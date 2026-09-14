@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_pos_daily_report_pivot" model="ir.ui.view">
+        <field name="name">aite.pos.daily.report.pivot</field>
+        <field name="model">aite.pos.daily.report</field>
+        <field name="arch" type="xml">
+            <pivot string="Analyse POS" sample="1">
+                <field name="date" interval="month" type="row"/>
+                <field name="categ_id" type="col"/>
+                <field name="price_subtotal" type="measure"/>
+                <field name="total_cost" type="measure"/>
+                <field name="margin" type="measure"/>
+                <field name="margin_rate" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_pos_daily_report_graph" model="ir.ui.view">
+        <field name="name">aite.pos.daily.report.graph</field>
+        <field name="model">aite.pos.daily.report</field>
+        <field name="arch" type="xml">
+            <graph string="Analyse POS" type="bar" sample="1">
+                <field name="date" interval="month"/>
+                <field name="price_subtotal" type="measure"/>
+                <field name="margin" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_pos_daily_report_list" model="ir.ui.view">
+        <field name="name">aite.pos.daily.report.list</field>
+        <field name="model">aite.pos.daily.report</field>
+        <field name="arch" type="xml">
+            <list string="Analyse POS" create="false" delete="false" edit="false">
+                <field name="date" widget="date"/>
+                <field name="config_id"/>
+                <field name="product_id"/>
+                <field name="categ_id" optional="show"/>
+                <field name="qty" sum="Total qté"/>
+                <field name="price_subtotal" sum="Total CA"/>
+                <field name="total_cost" sum="Total CMV"/>
+                <field name="margin" sum="Total marge"/>
+                <field name="margin_rate" widget="percentage" optional="hide"/>
+                <field name="currency_id" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <!--
+        NOTE ODOO 18 : les expressions Python dans les domaines de filtre
+        (context_today(), relativedelta, strftime) ne sont plus évaluables
+        côté client JS. On utilise à la place le filtre "date=" natif
+        d'Odoo 18 qui génère automatiquement les périodes courantes
+        (Aujourd'hui, Cette semaine, Ce mois, Ce trimestre, Cette année)
+        via le framework, sans expression Python.
+    -->
+    <record id="view_pos_daily_report_search" model="ir.ui.view">
+        <field name="name">aite.pos.daily.report.search</field>
+        <field name="model">aite.pos.daily.report</field>
+        <field name="arch" type="xml">
+            <search string="Analyse POS">
+                <field name="product_id"/>
+                <field name="categ_id"/>
+                <field name="config_id"/>
+                <field name="session_id"/>
+
+                <!-- Filtre date natif Odoo 18 — génère les sous-périodes
+                     automatiquement sans expression Python -->
+                <filter string="Date" name="filter_date" date="date"/>
+
+                <separator/>
+                <group string="Regrouper par">
+                    <filter string="Article" name="grp_product"
+                            context="{'group_by':'product_id'}"/>
+                    <filter string="Catégorie" name="grp_categ"
+                            context="{'group_by':'categ_id'}"/>
+                    <filter string="Point de vente" name="grp_config"
+                            context="{'group_by':'config_id'}"/>
+                    <filter string="Session" name="grp_session"
+                            context="{'group_by':'session_id'}"/>
+                    <filter string="Caissier" name="grp_user"
+                            context="{'group_by':'user_id'}"/>
+                    <filter string="Jour" name="grp_day"
+                            context="{'group_by':'date:day'}"/>
+                    <filter string="Semaine" name="grp_week"
+                            context="{'group_by':'date:week'}"/>
+                    <filter string="Mois" name="grp_month"
+                            context="{'group_by':'date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pos_daily_report" model="ir.actions.act_window">
+        <field name="name">Analyse POS — Marge &amp; CMV</field>
+        <field name="res_model">aite.pos.daily.report</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="search_view_id" ref="view_pos_daily_report_search"/>
+        <field name="context">{'group_by': ['categ_id']}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucune donnée POS disponible
+            </p>
+            <p>
+                Cette analyse exploite l'ensemble des lignes de commande
+                des sessions POS clôturées avec marge brute et CMV.
+            </p>
+        </field>
+    </record>
+
+</odoo>

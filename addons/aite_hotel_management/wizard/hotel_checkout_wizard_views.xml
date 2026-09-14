@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_hotel_checkout_wizard_form" model="ir.ui.view">
+        <field name="name">aite.hotel.checkout.wizard.form</field>
+        <field name="model">aite.hotel.checkout.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Check-out">
+                <group>
+                    <group string="Séjour">
+                        <field name="reservation_id" readonly="1"/>
+                        <field name="partner_id"/>
+                        <field name="planned_checkout"/>
+                        <field name="checkout_now"/>
+                        <field name="is_early" invisible="1"/>
+                        <field name="recompute_nights"
+                               invisible="not is_early"/>
+                        <field name="currency_id" invisible="1"/>
+                    </group>
+                    <group string="Folio">
+                        <field name="folio_id" readonly="1"/>
+                        <field name="amount_total"/>
+                        <field name="amount_paid"/>
+                        <field name="amount_residual" class="fw-bold"/>
+                        <field name="create_invoice"/>
+                    </group>
+                </group>
+                <div class="alert alert-warning" role="alert"
+                     invisible="not is_early">
+                    Départ anticipé détecté : si « Recalculer les
+                    nuitées » est coché, la date de départ et les nuitées
+                    facturées seront ramenées à la durée réelle.
+                </div>
+                <div class="alert alert-info" role="alert"
+                     invisible="amount_residual &lt;= 0">
+                    Un solde reste dû : vous pourrez l'encaisser depuis le
+                    folio après la facturation (bouton « Encaisser »).
+                </div>
+                <footer>
+                    <button name="action_confirm" type="object"
+                            string="Valider le départ" class="btn-primary"/>
+                    <button string="Annuler" class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

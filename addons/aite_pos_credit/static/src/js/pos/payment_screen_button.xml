@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!--
+        Injecte le bouton « Mettre sur ardoise » dans la zone des boutons de
+        l'écran de paiement (template PaymentScreenButtons, div.payment-buttons).
+        C'est la cible correcte et stable en Odoo 18.0 (et non PaymentScreen /
+        .paymentmethods, qui ne correspond pas).
+    -->
+    <t t-name="aite_pos_credit.PaymentScreenButtons"
+       t-inherit="point_of_sale.PaymentScreenButtons"
+       t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('payment-buttons')]" position="inside">
+            <button class="button btn btn-secondary btn-lg py-3 mb-2 w-100 aite-credit-btn"
+                    t-on-click="() => this.putOnCredit()">
+                <i class="fa fa-book me-2" role="img" aria-label="Ardoise"/>
+                Mettre sur ardoise
+            </button>
+        </xpath>
+    </t>
+
+</templates>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_direction_dashboard" model="ir.actions.client">
+        <field name="name">Direction — Vue consolidée</field>
+        <field name="tag">aite_direction_dashboard.dashboard</field>
+    </record>
+
+    <menuitem id="menu_direction_root"
+              name="Direction"
+              sequence="4"
+              groups="point_of_sale.group_pos_manager"
+              action="action_direction_dashboard"/>
+</odoo>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_slot_booking_list" model="ir.ui.view">
+        <field name="name">aite.slot.booking.list</field>
+        <field name="model">aite.slot.booking</field>
+        <field name="arch" type="xml">
+            <list decoration-info="state == 'confirmed'"
+                  decoration-success="state == 'done'"
+                  decoration-danger="state == 'no_show'"
+                  decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="start" widget="datetime"/>
+                <field name="stop" widget="datetime" optional="hide"/>
+                <field name="partner_id"/>
+                <field name="resource_id"/>
+                <field name="kind" optional="show"/>
+                <field name="service_id" optional="show"/>
+                <field name="qty" optional="hide"/>
+                <field name="amount" sum="Total"/>
+                <field name="source" optional="hide"/>
+                <field name="posted_line_id" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'confirmed'"
+                       decoration-success="state == 'done'"
+                       decoration-danger="state == 'no_show'"
+                       decoration-muted="state in ('cancelled','draft')"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_slot_booking_form" model="ir.ui.view">
+        <field name="name">aite.slot.booking.form</field>
+        <field name="model">aite.slot.booking</field>
+        <field name="arch" type="xml">
+            <form string="Réservation de créneau">
+                <header>
+                    <button name="action_confirm" type="object" string="Confirmer"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_done" type="object" string="Réalisée"
+                            class="btn-primary" invisible="state != 'confirmed'"/>
+                    <button name="action_send_confirmation" type="object"
+                            string="Renvoyer l'e-mail" invisible="state != 'confirmed'"/>
+                    <button name="action_post_to_folio" type="object"
+                            string="Reporter au folio"
+                            invisible="state != 'done' or posted_line_id"/>
+                    <button name="action_mark_picked_up" type="object"
+                            string="Marquer retiré"
+                            invisible="kind != 'pressing' or pickup_done or state not in ('confirmed','done')"/>
+                    <button name="action_no_show" type="object" string="No-show"
+                            invisible="state != 'confirmed'"/>
+                    <button name="action_cancel" type="object" string="Annuler"
+                            confirm="Annuler cette réservation ?"
+                            invisible="state not in ('draft','confirmed')"/>
+                    <button name="action_reset_draft" type="object" string="Remettre en brouillon"
+                            invisible="state not in ('cancelled','no_show')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,confirmed,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" readonly="1"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="partner_phone"/>
+                            <field name="resource_id"/>
+                            <field name="kind" invisible="1"/>
+                            <field name="service_id"/>
+                            <field name="qty" invisible="kind not in ('pressing',)"/>
+                            <field name="source" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="start"/>
+                            <field name="stop"/>
+                            <field name="duration_hours" widget="float_time"/>
+                            <field name="amount"/>
+                            <field name="amount_manual"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="company_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <group string="Pressing" invisible="kind != 'pressing'">
+                        <field name="pickup_date"/>
+                        <field name="pickup_done"/>
+                    </group>
+                    <group string="Séjour (note de chambre)">
+                        <field name="folio_id"/>
+                        <field name="posted_line_id" readonly="1"/>
+                    </group>
+                    <field name="note" placeholder="Note interne…"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_slot_booking_calendar" model="ir.ui.view">
+        <field name="name">aite.slot.booking.calendar</field>
+        <field name="model">aite.slot.booking</field>
+        <field name="arch" type="xml">
+            <calendar date_start="start" date_stop="stop" color="resource_id"
+                      mode="week" quick_create="0" event_open_popup="1">
+                <field name="partner_id"/>
+                <field name="resource_id"/>
+                <field name="service_id"/>
+                <field name="state"/>
+            </calendar>
+        </field>
+    </record>
+
+    <record id="view_slot_booking_search" model="ir.ui.view">
+        <field name="name">aite.slot.booking.search</field>
+        <field name="model">aite.slot.booking</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="resource_id"/>
+                <filter name="today" string="Aujourd'hui"
+                        domain="[('start','&gt;=',(context_today().strftime('%Y-%m-%d 00:00:00'))),('start','&lt;=',(context_today().strftime('%Y-%m-%d 23:59:59')))]"/>
+                <separator/>
+                <filter name="confirmed" string="Confirmées" domain="[('state','=','confirmed')]"/>
+                <filter name="done" string="Réalisées" domain="[('state','=','done')]"/>
+                <filter name="no_show" string="No-show" domain="[('state','=','no_show')]"/>
+                <separator/>
+                <filter name="space" string="Espaces" domain="[('kind','=','space')]"/>
+                <filter name="spa" string="SPA" domain="[('kind','=','spa')]"/>
+                <filter name="hair" string="Coiffure" domain="[('kind','=','hair')]"/>
+                <filter name="pressing" string="Pressing" domain="[('kind','=','pressing')]"/>
+                <separator/>
+                <filter name="pickup_waiting" string="Retraits en attente"
+                        domain="[('kind','=','pressing'),('pickup_done','=',False),('state','in',('confirmed','done'))]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_resource" string="Ressource" context="{'group_by': 'resource_id'}"/>
+                    <filter name="group_kind" string="Famille" context="{'group_by': 'kind'}"/>
+                    <filter name="group_state" string="État" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_slot_booking" model="ir.actions.act_window">
+        <field name="name">Réservations de créneaux</field>
+        <field name="res_model">aite.slot.booking</field>
+        <field name="view_mode">list,calendar,form</field>
+        <field name="search_view_id" ref="view_slot_booking_search"/>
+        <field name="context">{'search_default_today': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Aucune réservation</p>
+            <p>Réservez un espace VIP, un soin SPA, une coupe ou un dépôt
+            pressing — le moteur bloque les conflits automatiquement.</p>
+        </field>
+    </record>
+</odoo>

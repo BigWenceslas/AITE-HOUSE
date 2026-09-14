@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="cat_resto" model="product.category">
+            <field name="name">Restaurant</field>
+        </record>
+        <record id="cat_entrees" model="product.category">
+            <field name="name">Entrées</field>
+            <field name="parent_id" ref="cat_resto"/>
+        </record>
+        <record id="cat_plats" model="product.category">
+            <field name="name">Plats &amp; grillades</field>
+            <field name="parent_id" ref="cat_resto"/>
+        </record>
+        <record id="cat_poissons" model="product.category">
+            <field name="name">Poissons &amp; fruits de mer</field>
+            <field name="parent_id" ref="cat_resto"/>
+        </record>
+        <record id="cat_accomp" model="product.category">
+            <field name="name">Accompagnements</field>
+            <field name="parent_id" ref="cat_resto"/>
+        </record>
+        <record id="cat_desserts" model="product.category">
+            <field name="name">Desserts</field>
+            <field name="parent_id" ref="cat_resto"/>
+        </record>
+        <record id="cat_chaudes" model="product.category">
+            <field name="name">Boissons chaudes</field>
+            <field name="parent_id" ref="cat_resto"/>
+        </record>
+        <record id="cat_jus" model="product.category">
+            <field name="name">Jus &amp; softs</field>
+            <field name="parent_id" ref="cat_resto"/>
+        </record>
+        <record id="cat_eaux" model="product.category">
+            <field name="name">Eaux</field>
+            <field name="parent_id" ref="cat_resto"/>
+        </record>
+        <record id="cat_bieres" model="product.category">
+            <field name="name">Bières</field>
+            <field name="parent_id" ref="cat_resto"/>
+        </record>
+        <record id="cat_vins" model="product.category">
+            <field name="name">Vins &amp; spiritueux</field>
+            <field name="parent_id" ref="cat_resto"/>
+        </record>
+        <record id="cat_cocktails" model="product.category">
+            <field name="name">Cocktails</field>
+            <field name="parent_id" ref="cat_resto"/>
+        </record>
+        <record id="cat_boutique" model="product.category">
+            <field name="name">Boutique</field>
+        </record>
+        <record id="cat_snacks" model="product.category">
+            <field name="name">Snacks &amp; confiseries</field>
+            <field name="parent_id" ref="cat_boutique"/>
+        </record>
+        <record id="cat_epicerie" model="product.category">
+            <field name="name">Épicerie fine locale</field>
+            <field name="parent_id" ref="cat_boutique"/>
+        </record>
+        <record id="cat_hygiene" model="product.category">
+            <field name="name">Hygiène &amp; soins</field>
+            <field name="parent_id" ref="cat_boutique"/>
+        </record>
+        <record id="cat_artisanat" model="product.category">
+            <field name="name">Souvenirs &amp; artisanat</field>
+            <field name="parent_id" ref="cat_boutique"/>
+        </record>
+        <record id="cat_textile" model="product.category">
+            <field name="name">Textile &amp; accessoires</field>
+            <field name="parent_id" ref="cat_boutique"/>
+        </record>
+        <record id="cat_techno" model="product.category">
+            <field name="name">Accessoires voyage &amp; techno</field>
+            <field name="parent_id" ref="cat_boutique"/>
+        </record>
+        <record id="cat_prestations" model="product.category">
+            <field name="name">Prestations</field>
+        </record>
+        <record id="cat_spa" model="product.category">
+            <field name="name">SPA &amp; bien-être</field>
+            <field name="parent_id" ref="cat_prestations"/>
+        </record>
+        <record id="cat_coiffure" model="product.category">
+            <field name="name">Salon de coiffure</field>
+            <field name="parent_id" ref="cat_prestations"/>
+        </record>
+        <record id="cat_pressing" model="product.category">
+            <field name="name">Pressing</field>
+            <field name="parent_id" ref="cat_prestations"/>
+        </record>
+        <record id="cat_espaces" model="product.category">
+            <field name="name">Espaces VIP</field>
+            <field name="parent_id" ref="cat_prestations"/>
+        </record>
+        <record id="pos_cat_resto" model="pos.category">
+            <field name="name">Restaurant</field>
+        </record>
+        <record id="pos_cat_entrees" model="pos.category">
+            <field name="name">Entrées</field>
+            <field name="parent_id" ref="pos_cat_resto"/>
+        </record>
+        <record id="pos_cat_plats" model="pos.category">
+            <field name="name">Plats &amp; grillades</field>
+            <field name="parent_id" ref="pos_cat_resto"/>
+        </record>
+        <record id="pos_cat_poissons" model="pos.category">
+            <field name="name">Poissons &amp; fruits de mer</field>
+            <field name="parent_id" ref="pos_cat_resto"/>
+        </record>
+        <record id="pos_cat_accomp" model="pos.category">
+            <field name="name">Accompagnements</field>
+            <field name="parent_id" ref="pos_cat_resto"/>
+        </record>
+        <record id="pos_cat_desserts" model="pos.category">
+            <field name="name">Desserts</field>
+            <field name="parent_id" ref="pos_cat_resto"/>
+        </record>
+        <record id="pos_cat_chaudes" model="pos.category">
+            <field name="name">Boissons chaudes</field>
+            <field name="parent_id" ref="pos_cat_resto"/>
+        </record>
+        <record id="pos_cat_jus" model="pos.category">
+            <field name="name">Jus &amp; softs</field>
+            <field name="parent_id" ref="pos_cat_resto"/>
+        </record>
+        <record id="pos_cat_eaux" model="pos.category">
+            <field name="name">Eaux</field>
+            <field name="parent_id" ref="pos_cat_resto"/>
+        </record>
+        <record id="pos_cat_bieres" model="pos.category">
+            <field name="name">Bières</field>
+            <field name="parent_id" ref="pos_cat_resto"/>
+        </record>
+        <record id="pos_cat_vins" model="pos.category">
+            <field name="name">Vins &amp; spiritueux</field>
+            <field name="parent_id" ref="pos_cat_resto"/>
+        </record>
+        <record id="pos_cat_cocktails" model="pos.category">
+            <field name="name">Cocktails</field>
+            <field name="parent_id" ref="pos_cat_resto"/>
+        </record>
+        <record id="pos_cat_boutique" model="pos.category">
+            <field name="name">Boutique</field>
+        </record>
+        <record id="pos_cat_snacks" model="pos.category">
+            <field name="name">Snacks &amp; confiseries</field>
+            <field name="parent_id" ref="pos_cat_boutique"/>
+        </record>
+        <record id="pos_cat_epicerie" model="pos.category">
+            <field name="name">Épicerie fine locale</field>
+            <field name="parent_id" ref="pos_cat_boutique"/>
+        </record>
+        <record id="pos_cat_hygiene" model="pos.category">
+            <field name="name">Hygiène &amp; soins</field>
+            <field name="parent_id" ref="pos_cat_boutique"/>
+        </record>
+        <record id="pos_cat_artisanat" model="pos.category">
+            <field name="name">Souvenirs &amp; artisanat</field>
+            <field name="parent_id" ref="pos_cat_boutique"/>
+        </record>
+        <record id="pos_cat_textile" model="pos.category">
+            <field name="name">Textile &amp; accessoires</field>
+            <field name="parent_id" ref="pos_cat_boutique"/>
+        </record>
+        <record id="pos_cat_techno" model="pos.category">
+            <field name="name">Accessoires voyage &amp; techno</field>
+            <field name="parent_id" ref="pos_cat_boutique"/>
+        </record>
+    </data>
+</odoo>

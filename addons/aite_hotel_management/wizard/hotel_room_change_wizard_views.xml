@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_hotel_room_change_wizard_form" model="ir.ui.view">
+        <field name="name">aite.hotel.room.change.wizard.form</field>
+        <field name="model">aite.hotel.room.change.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Changer de chambre">
+                <group>
+                    <group string="Séjour">
+                        <field name="line_id" invisible="1"/>
+                        <field name="hotel_id" invisible="1"/>
+                        <field name="currency_id" invisible="1"/>
+                        <field name="partner_id"/>
+                        <field name="current_room_id"/>
+                        <field name="checkin_date"/>
+                        <field name="checkout_date"/>
+                    </group>
+                    <group string="Nouvelle chambre">
+                        <field name="new_room_id"
+                               options="{'no_create': True}"/>
+                        <field name="keep_price"/>
+                        <field name="current_price"/>
+                        <field name="new_price"/>
+                    </group>
+                </group>
+                <div class="alert alert-info" role="alert"
+                     invisible="not keep_price">
+                    Surclassement gracieux : la nouvelle chambre sera
+                    facturée au tarif actuel du séjour.
+                </div>
+                <footer>
+                    <button string="Changer la chambre" type="object"
+                            name="action_confirm" class="btn-primary"
+                            data-hotkey="q"/>
+                    <button string="Annuler" special="cancel"
+                            data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_hotel_room_change_wizard" model="ir.actions.act_window">
+        <field name="name">Changer de chambre</field>
+        <field name="res_model">aite.hotel.room.change.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_line_id': active_id}</field>
+        <field name="binding_model_id"
+               ref="model_aite_hotel_reservation_line"/>
+        <field name="binding_view_types">form,list</field>
+    </record>
+
+</odoo>

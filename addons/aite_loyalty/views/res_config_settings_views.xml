@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_aite_loyalty" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.aite.loyalty</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="AITE Fidélité" string="AITE Fidélité"
+                     name="aite_loyalty"
+                     groups="aite_hotel_management.group_hotel_manager">
+                    <block title="Barème des points" name="aite_loyalty_bareme">
+                        <setting id="aite_loyalty_rate" string="Points par 1 000"
+                                 help="Points gagnés par tranche de 1 000 de la devise.">
+                            <field name="aite_loyalty_rate_per_1000" class="o_light_label"/>
+                        </setting>
+                        <setting id="aite_loyalty_min" string="Montant minimum"
+                                 help="En dessous, la transaction ne génère aucun point.">
+                            <field name="aite_loyalty_min_amount" class="o_light_label"/>
+                        </setting>
+                        <setting id="aite_loyalty_window" string="Fenêtre de calcul"
+                                 help="Période glissante (en mois) pour la segmentation.">
+                            <field name="aite_loyalty_window_months" class="o_light_label"/>
+                            <span class="o_form_label"> mois</span>
+                        </setting>
+                    </block>
+                    <block title="Seuils de segmentation" name="aite_loyalty_seuils">
+                        <setting id="aite_loyalty_vip" string="Statut VIP"
+                                 help="Dépenses ET visites minimales sur la fenêtre.">
+                            <div class="row mt8">
+                                <label for="aite_loyalty_vip_min_spend" class="col-lg-5 o_light_label"/>
+                                <field name="aite_loyalty_vip_min_spend"/>
+                            </div>
+                            <div class="row">
+                                <label for="aite_loyalty_vip_min_visits" class="col-lg-5 o_light_label"/>
+                                <field name="aite_loyalty_vip_min_visits"/>
+                            </div>
+                        </setting>
+                        <setting id="aite_loyalty_vvip" string="Statut VVIP"
+                                 help="Dépenses, visites ET familles de services minimales.">
+                            <div class="row mt8">
+                                <label for="aite_loyalty_vvip_min_spend" class="col-lg-5 o_light_label"/>
+                                <field name="aite_loyalty_vvip_min_spend"/>
+                            </div>
+                            <div class="row">
+                                <label for="aite_loyalty_vvip_min_visits" class="col-lg-5 o_light_label"/>
+                                <field name="aite_loyalty_vvip_min_visits"/>
+                            </div>
+                            <div class="row">
+                                <label for="aite_loyalty_vvip_min_domains" class="col-lg-5 o_light_label"/>
+                                <field name="aite_loyalty_vvip_min_domains"/>
+                            </div>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>

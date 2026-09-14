@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_loyalty_adjust_wizard_form" model="ir.ui.view">
+        <field name="name">aite.loyalty.adjust.wizard.form</field>
+        <field name="model">aite.loyalty.adjust.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Ajustement de points">
+                <group>
+                    <field name="partner_id"/>
+                    <field name="points"/>
+                    <field name="note" placeholder="Geste commercial, correction…"/>
+                </group>
+                <footer>
+                    <button name="action_apply" type="object" string="Appliquer"
+                            class="btn-primary"/>
+                    <button string="Annuler" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_loyalty_adjust_wizard" model="ir.actions.act_window">
+        <field name="name">Ajuster des points</field>
+        <field name="res_model">aite.loyalty.adjust.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

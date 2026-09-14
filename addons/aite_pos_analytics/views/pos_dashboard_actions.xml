@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Action client racine du dashboard OWL.
+        Le tag ``aite_pos_analytics.dashboard`` correspond à
+        l'enregistrement dans la ``registry.category("actions")`` côté JS.
+    -->
+    <record id="action_pos_analytics_dashboard" model="ir.actions.client">
+        <field name="name">Tableau de bord POS</field>
+        <field name="tag">aite_pos_analytics.dashboard</field>
+        <field name="target">main</field>
+    </record>
+
+    <!--
+        Variantes : la même action client, mais avec ``default_view``
+        passé dans ``params`` pour ouvrir directement sur un onglet
+        donné. Permet d'avoir des menus distincts dans le sidebar
+        Odoo sans dupliquer le composant racine.
+    -->
+    <record id="action_pos_analytics_sessions" model="ir.actions.client">
+        <field name="name">Sessions POS</field>
+        <field name="tag">aite_pos_analytics.dashboard</field>
+        <field name="target">main</field>
+        <field name="params">{"default_view": "sessions"}</field>
+    </record>
+    <record id="action_pos_analytics_caisse" model="ir.actions.client">
+        <field name="name">Analyse par caisse</field>
+        <field name="tag">aite_pos_analytics.dashboard</field>
+        <field name="target">main</field>
+        <field name="params">{"default_view": "bycaisse"}</field>
+    </record>
+    <record id="action_pos_analytics_discrepancies" model="ir.actions.client">
+        <field name="name">Écarts de caisse</field>
+        <field name="tag">aite_pos_analytics.dashboard</field>
+        <field name="target">main</field>
+        <field name="params">{"default_view": "discrepancies"}</field>
+    </record>
+    <record id="action_pos_analytics_categories" model="ir.actions.client">
+        <field name="name">Analyse par catégorie</field>
+        <field name="tag">aite_pos_analytics.dashboard</field>
+        <field name="target">main</field>
+        <field name="params">{"default_view": "categories"}</field>
+    </record>
+
+</odoo>

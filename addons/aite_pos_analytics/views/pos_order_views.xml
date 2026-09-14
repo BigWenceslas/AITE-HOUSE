@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Extension de la vue formulaire pos.order : ajout d'un bloc analyse
+        marge dans la section "totaux", visible en consultation après
+        validation.
+    -->
+    <record id="view_pos_order_form_inherit_analytics" model="ir.ui.view">
+        <field name="name">pos.order.form.aite.analytics</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Colonnes marge dans la liste des lignes -->
+            <xpath expr="//field[@name='lines']/list/field[@name='price_subtotal_incl']"
+                   position="after">
+                <field name="cost_unit" optional="hide"/>
+                <field name="total_cost" optional="hide"/>
+                <field name="margin" optional="show"/>
+                <field name="margin_rate" widget="percentage" optional="hide"/>
+            </xpath>
+
+            <!-- Totaux marge en pied de form -->
+            <xpath expr="//field[@name='amount_total']" position="after">
+                <field name="total_cost"
+                       widget="monetary"
+                       options="{'currency_field': 'currency_id'}"/>
+                <field name="total_margin"
+                       widget="monetary"
+                       options="{'currency_field': 'currency_id'}"/>
+                <field name="margin_rate" widget="percentage"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!--
+        Extension de la list view pos.order : colonnes marge accessibles
+        en option dans les vues liste.
+    -->
+    <record id="view_pos_order_list_inherit_analytics" model="ir.ui.view">
+        <field name="name">pos.order.list.aite.analytics</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='amount_total']" position="after">
+                <field name="total_cost" optional="hide" sum="Total CMV"/>
+                <field name="total_margin" optional="show" sum="Marge totale"/>
+                <field name="margin_rate" widget="percentage" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

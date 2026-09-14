@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============ AMÉNITÉS ============ -->
+    <record id="view_hotel_amenity_list" model="ir.ui.view">
+        <field name="name">aite.hotel.amenity.list</field>
+        <field name="model">aite.hotel.amenity</field>
+        <field name="arch" type="xml">
+            <list string="Aménités" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="icon"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_hotel_amenity" model="ir.actions.act_window">
+        <field name="name">Aménités</field>
+        <field name="res_model">aite.hotel.amenity</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <!-- ============ TYPES DE CHAMBRE ============ -->
+    <record id="view_hotel_room_type_list" model="ir.ui.view">
+        <field name="name">aite.hotel.room.type.list</field>
+        <field name="model">aite.hotel.room.type</field>
+        <field name="arch" type="xml">
+            <list string="Types de chambre">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="base_price"/>
+                <field name="extra_person_price" optional="hide"/>
+                <field name="capacity_adults"/>
+                <field name="capacity_children"/>
+                <field name="room_count"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_hotel_room_type_form" model="ir.ui.view">
+        <field name="name">aite.hotel.room.type.form</field>
+        <field name="model">aite.hotel.room.type</field>
+        <field name="arch" type="xml">
+            <form string="Type de chambre">
+                <sheet>
+                    <field name="active" invisible="1"/>
+                    <widget name="web_ribbon" title="Archivé"
+                            bg_color="text-bg-danger" invisible="active"/>
+                    <field name="image_1920" widget="image"
+                           class="oe_avatar"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Ex. Deluxe"/></h1>
+                    </div>
+                    <group>
+                        <group string="Tarification">
+                            <field name="code"/>
+                            <field name="base_price"/>
+                            <field name="extra_person_price"/>
+                            <field name="product_id"
+                                   groups="aite_hotel_management.group_hotel_manager"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="company_id"
+                                   groups="base.group_multi_company"/>
+                        </group>
+                        <group string="Capacité">
+                            <field name="capacity_adults"/>
+                            <field name="capacity_children"/>
+                            <field name="room_count"/>
+                        </group>
+                    </group>
+                    <group string="Aménités">
+                        <field name="amenity_ids" nolabel="1" colspan="2"
+                               widget="many2many_tags"/>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description"
+                                   placeholder="Description commerciale du type de chambre…"/>
+                        </page>
+                        <page string="Tarifs saisonniers" name="seasons">
+                            <field name="season_ids">
+                                <list editable="bottom">
+                                    <field name="name"/>
+                                    <field name="hotel_id"/>
+                                    <field name="date_from"/>
+                                    <field name="date_to"/>
+                                    <field name="price"/>
+                                    <field name="currency_id"
+                                           column_invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_hotel_room_type" model="ir.actions.act_window">
+        <field name="name">Types de chambre</field>
+        <field name="res_model">aite.hotel.room.type</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créez vos types de chambre
+            </p>
+            <p>
+                Standard, Deluxe, Suite… chaque type porte le tarif de
+                base, les capacités et un article de facturation créé
+                automatiquement.
+            </p>
+        </field>
+    </record>
+
+    <!-- ============ CHAMBRES ============ -->
+    <record id="view_hotel_room_list" model="ir.ui.view">
+        <field name="name">aite.hotel.room.list</field>
+        <field name="model">aite.hotel.room</field>
+        <field name="arch" type="xml">
+            <list string="Chambres"
+                  decoration-danger="out_of_order"
+                  decoration-warning="hk_state in ('to_clean','cleaning','inspect')">
+                <field name="name"/>
+                <field name="hotel_id" optional="show"/>
+                <field name="floor_id" optional="show"/>
+                <field name="room_type_id"/>
+                <field name="capacity_adults" optional="hide"/>
+                <field name="effective_price"/>
+                <field name="status" widget="badge"
+                       decoration-success="status == 'free'"
+                       decoration-danger="status in ('occupied','out_of_order')"
+                       decoration-info="status == 'arrival'"
+                       decoration-warning="status == 'cleaning'"/>
+                <field name="hk_state" widget="badge" optional="show"
+                       decoration-success="hk_state == 'clean'"
+                       decoration-warning="hk_state != 'clean'"/>
+                <field name="out_of_order" optional="hide"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_hotel_room_kanban" model="ir.ui.view">
+        <field name="name">aite.hotel.room.kanban</field>
+        <field name="model">aite.hotel.room</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="floor_id" quick_create="false"
+                    class="o_kanban_small_column">
+                <field name="status"/>
+                <field name="hk_state"/>
+                <field name="out_of_order"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex flex-column p-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <strong class="fs-4">
+                                    <field name="name"/>
+                                </strong>
+                                <field name="status" widget="badge"
+                                       decoration-success="status == 'free'"
+                                       decoration-danger="status in ('occupied','out_of_order')"
+                                       decoration-info="status == 'arrival'"
+                                       decoration-warning="status == 'cleaning'"/>
+                            </div>
+                            <div class="text-muted">
+                                <field name="room_type_id"/>
+                                · <field name="effective_price"/>
+                                <field name="currency_id" invisible="1"/>
+                            </div>
+                            <div t-if="record.current_line_id.raw_value"
+                                 class="mt-1">
+                                <i class="fa fa-user me-1" title="Client"/>
+                                <field name="current_line_id"/>
+                            </div>
+                            <div class="mt-2 d-flex gap-1">
+                                <button name="action_start_cleaning"
+                                        type="object"
+                                        class="btn btn-sm btn-secondary"
+                                        invisible="hk_state != 'to_clean'">
+                                    Démarrer ménage
+                                </button>
+                                <button name="action_set_clean" type="object"
+                                        class="btn btn-sm btn-success"
+                                        invisible="hk_state not in ('cleaning','inspect')">
+                                    Propre
+                                </button>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_hotel_room_form" model="ir.ui.view">
+        <field name="name">aite.hotel.room.form</field>
+        <field name="model">aite.hotel.room</field>
+        <field name="arch" type="xml">
+            <form string="Chambre">
+                <header>
+                    <button name="action_set_to_clean" type="object"
+                            string="À nettoyer"
+                            invisible="hk_state != 'clean'"/>
+                    <button name="action_start_cleaning" type="object"
+                            string="Démarrer le ménage"
+                            invisible="hk_state != 'to_clean'"/>
+                    <button name="action_set_clean" type="object"
+                            string="Marquer propre" class="btn-primary"
+                            invisible="hk_state not in ('cleaning','inspect')"/>
+                    <button name="action_toggle_out_of_order" type="object"
+                            string="Mettre hors service"
+                            invisible="out_of_order"
+                            groups="aite_hotel_management.group_hotel_manager"/>
+                    <button name="action_toggle_out_of_order" type="object"
+                            string="Remettre en service" class="btn-warning"
+                            invisible="not out_of_order"
+                            groups="aite_hotel_management.group_hotel_manager"/>
+                    <field name="hk_state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_reservations" type="object"
+                                class="oe_stat_button" icon="fa-calendar">
+                            <span class="o_stat_text">Séjours</span>
+                        </button>
+                    </div>
+                    <field name="active" invisible="1"/>
+                    <widget name="web_ribbon" title="Hors service"
+                            bg_color="text-bg-danger"
+                            invisible="not out_of_order"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Ex. 101"/></h1>
+                    </div>
+                    <group>
+                        <group string="Localisation">
+                            <field name="hotel_id"/>
+                            <field name="floor_id"/>
+                            <field name="room_type_id"/>
+                            <field name="telephone_ext"/>
+                            <field name="company_id" invisible="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group string="Capacité &amp; tarif">
+                            <field name="capacity_adults"/>
+                            <field name="capacity_children"/>
+                            <field name="price_override"/>
+                            <field name="effective_price"/>
+                            <field name="status"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Aménités supplémentaires">
+                            <field name="amenity_ids" nolabel="1"
+                                   widget="many2many_tags"/>
+                        </group>
+                        <group string="Hors service"
+                               invisible="not out_of_order">
+                            <field name="out_of_order_reason"/>
+                        </group>
+                    </group>
+                    <group string="Notes internes">
+                        <field name="note" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hotel_room_search" model="ir.ui.view">
+        <field name="name">aite.hotel.room.search</field>
+        <field name="model">aite.hotel.room</field>
+        <field name="arch" type="xml">
+            <search string="Chambres">
+                <field name="name"/>
+                <field name="room_type_id"/>
+                <field name="hotel_id"/>
+                <filter name="filter_to_clean" string="À nettoyer"
+                        domain="[('hk_state', 'in', ('to_clean','cleaning','inspect'))]"/>
+                <filter name="filter_ooo" string="Hors service"
+                        domain="[('out_of_order', '=', True)]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_hotel" string="Hôtel"
+                            context="{'group_by': 'hotel_id'}"/>
+                    <filter name="group_floor" string="Étage"
+                            context="{'group_by': 'floor_id'}"/>
+                    <filter name="group_type" string="Type"
+                            context="{'group_by': 'room_type_id'}"/>
+                    <filter name="group_hk" string="État ménage"
+                            context="{'group_by': 'hk_state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_hotel_room" model="ir.actions.act_window">
+        <field name="name">Chambres</field>
+        <field name="res_model">aite.hotel.room</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_hotel_room_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créez vos chambres
+            </p>
+            <p>
+                Chaque chambre appartient à un hôtel, un étage et un type ;
+                le kanban sert de room rack (statut et ménage en direct).
+            </p>
+        </field>
+    </record>
+
+</odoo>

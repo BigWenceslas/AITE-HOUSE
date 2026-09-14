@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="res_vip_nongo" model="aite.booking.resource">
+            <field name="name">Salon VIP Nongo</field>
+            <field name="kind">space</field>
+            <field name="sequence" eval="10"/>
+            <field name="capacity" eval="20"/>
+            <field name="open_hour" eval="9.0"/>
+            <field name="close_hour" eval="23.0"/>
+            <field name="slot_minutes">60</field>
+            <field name="price_hour" eval="150000"/>
+            <field name="allow_online" eval="True"/>
+            <field name="color">#714B67</field>
+        </record>
+        <record id="res_vip_kaloum" model="aite.booking.resource">
+            <field name="name">Salon VIP Kaloum</field>
+            <field name="kind">space</field>
+            <field name="sequence" eval="11"/>
+            <field name="capacity" eval="12"/>
+            <field name="open_hour" eval="9.0"/>
+            <field name="close_hour" eval="23.0"/>
+            <field name="slot_minutes">60</field>
+            <field name="price_hour" eval="150000"/>
+            <field name="allow_online" eval="True"/>
+            <field name="color">#714B67</field>
+        </record>
+        <record id="res_vvip_kakimbo" model="aite.booking.resource">
+            <field name="name">Salon VVIP Kakimbo</field>
+            <field name="kind">space</field>
+            <field name="sequence" eval="12"/>
+            <field name="capacity" eval="30"/>
+            <field name="open_hour" eval="10.0"/>
+            <field name="close_hour" eval="23.0"/>
+            <field name="slot_minutes">60</field>
+            <field name="price_hour" eval="300000"/>
+            <field name="allow_online" eval="True"/>
+            <field name="color">#714B67</field>
+        </record>
+        <record id="res_vvip_terrasse" model="aite.booking.resource">
+            <field name="name">Terrasse VVIP</field>
+            <field name="kind">space</field>
+            <field name="sequence" eval="13"/>
+            <field name="capacity" eval="40"/>
+            <field name="open_hour" eval="16.0"/>
+            <field name="close_hour" eval="23.0"/>
+            <field name="slot_minutes">60</field>
+            <field name="price_hour" eval="300000"/>
+            <field name="allow_online" eval="False"/>
+            <field name="color">#714B67</field>
+        </record>
+        <record id="res_spa1" model="aite.booking.resource">
+            <field name="name">Cabine SPA 1</field>
+            <field name="kind">spa</field>
+            <field name="sequence" eval="14"/>
+            <field name="capacity" eval="1"/>
+            <field name="open_hour" eval="9.0"/>
+            <field name="close_hour" eval="21.0"/>
+            <field name="slot_minutes">30</field>
+            <field name="price_hour" eval="0"/>
+            <field name="allow_online" eval="True"/>
+            <field name="color">#0F6E56</field>
+        </record>
+        <record id="res_spa2" model="aite.booking.resource">
+            <field name="name">Cabine SPA 2</field>
+            <field name="kind">spa</field>
+            <field name="sequence" eval="15"/>
+            <field name="capacity" eval="1"/>
+            <field name="open_hour" eval="9.0"/>
+            <field name="close_hour" eval="21.0"/>
+            <field name="slot_minutes">30</field>
+            <field name="price_hour" eval="0"/>
+            <field name="allow_online" eval="True"/>
+            <field name="color">#0F6E56</field>
+        </record>
+        <record id="res_spa_duo" model="aite.booking.resource">
+            <field name="name">Cabine SPA duo</field>
+            <field name="kind">spa</field>
+            <field name="sequence" eval="16"/>
+            <field name="capacity" eval="1"/>
+            <field name="open_hour" eval="10.0"/>
+            <field name="close_hour" eval="21.0"/>
+            <field name="slot_minutes">30</field>
+            <field name="price_hour" eval="0"/>
+            <field name="allow_online" eval="True"/>
+            <field name="color">#0F6E56</field>
+        </record>
+        <record id="res_hammam" model="aite.booking.resource">
+            <field name="name">Hammam &amp; sauna</field>
+            <field name="kind">spa</field>
+            <field name="sequence" eval="17"/>
+            <field name="capacity" eval="6"/>
+            <field name="open_hour" eval="10.0"/>
+            <field name="close_hour" eval="21.0"/>
+            <field name="slot_minutes">60</field>
+            <field name="price_hour" eval="0"/>
+            <field name="allow_online" eval="True"/>
+            <field name="color">#0F6E56</field>
+        </record>
+        <record id="res_coif_h1" model="aite.booking.resource">
+            <field name="name">Fauteuil homme 1</field>
+            <field name="kind">hair</field>
+            <field name="sequence" eval="18"/>
+            <field name="capacity" eval="1"/>
+            <field name="open_hour" eval="9.0"/>
+            <field name="close_hour" eval="20.0"/>
+            <field name="slot_minutes">30</field>
+            <field name="price_hour" eval="0"/>
+            <field name="allow_online" eval="True"/>
+            <field name="color">#854F0B</field>
+        </record>
+        <record id="res_coif_h2" model="aite.booking.resource">
+            <field name="name">Fauteuil homme 2</field>
+            <field name="kind">hair</field>
+            <field name="sequence" eval="19"/>
+            <field name="capacity" eval="1"/>
+            <field name="open_hour" eval="9.0"/>
+            <field name="close_hour" eval="20.0"/>
+            <field name="slot_minutes">30</field>
+            <field name="price_hour" eval="0"/>
+            <field name="allow_online" eval="True"/>
+            <field name="color">#854F0B</field>
+        </record>
+        <record id="res_coif_f1" model="aite.booking.resource">
+            <field name="name">Fauteuil femme 1</field>
+            <field name="kind">hair</field>
+            <field name="sequence" eval="20"/>
+            <field name="capacity" eval="1"/>
+            <field name="open_hour" eval="9.0"/>
+            <field name="close_hour" eval="20.0"/>
+            <field name="slot_minutes">30</field>
+            <field name="price_hour" eval="0"/>
+            <field name="allow_online" eval="True"/>
+            <field name="color">#854F0B</field>
+        </record>
+        <record id="res_coif_f2" model="aite.booking.resource">
+            <field name="name">Fauteuil femme 2</field>
+            <field name="kind">hair</field>
+            <field name="sequence" eval="21"/>
+            <field name="capacity" eval="1"/>
+            <field name="open_hour" eval="9.0"/>
+            <field name="close_hour" eval="20.0"/>
+            <field name="slot_minutes">30</field>
+            <field name="price_hour" eval="0"/>
+            <field name="allow_online" eval="True"/>
+            <field name="color">#854F0B</field>
+        </record>
+        <record id="res_pressing" model="aite.booking.resource">
+            <field name="name">Comptoir pressing</field>
+            <field name="kind">pressing</field>
+            <field name="sequence" eval="22"/>
+            <field name="capacity" eval="4"/>
+            <field name="open_hour" eval="8.0"/>
+            <field name="close_hour" eval="19.0"/>
+            <field name="slot_minutes">30</field>
+            <field name="price_hour" eval="0"/>
+            <field name="allow_online" eval="False"/>
+            <field name="color">#185FA5</field>
+        </record>
+    </data>
+</odoo>

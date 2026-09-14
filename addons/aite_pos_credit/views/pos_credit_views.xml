@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============ LISTE ============ -->
+    <record id="view_aite_pos_credit_list" model="ir.ui.view">
+        <field name="name">aite.pos.credit.list</field>
+        <field name="model">aite.pos.credit</field>
+        <field name="arch" type="xml">
+            <list string="Ardoises" decoration-danger="severity == 'critical'"
+                  decoration-warning="severity == 'late'"
+                  decoration-muted="state in ('paid','cancelled')">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="source" widget="badge" optional="show"
+                       decoration-info="source == 'pos'"
+                       decoration-primary="source == 'sale'"/>
+                <field name="config_id" optional="show"/>
+                <field name="sale_order_id" optional="hide"/>
+                <field name="date_open"/>
+                <field name="amount_total" sum="Montant initial"/>
+                <field name="amount_paid" sum="Déjà remboursé"/>
+                <field name="amount_residual" sum="Reste dû"/>
+                <field name="age_days" string="Âge (j)"/>
+                <field name="severity" widget="badge"
+                       decoration-success="severity == 'recent'"
+                       decoration-warning="severity == 'late'"
+                       decoration-danger="severity == 'critical'"
+                       decoration-muted="severity == 'settled'"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'paid'"
+                       decoration-info="state == 'open'"
+                       decoration-muted="state == 'cancelled'"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============ FORMULAIRE ============ -->
+    <record id="view_aite_pos_credit_form" model="ir.ui.view">
+        <field name="name">aite.pos.credit.form</field>
+        <field name="model">aite.pos.credit</field>
+        <field name="arch" type="xml">
+            <form string="Ardoise">
+                <header>
+                    <button name="action_register_payment" type="object"
+                            string="Enregistrer un remboursement"
+                            class="btn-primary"
+                            invisible="state != 'open'"/>
+                    <button name="action_cancel" type="object"
+                            string="Annuler" confirm="Annuler cette ardoise ?"
+                            invisible="state != 'open'"/>
+                    <button name="action_reopen" type="object"
+                            string="Rouvrir"
+                            invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="open,paid"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_payments" type="object"
+                                class="oe_stat_button" icon="fa-money">
+                            <field name="payment_count" widget="statinfo"
+                                   string="Remboursements"/>
+                        </button>
+                    </div>
+
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="partner_id"
+                                   readonly="state != 'open'"/>
+                            <field name="date_open"
+                                   readonly="state != 'open'"/>
+                            <field name="source" widget="badge"
+                                   readonly="1"/>
+                            <field name="order_id" readonly="1"
+                                   invisible="source == 'sale'"/>
+                            <field name="config_id" readonly="1"
+                                   invisible="source == 'sale'"/>
+                            <field name="sale_order_id" readonly="1"
+                                   invisible="source != 'sale'"/>
+                            <field name="order_amount_total"
+                                   invisible="not order_id"/>
+                            <field name="order_paid_direct"
+                                   invisible="not order_id"/>
+                        </group>
+                        <group>
+                            <field name="amount_total"
+                                   readonly="state != 'open' or payment_count > 0"/>
+                            <field name="amount_paid"/>
+                            <field name="amount_residual"/>
+                            <field name="age_days"/>
+                            <field name="severity"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Remboursements" name="payments">
+                            <field name="payment_ids" readonly="state == 'cancelled'">
+                                <list editable="bottom"
+                                      decoration-muted="state == 'cancelled'">
+                                    <field name="date"/>
+                                    <field name="method"/>
+                                    <field name="transaction_ref"/>
+                                    <field name="amount" sum="Total remboursé"/>
+                                    <field name="collected_by" optional="show"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'posted'"
+                                           decoration-muted="state == 'cancelled'"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <button name="action_cancel" type="object"
+                                            string="Annuler" icon="fa-times"
+                                            invisible="state != 'posted'"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Note" name="note">
+                            <field name="note" placeholder="Note interne…"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ RECHERCHE ============ -->
+    <record id="view_aite_pos_credit_search" model="ir.ui.view">
+        <field name="name">aite.pos.credit.search</field>
+        <field name="model">aite.pos.credit</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher une ardoise">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="config_id"/>
+                <filter name="open" string="Ouvertes"
+                        domain="[('state','=','open')]"/>
+                <separator/>
+                <filter name="src_pos" string="Point de vente"
+                        domain="[('source','=','pos')]"/>
+                <filter name="src_sale" string="Ventes"
+                        domain="[('source','=','sale')]"/>
+                <filter name="paid" string="Réglées"
+                        domain="[('state','=','paid')]"/>
+                <separator/>
+                <filter name="late" string="En retard (+30j)"
+                        domain="[('age_days','&gt;=',30),('state','=','open')]"/>
+                <filter name="critical" string="Critiques (+60j)"
+                        domain="[('age_days','&gt;=',60),('state','=','open')]"/>
+                <separator/>
+                <filter name="this_month" string="Ouvertes ce mois"
+                        domain="[('date_open','&gt;=',(context_today().strftime('%Y-%m-01')))]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_partner" string="Client"
+                            context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_caisse" string="Caisse"
+                            context="{'group_by': 'config_id'}"/>
+                    <filter name="group_source" string="Origine"
+                            context="{'group_by': 'source'}"/>
+                    <filter name="group_state" string="État"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="group_severity" string="Sévérité"
+                            context="{'group_by': 'severity'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============ ACTION ============ -->
+    <record id="action_aite_pos_credit" model="ir.actions.act_window">
+        <field name="name">Ardoises</field>
+        <field name="res_model">aite.pos.credit</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_aite_pos_credit_search"/>
+        <field name="context">{'search_default_open': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucune ardoise pour l'instant
+            </p>
+            <p>
+                Les ardoises sont créées depuis le Point de Vente ou
+                depuis une commande de vente quand un client choisit de
+                payer plus tard.
+            </p>
+        </field>
+    </record>
+
+</odoo>

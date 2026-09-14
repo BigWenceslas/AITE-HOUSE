@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============ LISTE ============ -->
+    <record id="view_hotel_reservation_list" model="ir.ui.view">
+        <field name="name">aite.hotel.reservation.list</field>
+        <field name="model">aite.hotel.reservation</field>
+        <field name="arch" type="xml">
+            <list string="Réservations"
+                  decoration-info="state == 'confirmed'"
+                  decoration-success="state == 'checked_in'"
+                  decoration-muted="state in ('checked_out','cancelled','no_show')">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="hotel_id" optional="show"
+                       groups="base.group_multi_company"/>
+                <field name="checkin_date"/>
+                <field name="checkout_date"/>
+                <field name="nights"/>
+                <field name="room_count"/>
+                <field name="amount_room_total" sum="Total hébergement"/>
+                <field name="folio_amount_residual" optional="show"/>
+                <field name="source" widget="badge" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'confirmed'"
+                       decoration-success="state == 'checked_in'"
+                       decoration-warning="state == 'draft'"
+                       decoration-danger="state == 'no_show'"
+                       decoration-muted="state in ('checked_out','cancelled')"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============ FORMULAIRE ============ -->
+    <record id="view_hotel_reservation_form" model="ir.ui.view">
+        <field name="name">aite.hotel.reservation.form</field>
+        <field name="model">aite.hotel.reservation</field>
+        <field name="arch" type="xml">
+            <form string="Réservation">
+                <header>
+                    <button name="action_confirm" type="object"
+                            string="Confirmer" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_checkin" type="object"
+                            string="Check-in" class="btn-primary"
+                            invisible="state != 'confirmed'"/>
+                    <button name="action_open_checkout_wizard" type="object"
+                            string="Check-out" class="btn-primary"
+                            invisible="state != 'checked_in'"/>
+                    <button name="action_register_deposit" type="object"
+                            string="Encaisser un acompte"
+                            invisible="state not in ('confirmed','checked_in')"/>
+                    <button name="action_send_confirmation" type="object"
+                            string="Envoyer la confirmation"
+                            invisible="state not in ('confirmed','checked_in')"/>
+                    <button name="action_set_no_show" type="object"
+                            string="No-show" confirm="Marquer ce client non présenté ?"
+                            invisible="state != 'confirmed'"/>
+                    <button name="action_cancel" type="object"
+                            string="Annuler" confirm="Annuler cette réservation ?"
+                            invisible="state not in ('draft','confirmed','checked_in')"/>
+                    <button name="action_reset_draft" type="object"
+                            string="Remettre en brouillon"
+                            invisible="state not in ('cancelled','no_show')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,confirmed,checked_in,checked_out"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_folio" type="object"
+                                class="oe_stat_button" icon="fa-file-text-o"
+                                invisible="not folio_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Folio</span>
+                                <span class="o_stat_value">
+                                    <field name="folio_amount_residual"
+                                           widget="monetary"/>
+                                </span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Client">
+                            <field name="partner_id"
+                                   readonly="state not in ('draft','confirmed')"
+                                   context="{'default_is_hotel_guest': True}"/>
+                            <field name="partner_phone"/>
+                            <field name="partner_email"/>
+                            <field name="hotel_id"
+                                   readonly="state != 'draft'"
+                                   options="{'no_create': True}"/>
+                            <field name="company_id" invisible="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group string="Séjour">
+                            <field name="checkin_date"
+                                   readonly="state in ('checked_in','checked_out','cancelled','no_show')"/>
+                            <field name="checkout_date"
+                                   readonly="state in ('checked_out','cancelled','no_show')"/>
+                            <field name="nights"/>
+                            <field name="amount_room_total"/>
+                            <field name="actual_checkin"
+                                   invisible="not actual_checkin"/>
+                            <field name="actual_checkout"
+                                   invisible="not actual_checkout"/>
+                        </group>
+                        <group string="Canal &amp; commission">
+                            <field name="source"/>
+                            <field name="agent_id"
+                                   invisible="source != 'agent'"
+                                   required="source == 'agent'"/>
+                            <field name="commission_type"
+                                   invisible="not agent_id"/>
+                            <field name="commission_rate"
+                                   invisible="not agent_id"/>
+                            <field name="commission_amount"
+                                   invisible="not agent_id"/>
+                        </group>
+                        <group string="Occupation">
+                            <field name="room_count"/>
+                            <field name="adults"/>
+                            <field name="children"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Chambres" name="rooms">
+                            <field name="line_ids"
+                                   readonly="state in ('checked_out','cancelled','no_show')">
+                                <list editable="bottom">
+                                    <field name="room_type_id"/>
+                                    <field name="room_id"
+                                           options="{'no_create': True}"/>
+                                    <field name="adults"/>
+                                    <field name="children"/>
+                                    <field name="occupant_names"
+                                           optional="show"/>
+                                    <field name="nights"/>
+                                    <field name="price_night"/>
+                                    <field name="price_subtotal"
+                                           sum="Total"/>
+                                    <field name="hotel_id"
+                                           column_invisible="1"/>
+                                    <field name="currency_id"
+                                           column_invisible="1"/>
+                                    <field name="state"
+                                           column_invisible="1"/>
+                                    <button name="%(action_hotel_room_change_wizard)d"
+                                            type="action" icon="fa-exchange"
+                                            title="Changer de chambre"
+                                            invisible="state not in ('confirmed', 'checked_in')"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Demandes particulières" name="notes">
+                            <field name="note"
+                                   placeholder="Lit bébé, étage élevé, arrivée tardive…"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ KANBAN ============ -->
+    <record id="view_hotel_reservation_kanban" model="ir.ui.view">
+        <field name="name">aite.hotel.reservation.kanban</field>
+        <field name="model">aite.hotel.reservation</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" quick_create="false">
+                <field name="state"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex flex-column p-2">
+                            <div class="d-flex justify-content-between">
+                                <strong><field name="name"/></strong>
+                                <field name="amount_room_total"
+                                       widget="monetary"/>
+                                <field name="currency_id" invisible="1"/>
+                            </div>
+                            <div><field name="partner_id"/></div>
+                            <div class="text-muted">
+                                <i class="fa fa-calendar me-1" title="Dates"/>
+                                <field name="checkin_date"
+                                       widget="date"/> →
+                                <field name="checkout_date" widget="date"/>
+                                · <field name="nights"/> nuit(s)
+                            </div>
+                            <div class="text-muted">
+                                <i class="fa fa-bed me-1" title="Chambres"/>
+                                <field name="room_count"/> chambre(s)
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ============ CALENDRIER ============ -->
+    <record id="view_hotel_reservation_calendar" model="ir.ui.view">
+        <field name="name">aite.hotel.reservation.calendar</field>
+        <field name="model">aite.hotel.reservation</field>
+        <field name="arch" type="xml">
+            <calendar string="Réservations" date_start="checkin_date"
+                      date_stop="checkout_date" color="partner_id"
+                      mode="month" quick_create="0" event_open_popup="1">
+                <field name="partner_id"/>
+                <field name="room_count"/>
+                <field name="state"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- ============ RECHERCHE ============ -->
+    <record id="view_hotel_reservation_search" model="ir.ui.view">
+        <field name="name">aite.hotel.reservation.search</field>
+        <field name="model">aite.hotel.reservation</field>
+        <field name="arch" type="xml">
+            <search string="Réservations">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="line_ids" string="Chambre"
+                       filter_domain="[('line_ids.room_id.name', 'ilike', self)]"/>
+                <filter name="filter_arrivals_today" string="Arrivées du jour"
+                        domain="[('state', '=', 'confirmed'),
+                                 ('checkin_date', '&gt;=', datetime.datetime.combine(context_today(), datetime.time(0, 0, 0))),
+                                 ('checkin_date', '&lt;=', datetime.datetime.combine(context_today(), datetime.time(23, 59, 59)))]"/>
+                <filter name="filter_departures_today" string="Départs du jour"
+                        domain="[('state', '=', 'checked_in'),
+                                 ('checkout_date', '&gt;=', datetime.datetime.combine(context_today(), datetime.time(0, 0, 0))),
+                                 ('checkout_date', '&lt;=', datetime.datetime.combine(context_today(), datetime.time(23, 59, 59)))]"/>
+                <filter name="filter_inhouse" string="Clients présents"
+                        domain="[('state', '=', 'checked_in')]"/>
+                <separator/>
+                <filter name="filter_draft" string="Brouillons"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter name="filter_confirmed" string="Confirmées"
+                        domain="[('state', '=', 'confirmed')]"/>
+                <filter name="filter_no_show" string="No-show"
+                        domain="[('state', '=', 'no_show')]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_state" string="État"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="group_partner" string="Client"
+                            context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_hotel" string="Hôtel"
+                            context="{'group_by': 'hotel_id'}"/>
+                    <filter name="group_source" string="Canal"
+                            context="{'group_by': 'source'}"/>
+                    <filter name="group_checkin" string="Date d'arrivée"
+                            context="{'group_by': 'checkin_date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_hotel_reservation" model="ir.actions.act_window">
+        <field name="name">Réservations</field>
+        <field name="res_model">aite.hotel.reservation</field>
+        <field name="view_mode">list,kanban,form,calendar</field>
+        <field name="search_view_id" ref="view_hotel_reservation_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créez votre première réservation
+            </p>
+            <p>
+                Ou passez par « Réservation rapide » pour vérifier la
+                disponibilité et réserver en un écran.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_hotel_arrivals_today" model="ir.actions.act_window">
+        <field name="name">Arrivées du jour</field>
+        <field name="res_model">aite.hotel.reservation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_hotel_reservation_search"/>
+        <field name="context">{'search_default_filter_arrivals_today': 1}</field>
+    </record>
+
+    <record id="action_hotel_departures_today" model="ir.actions.act_window">
+        <field name="name">Départs du jour</field>
+        <field name="res_model">aite.hotel.reservation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_hotel_reservation_search"/>
+        <field name="context">{'search_default_filter_departures_today': 1}</field>
+    </record>
+
+    <record id="action_hotel_inhouse" model="ir.actions.act_window">
+        <field name="name">Clients présents</field>
+        <field name="res_model">aite.hotel.reservation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_hotel_reservation_search"/>
+        <field name="context">{'search_default_filter_inhouse': 1}</field>
+    </record>
+
+    <!-- ============ PLANNING GANTT (lignes de réservation) ============ -->
+    <record id="view_hotel_reservation_line_gantt" model="ir.ui.view">
+        <field name="name">aite.hotel.reservation.line.gantt</field>
+        <field name="model">aite.hotel.reservation.line</field>
+        <field name="arch" type="xml">
+            <gantt string="Planning des chambres"
+                   date_start="checkin_date"
+                   date_stop="checkout_date"
+                   default_group_by="room_id"
+                   color="room_type_id"
+                   default_scale="week"
+                   scales="day,week,month"
+                   decoration-info="state == 'confirmed'"
+                   decoration-success="state == 'checked_in'"
+                   decoration-danger="state == 'no_show'"
+                   decoration-secondary="state in ('checked_out','cancelled','draft')">
+                <field name="partner_id"/>
+                <field name="reservation_id"/>
+                <field name="state"/>
+            </gantt>
+        </field>
+    </record>
+
+    <record id="view_hotel_reservation_line_list" model="ir.ui.view">
+        <field name="name">aite.hotel.reservation.line.list</field>
+        <field name="model">aite.hotel.reservation.line</field>
+        <field name="arch" type="xml">
+            <list string="Séjours par chambre" create="false">
+                <field name="reservation_id"/>
+                <field name="partner_id"/>
+                <field name="room_id"/>
+                <field name="checkin_date"/>
+                <field name="checkout_date"/>
+                <field name="nights"/>
+                <field name="price_subtotal"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'confirmed'"
+                       decoration-success="state == 'checked_in'"
+                       decoration-muted="state in ('checked_out','cancelled','no_show','draft')"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_hotel_reservation_line_form" model="ir.ui.view">
+        <field name="name">aite.hotel.reservation.line.form</field>
+        <field name="model">aite.hotel.reservation.line</field>
+        <field name="arch" type="xml">
+            <form string="Séjour (chambre)">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="reservation_id"/>
+                            <field name="partner_id"/>
+                            <field name="room_type_id"/>
+                            <field name="room_id"/>
+                            <field name="state"/>
+                        </group>
+                        <group>
+                            <field name="checkin_date"/>
+                            <field name="checkout_date"/>
+                            <field name="nights"/>
+                            <field name="price_night"/>
+                            <field name="price_subtotal"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_hotel_room_planning" model="ir.actions.act_window">
+        <field name="name">Planning des chambres</field>
+        <field name="res_model">aite.hotel.reservation.line</field>
+        <field name="view_mode">gantt,list,form</field>
+        <field name="domain">[('state', 'in', ('confirmed','checked_in','checked_out'))]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Le planning se remplira avec vos réservations confirmées
+            </p>
+        </field>
+    </record>
+
+</odoo>

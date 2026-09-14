@@ -1,0 +1,16 @@
+/* Bouton « Mettre sur ardoise » dans l'écran de paiement POS */
+
+.aite-credit-btn {
+    background-color: #714B67;
+    color: #fff;
+    border: none;
+
+    &:hover {
+        background-color: #5d3d55;
+        color: #fff;
+    }
+
+    i {
+        opacity: .9;
+    }
+}

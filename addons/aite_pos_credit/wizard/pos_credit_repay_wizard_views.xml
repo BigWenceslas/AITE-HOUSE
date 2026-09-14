@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_aite_pos_credit_repay_wizard_form" model="ir.ui.view">
+        <field name="name">aite.pos.credit.repay.wizard.form</field>
+        <field name="model">aite.pos.credit.repay.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Enregistrer un remboursement">
+                <group>
+                    <group>
+                        <field name="credit_id" readonly="1"/>
+                        <field name="partner_id" readonly="1"/>
+                        <field name="residual"/>
+                        <field name="currency_id" invisible="1"/>
+                    </group>
+                    <group>
+                        <field name="amount"/>
+                        <field name="method"/>
+                        <field name="transaction_ref"
+                               placeholder="Identifiant MoMo / réf."/>
+                        <field name="date"/>
+                    </group>
+                </group>
+                <field name="note" placeholder="Note (optionnel)…"/>
+                <footer>
+                    <button name="action_confirm" type="object"
+                            string="Encaisser" class="btn-primary"/>
+                    <button string="Annuler" class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

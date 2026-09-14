@@ -1,0 +1,565 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- ============ KPI CARD ============ -->
+    <t t-name="aite_stock_dashboard.KpiCard">
+        <div t-att-class="'asd-kpi ' + (props.mega ? 'asd-kpi-mega asd-accent-' + props.accent : '')">
+            <div class="asd-kpi-label" t-esc="props.label"/>
+            <div class="asd-kpi-value" t-esc="props.value"/>
+            <div t-if="props.delta" t-att-class="'asd-kpi-delta ' + deltaClass">
+                <t t-esc="props.delta.text"/>
+            </div>
+            <div t-if="props.sub" class="asd-kpi-sub" t-esc="props.sub"/>
+        </div>
+    </t>
+
+    <!-- ============ ROOT ============ -->
+    <t t-name="aite_stock_dashboard.Dashboard">
+        <div class="asd-dashboard-root o_action">
+            <StockDashboardView/>
+        </div>
+    </t>
+
+    <!-- ============ DASHBOARD VIEW ============ -->
+    <t t-name="aite_stock_dashboard.DashboardView">
+        <div class="asd-dashboard">
+
+            <!-- En-tête -->
+            <div class="asd-topbar">
+                <div>
+                    <h2 class="asd-title">Stock &amp; Inventaire — Tableau de bord</h2>
+                    <div class="asd-sub">Valorisation · alertes de réappro · rotation · écarts &amp; coulage</div>
+                </div>
+            </div>
+
+            <!-- Filtres -->
+            <div class="asd-filterbar">
+                <div class="asd-filterrow">
+                    <span class="asd-flabel">Période</span>
+                    <t t-foreach="periodPresets" t-as="p" t-key="p.key">
+                        <button t-att-class="'asd-chip ' + (state.period === p.key ? 'active' : '')"
+                                t-on-click="() => this.setPeriod(p.key)"
+                                t-esc="p.label"/>
+                    </t>
+                    <span class="asd-spacer"/>
+                    <input type="date" class="asd-date"
+                           t-att-value="state.dateFrom"
+                           t-on-change="(ev) => this.onDateFrom(ev)"/>
+                    <span class="asd-arrow">→</span>
+                    <input type="date" class="asd-date"
+                           t-att-value="state.dateTo"
+                           t-on-change="(ev) => this.onDateTo(ev)"/>
+                    <button t-att-class="'asd-chip asd-apply ' + (state.period === 'custom' ? 'active' : '')"
+                            t-on-click="() => this.applyCustomRange()">Appliquer</button>
+                </div>
+                <div class="asd-filterrow">
+                    <span class="asd-flabel">Emplacement</span>
+                    <button t-att-class="'asd-chip ' + (state.locationId === 0 ? 'active' : '')"
+                            t-on-click="() => this.setLocation(0)">Tous</button>
+                    <t t-foreach="state.locations" t-as="l" t-key="l.id">
+                        <button t-att-class="'asd-chip ' + (state.locationId === l.id ? 'active' : '')"
+                                t-on-click="() => this.setLocation(l.id)">
+                            <span class="asd-dot" t-att-style="'background:' + l.color"/>
+                            <t t-esc="l.name"/>
+                        </button>
+                    </t>
+                </div>
+                <div class="asd-filterrow">
+                    <span class="asd-flabel">Catégorie</span>
+                    <button t-att-class="'asd-chip ' + (state.categId === 0 ? 'active' : '')"
+                            t-on-click="() => this.setCateg(0)">Toutes</button>
+                    <t t-foreach="state.categories" t-as="c" t-key="c.id">
+                        <button t-att-class="'asd-chip ' + (state.categId === c.id ? 'active' : '')"
+                                t-on-click="() => this.setCateg(c.id)"
+                                t-esc="c.name"/>
+                    </t>
+                </div>
+            </div>
+
+            <!-- Onglets -->
+            <div class="asd-tabbar">
+                <t t-foreach="tabs" t-as="tb" t-key="tb.key">
+                    <button t-att-class="'asd-tab ' + (state.tab === tb.key ? 'active' : '')"
+                            t-on-click="() => this.setTab(tb.key)"
+                            t-esc="tb.label"/>
+                </t>
+            </div>
+
+            <!-- Chargement -->
+            <div t-if="state.loading" class="asd-loading">
+                <i class="fa fa-spinner fa-spin"/> Chargement…
+            </div>
+
+            <div t-else="">
+
+                <!-- ============ ONGLET TABLEAU DE BORD ============ -->
+                <div t-if="state.tab === 'dashboard'">
+                    <div class="asd-section-title">Vue d'ensemble</div>
+                    <div class="asd-grid asd-grid-4">
+                        <KpiCard mega="true" accent="'info'"
+                                 label="'Valeur stock — coût d\'achat'"
+                                 value="money(state.kpis.total_value)"
+                                 sub="num(state.kpis.refs_count) + ' références · ' + qty(state.kpis.total_units) + ' unités'"/>
+                        <KpiCard mega="true" accent="'success'"
+                                 label="'Valeur stock — prix de vente'"
+                                 value="money(state.kpis.total_value_sale)"
+                                 sub="marginSub()"/>
+                        <KpiCard mega="true" accent="'danger'"
+                                 label="'Ruptures &amp; critiques'"
+                                 value="num(state.kpis.rupt_count + state.kpis.crit_count) + ' réfs'"
+                                 sub="num(state.kpis.rupt_count) + ' rupture · ' + num(state.kpis.crit_count) + ' sous ' + num(state.kpis.cfg.crit) + ' j'"/>
+                        <KpiCard mega="true" accent="coulAccent()"
+                                 label="'Coulage (période)'"
+                                 value="money(state.kpis.pertes)"
+                                 sub="coulSub()"/>
+                    </div>
+
+                    <div class="asd-section-title">Indicateurs</div>
+                    <div class="asd-grid asd-grid-4">
+                        <KpiCard label="'Couverture moyenne'"
+                                 value="days(state.kpis.couv_moy)"
+                                 sub="rotSub()"/>
+                        <KpiCard label="'Stock dormant'" accent="'danger'"
+                                 value="money(state.kpis.dorm_value)"
+                                 sub="num(state.kpis.dorm_count) + ' réfs (+' + num(state.kpis.cfg.dorm) + ' j de couverture)'"/>
+                        <KpiCard label="'Sous seuil de commande'"
+                                 value="num(state.kpis.seuil_count) + ' réfs'"
+                                 sub="'valeur à commander ' + money(state.kpis.cmd_value)"/>
+                        <KpiCard label="'Écarts d\'inventaire (période)'"
+                                 value="money(state.kpis.gap_net)"
+                                 sub="num(state.kpis.gap_refs) + ' réfs concernées'"/>
+                    </div>
+
+                    <div class="asd-section-title">Valorisation &amp; flux</div>
+                    <div class="asd-grid asd-grid-2">
+                        <div class="asd-card">
+                            <h3>Valeur du stock par catégorie</h3>
+                            <div class="asd-chartbox"><canvas t-ref="catChart"/></div>
+                        </div>
+                        <div class="asd-card">
+                            <h3>Entrées vs Sorties — 6 mois (au coût)</h3>
+                            <div class="asd-chartbox"><canvas t-ref="fluxChart"/></div>
+                        </div>
+                    </div>
+                    <div class="asd-grid asd-grid-2" style="margin-top:10px;">
+                        <div class="asd-card">
+                            <h3>Couverture par catégorie</h3>
+                            <div class="asd-chartbox"><canvas t-ref="couvChart"/></div>
+                            <div class="asd-mini">Vert : sain · Ambre : surstock (&gt; 21 j) · Rouge : critique ou dormant.</div>
+                        </div>
+                        <div class="asd-card">
+                            <h3>Top 8 — valeur immobilisée</h3>
+                            <div class="asd-chartbox"><canvas t-ref="topValChart"/></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============ ONGLET ALERTES ============ -->
+                <div t-if="state.tab === 'alerts'">
+                    <div class="asd-section-title">Alertes de réapprovisionnement</div>
+                    <div class="asd-grid asd-grid-4">
+                        <KpiCard mega="true" accent="'danger'"
+                                 label="'En rupture'"
+                                 value="num(state.kpis.rupt_count)"
+                                 sub="'références à zéro'"/>
+                        <KpiCard mega="true" accent="'warning'"
+                                 label="'Critiques'"
+                                 value="num(state.kpis.crit_count)"
+                                 sub="'couverture sous ' + num(state.kpis.cfg.crit) + ' jours'"/>
+                        <KpiCard label="'Sous seuil de commande'"
+                                 value="num(state.kpis.seuil_count) + ' réfs'"
+                                 sub="'point de commande atteint'"/>
+                        <KpiCard label="'Valeur à commander'"
+                                 value="money(state.kpis.cmd_value)"
+                                 sub="'suggestion de réappro'"/>
+                    </div>
+
+                    <div class="asd-card" style="margin-top:14px;">
+                        <div class="asd-card-head">
+                            <h3>Références à traiter (triées par urgence)</h3>
+                            <button t-if="state.meta.is_manager"
+                                    class="btn btn-outline-primary btn-sm"
+                                    t-on-click="() => this.openCfg()">⚙ Configurer les alertes</button>
+                        </div>
+                        <div class="asd-tablewrap">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Produit</th><th>Catégorie</th>
+                                        <th class="text-end">Stock</th>
+                                        <th class="text-end">Ventes/j</th>
+                                        <th class="text-end">Couverture</th>
+                                        <th class="text-end">Point de cmde</th>
+                                        <th class="text-end">À commander</th>
+                                        <th>Statut</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="alertRows" t-as="r" t-key="r.id"
+                                        t-on-click="() => this.openProduct(r.id)"
+                                        style="cursor:pointer">
+                                        <td><strong t-esc="r.name"/></td>
+                                        <td class="text-muted" t-esc="r.categ"/>
+                                        <td class="text-end" t-esc="qty(r.stock)"/>
+                                        <td class="text-end" t-esc="qty(r.vday)"/>
+                                        <td class="text-end" t-esc="days(r.couv)"/>
+                                        <td class="text-end" t-esc="qty(r.seuil)"/>
+                                        <td class="text-end"><strong t-esc="r.cmd ? qty(r.cmd) : '—'"/></td>
+                                        <td><span t-att-class="'badge ' + badge(r.status_cls)" t-esc="r.status"/></td>
+                                    </tr>
+                                    <tr t-if="!alertRows.length">
+                                        <td colspan="8" class="text-muted text-center">Aucune référence suivie</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="asd-note">
+                        <b>Point de commande</b> = ventes moy./jour × (délai réappro + <b t-esc="num(state.kpis.cfg.sec)"/> j de sécurité).
+                        Quantité suggérée : <b t-esc="num(state.kpis.cfg.hor)"/> jours de couverture après livraison — à arrondir au casier.
+                    </div>
+                </div>
+
+                <!-- ============ ONGLET STOCK COMPLET ============ -->
+                <div t-if="state.tab === 'stocklist'">
+                    <div class="asd-section-title">Inventaire complet — toutes les références</div>
+                    <div class="asd-grid asd-grid-4">
+                        <KpiCard mega="true" accent="'info'"
+                                 label="'Références'"
+                                 value="num(stockTotals.count)"
+                                 sub="'affichées (filtres appliqués)'"/>
+                        <KpiCard label="'Unités en stock'"
+                                 value="qty(stockTotals.units)"
+                                 sub="'tous emplacements filtrés'"/>
+                        <KpiCard mega="true" accent="'primary'"
+                                 label="'Valeur — coût d\'achat'"
+                                 value="money(stockTotals.value)"
+                                 sub="'trésorerie immobilisée'"/>
+                        <KpiCard mega="true" accent="'success'"
+                                 label="'Valeur — prix de vente'"
+                                 value="money(stockTotals.valueSale)"
+                                 sub="listMarginSub()"/>
+                    </div>
+
+                    <div class="asd-card" style="margin-top:14px;">
+                        <div class="asd-card-head">
+                            <h3>Stock par référence</h3>
+                            <input type="text" class="asd-search" placeholder="🔍 Rechercher un produit…"
+                                   t-att-value="state.search"
+                                   t-on-input="(ev) => this.onSearch(ev)"/>
+                        </div>
+                        <div class="asd-tablewrap">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Produit</th><th>Catégorie</th>
+                                        <t t-foreach="state.locations" t-as="l" t-key="l.id">
+                                            <th class="text-end" t-esc="l.name"/>
+                                        </t>
+                                        <th class="text-end">Total</th>
+                                        <th class="text-end">Coût unit.</th>
+                                        <th class="text-end">Valeur</th>
+                                        <th class="text-end">Ventes/j</th>
+                                        <th class="text-end">Couverture</th>
+                                        <th>Statut</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="stockRows" t-as="r" t-key="r.id"
+                                        t-on-click="() => this.openProduct(r.id)"
+                                        style="cursor:pointer">
+                                        <td><strong t-esc="r.name"/></td>
+                                        <td class="text-muted" t-esc="r.categ"/>
+                                        <t t-foreach="state.locations" t-as="l" t-key="l.id">
+                                            <td class="text-end" t-esc="locQty(r, l)"/>
+                                        </t>
+                                        <td class="text-end"><strong t-esc="qty(r.stock)"/></td>
+                                        <td class="text-end text-muted" t-esc="money(r.cost)"/>
+                                        <td class="text-end asd-barcell">
+                                            <div class="asd-bar" t-att-style="barStyle(r.value, maxRowValue)"/>
+                                            <t t-esc="money(r.value)"/>
+                                        </td>
+                                        <td class="text-end" t-esc="qty(r.vday)"/>
+                                        <td class="text-end" t-esc="days(r.couv)"/>
+                                        <td><span t-att-class="'badge ' + badge(r.status_cls)" t-esc="r.status"/></td>
+                                    </tr>
+                                    <tr t-if="!stockRows.length">
+                                        <td colspan="12" class="text-muted text-center">Aucun produit</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="asd-note">
+                        <b>Bonne pratique :</b> base de l'<b>inventaire tournant</b> — filtrez une catégorie,
+                        comptez, puis saisissez les écarts avec un motif dans Odoo (ajustement d'inventaire).
+                    </div>
+                </div>
+
+                <!-- ============ ONGLET ROTATION ============ -->
+                <div t-if="state.tab === 'rotation'">
+                    <div class="asd-section-title">Rotation des stocks</div>
+                    <div class="asd-grid asd-grid-4">
+                        <KpiCard mega="true" accent="'primary'"
+                                 label="'Rotation moyenne'"
+                                 value="rotX(state.kpis.rot_moy)"
+                                 sub="'renouvellements / mois'"/>
+                        <KpiCard mega="true" accent="'danger'"
+                                 label="'Stock dormant'"
+                                 value="money(state.kpis.dorm_value)"
+                                 sub="num(state.kpis.dorm_count) + ' réfs (+' + num(state.kpis.cfg.dorm) + ' j)'"/>
+                        <KpiCard label="'Références suivies'"
+                                 value="num(state.kpis.refs_count)"
+                                 sub="'stock ou ventes sur 30 j'"/>
+                        <KpiCard label="'Sorties (période)'"
+                                 value="money(state.kpis.out_value)"
+                                 sub="'valorisées au coût (CMV)'"/>
+                    </div>
+
+                    <div class="asd-grid asd-grid-2" style="margin-top:14px;">
+                        <div class="asd-card">
+                            <h3>Top 8 — rotation la plus rapide</h3>
+                            <div class="asd-chartbox"><canvas t-ref="rotChart"/></div>
+                        </div>
+                        <div class="asd-card">
+                            <h3>Dormants — valeur immobilisée</h3>
+                            <div class="asd-chartbox"><canvas t-ref="dormChart"/></div>
+                        </div>
+                    </div>
+
+                    <div class="asd-card" style="margin-top:10px;">
+                        <h3>Rotation par référence</h3>
+                        <div class="asd-tablewrap">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Produit</th><th>Catégorie</th>
+                                        <th class="text-end">Stock</th>
+                                        <th class="text-end">Sorties 30 j</th>
+                                        <th class="text-end">Rotation</th>
+                                        <th class="text-end">Couverture</th>
+                                        <th class="text-end">Valeur</th>
+                                        <th>Classe</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="rotationRows" t-as="r" t-key="r.id"
+                                        t-on-click="() => this.openProduct(r.id)"
+                                        style="cursor:pointer">
+                                        <td><strong t-esc="r.name"/></td>
+                                        <td class="text-muted" t-esc="r.categ"/>
+                                        <td class="text-end" t-esc="qty(r.stock)"/>
+                                        <td class="text-end" t-esc="qty(r.vday * 30)"/>
+                                        <td class="text-end"><strong t-esc="rotX(r.rot)"/></td>
+                                        <td class="text-end" t-esc="days(r.couv)"/>
+                                        <td class="text-end asd-barcell">
+                                            <div class="asd-bar" t-att-style="barStyle(r.value, maxRowValue)"/>
+                                            <t t-esc="money(r.value)"/>
+                                        </td>
+                                        <td><span t-att-class="'badge ' + badge(r.classe_cls)" t-esc="r.classe"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============ ONGLET INVENTAIRES & ÉCARTS ============ -->
+                <div t-if="state.tab === 'inventory'">
+                    <div class="asd-section-title">Écarts d'inventaire &amp; coulage (période)</div>
+                    <div class="asd-grid asd-grid-4">
+                        <KpiCard mega="true" accent="'warning'"
+                                 label="'Écart net (période)'"
+                                 value="money(state.kpis.gap_net)"
+                                 sub="num(state.kpis.gap_refs) + ' réfs concernées'"/>
+                        <KpiCard mega="true" accent="coulAccent()"
+                                 label="'Pertes (écarts − + casse)'"
+                                 value="money(state.kpis.pertes)"
+                                 sub="coulSub()"/>
+                        <KpiCard label="'CA estimé (période)'"
+                                 value="money(state.kpis.ca_est)"
+                                 sub="'sorties clients × prix de vente'"/>
+                        <KpiCard label="'Seuil de coulage'"
+                                 value="pct(state.kpis.coul_seuil)"
+                                 sub="'paramétrable dans les Réglages'"/>
+                    </div>
+
+                    <div class="asd-grid asd-grid-2" style="margin-top:14px;">
+                        <div class="asd-card">
+                            <h3>Écarts valorisés par catégorie</h3>
+                            <div class="asd-chartbox"><canvas t-ref="ecartChart"/></div>
+                        </div>
+                        <div class="asd-card">
+                            <h3>Coulage mensuel vs seuil (6 mois)</h3>
+                            <div class="asd-chartbox"><canvas t-ref="coulChart"/></div>
+                        </div>
+                    </div>
+
+                    <div class="asd-card" style="margin-top:10px;">
+                        <h3>Journal des écarts &amp; casses</h3>
+                        <div class="asd-tablewrap">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th><th>Type</th><th>Produit</th>
+                                        <th class="text-end">Qté ±</th>
+                                        <th class="text-end">Valeur ±</th>
+                                        <th>Référence</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="state.gaps" t-as="g" t-key="g.id">
+                                        <td class="text-muted" t-esc="g.date"/>
+                                        <td><span t-att-class="'badge ' + badge(g.gtype_cls)" t-esc="g.gtype"/></td>
+                                        <td><strong t-esc="g.product"/></td>
+                                        <td t-att-class="'text-end ' + valueClass(g.qty)" t-esc="signedQty(g.qty)"/>
+                                        <td t-att-class="'text-end ' + valueClass(g.value)"><strong t-esc="signedMoney(g.value)"/></td>
+                                        <td class="text-muted" t-esc="g.ref"/>
+                                    </tr>
+                                    <tr t-if="!state.gaps.length">
+                                        <td colspan="6" class="text-muted text-center">Aucun écart sur la période</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="asd-note">
+                        <b>Bonne pratique :</b> chaque ajustement doit porter un <b>motif</b>
+                        (vol, casse, offert non tracé, périmé, erreur de saisie) — jamais
+                        « ajuster pour que ça tombe juste ». Inventaire complet mensuel,
+                        comptages tournants hebdomadaires sur les fortes rotations.
+                    </div>
+                </div>
+
+                <!-- ============ ONGLET MOUVEMENTS ============ -->
+                <div t-if="state.tab === 'moves'">
+                    <div class="asd-section-title">Mouvements de stock (période)</div>
+                    <div class="asd-grid asd-grid-4">
+                        <KpiCard mega="true" accent="'success'"
+                                 label="'Entrées (réceptions)'"
+                                 value="money(state.moves.totals.in)"
+                                 sub="'valeur au coût'"/>
+                        <KpiCard mega="true" accent="'primary'"
+                                 label="'Sorties (ventes)'"
+                                 value="money(state.moves.totals.out)"
+                                 sub="'valeur au coût (CMV)'"/>
+                        <KpiCard label="'Transferts internes'"
+                                 value="qty(state.moves.totals.tr) + ' unités'"
+                                 sub="'réassort entre emplacements'"/>
+                        <KpiCard label="'Ajustements &amp; casse'"
+                                 value="money(state.moves.totals.adj)"
+                                 sub="'inventaires + rebuts'"/>
+                    </div>
+
+                    <div class="asd-card" style="margin-top:14px;">
+                        <h3>Journal des mouvements</h3>
+                        <div class="asd-tablewrap">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th><th>Type</th><th>Produit</th>
+                                        <th class="text-end">Qté ±</th>
+                                        <th>De</th><th>Vers</th>
+                                        <th class="text-end">Valeur ±</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="state.moves.rows" t-as="m" t-key="m.id">
+                                        <td class="text-muted" t-esc="m.date"/>
+                                        <td><span t-att-class="'badge ' + badge(m.type_cls)" t-esc="m.type"/></td>
+                                        <td><strong t-esc="m.product"/></td>
+                                        <td t-att-class="'text-end ' + valueClass(m.qty)" t-esc="signedQty(m.qty)"/>
+                                        <td class="text-muted asd-loc" t-esc="m.src"/>
+                                        <td class="text-muted asd-loc" t-esc="m.dst"/>
+                                        <td t-att-class="'text-end ' + valueClass(m.value)" t-esc="signedMoney(m.value)"/>
+                                    </tr>
+                                    <tr t-if="!state.moves.rows.length">
+                                        <td colspan="7" class="text-muted text-center">Aucun mouvement sur la période</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ============ MODAL CONFIGURATION DES ALERTES ============ -->
+            <t t-if="state.showCfg">
+                <div class="asd-overlay" t-on-click="() => this.closeCfg()"/>
+                <div class="asd-modal">
+                    <div class="asd-modal-head">
+                        <div>
+                            <div class="asd-modal-title">⚙ Alertes de réapprovisionnement</div>
+                            <div class="asd-modal-sub">Valeurs globales (société) et réglages par produit</div>
+                        </div>
+                        <span class="asd-x" t-on-click="() => this.closeCfg()">×</span>
+                    </div>
+                    <div class="asd-modal-body">
+                        <div class="asd-section-title" style="margin:2px 0 8px;">Paramètres globaux</div>
+                        <div class="asd-cfggrid">
+                            <label>Stock de sécurité (jours)
+                                <input type="number" min="0" max="30" t-model="state.cfgGlobal.sec"/>
+                            </label>
+                            <label>Horizon de commande (jours)
+                                <input type="number" min="1" max="60" t-model="state.cfgGlobal.hor"/>
+                            </label>
+                            <label>Seuil critique (jours de couverture)
+                                <input type="number" min="1" max="15" t-model="state.cfgGlobal.crit"/>
+                            </label>
+                            <label>Seuil dormant (jours de couverture)
+                                <input type="number" min="15" max="365" t-model="state.cfgGlobal.dorm"/>
+                            </label>
+                            <label>Délai réappro par défaut (jours)
+                                <input type="number" min="0" max="60" t-model="state.cfgGlobal.lead_default"/>
+                            </label>
+                            <label>Seuil de coulage (% du CA)
+                                <input type="number" min="0" max="20" step="0.1" t-model="state.cfgGlobal.coul_seuil"/>
+                            </label>
+                        </div>
+
+                        <div class="asd-section-title" style="margin:14px 0 6px;">Réglages par produit</div>
+                        <div class="asd-mini" style="margin-bottom:6px;">
+                            Délai à 0 = délai société. Seuil manuel à 0 = calcul automatique.
+                            Décochez « Alerte » pour ignorer une référence.
+                        </div>
+                        <div class="asd-tablewrap" style="max-height:300px;">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Produit</th>
+                                        <th>Délai (j)</th>
+                                        <th>Seuil manuel</th>
+                                        <th class="text-center">Alerte</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="state.cfgRows" t-as="r" t-key="r.tmpl_id">
+                                        <td>
+                                            <strong t-esc="r.name"/>
+                                            <div class="asd-mini"><t t-esc="r.categ"/> · seuil auto : <t t-esc="qty(r.seuil_auto)"/></div>
+                                        </td>
+                                        <td><input type="number" class="asd-cfg-input" min="0" max="60" t-model="r.lead_raw"/></td>
+                                        <td><input type="number" class="asd-cfg-input" min="0" placeholder="auto" t-model="r.manual_threshold"/></td>
+                                        <td class="text-center"><input type="checkbox" t-model="r.alert_active"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="asd-modal-actions">
+                            <button class="btn btn-primary" t-att-disabled="state.cfgSaving"
+                                    t-on-click="() => this.saveCfg()">
+                                <t t-if="state.cfgSaving"><i class="fa fa-spinner fa-spin"/> Enregistrement…</t>
+                                <t t-else="">Enregistrer la configuration</t>
+                            </button>
+                            <button class="btn btn-secondary" t-on-click="() => this.closeCfg()">Annuler</button>
+                        </div>
+                    </div>
+                </div>
+            </t>
+
+        </div>
+    </t>
+
+</templates>

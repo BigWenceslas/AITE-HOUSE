@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<!--
+    Template du composant racine — orchestre Tab/Filter/Vue/Panel.
+    Le layout est en flex col + un panel slide-over en position fixed.
+-->
+<t t-name="aite_pos_analytics.Dashboard">
+    <div class="o_aite_pos_dashboard">
+        <TabBar currentTab="state.tab" onSelect.bind="onTabChange"/>
+
+        <div class="o_aite_pos_dashboard_body">
+            <FilterBar
+                t-if="state.tab !== 'config'"
+                currentKey="state.periodKey"
+                dateFrom="state.dateFrom"
+                dateTo="state.dateTo"
+                configs="state.meta and state.meta.configs or []"
+                configId="state.configId"
+                minDate="state.minDate"
+                maxDate="state.maxDate"
+                hourKey="state.hourKey"
+                hourFrom="state.hourFrom"
+                hourTo="state.hourTo"
+                weekdayKey="state.weekdayKey"
+                weekdays="state.weekdays"
+                onChange.bind="onFilterChange"/>
+
+            <div class="o_aite_pos_dashboard_content">
+                <t t-if="state.tab === 'dashboard'">
+                    <DashboardView
+                        dateFrom="state.dateFrom"
+                        dateTo="state.dateTo"
+                        configId="state.configId"
+                        filters="filters"
+                        onSelectProduct.bind="onSelectProduct"/>
+                </t>
+                <t t-elif="state.tab === 'bycaisse'">
+                    <CaisseView
+                        dateFrom="state.dateFrom"
+                        dateTo="state.dateTo"
+                        configId="state.configId"
+                        filters="filters"/>
+                </t>
+                <t t-elif="state.tab === 'sessions'">
+                    <SessionsView
+                        dateFrom="state.dateFrom"
+                        dateTo="state.dateTo"
+                        configId="state.configId"/>
+                </t>
+                <t t-elif="state.tab === 'products'">
+                    <ProductsView
+                        dateFrom="state.dateFrom"
+                        dateTo="state.dateTo"
+                        configId="state.configId"
+                        initialCategory="state.productsCategory"
+                        onSelectProduct.bind="onSelectProduct"/>
+                </t>
+                <t t-elif="state.tab === 'margins'">
+                    <MarginsView
+                        dateFrom="state.dateFrom"
+                        dateTo="state.dateTo"
+                        configId="state.configId"/>
+                </t>
+                <t t-elif="state.tab === 'categories'">
+                    <CategoriesView
+                        dateFrom="state.dateFrom"
+                        dateTo="state.dateTo"
+                        configId="state.configId"
+                        onSelectCategory.bind="onSelectCategory"/>
+                </t>
+                <t t-elif="state.tab === 'discrepancies'">
+                    <DiscrepanciesView
+                        dateFrom="state.dateFrom"
+                        dateTo="state.dateTo"
+                        configId="state.configId"/>
+                </t>
+                <t t-elif="state.tab === 'payments'">
+                    <PaymentsView
+                        dateFrom="state.dateFrom"
+                        dateTo="state.dateTo"
+                        configId="state.configId"/>
+                </t>
+                <t t-elif="state.tab === 'config'">
+                    <ConfigView/>
+                </t>
+            </div>
+        </div>
+
+        <ProductPanel
+            t-if="state.panelProductId"
+            productId="state.panelProductId"
+            dateFrom="state.dateFrom"
+            dateTo="state.dateTo"
+            configId="state.configId"
+            onClose.bind="closePanel"/>
+    </div>
+</t>
+
+<!--
+    TabBar — onglets de navigation, layout horizontal défilable
+-->
+<t t-name="aite_pos_analytics.TabBar">
+    <div class="o_aite_tabbar">
+        <t t-foreach="tabs" t-as="t" t-key="t.key">
+            <button
+                t-attf-class="o_aite_tab {{ props.currentTab === t.key ? 'o_aite_tab_active' : '' }}"
+                t-on-click="() => this.select(t.key)">
+                <i t-attf-class="fa {{ t.icon }} me-1"/>
+                <span t-esc="t.label"/>
+            </button>
+        </t>
+    </div>
+</t>
+
+<!--
+    FilterBar — multi-lignes : période, caisse, heure, jour de semaine
+-->
+<t t-name="aite_pos_analytics.FilterBar">
+    <div class="o_aite_filterbar o_aite_filterbar_multi">
+        <!-- Ligne 1 : période -->
+        <div class="o_aite_frow">
+            <span class="o_aite_flabel">Période</span>
+            <button t-foreach="Object.entries(periods)" t-as="entry" t-key="entry[0]"
+                    t-att-data-period-key="entry[0]"
+                    t-attf-class="o_aite_fbtn {{ props.currentKey === entry[0] ? 'o_aite_fbtn_active' : '' }}"
+                    t-on-click="onQuickClick">
+                <t t-esc="entry[1].label"/>
+            </button>
+            <div class="o_aite_fspacer"/>
+            <span class="text-muted small">Du</span>
+            <input type="date" class="o_aite_date"
+                   t-model="state.customFrom"
+                   t-att-min="props.minDate" t-att-max="props.maxDate"/>
+            <span class="text-muted small">au</span>
+            <input type="date" class="o_aite_date"
+                   t-model="state.customTo"
+                   t-att-min="props.minDate" t-att-max="props.maxDate"/>
+            <button class="o_aite_apply_btn" t-on-click="applyCustom">Analyser</button>
+        </div>
+
+        <!-- Ligne 2 : caisse (chips + fallback select si beaucoup de caisses) -->
+        <div class="o_aite_frow" t-if="props.configs.length > 1">
+            <span class="o_aite_flabel">Caisse</span>
+            <t t-if="props.configs.length &lt;= 6">
+                <button data-config-id="all"
+                        t-attf-class="o_aite_fbtn {{ props.configId == null ? 'o_aite_fbtn_active' : '' }}"
+                        t-on-click="onConfigClick">
+                    Toutes les caisses
+                </button>
+                <button t-foreach="props.configs" t-as="c" t-key="c.id"
+                        t-att-data-config-id="c.id"
+                        t-attf-class="o_aite_fbtn {{ props.configId === c.id ? 'o_aite_fbtn_active' : '' }}"
+                        t-on-click="onConfigClick">
+                    <span class="o_aite_dot" t-attf-style="background: {{ c.color || '#714B67' }}"/>
+                    <t t-esc="c.name"/>
+                </button>
+            </t>
+            <t t-else="">
+                <select class="o_aite_pos_select" t-on-change="onConfigChange">
+                    <option value="">Toutes les caisses</option>
+                    <option t-foreach="props.configs" t-as="c" t-key="c.id"
+                            t-att-value="c.id"
+                            t-att-selected="props.configId === c.id">
+                        <t t-esc="c.name"/>
+                    </option>
+                </select>
+            </t>
+        </div>
+
+        <!-- Ligne 3 : plage horaire -->
+        <div class="o_aite_frow">
+            <span class="o_aite_flabel">Heure</span>
+            <button t-foreach="Object.entries(hourPresets)" t-as="hp" t-key="hp[0]"
+                    t-att-data-hour-key="hp[0]"
+                    t-attf-class="o_aite_fbtn o_aite_fbtn_alt {{ (props.hourKey || 'all') === hp[0] ? 'o_aite_fbtn_alt_active' : '' }}"
+                    t-on-click="onHourPreset">
+                <t t-esc="hp[1].label"/>
+            </button>
+            <div class="o_aite_fspacer"/>
+            <input type="number" min="0" max="23" class="o_aite_hour"
+                   t-model="state.customHourFrom"/>
+            <span class="text-muted small">h →</span>
+            <input type="number" min="0" max="23" class="o_aite_hour"
+                   t-model="state.customHourTo"/>
+            <span class="text-muted small">h</span>
+            <button class="o_aite_apply_btn" t-on-click="applyCustomHour">OK</button>
+        </div>
+
+        <!-- Ligne 4 : jour de semaine -->
+        <div class="o_aite_frow">
+            <span class="o_aite_flabel">Jour</span>
+            <button data-weekday-key="all"
+                    t-attf-class="o_aite_fbtn o_aite_fbtn_day {{ isAllDays() ? 'o_aite_fbtn_day_active' : '' }}"
+                    t-on-click="onWeekdayPreset">
+                Tous
+            </button>
+            <button t-foreach="weekdays" t-as="d" t-key="d.key"
+                    t-att-data-weekday="d.key"
+                    t-attf-class="o_aite_fbtn o_aite_fbtn_day {{ isWeekdayActive(d.key) ? 'o_aite_fbtn_day_active' : '' }}"
+                    t-on-click="toggleWeekday">
+                <t t-esc="d.label"/>
+            </button>
+            <div class="o_aite_fspacer"/>
+            <button data-weekday-key="week"
+                    class="o_aite_fbtn o_aite_fbtn_day"
+                    t-on-click="onWeekdayPreset">
+                Semaine (lun–ven)
+            </button>
+            <button data-weekday-key="weekend"
+                    class="o_aite_fbtn o_aite_fbtn_day"
+                    t-on-click="onWeekdayPreset">
+                Week-ends
+            </button>
+        </div>
+    </div>
+</t>
+
+<!--
+    KpiCard — utilisée partout
+-->
+<t t-name="aite_pos_analytics.KpiCard">
+    <div t-attf-class="o_aite_kpi o_aite_kpi_{{ props.size }}"
+         t-attf-style="border-top: 3px solid {{ props.color }}">
+        <div class="o_aite_kpi_label" t-esc="props.label"/>
+        <div class="o_aite_kpi_value" t-attf-style="color: {{ props.color }}">
+            <t t-esc="props.value"/>
+        </div>
+        <div t-if="props.subtitle" class="o_aite_kpi_sub" t-esc="props.subtitle"/>
+    </div>
+</t>
+
+<!--
+    RankRow — ligne de classement
+-->
+<t t-name="aite_pos_analytics.RankRow">
+    <div class="o_aite_rank_row" t-on-click="onClick">
+        <span class="o_aite_rank_n" t-esc="props.rank"/>
+        <span class="o_aite_rank_name" t-esc="props.name"/>
+        <div class="o_aite_rank_bg">
+            <div class="o_aite_rank_fill"
+                 t-attf-style="width: {{ Math.min(props.pct, 100) }}%; background: {{ props.color }}"/>
+        </div>
+        <span class="o_aite_rank_val" t-esc="props.value"/>
+    </div>
+</t>
+
+<!--
+    ProductPanel — slide-over à droite
+-->
+<t t-name="aite_pos_analytics.ProductPanel">
+    <div class="o_aite_panel_overlay" t-on-click="props.onClose"/>
+    <div class="o_aite_panel">
+        <div t-if="state.loading" class="p-4 text-muted">Chargement…</div>
+        <div t-elif="!state.data" class="p-4 text-muted">Aucune donnée disponible.</div>
+        <div t-else="">
+            <div class="o_aite_panel_head">
+                <span class="o_aite_panel_title" t-esc="state.data.name"/>
+                <span class="o_aite_panel_close" t-on-click="props.onClose">×</span>
+            </div>
+            <div class="o_aite_panel_body">
+                <div class="o_aite_cat_badge"
+                     t-attf-style="background: {{ getCatColors().bg }}; color: {{ getCatColors().text }}">
+                    <t t-esc="state.data.category or 'Sans catégorie'"/>
+                </div>
+                <div class="o_aite_mini_stats">
+                    <div class="o_aite_kpi">
+                        <div class="o_aite_kpi_label">CA</div>
+                        <div class="o_aite_kpi_value" t-attf-style="color: {{ COLORS.info }}; font-size: 14px">
+                            <t t-esc="fmtMoney(state.data.ca)"/>
+                        </div>
+                    </div>
+                    <div class="o_aite_kpi">
+                        <div class="o_aite_kpi_label">Marge</div>
+                        <div class="o_aite_kpi_value" t-attf-style="color: {{ COLORS.success }}; font-size: 14px">
+                            <t t-esc="fmtMoney(state.data.margin)"/>
+                        </div>
+                    </div>
+                    <div class="o_aite_kpi">
+                        <div class="o_aite_kpi_label">CMV</div>
+                        <div class="o_aite_kpi_value" t-attf-style="color: {{ COLORS.danger }}; font-size: 14px">
+                            <t t-esc="fmtMoney(state.data.cost)"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="o_aite_field">
+                    <div class="o_aite_field_label">Quantité vendue</div>
+                    <div class="o_aite_field_value fw-bold fs-5">
+                        <t t-esc="fmt(state.data.qty)"/> unités
+                    </div>
+                </div>
+                <div class="o_aite_field">
+                    <div class="o_aite_field_label">Taux de marge</div>
+                    <div class="d-flex align-items-center gap-2 mt-1">
+                        <div class="fw-bold fs-4"
+                             t-attf-style="color: {{ marginColor(state.data.margin_rate) }}">
+                            <t t-esc="fmtPct(state.data.margin_rate)"/>
+                        </div>
+                        <div class="flex-grow-1 o_aite_progressbar">
+                            <div t-attf-style="width: {{ Math.min(state.data.margin_rate, 100) }}%; background: {{ marginColor(state.data.margin_rate) }}"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="o_aite_separator"/>
+                <div class="o_aite_field">
+                    <div class="o_aite_field_label">Prix de vente moyen</div>
+                    <div class="o_aite_field_value fw-bold">
+                        <t t-esc="fmtMoney(state.data.price_avg)"/> / unité
+                    </div>
+                </div>
+                <div class="o_aite_field">
+                    <div class="o_aite_field_label">Coût moyen unitaire (CMV)</div>
+                    <div class="o_aite_field_value fw-bold" t-attf-style="color: {{ COLORS.danger }}">
+                        <t t-esc="fmtMoney(state.data.cost_avg)"/> / unité
+                    </div>
+                </div>
+                <div class="o_aite_field">
+                    <div class="o_aite_field_label">Marge unitaire</div>
+                    <div class="o_aite_field_value fw-bold" t-attf-style="color: {{ COLORS.success }}">
+                        <t t-esc="fmtMoney(state.data.margin_avg)"/> / unité
+                    </div>
+                </div>
+                <div class="o_aite_separator"/>
+                <div class="text-muted small mb-1">Période analysée</div>
+                <div class="small fw-bold">
+                    <t t-esc="fmtDate(props.dateFrom)"/> → <t t-esc="fmtDate(props.dateTo)"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</t>
+
+</templates>

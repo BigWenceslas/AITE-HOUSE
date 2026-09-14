@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Bloc de réglages dans Paramètres généraux, via une <app> dédiée.
+        Ancrage sur le formulaire de base (//form) : volontairement le plus
+        stable possible — pas de dépendance à la structure interne de la vue
+        de réglages du module Stock, qui varie selon les versions.
+    -->
+    <record id="res_config_settings_view_form_aite_stock" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.aite.stock</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="AITE Stock" string="AITE Stock"
+                     name="aite_stock_dashboard"
+                     groups="stock.group_stock_manager">
+                    <block title="Alertes de réapprovisionnement"
+                           name="aite_stock_alerts_block">
+                        <setting id="aite_stock_sec"
+                                 string="Stock de sécurité"
+                                 help="Jours ajoutés au délai de réappro pour le point de commande.">
+                            <field name="aite_stock_security_days"
+                                   class="o_light_label"/>
+                            <span class="o_form_label"> jours</span>
+                        </setting>
+                        <setting id="aite_stock_hor"
+                                 string="Horizon de commande"
+                                 help="Couverture visée après livraison (quantité suggérée).">
+                            <field name="aite_stock_horizon_days"
+                                   class="o_light_label"/>
+                            <span class="o_form_label"> jours</span>
+                        </setting>
+                        <setting id="aite_stock_crit"
+                                 string="Seuil critique"
+                                 help="Sous cette couverture, la référence passe en Critique.">
+                            <field name="aite_stock_critical_days"
+                                   class="o_light_label"/>
+                            <span class="o_form_label"> jours de couverture</span>
+                        </setting>
+                        <setting id="aite_stock_dorm"
+                                 string="Seuil dormant"
+                                 help="Au-delà de cette couverture, la référence est classée Dormante.">
+                            <field name="aite_stock_dormant_days"
+                                   class="o_light_label"/>
+                            <span class="o_form_label"> jours de couverture</span>
+                        </setting>
+                        <setting id="aite_stock_lead"
+                                 string="Délai réappro par défaut"
+                                 help="Utilisé quand la fiche produit n'en précise pas.">
+                            <field name="aite_stock_default_lead_days"
+                                   class="o_light_label"/>
+                            <span class="o_form_label"> jours</span>
+                        </setting>
+                        <setting id="aite_stock_coul"
+                                 string="Seuil de coulage"
+                                 help="Alerte quand les pertes (écarts + casse) dépassent ce % du CA estimé.">
+                            <field name="aite_stock_coulage_threshold"
+                                   class="o_light_label"/>
+                            <span class="o_form_label"> % du CA</span>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

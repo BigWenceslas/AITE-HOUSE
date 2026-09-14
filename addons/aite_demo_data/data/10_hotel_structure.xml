@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="hotel_main" model="aite.hotel.hotel">
+            <field name="name">Complexe Hôtelier — Démo</field>
+            <field name="code">CPX</field>
+        </record>
+        <record id="floor_rdc" model="aite.hotel.floor">
+            <field name="name">Rez-de-chaussée</field>
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="sequence" eval="1"/>
+        </record>
+        <record id="floor_1" model="aite.hotel.floor">
+            <field name="name">1er étage</field>
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="sequence" eval="2"/>
+        </record>
+        <record id="floor_2" model="aite.hotel.floor">
+            <field name="name">2e étage</field>
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="sequence" eval="3"/>
+        </record>
+        <record id="cat_hebergement" model="product.category">
+            <field name="name">Hébergement</field>
+        </record>
+        <record id="prod_nuitee" model="product.product">
+            <field name="name">Nuitée</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="cat_hebergement"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="list_price" eval="0.0"/>
+        </record>
+        <record id="prod_pdej" model="product.product">
+            <field name="name">Petit-déjeuner</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="cat_hebergement"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="list_price" eval="25000"/>
+        </record>
+        <record id="rtype_std" model="aite.hotel.room.type">
+            <field name="name">Standard</field>
+            <field name="code">STD</field>
+            <field name="base_price" eval="450000"/>
+            <field name="capacity_adults" eval="2"/>
+            <field name="capacity_children" eval="1"/>
+        </record>
+        <record id="rtype_cft" model="aite.hotel.room.type">
+            <field name="name">Confort</field>
+            <field name="code">CFT</field>
+            <field name="base_price" eval="650000"/>
+            <field name="capacity_adults" eval="2"/>
+            <field name="capacity_children" eval="1"/>
+        </record>
+        <record id="rtype_sjr" model="aite.hotel.room.type">
+            <field name="name">Suite Junior</field>
+            <field name="code">SJR</field>
+            <field name="base_price" eval="950000"/>
+            <field name="capacity_adults" eval="3"/>
+            <field name="capacity_children" eval="2"/>
+        </record>
+        <record id="rtype_vip" model="aite.hotel.room.type">
+            <field name="name">Suite VIP</field>
+            <field name="code">VIP</field>
+            <field name="base_price" eval="1500000"/>
+            <field name="capacity_adults" eval="4"/>
+            <field name="capacity_children" eval="2"/>
+        </record>
+        <record id="room_101" model="aite.hotel.room">
+            <field name="name">101</field>
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="floor_id" ref="floor_rdc"/>
+            <field name="room_type_id" ref="rtype_std"/>
+        </record>
+        <record id="room_102" model="aite.hotel.room">
+            <field name="name">102</field>
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="floor_id" ref="floor_rdc"/>
+            <field name="room_type_id" ref="rtype_std"/>
+        </record>
+        <record id="room_103" model="aite.hotel.room">
+            <field name="name">103</field>
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="floor_id" ref="floor_rdc"/>
+            <field name="room_type_id" ref="rtype_std"/>
+        </record>
+        <record id="room_104" model="aite.hotel.room">
+            <field name="name">104</field>
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="floor_id" ref="floor_rdc"/>
+            <field name="room_type_id" ref="rtype_std"/>
+        </record>
+        <record id="room_105" model="aite.hotel.room">
+            <field name="name">105</field>
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="floor_id" ref="floor_rdc"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="out_of_order" eval="True"/>
+        </record>
+        <record id="room_106" model="aite.hotel.room">
+            <field name="name">106</field>
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="floor_id" ref="floor_1"/>
+            <field name="room_type_id" ref="rtype_std"/>
+        </record>
+        <record id="room_201" model="aite.hotel.room">
+            <field name="name">201</field>
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="floor_id" ref="floor_1"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+        </record>
+        <record id="room_202" model="aite.hotel.room">
+            <field name="name">202</field>
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="floor_id" ref="floor_1"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+        </record>
+        <record id="room_203" model="aite.hotel.room">
+            <field name="name">203</field>
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="floor_id" ref="floor_1"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+        </record>
+        <record id="room_204" model="aite.hotel.room">
+            <field name="name">204</field>
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="floor_id" ref="floor_1"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+        </record>
+        <record id="room_205" model="aite.hotel.room">
+            <field name="name">205</field>
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="floor_id" ref="floor_2"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+        </record>
+        <record id="room_301" model="aite.hotel.room">
+            <field name="name">301</field>
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="floor_id" ref="floor_2"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+        </record>
+        <record id="room_302" model="aite.hotel.room">
+            <field name="name">302</field>
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="floor_id" ref="floor_2"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+        </record>
+        <record id="room_303" model="aite.hotel.room">
+            <field name="name">303</field>
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="floor_id" ref="floor_2"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+        </record>
+        <record id="room_401" model="aite.hotel.room">
+            <field name="name">401</field>
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="floor_id" ref="floor_2"/>
+            <field name="room_type_id" ref="rtype_vip"/>
+        </record>
+        <record id="room_402" model="aite.hotel.room">
+            <field name="name">402</field>
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="floor_id" ref="floor_2"/>
+            <field name="room_type_id" ref="rtype_vip"/>
+        </record>
+    </data>
+</odoo>

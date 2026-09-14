@@ -1,0 +1,3013 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="stay_001" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_01"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-2, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=2, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">ota</field>
+            <field name="state">checked_in</field>
+        </record>
+        <record id="stay_001_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_001"/>
+            <field name="room_type_id" ref="rtype_vip"/>
+            <field name="room_id" ref="room_401"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="1500000"/>
+        </record>
+        <record id="stay_002" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_c1"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-40, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-37, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_002_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_002"/>
+            <field name="room_type_id" ref="rtype_vip"/>
+            <field name="room_id" ref="room_401"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="1500000"/>
+        </record>
+        <record id="stay_003" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_06"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-36, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-35, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">agent</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_003_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_003"/>
+            <field name="room_type_id" ref="rtype_vip"/>
+            <field name="room_id" ref="room_401"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="1500000"/>
+        </record>
+        <record id="stay_004" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_35"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-33, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-30, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">agent</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_004_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_004"/>
+            <field name="room_type_id" ref="rtype_vip"/>
+            <field name="room_id" ref="room_401"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="1500000"/>
+        </record>
+        <record id="stay_005" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_16"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-28, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-25, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">ota</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_005_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_005"/>
+            <field name="room_type_id" ref="rtype_vip"/>
+            <field name="room_id" ref="room_401"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="1500000"/>
+        </record>
+        <record id="stay_006" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_31"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-23, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-22, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">ota</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_006_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_006"/>
+            <field name="room_type_id" ref="rtype_vip"/>
+            <field name="room_id" ref="room_401"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="1500000"/>
+        </record>
+        <record id="stay_007" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_18"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-20, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-19, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_007_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_007"/>
+            <field name="room_type_id" ref="rtype_vip"/>
+            <field name="room_id" ref="room_401"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="1500000"/>
+        </record>
+        <record id="stay_008" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_00"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-18, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-15, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="3"/>
+            <field name="source">agent</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_008_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_008"/>
+            <field name="room_type_id" ref="rtype_vip"/>
+            <field name="room_id" ref="room_401"/>
+            <field name="adults" eval="3"/>
+            <field name="price_night" eval="1500000"/>
+        </record>
+        <record id="stay_009" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_26"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-14, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-11, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="3"/>
+            <field name="source">agent</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_009_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_009"/>
+            <field name="room_type_id" ref="rtype_vip"/>
+            <field name="room_id" ref="room_401"/>
+            <field name="adults" eval="3"/>
+            <field name="price_night" eval="1500000"/>
+        </record>
+        <record id="stay_010" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_11"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-10, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-8, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="3"/>
+            <field name="source">website</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_010_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_010"/>
+            <field name="room_type_id" ref="rtype_vip"/>
+            <field name="room_id" ref="room_401"/>
+            <field name="adults" eval="3"/>
+            <field name="price_night" eval="1500000"/>
+        </record>
+        <record id="stay_011" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_22"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-7, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-6, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="3"/>
+            <field name="source">website</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_011_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_011"/>
+            <field name="room_type_id" ref="rtype_vip"/>
+            <field name="room_id" ref="room_401"/>
+            <field name="adults" eval="3"/>
+            <field name="price_night" eval="1500000"/>
+        </record>
+        <record id="stay_012" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_21"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-5, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-3, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">website</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_012_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_012"/>
+            <field name="room_type_id" ref="rtype_vip"/>
+            <field name="room_id" ref="room_401"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="1500000"/>
+        </record>
+        <record id="stay_013" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_05"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-3, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=0, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">ota</field>
+            <field name="state">checked_in</field>
+        </record>
+        <record id="stay_013_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_013"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_301"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_014" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_12"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-40, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-38, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">ota</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_014_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_014"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_301"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_015" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_36"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-36, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-34, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="3"/>
+            <field name="source">agent</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_015_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_015"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_301"/>
+            <field name="adults" eval="3"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_016" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_17"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-32, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-30, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="3"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_016_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_016"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_301"/>
+            <field name="adults" eval="3"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_017" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_11"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-28, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-27, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="3"/>
+            <field name="source">ota</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_017_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_017"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_301"/>
+            <field name="adults" eval="3"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_018" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_11"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-26, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-24, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="3"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_018_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_018"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_301"/>
+            <field name="adults" eval="3"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_019" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_31"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-22, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-20, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">phone</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_019_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_019"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_301"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_020" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_04"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-18, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-15, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">phone</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_020_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_020"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_301"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_021" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_30"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-14, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-13, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">ota</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_021_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_021"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_301"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_022" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_09"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-11, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-10, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">website</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_022_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_022"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_301"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_023" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_16"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-9, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-7, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="3"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_023_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_023"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_301"/>
+            <field name="adults" eval="3"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_024" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_22"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=0, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=3, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">website</field>
+            <field name="state">confirmed</field>
+        </record>
+        <record id="stay_024_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_024"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_201"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_025" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_03"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-40, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-37, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">website</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_025_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_025"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_201"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_026" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_07"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-35, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-33, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">ota</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_026_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_026"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_201"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_027" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_06"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-31, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-29, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">phone</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_027_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_027"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_201"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_028" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_08"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-27, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-25, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_028_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_028"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_201"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_029" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_03"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-24, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-21, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">ota</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_029_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_029"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_201"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_030" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_33"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-20, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-17, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_030_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_030"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_201"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_031" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_33"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-15, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-14, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_031_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_031"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_201"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_032" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_31"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-12, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-11, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_032_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_032"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_201"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_033" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_27"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-10, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-7, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_033_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_033"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_201"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_034" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_21"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-5, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-3, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">agent</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_034_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_034"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_201"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_035" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_30"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=0, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=2, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">ota</field>
+            <field name="state">confirmed</field>
+        </record>
+        <record id="stay_035_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_035"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_202"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_036" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_12"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-42, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-40, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">ota</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_036_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_036"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_202"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_037" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_19"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-39, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-38, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_037_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_037"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_202"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_038" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_02"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-36, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-35, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_038_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_038"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_202"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_039" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_31"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-33, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-32, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">ota</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_039_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_039"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_202"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_040" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_19"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-30, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-28, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">agent</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_040_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_040"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_202"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_041" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_12"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-27, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-25, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_041_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_041"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_202"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_042" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_07"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-23, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-21, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">ota</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_042_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_042"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_202"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_043" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_30"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-20, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-18, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">ota</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_043_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_043"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_202"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_044" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_18"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-17, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-16, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_044_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_044"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_202"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_045" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_17"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-14, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-12, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">ota</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_045_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_045"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_202"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_046" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_22"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-10, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-7, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">agent</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_046_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_046"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_202"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_047" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_03"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-5, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-2, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">agent</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_047_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_047"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_202"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_048" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_02"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=1, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=4, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">confirmed</field>
+        </record>
+        <record id="stay_048_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_048"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_302"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_049" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_13"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-42, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-39, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="3"/>
+            <field name="source">ota</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_049_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_049"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_302"/>
+            <field name="adults" eval="3"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_050" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_05"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-38, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-37, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="3"/>
+            <field name="source">website</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_050_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_050"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_302"/>
+            <field name="adults" eval="3"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_051" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_30"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-36, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-33, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">phone</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_051_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_051"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_302"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_052" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_30"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-31, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-28, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">phone</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_052_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_052"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_302"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_053" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_c2"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-26, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-24, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="3"/>
+            <field name="source">phone</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_053_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_053"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_302"/>
+            <field name="adults" eval="3"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_054" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_34"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-23, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-22, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="3"/>
+            <field name="source">agent</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_054_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_054"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_302"/>
+            <field name="adults" eval="3"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_055" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_34"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-21, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-18, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_055_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_055"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_302"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_056" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_06"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-16, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-15, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">no_show</field>
+        </record>
+        <record id="stay_056_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_056"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_302"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_057" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_04"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-13, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-10, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_057_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_057"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_302"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_058" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_00"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-8, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-7, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="3"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_058_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_058"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_302"/>
+            <field name="adults" eval="3"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_059" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_03"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-6, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-3, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="3"/>
+            <field name="source">website</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_059_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_059"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_302"/>
+            <field name="adults" eval="3"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_060" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_07"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-39, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-37, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">ota</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_060_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_060"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_101"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_061" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_06"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-36, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-33, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">website</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_061_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_061"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_101"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_062" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_17"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-32, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-31, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">agent</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_062_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_062"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_101"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_063" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_25"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-29, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-26, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">website</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_063_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_063"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_101"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_064" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_29"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-26, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-25, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">website</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_064_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_064"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_101"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_065" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_05"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-24, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-20, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">ota</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_065_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_065"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_101"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_066" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_03"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-17, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-13, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_066_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_066"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_101"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_067" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_36"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-13, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-11, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">website</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_067_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_067"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_101"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_068" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_02"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-9, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-5, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_068_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_068"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_101"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_069" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_26"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-3, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=0, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">phone</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_069_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_069"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_101"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_070" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_27"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=3, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=6, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">ota</field>
+            <field name="state">confirmed</field>
+        </record>
+        <record id="stay_070_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_070"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_101"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_071" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_11"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=6, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=9, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">draft</field>
+        </record>
+        <record id="stay_071_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_071"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_101"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_072" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_11"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-42, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-38, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">agent</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_072_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_072"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_102"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_073" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_07"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-38, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-35, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">phone</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_073_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_073"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_102"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_074" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_23"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-33, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-30, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_074_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_074"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_102"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_075" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_02"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-27, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-25, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">website</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_075_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_075"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_102"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_076" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_13"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-22, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-21, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_076_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_076"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_102"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_077" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_18"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-18, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-16, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">website</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_077_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_077"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_102"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_078" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_05"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-13, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-12, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">agent</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_078_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_078"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_102"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_079" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_27"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-11, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-8, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">phone</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_079_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_079"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_102"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_080" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_29"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-5, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-3, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_080_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_080"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_102"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_081" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_c0"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-1, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=0, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">phone</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_081_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_081"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_102"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_082" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_01"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=2, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=6, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">website</field>
+            <field name="state">confirmed</field>
+        </record>
+        <record id="stay_082_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_082"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_102"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_083" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_11"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=7, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=11, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">direct</field>
+            <field name="state">confirmed</field>
+        </record>
+        <record id="stay_083_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_083"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_102"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_084" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_07"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-40, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-36, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_084_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_084"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_103"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_085" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_32"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-36, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-33, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">phone</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_085_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_085"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_103"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_086" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_10"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-33, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-32, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">ota</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_086_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_086"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_103"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_087" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_c1"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-31, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-29, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_087_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_087"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_103"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_088" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_18"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-26, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-23, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">website</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_088_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_088"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_103"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_089" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_16"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-22, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-20, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">phone</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_089_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_089"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_103"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_090" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_24"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-17, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-16, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">website</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_090_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_090"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_103"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_091" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_01"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-14, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-13, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">agent</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_091_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_091"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_103"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_092" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_02"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-13, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-10, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">phone</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_092_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_092"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_103"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_093" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_10"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-7, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-4, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">agent</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_093_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_093"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_103"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_094" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_17"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-1, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=1, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">website</field>
+            <field name="state">checked_in</field>
+        </record>
+        <record id="stay_094_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_094"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_103"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_095" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_30"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=1, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=2, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">direct</field>
+            <field name="state">confirmed</field>
+        </record>
+        <record id="stay_095_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_095"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_103"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_096" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_33"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=3, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=6, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">phone</field>
+            <field name="state">confirmed</field>
+        </record>
+        <record id="stay_096_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_096"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_103"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_097" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_15"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=7, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=9, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">direct</field>
+            <field name="state">confirmed</field>
+        </record>
+        <record id="stay_097_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_097"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_103"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_098" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_34"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=9, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=10, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">website</field>
+            <field name="state">draft</field>
+        </record>
+        <record id="stay_098_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_098"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_103"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_099" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_33"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=10, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=11, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">confirmed</field>
+        </record>
+        <record id="stay_099_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_099"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_103"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_100" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_10"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=11, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=12, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">agent</field>
+            <field name="state">confirmed</field>
+        </record>
+        <record id="stay_100_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_100"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_103"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_101" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_12"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-40, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-38, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">website</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_101_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_101"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_104"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_102" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_17"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-37, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-34, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">agent</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_102_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_102"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_104"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_103" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_17"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-34, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-32, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_103_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_103"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_104"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_104" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_09"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-31, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-29, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_104_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_104"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_104"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_105" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_27"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-29, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-25, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_105_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_105"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_104"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_106" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_30"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-23, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-21, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_106_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_106"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_104"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_107" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_03"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-18, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-16, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_107_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_107"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_104"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_108" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_28"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-13, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-9, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">phone</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_108_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_108"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_104"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_109" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_22"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-8, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-6, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">website</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_109_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_109"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_104"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_110" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_08"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-3, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=1, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">phone</field>
+            <field name="state">checked_in</field>
+        </record>
+        <record id="stay_110_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_110"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_104"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_111" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_04"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=4, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=5, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">website</field>
+            <field name="state">confirmed</field>
+        </record>
+        <record id="stay_111_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_111"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_104"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_112" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_21"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=6, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=8, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">ota</field>
+            <field name="state">confirmed</field>
+        </record>
+        <record id="stay_112_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_112"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_104"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_113" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_c2"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=10, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=13, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">direct</field>
+            <field name="state">confirmed</field>
+        </record>
+        <record id="stay_113_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_113"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_104"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_114" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_19"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-39, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-38, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">ota</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_114_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_114"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_106"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_115" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_14"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-36, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-34, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_115_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_115"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_106"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_116" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_30"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-31, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-28, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">agent</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_116_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_116"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_106"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_117" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_29"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-26, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-25, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">website</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_117_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_117"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_106"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_118" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_24"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-23, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-19, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">agent</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_118_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_118"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_106"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_119" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_36"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-17, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-14, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">phone</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_119_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_119"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_106"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_120" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_09"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-11, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-7, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_120_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_120"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_106"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_121" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_05"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-4, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-1, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">agent</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_121_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_121"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_106"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_122" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_08"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=1, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=3, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">ota</field>
+            <field name="state">confirmed</field>
+        </record>
+        <record id="stay_122_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_122"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_106"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_123" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_08"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=6, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=10, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">confirmed</field>
+        </record>
+        <record id="stay_123_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_123"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_106"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_124" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_27"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=10, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=11, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">confirmed</field>
+        </record>
+        <record id="stay_124_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_124"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_106"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_125" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_35"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=11, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=12, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">agent</field>
+            <field name="state">cancelled</field>
+        </record>
+        <record id="stay_125_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_125"/>
+            <field name="room_type_id" ref="rtype_std"/>
+            <field name="room_id" ref="room_106"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="450000"/>
+        </record>
+        <record id="stay_126" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_c0"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-42, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-38, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">agent</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_126_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_126"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_203"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_127" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_27"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-37, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-35, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">phone</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_127_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_127"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_203"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_128" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_04"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-33, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-30, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">phone</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_128_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_128"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_203"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_129" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_03"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-28, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-24, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">website</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_129_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_129"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_203"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_130" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_16"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-21, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-18, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">agent</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_130_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_130"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_203"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_131" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_00"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-15, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-11, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_131_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_131"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_203"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_132" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_20"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-9, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-8, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_132_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_132"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_203"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_133" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_04"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-8, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-5, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">phone</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_133_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_133"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_203"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_134" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_03"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-4, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-3, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">website</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_134_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_134"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_203"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_135" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_28"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-3, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-1, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">agent</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_135_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_135"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_203"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_136" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_30"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=1, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=2, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">agent</field>
+            <field name="state">confirmed</field>
+        </record>
+        <record id="stay_136_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_136"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_203"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_137" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_31"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=4, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=8, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">confirmed</field>
+        </record>
+        <record id="stay_137_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_137"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_203"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_138" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_c0"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=10, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=12, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">cancelled</field>
+        </record>
+        <record id="stay_138_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_138"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_203"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_139" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_20"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-39, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-37, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_139_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_139"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_204"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_140" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_13"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-37, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-36, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_140_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_140"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_204"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_141" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_05"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-36, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-32, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_141_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_141"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_204"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_142" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_21"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-30, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-27, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">phone</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_142_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_142"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_204"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_143" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_07"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-26, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-24, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">website</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_143_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_143"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_204"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_144" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_19"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-21, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-20, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">phone</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_144_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_144"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_204"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_145" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_36"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-18, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-16, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">phone</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_145_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_145"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_204"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_146" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_20"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-16, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-14, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_146_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_146"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_204"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_147" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_25"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-13, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-11, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">website</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_147_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_147"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_204"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_148" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_11"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-10, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-8, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">phone</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_148_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_148"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_204"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_149" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_36"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-5, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-3, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">ota</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_149_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_149"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_204"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_150" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_14"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-2, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=0, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">ota</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_150_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_150"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_204"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_151" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_08"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=2, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=4, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">direct</field>
+            <field name="state">confirmed</field>
+        </record>
+        <record id="stay_151_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_151"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_204"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_152" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_11"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=6, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=7, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">phone</field>
+            <field name="state">confirmed</field>
+        </record>
+        <record id="stay_152_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_152"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_204"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_153" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_20"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=8, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=10, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">website</field>
+            <field name="state">confirmed</field>
+        </record>
+        <record id="stay_153_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_153"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_204"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_154" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_27"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-42, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-40, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">phone</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_154_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_154"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_205"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_155" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_17"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-37, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-33, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">agent</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_155_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_155"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_205"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_156" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_23"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-30, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-27, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">website</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_156_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_156"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_205"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_157" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_36"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-24, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-23, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">ota</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_157_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_157"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_205"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_158" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_09"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-22, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-21, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">phone</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_158_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_158"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_205"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_159" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_26"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-20, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-17, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_159_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_159"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_205"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_160" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_35"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-17, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-14, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_160_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_160"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_205"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_161" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_36"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-11, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-8, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_161_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_161"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_205"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_162" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_31"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-8, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-7, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">phone</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_162_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_162"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_205"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_163" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_09"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-4, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=0, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">website</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_163_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_163"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_205"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_164" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_29"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=3, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=5, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="1"/>
+            <field name="source">direct</field>
+            <field name="state">confirmed</field>
+        </record>
+        <record id="stay_164_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_164"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_205"/>
+            <field name="adults" eval="1"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_165" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_33"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=5, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=9, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">agent</field>
+            <field name="state">confirmed</field>
+        </record>
+        <record id="stay_165_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_165"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_205"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_166" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_35"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=11, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=13, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">confirmed</field>
+        </record>
+        <record id="stay_166_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_166"/>
+            <field name="room_type_id" ref="rtype_cft"/>
+            <field name="room_id" ref="room_205"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="650000"/>
+        </record>
+        <record id="stay_167" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_27"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-41, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-36, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">ota</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_167_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_167"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_303"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_168" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_00"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-35, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-33, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">ota</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_168_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_168"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_303"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_169" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_25"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-33, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-29, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">ota</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_169_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_169"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_303"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_170" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_19"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-26, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-23, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="3"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_170_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_170"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_303"/>
+            <field name="adults" eval="3"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_171" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_06"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-23, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-20, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="3"/>
+            <field name="source">phone</field>
+            <field name="state">no_show</field>
+        </record>
+        <record id="stay_171_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_171"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_303"/>
+            <field name="adults" eval="3"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_172" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_09"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-20, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-15, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="3"/>
+            <field name="source">ota</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_172_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_172"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_303"/>
+            <field name="adults" eval="3"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_173" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_36"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-12, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-9, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_173_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_173"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_303"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_174" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_19"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-9, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-6, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="3"/>
+            <field name="source">ota</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_174_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_174"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_303"/>
+            <field name="adults" eval="3"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_175" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_22"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-6, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-3, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="3"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_175_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_175"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_303"/>
+            <field name="adults" eval="3"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_176" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_21"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-1, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=3, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">ota</field>
+            <field name="state">checked_in</field>
+        </record>
+        <record id="stay_176_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_176"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_303"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_177" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_09"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=6, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=10, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">website</field>
+            <field name="state">confirmed</field>
+        </record>
+        <record id="stay_177_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_177"/>
+            <field name="room_type_id" ref="rtype_sjr"/>
+            <field name="room_id" ref="room_303"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="950000"/>
+        </record>
+        <record id="stay_178" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_00"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-41, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-38, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="3"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_178_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_178"/>
+            <field name="room_type_id" ref="rtype_vip"/>
+            <field name="room_id" ref="room_402"/>
+            <field name="adults" eval="3"/>
+            <field name="price_night" eval="1500000"/>
+        </record>
+        <record id="stay_179" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_16"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-35, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-31, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="3"/>
+            <field name="source">agent</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_179_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_179"/>
+            <field name="room_type_id" ref="rtype_vip"/>
+            <field name="room_id" ref="room_402"/>
+            <field name="adults" eval="3"/>
+            <field name="price_night" eval="1500000"/>
+        </record>
+        <record id="stay_180" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_c1"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-28, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-26, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">agent</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_180_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_180"/>
+            <field name="room_type_id" ref="rtype_vip"/>
+            <field name="room_id" ref="room_402"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="1500000"/>
+        </record>
+        <record id="stay_181" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_32"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-23, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-19, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">agent</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_181_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_181"/>
+            <field name="room_type_id" ref="rtype_vip"/>
+            <field name="room_id" ref="room_402"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="1500000"/>
+        </record>
+        <record id="stay_182" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_05"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-17, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-14, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_182_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_182"/>
+            <field name="room_type_id" ref="rtype_vip"/>
+            <field name="room_id" ref="room_402"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="1500000"/>
+        </record>
+        <record id="stay_183" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_09"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-14, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-10, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">phone</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_183_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_183"/>
+            <field name="room_type_id" ref="rtype_vip"/>
+            <field name="room_id" ref="room_402"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="1500000"/>
+        </record>
+        <record id="stay_184" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_17"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-7, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-3, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="3"/>
+            <field name="source">phone</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_184_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_184"/>
+            <field name="room_type_id" ref="rtype_vip"/>
+            <field name="room_id" ref="room_402"/>
+            <field name="adults" eval="3"/>
+            <field name="price_night" eval="1500000"/>
+        </record>
+        <record id="stay_185" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_16"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=-3, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=-1, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="3"/>
+            <field name="source">direct</field>
+            <field name="state">checked_out</field>
+        </record>
+        <record id="stay_185_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_185"/>
+            <field name="room_type_id" ref="rtype_vip"/>
+            <field name="room_id" ref="room_402"/>
+            <field name="adults" eval="3"/>
+            <field name="price_night" eval="1500000"/>
+        </record>
+        <record id="stay_186" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_09"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=0, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=3, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="3"/>
+            <field name="source">website</field>
+            <field name="state">checked_in</field>
+        </record>
+        <record id="stay_186_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_186"/>
+            <field name="room_type_id" ref="rtype_vip"/>
+            <field name="room_id" ref="room_402"/>
+            <field name="adults" eval="3"/>
+            <field name="price_night" eval="1500000"/>
+        </record>
+        <record id="stay_187" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_24"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=4, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=8, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="2"/>
+            <field name="source">website</field>
+            <field name="state">confirmed</field>
+        </record>
+        <record id="stay_187_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_187"/>
+            <field name="room_type_id" ref="rtype_vip"/>
+            <field name="room_id" ref="room_402"/>
+            <field name="adults" eval="2"/>
+            <field name="price_night" eval="1500000"/>
+        </record>
+        <record id="stay_188" model="aite.hotel.reservation">
+            <field name="hotel_id" ref="hotel_main"/>
+            <field name="partner_id" ref="partner_01"/>
+            <field name="checkin_date" eval="(DateTime.today() + relativedelta(days=11, hour=13, minute=0, second=0, microsecond=0))"/>
+            <field name="checkout_date" eval="(DateTime.today() + relativedelta(days=13, hour=10, minute=0, second=0, microsecond=0))"/>
+            <field name="adults" eval="3"/>
+            <field name="source">phone</field>
+            <field name="state">confirmed</field>
+        </record>
+        <record id="stay_188_l" model="aite.hotel.reservation.line">
+            <field name="reservation_id" ref="stay_188"/>
+            <field name="room_type_id" ref="rtype_vip"/>
+            <field name="room_id" ref="room_402"/>
+            <field name="adults" eval="3"/>
+            <field name="price_night" eval="1500000"/>
+        </record>
+    </data>
+</odoo>

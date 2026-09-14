@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Bloc de réglages : <app> dédiée ancrée sur //form (ancrage stable,
+         même approche validée que le module Stock). -->
+    <record id="res_config_settings_view_form_aite_purchase"
+            model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.aite.purchase</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="AITE Achats" string="AITE Achats"
+                     name="aite_purchase_dashboard"
+                     groups="purchase.group_purchase_manager">
+                    <block title="Alertes achats &amp; fournisseurs"
+                           name="aite_purchase_alerts_block">
+                        <setting id="aite_pur_soon"
+                                 string="Alerte échéance"
+                                 help="Factures dues sous ce délai : « À payer bientôt ».">
+                            <field name="aite_purchase_due_soon_days"
+                                   class="o_light_label"/>
+                            <span class="o_form_label"> jours avant échéance</span>
+                        </setting>
+                        <setting id="aite_pur_late"
+                                 string="Tolérance retard livraison"
+                                 help="Au-delà, la commande est signalée en retard (l'OTIF reste strict).">
+                            <field name="aite_purchase_late_days"
+                                   class="o_light_label"/>
+                            <span class="o_form_label"> jours</span>
+                        </setting>
+                        <setting id="aite_pur_dep"
+                                 string="Seuil de dépendance fournisseur"
+                                 help="Part des achats chez un fournisseur au-delà de laquelle le risque de concentration est signalé.">
+                            <field name="aite_purchase_dependency_pct"
+                                   class="o_light_label"/>
+                            <span class="o_form_label"> % des achats</span>
+                        </setting>
+                        <setting id="aite_pur_price"
+                                 string="Seuil de hausse de prix"
+                                 help="Variation de prix d'achat au-delà de laquelle une référence est badgée « Hausse forte ».">
+                            <field name="aite_purchase_price_increase_pct"
+                                   class="o_light_label"/>
+                            <span class="o_form_label"> %</span>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

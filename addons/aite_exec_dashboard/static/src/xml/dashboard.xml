@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="aite_exec_dashboard.KpiCard">
+        <div t-att-class="'aed-kpi ' + (props.mega ? 'aed-kpi-mega aed-accent-' + props.accent : '')">
+            <div class="aed-kpi-label" t-esc="props.label"/>
+            <div class="aed-kpi-value" t-esc="props.value"/>
+            <div t-if="props.sub" class="aed-kpi-sub" t-esc="props.sub"/>
+        </div>
+    </t>
+
+    <t t-name="aite_exec_dashboard.Dashboard">
+        <div class="aed-dashboard-root o_action">
+            <ExecDashboardView/>
+        </div>
+    </t>
+
+    <t t-name="aite_exec_dashboard.DashboardView">
+        <div class="aed-dashboard">
+
+            <div class="aed-topbar">
+                <div>
+                    <h2 class="aed-title">Direction — Vue consolidée</h2>
+                    <div class="aed-sub">Hébergement · Restauration &amp; boutique · Prestations</div>
+                </div>
+            </div>
+
+            <div class="aed-filterbar">
+                <div class="aed-filterrow">
+                    <span class="aed-flabel">Période</span>
+                    <t t-foreach="periodPresets" t-as="p" t-key="p.key">
+                        <button t-att-class="'aed-chip ' + (state.period === p.key ? 'active' : '')"
+                                t-on-click="() => this.setPeriod(p.key)" t-esc="p.label"/>
+                    </t>
+                    <span class="aed-spacer"/>
+                    <span class="aed-flabel">Du</span>
+                    <input type="date" class="aed-date" t-att-value="state.dateFrom"
+                           t-on-change="(ev) => this.onFromInput(ev)"/>
+                    <span class="aed-flabel">au</span>
+                    <input type="date" class="aed-date" t-att-value="state.dateTo"
+                           t-on-change="(ev) => this.onToInput(ev)"/>
+                </div>
+            </div>
+
+            <div t-if="state.loading" class="aed-loading">
+                <i class="fa fa-spinner fa-spin"/> Chargement…
+            </div>
+
+            <div t-else="">
+
+                <div class="aed-grid aed-grid-4">
+                    <KpiCard mega="true" accent="'primary'"
+                             label="'Chiffre d\'affaires total'"
+                             value="money(state.kpis.total_ca)"
+                             sub="'Période ' + state.dateFrom + ' → ' + state.dateTo"/>
+                    <KpiCard mega="true" accent="'primary'"
+                             label="'Hébergement'"
+                             value="money(state.kpis.hotel_ca)"
+                             sub="'Occupation ' + pct(state.kpis.occupancy) + ' · ADR ' + money(state.kpis.adr)"/>
+                    <KpiCard mega="true" accent="'info'"
+                             label="'Restauration &amp; boutique'"
+                             value="money(state.kpis.pos_ca)"
+                             sub="num(state.kpis.tickets) + ' tickets · panier ' + money(state.kpis.basket)"/>
+                    <KpiCard mega="true" accent="'teal'"
+                             label="'Prestations'"
+                             value="money(state.kpis.slots_ca)"
+                             sub="num(state.kpis.slots_count) + ' prestation(s) réalisée(s)'"/>
+                </div>
+
+                <div class="aed-grid aed-grid-4" t-if="state.meta.has_loyalty">
+                    <KpiCard label="'Points fidélité émis'"
+                             value="num(state.kpis.points_issued)"
+                             sub="'Tous services confondus'"/>
+                </div>
+
+                <div class="aed-section-title">Répartition &amp; évolution</div>
+                <div class="aed-grid aed-grid-2">
+                    <div class="aed-card">
+                        <h3>Mix du chiffre d'affaires par pôle</h3>
+                        <div class="aed-chartbox"><canvas t-ref="mixChart"/></div>
+                        <div class="aed-mixlist">
+                            <t t-foreach="state.kpis.mix" t-as="row" t-key="row.key">
+                                <div class="aed-mixrow">
+                                    <span class="aed-dot" t-att-style="dotStyle(row.key)"/>
+                                    <span class="aed-mixlabel" t-esc="poleLabel(row.key)"/>
+                                    <span class="aed-mixval" t-esc="mixLine(row)"/>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                    <div class="aed-card">
+                        <h3>Évolution mensuelle — 6 mois</h3>
+                        <div class="aed-chartbox aed-chartbox-tall"><canvas t-ref="evoChart"/></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </t>
+
+</templates>

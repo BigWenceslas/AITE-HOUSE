@@ -1,0 +1,251 @@
+/* Tableau de bord POS Crédit — recouvrement (charte AITE / LAVERANDAH) */
+
+/* Zone défilante de l'action — le wrapper racine du composant
+   porte la hauteur ; l'enfant .apc-dashboard s'étire au contenu
+   (min-height) : correctif scroll, pattern POS Analytics. */
+.apc-dashboard-root {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.apc-dashboard {
+    --apc-primary: #714B67;
+    --apc-success: #3B6D11;
+    --apc-danger: #A32D2D;
+    --apc-warning: #854F0B;
+    --apc-muted: #888780;
+    --apc-border: rgba(0, 0, 0, .08);
+    --apc-bg-soft: #f5f5f4;
+
+    padding: 14px;
+    background: #e8e6e0;
+    min-height: 100%;
+    font-size: 13px;
+
+    .apc-topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #fff;
+        border: 1px solid var(--apc-border);
+        border-radius: 12px;
+        padding: 12px 16px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .apc-title {
+        font-size: 18px;
+        margin: 0;
+        color: var(--apc-primary);
+        font-weight: 700;
+    }
+    .apc-sub {
+        color: var(--apc-muted);
+        font-size: 12px;
+        margin-top: 2px;
+    }
+
+    .apc-period {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+    }
+    .apc-chip {
+        background: transparent;
+        border: 1px solid var(--apc-border);
+        border-radius: 8px;
+        padding: 6px 12px;
+        font-size: 12px;
+        color: #5f5e5a;
+        cursor: pointer;
+        transition: .12s;
+
+        &:hover { background: var(--apc-bg-soft); }
+        &.active {
+            background: var(--apc-primary);
+            color: #fff;
+            border-color: var(--apc-primary);
+        }
+    }
+
+    .apc-loading {
+        padding: 40px;
+        text-align: center;
+        color: var(--apc-muted);
+    }
+
+    /* ---- Barre de filtres (période + caisse) ---- */
+    .apc-filterbar {
+        background: #fff;
+        border: 1px solid var(--apc-border);
+        border-radius: 12px;
+        padding: 10px 12px;
+        margin-top: 12px;
+    }
+    .apc-filterrow {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+
+        + .apc-filterrow {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--apc-border);
+        }
+    }
+    .apc-flabel {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        color: var(--apc-muted);
+        font-weight: 600;
+        min-width: 64px;
+    }
+    .apc-spacer { flex: 1; }
+    .apc-arrow { color: var(--apc-muted); }
+    .apc-date {
+        border: 1px solid var(--apc-border);
+        border-radius: 8px;
+        padding: 5px 8px;
+        font-size: 12px;
+        background: #fff;
+        color: inherit;
+    }
+    .apc-apply {
+        background: var(--apc-primary);
+        color: #fff;
+        border-color: var(--apc-primary);
+    }
+    .apc-dot {
+        display: inline-block;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        margin-right: 5px;
+        vertical-align: middle;
+    }
+
+    /* ---- Barres proportionnelles dans les tables ---- */
+    .apc-barcell {
+        position: relative;
+
+        .apc-bar {
+            position: absolute;
+            left: 0;
+            top: 10%;
+            height: 80%;
+            opacity: .12;
+            border-radius: 4px;
+            background: var(--apc-danger);
+            pointer-events: none;
+        }
+    }
+
+    .apc-section-title {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+        color: var(--apc-muted);
+        font-weight: 700;
+        margin: 18px 4px 8px;
+    }
+    .apc-flex-between {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .apc-grid {
+        display: grid;
+        gap: 10px;
+    }
+    .apc-grid-4 { grid-template-columns: repeat(4, 1fr); }
+    .apc-grid-2 { grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 1100px) {
+        .apc-grid-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 700px) {
+        .apc-grid-4, .apc-grid-2 { grid-template-columns: 1fr; }
+    }
+
+    .apc-kpi {
+        background: #fff;
+        border: 1px solid var(--apc-border);
+        border-radius: 12px;
+        padding: 14px;
+    }
+    .apc-kpi-mega { border-left: 4px solid var(--apc-primary); }
+    .apc-accent-primary { border-left-color: var(--apc-primary); }
+    .apc-accent-success { border-left-color: var(--apc-success); }
+    .apc-accent-danger { border-left-color: var(--apc-danger); }
+    .apc-accent-warning { border-left-color: var(--apc-warning); }
+
+    .apc-kpi-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        color: var(--apc-muted);
+        font-weight: 600;
+    }
+    .apc-kpi-value {
+        font-size: 22px;
+        font-weight: 700;
+        margin-top: 6px;
+        line-height: 1.1;
+    }
+    .apc-kpi-delta {
+        font-size: 11px;
+        margin-top: 6px;
+        font-weight: 600;
+    }
+    .apc-kpi-sub {
+        font-size: 11px;
+        color: var(--apc-muted);
+        margin-top: 4px;
+    }
+
+    .apc-card {
+        background: #fff;
+        border: 1px solid var(--apc-border);
+        border-radius: 12px;
+        padding: 14px;
+
+        h3 {
+            font-size: 13px;
+            margin: 0 0 10px;
+            color: #2b2a28;
+        }
+    }
+    .apc-card-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .apc-chartbox {
+        position: relative;
+        height: 220px;
+    }
+    .apc-mini {
+        font-size: 11px;
+        color: var(--apc-muted);
+        margin-top: 6px;
+    }
+    .apc-tablewrap {
+        max-height: 420px;
+        overflow: auto;
+
+        table { margin-bottom: 0; }
+        th {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            color: var(--apc-muted);
+            position: sticky;
+            top: 0;
+            background: var(--apc-bg-soft);
+        }
+        td { font-size: 12px; vertical-align: middle; }
+    }
+}

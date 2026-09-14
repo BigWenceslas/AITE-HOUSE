@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_hotel_booking_wizard_form" model="ir.ui.view">
+        <field name="name">aite.hotel.booking.wizard.form</field>
+        <field name="model">aite.hotel.booking.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Disponibilité &amp; réservation rapide">
+                <group>
+                    <group>
+                        <field name="hotel_id" options="{'no_create': True}"/>
+                        <field name="checkin_date"/>
+                        <field name="checkout_date"/>
+                        <field name="currency_id" invisible="1"/>
+                    </group>
+                    <group>
+                        <field name="room_type_id"
+                               options="{'no_create': True}"/>
+                        <field name="adults"/>
+                        <field name="children"/>
+                    </group>
+                </group>
+                <div class="mb-2">
+                    <button name="action_search" type="object"
+                            string="Rechercher les chambres disponibles"
+                            class="btn-secondary" icon="fa-search"/>
+                </div>
+                <field name="searched" invisible="1"/>
+                <field name="line_ids" invisible="not searched">
+                    <list editable="bottom" create="false" delete="false">
+                        <field name="selected" widget="boolean_toggle"/>
+                        <field name="room_id"/>
+                        <field name="room_type_id"/>
+                        <field name="floor_id" optional="show"/>
+                        <field name="capacity_adults"/>
+                        <field name="nights"/>
+                        <field name="price_night"/>
+                        <field name="price_total"/>
+                        <field name="currency_id" column_invisible="1"/>
+                    </list>
+                </field>
+                <div class="alert alert-info" role="alert"
+                     invisible="not searched or line_ids">
+                    Aucune chambre disponible sur ces critères : élargissez
+                    les dates ou le type de chambre.
+                </div>
+                <group invisible="not searched">
+                    <group>
+                        <field name="partner_id"
+                               context="{'default_is_hotel_guest': True}"/>
+                    </group>
+                    <group>
+                        <field name="confirm_immediately"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_book" type="object"
+                            string="Réserver" class="btn-primary"
+                            invisible="not searched"/>
+                    <button string="Fermer" class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_hotel_booking_wizard" model="ir.actions.act_window">
+        <field name="name">Réservation rapide</field>
+        <field name="res_model">aite.hotel.booking.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

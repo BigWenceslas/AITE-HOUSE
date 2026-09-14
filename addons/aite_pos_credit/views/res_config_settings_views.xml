@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Champ "vente à crédit" sur la méthode de paiement POS -->
+    <record id="view_pos_payment_method_form_aite" model="ir.ui.view">
+        <field name="name">pos.payment.method.form.aite.credit</field>
+        <field name="model">pos.payment.method</field>
+        <field name="inherit_id" ref="point_of_sale.pos_payment_method_view_form"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="is_aite_credit"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Bloc de paramètres comptables du module (Réglages POS) -->
+    <record id="res_config_settings_view_form_aite_credit" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.aite.credit</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="point_of_sale.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@id='pos_accounting_section']" position="after">
+                <block title="Ardoises / Crédit POS" id="aite_credit_section">
+                    <setting id="aite_credit_auto_entries"
+                             help="Génère l'écriture comptable (411) à la validation d'un remboursement d'ardoise.">
+                        <field name="pos_credit_auto_entries"/>
+                    </setting>
+                    <setting id="aite_credit_account"
+                             help="Compte client (411) portant l'encours des ardoises.">
+                        <field name="pos_credit_account_id"/>
+                    </setting>
+                    <setting id="aite_credit_journal"
+                             help="Journal d'encaissement des remboursements.">
+                        <field name="pos_credit_journal_id"/>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

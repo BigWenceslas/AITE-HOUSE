@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Menu racine : pointe explicitement sur le tableau de bord Front
+        Desk pour que l'icône de l'application ouvre toujours la même
+        chose, quel que soit le profil (même leçon que sur POS Crédit).
+    -->
+    <menuitem id="menu_hotel_root"
+              name="Hôtel"
+              action="action_hotel_dashboard"
+              web_icon="aite_hotel_management,static/description/icon.png"
+              sequence="35"
+              groups="group_hotel_housekeeping"/>
+
+    <!-- ============ FRONT DESK ============ -->
+    <menuitem id="menu_hotel_frontdesk"
+              name="Front Desk"
+              parent="menu_hotel_root"
+              sequence="10"
+              groups="group_hotel_user"/>
+    <menuitem id="menu_hotel_dashboard"
+              name="Tableau de bord"
+              parent="menu_hotel_frontdesk"
+              action="action_hotel_dashboard"
+              sequence="10"/>
+    <menuitem id="menu_hotel_booking_wizard"
+              name="Réservation rapide"
+              parent="menu_hotel_frontdesk"
+              action="action_hotel_booking_wizard"
+              sequence="20"/>
+    <menuitem id="menu_hotel_arrivals"
+              name="Arrivées du jour"
+              parent="menu_hotel_frontdesk"
+              action="action_hotel_arrivals_today"
+              sequence="30"/>
+    <menuitem id="menu_hotel_departures"
+              name="Départs du jour"
+              parent="menu_hotel_frontdesk"
+              action="action_hotel_departures_today"
+              sequence="40"/>
+    <menuitem id="menu_hotel_inhouse"
+              name="Clients présents"
+              parent="menu_hotel_frontdesk"
+              action="action_hotel_inhouse"
+              sequence="50"/>
+
+    <!-- ============ RÉSERVATIONS ============ -->
+    <menuitem id="menu_hotel_reservations_section"
+              name="Réservations"
+              parent="menu_hotel_root"
+              sequence="20"
+              groups="group_hotel_user"/>
+    <menuitem id="menu_hotel_reservation"
+              name="Réservations"
+              parent="menu_hotel_reservations_section"
+              action="action_hotel_reservation"
+              sequence="10"/>
+    <menuitem id="menu_hotel_room_planning"
+              name="Planning des chambres"
+              parent="menu_hotel_reservations_section"
+              action="action_hotel_room_planning"
+              sequence="20"/>
+
+    <!-- ============ FACTURATION ============ -->
+    <menuitem id="menu_hotel_billing_section"
+              name="Facturation"
+              parent="menu_hotel_root"
+              sequence="30"
+              groups="group_hotel_user"/>
+    <menuitem id="menu_hotel_folio"
+              name="Folios"
+              parent="menu_hotel_billing_section"
+              action="action_hotel_folio"
+              sequence="10"/>
+    <menuitem id="menu_hotel_payments"
+              name="Règlements"
+              parent="menu_hotel_billing_section"
+              action="action_hotel_folio_payment"
+              sequence="20"/>
+
+    <!-- ============ GOUVERNANTE ============ -->
+    <menuitem id="menu_hotel_housekeeping_section"
+              name="Gouvernante"
+              parent="menu_hotel_root"
+              sequence="40"
+              groups="group_hotel_housekeeping"/>
+    <menuitem id="menu_hotel_housekeeping"
+              name="Tâches de ménage"
+              parent="menu_hotel_housekeeping_section"
+              action="action_hotel_housekeeping"
+              sequence="10"/>
+    <menuitem id="menu_hotel_room_rack"
+              name="Room rack (chambres)"
+              parent="menu_hotel_housekeeping_section"
+              action="action_hotel_room"
+              sequence="20"/>
+
+    <!-- ============ CONFIGURATION ============ -->
+    <menuitem id="menu_hotel_config_section"
+              name="Configuration"
+              parent="menu_hotel_root"
+              sequence="90"
+              groups="group_hotel_manager"/>
+    <menuitem id="menu_hotel_config_hotels"
+              name="Hôtels"
+              parent="menu_hotel_config_section"
+              action="action_hotel_hotel"
+              sequence="10"/>
+    <menuitem id="menu_hotel_config_room_types"
+              name="Types de chambre"
+              parent="menu_hotel_config_section"
+              action="action_hotel_room_type"
+              sequence="20"/>
+    <menuitem id="menu_hotel_config_rooms"
+              name="Chambres"
+              parent="menu_hotel_config_section"
+              action="action_hotel_room"
+              sequence="30"/>
+    <menuitem id="menu_hotel_config_amenities"
+              name="Aménités"
+              parent="menu_hotel_config_section"
+              action="action_hotel_amenity"
+              sequence="40"/>
+    <menuitem id="menu_hotel_config_services"
+              name="Services hôteliers"
+              parent="menu_hotel_config_section"
+              action="action_hotel_service"
+              sequence="50"/>
+    <menuitem id="menu_hotel_config_seasons"
+              name="Tarifs saisonniers"
+              parent="menu_hotel_config_section"
+              action="action_hotel_season_price"
+              sequence="60"/>
+
+</odoo>

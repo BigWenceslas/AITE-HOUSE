@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_exec_dashboard"
+              name="Direction"
+              parent="aite_hotel_management.menu_hotel_root"
+              action="action_aite_exec_dashboard"
+              sequence="5"
+              groups="aite_hotel_management.group_hotel_manager"/>
+</odoo>

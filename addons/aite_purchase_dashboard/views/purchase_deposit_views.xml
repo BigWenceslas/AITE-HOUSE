@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_aite_purchase_deposit_list" model="ir.ui.view">
+        <field name="name">aite.purchase.deposit.list</field>
+        <field name="model">aite.purchase.deposit</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="partner_id"/>
+                <field name="qty"/>
+                <field name="unit_value"/>
+                <field name="value" sum="Total immobilisé"/>
+                <field name="last_return_date"/>
+                <field name="note" optional="show"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="company_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_aite_purchase_deposit_form" model="ir.ui.view">
+        <field name="name">aite.purchase.deposit.form</field>
+        <field name="model">aite.purchase.deposit</field>
+        <field name="arch" type="xml">
+            <form string="Consignes fournisseur">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="qty"/>
+                            <field name="unit_value"/>
+                            <field name="value"/>
+                        </group>
+                        <group>
+                            <field name="last_return_date"/>
+                            <field name="note"/>
+                            <field name="company_id"
+                                   groups="base.group_multi_company"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_booking_resource_list" model="ir.ui.view">
+        <field name="name">aite.booking.resource.list</field>
+        <field name="model">aite.booking.resource</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="kind"/>
+                <field name="capacity"/>
+                <field name="open_hour" widget="float_time"/>
+                <field name="close_hour" widget="float_time"/>
+                <field name="slot_minutes"/>
+                <field name="price_hour" optional="show"/>
+                <field name="allow_online" optional="show"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_booking_resource_form" model="ir.ui.view">
+        <field name="name">aite.booking.resource.form</field>
+        <field name="model">aite.booking.resource</field>
+        <field name="arch" type="xml">
+            <form string="Ressource">
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" placeholder="Salon VVIP 1, Cabine SPA A…"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="kind"/>
+                            <field name="hotel_id"/>
+                            <field name="capacity"/>
+                            <field name="color" widget="color"/>
+                            <field name="allow_online"/>
+                        </group>
+                        <group>
+                            <field name="open_hour" widget="float_time"/>
+                            <field name="close_hour" widget="float_time"/>
+                            <field name="slot_minutes"/>
+                            <field name="price_hour"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <field name="note" placeholder="Consignes internes…"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_booking_resource" model="ir.actions.act_window">
+        <field name="name">Ressources</field>
+        <field name="res_model">aite.booking.resource</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Créez vos ressources</p>
+            <p>Salons VIP / VVIP, cabines SPA, fauteuils de coiffure,
+            comptoir pressing — chacune avec ses horaires, son pas de
+            créneau et sa capacité.</p>
+        </field>
+    </record>
+</odoo>

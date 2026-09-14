@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_aite_purchase_dashboard_user,aite.purchase.dashboard.user,model_aite_purchase_dashboard,purchase.group_purchase_user,1,0,0,0
+access_aite_purchase_deposit_user,aite.purchase.deposit.user,model_aite_purchase_deposit,purchase.group_purchase_user,1,0,0,0
+access_aite_purchase_deposit_manager,aite.purchase.deposit.manager,model_aite_purchase_deposit,purchase.group_purchase_manager,1,1,1,1

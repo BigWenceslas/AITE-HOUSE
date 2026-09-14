@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Entrée unique dans le menu natif Inventaire (pas de menu racine
+        maison : leçon du module Crédit — un menu racine sans action ou aux
+        droits incohérents casse l'ouverture de l'app).
+    -->
+    <menuitem id="menu_aite_stock_dashboard"
+              name="Tableau de bord AITE"
+              parent="stock.menu_stock_root"
+              action="action_aite_stock_dashboard"
+              sequence="2"
+              groups="stock.group_stock_user"/>
+
+</odoo>

@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============ FOLIOS — LISTE ============ -->
+    <record id="view_hotel_folio_list" model="ir.ui.view">
+        <field name="name">aite.hotel.folio.list</field>
+        <field name="model">aite.hotel.folio</field>
+        <field name="arch" type="xml">
+            <list string="Folios"
+                  decoration-muted="state in ('paid','cancelled')"
+                  decoration-warning="state == 'open' and amount_residual &gt; 0">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="reservation_id" optional="show"/>
+                <field name="checkin_date" optional="hide"/>
+                <field name="checkout_date" optional="hide"/>
+                <field name="amount_total" sum="Total TTC"/>
+                <field name="amount_paid" sum="Encaissé"/>
+                <field name="amount_residual" sum="Solde dû"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'open'"
+                       decoration-warning="state == 'invoiced'"
+                       decoration-success="state == 'paid'"
+                       decoration-muted="state == 'cancelled'"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============ FOLIOS — FORMULAIRE ============ -->
+    <record id="view_hotel_folio_form" model="ir.ui.view">
+        <field name="name">aite.hotel.folio.form</field>
+        <field name="model">aite.hotel.folio</field>
+        <field name="arch" type="xml">
+            <form string="Folio">
+                <header>
+                    <button name="action_register_payment" type="object"
+                            string="Encaisser" class="btn-primary"
+                            invisible="state in ('paid','cancelled') or amount_residual &lt;= 0"/>
+                    <button name="action_create_invoice" type="object"
+                            string="Générer la facture"
+                            invisible="move_id or state == 'cancelled'"/>
+                    <button name="action_cancel" type="object"
+                            string="Annuler" confirm="Annuler ce folio ?"
+                            invisible="state != 'open'"
+                            groups="aite_hotel_management.group_hotel_manager"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="open,invoiced,paid"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_payments" type="object"
+                                class="oe_stat_button" icon="fa-money">
+                            <field name="payment_count" widget="statinfo"
+                                   string="Règlements"/>
+                        </button>
+                        <button name="action_view_invoice" type="object"
+                                class="oe_stat_button" icon="fa-pencil-square-o"
+                                invisible="not move_id">
+                            <span class="o_stat_text">Facture</span>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Séjour">
+                            <field name="partner_id"/>
+                            <field name="reservation_id" readonly="1"/>
+                            <field name="reservation_state"/>
+                            <field name="checkin_date"/>
+                            <field name="checkout_date"/>
+                            <field name="hotel_id"
+                                   groups="base.group_multi_company"/>
+                            <field name="company_id" invisible="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group string="Montants">
+                            <field name="amount_room"/>
+                            <field name="amount_service"/>
+                            <field name="amount_untaxed"/>
+                            <field name="amount_tax"/>
+                            <field name="amount_total" class="fw-bold"/>
+                            <field name="amount_paid"/>
+                            <field name="amount_residual" class="fw-bold"/>
+                            <field name="move_payment_state"
+                                   invisible="not move_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Lignes du folio" name="lines">
+                            <field name="line_ids" readonly="bool(move_id)">
+                                <list editable="bottom"
+                                      decoration-info="line_type == 'room'">
+                                    <field name="date"/>
+                                    <field name="line_type" widget="badge"
+                                           decoration-info="line_type == 'room'"
+                                           decoration-primary="line_type == 'service'"/>
+                                    <field name="service_id"
+                                           readonly="line_type == 'room'"/>
+                                    <field name="product_id"
+                                           readonly="line_type == 'room'"
+                                           optional="hide"/>
+                                    <field name="name"/>
+                                    <field name="quantity"/>
+                                    <field name="price_unit"/>
+                                    <field name="tax_ids"
+                                           widget="many2many_tags"
+                                           optional="show"/>
+                                    <field name="price_subtotal"
+                                           sum="Total HT"/>
+                                    <field name="price_total"
+                                           sum="Total TTC"/>
+                                    <field name="company_id"
+                                           column_invisible="1"/>
+                                    <field name="currency_id"
+                                           column_invisible="1"/>
+                                    <field name="reservation_line_id"
+                                           column_invisible="1"/>
+                                </list>
+                            </field>
+                            <div class="text-muted mt-2"
+                                 invisible="bool(move_id)">
+                                Les lignes « nuitée » sont synchronisées
+                                depuis la réservation ; ajoutez librement
+                                des lignes de service (restaurant,
+                                blanchisserie, minibar…).
+                            </div>
+                        </page>
+                        <page string="Règlements" name="payments">
+                            <field name="payment_ids"
+                                   readonly="state == 'cancelled'">
+                                <list editable="bottom"
+                                      decoration-muted="state == 'cancelled'">
+                                    <field name="date"/>
+                                    <field name="is_deposit"
+                                           optional="show"/>
+                                    <field name="method"/>
+                                    <field name="transaction_ref"/>
+                                    <field name="amount"
+                                           sum="Total encaissé"/>
+                                    <field name="collected_by"
+                                           optional="show"/>
+                                    <field name="move_id" optional="hide"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'posted'"
+                                           decoration-muted="state == 'cancelled'"/>
+                                    <field name="currency_id"
+                                           column_invisible="1"/>
+                                    <button name="action_cancel"
+                                            type="object" string="Annuler"
+                                            icon="fa-times"
+                                            invisible="state != 'posted'"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Note" name="note">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hotel_folio_search" model="ir.ui.view">
+        <field name="name">aite.hotel.folio.search</field>
+        <field name="model">aite.hotel.folio</field>
+        <field name="arch" type="xml">
+            <search string="Folios">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="reservation_id"/>
+                <filter name="filter_open" string="Ouverts"
+                        domain="[('state', '=', 'open')]"/>
+                <filter name="filter_due" string="Avec solde dû"
+                        domain="[('amount_residual', '&gt;', 0),
+                                 ('state', '!=', 'cancelled')]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_state" string="État"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="group_partner" string="Client"
+                            context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_hotel" string="Hôtel"
+                            context="{'group_by': 'hotel_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_hotel_folio" model="ir.actions.act_window">
+        <field name="name">Folios</field>
+        <field name="res_model">aite.hotel.folio</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_hotel_folio_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Les folios s'ouvrent à la confirmation des réservations
+            </p>
+            <p>
+                Un folio = la note de séjour d'un client : nuitées,
+                services, acomptes et règlements jusqu'à la facture.
+            </p>
+        </field>
+    </record>
+
+    <!-- ============ RÈGLEMENTS ============ -->
+    <record id="view_hotel_folio_payment_list" model="ir.ui.view">
+        <field name="name">aite.hotel.folio.payment.list</field>
+        <field name="model">aite.hotel.folio.payment</field>
+        <field name="arch" type="xml">
+            <list string="Règlements"
+                  decoration-muted="state == 'cancelled'">
+                <field name="date"/>
+                <field name="folio_id"/>
+                <field name="partner_id"/>
+                <field name="is_deposit" optional="show"/>
+                <field name="method" widget="badge"/>
+                <field name="transaction_ref" optional="show"/>
+                <field name="amount" sum="Total"/>
+                <field name="collected_by" optional="show"/>
+                <field name="hotel_id" optional="hide"
+                       groups="base.group_multi_company"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'posted'"
+                       decoration-muted="state == 'cancelled'"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_hotel_folio_payment_form" model="ir.ui.view">
+        <field name="name">aite.hotel.folio.payment.form</field>
+        <field name="model">aite.hotel.folio.payment</field>
+        <field name="arch" type="xml">
+            <form string="Règlement">
+                <header>
+                    <button name="action_cancel" type="object"
+                            string="Annuler" confirm="Annuler ce règlement ?"
+                            invisible="state != 'posted'"/>
+                    <button name="action_post" type="object"
+                            string="Revalider"
+                            invisible="state != 'cancelled'"
+                            groups="aite_hotel_management.group_hotel_manager"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="folio_id"/>
+                            <field name="partner_id"/>
+                            <field name="date"/>
+                            <field name="is_deposit"/>
+                        </group>
+                        <group>
+                            <field name="amount"/>
+                            <field name="method"/>
+                            <field name="transaction_ref"/>
+                            <field name="collected_by"/>
+                            <field name="move_id"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="note"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hotel_folio_payment_search" model="ir.ui.view">
+        <field name="name">aite.hotel.folio.payment.search</field>
+        <field name="model">aite.hotel.folio.payment</field>
+        <field name="arch" type="xml">
+            <search string="Règlements">
+                <field name="folio_id"/>
+                <field name="partner_id"/>
+                <field name="transaction_ref"/>
+                <filter name="filter_deposits" string="Acomptes"
+                        domain="[('is_deposit', '=', True)]"/>
+                <filter name="filter_posted" string="Validés"
+                        domain="[('state', '=', 'posted')]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_method" string="Moyen de paiement"
+                            context="{'group_by': 'method'}"/>
+                    <filter name="group_date" string="Date"
+                            context="{'group_by': 'date:day'}"/>
+                    <filter name="group_collected" string="Encaissé par"
+                            context="{'group_by': 'collected_by'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_hotel_folio_payment" model="ir.actions.act_window">
+        <field name="name">Règlements</field>
+        <field name="res_model">aite.hotel.folio.payment</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_hotel_folio_payment_search"/>
+    </record>
+
+</odoo>

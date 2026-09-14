@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_aite_exec_dashboard" model="ir.actions.client">
+        <field name="name">Direction — Vue consolidée</field>
+        <field name="tag">aite_exec_dashboard</field>
+    </record>
+</odoo>

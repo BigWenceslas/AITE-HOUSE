@@ -1,0 +1,1041 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<!-- =============== DASHBOARD VIEW =============== -->
+<t t-name="aite_pos_analytics.DashboardView">
+    <div class="o_aite_view">
+        <div t-if="state.loading" class="o_aite_loading">Chargement des données…</div>
+        <t t-else="">
+            <!-- KPIs méga (4) -->
+            <div class="o_aite_grid_4 mb-3">
+                <KpiCard label="'Chiffre d\'affaires'"
+                         value="fmtMoney(state.kpis.ca)"
+                         subtitle="fmtMoney(state.kpis.ca_per_day) + ' / jour · ' + state.kpis.days + 'j'"
+                         color="COLORS.info"/>
+                <KpiCard label="'Marge brute'"
+                         value="fmtMoney(state.kpis.margin)"
+                         subtitle="'Taux: ' + fmtPct(state.kpis.margin_rate) + ' · ' + fmtMoney(state.kpis.margin_per_order) + '/tx'"
+                         color="COLORS.success"/>
+                <KpiCard label="'CMV (coût marchandises)'"
+                         value="fmtMoney(state.kpis.cost)"
+                         subtitle="fmtPct(state.kpis.cmv_rate) + ' du CA · ' + fmtMoney(state.kpis.cost_per_unit) + '/u'"
+                         color="COLORS.danger"/>
+                <KpiCard label="'Transactions'"
+                         value="fmt(state.kpis.order_count)"
+                         subtitle="'Panier moy. ' + fmtMoney(state.kpis.average_basket) + ' · ' + fmt(state.kpis.qty) + ' u'"
+                         color="COLORS.primary"/>
+            </div>
+
+            <!-- Bande de variation vs période précédente (même durée) -->
+            <div class="o_aite_delta_strip mb-3"
+                 t-if="state.kpis.ca_delta !== null || state.kpis.margin_delta !== null">
+                <div class="o_aite_delta_cell">
+                    <span class="o_aite_delta_lbl">CA vs N-1</span>
+                    <span t-if="fmtDelta(state.kpis.ca_delta)"
+                          t-attf-class="o_aite_delta_val o_aite_{{ deltaClass(state.kpis.ca_delta) }}"
+                          t-esc="fmtDelta(state.kpis.ca_delta)"/>
+                    <span t-else="" class="o_aite_delta_val text-muted">—</span>
+                </div>
+                <div class="o_aite_delta_cell">
+                    <span class="o_aite_delta_lbl">Marge vs N-1</span>
+                    <span t-if="fmtDelta(state.kpis.margin_delta)"
+                          t-attf-class="o_aite_delta_val o_aite_{{ deltaClass(state.kpis.margin_delta) }}"
+                          t-esc="fmtDelta(state.kpis.margin_delta)"/>
+                    <span t-else="" class="o_aite_delta_val text-muted">—</span>
+                </div>
+                <div class="o_aite_delta_cell">
+                    <span class="o_aite_delta_lbl">CMV vs N-1</span>
+                    <span t-if="fmtDelta(state.kpis.cost_delta)"
+                          t-attf-class="o_aite_delta_val o_aite_{{ deltaClass(state.kpis.cost_delta) }}"
+                          t-esc="fmtDelta(state.kpis.cost_delta)"/>
+                    <span t-else="" class="o_aite_delta_val text-muted">—</span>
+                </div>
+                <div class="o_aite_delta_cell">
+                    <span class="o_aite_delta_lbl">Commandes vs N-1</span>
+                    <span t-if="fmtDelta(state.kpis.order_count_delta)"
+                          t-attf-class="o_aite_delta_val o_aite_{{ deltaClass(state.kpis.order_count_delta) }}"
+                          t-esc="fmtDelta(state.kpis.order_count_delta)"/>
+                    <span t-else="" class="o_aite_delta_val text-muted">—</span>
+                </div>
+            </div>
+
+            <!-- KPIs secondaires -->
+            <div class="o_aite_grid_4 mb-3">
+                <div class="o_aite_kpi">
+                    <div class="o_aite_kpi_label">Ratio CMV/CA</div>
+                    <div class="o_aite_kpi_value"
+                         t-attf-style="color: {{ state.kpis.cmv_rate &lt; 65 ? COLORS.success : COLORS.danger }}; font-size: 14px">
+                        <t t-esc="fmtPct(state.kpis.cmv_rate)"/>
+                    </div>
+                    <div class="o_aite_kpi_sub">
+                        <t t-if="state.kpis.cmv_rate &lt; 65">Bonne maîtrise ✓</t>
+                        <t t-else="">À optimiser ⚠</t>
+                    </div>
+                </div>
+                <div class="o_aite_kpi">
+                    <div class="o_aite_kpi_label">Taux de marge</div>
+                    <div class="o_aite_kpi_value"
+                         t-attf-style="color: {{ state.kpis.margin_rate >= 35 ? COLORS.success : COLORS.warning }}; font-size: 14px">
+                        <t t-esc="fmtPct(state.kpis.margin_rate)"/>
+                    </div>
+                    <div class="o_aite_kpi_sub">
+                        <t t-if="state.kpis.margin_rate >= 35">Objectif atteint ✓</t>
+                        <t t-else="">Sous objectif</t>
+                    </div>
+                </div>
+                <div class="o_aite_kpi">
+                    <div class="o_aite_kpi_label">Articles actifs</div>
+                    <div class="o_aite_kpi_value" style="font-size: 14px">
+                        <t t-esc="activeProducts()"/> <span class="text-muted small">/ <t t-esc="state.products.length"/></span>
+                    </div>
+                    <div class="o_aite_kpi_sub">références vendues</div>
+                </div>
+                <div class="o_aite_kpi" t-if="bestProduct()">
+                    <div class="o_aite_kpi_label">Meilleur article</div>
+                    <div class="o_aite_kpi_value" t-attf-style="font-size: 12px; color: {{ COLORS.primary }}">
+                        <t t-esc="bestProduct().name.slice(0, 18)"/>
+                    </div>
+                    <div class="o_aite_kpi_sub">
+                        <t t-esc="fmtMoney(bestProduct().ca)"/> CA
+                    </div>
+                </div>
+            </div>
+
+            <!-- Module CA + Évolution -->
+            <div class="o_aite_mod_card">
+                <div class="o_aite_mod_hdr">
+                    <div class="o_aite_mod_hdr_left">
+                        <div class="o_aite_mod_icon" t-attf-style="background: {{ COLORS.primary }}">
+                            <i class="fa fa-line-chart text-white"/>
+                        </div>
+                        <div>
+                            <div class="o_aite_mod_title" t-attf-style="color: {{ COLORS.primary }}">
+                                Ventes &amp; évolution
+                            </div>
+                            <div class="o_aite_mod_sub">CA · Marge · CMV</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="o_aite_mod_body">
+                    <div class="o_aite_grid_2">
+                        <div>
+                            <div class="o_aite_section_title">Top 8 articles — CA vs Marge</div>
+                            <div class="o_aite_chart_wrap">
+                                <canvas t-ref="chartTop"/>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="o_aite_section_title">Évolution mensuelle (CA · CMV · Marge)</div>
+                            <div class="d-flex gap-3 mb-1 small">
+                                <span class="d-flex align-items-center gap-1">
+                                    <span style="width:14px; height:2px; background:#714B67; display:inline-block"/>CA
+                                </span>
+                                <span class="d-flex align-items-center gap-1">
+                                    <span style="width:14px; border-top:2px dashed #A32D2D; display:inline-block"/>CMV
+                                </span>
+                                <span class="d-flex align-items-center gap-1">
+                                    <span style="width:14px; border-top:2px dashed #3B6D11; display:inline-block"/>Marge
+                                </span>
+                            </div>
+                            <div class="o_aite_chart_wrap">
+                                <canvas t-ref="chartLine"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Module CMV par catégorie -->
+            <div class="o_aite_mod_card" t-if="state.categories.length">
+                <div class="o_aite_mod_hdr">
+                    <div class="o_aite_mod_hdr_left">
+                        <div class="o_aite_mod_icon" t-attf-style="background: {{ COLORS.success }}">
+                            <i class="fa fa-pie-chart text-white"/>
+                        </div>
+                        <div>
+                            <div class="o_aite_mod_title" t-attf-style="color: {{ COLORS.success }}">
+                                Marge &amp; CMV par catégorie
+                            </div>
+                            <div class="o_aite_mod_sub">répartition de la rentabilité</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="o_aite_mod_body">
+                    <div class="o_aite_grid_2">
+                        <div>
+                            <div class="o_aite_section_title">Catégories — marge &amp; CMV</div>
+                            <t t-foreach="state.categories" t-as="c" t-key="c.categ_id || c_index">
+                                <div class="o_aite_cat_row">
+                                    <div class="d-flex justify-content-between small mb-1">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="o_aite_cat_dot" t-attf-style="background: {{ catColors(c.name, c_index).col }}"/>
+                                            <span class="fw-bold"><t t-esc="c.name"/></span>
+                                            <span class="text-muted" style="font-size:9px">
+                                                tx <t t-esc="fmtPct(c.margin_rate)"/>
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <span class="fw-bold" t-attf-style="color: {{ COLORS.success }}">
+                                                <t t-esc="fmtMoney(c.margin)"/>
+                                            </span>
+                                            <span class="text-muted" style="font-size:9px">
+                                                · CMV <t t-esc="fmtMoney(c.cost)"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="o_aite_progressbar">
+                                        <div t-attf-style="width: {{ Math.min(c.margin_rate, 100) }}%; background: {{ catColors(c.name, c_index).col }}"/>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                        <div>
+                            <div class="o_aite_section_title">CMV vs Marge</div>
+                            <div class="o_aite_chart_wrap">
+                                <canvas t-ref="chartCmv"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Module Performance par caisse + insights temporels -->
+            <div class="o_aite_mod_card" t-if="state.caisses.length">
+                <div class="o_aite_mod_hdr">
+                    <div class="o_aite_mod_hdr_left">
+                        <div class="o_aite_mod_icon" t-attf-style="background: {{ COLORS.info }}">
+                            <i class="fa fa-cash-register text-white"/>
+                        </div>
+                        <div>
+                            <div class="o_aite_mod_title" t-attf-style="color: {{ COLORS.info }}">
+                                Performance par caisse
+                            </div>
+                            <div class="o_aite_mod_sub">CA · marge totale &amp; par point de vente</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="o_aite_mod_body">
+                    <div class="o_aite_grid_2">
+                        <div>
+                            <div class="o_aite_section_title">Contribution au CA</div>
+                            <div class="o_aite_chart_wrap">
+                                <canvas t-ref="chartCaisse"/>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="o_aite_section_title">Synthèse par caisse</div>
+                            <t t-foreach="state.caisses" t-as="c" t-key="c.config_id || c_index">
+                                <div class="o_aite_caisse_line">
+                                    <span class="o_aite_cat_dot" t-attf-style="background: {{ c.color }}"/>
+                                    <span class="o_aite_caisse_name fw-bold"><t t-esc="c.name"/></span>
+                                    <span class="o_aite_caisse_ca"><t t-esc="fmtMoney(c.ca)"/></span>
+                                    <span class="badge_pill" t-attf-class="badge_pill {{ c.margin_rate >= 50 ? 'b-teal' : (c.margin_rate >= 40 ? 'b-amb' : 'b-red') }}">
+                                        <t t-esc="fmtPct(c.margin_rate)"/>
+                                    </span>
+                                    <span class="o_aite_caisse_pct text-muted"><t t-esc="fmtPct(c.pct_ca)"/> du CA</span>
+                                </div>
+                            </t>
+                            <div class="o_aite_caisse_line o_aite_caisse_total">
+                                <span class="o_aite_cat_dot" style="background:#888780"/>
+                                <span class="o_aite_caisse_name fw-bold">TOTAL</span>
+                                <span class="o_aite_caisse_ca fw-bold"><t t-esc="fmtMoney(state.caisseTotal.ca)"/></span>
+                                <span class="badge_pill b-amb"><t t-esc="fmtPct(state.caisseTotal.margin_rate)"/></span>
+                                <span class="o_aite_caisse_pct text-muted">marge <t t-esc="fmtMoney(state.caisseTotal.margin)"/></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Module Heatmap heure × jour -->
+            <div class="o_aite_mod_card" t-if="state.heatmap and state.heatmap.max">
+                <div class="o_aite_mod_hdr">
+                    <div class="o_aite_mod_hdr_left">
+                        <div class="o_aite_mod_icon" t-attf-style="background: {{ COLORS.primary }}">
+                            <i class="fa fa-th text-white"/>
+                        </div>
+                        <div>
+                            <div class="o_aite_mod_title" t-attf-style="color: {{ COLORS.primary }}">
+                                Répartition des ventes — heure × jour
+                            </div>
+                            <div class="o_aite_mod_sub">intensité = chiffre d'affaires · pour caler plannings &amp; happy hours</div>
+                        </div>
+                    </div>
+                    <div class="o_aite_mod_hdr_right" t-if="state.insights">
+                        <t t-if="state.insights.best_hour_slot">
+                            <span class="o_aite_insight_chip">
+                                Pic <t t-esc="state.insights.best_hour_slot.label"/>
+                                (<t t-esc="fmtPct(state.insights.best_hour_slot.pct)"/>)
+                            </span>
+                        </t>
+                        <t t-if="state.insights.best_weekday">
+                            <span class="o_aite_insight_chip">
+                                Jour fort : <t t-esc="state.insights.best_weekday.label"/>
+                            </span>
+                        </t>
+                    </div>
+                </div>
+                <div class="o_aite_mod_body">
+                    <div class="o_aite_heatmap_wrap">
+                        <table class="o_aite_heatmap">
+                            <thead>
+                                <tr>
+                                    <th class="o_aite_heat_corner">Jour \ h</th>
+                                    <t t-foreach="state.heatmap.hours" t-as="h" t-key="h">
+                                        <th class="o_aite_heat_hhdr"><t t-esc="h"/></th>
+                                    </t>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="state.heatmap.days" t-as="day" t-key="day_index">
+                                    <tr>
+                                        <td class="o_aite_heat_dhdr"><t t-esc="day"/></td>
+                                        <t t-foreach="state.heatmap.matrix[day_index]" t-as="val" t-key="val_index">
+                                            <td class="o_aite_heat_cell"
+                                                t-attf-style="background: {{ heatColor(val) }}; color: {{ heatTextColor(val) }}"
+                                                t-att-title="fmtMoney(val)">
+                                                <t t-esc="heatLabel(val)"/>
+                                            </td>
+                                        </t>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Module Classements -->
+            <div class="o_aite_mod_card">
+                <div class="o_aite_mod_hdr">
+                    <div class="o_aite_mod_hdr_left">
+                        <div class="o_aite_mod_icon" t-attf-style="background: {{ COLORS.warning }}">
+                            <i class="fa fa-trophy text-white"/>
+                        </div>
+                        <div>
+                            <div class="o_aite_mod_title" t-attf-style="color: {{ COLORS.warning }}">
+                                Classements produits
+                            </div>
+                            <div class="o_aite_mod_sub">Bières · Marges · Moins vendus</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="o_aite_mod_body">
+                    <div class="o_aite_grid_3">
+                        <div>
+                            <div class="o_aite_section_title">🍺 Top bières (qté)</div>
+                            <t t-foreach="state.rankings.top_beers" t-as="p" t-key="p.product_id">
+                                <RankRow rank="p_index + 1" name="p.name"
+                                         pct="p.qty / maxTopBeerQty() * 100"
+                                         value="fmt(p.qty) + ' u'"
+                                         color="COLORS.primary"
+                                         onClick="() => onProductClick(p.product_id)"/>
+                            </t>
+                        </div>
+                        <div>
+                            <div class="o_aite_section_title">⭐ Meilleures marges</div>
+                            <t t-foreach="state.rankings.best_margins" t-as="p" t-key="p.product_id">
+                                <RankRow rank="p_index + 1" name="p.name"
+                                         pct="p.margin_rate"
+                                         value="fmtPct(p.margin_rate)"
+                                         color="COLORS.success"
+                                         onClick="() => onProductClick(p.product_id)"/>
+                            </t>
+                        </div>
+                        <div>
+                            <div class="o_aite_section_title">📉 Moins vendus</div>
+                            <t t-foreach="state.rankings.low_sellers" t-as="p" t-key="p.product_id">
+                                <RankRow rank="p_index + 1" name="p.name"
+                                         pct="p.qty / maxLowSellerQty() * 100"
+                                         value="fmt(p.qty) + ' u'"
+                                         color="COLORS.danger"
+                                         onClick="() => onProductClick(p.product_id)"/>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Module Table détaillée -->
+            <div class="o_aite_mod_card">
+                <div class="o_aite_mod_hdr">
+                    <div class="o_aite_mod_hdr_left">
+                        <div class="o_aite_mod_icon" t-attf-style="background: {{ COLORS.info }}">
+                            <i class="fa fa-table text-white"/>
+                        </div>
+                        <div>
+                            <div class="o_aite_mod_title" t-attf-style="color: {{ COLORS.info }}">
+                                Analyse détaillée — tous les articles
+                            </div>
+                            <div class="o_aite_mod_sub">Cliquer sur une ligne pour le détail</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="o_aite_mod_body p-0">
+                    <table class="o_aite_table">
+                        <thead>
+                            <tr>
+                                <th>Article</th>
+                                <th class="text-end">Qté</th>
+                                <th class="text-end">CA</th>
+                                <th class="text-end">CMV</th>
+                                <th class="text-end">Marge</th>
+                                <th class="text-end">Taux</th>
+                                <th>Catégorie</th>
+                                <th>Performance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="state.products" t-as="p" t-key="p.product_id">
+                                <tr t-on-click="() => this.onProductClick(p.product_id)">
+                                    <td class="fw-bold"><t t-esc="p.name"/></td>
+                                    <td class="text-end text-muted"><t t-esc="fmt(p.qty)"/></td>
+                                    <td class="text-end fw-bold"><t t-esc="fmt(p.ca)"/></td>
+                                    <td class="text-end" t-attf-style="color: {{ COLORS.danger }}"><t t-esc="fmt(p.cost)"/></td>
+                                    <td class="text-end" t-attf-style="color: {{ COLORS.success }}"><t t-esc="fmt(p.margin)"/></td>
+                                    <td class="text-end">
+                                        <span t-attf-class="badge_pill {{ marginBadgeClass(p.margin_rate) }}">
+                                            <t t-esc="fmtPct(p.margin_rate)"/>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge_pill"
+                                              t-attf-style="background: {{ catColors(p.category, p_index).bg }}; color: {{ catColors(p.category, p_index).text }}">
+                                            <t t-esc="p.category or '—'"/>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="o_aite_progressbar">
+                                            <div t-attf-style="width: {{ p.ca / maxProductCA() * 100 }}%; background: {{ COLORS.primary }}"/>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </t>
+    </div>
+</t>
+
+<!-- =============== CAISSE VIEW (Par caisse) =============== -->
+<t t-name="aite_pos_analytics.CaisseView">
+    <div class="o_aite_view">
+        <div t-if="state.loading" class="o_aite_loading">Chargement des données…</div>
+        <t t-else="">
+            <div t-if="!state.caisses.length" class="o_aite_empty">
+                Aucune vente sur la période sélectionnée. Ajustez les filtres ci-dessus.
+            </div>
+            <t t-else="">
+                <!-- KPIs de tête -->
+                <div class="o_aite_grid_4 mb-3">
+                    <div class="o_aite_kpi" t-if="topContributor" t-attf-style="border-top: 3px solid {{ COLORS.info }}">
+                        <div class="o_aite_kpi_label">Caisse n°1 (CA)</div>
+                        <div class="o_aite_kpi_value" t-attf-style="color: {{ COLORS.info }}; font-size: 15px">
+                            <t t-esc="topContributor.name"/>
+                        </div>
+                        <div class="o_aite_kpi_sub">
+                            <t t-esc="fmtMoney(topContributor.ca)"/> · <t t-esc="fmtPct(topContributor.pct_ca)"/>
+                        </div>
+                    </div>
+                    <div class="o_aite_kpi" t-if="mostProfitable" t-attf-style="border-top: 3px solid {{ COLORS.success }}">
+                        <div class="o_aite_kpi_label">Caisse la + rentable</div>
+                        <div class="o_aite_kpi_value" t-attf-style="color: {{ COLORS.success }}; font-size: 15px">
+                            <t t-esc="mostProfitable.name"/>
+                        </div>
+                        <div class="o_aite_kpi_sub">taux <t t-esc="fmtPct(mostProfitable.margin_rate)"/></div>
+                    </div>
+                    <div class="o_aite_kpi" t-if="bestBasket" t-attf-style="border-top: 3px solid {{ COLORS.warning }}">
+                        <div class="o_aite_kpi_label">Meilleur panier moyen</div>
+                        <div class="o_aite_kpi_value" t-attf-style="color: {{ COLORS.warning }}; font-size: 15px">
+                            <t t-esc="bestBasket.name"/>
+                        </div>
+                        <div class="o_aite_kpi_sub"><t t-esc="fmtMoney(bestBasket.average_basket)"/></div>
+                    </div>
+                    <div class="o_aite_kpi" t-attf-style="border-top: 3px solid {{ COLORS.danger }}">
+                        <div class="o_aite_kpi_label">Écart de caisse total</div>
+                        <div class="o_aite_kpi_value"
+                             t-attf-style="color: {{ state.total.cash_difference &lt; 0 ? COLORS.danger : COLORS.success }}; font-size: 16px">
+                            <t t-esc="fmtSigned(state.total.cash_difference)"/>
+                        </div>
+                        <div class="o_aite_kpi_sub">sur la période</div>
+                    </div>
+                </div>
+
+                <!-- Tableau comparatif -->
+                <div class="o_aite_mod_card">
+                    <div class="o_aite_mod_hdr">
+                        <div class="o_aite_mod_hdr_left">
+                            <div class="o_aite_mod_icon" t-attf-style="background: {{ COLORS.primary }}">
+                                <i class="fa fa-table text-white"/>
+                            </div>
+                            <div>
+                                <div class="o_aite_mod_title" t-attf-style="color: {{ COLORS.primary }}">
+                                    Comparatif des caisses
+                                </div>
+                                <div class="o_aite_mod_sub">marge totale &amp; par caisse sur la période</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="o_aite_mod_body p-0">
+                        <table class="o_aite_table">
+                            <thead>
+                                <tr>
+                                    <th>Caisse</th>
+                                    <th class="text-end">CA HT</th>
+                                    <th class="text-end">% CA</th>
+                                    <th class="text-end">Marge</th>
+                                    <th class="text-end">Taux</th>
+                                    <th class="text-end">CMV</th>
+                                    <th class="text-end">Cmdes</th>
+                                    <th class="text-end">Panier moy.</th>
+                                    <th class="text-end">Qté</th>
+                                    <th class="text-end">Écart caisse</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="state.caisses" t-as="c" t-key="c.config_id || c_index">
+                                    <tr>
+                                        <td class="fw-bold">
+                                            <span class="o_aite_cat_dot" t-attf-style="background: {{ c.color }}"/>
+                                            <t t-esc="c.name"/>
+                                        </td>
+                                        <td class="text-end fw-bold"><t t-esc="fmtMoney(c.ca)"/></td>
+                                        <td class="text-end text-muted"><t t-esc="fmtPct(c.pct_ca)"/></td>
+                                        <td class="text-end" t-attf-style="color: {{ COLORS.success }}"><t t-esc="fmtMoney(c.margin)"/></td>
+                                        <td class="text-end">
+                                            <span t-attf-class="badge_pill {{ marginBadgeClass(c.margin_rate) }}">
+                                                <t t-esc="fmtPct(c.margin_rate)"/>
+                                            </span>
+                                        </td>
+                                        <td class="text-end" t-attf-style="color: {{ COLORS.danger }}"><t t-esc="fmtMoney(c.cost)"/></td>
+                                        <td class="text-end text-muted"><t t-esc="fmt(c.order_count)"/></td>
+                                        <td class="text-end"><t t-esc="fmtMoney(c.average_basket)"/></td>
+                                        <td class="text-end text-muted"><t t-esc="fmt(c.qty)"/></td>
+                                        <td class="text-end">
+                                            <span t-if="c.cash_difference"
+                                                  t-attf-style="color: {{ c.cash_difference &lt; 0 ? COLORS.danger : COLORS.success }}; font-weight: 600">
+                                                <t t-esc="fmtSigned(c.cash_difference)"/>
+                                            </span>
+                                            <span t-else="" class="text-muted">0</span>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                            <tfoot>
+                                <tr class="o_aite_table_total">
+                                    <td class="fw-bold">TOTAL</td>
+                                    <td class="text-end fw-bold"><t t-esc="fmtMoney(state.total.ca)"/></td>
+                                    <td class="text-end">100%</td>
+                                    <td class="text-end fw-bold" t-attf-style="color: {{ COLORS.success }}"><t t-esc="fmtMoney(state.total.margin)"/></td>
+                                    <td class="text-end">
+                                        <span class="badge_pill b-amb"><t t-esc="fmtPct(state.total.margin_rate)"/></span>
+                                    </td>
+                                    <td class="text-end fw-bold" t-attf-style="color: {{ COLORS.danger }}"><t t-esc="fmtMoney(state.total.cost)"/></td>
+                                    <td class="text-end"><t t-esc="fmt(state.total.order_count)"/></td>
+                                    <td class="text-end"><t t-esc="fmtMoney(state.total.average_basket)"/></td>
+                                    <td class="text-end"><t t-esc="fmt(state.total.qty)"/></td>
+                                    <td class="text-end">
+                                        <span t-attf-style="color: {{ state.total.cash_difference &lt; 0 ? COLORS.danger : COLORS.success }}; font-weight: 600">
+                                            <t t-esc="fmtSigned(state.total.cash_difference)"/>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Graphiques -->
+                <div class="o_aite_grid_2">
+                    <div class="o_aite_mod_card">
+                        <div class="o_aite_mod_body">
+                            <div class="o_aite_section_title">Part du CA par caisse</div>
+                            <div class="o_aite_chart_wrap">
+                                <canvas t-ref="chartShare"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="o_aite_mod_card">
+                        <div class="o_aite_mod_body">
+                            <div class="o_aite_section_title">Taux de marge par caisse</div>
+                            <div class="o_aite_chart_wrap">
+                                <canvas t-ref="chartRate"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </div>
+</t>
+
+<!-- =============== SESSIONS VIEW =============== -->
+<t t-name="aite_pos_analytics.SessionsView">
+    <div class="o_aite_view">
+        <div t-if="state.loading" class="o_aite_loading">Chargement…</div>
+        <t t-else="">
+            <div class="o_aite_grid_4 mb-3">
+                <KpiCard label="'Sessions'" value="fmt(state.sessions.length)"
+                         subtitle="'sur la période'" color="COLORS.info"/>
+                <KpiCard label="'CA total'" value="fmtMoney(totalCA)"
+                         subtitle="''" color="COLORS.success"/>
+                <KpiCard label="'Marge totale'" value="fmtMoney(totalMargin)"
+                         subtitle="totalCA &gt; 0 ? fmtPct(totalMargin / totalCA * 100) + ' de taux' : ''"
+                         color="COLORS.primary"/>
+                <KpiCard label="'Panier moyen'" value="fmtMoney(avgBasket)"
+                         subtitle="fmt(totalOrders) + ' transactions'" color="COLORS.warning"/>
+            </div>
+            <div class="o_aite_mod_card">
+                <div class="o_aite_mod_body p-0">
+                    <table class="o_aite_table">
+                        <thead>
+                            <tr>
+                                <th>Session</th>
+                                <th>Date</th>
+                                <th>Caissier</th>
+                                <th>État</th>
+                                <th class="text-end">CA</th>
+                                <th class="text-end">Marge</th>
+                                <th class="text-end">Tx</th>
+                                <th class="text-end">Cmd.</th>
+                                <th class="text-end">Panier</th>
+                                <th>Écart caisse</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="state.sessions" t-as="s" t-key="s.id">
+                                <tr>
+                                    <td class="fw-bold" t-attf-style="color: {{ COLORS.info }}"><t t-esc="s.name"/></td>
+                                    <td class="small"><t t-esc="fmtDate(s.start_at)"/></td>
+                                    <td class="small"><t t-esc="s.user_name"/></td>
+                                    <td class="small"><t t-esc="stateLabel(s.state)"/></td>
+                                    <td class="text-end fw-bold"><t t-esc="fmt(s.total_ca)"/></td>
+                                    <td class="text-end" t-attf-style="color: {{ COLORS.success }}"><t t-esc="fmt(s.total_margin)"/></td>
+                                    <td class="text-end"><t t-esc="fmtPct(s.margin_rate)"/></td>
+                                    <td class="text-end"><t t-esc="s.order_count"/></td>
+                                    <td class="text-end"><t t-esc="fmt(s.average_basket)"/></td>
+                                    <td>
+                                        <span t-attf-class="badge_pill {{ severityBadge(s.severity) }}">
+                                            <t t-esc="severityLabel(s.severity)"/>
+                                            <t t-if="s.cash_difference"> · <t t-esc="fmt(s.cash_difference)"/></t>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </t>
+    </div>
+</t>
+
+<!-- =============== PRODUCTS VIEW =============== -->
+<t t-name="aite_pos_analytics.ProductsView">
+    <div class="o_aite_view">
+        <div t-if="state.loading" class="o_aite_loading">Chargement…</div>
+        <t t-else="">
+            <div class="d-flex flex-wrap gap-1 mb-2 align-items-center">
+                <button t-attf-class="o_aite_fbtn {{ !state.categFilter ? 'o_aite_fbtn_active' : '' }}"
+                        t-on-click="() => this.setCateg(null)">Toutes catégories</button>
+                <t t-foreach="categoriesList" t-as="cn" t-key="cn">
+                    <button t-attf-class="o_aite_fbtn {{ state.categFilter === cn ? 'o_aite_fbtn_active' : '' }}"
+                            t-on-click="() => this.setCateg(cn)">
+                        <span class="d-inline-block rounded-circle me-1"
+                              t-attf-style="width:8px;height:8px;background: {{ catColors(cn, cn_index).col }}"/>
+                        <t t-esc="cn"/>
+                    </button>
+                </t>
+            </div>
+            <div class="o_aite_search_bar mb-3">
+                <input type="text" class="form-control" placeholder="Rechercher un article ou une catégorie…"
+                       t-on-input="onSearchInput"/>
+                <span class="text-muted small ms-2">
+                    <t t-esc="filteredProducts.length"/> / <t t-esc="state.products.length"/> articles
+                </span>
+            </div>
+            <div class="o_aite_mod_card">
+                <div class="o_aite_mod_body p-0">
+                    <table class="o_aite_table">
+                        <thead>
+                            <tr>
+                                <th t-on-click="() => this.setSort('name')" style="cursor:pointer">
+                                    Article<t t-esc="sortIndicator('name')"/>
+                                </th>
+                                <th class="text-end" t-on-click="() => this.setSort('qty')" style="cursor:pointer">
+                                    Qté<t t-esc="sortIndicator('qty')"/>
+                                </th>
+                                <th class="text-end" t-on-click="() => this.setSort('ca')" style="cursor:pointer">
+                                    CA<t t-esc="sortIndicator('ca')"/>
+                                </th>
+                                <th class="text-end" t-on-click="() => this.setSort('cost')" style="cursor:pointer">
+                                    CMV<t t-esc="sortIndicator('cost')"/>
+                                </th>
+                                <th class="text-end" t-on-click="() => this.setSort('margin')" style="cursor:pointer">
+                                    Marge<t t-esc="sortIndicator('margin')"/>
+                                </th>
+                                <th class="text-end" t-on-click="() => this.setSort('margin_rate')" style="cursor:pointer">
+                                    Taux<t t-esc="sortIndicator('margin_rate')"/>
+                                </th>
+                                <th>Catégorie</th>
+                                <th>Performance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="filteredProducts" t-as="p" t-key="p.product_id">
+                                <tr t-on-click="() => props.onSelectProduct(p.product_id)">
+                                    <td class="fw-bold"><t t-esc="p.name"/></td>
+                                    <td class="text-end text-muted"><t t-esc="fmt(p.qty)"/></td>
+                                    <td class="text-end fw-bold"><t t-esc="fmt(p.ca)"/></td>
+                                    <td class="text-end" t-attf-style="color: {{ COLORS.danger }}"><t t-esc="fmt(p.cost)"/></td>
+                                    <td class="text-end" t-attf-style="color: {{ COLORS.success }}"><t t-esc="fmt(p.margin)"/></td>
+                                    <td class="text-end">
+                                        <span t-attf-class="badge_pill {{ marginBadgeClass(p.margin_rate) }}">
+                                            <t t-esc="fmtPct(p.margin_rate)"/>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge_pill"
+                                              t-attf-style="background: {{ catColors(p.category, p_index).bg }}; color: {{ catColors(p.category, p_index).text }}">
+                                            <t t-esc="p.category or '—'"/>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="o_aite_progressbar">
+                                            <div t-attf-style="width: {{ p.ca / maxCA() * 100 }}%; background: {{ COLORS.primary }}"/>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </t>
+    </div>
+</t>
+
+<!-- =============== MARGINS VIEW =============== -->
+<t t-name="aite_pos_analytics.MarginsView">
+    <div class="o_aite_view">
+        <div t-if="state.loading" class="o_aite_loading">Chargement…</div>
+        <t t-else="">
+            <div class="o_aite_grid_4 mb-3">
+                <KpiCard label="'CA total'" value="fmtMoney(state.kpis.ca)"
+                         subtitle="''" color="COLORS.info"/>
+                <KpiCard label="'CMV'" value="fmtMoney(state.kpis.cost)"
+                         subtitle="fmtPct(state.kpis.cmv_rate) + ' du CA'" color="COLORS.danger"/>
+                <KpiCard label="'Marge brute'" value="fmtMoney(state.kpis.margin)"
+                         subtitle="fmtPct(state.kpis.margin_rate) + ' de taux'" color="COLORS.success"/>
+                <KpiCard label="'Marge / transaction'" value="fmtMoney(state.kpis.margin_per_order)"
+                         subtitle="fmt(state.kpis.order_count) + ' commandes'" color="COLORS.primary"/>
+            </div>
+            <div class="o_aite_mod_card">
+                <div class="o_aite_mod_body">
+                    <div class="o_aite_section_title">CA · CMV · Marge par catégorie</div>
+                    <div class="o_aite_chart_wrap" style="height:280px">
+                        <canvas t-ref="chartMargin"/>
+                    </div>
+                </div>
+            </div>
+            <div class="o_aite_grid_2">
+                <div class="o_aite_mod_card">
+                    <div class="o_aite_mod_hdr">
+                        <div class="o_aite_mod_hdr_left">
+                            <div class="o_aite_mod_title" t-attf-style="color: {{ COLORS.success }}">
+                                ⭐ Top 10 — meilleures marges
+                            </div>
+                        </div>
+                    </div>
+                    <div class="o_aite_mod_body p-0">
+                        <table class="o_aite_table">
+                            <thead><tr><th>Article</th><th class="text-end">CA</th><th class="text-end">Marge</th><th class="text-end">Taux</th></tr></thead>
+                            <tbody>
+                                <t t-foreach="topMarginProducts()" t-as="p" t-key="p.product_id">
+                                    <tr>
+                                        <td class="fw-bold"><t t-esc="p.name"/></td>
+                                        <td class="text-end"><t t-esc="fmt(p.ca)"/></td>
+                                        <td class="text-end" t-attf-style="color: {{ COLORS.success }}"><t t-esc="fmt(p.margin)"/></td>
+                                        <td class="text-end">
+                                            <span class="badge_pill b-teal"><t t-esc="fmtPct(p.margin_rate)"/></span>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="o_aite_mod_card">
+                    <div class="o_aite_mod_hdr">
+                        <div class="o_aite_mod_hdr_left">
+                            <div class="o_aite_mod_title" t-attf-style="color: {{ COLORS.danger }}">
+                                ⚠ Top 10 — marges faibles
+                            </div>
+                        </div>
+                    </div>
+                    <div class="o_aite_mod_body p-0">
+                        <table class="o_aite_table">
+                            <thead><tr><th>Article</th><th class="text-end">CA</th><th class="text-end">Marge</th><th class="text-end">Taux</th></tr></thead>
+                            <tbody>
+                                <t t-foreach="lowMarginProducts()" t-as="p" t-key="p.product_id">
+                                    <tr>
+                                        <td class="fw-bold"><t t-esc="p.name"/></td>
+                                        <td class="text-end"><t t-esc="fmt(p.ca)"/></td>
+                                        <td class="text-end" t-attf-style="color: {{ COLORS.success }}"><t t-esc="fmt(p.margin)"/></td>
+                                        <td class="text-end">
+                                            <span t-attf-class="badge_pill {{ marginBadgeClass(p.margin_rate) }}">
+                                                <t t-esc="fmtPct(p.margin_rate)"/>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </div>
+</t>
+
+<!-- =============== CATEGORIES VIEW =============== -->
+<t t-name="aite_pos_analytics.CategoriesView">
+    <div class="o_aite_view">
+        <div t-if="state.loading" class="o_aite_loading">Chargement…</div>
+        <t t-else="">
+            <div class="o_aite_mod_card">
+                <div class="o_aite_mod_body">
+                    <div class="o_aite_chart_wrap" style="height:280px">
+                        <canvas t-ref="chartCat"/>
+                    </div>
+                </div>
+            </div>
+            <div class="o_aite_mod_card" t-if="state.evolution.series.length">
+                <div class="o_aite_mod_head">
+                    Évolution du CA par catégorie — 6 mois
+                    <span class="text-muted small ms-2">quelles familles montent, lesquelles s'essoufflent</span>
+                </div>
+                <div class="o_aite_mod_body">
+                    <div class="o_aite_chart_wrap" style="height:260px">
+                        <canvas t-ref="chartCatEvo"/>
+                    </div>
+                </div>
+            </div>
+            <div class="o_aite_mod_card">
+                <div class="o_aite_mod_body p-0">
+                    <table class="o_aite_table">
+                        <thead>
+                            <tr>
+                                <th>Catégorie</th>
+                                <th class="text-end">Articles</th>
+                                <th class="text-end">Qté vendue</th>
+                                <th class="text-end">CA</th>
+                                <th class="text-end">CMV</th>
+                                <th class="text-end">Marge</th>
+                                <th class="text-end">Taux</th>
+                                <th class="text-end">% CA</th>
+                                <th>Part du CA</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="state.categories" t-as="c" t-key="c.categ_id || c_index">
+                                <tr t-on-click="() => this.selectCategory(c)"
+                                    t-att-style="hasDrill ? 'cursor:pointer' : ''"
+                                    t-att-title="hasDrill ? 'Voir les articles de cette catégorie' : ''">
+                                    <td class="fw-bold" t-attf-style="color: {{ catColors(c.name, c_index).col }}">
+                                        <t t-esc="c.name"/>
+                                    </td>
+                                    <td class="text-end text-muted"><t t-esc="c.articles"/></td>
+                                    <td class="text-end"><t t-esc="fmt(c.qty)"/></td>
+                                    <td class="text-end fw-bold"><t t-esc="fmt(c.ca)"/></td>
+                                    <td class="text-end" t-attf-style="color: {{ COLORS.danger }}"><t t-esc="fmt(c.cost)"/></td>
+                                    <td class="text-end" t-attf-style="color: {{ COLORS.success }}"><t t-esc="fmt(c.margin)"/></td>
+                                    <td class="text-end">
+                                        <span t-attf-class="badge_pill {{ marginBadgeClass(c.margin_rate) }}">
+                                            <t t-esc="fmtPct(c.margin_rate)"/>
+                                        </span>
+                                    </td>
+                                    <td class="text-end text-muted"><t t-esc="fmtPct(c.pct_ca)"/></td>
+                                    <td>
+                                        <div class="o_aite_progressbar">
+                                            <div t-attf-style="width: {{ c.pct_ca }}%; background: {{ catColors(c.name, c_index).col }}"/>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </t>
+    </div>
+</t>
+
+<!-- =============== DISCREPANCIES VIEW =============== -->
+<t t-name="aite_pos_analytics.DiscrepanciesView">
+    <div class="o_aite_view">
+        <div t-if="state.loading" class="o_aite_loading">Chargement…</div>
+        <t t-else="">
+            <t t-if="state.data">
+                <div class="o_aite_grid_4 mb-3">
+                    <KpiCard label="'Écart négatif total'"
+                             value="fmtMoney(Math.abs(state.data.total_negative))"
+                             subtitle="'sessions clôturées'"
+                             color="COLORS.danger"/>
+                    <KpiCard label="'Sessions avec écart'"
+                             value="fmt(state.data.count_negative + state.data.count_positive)"
+                             subtitle="fmt(state.data.count_negative) + ' nég. · ' + fmt(state.data.count_positive) + ' pos.'"
+                             color="COLORS.warning"/>
+                    <KpiCard label="'Écart moyen'"
+                             value="fmtMoney(Math.abs(state.data.average_negative))"
+                             subtitle="'par session négative'"
+                             color="COLORS.primary"/>
+                    <KpiCard label="'Plus grand écart'"
+                             value="fmtMoney(Math.abs(state.data.largest_negative))"
+                             subtitle="'à investiguer en priorité'"
+                             color="COLORS.danger"/>
+                </div>
+                <div t-if="state.data.count_negative &gt; 5" class="o_aite_alert mb-3">
+                    ⚠ Plusieurs sessions présentent un écart négatif. Vérifier les procédures de comptage de caisse à la clôture.
+                </div>
+                <div class="o_aite_mod_card">
+                    <div class="o_aite_mod_body p-0">
+                        <table class="o_aite_table">
+                            <thead>
+                                <tr>
+                                    <th>Session</th>
+                                    <th>Date</th>
+                                    <th>Caissier</th>
+                                    <th class="text-end">CA</th>
+                                    <th class="text-end">Écart (F)</th>
+                                    <th>Sévérité</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="state.data.sessions" t-as="s" t-key="s.id">
+                                    <tr>
+                                        <td class="fw-bold" t-attf-style="color: {{ COLORS.info }}"><t t-esc="s.name"/></td>
+                                        <td class="small"><t t-esc="fmtDate(s.start_at)"/></td>
+                                        <td class="small"><t t-esc="s.user_name"/></td>
+                                        <td class="text-end"><t t-esc="fmt(s.total_ca)"/></td>
+                                        <td class="text-end fw-bold"
+                                            t-attf-style="color: {{ s.cash_difference &lt; 0 ? COLORS.danger : COLORS.info }}">
+                                            <t t-esc="fmt(s.cash_difference)"/>
+                                        </td>
+                                        <td>
+                                            <span t-attf-class="badge_pill {{ severityBadge(s.severity) }}">
+                                                <t t-esc="severityLabel(s.severity)"/>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </div>
+</t>
+
+<!-- =============== PAYMENTS VIEW =============== -->
+<t t-name="aite_pos_analytics.PaymentsView">
+    <div class="o_aite_view">
+        <div t-if="state.loading" class="o_aite_loading">Chargement…</div>
+        <t t-else="">
+            <div class="o_aite_grid_4 mb-3">
+                <KpiCard label="'Total encaissé'" value="fmtMoney(totalAmount)"
+                         subtitle="''" color="COLORS.success"/>
+                <KpiCard label="'Paiements'" value="fmt(totalCount)"
+                         subtitle="'transactions'" color="COLORS.info"/>
+                <KpiCard label="'Modes utilisés'" value="fmt(state.payments.length)"
+                         subtitle="'sur la période'" color="COLORS.primary"/>
+                <KpiCard label="'Mode principal'"
+                         value="state.payments.length ? state.payments[0].method_name : '—'"
+                         subtitle="state.payments.length ? fmtPct(state.payments[0].pct) + ' du total' : ''"
+                         color="COLORS.warning"/>
+            </div>
+            <div class="o_aite_grid_2">
+                <div class="o_aite_mod_card">
+                    <div class="o_aite_mod_body">
+                        <div class="o_aite_section_title">Répartition</div>
+                        <div class="o_aite_chart_wrap" style="height:280px">
+                            <canvas t-ref="chartPay"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="o_aite_mod_card">
+                    <div class="o_aite_mod_body p-0">
+                        <table class="o_aite_table">
+                            <thead>
+                                <tr>
+                                    <th>Mode</th>
+                                    <th class="text-end">Montant</th>
+                                    <th class="text-end">Nb</th>
+                                    <th class="text-end">% Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="state.payments" t-as="p" t-key="p.method_id">
+                                    <tr>
+                                        <td class="fw-bold"><t t-esc="p.method_name"/></td>
+                                        <td class="text-end"><t t-esc="fmt(p.amount)"/></td>
+                                        <td class="text-end text-muted"><t t-esc="p.count"/></td>
+                                        <td class="text-end"><t t-esc="fmtPct(p.pct)"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </div>
+</t>
+
+<!-- =============== CONFIG VIEW =============== -->
+<t t-name="aite_pos_analytics.ConfigView">
+    <div class="o_aite_view">
+        <div class="o_aite_mod_card">
+            <div class="o_aite_mod_hdr">
+                <div class="o_aite_mod_hdr_left">
+                    <div class="o_aite_mod_title">Configuration</div>
+                    <div class="o_aite_mod_sub">Raccourcis vers les paramètres POS pertinents</div>
+                </div>
+            </div>
+            <div class="o_aite_mod_body">
+                <div class="o_aite_config_grid">
+                    <button class="o_aite_config_btn" t-on-click="openPosConfig">
+                        <i class="fa fa-cog fa-2x mb-2"/>
+                        <div class="fw-bold">Points de vente</div>
+                        <div class="text-muted small">Caisses, sessions, modes</div>
+                    </button>
+                    <button class="o_aite_config_btn" t-on-click="openPosCategory">
+                        <i class="fa fa-th-large fa-2x mb-2"/>
+                        <div class="fw-bold">Catégories produit</div>
+                        <div class="text-muted small">Bières, softs, vins…</div>
+                    </button>
+                    <button class="o_aite_config_btn" t-on-click="openPaymentMethods">
+                        <i class="fa fa-credit-card fa-2x mb-2"/>
+                        <div class="fw-bold">Modes de paiement</div>
+                        <div class="text-muted small">Espèces, mobile money…</div>
+                    </button>
+                    <button class="o_aite_config_btn" t-on-click="openProducts">
+                        <i class="fa fa-cube fa-2x mb-2"/>
+                        <div class="fw-bold">Articles</div>
+                        <div class="text-muted small">Prix, coûts, catégories</div>
+                    </button>
+                    <button class="o_aite_config_btn" t-on-click="openAnalyticsReport">
+                        <i class="fa fa-bar-chart fa-2x mb-2"/>
+                        <div class="fw-bold">Rapport pivot</div>
+                        <div class="text-muted small">Analyse multidimensionnelle</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</t>
+
+</templates>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Entrées dans le menu natif Achats (pas de menu racine maison —
+        leçon des modules précédents : action explicite obligatoire).
+    -->
+    <menuitem id="menu_aite_purchase_dashboard"
+              name="Tableau de bord AITE"
+              parent="purchase.menu_purchase_root"
+              action="action_aite_purchase_dashboard"
+              sequence="2"
+              groups="purchase.group_purchase_user"/>
+
+    <menuitem id="menu_aite_purchase_deposit"
+              name="Consignes fournisseurs"
+              parent="purchase.menu_purchase_config"
+              action="action_aite_purchase_deposit"
+              sequence="90"
+              groups="purchase.group_purchase_user"/>
+
+</odoo>

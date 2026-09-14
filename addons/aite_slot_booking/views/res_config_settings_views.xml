@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_aite_slot" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.aite.slot</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="AITE Espaces" string="AITE Espaces"
+                     name="aite_slot_booking"
+                     groups="aite_hotel_management.group_hotel_manager">
+                    <block title="Espaces &amp; Prestations" name="aite_slot_block">
+                        <setting id="aite_slot_noshow" string="No-show automatique"
+                                 help="Délai de grâce après l'heure de fin avant passage en no-show.">
+                            <field name="aite_slot_no_show_hours" class="o_light_label"/>
+                            <span class="o_form_label"> heures</span>
+                        </setting>
+                        <setting id="aite_slot_folio" string="Report automatique au folio"
+                                 help="À la réalisation, porter la prestation sur le folio ouvert unique du client.">
+                            <field name="aite_slot_auto_post_folio"/>
+                        </setting>
+                        <setting id="aite_slot_mail" string="E-mail de confirmation automatique"
+                                 help="Envoyer la confirmation au client dès la confirmation.">
+                            <field name="aite_slot_mail_on_confirm"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>

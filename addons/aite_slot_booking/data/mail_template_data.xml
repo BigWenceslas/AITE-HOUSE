@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mail_template_slot_confirmation" model="mail.template">
+        <field name="name">Espaces &amp; Prestations : confirmation de réservation</field>
+        <field name="model_id" ref="model_aite_slot_booking"/>
+        <field name="subject">{{ object.company_id.name }} — Confirmation {{ object.name }}</field>
+        <field name="email_from">{{ object.company_id.email or user.email_formatted }}</field>
+        <field name="partner_to">{{ object.partner_id.id }}</field>
+        <field name="body_html" type="html">
+<div style="font-family: Calibri, Arial, sans-serif; color: #2B2A28; font-size: 14px;">
+    <p>Bonjour <t t-out="object.partner_id.name"/>,</p>
+    <p>Votre réservation est <b>confirmée</b> :</p>
+    <table style="border-collapse: collapse; margin: 8px 0;">
+        <tr><td style="padding: 3px 10px 3px 0; color: #714B67;"><b>Référence</b></td>
+            <td><t t-out="object.name"/></td></tr>
+        <tr><td style="padding: 3px 10px 3px 0; color: #714B67;"><b>Ressource</b></td>
+            <td><t t-out="object.resource_id.name"/></td></tr>
+        <tr t-if="object.service_id">
+            <td style="padding: 3px 10px 3px 0; color: #714B67;"><b>Prestation</b></td>
+            <td><t t-out="object.service_id.name"/></td></tr>
+        <tr><td style="padding: 3px 10px 3px 0; color: #714B67;"><b>Début</b></td>
+            <td><t t-out="format_datetime(object.start, tz=object.env.user.tz, dt_format='dd/MM/yyyy HH:mm')"/></td></tr>
+        <tr><td style="padding: 3px 10px 3px 0; color: #714B67;"><b>Fin</b></td>
+            <td><t t-out="format_datetime(object.stop, tz=object.env.user.tz, dt_format='HH:mm')"/></td></tr>
+        <tr t-if="object.amount">
+            <td style="padding: 3px 10px 3px 0; color: #714B67;"><b>Montant</b></td>
+            <td><t t-out="format_amount(object.amount, object.currency_id)"/></td></tr>
+    </table>
+    <p>À très bientôt,<br/><t t-out="object.company_id.name"/></p>
+</div>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+</odoo>

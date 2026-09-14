@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_aite_roomcharge" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.aite.roomcharge</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="AITE Note de chambre" string="AITE Note de chambre"
+                     name="aite_hotel_pos_link"
+                     groups="aite_hotel_management.group_hotel_manager">
+                    <block title="Report POS → folio" name="aite_roomcharge_block">
+                        <setting id="aite_roomcharge_product" string="Article de report"
+                                 help="Article de la ligne « Consommation POS » sur le folio.">
+                            <field name="aite_roomcharge_product_id"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>

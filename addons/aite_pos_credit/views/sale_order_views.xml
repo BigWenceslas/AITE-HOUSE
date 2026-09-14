@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Extension du formulaire de commande de vente : mise sur ardoise.
+        Ancrage volontairement générique (//notebook, //header,
+        //div[@name='button_box']) — même approche robuste que la fiche
+        produit du module Stock.
+    -->
+    <record id="view_order_form_aite_credit" model="ir.ui.view">
+        <field name="name">sale.order.form.aite.credit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//header" position="inside">
+                <button name="action_aite_put_on_credit" type="object"
+                        string="Mettre sur ardoise"
+                        invisible="aite_credit_id or state not in ('sale', 'done')"
+                        confirm="Porter le total de cette commande (moins l'acompte comptant éventuel) sur l'ardoise du client ?"/>
+            </xpath>
+
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_aite_view_credit" type="object"
+                        class="oe_stat_button" icon="fa-book"
+                        invisible="not aite_credit_id">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Ardoise</span>
+                        <field name="aite_credit_id" nolabel="1"
+                               readonly="1" class="o_stat_value"/>
+                    </div>
+                </button>
+            </xpath>
+
+            <xpath expr="//notebook" position="inside">
+                <page string="Ardoise AITE" name="aite_credit">
+                    <group>
+                        <group string="Vente à crédit">
+                            <field name="aite_put_on_credit"
+                                   readonly="aite_credit_id or state not in ('draft', 'sent')"/>
+                            <field name="aite_credit_down_payment"
+                                   invisible="not aite_put_on_credit"
+                                   readonly="aite_credit_id"/>
+                            <field name="aite_credit_id" readonly="1"
+                                   invisible="not aite_credit_id"/>
+                        </group>
+                        <group string="Comment ça marche">
+                            <div class="text-muted" colspan="2">
+                                <p>
+                                    Cochez <b>Mettre sur ardoise</b> sur le devis :
+                                    à la confirmation, une ardoise est créée pour le
+                                    <b>total moins l'acompte</b> reçu comptant.
+                                </p>
+                                <p>
+                                    Le remboursement se fait ensuite comme pour le
+                                    POS : menu <b>POS Crédit</b>, espèces, MTN MoMo
+                                    ou Orange Money — le même tableau de bord suit
+                                    les deux canaux.
+                                </p>
+                            </div>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

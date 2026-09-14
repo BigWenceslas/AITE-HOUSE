@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- ============ KPI CARD ============ -->
+    <t t-name="aite_hotel_management.KpiCard">
+        <div t-att-class="'ahm-kpi ' + (props.mega ? 'ahm-kpi-mega ahm-accent-' + props.accent : '')">
+            <div class="ahm-kpi-label" t-esc="props.label"/>
+            <div class="ahm-kpi-value" t-esc="props.value"/>
+            <div t-if="props.delta" t-att-class="'ahm-kpi-delta ' + deltaClass">
+                <t t-esc="props.delta.text"/>
+            </div>
+            <div t-if="props.sub" class="ahm-kpi-sub" t-esc="props.sub"/>
+        </div>
+    </t>
+
+    <!-- ============ DASHBOARD ROOT ============ -->
+    <t t-name="aite_hotel_management.Dashboard">
+        <div class="ahm-dashboard-root o_action">
+            <HotelDashboardView/>
+        </div>
+    </t>
+
+    <!-- ============ DASHBOARD VIEW ============ -->
+    <t t-name="aite_hotel_management.DashboardView">
+        <div class="ahm-dashboard">
+
+            <!-- En-tête -->
+            <div class="ahm-topbar">
+                <div>
+                    <h2 class="ahm-title">Front Desk — Réception</h2>
+                    <div class="ahm-sub">
+                        Occupation, arrivées &amp; départs, room board ·
+                        <t t-esc="state.companyName"/>
+                    </div>
+                </div>
+                <div class="ahm-topactions">
+                    <button class="btn btn-primary btn-sm"
+                            t-on-click="() => this.openBookingWizard()">
+                        <i class="fa fa-plus me-1"/>Nouvelle réservation
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filtres -->
+            <div class="ahm-filterbar">
+                <div class="ahm-filterrow">
+                    <span class="ahm-flabel">Période</span>
+                    <t t-foreach="periodPresets" t-as="p" t-key="p.key">
+                        <button t-att-class="'ahm-chip ' + (state.period === p.key ? 'active' : '')"
+                                t-on-click="() => this.setPeriod(p.key)"
+                                t-esc="p.label"/>
+                    </t>
+                    <span class="ahm-spacer"/>
+                    <input type="date" class="ahm-date"
+                           t-att-value="state.dateFrom"
+                           t-on-change="(ev) => this.onDateFrom(ev)"/>
+                    <span class="ahm-arrow">→</span>
+                    <input type="date" class="ahm-date"
+                           t-att-value="state.dateTo"
+                           t-on-change="(ev) => this.onDateTo(ev)"/>
+                    <button t-att-class="'ahm-chip ahm-apply ' + (state.period === 'custom' ? 'active' : '')"
+                            t-on-click="() => this.applyCustomRange()">Appliquer</button>
+                </div>
+                <div class="ahm-filterrow" t-if="state.hotels.length > 1">
+                    <span class="ahm-flabel">Hôtel</span>
+                    <button t-att-class="'ahm-chip ' + (state.hotelId === 0 ? 'active' : '')"
+                            t-on-click="() => this.setHotel(0)">Tous les hôtels</button>
+                    <t t-foreach="state.hotels" t-as="h" t-key="h.id">
+                        <button t-att-class="'ahm-chip ' + (state.hotelId === h.id ? 'active' : '')"
+                                t-on-click="() => this.setHotel(h.id)">
+                            <span class="ahm-dot" t-att-style="'background:' + h.color"/>
+                            <t t-esc="h.name"/>
+                        </button>
+                    </t>
+                </div>
+            </div>
+
+            <!-- Chargement -->
+            <div t-if="state.loading" class="ahm-loading">
+                <i class="fa fa-spinner fa-spin"/> Chargement…
+            </div>
+
+            <div t-else="">
+
+                <!-- Photo du jour -->
+                <div class="ahm-section-title">Photo du jour</div>
+                <div class="ahm-grid ahm-grid-4">
+                    <KpiCard mega="true" accent="'primary'"
+                             label="'Occupation ce soir'"
+                             value="pct(state.kpis.today.occupancy)"
+                             sub="occFraction() + ' chambres occupées'"/>
+                    <KpiCard mega="true" accent="'info'"
+                             label="'Arrivées attendues'"
+                             value="num(state.kpis.today.arrivals)"
+                             sub="'réservations confirmées du jour'"/>
+                    <KpiCard mega="true" accent="'warning'"
+                             label="'Départs prévus'"
+                             value="num(state.kpis.today.departures)"
+                             sub="'check-out attendus aujourd\'hui'"/>
+                    <KpiCard mega="true" accent="'success'"
+                             label="'Clients présents'"
+                             value="num(state.kpis.today.inhouse_guests)"
+                             sub="num(state.kpis.today.inhouse_reservations) + ' séjours en cours'"/>
+                </div>
+
+                <!-- Performance de la période -->
+                <div class="ahm-section-title">Performance de la période</div>
+                <div class="ahm-grid ahm-grid-4">
+                    <KpiCard label="'Taux d\'occupation'"
+                             value="pct(state.kpis.period.occupancy)"
+                             delta="deltaOf(state.kpis.deltas.occupancy, true)"
+                             sub="num(state.kpis.period.nights_sold) + ' nuitées vendues'"/>
+                    <KpiCard label="'ADR — prix moyen / nuit'"
+                             value="money(state.kpis.period.adr)"
+                             delta="deltaOf(state.kpis.deltas.adr, true)"
+                             sub="'CA hébergement / nuitées vendues'"/>
+                    <KpiCard label="'RevPAR'"
+                             value="money(state.kpis.period.revpar)"
+                             delta="deltaOf(state.kpis.deltas.revpar, true)"
+                             sub="'revenu / chambre disponible'"/>
+                    <KpiCard label="'Chiffre d\'affaires (HT)'"
+                             value="money(state.kpis.period.total_revenue)"
+                             delta="deltaOf(state.kpis.deltas.total_revenue, true)"
+                             sub="'Hébergement ' + money(state.kpis.period.room_revenue) + ' · Services ' + money(state.kpis.period.service_revenue)"/>
+                </div>
+
+                <!-- Graphiques -->
+                <div class="ahm-grid ahm-grid-2 ahm-mt">
+                    <div class="ahm-card">
+                        <h3>Taux d'occupation par jour</h3>
+                        <div class="ahm-chartbox">
+                            <canvas t-ref="occChart"/>
+                        </div>
+                    </div>
+                    <div class="ahm-card">
+                        <h3>CA hébergement par type de chambre</h3>
+                        <div class="ahm-chartbox">
+                            <canvas t-ref="revChart"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Room board -->
+                <div class="ahm-section-title ahm-flex-between">
+                    <span>Room board</span>
+                    <span class="ahm-legend">
+                        <t t-foreach="statusLegend" t-as="s" t-key="s.key">
+                            <span class="ahm-legend-item">
+                                <span class="ahm-dot"
+                                      t-att-style="'background:' + s.color"/>
+                                <t t-esc="s.label"/>
+                            </span>
+                        </t>
+                    </span>
+                </div>
+                <div class="ahm-card">
+                    <div t-if="!state.board.length" class="ahm-empty">
+                        Aucune chambre configurée. Créez vos chambres dans
+                        Configuration → Chambres.
+                    </div>
+                    <div t-foreach="boardGroups" t-as="group"
+                         t-key="group.label" class="ahm-boardgroup">
+                        <div class="ahm-boardgroup-label" t-esc="group.label"/>
+                        <div class="ahm-boardgrid">
+                            <t t-foreach="group.rooms" t-as="room" t-key="room.id">
+                                <div t-att-class="'ahm-room ahm-room--' + room.status"
+                                     t-att-title="roomTitle(room)"
+                                     t-on-click="() => this.openRoom(room)">
+                                    <div class="ahm-room-name" t-esc="room.name"/>
+                                    <div class="ahm-room-type" t-esc="room.type"/>
+                                    <div t-if="room.guest" class="ahm-room-guest"
+                                         t-esc="room.guest"/>
+                                    <i t-if="room.hk_state === 'to_clean' or room.hk_state === 'cleaning'"
+                                       class="fa fa-paint-brush ahm-room-hk"
+                                       title="Ménage à faire / en cours"/>
+                                    <i t-if="room.hk_state === 'inspect'"
+                                       class="fa fa-search ahm-room-hk"
+                                       title="À contrôler"/>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mouvements du jour -->
+                <div class="ahm-grid ahm-grid-2 ahm-mt">
+                    <div class="ahm-card">
+                        <div class="ahm-card-head">
+                            <h3>
+                                <i class="fa fa-sign-in me-1 text-info"/>
+                                Arrivées du jour
+                            </h3>
+                            <button class="btn btn-link btn-sm p-0"
+                                    t-on-click="() => this.openArrivals()">
+                                Tout voir
+                            </button>
+                        </div>
+                        <div t-if="!state.movements.arrivals.length"
+                             class="ahm-empty">Aucune arrivée prévue aujourd'hui.</div>
+                        <div t-else="" class="ahm-tablewrap">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Heure</th>
+                                        <th>Réservation</th>
+                                        <th>Client</th>
+                                        <th>Chambres</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="state.movements.arrivals"
+                                        t-as="row" t-key="row.id"
+                                        class="ahm-rowlink"
+                                        t-on-click="() => this.openReservation(row.id)">
+                                        <td t-esc="hour(row.time)"/>
+                                        <td t-esc="row.name"/>
+                                        <td t-esc="row.guest"/>
+                                        <td t-esc="row.rooms"/>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="ahm-card">
+                        <div class="ahm-card-head">
+                            <h3>
+                                <i class="fa fa-sign-out me-1 text-warning"/>
+                                Départs du jour
+                            </h3>
+                            <button class="btn btn-link btn-sm p-0"
+                                    t-on-click="() => this.openDepartures()">
+                                Tout voir
+                            </button>
+                        </div>
+                        <div t-if="!state.movements.departures.length"
+                             class="ahm-empty">Aucun départ prévu aujourd'hui.</div>
+                        <div t-else="" class="ahm-tablewrap">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Heure</th>
+                                        <th>Réservation</th>
+                                        <th>Client</th>
+                                        <th>Chambres</th>
+                                        <th class="text-end">Solde dû</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="state.movements.departures"
+                                        t-as="row" t-key="row.id"
+                                        class="ahm-rowlink"
+                                        t-on-click="() => this.openReservation(row.id)">
+                                        <td t-esc="hour(row.time)"/>
+                                        <td t-esc="row.name"/>
+                                        <td t-esc="row.guest"/>
+                                        <td t-esc="row.rooms"/>
+                                        <td class="text-end">
+                                            <span t-if="residualBadge(row)"
+                                                  class="badge text-bg-danger"
+                                                  t-esc="residualBadge(row)"/>
+                                            <span t-else="" class="text-muted">—</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gouvernante -->
+                <div class="ahm-section-title ahm-flex-between">
+                    <span>Gouvernante — état des chambres</span>
+                    <button class="btn btn-link btn-sm p-0"
+                            t-on-click="() => this.openHousekeeping()">
+                        Ouvrir les tâches
+                    </button>
+                </div>
+                <div class="ahm-grid ahm-grid-4">
+                    <KpiCard accent="'warning'" mega="true"
+                             label="'À nettoyer'"
+                             value="num(state.hk.to_clean)"
+                             sub="'chambres en attente de ménage'"/>
+                    <KpiCard accent="'info'" mega="true"
+                             label="'Ménage en cours'"
+                             value="num(state.hk.cleaning)"
+                             sub="'femmes/valets de chambre au travail'"/>
+                    <KpiCard accent="'primary'" mega="true"
+                             label="'À contrôler'"
+                             value="num(state.hk.inspect)"
+                             sub="'inspections gouvernante en attente'"/>
+                    <KpiCard accent="'danger'" mega="true"
+                             label="'Hors service'"
+                             value="num(state.hk.out_of_order)"
+                             sub="'chambres indisponibles à la vente'"/>
+                </div>
+
+            </div>
+        </div>
+    </t>
+
+</templates>

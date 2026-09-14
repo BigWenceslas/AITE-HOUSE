@@ -1,0 +1,336 @@
+/* Tableau de bord Front Desk — Gestion Hôtelière (charte AITE) */
+
+/* Zone défilante de l'action — le wrapper racine du composant
+   porte la hauteur ; l'enfant .ahm-dashboard s'étire au contenu
+   (min-height) : correctif scroll, pattern POS Analytics. */
+.ahm-dashboard-root {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.ahm-dashboard {
+    --ahm-primary: #714B67;
+    --ahm-success: #3B6D11;
+    --ahm-danger: #A32D2D;
+    --ahm-warning: #854F0B;
+    --ahm-info: #185FA5;
+    --ahm-muted: #888780;
+    --ahm-border: rgba(0, 0, 0, .08);
+    --ahm-bg-soft: #f5f5f4;
+
+    padding: 14px;
+    background: #e8e6e0;
+    min-height: 100%;
+    font-size: 13px;
+
+    /* ---- En-tête ---- */
+    .ahm-topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #fff;
+        border: 1px solid var(--ahm-border);
+        border-radius: 12px;
+        padding: 12px 16px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .ahm-title {
+        font-size: 18px;
+        margin: 0;
+        color: var(--ahm-primary);
+        font-weight: 700;
+    }
+    .ahm-sub {
+        color: var(--ahm-muted);
+        font-size: 12px;
+        margin-top: 2px;
+    }
+
+    /* ---- Filtres ---- */
+    .ahm-filterbar {
+        background: #fff;
+        border: 1px solid var(--ahm-border);
+        border-radius: 12px;
+        padding: 10px 12px;
+        margin-top: 12px;
+    }
+    .ahm-filterrow {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+
+        + .ahm-filterrow {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--ahm-border);
+        }
+    }
+    .ahm-flabel {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        color: var(--ahm-muted);
+        font-weight: 600;
+        min-width: 64px;
+    }
+    .ahm-spacer { flex: 1; }
+    .ahm-arrow { color: var(--ahm-muted); }
+    .ahm-date {
+        border: 1px solid var(--ahm-border);
+        border-radius: 8px;
+        padding: 5px 8px;
+        font-size: 12px;
+        background: #fff;
+        color: inherit;
+    }
+    .ahm-chip {
+        background: transparent;
+        border: 1px solid var(--ahm-border);
+        border-radius: 8px;
+        padding: 6px 12px;
+        font-size: 12px;
+        color: #5f5e5a;
+        cursor: pointer;
+        transition: .12s;
+
+        &:hover { background: var(--ahm-bg-soft); }
+        &.active {
+            background: var(--ahm-primary);
+            color: #fff;
+            border-color: var(--ahm-primary);
+        }
+    }
+    .ahm-apply {
+        background: var(--ahm-primary);
+        color: #fff;
+        border-color: var(--ahm-primary);
+    }
+    .ahm-dot {
+        display: inline-block;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        margin-right: 5px;
+        vertical-align: middle;
+    }
+
+    .ahm-loading {
+        padding: 40px;
+        text-align: center;
+        color: var(--ahm-muted);
+    }
+    .ahm-empty {
+        padding: 16px;
+        text-align: center;
+        color: var(--ahm-muted);
+        font-style: italic;
+    }
+    .ahm-mt { margin-top: 12px; }
+
+    /* ---- Sections & grilles ---- */
+    .ahm-section-title {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+        color: var(--ahm-muted);
+        font-weight: 700;
+        margin: 18px 4px 8px;
+    }
+    .ahm-flex-between {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    .ahm-grid {
+        display: grid;
+        gap: 10px;
+    }
+    .ahm-grid-4 { grid-template-columns: repeat(4, 1fr); }
+    .ahm-grid-2 { grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 1100px) {
+        .ahm-grid-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 700px) {
+        .ahm-grid-4, .ahm-grid-2 { grid-template-columns: 1fr; }
+    }
+
+    /* ---- Cartes KPI ---- */
+    .ahm-kpi {
+        background: #fff;
+        border: 1px solid var(--ahm-border);
+        border-radius: 12px;
+        padding: 14px;
+    }
+    .ahm-kpi-mega { border-left: 4px solid var(--ahm-primary); }
+    .ahm-accent-primary { border-left-color: var(--ahm-primary); }
+    .ahm-accent-success { border-left-color: var(--ahm-success); }
+    .ahm-accent-danger { border-left-color: var(--ahm-danger); }
+    .ahm-accent-warning { border-left-color: var(--ahm-warning); }
+    .ahm-accent-info { border-left-color: var(--ahm-info); }
+
+    .ahm-kpi-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        color: var(--ahm-muted);
+        font-weight: 600;
+    }
+    .ahm-kpi-value {
+        font-size: 22px;
+        font-weight: 700;
+        margin-top: 6px;
+        line-height: 1.1;
+    }
+    .ahm-kpi-delta {
+        font-size: 11px;
+        margin-top: 6px;
+        font-weight: 600;
+    }
+    .ahm-kpi-sub {
+        font-size: 11px;
+        color: var(--ahm-muted);
+        margin-top: 4px;
+    }
+
+    /* ---- Cartes génériques & graphiques ---- */
+    .ahm-card {
+        background: #fff;
+        border: 1px solid var(--ahm-border);
+        border-radius: 12px;
+        padding: 14px;
+
+        h3 {
+            font-size: 13px;
+            margin: 0 0 10px;
+            color: #2b2a28;
+        }
+    }
+    .ahm-card-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .ahm-chartbox {
+        position: relative;
+        height: 220px;
+    }
+    .ahm-tablewrap {
+        max-height: 320px;
+        overflow: auto;
+
+        table { margin-bottom: 0; }
+        th {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            color: var(--ahm-muted);
+            position: sticky;
+            top: 0;
+            background: var(--ahm-bg-soft);
+        }
+        td { font-size: 12px; vertical-align: middle; }
+    }
+    .ahm-rowlink {
+        cursor: pointer;
+
+        &:hover td { background: var(--ahm-bg-soft); }
+    }
+
+    /* ---- Room board ---- */
+    .ahm-legend {
+        display: inline-flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        text-transform: none;
+        letter-spacing: 0;
+        font-weight: 500;
+        font-size: 11px;
+        color: #5f5e5a;
+    }
+    .ahm-legend-item { white-space: nowrap; }
+
+    .ahm-boardgroup {
+        + .ahm-boardgroup { margin-top: 12px; }
+    }
+    .ahm-boardgroup-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--ahm-muted);
+        text-transform: uppercase;
+        letter-spacing: .4px;
+        margin-bottom: 6px;
+    }
+    .ahm-boardgrid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+        gap: 8px;
+    }
+    .ahm-room {
+        position: relative;
+        border: 1px solid var(--ahm-border);
+        border-left-width: 5px;
+        border-radius: 10px;
+        padding: 8px 10px;
+        background: #fff;
+        cursor: pointer;
+        min-height: 62px;
+        transition: .12s;
+
+        &:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, .12);
+        }
+    }
+    .ahm-room--free {
+        border-left-color: #3B6D11;
+        background: #f4f8ef;
+    }
+    .ahm-room--arrival {
+        border-left-color: #185FA5;
+        background: #eff5fb;
+    }
+    .ahm-room--occupied {
+        border-left-color: #A32D2D;
+        background: #fbf1f1;
+    }
+    .ahm-room--cleaning {
+        border-left-color: #854F0B;
+        background: #faf5ec;
+    }
+    .ahm-room--out_of_order {
+        border-left-color: #5f5e5a;
+        background: #efefee;
+        opacity: .75;
+    }
+    .ahm-room-name {
+        font-weight: 700;
+        font-size: 13px;
+        line-height: 1.1;
+    }
+    .ahm-room-type {
+        font-size: 10px;
+        color: var(--ahm-muted);
+        text-transform: uppercase;
+        letter-spacing: .3px;
+        margin-top: 2px;
+    }
+    .ahm-room-guest {
+        font-size: 11px;
+        margin-top: 3px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .ahm-room-hk {
+        position: absolute;
+        top: 7px;
+        right: 8px;
+        font-size: 11px;
+        color: var(--ahm-warning);
+    }
+}

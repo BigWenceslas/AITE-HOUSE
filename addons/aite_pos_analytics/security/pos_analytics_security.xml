@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Deux groupes :
+        - utilisateur analytique (lecture des rapports, dashboard)
+        - manager analytique (lecture + export + accès complet)
+    -->
+
+    <record id="module_category_aite_pos_analytics" model="ir.module.category">
+        <field name="name">POS Analytics AITE</field>
+        <field name="description">Accès aux tableaux de bord d'analyse POS d'AITE Consulting</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="group_aite_pos_analytics_user" model="res.groups">
+        <field name="name">Utilisateur — Analyses POS</field>
+        <field name="category_id" ref="module_category_aite_pos_analytics"/>
+        <field name="implied_ids" eval="[(4, ref('point_of_sale.group_pos_user'))]"/>
+        <field name="comment">Accès en lecture aux rapports et dashboard d'analyse POS.</field>
+    </record>
+
+    <record id="group_aite_pos_analytics_manager" model="res.groups">
+        <field name="name">Manager — Analyses POS</field>
+        <field name="category_id" ref="module_category_aite_pos_analytics"/>
+        <field name="implied_ids" eval="[
+            (4, ref('group_aite_pos_analytics_user')),
+            (4, ref('point_of_sale.group_pos_manager')),
+        ]"/>
+        <field name="comment">Accès complet aux analyses POS, export et configuration.</field>
+    </record>
+
+</odoo>

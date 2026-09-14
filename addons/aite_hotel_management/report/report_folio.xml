@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_folio_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="row mb-3">
+                            <div class="col-7">
+                                <h2>Note de séjour</h2>
+                                <h4 class="text-muted" t-field="doc.name"/>
+                                <div class="text-muted">
+                                    Réservation
+                                    <span t-field="doc.reservation_id.name"/>
+                                </div>
+                            </div>
+                            <div class="col-5 text-end">
+                                <strong t-field="doc.hotel_id.name"/><br/>
+                                <span t-field="doc.hotel_id.city"/><br/>
+                                <span t-field="doc.hotel_id.phone"/>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <strong>Client</strong><br/>
+                                <span t-field="doc.partner_id.name"/><br/>
+                                <span t-field="doc.partner_id.phone"/>
+                            </div>
+                            <div class="col-6 text-end">
+                                <strong>Séjour :</strong>
+                                <span t-field="doc.checkin_date"
+                                      t-options='{"widget": "date"}'/>
+                                →
+                                <span t-field="doc.checkout_date"
+                                      t-options='{"widget": "date"}'/>
+                            </div>
+                        </div>
+
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th class="text-end">Qté</th>
+                                    <th class="text-end">P.U.</th>
+                                    <th class="text-end">Total HT</th>
+                                    <th class="text-end">Total TTC</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="doc.line_ids" t-as="line">
+                                    <td><span t-field="line.date"/></td>
+                                    <td><span t-field="line.name"/></td>
+                                    <td class="text-end">
+                                        <span t-field="line.quantity"/>
+                                    </td>
+                                    <td class="text-end">
+                                        <span t-field="line.price_unit"
+                                              t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                    </td>
+                                    <td class="text-end">
+                                        <span t-field="line.price_subtotal"
+                                              t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                    </td>
+                                    <td class="text-end">
+                                        <span t-field="line.price_total"
+                                              t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="row justify-content-end">
+                            <div class="col-5">
+                                <table class="table table-sm table-borderless">
+                                    <tr>
+                                        <td>Total HT</td>
+                                        <td class="text-end">
+                                            <span t-field="doc.amount_untaxed"
+                                                  t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Taxes</td>
+                                        <td class="text-end">
+                                            <span t-field="doc.amount_tax"
+                                                  t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-top">
+                                        <td><strong>Total TTC</strong></td>
+                                        <td class="text-end">
+                                            <strong t-field="doc.amount_total"
+                                                    t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Déjà encaissé</td>
+                                        <td class="text-end">
+                                            <span t-field="doc.amount_paid"
+                                                  t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-top">
+                                        <td><strong>Solde dû</strong></td>
+                                        <td class="text-end">
+                                            <strong t-field="doc.amount_residual"
+                                                    t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <t t-set="posted_payments"
+                           t-value="doc.payment_ids.filtered(lambda p: p.state == 'posted')"/>
+                        <div t-if="posted_payments" class="mt-3">
+                            <strong>Règlements reçus</strong>
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Moyen</th>
+                                        <th>Référence</th>
+                                        <th class="text-end">Montant</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="posted_payments" t-as="pay">
+                                        <td><span t-field="pay.date"/></td>
+                                        <td><span t-field="pay.method"/></td>
+                                        <td><span t-field="pay.transaction_ref"/></td>
+                                        <td class="text-end">
+                                            <span t-field="pay.amount"
+                                                  t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <p class="mt-4 text-muted" style="font-size: 11px;">
+                            Merci de votre séjour à
+                            <span t-field="doc.hotel_id.name"/> !
+                        </p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

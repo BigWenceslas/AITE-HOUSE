@@ -1,0 +1,403 @@
+/* Tableau de bord Espaces & Prestations — charte AITE / LAVERANDAH */
+
+/* Zone défilante de l'action — le wrapper racine du composant
+   porte la hauteur ; l'enfant .aed-dashboard s'étire au contenu
+   (min-height) : correctif scroll, pattern POS Analytics. */
+.aed-dashboard-root {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.aed-dashboard {
+    --aed-primary: #714B67;
+    --aed-success: #3B6D11;
+    --aed-info: #185FA5;
+    --aed-danger: #A32D2D;
+    --aed-warning: #854F0B;
+    --aed-muted: #888780;
+    --aed-border: rgba(0, 0, 0, .08);
+    --aed-bg-soft: #f5f5f4;
+
+    padding: 14px;
+    background: #e8e6e0;
+    min-height: 100%;
+    font-size: 13px;
+
+    .aed-topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #fff;
+        border: 1px solid var(--aed-border);
+        border-radius: 12px;
+        padding: 12px 16px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .aed-title {
+        font-size: 18px;
+        margin: 0;
+        color: var(--aed-primary);
+        font-weight: 700;
+    }
+    .aed-sub {
+        color: var(--aed-muted);
+        font-size: 12px;
+        margin-top: 2px;
+    }
+
+    /* ---- Filtres ---- */
+    .aed-filterbar {
+        background: #fff;
+        border: 1px solid var(--aed-border);
+        border-radius: 12px;
+        padding: 10px 12px;
+        margin-top: 12px;
+    }
+    .aed-filterrow {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+
+        + .aed-filterrow {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--aed-border);
+        }
+    }
+    .aed-flabel {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        color: var(--aed-muted);
+        font-weight: 600;
+        min-width: 86px;
+    }
+    .aed-spacer { flex: 1; }
+    .aed-arrow { color: var(--aed-muted); }
+    .aed-date {
+        border: 1px solid var(--aed-border);
+        border-radius: 8px;
+        padding: 5px 8px;
+        font-size: 12px;
+        background: #fff;
+        color: inherit;
+    }
+    .aed-chip {
+        background: transparent;
+        border: 1px solid var(--aed-border);
+        border-radius: 8px;
+        padding: 6px 12px;
+        font-size: 12px;
+        color: #5f5e5a;
+        cursor: pointer;
+        transition: .12s;
+
+        &:hover { background: var(--aed-bg-soft); }
+        &.active {
+            background: var(--aed-primary);
+            color: #fff;
+            border-color: var(--aed-primary);
+        }
+    }
+    .aed-apply.active,
+    .aed-apply:hover {
+        background: var(--aed-primary);
+        color: #fff;
+        border-color: var(--aed-primary);
+    }
+    .aed-dot {
+        display: inline-block;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        margin-right: 5px;
+        vertical-align: middle;
+    }
+
+    /* ---- Onglets ---- */
+    .aed-tabbar {
+        display: flex;
+        gap: 4px;
+        background: #fff;
+        border: 1px solid var(--aed-border);
+        border-radius: 12px;
+        padding: 8px 10px;
+        margin-top: 12px;
+        overflow-x: auto;
+    }
+    .aed-tab {
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        padding: 6px 14px;
+        font-size: 12px;
+        color: #5f5e5a;
+        cursor: pointer;
+        white-space: nowrap;
+
+        &:hover { background: var(--aed-bg-soft); }
+        &.active {
+            background: var(--aed-primary);
+            color: #fff;
+        }
+    }
+
+    .aed-loading {
+        padding: 40px;
+        text-align: center;
+        color: var(--aed-muted);
+    }
+
+    .aed-section-title {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+        color: var(--aed-muted);
+        font-weight: 700;
+        margin: 18px 4px 8px;
+    }
+
+    .aed-grid {
+        display: grid;
+        gap: 10px;
+    }
+    .aed-grid-4 { grid-template-columns: repeat(4, 1fr); }
+    .aed-grid-2 { grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 1100px) {
+        .aed-grid-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 700px) {
+        .aed-grid-4, .aed-grid-2 { grid-template-columns: 1fr; }
+    }
+
+    /* ---- KPI ---- */
+    .aed-kpi {
+        background: #fff;
+        border: 1px solid var(--aed-border);
+        border-radius: 12px;
+        padding: 14px;
+    }
+    .aed-kpi-mega { border-left: 4px solid var(--aed-primary); }
+    .aed-accent-primary { border-left-color: var(--aed-primary); }
+    .aed-accent-success { border-left-color: var(--aed-success); }
+    .aed-accent-danger { border-left-color: var(--aed-danger); }
+    .aed-accent-warning { border-left-color: var(--aed-warning); }
+    .aed-accent-info { border-left-color: var(--aed-info); }
+
+    .aed-kpi-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        color: var(--aed-muted);
+        font-weight: 600;
+    }
+    .aed-kpi-value {
+        font-size: 22px;
+        font-weight: 700;
+        margin-top: 6px;
+        line-height: 1.1;
+    }
+    .aed-kpi-delta {
+        font-size: 11px;
+        margin-top: 6px;
+        font-weight: 600;
+    }
+    .aed-kpi-sub {
+        font-size: 11px;
+        color: var(--aed-muted);
+        margin-top: 4px;
+    }
+
+    /* ---- Cartes & tables ---- */
+    .aed-card {
+        background: #fff;
+        border: 1px solid var(--aed-border);
+        border-radius: 12px;
+        padding: 14px;
+
+        h3 {
+            font-size: 13px;
+            margin: 0 0 10px;
+            color: #2b2a28;
+        }
+    }
+    .aed-card-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+
+        h3 { margin: 0; }
+    }
+    .aed-chartbox {
+        position: relative;
+        height: 230px;
+    }
+    .aed-mini {
+        font-size: 11px;
+        color: var(--aed-muted);
+        margin-top: 6px;
+    }
+    .aed-search {
+        border: 1px solid var(--aed-border);
+        border-radius: 8px;
+        padding: 6px 10px;
+        font-size: 12px;
+        min-width: 220px;
+    }
+    .aed-tablewrap {
+        max-height: 480px;
+        overflow: auto;
+
+        table { margin-bottom: 0; }
+        th {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            color: var(--aed-muted);
+            position: sticky;
+            top: 0;
+            background: var(--aed-bg-soft);
+            z-index: 1;
+        }
+        td { font-size: 12px; vertical-align: middle; }
+    }
+    .aed-loc {
+        max-width: 160px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 11px;
+    }
+    .aed-barcell {
+        position: relative;
+
+        .aed-bar {
+            position: absolute;
+            left: 0;
+            top: 12%;
+            height: 76%;
+            opacity: .12;
+            border-radius: 4px;
+            background: var(--aed-primary);
+            pointer-events: none;
+        }
+    }
+    .aed-note {
+        background: #FAF6E9;
+        border: 1px solid #E8DFB8;
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 12px;
+        color: #6b5d20;
+        margin-top: 12px;
+    }
+
+    /* ---- Modal configuration ---- */
+    .aed-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, .35);
+        z-index: 55;
+    }
+    .aed-modal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 680px;
+        max-width: 94vw;
+        max-height: 88vh;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 18px 50px rgba(0, 0, 0, .28);
+        z-index: 60;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    .aed-modal-head {
+        background: var(--aed-primary);
+        color: #fff;
+        padding: 14px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .aed-modal-title { font-size: 15px; font-weight: 700; }
+    .aed-modal-sub { font-size: 11px; opacity: .85; }
+    .aed-x { cursor: pointer; font-size: 20px; line-height: 1; }
+    .aed-modal-body {
+        padding: 14px 16px;
+        overflow-y: auto;
+    }
+    .aed-cfggrid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+
+        label {
+            font-size: 12px;
+            color: #46414e;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-weight: 600;
+        }
+        input {
+            border: 1px solid var(--aed-border);
+            border-radius: 8px;
+            padding: 6px 8px;
+            font-size: 12px;
+            width: 100%;
+        }
+    }
+    @media (max-width: 560px) {
+        .aed-cfggrid { grid-template-columns: 1fr; }
+    }
+    .aed-cfg-input {
+        border: 1px solid var(--aed-border);
+        border-radius: 8px;
+        padding: 4px 6px;
+        font-size: 12px;
+        width: 96px;
+    }
+    .aed-modal-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 14px;
+
+        .btn:first-child { flex: 1; }
+    }
+}
+
+/* ---- Planning du jour : couloirs par ressource ---- */
+.aed-board { display: flex; flex-direction: column; gap: 8px; }
+.aed-lane { display: flex; align-items: center; gap: 10px; }
+.aed-lane-name { width: 160px; min-width: 160px; font-weight: 600; font-size: 12px;
+    color: #46414E; display: flex; align-items: center; gap: 6px; }
+.aed-lane-track { position: relative; flex: 1; height: 34px; background: #F6F4F3;
+    border: 1px solid #E7E2DF; border-radius: 6px; overflow: hidden; }
+.aed-lane-grid { position: absolute; top: 0; bottom: 0; border-left: 1px dashed #E1DBD7; }
+.aed-lane-book { position: absolute; top: 3px; bottom: 3px; border-radius: 4px;
+    color: #fff; font-size: 10.5px; line-height: 1.1; padding: 3px 6px;
+    overflow: hidden; white-space: nowrap; text-overflow: ellipsis; cursor: pointer; }
+.aed-lane-book.st-confirmed { background: #185FA5; }
+.aed-lane-book.st-done { background: #0F6E56; }
+.aed-lane-book.st-draft { background: #888780; }
+.aed-hours { display: flex; margin-left: 170px; font-size: 10px; color: #888780;
+    justify-content: space-between; padding: 0 2px 2px; }
+.aed-slot-free { color: #0F6E56; }
+.aed-slot-full { color: #A32D2D; }
+.aed-lane-free { width: 130px; min-width: 130px; font-size: 10.5px; text-align: right; }
+
+/* ---- Mix list sous le donut ---- */
+.aed-mixlist { margin-top: 8px; display: flex; flex-direction: column; gap: 4px; }
+.aed-mixrow { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.aed-mixlabel { flex: 1; color: #46414E; font-weight: 600; }
+.aed-mixval { color: #888780; }
+.aed-chartbox-tall { height: 280px; }

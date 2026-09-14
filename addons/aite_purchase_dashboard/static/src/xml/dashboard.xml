@@ -1,0 +1,571 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- ============ KPI CARD ============ -->
+    <t t-name="aite_purchase_dashboard.KpiCard">
+        <div t-att-class="'apd-kpi ' + (props.mega ? 'apd-kpi-mega apd-accent-' + props.accent : '')">
+            <div class="apd-kpi-label" t-esc="props.label"/>
+            <div class="apd-kpi-value" t-esc="props.value"/>
+            <div t-if="props.delta" t-att-class="'apd-kpi-delta ' + deltaClass">
+                <t t-esc="props.delta.text"/>
+            </div>
+            <div t-if="props.sub" class="apd-kpi-sub" t-esc="props.sub"/>
+        </div>
+    </t>
+
+    <!-- ============ ROOT ============ -->
+    <t t-name="aite_purchase_dashboard.Dashboard">
+        <div class="apd-dashboard-root o_action">
+            <PurchaseDashboardView/>
+        </div>
+    </t>
+
+    <!-- ============ DASHBOARD VIEW ============ -->
+    <t t-name="aite_purchase_dashboard.DashboardView">
+        <div class="apd-dashboard">
+
+            <div class="apd-topbar">
+                <div>
+                    <h2 class="apd-title">Achats &amp; Fournisseurs — Tableau de bord</h2>
+                    <div class="apd-sub">Dettes (401) &amp; créances fournisseurs (409) · échéancier · OTIF · prix</div>
+                </div>
+            </div>
+
+            <!-- Filtres -->
+            <div class="apd-filterbar">
+                <div class="apd-filterrow">
+                    <span class="apd-flabel">Période</span>
+                    <t t-foreach="periodPresets" t-as="p" t-key="p.key">
+                        <button t-att-class="'apd-chip ' + (state.period === p.key ? 'active' : '')"
+                                t-on-click="() => this.setPeriod(p.key)"
+                                t-esc="p.label"/>
+                    </t>
+                    <span class="apd-spacer"/>
+                    <input type="date" class="apd-date"
+                           t-att-value="state.dateFrom"
+                           t-on-change="(ev) => this.onDateFrom(ev)"/>
+                    <span class="apd-arrow">→</span>
+                    <input type="date" class="apd-date"
+                           t-att-value="state.dateTo"
+                           t-on-change="(ev) => this.onDateTo(ev)"/>
+                    <button t-att-class="'apd-chip apd-apply ' + (state.period === 'custom' ? 'active' : '')"
+                            t-on-click="() => this.applyCustomRange()">Appliquer</button>
+                </div>
+                <div class="apd-filterrow">
+                    <span class="apd-flabel">Fournisseur</span>
+                    <button t-att-class="'apd-chip ' + (state.supplierId === 0 ? 'active' : '')"
+                            t-on-click="() => this.setSupplier(0)">Tous</button>
+                    <t t-foreach="state.suppliers" t-as="s" t-key="s.id">
+                        <button t-att-class="'apd-chip ' + (state.supplierId === s.id ? 'active' : '')"
+                                t-on-click="() => this.setSupplier(s.id)">
+                            <span class="apd-dot" t-att-style="'background:' + s.color"/>
+                            <t t-esc="s.name"/>
+                        </button>
+                    </t>
+                </div>
+            </div>
+
+            <!-- Onglets -->
+            <div class="apd-tabbar">
+                <t t-foreach="tabs" t-as="tb" t-key="tb.key">
+                    <button t-att-class="'apd-tab ' + (state.tab === tb.key ? 'active' : '')"
+                            t-on-click="() => this.setTab(tb.key)"
+                            t-esc="tb.label"/>
+                </t>
+            </div>
+
+            <div t-if="state.loading" class="apd-loading">
+                <i class="fa fa-spinner fa-spin"/> Chargement…
+            </div>
+
+            <div t-else="">
+
+                <!-- ============ TABLEAU DE BORD ============ -->
+                <div t-if="state.tab === 'dashboard'">
+                    <div class="apd-section-title">Vue d'ensemble</div>
+                    <div class="apd-grid apd-grid-4">
+                        <KpiCard mega="true" accent="'info'"
+                                 label="'Achats (période)'"
+                                 value="money(state.kpis.achats)"
+                                 sub="num(state.kpis.orders_count) + ' commandes · ' + num(state.kpis.recus_count) + ' réceptions'"/>
+                        <KpiCard mega="true" accent="'danger'"
+                                 label="'Dette fournisseurs (401)'"
+                                 value="money(state.kpis.encours)"
+                                 sub="num(state.kpis.open_count) + ' factures ouvertes'"/>
+                        <KpiCard mega="true" accent="'warning'"
+                                 label="'À payer sous ' + num(state.kpis.cfg.soon) + ' j'"
+                                 value="money(state.kpis.soon)"
+                                 sub="num(state.kpis.soon_count) + ' facture(s) · trésorerie à prévoir'"/>
+                        <KpiCard mega="true" accent="'primary'"
+                                 label="'DPO — délai moyen de paiement'"
+                                 value="days(state.kpis.dpo)"
+                                 sub="'encours / factures période · tenir les délais négociés'"/>
+                    </div>
+
+                    <div class="apd-section-title">Indicateurs</div>
+                    <div class="apd-grid apd-grid-4">
+                        <KpiCard label="'En retard de paiement'" accent="'danger'"
+                                 value="negMoney(state.kpis.retard)"
+                                 sub="num(state.kpis.retard_count) + ' facture(s) · ' + pct(state.kpis.retard_pct) + ' de l\'encours'"/>
+                        <KpiCard label="'Créances fournisseurs (409)'"
+                                 value="money(state.kpis.claims_total)"
+                                 sub="'consignes + avoirs + acomptes'"/>
+                        <KpiCard label="'Taux de service (OTIF)'"
+                                 value="pct(state.kpis.otif)"
+                                 sub="'livré à l\'heure et complet · cible ≥ 90 %'"/>
+                        <KpiCard label="'Commandes en cours'"
+                                 value="num(state.kpis.pending_count) + ' cmd'"
+                                 sub="money(state.kpis.pending_amount) + ' attendus · ' + num(state.kpis.pending_late) + ' en retard'"/>
+                    </div>
+
+                    <div class="apd-section-title">Répartition &amp; flux</div>
+                    <div class="apd-grid apd-grid-2">
+                        <div class="apd-card">
+                            <h3>Achats par fournisseur (période)</h3>
+                            <div class="apd-chartbox"><canvas t-ref="supChart"/></div>
+                        </div>
+                        <div class="apd-card">
+                            <h3>Factures vs Paiements — 6 mois</h3>
+                            <div class="apd-chartbox"><canvas t-ref="fluxChart"/></div>
+                        </div>
+                    </div>
+                    <div class="apd-grid apd-grid-2" style="margin-top:10px;">
+                        <div class="apd-card">
+                            <h3>Balance âgée de la dette (par retard)</h3>
+                            <div class="apd-chartbox"><canvas t-ref="agingChart"/></div>
+                            <div class="apd-mini">Un glissement vers +30/+60 j annonce une tension de trésorerie.</div>
+                        </div>
+                        <div class="apd-card">
+                            <h3>Top produits achetés (période)</h3>
+                            <div class="apd-chartbox"><canvas t-ref="topProdChart"/></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============ FOURNISSEURS ============ -->
+                <div t-if="state.tab === 'suppliers'">
+                    <div class="apd-section-title">Performance fournisseurs</div>
+                    <div class="apd-grid apd-grid-4">
+                        <KpiCard mega="true" accent="'info'"
+                                 label="'Fournisseurs actifs'"
+                                 value="num(state.kpis.suppliers_count)"
+                                 sub="'avec achats sur la période'"/>
+                        <KpiCard mega="true" accent="'warning'"
+                                 label="'Top fournisseur'"
+                                 value="state.kpis.top_sup_name"
+                                 sub="depSub()"/>
+                        <KpiCard label="'Délai moyen de livraison'"
+                                 value="days(state.kpis.delai_moy)"
+                                 sub="'commande → réception'"/>
+                        <KpiCard label="'OTIF moyen'"
+                                 value="pct(state.kpis.otif)"
+                                 sub="'à l\'heure et complet'"/>
+                    </div>
+
+                    <div class="apd-card" style="margin-top:14px;">
+                        <div class="apd-card-head">
+                            <h3>Détail par fournisseur</h3>
+                            <button t-if="state.meta.is_manager"
+                                    class="btn btn-outline-primary btn-sm"
+                                    t-on-click="() => this.openCfg()">⚙ Configurer les alertes</button>
+                        </div>
+                        <div class="apd-tablewrap">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Fournisseur</th>
+                                        <th class="text-end">Achats période</th>
+                                        <th class="text-end">Part</th>
+                                        <th class="text-end">Encours dû</th>
+                                        <th class="text-end">En retard</th>
+                                        <th class="text-end">Délai moy.</th>
+                                        <th class="text-end">OTIF</th>
+                                        <th>Statut</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="state.supplierRows" t-as="s" t-key="s.id"
+                                        t-on-click="() => this.openPartner(s.id)"
+                                        style="cursor:pointer">
+                                        <td>
+                                            <span class="apd-dot" t-att-style="'background:' + s.color"/>
+                                            <strong t-esc="s.name"/>
+                                        </td>
+                                        <td class="text-end" t-esc="money(s.achats)"/>
+                                        <td class="text-end" t-esc="pct(s.part)"/>
+                                        <td class="text-end" t-esc="moneyOrDash(s.du)"/>
+                                        <td t-att-class="'text-end ' + valueClass(s.retard)" t-esc="moneyOrDash(s.retard)"/>
+                                        <td class="text-end" t-esc="s.delai ? days(s.delai) : '—'"/>
+                                        <td class="text-end" t-esc="s.achats ? pct(s.otif) : '—'"/>
+                                        <td><span t-att-class="'badge ' + badge(s.badge_cls)" t-esc="s.badge"/></td>
+                                    </tr>
+                                    <tr t-if="!state.supplierRows.length">
+                                        <td colspan="8" class="text-muted text-center">Aucun fournisseur actif</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="apd-note">
+                        <b>Risque de concentration :</b> au-delà de
+                        <b t-esc="pct(state.kpis.cfg.dep)"/> des achats chez un seul fournisseur,
+                        une rupture ou une hausse de tarif vous expose fortement — négociez ou diversifiez.
+                    </div>
+                </div>
+
+                <!-- ============ DETTES & ÉCHÉANCIER ============ -->
+                <div t-if="state.tab === 'debts'">
+                    <div class="apd-section-title">Dettes fournisseurs (401)</div>
+                    <div class="apd-grid apd-grid-4">
+                        <KpiCard mega="true" accent="'danger'"
+                                 label="'Encours total dû'"
+                                 value="money(state.kpis.encours)"
+                                 sub="num(state.kpis.open_count) + ' factures ouvertes'"/>
+                        <KpiCard mega="true" accent="'warning'"
+                                 label="'En retard'"
+                                 value="negMoney(state.kpis.retard)"
+                                 sub="num(state.kpis.retard_count) + ' facture(s) échue(s)'"/>
+                        <KpiCard label="'À payer sous ' + num(state.kpis.cfg.soon) + ' j'"
+                                 value="money(state.kpis.soon)"
+                                 sub="'échéances imminentes'"/>
+                        <KpiCard label="'À payer sous 8–30 j'"
+                                 value="money(state.kpis.month)"
+                                 sub="'à provisionner'"/>
+                    </div>
+
+                    <div class="apd-grid apd-grid-2" style="margin-top:14px;">
+                        <div class="apd-card">
+                            <h3>Balance âgée (retard de paiement)</h3>
+                            <div class="apd-chartbox"><canvas t-ref="agingDChart"/></div>
+                        </div>
+                        <div class="apd-card">
+                            <h3>Échéancier — 6 prochaines semaines</h3>
+                            <div class="apd-chartbox"><canvas t-ref="echChart"/></div>
+                        </div>
+                    </div>
+
+                    <div class="apd-card" style="margin-top:10px;">
+                        <h3>Factures fournisseurs ouvertes (triées par urgence)</h3>
+                        <div class="apd-tablewrap">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Échéance</th><th>Fournisseur</th><th>Réf.</th>
+                                        <th class="text-end">Montant</th>
+                                        <th class="text-end">Payé</th>
+                                        <th class="text-end">Reste dû</th>
+                                        <th class="text-end">Retard</th>
+                                        <th>Statut</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="state.invoices" t-as="i" t-key="i.id"
+                                        t-on-click="() => this.openMove(i.id)"
+                                        style="cursor:pointer">
+                                        <td t-esc="i.due"/>
+                                        <td>
+                                            <span class="apd-dot" t-att-style="dotStyle(i.partner_id)"/>
+                                            <t t-esc="i.partner"/>
+                                        </td>
+                                        <td class="text-muted" t-esc="i.ref"/>
+                                        <td class="text-end" t-esc="money(i.total)"/>
+                                        <td class="text-end" t-esc="moneyOrDash(i.paid)"/>
+                                        <td class="text-end"><strong t-esc="money(i.residual)"/></td>
+                                        <td t-att-class="'text-end ' + valueClass(i.days_late)" t-esc="lateText(i)"/>
+                                        <td><span t-att-class="'badge ' + badge(i.status_cls)" t-esc="i.status"/></td>
+                                    </tr>
+                                    <tr t-if="!state.invoices.length">
+                                        <td colspan="8" class="text-muted text-center">Aucune facture ouverte</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="apd-note">
+                        <b>Bonne pratique :</b> payer à l'échéance protège vos <b>conditions</b>
+                        (délais, remises, escomptes) et votre réputation fournisseur.
+                    </div>
+                </div>
+
+                <!-- ============ AVOIRS & CONSIGNES ============ -->
+                <div t-if="state.tab === 'claims'">
+                    <div class="apd-section-title">Créances fournisseurs (409) — l'argent qui dort chez vos fournisseurs</div>
+                    <div class="apd-grid apd-grid-4">
+                        <KpiCard mega="true" accent="'primary'"
+                                 label="'Créances totales (409)'"
+                                 value="money(state.kpis.claims_total)"
+                                 sub="'consignes + avoirs + acomptes'"/>
+                        <KpiCard mega="true" accent="'info'"
+                                 label="'Consignes en cours (4096)'"
+                                 value="money(state.kpis.deposits_total)"
+                                 sub="num(state.kpis.deposits_qty) + ' casiers chez les fournisseurs'"/>
+                        <KpiCard mega="true" accent="'warning'"
+                                 label="'Avoirs à déduire (4097/4098)'"
+                                 value="money(state.kpis.avoirs_total)"
+                                 sub="num(state.kpis.avoirs_count) + ' avoir(s) ouvert(s)'"/>
+                        <KpiCard label="'Acomptes / soldes débiteurs (4091)'"
+                                 value="money(state.kpis.acomptes_est)"
+                                 sub="'paiements non lettrés (estimation)'"/>
+                    </div>
+
+                    <div class="apd-grid apd-grid-2" style="margin-top:14px;">
+                        <div class="apd-card">
+                            <div class="apd-card-head">
+                                <h3>Consignes d'emballages (4096)</h3>
+                                <button class="btn btn-outline-primary btn-sm"
+                                        t-on-click="() => this.openDeposits()">Gérer les consignes</button>
+                            </div>
+                            <div class="apd-tablewrap">
+                                <table class="table table-sm table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Fournisseur</th>
+                                            <th class="text-end">Casiers</th>
+                                            <th class="text-end">Consigne/casier</th>
+                                            <th class="text-end">Valeur</th>
+                                            <th>Dernière déconsignation</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="state.claims.deposits" t-as="d" t-key="d.id"
+                                            t-on-click="() => this.openPartner(d.partner_id)"
+                                            style="cursor:pointer">
+                                            <td>
+                                                <span class="apd-dot" t-att-style="dotStyle(d.partner_id)"/>
+                                                <t t-esc="d.partner"/>
+                                            </td>
+                                            <td class="text-end" t-esc="num(d.qty)"/>
+                                            <td class="text-end" t-esc="money(d.unit_value)"/>
+                                            <td class="text-end"><strong t-esc="money(d.value)"/></td>
+                                            <td class="text-muted" t-esc="orDash(d.last)"/>
+                                        </tr>
+                                        <tr t-if="!state.claims.deposits.length">
+                                            <td colspan="5" class="text-muted text-center">
+                                                Aucune consigne enregistrée — cliquez « Gérer les consignes »
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="apd-mini">Sans suivi à l'unité, le compte 4096 ne se solde jamais — comptez vos casiers périodiquement.</div>
+                        </div>
+                        <div class="apd-card">
+                            <h3>Avoirs fournisseurs ouverts</h3>
+                            <div class="apd-tablewrap">
+                                <table class="table table-sm table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th><th>Fournisseur</th><th>Réf.</th>
+                                            <th>Motif</th>
+                                            <th class="text-end">Montant</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="state.claims.avoirs" t-as="a" t-key="a.id"
+                                            t-on-click="() => this.openMove(a.id)"
+                                            style="cursor:pointer">
+                                            <td class="text-muted" t-esc="a.date"/>
+                                            <td>
+                                                <span class="apd-dot" t-att-style="dotStyle(a.partner_id)"/>
+                                                <t t-esc="a.partner"/>
+                                            </td>
+                                            <td class="text-muted" t-esc="a.ref"/>
+                                            <td class="text-muted" t-esc="orDash(a.motif)"/>
+                                            <td class="text-end"><strong t-esc="money(a.amount)"/></td>
+                                        </tr>
+                                        <tr t-if="!state.claims.avoirs.length">
+                                            <td colspan="5" class="text-muted text-center">Aucun avoir ouvert</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="apd-note">
+                        <b>Réflexe :</b> chaque casse à la livraison, écart de facturation ou retour doit
+                        générer un <b>avoir tracé</b> — et être <b>déduit du prochain paiement</b>.
+                        Un avoir oublié est une perte sèche.
+                    </div>
+                </div>
+
+                <!-- ============ COMMANDES & RÉCEPTIONS ============ -->
+                <div t-if="state.tab === 'orders'">
+                    <div class="apd-section-title">Commandes &amp; réceptions</div>
+                    <div class="apd-grid apd-grid-4">
+                        <KpiCard mega="true" accent="'info'"
+                                 label="'Commandes (période)'"
+                                 value="num(state.kpis.orders_count)"
+                                 sub="money(state.kpis.achats) + ' engagés'"/>
+                        <KpiCard mega="true" accent="'warning'"
+                                 label="'En retard de livraison'"
+                                 value="num(state.kpis.pending_late + state.kpis.recv_late)"
+                                 sub="num(state.kpis.pending_late) + ' en attente · ' + num(state.kpis.recv_late) + ' reçues en retard'"/>
+                        <KpiCard label="'OTIF (période)'"
+                                 value="pct(state.kpis.otif)"
+                                 sub="'à l\'heure et complètes'"/>
+                        <KpiCard label="'Délai moyen de réception'"
+                                 value="days(state.kpis.delai_moy)"
+                                 sub="'commande → réception'"/>
+                    </div>
+
+                    <div class="apd-card" style="margin-top:14px;">
+                        <h3>Journal des commandes</h3>
+                        <div class="apd-tablewrap">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th><th>Fournisseur</th><th>Réf.</th>
+                                        <th class="text-end">Montant</th>
+                                        <th>Prévue</th><th>Reçue</th>
+                                        <th class="text-end">Retard</th>
+                                        <th class="text-center">Complète</th>
+                                        <th>Statut</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="state.orders" t-as="o" t-key="o.id"
+                                        t-on-click="() => this.openOrder(o.id)"
+                                        style="cursor:pointer">
+                                        <td t-esc="o.date"/>
+                                        <td>
+                                            <span class="apd-dot" t-att-style="dotStyle(o.partner_id)"/>
+                                            <t t-esc="o.partner"/>
+                                        </td>
+                                        <td class="text-muted" t-esc="o.ref"/>
+                                        <td class="text-end" t-esc="money(o.amount)"/>
+                                        <td t-esc="orDash(o.planned)"/>
+                                        <td t-esc="orDash(o.recv)"/>
+                                        <td t-att-class="'text-end ' + valueClass(o.days_late)"
+                                            t-esc="o.days_late ? o.days_late + ' j' : '—'"/>
+                                        <td class="text-center" t-esc="fullMark(o)"/>
+                                        <td><span t-att-class="'badge ' + badge(o.status_cls)" t-esc="o.status"/></td>
+                                    </tr>
+                                    <tr t-if="!state.orders.length">
+                                        <td colspan="9" class="text-muted text-center">Aucune commande sur la période</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="apd-note">
+                        <b>OTIF</b> = livré <b>à l'heure ET complet</b>. Un fournisseur peut être ponctuel
+                        mais livrer incomplet — c'est l'OTIF qui révèle l'écart. Cible PME : ≥ 90 %.
+                    </div>
+                </div>
+
+                <!-- ============ PRIX & VARIATIONS ============ -->
+                <div t-if="state.tab === 'prices'">
+                    <div class="apd-section-title">Prix d'achat — variations</div>
+                    <div class="apd-grid apd-grid-4">
+                        <KpiCard mega="true" accent="'warning'"
+                                 label="'Variation moyenne pondérée'"
+                                 value="signedPct(state.kpis.var_moy)"
+                                 sub="'sur le panier d\'achats récent'"/>
+                        <KpiCard mega="true" accent="'danger'"
+                                 label="'Plus forte hausse'"
+                                 value="signedPct(state.kpis.top_hausse)"
+                                 sub="state.kpis.top_hausse_name"/>
+                        <KpiCard label="'Hausses > ' + pct(state.kpis.cfg.price)"
+                                 value="num(state.kpis.nb_hausses)"
+                                 sub="'références concernées'"/>
+                        <KpiCard label="'Impact annuel estimé'" accent="'danger'"
+                                 value="negMoney(state.kpis.impact)"
+                                 sub="'Δ prix × volumes annuels'"/>
+                    </div>
+
+                    <div class="apd-grid apd-grid-2" style="margin-top:14px;">
+                        <div class="apd-card">
+                            <h3>Indice des prix d'achat (base 100)</h3>
+                            <div class="apd-chartbox"><canvas t-ref="prixChart"/></div>
+                        </div>
+                        <div class="apd-card">
+                            <h3>Variations par produit</h3>
+                            <div class="apd-tablewrap">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Produit</th><th>Fournisseur</th>
+                                            <th class="text-end">Prix N−6m</th>
+                                            <th class="text-end">Prix actuel</th>
+                                            <th class="text-end">Δ</th>
+                                            <th class="text-end">Impact annuel</th>
+                                            <th>Statut</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="state.prices" t-as="p" t-key="p.product_id">
+                                            <td><strong t-esc="p.name"/></td>
+                                            <td class="text-muted" t-esc="p.partner"/>
+                                            <td class="text-end" t-esc="money(p.p0)"/>
+                                            <td class="text-end" t-esc="money(p.p1)"/>
+                                            <td t-att-class="'text-end ' + (p.delta > 0 ? 'text-danger' : p.delta &lt; 0 ? 'text-success' : '')"
+                                                t-esc="signedPct(p.delta)"/>
+                                            <td t-att-class="'text-end ' + impactClass(p)" t-esc="impactText(p)"/>
+                                            <td><span t-att-class="'badge ' + badge(p.badge_cls)" t-esc="p.badge"/></td>
+                                        </tr>
+                                        <tr t-if="!state.prices.length">
+                                            <td colspan="7" class="text-muted text-center">
+                                                Pas assez d'historique d'achats pour comparer les prix
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="apd-note">
+                        <b>Contrôle des prix facturés :</b> comparez chaque facture au prix négocié —
+                        les dérives passent par petites touches. Au-delà du seuil, renégociez ou mettez en concurrence.
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ============ MODAL CONFIGURATION ============ -->
+            <t t-if="state.showCfg">
+                <div class="apd-overlay" t-on-click="() => this.closeCfg()"/>
+                <div class="apd-modal">
+                    <div class="apd-modal-head">
+                        <div>
+                            <div class="apd-modal-title">⚙ Alertes achats &amp; fournisseurs</div>
+                            <div class="apd-modal-sub">Valeurs globales de la société</div>
+                        </div>
+                        <span class="apd-x" t-on-click="() => this.closeCfg()">×</span>
+                    </div>
+                    <div class="apd-modal-body">
+                        <div class="apd-cfggrid">
+                            <label>Alerte échéance (jours avant)
+                                <input type="number" min="1" max="30" t-model="state.cfgGlobal.soon"/>
+                            </label>
+                            <label>Tolérance retard livraison (jours)
+                                <input type="number" min="0" max="15" t-model="state.cfgGlobal.late"/>
+                            </label>
+                            <label>Seuil de dépendance fournisseur (%)
+                                <input type="number" min="10" max="90" step="5" t-model="state.cfgGlobal.dep"/>
+                            </label>
+                            <label>Seuil de hausse de prix (%)
+                                <input type="number" min="1" max="30" step="0.5" t-model="state.cfgGlobal.price"/>
+                            </label>
+                        </div>
+                        <div class="apd-mini" style="margin-top:8px;">
+                            Échéance : factures dues sous ce délai → « À payer bientôt ».
+                            Livraison : au-delà du seuil → « En retard » (l'OTIF reste strict).
+                            Dépendance : badge au-delà de cette part d'achats.
+                            Prix : « Hausse forte » au-delà du seuil.
+                        </div>
+                        <div class="apd-modal-actions">
+                            <button class="btn btn-primary" t-att-disabled="state.cfgSaving"
+                                    t-on-click="() => this.saveCfg()">
+                                <t t-if="state.cfgSaving"><i class="fa fa-spinner fa-spin"/> Enregistrement…</t>
+                                <t t-else="">Enregistrer la configuration</t>
+                            </button>
+                            <button class="btn btn-secondary" t-on-click="() => this.closeCfg()">Annuler</button>
+                        </div>
+                    </div>
+                </div>
+            </t>
+
+        </div>
+    </t>
+
+</templates>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_aite_pos_credit_payment_list" model="ir.ui.view">
+        <field name="name">aite.pos.credit.payment.list</field>
+        <field name="model">aite.pos.credit.payment</field>
+        <field name="arch" type="xml">
+            <list string="Remboursements"
+                  decoration-muted="state == 'cancelled'">
+                <field name="date"/>
+                <field name="partner_id"/>
+                <field name="credit_id"/>
+                <field name="method"/>
+                <field name="transaction_ref" optional="show"/>
+                <field name="collected_by" optional="show"/>
+                <field name="amount" sum="Total"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'posted'"
+                       decoration-muted="state == 'cancelled'"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_aite_pos_credit_payment_form" model="ir.ui.view">
+        <field name="name">aite.pos.credit.payment.form</field>
+        <field name="model">aite.pos.credit.payment</field>
+        <field name="arch" type="xml">
+            <form string="Remboursement">
+                <header>
+                    <button name="action_cancel" type="object" string="Annuler"
+                            invisible="state != 'posted'"/>
+                    <button name="action_post" type="object" string="Valider"
+                            class="btn-primary" invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="credit_id"/>
+                            <field name="partner_id"/>
+                            <field name="date"/>
+                        </group>
+                        <group>
+                            <field name="amount"/>
+                            <field name="method"/>
+                            <field name="transaction_ref"/>
+                            <field name="collected_by"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <field name="note" placeholder="Note…"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_aite_pos_credit_payment_search" model="ir.ui.view">
+        <field name="name">aite.pos.credit.payment.search</field>
+        <field name="model">aite.pos.credit.payment</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher un remboursement">
+                <field name="partner_id"/>
+                <field name="credit_id"/>
+                <field name="transaction_ref"/>
+                <filter name="posted" string="Validés"
+                        domain="[('state','=','posted')]"/>
+                <separator/>
+                <filter name="mtn" string="MTN MoMo" domain="[('method','=','mtn')]"/>
+                <filter name="orange" string="Orange Money" domain="[('method','=','orange')]"/>
+                <filter name="cash" string="Espèces" domain="[('method','=','cash')]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_method" string="Moyen de paiement"
+                            context="{'group_by': 'method'}"/>
+                    <filter name="group_partner" string="Client"
+                            context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_date" string="Date"
+                            context="{'group_by': 'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_aite_pos_credit_payment" model="ir.actions.act_window">
+        <field name="name">Remboursements</field>
+        <field name="res_model">aite.pos.credit.payment</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_aite_pos_credit_payment_search"/>
+        <field name="context">{'search_default_posted': 1}</field>
+    </record>
+
+</odoo>

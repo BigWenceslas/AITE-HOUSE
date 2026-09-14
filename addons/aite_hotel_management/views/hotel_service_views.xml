@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============ SERVICES ============ -->
+    <record id="view_hotel_service_list" model="ir.ui.view">
+        <field name="name">aite.hotel.service.list</field>
+        <field name="model">aite.hotel.service</field>
+        <field name="arch" type="xml">
+            <list string="Services" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="category"/>
+                <field name="price"/>
+                <field name="product_id" optional="hide"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="company_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_hotel_service" model="ir.actions.act_window">
+        <field name="name">Services hôteliers</field>
+        <field name="res_model">aite.hotel.service</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créez votre catalogue de services
+            </p>
+            <p>
+                Restaurant, blanchisserie, transport, minibar… imputables
+                en un clic sur le folio du client.
+            </p>
+        </field>
+    </record>
+
+    <!-- ============ TARIFS SAISONNIERS ============ -->
+    <record id="view_hotel_season_price_list" model="ir.ui.view">
+        <field name="name">aite.hotel.season.price.list</field>
+        <field name="model">aite.hotel.season.price</field>
+        <field name="arch" type="xml">
+            <list string="Tarifs saisonniers" editable="bottom">
+                <field name="name"/>
+                <field name="room_type_id"/>
+                <field name="hotel_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="price"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_hotel_season_price_search" model="ir.ui.view">
+        <field name="name">aite.hotel.season.price.search</field>
+        <field name="model">aite.hotel.season.price</field>
+        <field name="arch" type="xml">
+            <search string="Tarifs saisonniers">
+                <field name="name"/>
+                <field name="room_type_id"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_type" string="Type de chambre"
+                            context="{'group_by': 'room_type_id'}"/>
+                    <filter name="group_hotel" string="Hôtel"
+                            context="{'group_by': 'hotel_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_hotel_season_price" model="ir.actions.act_window">
+        <field name="name">Tarifs saisonniers</field>
+        <field name="res_model">aite.hotel.season.price</field>
+        <field name="view_mode">list</field>
+        <field name="search_view_id" ref="view_hotel_season_price_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Définissez vos saisons tarifaires
+            </p>
+            <p>
+                Haute saison, fêtes, événements : un prix par nuit sur une
+                plage de dates, par type de chambre — le moteur tarifaire
+                l'applique automatiquement aux réservations.
+            </p>
+        </field>
+    </record>
+
+</odoo>

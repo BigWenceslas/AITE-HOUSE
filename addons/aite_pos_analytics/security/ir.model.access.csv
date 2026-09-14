@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_aite_pos_daily_report_user,aite.pos.daily.report.user,model_aite_pos_daily_report,group_aite_pos_analytics_user,1,0,0,0
+access_aite_pos_daily_report_manager,aite.pos.daily.report.manager,model_aite_pos_daily_report,group_aite_pos_analytics_manager,1,0,0,0

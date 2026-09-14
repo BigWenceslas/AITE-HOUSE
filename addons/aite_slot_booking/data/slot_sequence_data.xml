@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="seq_aite_slot_booking" model="ir.sequence">
+        <field name="name">Réservation de créneau</field>
+        <field name="code">aite.slot.booking</field>
+        <field name="prefix">RES/%(y)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

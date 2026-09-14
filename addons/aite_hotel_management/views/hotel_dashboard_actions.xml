@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_hotel_dashboard" model="ir.actions.client">
+        <field name="name">Front Desk</field>
+        <field name="tag">aite_hotel_dashboard</field>
+    </record>
+
+</odoo>

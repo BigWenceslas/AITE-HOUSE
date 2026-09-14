@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============ HÔTEL ============ -->
+    <record id="view_hotel_hotel_list" model="ir.ui.view">
+        <field name="name">aite.hotel.hotel.list</field>
+        <field name="model">aite.hotel.hotel</field>
+        <field name="arch" type="xml">
+            <list string="Hôtels">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="city"/>
+                <field name="stars"/>
+                <field name="room_count"/>
+                <field name="sellable_room_count"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_hotel_hotel_form" model="ir.ui.view">
+        <field name="name">aite.hotel.hotel.form</field>
+        <field name="model">aite.hotel.hotel</field>
+        <field name="arch" type="xml">
+            <form string="Hôtel">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_rooms" type="object"
+                                class="oe_stat_button" icon="fa-bed">
+                            <field name="room_count" widget="statinfo"
+                                   string="Chambres"/>
+                        </button>
+                    </div>
+                    <field name="active" invisible="1"/>
+                    <widget name="web_ribbon" title="Archivé"
+                            bg_color="text-bg-danger"
+                            invisible="active"/>
+                    <field name="image_1920" widget="image"
+                           class="oe_avatar"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Nom de l'hôtel"/></h1>
+                    </div>
+                    <group>
+                        <group string="Identité">
+                            <field name="code"/>
+                            <field name="stars"/>
+                            <field name="company_id"
+                                   groups="base.group_multi_company"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group string="Horaires standards">
+                            <field name="checkin_hour" widget="float_time"/>
+                            <field name="checkout_hour" widget="float_time"/>
+                        </group>
+                        <group string="Coordonnées">
+                            <field name="street"/>
+                            <field name="city"/>
+                            <field name="country_id"/>
+                            <field name="phone" widget="phone"/>
+                            <field name="email" widget="email"/>
+                            <field name="website" widget="url"/>
+                        </group>
+                        <group string="Structure">
+                            <field name="sellable_room_count"/>
+                            <field name="floor_ids" nolabel="1" colspan="2">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                </list>
+                            </field>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Politique / informations" name="policy">
+                            <field name="note"
+                                   placeholder="Conditions d'annulation, acompte demandé, animaux, taxes de séjour…"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_hotel_hotel" model="ir.actions.act_window">
+        <field name="name">Hôtels</field>
+        <field name="res_model">aite.hotel.hotel</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créez votre premier hôtel
+            </p>
+            <p>
+                Définissez l'établissement, ses étages et ses horaires
+                standards ; ajoutez ensuite types de chambre et chambres.
+            </p>
+        </field>
+    </record>
+
+    <!-- ============ ÉTAGES ============ -->
+    <record id="view_hotel_floor_list" model="ir.ui.view">
+        <field name="name">aite.hotel.floor.list</field>
+        <field name="model">aite.hotel.floor</field>
+        <field name="arch" type="xml">
+            <list string="Étages" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="hotel_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_hotel_floor" model="ir.actions.act_window">
+        <field name="name">Étages</field>
+        <field name="res_model">aite.hotel.floor</field>
+        <field name="view_mode">list</field>
+    </record>
+
+</odoo>

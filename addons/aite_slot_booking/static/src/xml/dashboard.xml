@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="aite_slot_booking.KpiCard">
+        <div t-att-class="'asb-kpi ' + (props.mega ? 'asb-kpi-mega asb-accent-' + props.accent : '')">
+            <div class="asb-kpi-label" t-esc="props.label"/>
+            <div class="asb-kpi-value" t-esc="props.value"/>
+            <div t-if="props.sub" class="asb-kpi-sub" t-esc="props.sub"/>
+        </div>
+    </t>
+
+    <t t-name="aite_slot_booking.Dashboard">
+        <div class="asb-dashboard-root o_action">
+            <SlotDashboardView/>
+        </div>
+    </t>
+
+    <t t-name="aite_slot_booking.DashboardView">
+        <div class="asb-dashboard">
+
+            <div class="asb-topbar">
+                <div>
+                    <h2 class="asb-title">Espaces &amp; Prestations</h2>
+                    <div class="asb-sub">Planning des créneaux · SPA, coiffure, pressing, espaces VIP / VVIP</div>
+                </div>
+                <button class="btn btn-primary btn-sm" t-on-click="() => this.newBooking()">+ Nouvelle réservation</button>
+            </div>
+
+            <!-- Filtres -->
+            <div class="asb-filterbar">
+                <div class="asb-filterrow">
+                    <span class="asb-flabel">Jour</span>
+                    <button class="asb-chip" t-on-click="() => this.setDay(-1)">‹</button>
+                    <input type="date" class="asb-date" t-att-value="state.day"
+                           t-on-change="(ev) => this.onDayInput(ev)"/>
+                    <button class="asb-chip" t-on-click="() => this.setDay(1)">›</button>
+                    <button class="asb-chip" t-on-click="() => this.setToday()">Aujourd'hui</button>
+                    <span class="asb-spacer"/>
+                    <span class="asb-flabel">Période stats</span>
+                    <t t-foreach="periodPresets" t-as="p" t-key="p.key">
+                        <button t-att-class="'asb-chip ' + (state.period === p.key ? 'active' : '')"
+                                t-on-click="() => this.setPeriod(p.key)" t-esc="p.label"/>
+                    </t>
+                </div>
+                <div class="asb-filterrow">
+                    <span class="asb-flabel">Famille</span>
+                    <button t-att-class="'asb-chip ' + (state.kind === '' ? 'active' : '')"
+                            t-on-click="() => this.setKind('')">Toutes</button>
+                    <t t-foreach="kindChips" t-as="k" t-key="k.key">
+                        <button t-att-class="'asb-chip ' + (state.kind === k.key ? 'active' : '')"
+                                t-on-click="() => this.setKind(k.key)">
+                            <span class="asb-dot" t-att-style="dotStyle(k.color)"/>
+                            <t t-esc="k.label"/>
+                        </button>
+                    </t>
+                </div>
+                <div class="asb-filterrow" t-if="resourceChips.length > 1">
+                    <span class="asb-flabel">Ressource</span>
+                    <button t-att-class="'asb-chip ' + (state.resourceId === 0 ? 'active' : '')"
+                            t-on-click="() => this.setResource(0)">Toutes</button>
+                    <t t-foreach="resourceChips" t-as="r" t-key="r.id">
+                        <button t-att-class="'asb-chip ' + (state.resourceId === r.id ? 'active' : '')"
+                                t-on-click="() => this.setResource(r.id)">
+                            <span class="asb-dot" t-att-style="dotStyle(r.color)"/>
+                            <t t-esc="r.name"/>
+                        </button>
+                    </t>
+                </div>
+            </div>
+
+            <div t-if="state.loading" class="asb-loading">
+                <i class="fa fa-spinner fa-spin"/> Chargement…
+            </div>
+
+            <div t-else="">
+
+                <!-- KPIs période -->
+                <div class="asb-section-title">Activité de la période</div>
+                <div class="asb-grid asb-grid-4">
+                    <KpiCard mega="true" accent="'primary'"
+                             label="'CA prestations réalisées'"
+                             value="money(state.kpis.ca_done)"
+                             sub="num(state.kpis.done_count) + ' réalisée(s)'"/>
+                    <KpiCard mega="true" accent="'info'"
+                             label="'Taux de remplissage'"
+                             value="pct(state.kpis.fill_rate)"
+                             sub="hours(state.kpis.booked_hours) + ' réservées / ' + hours(state.kpis.open_hours) + ' ouvrées'"/>
+                    <KpiCard mega="true" accent="'danger'"
+                             label="'No-show'"
+                             value="pct(state.kpis.no_show_pct)"
+                             sub="num(state.kpis.no_show_count) + ' rendez-vous manqué(s)'"/>
+                    <KpiCard mega="true" accent="'warning'"
+                             label="'Retraits pressing en attente'"
+                             value="num(state.kpis.pickups_waiting)"
+                             sub="num(state.kpis.confirmed_count) + ' réservation(s) à venir'"/>
+                </div>
+
+                <!-- Planning du jour -->
+                <div class="asb-section-title">Planning du <t t-esc="state.day"/></div>
+                <div class="asb-card">
+                    <div class="asb-board">
+                        <t t-foreach="state.board" t-as="bd" t-key="bd.resource.id">
+                            <div class="asb-lane">
+                                <div class="asb-lane-name">
+                                    <span class="asb-dot" t-att-style="dotStyle(bd.resource.color)"/>
+                                    <span t-esc="bd.resource.name"/>
+                                </div>
+                                <div class="asb-lane-track">
+                                    <t t-foreach="laneTicks(bd.resource)" t-as="tk" t-key="tk.key">
+                                        <div class="asb-lane-grid" t-att-style="tickStyle(tk)"/>
+                                    </t>
+                                    <t t-foreach="bd.bookings" t-as="b" t-key="b.id">
+                                        <div t-att-class="'asb-lane-book st-' + b.state"
+                                             t-att-style="laneStyle(b, bd.resource)"
+                                             t-att-title="b.partner + ' · ' + b.label"
+                                             t-on-click="() => this.openBooking(b.id)">
+                                            <t t-esc="b.partner"/>
+                                        </div>
+                                    </t>
+                                </div>
+                                <div class="asb-lane-free asb-slot-free" t-esc="boardFreeText(bd)"/>
+                            </div>
+                        </t>
+                        <div t-if="!state.board.length" class="text-muted text-center p-3">
+                            Aucune ressource — créez-les dans Configuration → Ressources.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Répartition & remplissage -->
+                <div class="asb-section-title">Répartition &amp; remplissage</div>
+                <div class="asb-grid asb-grid-2">
+                    <div class="asb-card">
+                        <h3>CA réalisé par famille (période)</h3>
+                        <div class="asb-chartbox"><canvas t-ref="mixChart"/></div>
+                    </div>
+                    <div class="asb-card">
+                        <h3>Remplissage par ressource</h3>
+                        <div class="asb-chartbox"><canvas t-ref="fillChart"/></div>
+                    </div>
+                </div>
+
+                <!-- Journal -->
+                <div class="asb-card" style="margin-top:10px;">
+                    <h3>Réservations de la période</h3>
+                    <div class="asb-tablewrap">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th><th>Réf.</th><th>Client</th>
+                                    <th>Ressource</th><th>Prestation</th>
+                                    <th class="text-end">Qté</th>
+                                    <th class="text-end">Montant</th>
+                                    <th>Origine</th><th>Folio</th>
+                                    <th>Pressing</th><th>État</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="state.bookings" t-as="b" t-key="b.id"
+                                    t-on-click="() => this.openBooking(b.id)"
+                                    style="cursor:pointer">
+                                    <td t-esc="b.date"/>
+                                    <td class="text-muted" t-esc="b.ref"/>
+                                    <td><strong t-esc="b.partner"/></td>
+                                    <td t-esc="b.resource"/>
+                                    <td t-esc="b.service"/>
+                                    <td class="text-end" t-esc="num(b.qty)"/>
+                                    <td class="text-end" t-esc="money(b.amount)"/>
+                                    <td class="text-muted" t-esc="sourceLabel(b.source)"/>
+                                    <td class="text-muted" t-esc="postedMark(b)"/>
+                                    <td class="text-muted" t-esc="pickupMark(b)"/>
+                                    <td><span t-att-class="'badge ' + badge(b.state)" t-esc="stateLabel(b.state)"/></td>
+                                </tr>
+                                <tr t-if="!state.bookings.length">
+                                    <td colspan="11" class="text-muted text-center">Aucune réservation sur la période</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </t>
+
+</templates>

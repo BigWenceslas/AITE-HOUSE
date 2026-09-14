@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="quant_prod_046" model="stock.quant">
+            <field name="product_id" ref="prod_046"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="58.0"/>
+        </record>
+        <record id="prod_046" model="product.product">
+            <field name="aite_manual_threshold" eval="16.0"/>
+            <field name="aite_lead_days" eval="6"/>
+        </record>
+        <record id="prod_047" model="product.product">
+            <field name="aite_manual_threshold" eval="20.0"/>
+            <field name="aite_lead_days" eval="5"/>
+        </record>
+        <record id="quant_prod_051" model="stock.quant">
+            <field name="product_id" ref="prod_051"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="23.0"/>
+        </record>
+        <record id="quant_prod_052" model="stock.quant">
+            <field name="product_id" ref="prod_052"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="18.0"/>
+        </record>
+        <record id="quant_prod_053" model="stock.quant">
+            <field name="product_id" ref="prod_053"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="18.0"/>
+        </record>
+        <record id="quant_prod_054" model="stock.quant">
+            <field name="product_id" ref="prod_054"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="47.0"/>
+        </record>
+        <record id="prod_054" model="product.product">
+            <field name="aite_manual_threshold" eval="10.0"/>
+            <field name="aite_lead_days" eval="6"/>
+        </record>
+        <record id="quant_prod_055" model="stock.quant">
+            <field name="product_id" ref="prod_055"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="47.0"/>
+        </record>
+        <record id="quant_prod_056" model="stock.quant">
+            <field name="product_id" ref="prod_056"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="23.0"/>
+        </record>
+        <record id="quant_prod_057" model="stock.quant">
+            <field name="product_id" ref="prod_057"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="52.0"/>
+        </record>
+        <record id="prod_057" model="product.product">
+            <field name="aite_manual_threshold" eval="12.0"/>
+            <field name="aite_lead_days" eval="6"/>
+        </record>
+        <record id="quant_prod_058" model="stock.quant">
+            <field name="product_id" ref="prod_058"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="20.0"/>
+        </record>
+        <record id="prod_058" model="product.product">
+            <field name="aite_manual_threshold" eval="23.0"/>
+            <field name="aite_lead_days" eval="6"/>
+        </record>
+        <record id="quant_prod_059" model="stock.quant">
+            <field name="product_id" ref="prod_059"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="47.0"/>
+        </record>
+        <record id="prod_059" model="product.product">
+            <field name="aite_manual_threshold" eval="11.0"/>
+            <field name="aite_lead_days" eval="5"/>
+        </record>
+        <record id="quant_prod_060" model="stock.quant">
+            <field name="product_id" ref="prod_060"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="2.0"/>
+        </record>
+        <record id="prod_060" model="product.product">
+            <field name="aite_manual_threshold" eval="20.0"/>
+            <field name="aite_lead_days" eval="6"/>
+        </record>
+        <record id="quant_prod_061" model="stock.quant">
+            <field name="product_id" ref="prod_061"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="45.0"/>
+        </record>
+        <record id="prod_061" model="product.product">
+            <field name="aite_manual_threshold" eval="13.0"/>
+            <field name="aite_lead_days" eval="3"/>
+        </record>
+        <record id="quant_prod_062" model="stock.quant">
+            <field name="product_id" ref="prod_062"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="68.0"/>
+        </record>
+        <record id="quant_prod_065" model="stock.quant">
+            <field name="product_id" ref="prod_065"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="9.0"/>
+        </record>
+        <record id="quant_prod_066" model="stock.quant">
+            <field name="product_id" ref="prod_066"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="7.0"/>
+        </record>
+        <record id="quant_prod_067" model="stock.quant">
+            <field name="product_id" ref="prod_067"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="15.0"/>
+        </record>
+        <record id="quant_prod_075" model="stock.quant">
+            <field name="product_id" ref="prod_075"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="74.0"/>
+        </record>
+        <record id="quant_prod_076" model="stock.quant">
+            <field name="product_id" ref="prod_076"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="59.0"/>
+        </record>
+        <record id="prod_076" model="product.product">
+            <field name="aite_manual_threshold" eval="10.0"/>
+            <field name="aite_lead_days" eval="6"/>
+        </record>
+        <record id="quant_prod_077" model="stock.quant">
+            <field name="product_id" ref="prod_077"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="45.0"/>
+        </record>
+        <record id="quant_prod_078" model="stock.quant">
+            <field name="product_id" ref="prod_078"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="79.0"/>
+        </record>
+        <record id="prod_079" model="product.product">
+            <field name="aite_manual_threshold" eval="13.0"/>
+            <field name="aite_lead_days" eval="3"/>
+        </record>
+        <record id="quant_prod_080" model="stock.quant">
+            <field name="product_id" ref="prod_080"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="19.0"/>
+        </record>
+        <record id="prod_080" model="product.product">
+            <field name="aite_manual_threshold" eval="24.0"/>
+            <field name="aite_lead_days" eval="7"/>
+        </record>
+        <record id="quant_prod_081" model="stock.quant">
+            <field name="product_id" ref="prod_081"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="4.0"/>
+        </record>
+        <record id="prod_081" model="product.product">
+            <field name="aite_manual_threshold" eval="18.0"/>
+            <field name="aite_lead_days" eval="4"/>
+        </record>
+        <record id="quant_prod_082" model="stock.quant">
+            <field name="product_id" ref="prod_082"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="44.0"/>
+        </record>
+        <record id="quant_prod_083" model="stock.quant">
+            <field name="product_id" ref="prod_083"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="44.0"/>
+        </record>
+        <record id="quant_prod_084" model="stock.quant">
+            <field name="product_id" ref="prod_084"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="59.0"/>
+        </record>
+        <record id="quant_prod_085" model="stock.quant">
+            <field name="product_id" ref="prod_085"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="16.0"/>
+        </record>
+        <record id="quant_prod_086" model="stock.quant">
+            <field name="product_id" ref="prod_086"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="28.0"/>
+        </record>
+        <record id="quant_prod_087" model="stock.quant">
+            <field name="product_id" ref="prod_087"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="33.0"/>
+        </record>
+        <record id="quant_prod_088" model="stock.quant">
+            <field name="product_id" ref="prod_088"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="54.0"/>
+        </record>
+        <record id="quant_prod_089" model="stock.quant">
+            <field name="product_id" ref="prod_089"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="24.0"/>
+        </record>
+        <record id="prod_090" model="product.product">
+            <field name="aite_manual_threshold" eval="16.0"/>
+            <field name="aite_lead_days" eval="6"/>
+        </record>
+        <record id="quant_prod_091" model="stock.quant">
+            <field name="product_id" ref="prod_091"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="51.0"/>
+        </record>
+        <record id="prod_091" model="product.product">
+            <field name="aite_manual_threshold" eval="14.0"/>
+            <field name="aite_lead_days" eval="5"/>
+        </record>
+        <record id="quant_prod_092" model="stock.quant">
+            <field name="product_id" ref="prod_092"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="53.0"/>
+        </record>
+        <record id="prod_092" model="product.product">
+            <field name="aite_manual_threshold" eval="16.0"/>
+            <field name="aite_lead_days" eval="3"/>
+        </record>
+        <record id="quant_prod_093" model="stock.quant">
+            <field name="product_id" ref="prod_093"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="59.0"/>
+        </record>
+        <record id="prod_093" model="product.product">
+            <field name="aite_manual_threshold" eval="17.0"/>
+            <field name="aite_lead_days" eval="5"/>
+        </record>
+        <record id="quant_prod_094" model="stock.quant">
+            <field name="product_id" ref="prod_094"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="2.0"/>
+        </record>
+        <record id="prod_094" model="product.product">
+            <field name="aite_manual_threshold" eval="13.0"/>
+            <field name="aite_lead_days" eval="4"/>
+        </record>
+        <record id="quant_prod_095" model="stock.quant">
+            <field name="product_id" ref="prod_095"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="14.0"/>
+        </record>
+        <record id="quant_prod_096" model="stock.quant">
+            <field name="product_id" ref="prod_096"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="4.0"/>
+        </record>
+        <record id="prod_096" model="product.product">
+            <field name="aite_manual_threshold" eval="12.0"/>
+            <field name="aite_lead_days" eval="5"/>
+        </record>
+        <record id="quant_prod_097" model="stock.quant">
+            <field name="product_id" ref="prod_097"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="35.0"/>
+        </record>
+        <record id="prod_097" model="product.product">
+            <field name="aite_manual_threshold" eval="12.0"/>
+            <field name="aite_lead_days" eval="7"/>
+        </record>
+        <record id="quant_prod_098" model="stock.quant">
+            <field name="product_id" ref="prod_098"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="64.0"/>
+        </record>
+        <record id="prod_098" model="product.product">
+            <field name="aite_manual_threshold" eval="10.0"/>
+            <field name="aite_lead_days" eval="4"/>
+        </record>
+        <record id="quant_prod_099" model="stock.quant">
+            <field name="product_id" ref="prod_099"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="47.0"/>
+        </record>
+        <record id="quant_prod_100" model="stock.quant">
+            <field name="product_id" ref="prod_100"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="10.0"/>
+        </record>
+        <record id="quant_prod_101" model="stock.quant">
+            <field name="product_id" ref="prod_101"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="11.0"/>
+        </record>
+        <record id="quant_prod_102" model="stock.quant">
+            <field name="product_id" ref="prod_102"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="61.0"/>
+        </record>
+        <record id="quant_prod_103" model="stock.quant">
+            <field name="product_id" ref="prod_103"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="70.0"/>
+        </record>
+        <record id="quant_prod_104" model="stock.quant">
+            <field name="product_id" ref="prod_104"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="6.0"/>
+        </record>
+        <record id="quant_prod_105" model="stock.quant">
+            <field name="product_id" ref="prod_105"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="44.0"/>
+        </record>
+        <record id="quant_prod_106" model="stock.quant">
+            <field name="product_id" ref="prod_106"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="58.0"/>
+        </record>
+        <record id="quant_prod_107" model="stock.quant">
+            <field name="product_id" ref="prod_107"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="4.0"/>
+        </record>
+        <record id="quant_prod_108" model="stock.quant">
+            <field name="product_id" ref="prod_108"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="9.0"/>
+        </record>
+        <record id="quant_prod_109" model="stock.quant">
+            <field name="product_id" ref="prod_109"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="14.0"/>
+        </record>
+        <record id="quant_prod_110" model="stock.quant">
+            <field name="product_id" ref="prod_110"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="12.0"/>
+        </record>
+        <record id="quant_prod_111" model="stock.quant">
+            <field name="product_id" ref="prod_111"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="63.0"/>
+        </record>
+        <record id="quant_prod_112" model="stock.quant">
+            <field name="product_id" ref="prod_112"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="7.0"/>
+        </record>
+        <record id="quant_prod_113" model="stock.quant">
+            <field name="product_id" ref="prod_113"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="10.0"/>
+        </record>
+        <record id="quant_prod_114" model="stock.quant">
+            <field name="product_id" ref="prod_114"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="45.0"/>
+        </record>
+        <record id="quant_prod_115" model="stock.quant">
+            <field name="product_id" ref="prod_115"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="66.0"/>
+        </record>
+        <record id="quant_prod_116" model="stock.quant">
+            <field name="product_id" ref="prod_116"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="76.0"/>
+        </record>
+        <record id="quant_prod_117" model="stock.quant">
+            <field name="product_id" ref="prod_117"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="78.0"/>
+        </record>
+        <record id="quant_prod_118" model="stock.quant">
+            <field name="product_id" ref="prod_118"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="79.0"/>
+        </record>
+        <record id="quant_prod_119" model="stock.quant">
+            <field name="product_id" ref="prod_119"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="9.0"/>
+        </record>
+        <record id="quant_prod_120" model="stock.quant">
+            <field name="product_id" ref="prod_120"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="quantity" eval="20.0"/>
+        </record>
+        <record id="supplier_00" model="res.partner">
+            <field name="name">SOGUIDIS Distribution</field>
+            <field name="is_company" eval="True"/>
+            <field name="supplier_rank" eval="1"/>
+            <field name="phone">+224 620 44 55 60</field>
+        </record>
+        <record id="supplier_01" model="res.partner">
+            <field name="name">Ets Kankan Négoce</field>
+            <field name="is_company" eval="True"/>
+            <field name="supplier_rank" eval="1"/>
+            <field name="phone">+224 621 44 55 61</field>
+        </record>
+        <record id="supplier_02" model="res.partner">
+            <field name="name">Camara &amp; Fils Import</field>
+            <field name="is_company" eval="True"/>
+            <field name="supplier_rank" eval="1"/>
+            <field name="phone">+224 622 44 55 62</field>
+        </record>
+        <record id="supplier_03" model="res.partner">
+            <field name="name">Fria Boissons SARL</field>
+            <field name="is_company" eval="True"/>
+            <field name="supplier_rank" eval="1"/>
+            <field name="phone">+224 623 44 55 63</field>
+        </record>
+        <record id="supplier_04" model="res.partner">
+            <field name="name">Artisans de Kindia</field>
+            <field name="is_company" eval="True"/>
+            <field name="supplier_rank" eval="1"/>
+            <field name="phone">+224 624 44 55 64</field>
+        </record>
+        <record id="pos_config_boutique" model="pos.config">
+            <field name="name">Caisse Boutique (démo)</field>
+            <field name="limit_categories" eval="True"/>
+            <field name="iface_available_categ_ids" eval="[(6, 0, [ref('pos_cat_boutique'), ref('pos_cat_snacks'), ref('pos_cat_epicerie'), ref('pos_cat_hygiene'), ref('pos_cat_artisanat'), ref('pos_cat_textile'), ref('pos_cat_techno')])]"/>
+        </record>
+    </data>
+</odoo>

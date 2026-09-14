@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_hotel_housekeeping_kanban" model="ir.ui.view">
+        <field name="name">aite.hotel.housekeeping.kanban</field>
+        <field name="model">aite.hotel.housekeeping</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" quick_create="false">
+                <field name="state"/>
+                <field name="priority"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex flex-column p-2">
+                            <div class="d-flex justify-content-between">
+                                <strong>
+                                    Ch. <field name="room_id"/>
+                                </strong>
+                                <field name="priority" widget="priority"/>
+                            </div>
+                            <div>
+                                <field name="task_type" widget="badge"/>
+                            </div>
+                            <div class="text-muted">
+                                <i class="fa fa-calendar me-1" title="Date"/>
+                                <field name="date"/>
+                            </div>
+                            <div t-if="record.assigned_to.raw_value">
+                                <i class="fa fa-user me-1" title="Assignée à"/>
+                                <field name="assigned_to"/>
+                            </div>
+                            <div class="mt-2 d-flex gap-1">
+                                <button name="action_start" type="object"
+                                        class="btn btn-sm btn-secondary"
+                                        invisible="state != 'todo'">
+                                    Démarrer
+                                </button>
+                                <button name="action_done" type="object"
+                                        class="btn btn-sm btn-success"
+                                        invisible="state not in ('todo','in_progress')">
+                                    Terminer
+                                </button>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_hotel_housekeeping_list" model="ir.ui.view">
+        <field name="name">aite.hotel.housekeeping.list</field>
+        <field name="model">aite.hotel.housekeeping</field>
+        <field name="arch" type="xml">
+            <list string="Tâches de gouvernante"
+                  decoration-muted="state in ('done','cancelled')"
+                  decoration-danger="priority == '1' and state == 'todo'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="room_id"/>
+                <field name="floor_id" optional="show"/>
+                <field name="hotel_id" optional="hide"
+                       groups="base.group_multi_company"/>
+                <field name="task_type" widget="badge"/>
+                <field name="assigned_to"/>
+                <field name="priority" widget="priority"/>
+                <field name="state" widget="badge"
+                       decoration-warning="state == 'todo'"
+                       decoration-info="state == 'in_progress'"
+                       decoration-success="state == 'done'"
+                       decoration-muted="state == 'cancelled'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_hotel_housekeeping_form" model="ir.ui.view">
+        <field name="name">aite.hotel.housekeeping.form</field>
+        <field name="model">aite.hotel.housekeeping</field>
+        <field name="arch" type="xml">
+            <form string="Tâche de gouvernante">
+                <header>
+                    <button name="action_start" type="object"
+                            string="Démarrer" class="btn-primary"
+                            invisible="state != 'todo'"/>
+                    <button name="action_done" type="object"
+                            string="Terminer" class="btn-primary"
+                            invisible="state not in ('todo','in_progress')"/>
+                    <button name="action_cancel" type="object"
+                            string="Annuler"
+                            invisible="state in ('done','cancelled')"/>
+                    <button name="action_reset_todo" type="object"
+                            string="Réactiver"
+                            invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="todo,in_progress,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="room_id"
+                                   readonly="state != 'todo'"/>
+                            <field name="floor_id"/>
+                            <field name="hotel_id"
+                                   groups="base.group_multi_company"/>
+                            <field name="company_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="task_type"
+                                   readonly="state != 'todo'"/>
+                            <field name="date"/>
+                            <field name="assigned_to"/>
+                            <field name="priority" widget="priority"/>
+                        </group>
+                    </group>
+                    <group string="Consignes / constat">
+                        <field name="note" nolabel="1"
+                               placeholder="Consignes de ménage, constat de maintenance…"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hotel_housekeeping_search" model="ir.ui.view">
+        <field name="name">aite.hotel.housekeeping.search</field>
+        <field name="model">aite.hotel.housekeeping</field>
+        <field name="arch" type="xml">
+            <search string="Tâches de gouvernante">
+                <field name="room_id"/>
+                <field name="assigned_to"/>
+                <filter name="filter_today" string="Aujourd'hui"
+                        domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter name="filter_open" string="À traiter"
+                        domain="[('state', 'in', ('todo','in_progress'))]"/>
+                <filter name="filter_mine" string="Mes tâches"
+                        domain="[('assigned_to', '=', uid)]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_state" string="État"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="group_type" string="Type"
+                            context="{'group_by': 'task_type'}"/>
+                    <filter name="group_floor" string="Étage"
+                            context="{'group_by': 'floor_id'}"/>
+                    <filter name="group_assigned" string="Assignée à"
+                            context="{'group_by': 'assigned_to'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_hotel_housekeeping" model="ir.actions.act_window">
+        <field name="name">Gouvernante</field>
+        <field name="res_model">aite.hotel.housekeeping</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_hotel_housekeeping_search"/>
+        <field name="context">{'search_default_filter_open': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucune tâche de ménage en attente
+            </p>
+            <p>
+                Les recouches sont créées automatiquement au check-out ;
+                le ménage quotidien peut l'être par le planificateur.
+            </p>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <record id="module_category_pos_credit" model="ir.module.category">
+            <field name="name">POS Crédit</field>
+            <field name="description">Gestion des ardoises et du recouvrement POS</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <record id="group_pos_credit_user" model="res.groups">
+            <field name="name">Utilisateur</field>
+            <field name="category_id" ref="module_category_pos_credit"/>
+            <field name="comment">Consulte les ardoises, enregistre des remboursements.</field>
+        </record>
+
+        <record id="group_pos_credit_manager" model="res.groups">
+            <field name="name">Responsable</field>
+            <field name="category_id" ref="module_category_pos_credit"/>
+            <field name="implied_ids" eval="[(4, ref('group_pos_credit_user'))]"/>
+            <field name="comment">Gère, annule, rouvre les ardoises ; accès au tableau de bord.</field>
+        </record>
+
+    </data>
+</odoo>

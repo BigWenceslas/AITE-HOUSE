@@ -1,0 +1,13 @@
+module;version;nom;dépendances;fichiers
+aite_demo_data;18.0.1.2.1;AITE — Jeu d'essai démonstration;point_of_sale, aite_hotel_management, aite_slot_booking, aite_loyalty, aite_stock_dashboard;17
+aite_direction_dashboard;18.0.1.0.2;AITE — Direction (vue consolidée);aite_pos_analytics, aite_pos_credit, aite_stock_dashboard, aite_purchase_dashboard;9
+aite_exec_dashboard;18.0.1.0.2;AITE — Tableau de bord Direction;web, point_of_sale, aite_hotel_management, aite_slot_booking;14
+aite_hotel_management;18.0.1.0.2;AITE — Gestion Hôtelière (PMS);base, mail, product, account, sale, web_gantt;51
+aite_hotel_pos_link;18.0.1.0.0;AITE — Note de chambre (POS → folio);point_of_sale, aite_hotel_management;13
+aite_loyalty;18.0.1.0.0;AITE — Fidélité unifiée & segmentation;base, mail, point_of_sale, aite_hotel_management, aite_slot_booking;16
+aite_pos_analytics;18.0.2.1.0;AITE — POS Analytics (LAVERANDAH);base, product, point_of_sale, account;36
+aite_pos_credit;18.0.2.0.2;AITE — Crédit clients (Ardoises POS & Ventes);base, product, point_of_sale, sale, account;38
+aite_purchase_dashboard;18.0.1.0.2;AITE — Achats & Fournisseurs (Tableau de bord);base, purchase, account, web;19
+aite_slot_booking;18.0.1.0.2;AITE — Espaces & Prestations (réservation par créneaux);base, mail, product, account, aite_hotel_management, web;25
+aite_stock_dashboard;18.0.1.1.2;AITE — Stock & Inventaire (Tableau de bord);base, product, stock, web;19
+aite_website_booking;18.0.1.0.0;AITE — Réservation en ligne;website, portal, aite_slot_booking, aite_hotel_management;8

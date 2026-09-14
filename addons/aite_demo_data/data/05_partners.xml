@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="partner_00" model="res.partner">
+            <field name="name">Mamadou Baldé</field>
+            <field name="phone">+224 62067 94 66 28</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">vvip</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">mamadou.balde@exemple.gn</field>
+        </record>
+        <record id="partner_01" model="res.partner">
+            <field name="name">Aïcha Sow</field>
+            <field name="phone">+224 62112 64 40 10</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">vvip</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">aicha.sow@exemple.gn</field>
+        </record>
+        <record id="partner_02" model="res.partner">
+            <field name="name">Ibrahima Bah</field>
+            <field name="phone">+224 62265 12 32 61</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">vip</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">ibrahima.bah@exemple.gn</field>
+        </record>
+        <record id="partner_03" model="res.partner">
+            <field name="name">Fatoumata Diallo</field>
+            <field name="phone">+224 62347 57 40 46</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">vip</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">fatoumata.diallo@exemple.gn</field>
+        </record>
+        <record id="partner_04" model="res.partner">
+            <field name="name">Ousmane Bangoura</field>
+            <field name="phone">+224 62412 58 63 10</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">vip</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">ousmane.bangoura@exemple.gn</field>
+        </record>
+        <record id="partner_05" model="res.partner">
+            <field name="name">Mariama Barry</field>
+            <field name="phone">+224 62572 60 81 95</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">vip</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">mariama.barry@exemple.gn</field>
+        </record>
+        <record id="partner_06" model="res.partner">
+            <field name="name">Sékou Soumah</field>
+            <field name="phone">+224 62639 35 22 99</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">vip</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">sekou.soumah@exemple.gn</field>
+        </record>
+        <record id="partner_07" model="res.partner">
+            <field name="name">Kadiatou Keita</field>
+            <field name="phone">+224 62729 72 44 16</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">vvip</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">kadiatou.keita@exemple.gn</field>
+        </record>
+        <record id="partner_08" model="res.partner">
+            <field name="name">Mohamed Doumbouya</field>
+            <field name="phone">+224 62065 46 37 79</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">standard</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">mohamed.doumbouya@exemple.gn</field>
+        </record>
+        <record id="partner_09" model="res.partner">
+            <field name="name">Aminata Sylla</field>
+            <field name="phone">+224 62176 59 63 92</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">standard</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">aminata.sylla@exemple.gn</field>
+        </record>
+        <record id="partner_10" model="res.partner">
+            <field name="name">Thierno Cissé</field>
+            <field name="phone">+224 62258 81 80 86</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">standard</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">thierno.cisse@exemple.gn</field>
+        </record>
+        <record id="partner_11" model="res.partner">
+            <field name="name">Hadja Kourouma</field>
+            <field name="phone">+224 62349 48 69 30</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">standard</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">hadja.kourouma@exemple.gn</field>
+        </record>
+        <record id="partner_12" model="res.partner">
+            <field name="name">Boubacar Touré</field>
+            <field name="phone">+224 62493 32 12 18</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">standard</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">boubacar.toure@exemple.gn</field>
+        </record>
+        <record id="partner_13" model="res.partner">
+            <field name="name">Bintou Kaba</field>
+            <field name="phone">+224 62536 97 65 86</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">standard</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">bintou.kaba@exemple.gn</field>
+        </record>
+        <record id="partner_14" model="res.partner">
+            <field name="name">Alseny Fofana</field>
+            <field name="phone">+224 62681 99 93 11</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">standard</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">alseny.fofana@exemple.gn</field>
+        </record>
+        <record id="partner_15" model="res.partner">
+            <field name="name">Djénabou Béavogui</field>
+            <field name="phone">+224 62766 40 33 51</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">standard</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">djenabou.beavogui@exemple.gn</field>
+        </record>
+        <record id="partner_16" model="res.partner">
+            <field name="name">Lansana Sano</field>
+            <field name="phone">+224 62048 69 13 21</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">standard</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">lansana.sano@exemple.gn</field>
+        </record>
+        <record id="partner_17" model="res.partner">
+            <field name="name">Salématou Yattara</field>
+            <field name="phone">+224 62131 44 33 91</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">standard</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">salematou.yattara@exemple.gn</field>
+        </record>
+        <record id="partner_18" model="res.partner">
+            <field name="name">Facinet Condé</field>
+            <field name="phone">+224 62291 69 97 76</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">standard</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">facinet.conde@exemple.gn</field>
+        </record>
+        <record id="partner_19" model="res.partner">
+            <field name="name">Oumou Camara</field>
+            <field name="phone">+224 62392 17 61 57</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">standard</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">oumou.camara@exemple.gn</field>
+        </record>
+        <record id="partner_20" model="res.partner">
+            <field name="name">Naby Baldé</field>
+            <field name="phone">+224 62454 68 96 74</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">standard</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">naby.balde@exemple.gn</field>
+        </record>
+        <record id="partner_21" model="res.partner">
+            <field name="name">Fanta Sow</field>
+            <field name="phone">+224 62547 72 46 96</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">standard</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">fanta.sow@exemple.gn</field>
+        </record>
+        <record id="partner_22" model="res.partner">
+            <field name="name">Elhadj Bah</field>
+            <field name="phone">+224 62646 54 87 26</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">standard</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">elhadj.bah@exemple.gn</field>
+        </record>
+        <record id="partner_23" model="res.partner">
+            <field name="name">Safiatou Diallo</field>
+            <field name="phone">+224 62783 46 55 61</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">standard</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">safiatou.diallo@exemple.gn</field>
+        </record>
+        <record id="partner_24" model="res.partner">
+            <field name="name">Karamoko Bangoura</field>
+            <field name="phone">+224 62067 18 75 93</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">standard</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">karamoko.bangoura@exemple.gn</field>
+        </record>
+        <record id="partner_25" model="res.partner">
+            <field name="name">Mabinty Barry</field>
+            <field name="phone">+224 62115 34 52 74</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">standard</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">mabinty.barry@exemple.gn</field>
+        </record>
+        <record id="partner_26" model="res.partner">
+            <field name="name">Souleymane Soumah</field>
+            <field name="phone">+224 62246 58 88 30</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">standard</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">souleymane.soumah@exemple.gn</field>
+        </record>
+        <record id="partner_27" model="res.partner">
+            <field name="name">Néné Keita</field>
+            <field name="phone">+224 62394 14 61 45</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">standard</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">nene.keita@exemple.gn</field>
+        </record>
+        <record id="partner_28" model="res.partner">
+            <field name="name">Abdoulaye Doumbouya</field>
+            <field name="phone">+224 62471 27 40 43</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">standard</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">abdoulaye.doumbouya@exemple.gn</field>
+        </record>
+        <record id="partner_29" model="res.partner">
+            <field name="name">Kadija Sylla</field>
+            <field name="phone">+224 62575 19 98 23</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">vip</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">kadija.sylla@exemple.gn</field>
+        </record>
+        <record id="partner_30" model="res.partner">
+            <field name="name">Fodé Cissé</field>
+            <field name="phone">+224 62658 18 90 91</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">standard</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">fode.cisse@exemple.gn</field>
+        </record>
+        <record id="partner_31" model="res.partner">
+            <field name="name">Rouguiatou Kourouma</field>
+            <field name="phone">+224 62790 35 47 48</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">standard</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">rouguiatou.kourouma@exemple.gn</field>
+        </record>
+        <record id="partner_32" model="res.partner">
+            <field name="name">Moussa Touré</field>
+            <field name="phone">+224 62063 25 18 83</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">standard</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">moussa.toure@exemple.gn</field>
+        </record>
+        <record id="partner_33" model="res.partner">
+            <field name="name">Assiatou Kaba</field>
+            <field name="phone">+224 62177 32 30 93</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">standard</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">assiatou.kaba@exemple.gn</field>
+        </record>
+        <record id="partner_34" model="res.partner">
+            <field name="name">Yamoussa Fofana</field>
+            <field name="phone">+224 62231 67 95 64</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">standard</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">yamoussa.fofana@exemple.gn</field>
+        </record>
+        <record id="partner_35" model="res.partner">
+            <field name="name">Diaka Béavogui</field>
+            <field name="phone">+224 62362 31 75 23</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">standard</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">diaka.beavogui@exemple.gn</field>
+        </record>
+        <record id="partner_36" model="res.partner">
+            <field name="name">Ansoumane Sano</field>
+            <field name="phone">+224 62495 80 56 49</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">vip</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="email">ansoumane.sano@exemple.gn</field>
+        </record>
+        <record id="partner_c0" model="res.partner">
+            <field name="name">SOGUIMEX SARL</field>
+            <field name="phone">+224 62550 78 15 68</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">standard</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="is_company" eval="True"/>
+        </record>
+        <record id="partner_c1" model="res.partner">
+            <field name="name">Bureau d'études BENKADI</field>
+            <field name="phone">+224 62623 58 85 85</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">vvip</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="is_company" eval="True"/>
+        </record>
+        <record id="partner_c2" model="res.partner">
+            <field name="name">ONG Horizon Guinée</field>
+            <field name="phone">+224 62727 82 55 40</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="loyalty_tier">standard</field>
+            <field name="loyalty_tier_date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="is_company" eval="True"/>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,801 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="aite_direction_dashboard.KpiCard">
+    <div t-att-class="'add-card ' + (props.mega ? 'add-mega ' : '')
+                      + (props.accent ? 'add-al-' + props.accent : '')
+                      + (props.onClick ? ' add-clickable' : '')"
+         t-on-click="() => props.onClick and props.onClick()">
+        <span t-if="props.badge"
+              t-att-class="'add-badge add-b-' + props.badge"
+              t-esc="props.badge === 'per' ? 'période' : 'photo'"/>
+        <div class="add-lbl" t-esc="props.label"/>
+        <div class="add-val">
+            <t t-esc="props.value"/>
+            <span t-if="props.delta !== undefined and props.delta !== null"
+                  t-att-class="'add-delta ' + deltaCls"
+                  t-esc="deltaText"/>
+        </div>
+        <div t-if="props.sub" class="add-sub" t-esc="props.sub"/>
+    </div>
+</t>
+
+<t t-name="aite_direction_dashboard.HBar">
+    <div class="add-hbar">
+        <div class="add-hl" t-esc="props.label"/>
+        <div class="add-ht">
+            <div class="add-hf"
+                 t-attf-style="width: {{ width }}%; background: {{ props.color }};"/>
+        </div>
+        <div class="add-hv">
+            <t t-esc="props.value"/>
+            <span t-if="props.hint" class="add-hint" t-esc="props.hint"/>
+        </div>
+    </div>
+</t>
+
+<t t-name="aite_direction_dashboard.TrendChart">
+    <svg viewBox="0 0 560 212" class="add-trend">
+        <g stroke="#eeede8" stroke-width="1">
+            <line x1="40" y1="20" x2="545" y2="20"/>
+            <line x1="40" y1="100" x2="545" y2="100"/>
+            <line x1="40" y1="180" x2="545" y2="180"/>
+        </g>
+        <g font-size="9" fill="#888780" text-anchor="end">
+            <text x="36" y="23" t-esc="maxBarLabel"/>
+            <text x="36" y="183">0</text>
+        </g>
+        <g font-size="9" fill="#854F0B" text-anchor="start">
+            <text x="548" y="23" t-esc="maxLineLabel"/>
+            <text x="548" y="183">0</text>
+        </g>
+        <t t-foreach="bars" t-as="b" t-key="b.period">
+            <rect t-att-x="b.caX" t-att-y="b.caY" width="22"
+                  t-att-height="b.caH" fill="#714B67"/>
+            <rect t-att-x="b.biX" t-att-y="b.biY" width="22"
+                  t-att-height="b.biH" fill="#185FA5"/>
+            <text t-att-x="b.xLabel" y="198" font-size="10"
+                  fill="#888780" text-anchor="middle" t-esc="b.period"/>
+        </t>
+        <polyline t-att-points="linePoints" fill="none"
+                  stroke="#854F0B" stroke-width="2.5"/>
+        <t t-foreach="line" t-as="p" t-key="p_index">
+            <circle t-att-cx="p.x" t-att-cy="p.y" r="3.5"
+                    fill="#854F0B"/>
+        </t>
+    </svg>
+    <div class="add-legend">
+        <span class="add-dot" style="background:#714B67"/>CA encaissé
+        <span class="add-dot" style="background:#185FA5"/>Achats
+        (factures)
+        <span class="add-dot" style="background:#854F0B"/>Encours
+        d'ardoises (échelle droite)
+    </div>
+</t>
+
+<t t-name="aite_direction_dashboard.MirrorAging">
+    <div class="add-mhead">
+        <span>Vos clients vous doivent</span>
+        <span class="add-msp"/>
+        <span>Vous devez aux fournisseurs</span>
+    </div>
+    <div class="add-mirror">
+        <t t-foreach="rows" t-as="r" t-key="r.key">
+            <div class="add-mrow">
+                <div class="add-mside add-left">
+                    <span class="add-mval add-l" t-esc="r.cAmount"/>
+                    <div class="add-mbar"
+                         t-attf-style="width: {{ r.cPct }}%; background: {{ r.cColor }};"/>
+                </div>
+                <div class="add-mlab" t-esc="r.label"/>
+                <div class="add-mside">
+                    <div class="add-mbar"
+                         t-attf-style="width: {{ r.sPct }}%; background: {{ r.sColor }};"/>
+                    <span class="add-mval" t-esc="r.sAmount"/>
+                </div>
+            </div>
+        </t>
+    </div>
+    <div class="add-legend">Gauche : du cash qui s'évapore avec l'âge.
+        Droite : du crédit fournisseur — gratuit tant que les échéances
+        tiennent.</div>
+</t>
+
+<t t-name="aite_direction_dashboard.Heatmap">
+    <div class="add-hm">
+        <t t-foreach="grid" t-as="row" t-key="row.label">
+            <div class="add-hm-row">
+                <div class="add-hm-day" t-esc="row.label"/>
+                <t t-foreach="row.cells" t-as="c" t-key="c.h">
+                    <div class="add-hm-cell"
+                         t-att-title="c.h + ' h'"
+                         t-attf-style="background: rgba(113, 75, 103, {{ c.alpha }});"/>
+                </t>
+            </div>
+        </t>
+        <div class="add-hm-x">
+            <span class="add-hm-day"/>
+            <t t-foreach="hours" t-as="h" t-key="h">
+                <span t-esc="h"/>
+            </t>
+        </div>
+    </div>
+</t>
+
+<!-- ══════════════════════ RACINE ══════════════════════ -->
+<t t-name="aite_direction_dashboard.Dashboard">
+    <div class="add-dashboard">
+        <t t-if="!state.loading">
+            <div class="add-dashboard-top">
+
+            <div class="add-head">
+                <h1>Direction — Vue consolidée</h1>
+                <div class="add-headsub">
+                    POS · Crédit clients · Stock · Achats —
+                    <t t-esc="state.meta.company"/>
+                </div>
+            </div>
+
+            <!-- filtres globaux -->
+            <div class="add-bar add-filters">
+                <span class="add-lblf">PÉRIODE</span>
+                <t t-foreach="periods" t-as="p" t-key="p.key">
+                    <button t-att-class="'add-chip'
+                            + (state.period === p.key ? ' add-on' : '')"
+                            t-on-click="() => this.setPeriod(p.key)"
+                            t-esc="p.label"/>
+                </t>
+                <span class="add-du">Du</span>
+                <input type="date" class="add-datein add-date-from"
+                       t-att-value="state.from"/>
+                <span class="add-du">au</span>
+                <input type="date" class="add-datein add-date-to"
+                       t-att-value="state.to"/>
+                <button t-att-class="'add-chip add-apply'
+                        + (state.custom ? ' add-on' : '')"
+                        t-on-click="applyCustom">Appliquer</button>
+            </div>
+            <div class="add-bar">
+                <span class="add-lblf">CAISSE</span>
+                <button t-att-class="'add-chip'
+                        + (!state.configId ? ' add-on' : '')"
+                        t-on-click="() => this.setCaisse(null)">
+                    Toutes les caisses</button>
+                <t t-foreach="configs" t-as="c" t-key="c.id">
+                    <button t-att-class="'add-chip'
+                            + (state.configId === c.id ? ' add-on' : '')"
+                            t-on-click="() => this.setCaisse(c.id)">
+                        <span class="add-dotc"
+                              t-attf-style="background: {{ c.color }};"/>
+                        <t t-esc="c.name"/>
+                    </button>
+                </t>
+                <span class="add-note">caisse, heure et jours filtrent
+                    les données de vente</span>
+            </div>
+            <div class="add-bar">
+                <span class="add-lblf">HEURE</span>
+                <t t-foreach="tranches" t-as="tr" t-key="tr.label">
+                    <button t-att-class="'add-chip'
+                            + (state.tranche === tr.key ? ' add-on' : '')"
+                            t-on-click="() => this.setTranche(tr.key)"
+                            t-esc="tr.label"/>
+                </t>
+            </div>
+            <div class="add-bar">
+                <span class="add-lblf">JOUR</span>
+                <t t-foreach="jours" t-as="j" t-key="j_index">
+                    <button t-att-class="'add-chip'
+                            + (state.days.includes(j_index) ? ' add-on' : '')"
+                            t-on-click="() => this.togJour(j_index)"
+                            t-esc="j"/>
+                </t>
+                <span class="add-note">multi-sélection — aucun = tous</span>
+            </div>
+
+            <!-- onglets -->
+            <div class="add-bar">
+                <span class="add-lblf">VUE</span>
+                <t t-foreach="tabs" t-as="tb" t-key="tb.key">
+                    <button t-att-class="'add-tab'
+                            + (state.tab === tb.key ? ' add-on' : '')"
+                            t-on-click="() => this.setTab(tb.key)">
+                        <t t-esc="tb.label"/>
+                        <span t-if="badges[tb.key]" class="add-n"
+                              t-esc="badges[tb.key]"/>
+                    </button>
+                </t>
+            </div>
+            </div>
+
+            <div class="add-dashboard-body">
+
+            <!-- ═══ VUE D'ENSEMBLE ═══ -->
+            <div t-if="state.tab === 'vue'">
+                <t t-if="state.data.vue">
+                    <t t-set="o" t-value="state.data.vue"/>
+                    <div class="add-sect">SANTÉ DE L'AFFAIRE</div>
+                    <div class="add-row">
+                        <KpiCard mega="true" accent="'vert'" badge="'per'"
+                            label="'CA encaissé'"
+                            value="money(o.pos.ca)"
+                            delta="o.pos.ca_delta"
+                            sub="o.pos.order_count + ' tickets · POS payés / facturés'"/>
+                        <KpiCard mega="true" accent="'teal'" badge="'per'"
+                            label="'Marge brute réalisée'"
+                            value="money(o.pos.margin)"
+                            sub="pct(o.pos.margin_rate) + ' du CA · CA − coût des ventes'"/>
+                        <KpiCard mega="true" accent="'rouge'" badge="'per'"
+                            label="'Cash à risque'"
+                            value="money(o.cash_risk)"
+                            sub="'ardoises +30 j (' + moneyShort(o.cash_risk_parts.late)
+                                 + ') + coulage (' + moneyShort(o.cash_risk_parts.coulage) + ')'"/>
+                        <KpiCard mega="true" accent="'info'" badge="'photo'"
+                            label="'Crédits clients − dettes fournisseurs'"
+                            value="money(o.net_position)"
+                            sub="netPositionSub"/>
+                    </div>
+                    <div class="add-sect">L'ESSENTIEL PAR PÔLE — cliquer
+                        une carte ouvre l'onglet</div>
+                    <div class="add-row">
+                        <KpiCard badge="'per'" label="'Ventes — tickets'"
+                            value="'' + o.pos.order_count"
+                            sub="'panier moyen ' + money(o.pos.average_basket)"
+                            onClick="() => this.setTab('pos')"/>
+                        <KpiCard accent="'ambre'" badge="'photo'"
+                            label="'Encours ardoises'"
+                            value="money(o.credit.outstanding)"
+                            sub="o.credit.debtor_count + ' clients · '
+                                 + moneyShort(o.credit.late_amount) + ' au-delà de 30 j'"
+                            onClick="() => this.setTab('credit')"/>
+                        <KpiCard accent="'info'" badge="'photo'"
+                            label="'Dettes fournisseurs'"
+                            value="money(o.purchase.encours)"
+                            sub="moneyShort(o.purchase.retard) + ' échues · '
+                                 + moneyShort(o.purchase.soon) + ' sous 7 j'"
+                            onClick="() => this.setTab('achat')"/>
+                        <KpiCard badge="'photo'"
+                            label="'Stock — valeur / alertes'"
+                            value="money(o.stock.total_value)"
+                            sub="(o.stock.rupt_count + o.stock.crit_count)
+                                 + ' réfs en alerte · coulage ' + pct(o.stock.coul_pct)"
+                            onClick="() => this.setTab('stock')"/>
+                    </div>
+                    <div class="add-sect">TENDANCES</div>
+                    <div class="add-row">
+                        <div class="add-panel">
+                            <h3>CA vs Achats — 6 mois, et encours
+                                d'ardoises
+                                <span class="add-src">POS · Achats ·
+                                    Crédit</span></h3>
+                            <TrendChart rows="o.trends" currency="cur"/>
+                        </div>
+                        <div class="add-panel">
+                            <h3>Balance âgée en miroir
+                                <span class="add-src">Crédit · Achats</span></h3>
+                            <MirrorAging clients="o.aging_clients"
+                                suppliers="o.supplier_buckets.aging"
+                                currency="cur"/>
+                        </div>
+                    </div>
+                </t>
+                <div t-else="" class="add-loading">Chargement…</div>
+            </div>
+
+            <!-- ═══ POS ═══ -->
+            <div t-if="state.tab === 'pos'">
+                <t t-if="state.data.pos">
+                    <t t-set="d" t-value="state.data.pos"/>
+                    <div class="add-sect">VENTES — POINT DE VENTE</div>
+                    <div class="add-row">
+                        <KpiCard mega="true" accent="'vert'" badge="'per'"
+                            label="'CA encaissé'" value="money(d.kpis.ca)"
+                            delta="d.kpis.ca_delta"
+                            sub="'vs période précédente'"/>
+                        <KpiCard badge="'per'" label="'Tickets'"
+                            value="'' + d.kpis.order_count"
+                            delta="d.kpis.order_count_delta"
+                            sub="money(d.kpis.ca_per_day) + ' / jour'"/>
+                        <KpiCard badge="'per'" label="'Panier moyen'"
+                            value="money(d.kpis.average_basket)"
+                            sub="qtyPerTicket + ' articles / ticket'"/>
+                        <KpiCard accent="'teal'" badge="'per'"
+                            label="'Marge brute'"
+                            value="pct(d.kpis.margin_rate)"
+                            delta="d.kpis.margin_delta"
+                            sub="money(d.kpis.margin)"/>
+                    </div>
+                    <div class="add-row">
+                        <KpiCard badge="'per'" label="'Articles vendus'"
+                            value="posQty"
+                            sub="'coût / unité ' + money(d.kpis.cost_per_unit)"/>
+                        <KpiCard badge="'per'" label="'Marge / commande'"
+                            value="money(d.kpis.margin_per_order)"
+                            sub="'CMV ' + pct(d.kpis.cmv_rate) + ' du CA'"/>
+                        <KpiCard accent="'ambre'" badge="'per'"
+                            label="'Ventes à crédit'"
+                            value="money(d.new_credits.amount)"
+                            sub="pct(d.new_credits.pct) + ' du CA · '
+                                 + d.new_credits.count + ' ardoises'"/>
+                        <KpiCard badge="'photo'" label="'Caisses actives'"
+                            value="'' + configs.length"
+                            sub="'filtre en cours : ' + caisseLabel"/>
+                    </div>
+                    <div class="add-row">
+                        <div class="add-panel">
+                            <h3>Chaleur des ventes — jours × heures
+                                <span class="add-src">POS Analytics</span></h3>
+                            <Heatmap rows="d.heatmap"/>
+                            <div class="add-legend">Plus la case est
+                                foncée, plus le CA de la tranche est
+                                élevé.</div>
+                            <a class="add-drill"
+                               t-on-click="() => this.drill('pos')">
+                                Ouvrir POS Analytics ↗</a>
+                        </div>
+                        <div class="add-panel">
+                            <h3>Top 5 produits
+                                <span class="add-src">période</span></h3>
+                            <table class="add-mini">
+                                <t t-foreach="d.top_products" t-as="r"
+                                   t-key="r_index">
+                                    <tr>
+                                        <td t-esc="r.name"/>
+                                        <td class="add-r"
+                                            t-esc="money(r.ca)"/>
+                                        <td class="add-age"
+                                            t-esc="pct(r.margin_rate, 0)"/>
+                                    </tr>
+                                </t>
+                            </table>
+                            <h3 class="add-mt">Catégories — part du CA</h3>
+                            <t t-foreach="posCategories" t-as="c"
+                               t-key="c_index">
+                                <HBar label="c.name" pct="c.pct"
+                                    color="c.color"
+                                    value="pct(c.pct, 0)"/>
+                            </t>
+                            <h3 class="add-mt">Encaissements</h3>
+                            <t t-foreach="posPayments" t-as="p"
+                               t-key="p_index">
+                                <HBar label="p.name" pct="p.pct"
+                                    color="p.color"
+                                    value="money(p.amount)"
+                                    hint="pct(p.pct, 0)"/>
+                            </t>
+                        </div>
+                    </div>
+                </t>
+                <div t-else="" class="add-loading">Chargement…</div>
+            </div>
+
+            <!-- ═══ CRÉDIT ═══ -->
+            <div t-if="state.tab === 'credit'">
+                <div class="add-bar">
+                    <span class="add-lblf">ORIGINE</span>
+                    <button t-att-class="'add-chip'
+                            + (!state.creditSource ? ' add-on' : '')"
+                            t-on-click="() => this.setCreditSource(null)">
+                        Toutes</button>
+                    <button t-att-class="'add-chip'
+                            + (state.creditSource === 'pos' ? ' add-on' : '')"
+                            t-on-click="() => this.setCreditSource('pos')">
+                        POS</button>
+                    <button t-att-class="'add-chip'
+                            + (state.creditSource === 'sale' ? ' add-on' : '')"
+                            t-on-click="() => this.setCreditSource('sale')">
+                        Ventes / factures</button>
+                </div>
+                <t t-if="state.data.credit">
+                    <t t-set="d" t-value="state.data.credit"/>
+                    <div class="add-sect">CRÉDIT CLIENTS — ARDOISES</div>
+                    <div class="add-row">
+                        <KpiCard mega="true" accent="'ambre'"
+                            badge="'photo'" label="'Encours total'"
+                            value="money(d.kpis.outstanding)"
+                            sub="d.kpis.debtor_count + ' clients débiteurs'"/>
+                        <KpiCard accent="'rouge'" badge="'photo'"
+                            label="'Au-delà de 30 j'"
+                            value="money(d.kpis.late_amount)"
+                            sub="pct(d.kpis.late_pct) + ' de l\'encours'"/>
+                        <KpiCard badge="'photo'"
+                            label="'Plus ancienne ardoise'"
+                            value="(d.kpis.oldest_age || 0) + ' j'"
+                            sub="(d.kpis.oldest_partner || '—') + ' · '
+                                 + money(d.kpis.oldest_amount)"/>
+                        <KpiCard badge="'photo'"
+                            label="'Délai moyen de remboursement'"
+                            value="(d.kpis.avg_settle_days || 0) + ' j'"
+                            sub="d.kpis.settled_count + ' ardoises soldées'"/>
+                    </div>
+                    <div class="add-row">
+                        <KpiCard accent="'vert'" badge="'per'"
+                            label="'Recouvré'"
+                            value="money(d.kpis.recovered)"
+                            delta="d.kpis.recovered_delta"
+                            sub="d.kpis.payment_count + ' remboursements'"/>
+                        <KpiCard accent="'ambre'" badge="'per'"
+                            label="'Nouveaux crédits'"
+                            value="money(d.kpis.opened_amount)"
+                            delta="d.kpis.opened_delta"
+                            sub="d.kpis.new_credits + ' ardoises ouvertes'"/>
+                        <KpiCard accent="'teal'" badge="'per'"
+                            label="'Flux net'"
+                            value="netFlowText"
+                            sub="'recouvré − nouveaux : l\'encours '
+                                 + (d.kpis.net_flow >= 0 ? 'baisse' : 'monte')"/>
+                        <KpiCard badge="'per'"
+                            label="'Taux de recouvrement'"
+                            value="pct(d.kpis.recovery_rate, 0)"
+                            sub="'ardoise moyenne '
+                                 + money(d.kpis.avg_ardoise)"/>
+                    </div>
+                    <div class="add-row">
+                        <div class="add-panel">
+                            <h3>Balance âgée clients
+                                <span class="add-src">Crédit v2</span></h3>
+                            <t t-foreach="creditAging" t-as="a"
+                               t-key="a_index">
+                                <HBar label="a.label" pct="a.pct"
+                                    color="a.color"
+                                    value="moneyShort(a.amount)"
+                                    hint="a.count + ' cl.'"/>
+                            </t>
+                            <h3 class="add-mt">Encours — 6 mois
+                                (fin de mois)</h3>
+                            <svg viewBox="0 0 520 120" class="add-spark">
+                                <polyline t-att-points="creditLinePoints"
+                                    fill="none" stroke="#854F0B"
+                                    stroke-width="2.5"/>
+                            </svg>
+                            <div class="add-legend"
+                                 t-esc="creditLineLegend"/>
+                        </div>
+                        <div class="add-panel">
+                            <h3>Top débiteurs
+                                <span class="add-src">photo</span></h3>
+                            <table class="add-mini">
+                                <t t-foreach="d.top_debtors" t-as="r"
+                                   t-key="r_index">
+                                    <tr>
+                                        <td t-esc="r.name"/>
+                                        <td class="add-r"
+                                            t-esc="money(r.outstanding)"/>
+                                        <td class="add-age">
+                                            <span t-att-class="'add-pill '
+                                                + ((r.max_age || 0) > 60
+                                                   ? 'add-p-rouge'
+                                                   : 'add-p-ambre')"
+                                                t-esc="(r.max_age || 0) + ' j'"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </table>
+                            <h3 class="add-mt">Derniers remboursements
+                                <span class="add-src">période</span></h3>
+                            <table class="add-mini">
+                                <t t-foreach="d.recent_payments" t-as="r"
+                                   t-key="r_index">
+                                    <tr>
+                                        <td t-esc="r.partner_name"/>
+                                        <td class="add-r"
+                                            t-esc="money(r.amount)"/>
+                                        <td class="add-age"
+                                            t-esc="(r.method_label || r.method || '')
+                                                   + ' · ' + (r.date || '')"/>
+                                    </tr>
+                                </t>
+                            </table>
+                            <a class="add-drill"
+                               t-on-click="() => this.drill('credit')">
+                                Ouvrir Crédit clients ↗</a>
+                        </div>
+                    </div>
+                </t>
+                <div t-else="" class="add-loading">Chargement…</div>
+            </div>
+
+            <!-- ═══ STOCK ═══ -->
+            <div t-if="state.tab === 'stock'">
+                <div class="add-bar">
+                    <span class="add-lblf">EMPLACEMENT</span>
+                    <button t-att-class="'add-chip'
+                            + (!state.locationId ? ' add-on' : '')"
+                            t-on-click="() => this.setLocation(null)">
+                        Tous</button>
+                    <t t-foreach="state.meta.locations" t-as="l"
+                       t-key="l.id">
+                        <button t-att-class="'add-chip'
+                                + (state.locationId === l.id ? ' add-on' : '')"
+                                t-on-click="() => this.setLocation(l.id)"
+                                t-esc="l.name"/>
+                    </t>
+                </div>
+                <t t-if="state.data.stock">
+                    <t t-set="d" t-value="state.data.stock"/>
+                    <div class="add-sect">STOCK &amp; INVENTAIRE</div>
+                    <div class="add-row">
+                        <KpiCard mega="true" badge="'photo'"
+                            label="'Valeur — coût d\'achat'"
+                            value="money(d.kpis.total_value)"
+                            sub="d.kpis.refs_count + ' réfs · '
+                                 + stockUnits + ' unités'"/>
+                        <KpiCard mega="true" accent="'teal'"
+                            badge="'photo'"
+                            label="'Valeur — prix de vente'"
+                            value="money(d.kpis.total_value_sale)"
+                            sub="'marge potentielle '
+                                 + moneyShort(d.kpis.margin_value) + ' ('
+                                 + pct(d.kpis.margin_pct) + ')'"/>
+                        <KpiCard accent="'rouge'" badge="'photo'"
+                            label="'Ruptures &amp; critiques'"
+                            value="(d.kpis.rupt_count + d.kpis.crit_count)
+                                   + ' réfs'"
+                            sub="d.kpis.rupt_count + ' ruptures · '
+                                 + d.kpis.crit_count + ' critiques'"/>
+                        <KpiCard accent="'ambre'" badge="'photo'"
+                            label="'À commander'"
+                            value="money(d.kpis.cmd_value)"
+                            sub="d.kpis.seuil_count
+                                 + ' réfs sous seuil'"/>
+                    </div>
+                    <div class="add-row">
+                        <KpiCard badge="'photo'"
+                            label="'Couverture moyenne'"
+                            value="(d.kpis.couv_moy || 0).toFixed(1)
+                                   .replace('.', ',') + ' j'"
+                            sub="'rotation ' + (d.kpis.rot_moy || 0)
+                                 .toFixed(1).replace('.', ',')
+                                 + '× / mois'"/>
+                        <KpiCard accent="'ambre'" badge="'photo'"
+                            label="'Stock dormant'"
+                            value="money(d.kpis.dorm_value)"
+                            sub="d.kpis.dorm_count + ' réfs'"/>
+                        <KpiCard accent="'rouge'" badge="'per'"
+                            label="'Coulage'"
+                            value="money(d.kpis.pertes)"
+                            sub="pct(d.kpis.coul_pct) + ' du CA estimé — seuil '
+                                 + pct(d.kpis.coul_seuil, 0)"/>
+                        <KpiCard accent="'rouge'" badge="'per'"
+                            label="'Écarts d\'inventaire'"
+                            value="money(d.kpis.gap_net)"
+                            sub="d.kpis.gap_refs + ' réfs concernées'"/>
+                    </div>
+                    <div class="add-row">
+                        <div class="add-panel">
+                            <h3>Valeur par catégorie
+                                <span class="add-src">au coût</span></h3>
+                            <t t-foreach="stockByCat" t-as="c"
+                               t-key="c_index">
+                                <HBar label="c.name" pct="c.pct"
+                                    color="c.color"
+                                    value="moneyShort(c.value)"/>
+                            </t>
+                            <h3 class="add-mt">Couverture par catégorie</h3>
+                            <t t-foreach="stockCoverage" t-as="c"
+                               t-key="c_index">
+                                <HBar label="c.name" pct="c.pct"
+                                    color="c.color" value="c.text"/>
+                            </t>
+                        </div>
+                        <div class="add-panel">
+                            <h3>Top valeur immobilisée
+                                <span class="add-src">photo</span></h3>
+                            <table class="add-mini">
+                                <t t-foreach="d.top_value" t-as="r"
+                                   t-key="r_index">
+                                    <tr>
+                                        <td t-esc="r.name"/>
+                                        <td class="add-r"
+                                            t-esc="money(r.value)"/>
+                                    </tr>
+                                </t>
+                            </table>
+                            <h3 class="add-mt">Ruptures les plus
+                                pénalisantes</h3>
+                            <table class="add-mini">
+                                <t t-foreach="d.penalties" t-as="r"
+                                   t-key="r_index">
+                                    <tr>
+                                        <td t-esc="r.name"/>
+                                        <td class="add-r"
+                                            t-esc="penaltyText(r)"/>
+                                        <td class="add-age">
+                                            <span t-att-class="'add-pill '
+                                                + (r.status === 'Rupture'
+                                                   ? 'add-p-rouge'
+                                                   : 'add-p-ambre')"
+                                                t-esc="r.status"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </table>
+                            <a class="add-drill"
+                               t-on-click="() => this.drill('stock')">
+                                Ouvrir Stock &amp; Inventaire ↗</a>
+                        </div>
+                    </div>
+                </t>
+                <div t-else="" class="add-loading">Chargement…</div>
+            </div>
+
+            <!-- ═══ ACHATS ═══ -->
+            <div t-if="state.tab === 'achat'">
+                <div class="add-bar">
+                    <span class="add-lblf">FOURNISSEUR</span>
+                    <button t-att-class="'add-chip'
+                            + (!state.supplierId ? ' add-on' : '')"
+                            t-on-click="() => this.setSupplier(null)">
+                        Tous</button>
+                    <t t-foreach="supplierChips" t-as="s" t-key="s.id">
+                        <button t-att-class="'add-chip'
+                                + (state.supplierId === s.id ? ' add-on' : '')"
+                                t-on-click="() => this.setSupplier(s.id)"
+                                t-esc="s.name"/>
+                    </t>
+                </div>
+                <t t-if="state.data.achat">
+                    <t t-set="d" t-value="state.data.achat"/>
+                    <div class="add-sect">ACHATS &amp; FOURNISSEURS</div>
+                    <div class="add-row">
+                        <KpiCard mega="true" accent="'info'"
+                            badge="'photo'"
+                            label="'Dettes fournisseurs'"
+                            value="money(d.kpis.encours)"
+                            sub="d.kpis.open_count + ' factures ouvertes'"/>
+                        <KpiCard accent="'rouge'" badge="'photo'"
+                            label="'Échues'"
+                            value="money(d.kpis.retard)"
+                            sub="d.kpis.retard_count + ' factures ('
+                                 + pct(d.kpis.retard_pct, 0) + ')'"/>
+                        <KpiCard accent="'rouge'" badge="'photo'"
+                            label="'À payer sous 7 j'"
+                            value="money(d.kpis.soon)"
+                            sub="d.kpis.soon_count + ' échéances'"/>
+                        <KpiCard badge="'photo'"
+                            label="'Consignes &amp; avoirs'"
+                            value="money((d.claims.deposits_total || 0)
+                                         + (d.claims.avoirs_total || 0))"
+                            sub="'consignes '
+                                 + moneyShort(d.claims.deposits_total || 0)
+                                 + ' · avoirs '
+                                 + moneyShort(d.claims.avoirs_total || 0)"/>
+                    </div>
+                    <div class="add-row">
+                        <KpiCard badge="'per'" label="'Volume acheté'"
+                            value="money(d.kpis.achats)"
+                            sub="d.kpis.recus_count + ' réceptions'"/>
+                        <KpiCard accent="'vert'" badge="'per'"
+                            label="'OTIF'"
+                            value="pct(d.kpis.otif, 0)"
+                            sub="'livraisons complètes et à l\'heure'"/>
+                        <KpiCard badge="'per'"
+                            label="'Délai moyen de livraison'"
+                            value="(d.kpis.delai_moy || 0).toFixed(1)
+                                   .replace('.', ',') + ' j'"
+                            sub="'DPO ' + dpoText + ' j (délai de paiement)'"/>
+                        <KpiCard accent="'ambre'" badge="'per'"
+                            label="'Prix en hausse'"
+                            value="priceUpCount + ' réfs'"
+                            sub="'vs dernier achat'"/>
+                    </div>
+                    <div class="add-row">
+                        <div class="add-panel">
+                            <h3>Échéancier — 4 prochaines semaines
+                                <span class="add-src">Achats</span></h3>
+                            <t t-foreach="purchaseSchedule" t-as="b"
+                               t-key="b_index">
+                                <HBar label="b.label" pct="b.pct"
+                                    color="b.color"
+                                    value="moneyShort(b.amount)"
+                                    hint="b.count + ' fact.'"/>
+                            </t>
+                            <h3 class="add-mt">Hausses de prix récentes</h3>
+                            <table class="add-mini">
+                                <t t-foreach="priceUp" t-as="r"
+                                   t-key="r_index">
+                                    <tr>
+                                        <td t-esc="r.name"/>
+                                        <td class="add-r"
+                                            t-esc="r.deltaText"/>
+                                        <td class="add-age"
+                                            t-esc="r.partner"/>
+                                    </tr>
+                                </t>
+                            </table>
+                        </div>
+                        <div class="add-panel">
+                            <h3>Fournisseurs de la période
+                                <span class="add-src">volume · OTIF</span></h3>
+                            <table class="add-mini">
+                                <t t-foreach="d.suppliers" t-as="r"
+                                   t-key="r_index">
+                                    <tr>
+                                        <td t-esc="r.name"/>
+                                        <td class="add-r"
+                                            t-esc="money(r.achats)"/>
+                                        <td class="add-age"
+                                            t-esc="pct(r.otif, 0)"/>
+                                    </tr>
+                                </t>
+                            </table>
+                            <h3 class="add-mt">Échéances — 7 jours</h3>
+                            <table class="add-mini">
+                                <t t-foreach="d.week_bills" t-as="r"
+                                   t-key="r_index">
+                                    <tr>
+                                        <td t-esc="r.partner"/>
+                                        <td class="add-r"
+                                            t-esc="money(r.amount)"/>
+                                        <td class="add-age"
+                                            t-esc="r.planned"/>
+                                    </tr>
+                                </t>
+                            </table>
+                            <a class="add-drill"
+                               t-on-click="() => this.drill('purchase')">
+                                Ouvrir Achats &amp; Fournisseurs ↗</a>
+                        </div>
+                    </div>
+                </t>
+                <div t-else="" class="add-loading">Chargement…</div>
+            </div>
+
+            <!-- ═══ À TRAITER ═══ -->
+            <div t-if="state.tab === 'todo'">
+                <t t-if="state.data.todo">
+                    <div class="add-sect">À TRAITER — LA LISTE DU GÉRANT
+                        (<t t-esc="state.data.todo.count"/> actions)</div>
+                    <div class="add-row add-wrap">
+                        <t t-foreach="state.data.todo.sections" t-as="s"
+                           t-key="s.key">
+                            <div class="add-panel">
+                                <h3>
+                                    <span t-att-class="'add-pill '
+                                        + (s.priority === 'urgent'
+                                           ? 'add-p-rouge' : 'add-p-ambre')"
+                                        t-esc="s.priority === 'urgent'
+                                               ? 'URGENT' : 'À SURVEILLER'"/>
+                                    <t t-esc="s.title"/>
+                                    <span class="add-src"
+                                          t-esc="s.source"/>
+                                </h3>
+                                <table class="add-mini">
+                                    <t t-foreach="s.rows" t-as="r"
+                                       t-key="r_index">
+                                        <tr class="add-actrow"
+                                            t-on-click="() => this.drill(r.action)">
+                                            <td t-esc="r.label"/>
+                                            <td class="add-r"
+                                                t-esc="r.amount !== null
+                                                       and r.amount !== undefined
+                                                       ? money(r.amount) : ''"/>
+                                            <td class="add-age"
+                                                t-esc="r.hint"/>
+                                        </tr>
+                                    </t>
+                                </table>
+                            </div>
+                        </t>
+                    </div>
+                    <div class="add-legend add-pad">Chaque ligne ouvre le
+                        tableau de bord spécialisé correspondant.</div>
+                </t>
+                <div t-else="" class="add-loading">Chargement…</div>
+            </div>
+
+            <div class="add-footer">
+                Sources : POS Analytics · Crédit clients v2 · Stock &amp;
+                Inventaire · Achats &amp; Fournisseurs. Les cartes
+                « période » suivent les filtres ; les cartes « photo »
+                sont des instantanés. Caisse, tranche horaire et jours
+                s'appliquent aux données de vente.
+            </div>
+            </div>
+        </t>
+        <div t-else="" class="add-loading add-boot">Chargement du tableau
+            de bord…</div>
+    </div>
+</t>
+
+</templates>

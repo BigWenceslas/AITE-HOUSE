@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Menu "Analyse AITE" dans le Point de Vente.
+        Pointe sur l'action client du dashboard OWL, et chaque sous-menu
+        ouvre le dashboard avec ``default_view`` adapté.
+    -->
+
+    <menuitem id="menu_aite_pos_analytics_root"
+              name="Analyse AITE"
+              parent="point_of_sale.menu_point_root"
+              sequence="80"
+              groups="aite_pos_analytics.group_aite_pos_analytics_user"/>
+
+    <menuitem id="menu_aite_pos_dashboard"
+              name="Tableau de bord"
+              parent="menu_aite_pos_analytics_root"
+              action="action_pos_analytics_dashboard"
+              sequence="10"/>
+
+    <menuitem id="menu_aite_pos_caisse"
+              name="Par caisse"
+              parent="menu_aite_pos_analytics_root"
+              action="action_pos_analytics_caisse"
+              sequence="15"/>
+
+    <menuitem id="menu_aite_pos_sessions"
+              name="Sessions POS"
+              parent="menu_aite_pos_analytics_root"
+              action="action_pos_analytics_sessions"
+              sequence="20"/>
+
+    <menuitem id="menu_aite_pos_categories"
+              name="Par catégorie"
+              parent="menu_aite_pos_analytics_root"
+              action="action_pos_analytics_categories"
+              sequence="30"/>
+
+    <menuitem id="menu_aite_pos_discrepancies"
+              name="Écarts de caisse"
+              parent="menu_aite_pos_analytics_root"
+              action="action_pos_analytics_discrepancies"
+              sequence="40"/>
+
+    <menuitem id="menu_aite_pos_daily_report"
+              name="Pivot &amp; Graph"
+              parent="menu_aite_pos_analytics_root"
+              action="action_pos_daily_report"
+              sequence="50"/>
+
+</odoo>
+

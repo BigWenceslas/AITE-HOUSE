@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Onglet dédié sur la fiche article. Ancrage sur le <notebook> du
+        formulaire produit de base : présent dans toutes les versions,
+        aucune dépendance à la structure des pages ajoutées par Stock.
+    -->
+    <record id="product_template_form_view_aite_stock" model="ir.ui.view">
+        <field name="name">product.template.form.aite.stock</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Réappro AITE" name="aite_reorder">
+                    <group>
+                        <group string="Alerte de réapprovisionnement">
+                            <field name="aite_alert_active"/>
+                            <field name="aite_lead_days"/>
+                            <field name="aite_manual_threshold"/>
+                        </group>
+                        <group string="Comment ça marche">
+                            <div class="text-muted" colspan="2">
+                                <p>
+                                    <b>Point de commande</b> = ventes moy./jour ×
+                                    (délai réappro + sécurité société).<br/>
+                                    <b>Quantité suggérée</b> = ventes moy./jour ×
+                                    (délai + horizon) − stock.
+                                </p>
+                                <p>
+                                    Délai à <b>0</b> : le délai par défaut de la
+                                    société s'applique. Seuil manuel à <b>0</b> :
+                                    calcul automatique. Les ventes moyennes sont
+                                    mesurées sur 30 jours glissants.
+                                </p>
+                            </div>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

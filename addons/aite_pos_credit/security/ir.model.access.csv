@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pos_credit_user,aite.pos.credit.user,model_aite_pos_credit,group_pos_credit_user,1,1,1,0
+access_pos_credit_manager,aite.pos.credit.manager,model_aite_pos_credit,group_pos_credit_manager,1,1,1,1
+access_pos_credit_payment_user,aite.pos.credit.payment.user,model_aite_pos_credit_payment,group_pos_credit_user,1,1,1,0
+access_pos_credit_payment_manager,aite.pos.credit.payment.manager,model_aite_pos_credit_payment,group_pos_credit_manager,1,1,1,1
+access_pos_credit_repay_wizard_user,aite.pos.credit.repay.wizard.user,model_aite_pos_credit_repay_wizard,group_pos_credit_user,1,1,1,1
+access_pos_credit_dashboard_user,aite.pos.credit.dashboard.user,model_aite_pos_credit_dashboard,group_pos_credit_user,1,0,0,0

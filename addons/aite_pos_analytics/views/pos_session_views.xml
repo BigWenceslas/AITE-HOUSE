@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        NOTE DE COMPATIBILITÉ ODOO 18
+        ==============================
+        L'extension de la vue FORMULAIRE pos.session a été retirée car
+        la fiche session native Odoo 18 n'a plus de <notebook> — elle
+        est désormais plate (sheet + groupes directs). L'injection
+        "//notebook" échoue donc au chargement.
+
+        Non bloquant : les données analytiques de session restent
+        accessibles via :
+          - Le dashboard OWL (vue principale du module, onglet Sessions)
+          - La list view ci-dessous (colonnes CA, Marge, Sévérité)
+          - Les rapports pivot/graph (menu Pivot & Graph)
+
+        Pour remettre en place l'injection form :
+          1. Ouvrir Paramètres -> Technique -> Interface -> Vues
+          2. Chercher le xmlid « point_of_sale.view_pos_session_form »
+          3. Relever la structure réelle et adapter le xpath.
+          4. Utiliser par ex. <xpath expr="//sheet" position="inside">
+    -->
+
+    <!--
+        Extension de la LIST VIEW pos.session :
+        colonnes analytiques CA, Marge, badge Sévérité.
+    -->
+    <record id="view_pos_session_list_inherit_analytics" model="ir.ui.view">
+        <field name="name">pos.session.list.aite.analytics</field>
+        <field name="model">pos.session</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_session_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="before">
+                <field name="total_ca" optional="show" sum="Total CA"/>
+                <field name="total_margin" optional="show" sum="Marge totale"/>
+                <field name="margin_rate" widget="percentage" optional="hide"/>
+                <field name="cash_discrepancy_severity"
+                       widget="badge"
+                       optional="show"
+                       decoration-success="cash_discrepancy_severity == 'none'"
+                       decoration-info="cash_discrepancy_severity == 'over'"
+                       decoration-warning="cash_discrepancy_severity in ('low','med')"
+                       decoration-danger="cash_discrepancy_severity == 'high'"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!--
+        Extension de la SEARCH VIEW pos.session :
+        filtres par sévérité d'écart de caisse.
+    -->
+    <record id="view_pos_session_search_inherit_analytics" model="ir.ui.view">
+        <field name="name">pos.session.search.aite.analytics</field>
+        <field name="model">pos.session</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_session_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <separator/>
+                <filter string="Écart critique"
+                        name="filter_cash_high"
+                        domain="[('cash_discrepancy_severity','=','high')]"/>
+                <filter string="Écart élevé"
+                        name="filter_cash_med"
+                        domain="[('cash_discrepancy_severity','=','med')]"/>
+                <filter string="Écart modéré"
+                        name="filter_cash_low"
+                        domain="[('cash_discrepancy_severity','=','low')]"/>
+                <filter string="Excédent caisse"
+                        name="filter_cash_over"
+                        domain="[('cash_discrepancy_severity','=','over')]"/>
+                <separator/>
+                <group string="Regrouper par">
+                    <filter string="Sévérité écart"
+                            name="groupby_severity"
+                            context="{'group_by':'cash_discrepancy_severity'}"/>
+                    <filter string="Point de vente"
+                            name="groupby_config"
+                            context="{'group_by':'config_id'}"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

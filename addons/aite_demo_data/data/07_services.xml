@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="svc_mass60" model="aite.booking.service">
+            <field name="name">Massage relaxant 60 min</field>
+            <field name="kind">spa</field>
+            <field name="duration_minutes" eval="60"/>
+            <field name="price" eval="350000"/>
+            <field name="product_id" ref="prod_121"/>
+        </record>
+        <record id="svc_mass90" model="aite.booking.service">
+            <field name="name">Massage deep tissue 90 min</field>
+            <field name="kind">spa</field>
+            <field name="duration_minutes" eval="90"/>
+            <field name="price" eval="480000"/>
+            <field name="product_id" ref="prod_122"/>
+        </record>
+        <record id="svc_duo" model="aite.booking.service">
+            <field name="name">Massage duo 60 min</field>
+            <field name="kind">spa</field>
+            <field name="duration_minutes" eval="60"/>
+            <field name="price" eval="620000"/>
+            <field name="product_id" ref="prod_123"/>
+        </record>
+        <record id="svc_gommage" model="aite.booking.service">
+            <field name="name">Gommage corporel karité</field>
+            <field name="kind">spa</field>
+            <field name="duration_minutes" eval="60"/>
+            <field name="price" eval="280000"/>
+            <field name="product_id" ref="prod_124"/>
+        </record>
+        <record id="svc_visage" model="aite.booking.service">
+            <field name="name">Soin du visage éclat</field>
+            <field name="kind">spa</field>
+            <field name="duration_minutes" eval="60"/>
+            <field name="price" eval="300000"/>
+            <field name="product_id" ref="prod_125"/>
+        </record>
+        <record id="svc_hammam" model="aite.booking.service">
+            <field name="name">Hammam &amp; sauna (accès 60 min)</field>
+            <field name="kind">spa</field>
+            <field name="duration_minutes" eval="60"/>
+            <field name="price" eval="180000"/>
+            <field name="product_id" ref="prod_126"/>
+        </record>
+        <record id="svc_manucure" model="aite.booking.service">
+            <field name="name">Manucure</field>
+            <field name="kind">spa</field>
+            <field name="duration_minutes" eval="60"/>
+            <field name="price" eval="120000"/>
+            <field name="product_id" ref="prod_127"/>
+        </record>
+        <record id="svc_pedicure" model="aite.booking.service">
+            <field name="name">Pédicure</field>
+            <field name="kind">spa</field>
+            <field name="duration_minutes" eval="60"/>
+            <field name="price" eval="140000"/>
+            <field name="product_id" ref="prod_128"/>
+        </record>
+        <record id="svc_coupeh" model="aite.booking.service">
+            <field name="name">Coupe homme</field>
+            <field name="kind">hair</field>
+            <field name="duration_minutes" eval="30"/>
+            <field name="price" eval="80000"/>
+            <field name="product_id" ref="prod_129"/>
+        </record>
+        <record id="svc_coupebarbe" model="aite.booking.service">
+            <field name="name">Coupe + barbe</field>
+            <field name="kind">hair</field>
+            <field name="duration_minutes" eval="60"/>
+            <field name="price" eval="110000"/>
+            <field name="product_id" ref="prod_130"/>
+        </record>
+        <record id="svc_barbe" model="aite.booking.service">
+            <field name="name">Taille de barbe</field>
+            <field name="kind">hair</field>
+            <field name="duration_minutes" eval="30"/>
+            <field name="price" eval="50000"/>
+            <field name="product_id" ref="prod_131"/>
+        </record>
+        <record id="svc_coupef" model="aite.booking.service">
+            <field name="name">Coupe femme</field>
+            <field name="kind">hair</field>
+            <field name="duration_minutes" eval="60"/>
+            <field name="price" eval="130000"/>
+            <field name="product_id" ref="prod_132"/>
+        </record>
+        <record id="svc_brush" model="aite.booking.service">
+            <field name="name">Brushing</field>
+            <field name="kind">hair</field>
+            <field name="duration_minutes" eval="60"/>
+            <field name="price" eval="90000"/>
+            <field name="product_id" ref="prod_133"/>
+        </record>
+        <record id="svc_tresses" model="aite.booking.service">
+            <field name="name">Tresses (forfait 2 h)</field>
+            <field name="kind">hair</field>
+            <field name="duration_minutes" eval="120"/>
+            <field name="price" eval="250000"/>
+            <field name="product_id" ref="prod_134"/>
+        </record>
+        <record id="svc_defrisage" model="aite.booking.service">
+            <field name="name">Défrisage + soin</field>
+            <field name="kind">hair</field>
+            <field name="duration_minutes" eval="90"/>
+            <field name="price" eval="180000"/>
+            <field name="product_id" ref="prod_135"/>
+        </record>
+        <record id="svc_color" model="aite.booking.service">
+            <field name="name">Coloration</field>
+            <field name="kind">hair</field>
+            <field name="duration_minutes" eval="90"/>
+            <field name="price" eval="220000"/>
+            <field name="product_id" ref="prod_136"/>
+        </record>
+        <record id="svc_chemise" model="aite.booking.service">
+            <field name="name">Chemise</field>
+            <field name="kind">pressing</field>
+            <field name="duration_minutes" eval="30"/>
+            <field name="price" eval="15000"/>
+            <field name="product_id" ref="prod_137"/>
+        </record>
+        <record id="svc_pantalon" model="aite.booking.service">
+            <field name="name">Pantalon</field>
+            <field name="kind">pressing</field>
+            <field name="duration_minutes" eval="30"/>
+            <field name="price" eval="18000"/>
+            <field name="product_id" ref="prod_138"/>
+        </record>
+        <record id="svc_costume" model="aite.booking.service">
+            <field name="name">Costume 2 pièces</field>
+            <field name="kind">pressing</field>
+            <field name="duration_minutes" eval="30"/>
+            <field name="price" eval="45000"/>
+            <field name="product_id" ref="prod_139"/>
+        </record>
+        <record id="svc_robe" model="aite.booking.service">
+            <field name="name">Robe / boubou</field>
+            <field name="kind">pressing</field>
+            <field name="duration_minutes" eval="30"/>
+            <field name="price" eval="30000"/>
+            <field name="product_id" ref="prod_140"/>
+        </record>
+        <record id="svc_lavkg" model="aite.booking.service">
+            <field name="name">Lavage au kilo</field>
+            <field name="kind">pressing</field>
+            <field name="duration_minutes" eval="30"/>
+            <field name="price" eval="12000"/>
+            <field name="product_id" ref="prod_141"/>
+        </record>
+        <record id="svc_repkg" model="aite.booking.service">
+            <field name="name">Repassage au kilo</field>
+            <field name="kind">pressing</field>
+            <field name="duration_minutes" eval="30"/>
+            <field name="price" eval="8000"/>
+            <field name="product_id" ref="prod_142"/>
+        </record>
+    </data>
+</odoo>

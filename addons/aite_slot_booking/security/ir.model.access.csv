@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_slot_resource_user,slot.resource.user,model_aite_booking_resource,aite_hotel_management.group_hotel_user,1,0,0,0
+access_slot_resource_manager,slot.resource.manager,model_aite_booking_resource,aite_hotel_management.group_hotel_manager,1,1,1,1
+access_slot_service_user,slot.service.user,model_aite_booking_service,aite_hotel_management.group_hotel_user,1,0,0,0
+access_slot_service_manager,slot.service.manager,model_aite_booking_service,aite_hotel_management.group_hotel_manager,1,1,1,1
+access_slot_booking_user,slot.booking.user,model_aite_slot_booking,aite_hotel_management.group_hotel_user,1,1,1,0
+access_slot_booking_manager,slot.booking.manager,model_aite_slot_booking,aite_hotel_management.group_hotel_manager,1,1,1,1
+access_slot_dashboard_user,slot.dashboard.user,model_aite_slot_dashboard,aite_hotel_management.group_hotel_user,1,0,0,0

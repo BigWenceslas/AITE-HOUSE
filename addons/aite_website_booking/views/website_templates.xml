@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ══════════ Accueil réservation ══════════ -->
+    <template id="landing" name="Réservation — Accueil">
+        <t t-call="website.layout">
+            <div class="container my-5">
+                <h1 class="mb-2">Réserver en ligne</h1>
+                <p class="text-muted mb-4">Disponibilités en temps réel — confirmation immédiate par e-mail.</p>
+                <div class="row g-4">
+                    <div class="col-12 col-md-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body d-flex flex-column">
+                                <h4 class="card-title">Espaces VIP &amp; VVIP</h4>
+                                <p class="card-text flex-grow-1">Salons privés à l'heure, pour vos rencontres et célébrations.</p>
+                                <a href="/reservation/espaces" class="btn btn-primary">Choisir un espace</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body d-flex flex-column">
+                                <h4 class="card-title">SPA &amp; Coiffure</h4>
+                                <p class="card-text flex-grow-1">Soins et rendez-vous coiffure homme &amp; femme.</p>
+                                <a href="/reservation/prestations" class="btn btn-primary">Prendre rendez-vous</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body d-flex flex-column">
+                                <h4 class="card-title">Chambres &amp; Suites</h4>
+                                <p class="card-text flex-grow-1">Votre séjour, confirmé par notre réception.</p>
+                                <a href="/reservation/chambres" class="btn btn-primary">Demander un séjour</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ══════════ Espaces : liste ══════════ -->
+    <template id="spaces" name="Espaces VIP / VVIP">
+        <t t-call="website.layout">
+            <div class="container my-5">
+                <h1 class="mb-4">Espaces VIP &amp; VVIP</h1>
+                <div class="row g-4">
+                    <t t-foreach="resources" t-as="r">
+                        <div class="col-12 col-md-4">
+                            <div class="card h-100 shadow-sm">
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title" t-esc="r.name"/>
+                                    <p class="text-muted mb-1">
+                                        Ouvert de <t t-esc="'%02d:%02d' % (int(r.open_hour), int(round((r.open_hour - int(r.open_hour)) * 60)))"/>
+                                        à <t t-esc="'%02d:%02d' % (int(r.close_hour), int(round((r.close_hour - int(r.close_hour)) * 60)))"/>
+                                    </p>
+                                    <p class="flex-grow-1" t-if="r.price_hour">
+                                        <span t-esc="'{:,.0f}'.format(r.price_hour).replace(',', ' ')"/>
+                                        <t t-esc="r.currency_id.symbol"/> / heure
+                                    </p>
+                                    <a t-attf-href="/reservation/espace/#{r.id}" class="btn btn-outline-primary">Voir les créneaux</a>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                    <p t-if="not resources" class="text-muted">Aucun espace réservable en ligne pour le moment.</p>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ══════════ Espaces : grille + formulaire ══════════ -->
+    <template id="space_grid" name="Espace — créneaux">
+        <t t-call="website.layout">
+            <div class="container my-5" style="max-width: 720px;">
+                <a href="/reservation/espaces" class="text-muted">&#8592; Tous les espaces</a>
+                <h1 class="mb-1 mt-2" t-esc="resource.name"/>
+                <p class="text-muted" t-if="resource.price_hour">
+                    <span t-esc="'{:,.0f}'.format(resource.price_hour).replace(',', ' ')"/>
+                    <t t-esc="resource.currency_id.symbol"/> / heure
+                </p>
+                <div t-if="error == 'slot'" class="alert alert-warning">Ce créneau vient d'être pris — choisissez-en un autre.</div>
+                <div t-if="error == 'name'" class="alert alert-warning">Merci d'indiquer votre nom.</div>
+                <div t-if="error == 'phone'" class="alert alert-warning">Merci d'indiquer un numéro de téléphone valide.</div>
+
+                <form method="get" t-attf-action="/reservation/espace/#{resource.id}" class="row g-2 align-items-end mb-4">
+                    <div class="col-auto">
+                        <label class="form-label">Date</label>
+                        <input type="date" name="date" class="form-control" t-att-value="day"/>
+                    </div>
+                    <div class="col-auto">
+                        <button class="btn btn-secondary" type="submit">Voir ce jour</button>
+                    </div>
+                </form>
+
+                <form method="post" action="/reservation/confirmer">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <input type="hidden" name="resource_id" t-att-value="resource.id"/>
+                    <input type="hidden" name="date" t-att-value="day"/>
+                    <h5>Créneaux disponibles</h5>
+                    <div class="d-flex flex-wrap gap-2 mb-4">
+                        <t t-foreach="free_slots" t-as="s">
+                            <label class="btn btn-outline-success">
+                                <input type="radio" name="start_h" t-att-value="s['start']" class="form-check-input me-1" required="required"/>
+                                <t t-esc="s['label']"/>
+                            </label>
+                        </t>
+                        <p t-if="not free_slots" class="text-muted">Complet ce jour — essayez une autre date.</p>
+                    </div>
+                    <t t-if="free_slots">
+                        <h5>Vos coordonnées</h5>
+                        <div class="row g-3 mb-3">
+                            <div class="col-12 col-md-4">
+                                <input type="text" name="name" class="form-control" placeholder="Nom complet" required="required"/>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <input type="tel" name="phone" class="form-control" placeholder="Téléphone" required="required"/>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <input type="email" name="email" class="form-control" placeholder="E-mail (confirmation)"/>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg">Réserver ce créneau</button>
+                        <p class="text-muted mt-2 mb-0">Acompte à régler au comptoir — Orange Money, MTN MoMo ou espèces.</p>
+                    </t>
+                </form>
+            </div>
+        </t>
+    </template>
+
+    <!-- ══════════ Prestations : liste ══════════ -->
+    <template id="services" name="Prestations SPA &amp; Coiffure">
+        <t t-call="website.layout">
+            <div class="container my-5">
+                <h1 class="mb-4">SPA &amp; Coiffure</h1>
+                <div class="row g-4">
+                    <t t-foreach="services" t-as="s">
+                        <div class="col-12 col-md-4">
+                            <div class="card h-100 shadow-sm">
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title" t-esc="s.name"/>
+                                    <p class="text-muted mb-1">
+                                        <t t-esc="dict(s._fields['kind'].selection).get(s.kind)"/>
+                                        · <t t-esc="s.duration_minutes"/> min
+                                    </p>
+                                    <p class="flex-grow-1">
+                                        <span t-esc="'{:,.0f}'.format(s.price).replace(',', ' ')"/>
+                                        <t t-esc="s.currency_id.symbol"/>
+                                    </p>
+                                    <a t-attf-href="/reservation/prestation/#{s.id}" class="btn btn-outline-primary">Choisir un créneau</a>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                    <p t-if="not services" class="text-muted">Catalogue en préparation.</p>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ══════════ Prestation : grille ══════════ -->
+    <template id="service_grid" name="Prestation — créneaux">
+        <t t-call="website.layout">
+            <div class="container my-5" style="max-width: 720px;">
+                <a href="/reservation/prestations" class="text-muted">&#8592; Toutes les prestations</a>
+                <h1 class="mb-1 mt-2" t-esc="service.name"/>
+                <p class="text-muted">
+                    <t t-esc="service.duration_minutes"/> min ·
+                    <span t-esc="'{:,.0f}'.format(service.price).replace(',', ' ')"/>
+                    <t t-esc="service.currency_id.symbol"/>
+                </p>
+                <div t-if="error == 'slot'" class="alert alert-warning">Ce créneau vient d'être pris — choisissez-en un autre.</div>
+                <div t-if="error == 'name'" class="alert alert-warning">Merci d'indiquer votre nom.</div>
+                <div t-if="error == 'phone'" class="alert alert-warning">Merci d'indiquer un numéro de téléphone valide.</div>
+
+                <form method="get" t-attf-action="/reservation/prestation/#{service.id}" class="row g-2 align-items-end mb-4">
+                    <div class="col-auto" t-if="len(resources) &gt; 1">
+                        <label class="form-label">Avec</label>
+                        <select name="resource_id" class="form-select">
+                            <t t-foreach="resources" t-as="r">
+                                <option t-att-value="r.id" t-att-selected="'selected' if r.id == resource.id else None" t-esc="r.name"/>
+                            </t>
+                        </select>
+                    </div>
+                    <input type="hidden" name="resource_id" t-att-value="resource.id" t-if="len(resources) &lt;= 1"/>
+                    <div class="col-auto">
+                        <label class="form-label">Date</label>
+                        <input type="date" name="date" class="form-control" t-att-value="day"/>
+                    </div>
+                    <div class="col-auto">
+                        <button class="btn btn-secondary" type="submit">Voir</button>
+                    </div>
+                </form>
+
+                <form method="post" action="/reservation/confirmer">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <input type="hidden" name="resource_id" t-att-value="resource.id"/>
+                    <input type="hidden" name="service_id" t-att-value="service.id"/>
+                    <input type="hidden" name="date" t-att-value="day"/>
+                    <h5>Heures de début possibles <small class="text-muted">(avec <t t-esc="resource.name"/>)</small></h5>
+                    <div class="d-flex flex-wrap gap-2 mb-4">
+                        <t t-foreach="start_slots" t-as="s">
+                            <label class="btn btn-outline-success">
+                                <input type="radio" name="start_h" t-att-value="s['start']" class="form-check-input me-1" required="required"/>
+                                <t t-esc="s['label']"/>
+                            </label>
+                        </t>
+                        <p t-if="not start_slots" class="text-muted">Complet ce jour — essayez une autre date ou une autre ressource.</p>
+                    </div>
+                    <t t-if="start_slots">
+                        <h5>Vos coordonnées</h5>
+                        <div class="row g-3 mb-3">
+                            <div class="col-12 col-md-4">
+                                <input type="text" name="name" class="form-control" placeholder="Nom complet" required="required"/>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <input type="tel" name="phone" class="form-control" placeholder="Téléphone" required="required"/>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <input type="email" name="email" class="form-control" placeholder="E-mail (confirmation)"/>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg">Réserver</button>
+                        <p class="text-muted mt-2 mb-0">Acompte à régler au comptoir — Orange Money, MTN MoMo ou espèces.</p>
+                    </t>
+                </form>
+            </div>
+        </t>
+    </template>
+
+    <!-- ══════════ Chambres : demande ══════════ -->
+    <template id="rooms_form" name="Séjour — demande">
+        <t t-call="website.layout">
+            <div class="container my-5" style="max-width: 640px;">
+                <h1 class="mb-3">Demande de séjour</h1>
+                <p class="text-muted">Notre réception confirme votre chambre et vous rappelle rapidement.</p>
+                <div t-if="error == 'dates'" class="alert alert-warning">La date de départ doit être après l'arrivée.</div>
+                <div t-if="error == 'name'" class="alert alert-warning">Merci d'indiquer votre nom.</div>
+                <div t-if="error == 'phone'" class="alert alert-warning">Merci d'indiquer un numéro de téléphone valide.</div>
+                <form method="post" action="/reservation/chambres/envoyer">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="form-label">Arrivée</label>
+                            <input type="date" name="checkin" class="form-control" t-att-min="today" required="required"/>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Départ</label>
+                            <input type="date" name="checkout" class="form-control" t-att-min="today" required="required"/>
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label">Adultes</label>
+                            <input type="number" name="adults" class="form-control" value="2" min="1"/>
+                        </div>
+                        <div class="col-8">
+                            <label class="form-label">Nom complet</label>
+                            <input type="text" name="name" class="form-control" required="required"/>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Téléphone</label>
+                            <input type="tel" name="phone" class="form-control" required="required"/>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">E-mail</label>
+                            <input type="email" name="email" class="form-control"/>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Message (optionnel)</label>
+                            <textarea name="message" class="form-control" rows="3"/>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg mt-3">Envoyer la demande</button>
+                </form>
+            </div>
+        </t>
+    </template>
+
+    <!-- ══════════ Merci ══════════ -->
+    <template id="thanks" name="Réservation — merci">
+        <t t-call="website.layout">
+            <div class="container my-5 text-center" style="max-width: 640px;">
+                <h1 class="mb-3">Merci !</h1>
+                <t t-if="mode == 'slot'">
+                    <p class="lead">Votre réservation <b t-esc="booking.name"/> est <b>confirmée</b>.</p>
+                    <p><t t-esc="booking.resource_id.name"/><t t-if="booking.service_id"> — <t t-esc="booking.service_id.name"/></t></p>
+                    <p t-if="booking.partner_id.email" class="text-muted">Un e-mail de confirmation vous a été envoyé.</p>
+                    <div class="alert alert-info mt-4">
+                        L'acompte se règle au comptoir à votre arrivée —
+                        <b>Orange Money, MTN MoMo ou espèces</b>.
+                    </div>
+                </t>
+                <t t-if="mode == 'room'">
+                    <p class="lead">Votre demande de séjour <b t-esc="reservation.name"/> est bien transmise.</p>
+                    <p class="text-muted">Notre réception vous confirme la chambre et le tarif très rapidement.</p>
+                </t>
+                <a href="/reservation" class="btn btn-outline-primary mt-3">Retour aux réservations</a>
+            </div>
+        </t>
+    </template>
+
+    <!-- ══════════ Espace client ══════════ -->
+    <template id="my_bookings" name="Mes réservations">
+        <t t-call="website.layout">
+            <div class="container my-5" style="max-width: 860px;">
+                <h1 class="mb-4">Mes réservations</h1>
+                <h4>Espaces &amp; prestations</h4>
+                <table class="table table-sm">
+                    <thead><tr><th>Réf.</th><th>Quoi</th><th>Début</th><th>État</th></tr></thead>
+                    <tbody>
+                        <t t-foreach="bookings" t-as="b">
+                            <tr>
+                                <td t-esc="b.name"/>
+                                <td><t t-esc="b.service_id.name or b.resource_id.name"/></td>
+                                <td t-esc="b.start" t-options="{'widget': 'datetime'}"/>
+                                <td t-esc="dict(b._fields['state'].selection).get(b.state)"/>
+                            </tr>
+                        </t>
+                        <tr t-if="not bookings"><td colspan="4" class="text-muted">Aucune réservation.</td></tr>
+                    </tbody>
+                </table>
+                <h4 class="mt-4">Séjours</h4>
+                <table class="table table-sm">
+                    <thead><tr><th>Réf.</th><th>Arrivée</th><th>Départ</th><th>État</th></tr></thead>
+                    <tbody>
+                        <t t-foreach="stays" t-as="s">
+                            <tr>
+                                <td t-esc="s.name"/>
+                                <td t-esc="s.checkin_date" t-options="{'widget': 'date'}"/>
+                                <td t-esc="s.checkout_date" t-options="{'widget': 'date'}"/>
+                                <td t-esc="dict(s._fields['state'].selection).get(s.state)"/>
+                            </tr>
+                        </t>
+                        <tr t-if="not stays"><td colspan="4" class="text-muted">Aucun séjour.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+    </template>
+
+</odoo>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Menu racine : on lui donne EXPLICITEMENT l'action du tableau de bord.
+        Ainsi cliquer sur l'icône ouvre le tableau de bord de façon
+        déterministe, sans dépendre de l'action d'un sous-menu (qui pouvait
+        échouer selon les droits de l'utilisateur → « action introuvable »).
+
+        Le menu racine est ouvert au groupe "utilisateur" pour que tous les
+        utilisateurs du module puissent l'ouvrir. Le tableau de bord lui-même
+        reste informatif ; les données sensibles restent protégées par les
+        ACL des modèles.
+    -->
+    <menuitem id="menu_pos_credit_root"
+              name="POS Crédit"
+              action="action_pos_credit_dashboard"
+              web_icon="aite_pos_credit,static/description/icon.png"
+              sequence="46"
+              groups="group_pos_credit_user"/>
+
+    <menuitem id="menu_pos_credit_dashboard"
+              name="Recouvrement"
+              parent="menu_pos_credit_root"
+              action="action_pos_credit_dashboard"
+              sequence="10"
+              groups="group_pos_credit_user"/>
+
+    <menuitem id="menu_pos_credit_ardoises"
+              name="Ardoises"
+              parent="menu_pos_credit_root"
+              action="action_aite_pos_credit"
+              sequence="20"
+              groups="group_pos_credit_user"/>
+
+    <menuitem id="menu_pos_credit_payments"
+              name="Remboursements"
+              parent="menu_pos_credit_root"
+              action="action_aite_pos_credit_payment"
+              sequence="30"
+              groups="group_pos_credit_user"/>
+
+</odoo>

@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_loyalty_move_user,loyalty.move.user,model_aite_loyalty_move,aite_hotel_management.group_hotel_user,1,0,0,0
+access_loyalty_move_manager,loyalty.move.manager,model_aite_loyalty_move,aite_hotel_management.group_hotel_manager,1,1,1,1
+access_loyalty_adjust_wizard,loyalty.adjust.wizard,model_aite_loyalty_adjust_wizard,aite_hotel_management.group_hotel_manager,1,1,1,1

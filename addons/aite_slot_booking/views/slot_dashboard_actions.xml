@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_aite_slot_dashboard" model="ir.actions.client">
+        <field name="name">Espaces &amp; Prestations — Tableau de bord</field>
+        <field name="tag">aite_slot_dashboard</field>
+    </record>
+</odoo>

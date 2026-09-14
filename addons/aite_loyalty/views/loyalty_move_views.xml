@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_loyalty_move_list" model="ir.ui.view">
+        <field name="name">aite.loyalty.move.list</field>
+        <field name="model">aite.loyalty.move</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="points &lt; 0" create="false">
+                <field name="date"/>
+                <field name="partner_id"/>
+                <field name="origin_detail"/>
+                <field name="ref"/>
+                <field name="amount_base" optional="show"/>
+                <field name="points" sum="Total points"/>
+                <field name="note" optional="hide"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_loyalty_move_search" model="ir.ui.view">
+        <field name="name">aite.loyalty.move.search</field>
+        <field name="model">aite.loyalty.move</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="partner_id"/>
+                <field name="ref"/>
+                <filter name="gains" string="Gains" domain="[('points','&gt;',0)]"/>
+                <filter name="retraits" string="Retraits" domain="[('points','&lt;',0)]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_partner" string="Client" context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_origin" string="Origine" context="{'group_by': 'origin_detail'}"/>
+                    <filter name="group_date" string="Mois" context="{'group_by': 'date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_loyalty_move" model="ir.actions.act_window">
+        <field name="name">Mouvements de points</field>
+        <field name="res_model">aite.loyalty.move</field>
+        <field name="view_mode">list</field>
+        <field name="search_view_id" ref="view_loyalty_move_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Aucun mouvement</p>
+            <p>Les points s'accumulent automatiquement : commandes POS
+            réglées, folios de séjour, prestations réalisées.</p>
+        </field>
+    </record>
+    <record id="action_loyalty_vip_partners" model="ir.actions.act_window">
+        <field name="name">Clients VIP &amp; VVIP</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">[('loyalty_tier','in',('vip','vvip'))]</field>
+        <field name="context">{'search_default_customer': 1}</field>
+    </record>
+</odoo>

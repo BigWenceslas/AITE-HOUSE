@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- ============ KPI CARD ============ -->
+    <t t-name="aite_pos_credit.KpiCard">
+        <div t-att-class="'apc-kpi ' + (props.mega ? 'apc-kpi-mega apc-accent-' + props.accent : '')">
+            <div class="apc-kpi-label" t-esc="props.label"/>
+            <div class="apc-kpi-value" t-esc="props.value"/>
+            <div t-if="props.delta" t-att-class="'apc-kpi-delta ' + deltaClass">
+                <t t-esc="props.delta.text"/>
+            </div>
+            <div t-if="props.sub" class="apc-kpi-sub" t-esc="props.sub"/>
+        </div>
+    </t>
+
+    <!-- ============ DASHBOARD ROOT ============ -->
+    <t t-name="aite_pos_credit.Dashboard">
+        <div class="apc-dashboard-root o_action">
+            <CreditDashboardView/>
+        </div>
+    </t>
+
+    <!-- ============ DASHBOARD VIEW ============ -->
+    <t t-name="aite_pos_credit.DashboardView">
+        <div class="apc-dashboard">
+
+            <!-- Header -->
+            <div class="apc-topbar">
+                <div>
+                    <h2 class="apc-title">POS Crédit — Recouvrement</h2>
+                    <div class="apc-sub">Ardoises &amp; remboursements · suivi des dettes clients</div>
+                </div>
+            </div>
+
+            <!-- Filtres -->
+            <div class="apc-filterbar">
+                <div class="apc-filterrow">
+                    <span class="apc-flabel">Période</span>
+                    <t t-foreach="periodPresets" t-as="p" t-key="p.key">
+                        <button t-att-class="'apc-chip ' + (state.period === p.key ? 'active' : '')"
+                                t-on-click="() => this.setPeriod(p.key)"
+                                t-esc="p.label"/>
+                    </t>
+                    <span class="apc-spacer"/>
+                    <input type="date" class="apc-date"
+                           t-att-value="state.dateFrom"
+                           t-on-change="(ev) => this.onDateFrom(ev)"/>
+                    <span class="apc-arrow">→</span>
+                    <input type="date" class="apc-date"
+                           t-att-value="state.dateTo"
+                           t-on-change="(ev) => this.onDateTo(ev)"/>
+                    <button t-att-class="'apc-chip apc-apply ' + (state.period === 'custom' ? 'active' : '')"
+                            t-on-click="() => this.applyCustomRange()">Appliquer</button>
+                </div>
+                <div class="apc-filterrow">
+                    <span class="apc-flabel">Origine</span>
+                    <button t-att-class="'apc-chip ' + (state.source === 'all' ? 'active' : '')"
+                            t-on-click="() => this.setSource('all')">Toutes</button>
+                    <button t-att-class="'apc-chip ' + (state.source === 'pos' ? 'active' : '')"
+                            t-on-click="() => this.setSource('pos')">Point de vente</button>
+                    <button t-att-class="'apc-chip ' + (state.source === 'sale' ? 'active' : '')"
+                            t-on-click="() => this.setSource('sale')">Ventes</button>
+                </div>
+                <div class="apc-filterrow">
+                    <span class="apc-flabel">Caisse</span>
+                    <button t-att-class="'apc-chip ' + (state.configId === 0 ? 'active' : '')"
+                            t-on-click="() => this.setConfig(0)">Toutes les caisses</button>
+                    <t t-foreach="state.configs" t-as="c" t-key="c.id">
+                        <button t-att-class="'apc-chip ' + (state.configId === c.id ? 'active' : '')"
+                                t-on-click="() => this.setConfig(c.id)">
+                            <span class="apc-dot" t-att-style="'background:' + c.color"/>
+                            <t t-esc="c.name"/>
+                        </button>
+                    </t>
+                </div>
+            </div>
+
+            <!-- Loading -->
+            <div t-if="state.loading" class="apc-loading">
+                <i class="fa fa-spinner fa-spin"/> Chargement…
+            </div>
+
+            <div t-else="">
+                <!-- KPIs principaux -->
+                <div class="apc-section-title">Encours &amp; recouvrement</div>
+                <div class="apc-grid apc-grid-4">
+                    <KpiCard mega="true" accent="'danger'"
+                             label="'Encours total (dû)'"
+                             value="money(state.kpis.outstanding)"
+                             sub="outstandingSub()"/>
+                    <KpiCard mega="true" accent="'success'"
+                             label="'Recouvré (période)'"
+                             value="money(state.kpis.recovered)"
+                             delta="deltaOf(state.kpis.recovered_delta, true)"
+                             sub="state.kpis.payment_count + ' remboursements'"/>
+                    <KpiCard mega="true" accent="'warning'"
+                             label="'Nouvelles ardoises (période)'"
+                             value="money(state.kpis.opened_amount)"
+                             delta="deltaOf(state.kpis.opened_delta, false)"
+                             sub="num(state.kpis.new_credits) + ' ardoises ouvertes'"/>
+                    <KpiCard mega="true" accent="'primary'"
+                             label="'Taux de recouvrement'"
+                             value="pct(state.kpis.recovery_rate)"
+                             sub="'recouvré / (encours + recouvré)'"/>
+                </div>
+
+                <!-- Indicateurs de risque -->
+                <div class="apc-section-title">Indicateurs de risque</div>
+                <div class="apc-grid apc-grid-4">
+                    <KpiCard label="'Ardoise moyenne'"
+                             value="money(state.kpis.avg_ardoise)"
+                             sub="num(state.kpis.debtor_count) + ' débiteurs actifs'"/>
+                    <KpiCard label="'Plus ancienne dette'"
+                             value="days(state.kpis.oldest_age)"
+                             sub="state.kpis.oldest_partner"/>
+                    <KpiCard label="'En retard (+30j)'" accent="'danger'"
+                             value="money(state.kpis.late_amount)"
+                             sub="pct(state.kpis.late_pct) + ' de l\'encours'"/>
+                    <KpiCard label="'Ardoises réglées (période)'"
+                             value="num(state.kpis.settled_count)"
+                             sub="'délai moyen ' + days(state.kpis.avg_settle_days)"/>
+                </div>
+
+                <!-- Âge de la dette & évolution -->
+                <div class="apc-section-title">Âge de la dette &amp; évolution</div>
+                <div class="apc-grid apc-grid-2">
+                    <div class="apc-card">
+                        <h3>Balance âgée (aging) de l'encours</h3>
+                        <div class="apc-chartbox"><canvas t-ref="agingChart"/></div>
+                        <div class="apc-mini">Plus la dette est ancienne, plus le risque d'impayé est élevé.</div>
+                    </div>
+                    <div class="apc-card">
+                        <h3>Nouvelles ardoises vs Recouvré (6 mois)</h3>
+                        <div class="apc-chartbox"><canvas t-ref="evoChart"/></div>
+                    </div>
+                </div>
+
+                <!-- Répartition par caisse & rythme -->
+                <div class="apc-section-title">Répartition &amp; rythme</div>
+                <div class="apc-grid apc-grid-2">
+                    <div class="apc-card">
+                        <h3>Encours par origine</h3>
+                        <div class="apc-chartbox"><canvas t-ref="caisseChart"/></div>
+                        <div class="apc-mini">Où le crédit est accordé — toutes périodes (photo de l'encours).</div>
+                    </div>
+                    <div class="apc-card">
+                        <h3>Remboursements par jour (période)</h3>
+                        <div class="apc-chartbox"><canvas t-ref="dailyChart"/></div>
+                    </div>
+                </div>
+
+                <!-- Remboursements -->
+                <div class="apc-section-title">Remboursements (période)</div>
+                <div class="apc-grid apc-grid-2">
+                    <div class="apc-card">
+                        <h3>Répartition par moyen de paiement</h3>
+                        <div class="apc-chartbox"><canvas t-ref="payChart"/></div>
+                    </div>
+                    <div class="apc-card">
+                        <div class="apc-card-head">
+                            <h3>Derniers remboursements</h3>
+                            <button class="btn btn-link btn-sm" t-on-click="openAllPayments">Tout voir</button>
+                        </div>
+                        <div class="apc-tablewrap">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th><th>Client</th><th>Moyen</th>
+                                        <th class="text-end">Montant</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="state.recentPayments.slice(0, 8)" t-as="p" t-key="p.id">
+                                        <td t-esc="p.date"/>
+                                        <td t-esc="p.partner_name"/>
+                                        <td t-esc="paymentLabel(p.method)"/>
+                                        <td class="text-end" t-esc="money(p.amount)"/>
+                                    </tr>
+                                    <tr t-if="!state.recentPayments.length">
+                                        <td colspan="4" class="text-muted text-center">Aucun remboursement sur la période</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top débiteurs -->
+                <div class="apc-section-title apc-flex-between">
+                    <span>Top débiteurs</span>
+                    <button class="btn btn-link btn-sm" t-on-click="openAllArdoises">Toutes les ardoises</button>
+                </div>
+                <div class="apc-card">
+                    <div class="apc-tablewrap">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Client</th><th>Téléphone</th>
+                                    <th class="text-end">Encours</th>
+                                    <th class="text-end">Âge max</th>
+                                    <th>Dernier paiement</th><th>Statut</th><th/>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="state.topDebtors" t-as="d" t-key="d.partner_id"
+                                    t-on-click="() => this.openDebtor(d.partner_id)"
+                                    style="cursor:pointer">
+                                    <td><strong t-esc="d.name"/></td>
+                                    <td class="text-muted" t-esc="d.phone"/>
+                                    <td class="text-end apc-barcell">
+                                        <div class="apc-bar" t-att-style="debtorBarStyle(d)"/>
+                                        <strong t-esc="money(d.outstanding)"/>
+                                    </td>
+                                    <td class="text-end" t-esc="days(d.max_age)"/>
+                                    <td class="text-muted" t-esc="lastPay(d)"/>
+                                    <td>
+                                        <span t-att-class="'badge ' + severityBadge(d.severity).cls"
+                                              t-esc="severityBadge(d.severity).label"/>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-secondary"
+                                                t-on-click.stop="() => this.openDebtor(d.partner_id)">Détail</button>
+                                    </td>
+                                </tr>
+                                <tr t-if="!state.topDebtors.length">
+                                    <td colspan="7" class="text-muted text-center">Aucun débiteur</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </t>
+
+</templates>

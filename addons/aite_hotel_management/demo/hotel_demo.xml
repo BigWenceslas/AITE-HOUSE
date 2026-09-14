@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ========================================================== -->
+        <!-- Hôtel de démonstration : Hôtel La Vérandah (Yaoundé)       -->
+        <!-- ========================================================== -->
+
+        <record id="demo_hotel_verandah" model="aite.hotel.hotel">
+            <field name="name">Hôtel La Vérandah</field>
+            <field name="code">HLV</field>
+            <field name="street">Avenue Kennedy, Bastos</field>
+            <field name="city">Yaoundé</field>
+            <field name="country_id" ref="base.cm"/>
+            <field name="phone">+237 6 90 00 00 00</field>
+            <field name="email">contact@laverandah.example.com</field>
+            <field name="stars">4</field>
+            <field name="checkin_hour">13.0</field>
+            <field name="checkout_hour">12.0</field>
+            <field name="note" type="html">
+                <p>Bienvenue à l'Hôtel La Vérandah ! Arrivée à partir de
+                13h00, départ avant 12h00. Petit-déjeuner servi de 6h30 à
+                10h00. Wi-Fi gratuit dans tout l'établissement.</p>
+            </field>
+        </record>
+
+        <record id="demo_floor_rdc" model="aite.hotel.floor">
+            <field name="name">Rez-de-chaussée</field>
+            <field name="sequence">1</field>
+            <field name="hotel_id" ref="demo_hotel_verandah"/>
+        </record>
+        <record id="demo_floor_1" model="aite.hotel.floor">
+            <field name="name">1er étage</field>
+            <field name="sequence">2</field>
+            <field name="hotel_id" ref="demo_hotel_verandah"/>
+        </record>
+
+        <!-- ========================================================== -->
+        <!-- Types de chambre                                           -->
+        <!-- ========================================================== -->
+
+        <record id="demo_room_type_standard" model="aite.hotel.room.type">
+            <field name="name">Chambre Standard</field>
+            <field name="code">STD</field>
+            <field name="sequence">1</field>
+            <field name="base_price">25000</field>
+            <field name="extra_person_price">5000</field>
+            <field name="capacity_adults">2</field>
+            <field name="capacity_children">1</field>
+            <field name="amenity_ids"
+                   eval="[(6, 0, [ref('amenity_wifi'), ref('amenity_tv'),
+                                  ref('amenity_ac')])]"/>
+            <field name="description">Chambre confortable avec lit double,
+climatisation et télévision. Idéale pour les voyageurs d'affaires.</field>
+        </record>
+
+        <record id="demo_room_type_deluxe" model="aite.hotel.room.type">
+            <field name="name">Chambre Deluxe</field>
+            <field name="code">DLX</field>
+            <field name="sequence">2</field>
+            <field name="base_price">40000</field>
+            <field name="extra_person_price">7500</field>
+            <field name="capacity_adults">2</field>
+            <field name="capacity_children">2</field>
+            <field name="amenity_ids"
+                   eval="[(6, 0, [ref('amenity_wifi'), ref('amenity_tv'),
+                                  ref('amenity_ac'), ref('amenity_minibar'),
+                                  ref('amenity_safe')])]"/>
+            <field name="description">Chambre spacieuse avec minibar,
+coffre-fort et vue sur le jardin.</field>
+        </record>
+
+        <record id="demo_room_type_suite" model="aite.hotel.room.type">
+            <field name="name">Suite Exécutive</field>
+            <field name="code">STE</field>
+            <field name="sequence">3</field>
+            <field name="base_price">75000</field>
+            <field name="extra_person_price">10000</field>
+            <field name="capacity_adults">3</field>
+            <field name="capacity_children">2</field>
+            <field name="amenity_ids"
+                   eval="[(6, 0, [ref('amenity_wifi'), ref('amenity_tv'),
+                                  ref('amenity_ac'), ref('amenity_minibar'),
+                                  ref('amenity_safe'), ref('amenity_balcony'),
+                                  ref('amenity_breakfast')])]"/>
+            <field name="description">Suite haut de gamme avec salon séparé,
+balcon privé et petit-déjeuner inclus.</field>
+        </record>
+
+        <!-- ========================================================== -->
+        <!-- Tarifs saisonniers                                         -->
+        <!-- ========================================================== -->
+
+        <record id="demo_season_fetes_std" model="aite.hotel.season.price">
+            <field name="name">Fêtes de fin d'année</field>
+            <field name="room_type_id" ref="demo_room_type_standard"/>
+            <field name="hotel_id" ref="demo_hotel_verandah"/>
+            <field name="date_from" eval="time.strftime('%Y-12-15')"/>
+            <field name="date_to" eval="(DateTime.now() + relativedelta(years=1)).strftime('%Y-01-05')"/>
+            <field name="price">32000</field>
+        </record>
+
+        <record id="demo_season_fetes_dlx" model="aite.hotel.season.price">
+            <field name="name">Fêtes de fin d'année</field>
+            <field name="room_type_id" ref="demo_room_type_deluxe"/>
+            <field name="hotel_id" ref="demo_hotel_verandah"/>
+            <field name="date_from" eval="time.strftime('%Y-12-15')"/>
+            <field name="date_to" eval="(DateTime.now() + relativedelta(years=1)).strftime('%Y-01-05')"/>
+            <field name="price">50000</field>
+        </record>
+
+        <!-- ========================================================== -->
+        <!-- Chambres                                                   -->
+        <!-- ========================================================== -->
+
+        <record id="demo_room_101" model="aite.hotel.room">
+            <field name="name">101</field>
+            <field name="hotel_id" ref="demo_hotel_verandah"/>
+            <field name="floor_id" ref="demo_floor_rdc"/>
+            <field name="room_type_id" ref="demo_room_type_standard"/>
+            <field name="telephone_ext">101</field>
+        </record>
+        <record id="demo_room_102" model="aite.hotel.room">
+            <field name="name">102</field>
+            <field name="hotel_id" ref="demo_hotel_verandah"/>
+            <field name="floor_id" ref="demo_floor_rdc"/>
+            <field name="room_type_id" ref="demo_room_type_standard"/>
+            <field name="telephone_ext">102</field>
+        </record>
+        <record id="demo_room_103" model="aite.hotel.room">
+            <field name="name">103</field>
+            <field name="hotel_id" ref="demo_hotel_verandah"/>
+            <field name="floor_id" ref="demo_floor_rdc"/>
+            <field name="room_type_id" ref="demo_room_type_standard"/>
+            <field name="telephone_ext">103</field>
+        </record>
+        <record id="demo_room_104" model="aite.hotel.room">
+            <field name="name">104</field>
+            <field name="hotel_id" ref="demo_hotel_verandah"/>
+            <field name="floor_id" ref="demo_floor_rdc"/>
+            <field name="room_type_id" ref="demo_room_type_deluxe"/>
+            <field name="telephone_ext">104</field>
+        </record>
+        <record id="demo_room_201" model="aite.hotel.room">
+            <field name="name">201</field>
+            <field name="hotel_id" ref="demo_hotel_verandah"/>
+            <field name="floor_id" ref="demo_floor_1"/>
+            <field name="room_type_id" ref="demo_room_type_deluxe"/>
+            <field name="telephone_ext">201</field>
+        </record>
+        <record id="demo_room_202" model="aite.hotel.room">
+            <field name="name">202</field>
+            <field name="hotel_id" ref="demo_hotel_verandah"/>
+            <field name="floor_id" ref="demo_floor_1"/>
+            <field name="room_type_id" ref="demo_room_type_deluxe"/>
+            <field name="telephone_ext">202</field>
+        </record>
+        <record id="demo_room_203" model="aite.hotel.room">
+            <field name="name">203</field>
+            <field name="hotel_id" ref="demo_hotel_verandah"/>
+            <field name="floor_id" ref="demo_floor_1"/>
+            <field name="room_type_id" ref="demo_room_type_suite"/>
+            <field name="telephone_ext">203</field>
+            <field name="price_override">70000</field>
+        </record>
+        <record id="demo_room_204" model="aite.hotel.room">
+            <field name="name">204</field>
+            <field name="hotel_id" ref="demo_hotel_verandah"/>
+            <field name="floor_id" ref="demo_floor_1"/>
+            <field name="room_type_id" ref="demo_room_type_suite"/>
+            <field name="telephone_ext">204</field>
+        </record>
+
+        <!-- ========================================================== -->
+        <!-- Services annexes                                           -->
+        <!-- ========================================================== -->
+
+        <record id="demo_service_breakfast" model="aite.hotel.service">
+            <field name="name">Petit-déjeuner continental</field>
+            <field name="category">restaurant</field>
+            <field name="price">4500</field>
+            <field name="description">Servi de 6h30 à 10h00 au restaurant.</field>
+        </record>
+        <record id="demo_service_laundry" model="aite.hotel.service">
+            <field name="name">Blanchisserie (par pièce)</field>
+            <field name="category">laundry</field>
+            <field name="price">1500</field>
+            <field name="description">Linge rendu sous 24 h.</field>
+        </record>
+        <record id="demo_service_shuttle" model="aite.hotel.service">
+            <field name="name">Navette aéroport Nsimalen</field>
+            <field name="category">transport</field>
+            <field name="price">15000</field>
+            <field name="description">Trajet aller simple, sur réservation.</field>
+        </record>
+        <record id="demo_service_minibar" model="aite.hotel.service">
+            <field name="name">Consommation minibar</field>
+            <field name="category">minibar</field>
+            <field name="price">2500</field>
+        </record>
+        <record id="demo_service_spa" model="aite.hotel.service">
+            <field name="name">Massage relaxant (1 h)</field>
+            <field name="category">spa</field>
+            <field name="price">20000</field>
+        </record>
+
+        <!-- ========================================================== -->
+        <!-- Partenaires : agence & clients                             -->
+        <!-- ========================================================== -->
+
+        <record id="demo_partner_agency" model="res.partner">
+            <field name="name">Cameroun Voyages &amp; Tours</field>
+            <field name="is_company" eval="True"/>
+            <field name="is_booking_agent" eval="True"/>
+            <field name="city">Yaoundé</field>
+            <field name="country_id" ref="base.cm"/>
+            <field name="phone">+237 6 91 11 22 33</field>
+            <field name="email">resa@cvt.example.com</field>
+        </record>
+
+        <record id="demo_partner_guest_1" model="res.partner">
+            <field name="name">Jean-Pierre Mbarga</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="city">Douala</field>
+            <field name="country_id" ref="base.cm"/>
+            <field name="phone">+237 6 77 44 55 66</field>
+            <field name="email">jp.mbarga@example.com</field>
+            <field name="guest_id_type">cni</field>
+            <field name="guest_id_number">123456789</field>
+            <field name="nationality_id" ref="base.cm"/>
+        </record>
+
+        <record id="demo_partner_guest_2" model="res.partner">
+            <field name="name">Awa Ndiaye</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="city">Dakar</field>
+            <field name="country_id" ref="base.sn"/>
+            <field name="phone">+221 77 123 45 67</field>
+            <field name="email">awa.ndiaye@example.com</field>
+            <field name="guest_id_type">passport</field>
+            <field name="guest_id_number">SN0456789</field>
+            <field name="nationality_id" ref="base.sn"/>
+        </record>
+
+        <record id="demo_partner_guest_3" model="res.partner">
+            <field name="name">Claire Dupont</field>
+            <field name="is_hotel_guest" eval="True"/>
+            <field name="city">Paris</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="email">claire.dupont@example.com</field>
+            <field name="guest_id_type">passport</field>
+            <field name="guest_id_number">19FR34567</field>
+            <field name="nationality_id" ref="base.fr"/>
+        </record>
+
+    </data>
+</odoo>

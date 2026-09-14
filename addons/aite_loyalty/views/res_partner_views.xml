@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_form_aite_loyalty" model="ir.ui.view">
+        <field name="name">res.partner.form.aite.loyalty</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button name="action_view_loyalty_moves" type="object"
+                        class="oe_stat_button" icon="fa-star"
+                        invisible="loyalty_move_count == 0">
+                    <field name="loyalty_points" widget="statinfo"
+                           string="Points"/>
+                </button>
+            </div>
+            <field name="category_id" position="before">
+                <field name="loyalty_tier" widget="badge"
+                       decoration-warning="loyalty_tier == 'vip'"
+                       decoration-danger="loyalty_tier == 'vvip'"/>
+                <field name="loyalty_tier_date"
+                       invisible="loyalty_tier == 'standard'"/>
+            </field>
+        </field>
+    </record>
+</odoo>

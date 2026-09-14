@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_pos_credit_dashboard" model="ir.actions.client">
+        <field name="name">Recouvrement</field>
+        <field name="tag">aite_pos_credit_dashboard</field>
+    </record>
+
+</odoo>

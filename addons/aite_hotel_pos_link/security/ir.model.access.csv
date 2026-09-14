@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_roomcharge_pending_user,roomcharge.pending.user,model_aite_roomcharge_pending,aite_hotel_management.group_hotel_user,1,1,1,0
+access_roomcharge_pending_manager,roomcharge.pending.manager,model_aite_roomcharge_pending,aite_hotel_management.group_hotel_manager,1,1,1,1
