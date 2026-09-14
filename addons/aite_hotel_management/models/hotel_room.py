@@ -120,7 +120,10 @@ class HotelRoomType(models.Model):
         room_types = super().create(vals_list)
         for rtype in room_types:
             if not rtype.product_id:
-                rtype.product_id = self.env['product.product'].create(
+                # ``sudo`` : l'article support est une écriture technique.
+                # Le profil « Responsable » de l'hôtel n'a pas — et n'a pas
+                # à avoir — les droits de création sur product.product.
+                rtype.product_id = self.env['product.product'].sudo().create(
                     rtype._prepare_product_vals())
         return room_types
 
@@ -129,7 +132,7 @@ class HotelRoomType(models.Model):
         # Garder l'article aligné sur le nom / tarif de base.
         if 'name' in vals or 'base_price' in vals:
             for rtype in self.filtered('product_id'):
-                rtype.product_id.write({
+                rtype.product_id.sudo().write({
                     'name': _("Nuitée — %s", rtype.name),
                     'list_price': rtype.base_price,
                 })

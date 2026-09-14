@@ -28,7 +28,10 @@ class ResCompany(models.Model):
              "du client (s'il est unique).",
     )
     aite_slot_mail_on_confirm = fields.Boolean(
-        string="E-mail de confirmation automatique", default=True,
+        # Libellé qualifié : ``aite_hotel_management`` porte un booléen
+        # homonyme sur res.company (cf. hotel_send_confirmation).
+        string="E-mail de confirmation automatique des réservations d'espaces",
+        default=True,
     )
 
 

@@ -56,7 +56,11 @@ class PosCreditDashboard(models.AbstractModel):
         return self.env.company.currency_id
 
     def _credit_domain(self, config_id=None, states=('open',), source=None):
-        domain = [('state', 'in', list(states))]
+        # Le cloisonnement est porté par les règles d'enregistrement ;
+        # le filtre explicite garde le tableau de bord lisible quand il
+        # est appelé en ``sudo`` (orchestration par le cockpit).
+        domain = [('state', 'in', list(states)),
+                  ('company_id', '=', self.env.company.id)]
         if config_id:
             domain.append(('config_id', '=', int(config_id)))
         if source:
@@ -66,6 +70,7 @@ class PosCreditDashboard(models.AbstractModel):
     def _payment_domain(self, dt_from, dt_to, config_id=None, source=None):
         domain = [
             ('state', '=', 'posted'),
+            ('company_id', '=', self.env.company.id),
             ('date', '>=', dt_from),
             ('date', '<=', dt_to),
         ]
@@ -250,11 +255,19 @@ class PosCreditDashboard(models.AbstractModel):
         open_credits = Credit.search(self._credit_domain(config_id,
                                                          source=source))
 
+        # Borne basse ouverte sur la première tranche : une ardoise mal
+        # datée (date d'ouverture dans le futur ⇒ âge négatif) ne tombait
+        # dans aucune tranche et son montant disparaissait de la balance,
+        # qui ne se réconciliait alors plus avec l'encours affiché.
         buckets = [
-            {'label': "0–30 j", 'min': 0, 'max': 30, 'amount': 0.0, 'count': 0},
-            {'label': "30–60 j", 'min': 30, 'max': 60, 'amount': 0.0, 'count': 0},
-            {'label': "60–90 j", 'min': 60, 'max': 90, 'amount': 0.0, 'count': 0},
-            {'label': "+90 j", 'min': 90, 'max': 10 ** 9, 'amount': 0.0, 'count': 0},
+            {'key': '0_30', 'label': "0–30 j", 'min': -10 ** 9, 'max': 30,
+             'amount': 0.0, 'count': 0},
+            {'key': '31_60', 'label': "30–60 j", 'min': 30, 'max': 60,
+             'amount': 0.0, 'count': 0},
+            {'key': '61_90', 'label': "60–90 j", 'min': 60, 'max': 90,
+             'amount': 0.0, 'count': 0},
+            {'key': '90p', 'label': "+90 j", 'min': 90, 'max': 10 ** 9,
+             'amount': 0.0, 'count': 0},
         ]
         for c in open_credits:
             age = (today - c.date_open).days if c.date_open else 0
@@ -263,8 +276,14 @@ class PosCreditDashboard(models.AbstractModel):
                     b['amount'] += c.amount_residual
                     b['count'] += 1
                     break
+        # ``key`` et les bornes font partie du contrat : le cockpit
+        # Direction reventile ces tranches et, sans elles, rangeait tout
+        # l'encours dans « +90 j » — la balance âgée en miroir affichait
+        # alors 100 % de créances critiques.
         return [
-            {'label': b['label'], 'amount': b['amount'], 'count': b['count']}
+            {'key': b['key'], 'label': b['label'],
+             'min': max(0, b['min']), 'max': b['max'],
+             'amount': b['amount'], 'count': b['count']}
             for b in buckets
         ]
 
@@ -276,7 +295,8 @@ class PosCreditDashboard(models.AbstractModel):
         du module Ventes.
         """
         Credit = self.env['aite.pos.credit']
-        domain = [('state', '=', 'open')]
+        domain = [('state', '=', 'open'),
+                  ('company_id', '=', self.env.company.id)]
         if source:
             domain.append(('source', '=', source))
         open_credits = Credit.search(domain)

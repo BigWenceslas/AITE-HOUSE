@@ -98,7 +98,7 @@ class PosCredit(models.Model):
         'aite.pos.credit.payment', 'credit_id', string="Remboursements",
     )
     payment_count = fields.Integer(
-        string="Nb remboursements", compute='_compute_amounts',
+        string="Nb remboursements", compute='_compute_payment_count',
     )
 
     state = fields.Selection(
@@ -108,7 +108,6 @@ class PosCredit(models.Model):
             ('cancelled', "Annulée"),
         ],
         string="État", default='open', required=True, index=True, copy=False,
-        tracking=True,
     )
 
     age_days = fields.Integer(
@@ -139,9 +138,6 @@ class PosCredit(models.Model):
             )
             credit.amount_paid = paid
             credit.amount_residual = max(0.0, credit.amount_total - paid)
-            credit.payment_count = len(
-                credit.payment_ids.filtered(lambda p: p.state == 'posted')
-            )
             # Bascule automatique en "réglée" quand le reste atteint zéro.
             if credit.state == 'open' and credit.amount_total > 0 \
                     and credit.amount_residual <= 0.0:
@@ -149,6 +145,19 @@ class PosCredit(models.Model):
             elif credit.state == 'paid' and credit.amount_residual > 0.0:
                 # Un remboursement annulé peut rouvrir l'ardoise.
                 credit.state = 'open'
+
+    @api.depends('payment_ids.state')
+    def _compute_payment_count(self):
+        """
+        Compte des remboursements validés — compute **distinct** de
+        ``_compute_amounts`` : ce champ n'est pas stocké, et le mélanger
+        aux champs stockés ferait écrire en base à chaque simple lecture
+        (voire lever une AccessError en contexte lecture seule).
+        """
+        for credit in self:
+            credit.payment_count = len(
+                credit.payment_ids.filtered(lambda p: p.state == 'posted')
+            )
 
     @api.depends('date_open', 'state', 'amount_residual')
     def _compute_age(self):

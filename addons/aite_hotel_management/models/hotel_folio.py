@@ -61,7 +61,7 @@ class HotelFolio(models.Model):
         'aite.hotel.folio.payment', 'folio_id', string="Règlements",
     )
     payment_count = fields.Integer(
-        string="Nb règlements", compute='_compute_amounts',
+        string="Nb règlements", compute='_compute_payment_count',
     )
 
     amount_room = fields.Monetary(
@@ -135,7 +135,6 @@ class HotelFolio(models.Model):
             posted = folio.payment_ids.filtered(
                 lambda p: p.state == 'posted')
             folio.amount_paid = sum(posted.mapped('amount'))
-            folio.payment_count = len(posted)
             folio.amount_residual = max(
                 0.0, folio.amount_total - folio.amount_paid)
             # Bascule automatique facturé → soldé (et retour si un
@@ -145,6 +144,18 @@ class HotelFolio(models.Model):
                 folio.state = 'paid'
             elif folio.state == 'paid' and folio.amount_residual > 0.0:
                 folio.state = 'invoiced'
+
+    @api.depends('payment_ids.state')
+    def _compute_payment_count(self):
+        """
+        Nombre de règlements validés — compute **distinct** de
+        ``_compute_amounts`` : ce champ n'est pas stocké, et le mélanger
+        aux champs stockés ferait écrire en base à chaque simple lecture
+        (voire lever une AccessError en contexte lecture seule).
+        """
+        for folio in self:
+            folio.payment_count = len(
+                folio.payment_ids.filtered(lambda p: p.state == 'posted'))
 
     # ------------------------------------------------------------------
     # CRUD
@@ -180,10 +191,12 @@ class HotelFolio(models.Model):
             if folio.move_id or folio.state in ('invoiced', 'paid',
                                                 'cancelled'):
                 continue
+            room_lines = folio.line_ids.filtered(
+                lambda l: l.line_type == 'room')
             existing = {
                 line.reservation_line_id.id: line
-                for line in folio.line_ids
-                if line.line_type == 'room' and line.reservation_line_id
+                for line in room_lines
+                if line.reservation_line_id
             }
             seen = set()
             for rline in folio.reservation_id.line_ids:
@@ -195,9 +208,18 @@ class HotelFolio(models.Model):
                     vals['folio_id'] = folio.id
                     self.env['aite.hotel.folio.line'].create(vals)
             # Nuitées orphelines (chambre retirée de la réservation).
+            # Le champ ``reservation_line_id`` est en ``ondelete='set null'``
+            # — supprimer la ligne de séjour le vide au lieu de retirer la
+            # nuitée : sans ce second filtre, le client resterait facturé
+            # pour une chambre qui ne fait plus partie du séjour.
+            orphans = folio.env['aite.hotel.folio.line']
             for rline_id, fline in existing.items():
                 if rline_id not in seen:
-                    fline.unlink()
+                    orphans |= fline
+            orphans |= room_lines.filtered(
+                lambda l: not l.reservation_line_id)
+            if orphans:
+                orphans.unlink()
 
     def _prepare_room_line_vals(self, rline):
         self.ensure_one()
@@ -571,7 +593,10 @@ class HotelFolioPayment(models.Model):
         if company.hotel_payment_journal_id:
             return company.hotel_payment_journal_id
 
-        Journal = self.env['account.journal']
+        # ``sudo`` : la réception encaisse sans détenir les droits
+        # comptables. Le choix du journal est une mécanique interne ; le
+        # contrôle d'accès porte sur le règlement de folio lui-même.
+        Journal = self.env['account.journal'].sudo()
         if self.method == 'cash':
             journal = Journal.search([
                 ('type', '=', 'cash'), ('company_id', '=', company.id),
@@ -603,7 +628,10 @@ class HotelFolioPayment(models.Model):
             return
 
         partner = self.partner_id
-        receivable = company._get_hotel_receivable_account(partner)
+        # ``sudo`` sur la résolution du compte 411 pour la même raison que
+        # le journal : la réception n'a pas accès au plan comptable.
+        receivable = company.sudo()._get_hotel_receivable_account(
+            partner.sudo())
         journal = self._journal_for_method()
         if not receivable or not journal:
             return

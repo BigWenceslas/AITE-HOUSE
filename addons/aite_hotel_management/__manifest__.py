@@ -9,9 +9,10 @@
 AITE Gestion Hôtelière
 ======================
 
-Property Management System (PMS) complet pour Odoo 18 Enterprise, inspiré
-des meilleures pratiques du marché (Opera Cloud, Mews, Cloudbeds) et pensé
-pour le contexte camerounais (OHADA, Mobile Money).
+Property Management System (PMS) complet pour Odoo 18 (Community &
+Enterprise), inspiré des meilleures pratiques du marché (Opera Cloud,
+Mews, Cloudbeds) et pensé pour le contexte camerounais (OHADA, Mobile
+Money).
 
 Fonctionnel
 -----------
@@ -22,8 +23,9 @@ Fonctionnel
   workflow brouillon → confirmée → arrivée (check-in) → départ
   (check-out), annulation et no-show, changement de chambre,
   commissions d'agents / apporteurs.
-* **Front desk** : planning Gantt des chambres (Enterprise), calendrier,
-  arrivées / départs / clients présents du jour.
+* **Front desk** : planning des chambres (vue calendrier sur Community,
+  Gantt sur Enterprise via ``aite_hotel_gantt``), calendrier des
+  réservations, arrivées / départs / clients présents du jour.
 * **Folio client** : note de séjour regroupant nuitées et services
   (restaurant, blanchisserie, minibar…), acomptes et règlements
   Mobile Money (MTN MoMo / Orange Money), espèces, carte ; écritures
@@ -34,8 +36,9 @@ Fonctionnel
   chiffre d'affaires, room board temps réel, mouvements du jour,
   graphiques d'évolution.
 
-Compatible Odoo 18 Enterprise. Conçu dans la continuité du module
-``aite_pos_credit`` (mêmes conventions, même charte de tableau de bord).
+Compatible Odoo 18 Community et Enterprise. Conçu dans la continuité du
+module ``aite_pos_credit`` (mêmes conventions, même charte de tableau de
+bord).
 """,
     'author': "AITE CONSULTING",
     'website': "https://aiteconsulting.com",
@@ -49,8 +52,11 @@ Compatible Odoo 18 Enterprise. Conçu dans la continuité du module
         'product',
         'account',
         'sale',
-        'web_gantt',  # planning des chambres (Odoo Enterprise)
     ],
+    # Le planning Gantt des chambres est fourni par le module passerelle
+    # ``aite_hotel_gantt``, auto-installé quand ``web_gantt`` (Enterprise)
+    # est présent. Le socle reste ainsi installable sur Odoo Community,
+    # où le planning s'affiche en vue calendrier.
 
     'data': [
         'security/hotel_security.xml',

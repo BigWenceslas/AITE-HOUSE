@@ -49,7 +49,8 @@ class PosDailyReport(models.Model):
     )
     margin_rate = fields.Float(
         string="Taux marge (%)", readonly=True, digits=(5, 2),
-        group_operator='avg',
+        # Odoo 18 : 'group_operator' est déprécié au profit de 'aggregator'.
+        aggregator='avg',
     )
 
     # Dimensions temporelles dérivées (pour filtres heure / jour de semaine

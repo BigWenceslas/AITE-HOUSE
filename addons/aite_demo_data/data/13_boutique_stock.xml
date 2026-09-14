@@ -411,10 +411,17 @@
             <field name="supplier_rank" eval="1"/>
             <field name="phone">+224 624 44 55 64</field>
         </record>
-        <record id="pos_config_boutique" model="pos.config">
-            <field name="name">Caisse Boutique (démo)</field>
-            <field name="limit_categories" eval="True"/>
-            <field name="iface_available_categ_ids" eval="[(6, 0, [ref('pos_cat_boutique'), ref('pos_cat_snacks'), ref('pos_cat_epicerie'), ref('pos_cat_hygiene'), ref('pos_cat_artisanat'), ref('pos_cat_textile'), ref('pos_cat_techno')])]"/>
-        </record>
+        <!-- La caisse « Boutique (démo) » n'est PLUS déclarée ici.
+
+             Créer un pos.config déclenche
+             ``_create_journal_and_payment_methods``, qui exige un plan
+             comptable installé sur la société : sur une base qui n'en a
+             pas encore, l'installation du module échouait entièrement
+             (« Ensure that there is an existing bank journal »).
+
+             Elle est désormais créée par le générateur
+             (``aite.demo.generator._ensure_pos_config``), qui vérifie la
+             présence du plan comptable et passe son tour proprement le
+             cas échéant. -->
     </data>
 </odoo>

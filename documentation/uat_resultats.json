@@ -1,0 +1,357 @@
+{
+  "generated_at": "2026-09-14 16:02",
+  "base_url": "http://127.0.0.1:8069",
+  "scenarios": [
+    {
+      "key": "r1-front-desk",
+      "title": "La journée de la réception",
+      "persona": "Réception (Awa Diallo)",
+      "goal": "Prendre connaissance de la journée, retrouver une réservation, ouvrir un folio et encaisser un acompte.",
+      "status": "OK",
+      "steps": [
+        {
+          "number": 1,
+          "title": "Ouvrir le Front Desk",
+          "expected": "Le tableau de bord affiche l'occupation du jour, les arrivées, les départs et le room board.",
+          "observed": "Occupation, arrivées, départs et room board sont affichés.",
+          "screenshot": "r1-front-desk-01-ouvrir-le-front-desk.png",
+          "status": "OK",
+          "detail": ""
+        },
+        {
+          "number": 2,
+          "title": "Consulter les arrivées du jour",
+          "expected": "La liste ne montre que les réservations confirmées arrivant aujourd'hui.",
+          "observed": "La liste des arrivées du jour s'affiche.",
+          "screenshot": "r1-front-desk-02-consulter-les-arrivees-du-jour.png",
+          "status": "OK",
+          "detail": ""
+        },
+        {
+          "number": 3,
+          "title": "Ouvrir le planning des chambres",
+          "expected": "Le planning s'affiche — calendrier sur Community, Gantt sur Enterprise — avec les séjours de la période.",
+          "observed": "Le planning s'ouvre et présente les séjours.",
+          "screenshot": "r1-front-desk-03-ouvrir-le-planning-des-chambres.png",
+          "status": "OK",
+          "detail": ""
+        },
+        {
+          "number": 4,
+          "title": "Lister les réservations",
+          "expected": "La liste des réservations du séjour s'affiche.",
+          "observed": "La liste des réservations du séjour s'affiche.",
+          "screenshot": "r1-front-desk-04-lister-les-reservations.png",
+          "status": "OK",
+          "detail": ""
+        },
+        {
+          "number": 5,
+          "title": "Ouvrir une réservation",
+          "expected": "La fiche montre le client, les chambres, le folio et les boutons du workflow.",
+          "observed": "La fiche réservation s'ouvre avec son folio.",
+          "screenshot": "r1-front-desk-05-ouvrir-une-reservation.png",
+          "status": "OK",
+          "detail": ""
+        },
+        {
+          "number": 6,
+          "title": "Consulter les folios",
+          "expected": "Les notes de séjour listent hébergement, services et solde dû.",
+          "observed": "Les folios s'affichent avec leur solde.",
+          "screenshot": "r1-front-desk-06-consulter-les-folios.png",
+          "status": "OK",
+          "detail": ""
+        },
+        {
+          "number": 7,
+          "title": "Ouvrir la réservation rapide",
+          "expected": "L'assistant propose dates, occupation et recherche de disponibilité.",
+          "observed": "L'assistant de réservation rapide s'ouvre.",
+          "screenshot": "r1-front-desk-07-ouvrir-la-reservation-rapide.png",
+          "status": "OK",
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "key": "r2-gouvernante",
+      "title": "Le tour des chambres",
+      "persona": "Gouvernante (Fanta Souaré)",
+      "goal": "Prendre ses tâches du jour, démarrer une recouche, la terminer et voir l'état des chambres changer.",
+      "status": "OK",
+      "steps": [
+        {
+          "number": 1,
+          "title": "Ouvrir les tâches de gouvernante",
+          "expected": "Les tâches du jour s'affichent, groupées par état.",
+          "observed": "Les tâches de ménage du jour sont listées.",
+          "screenshot": "r2-gouvernante-01-ouvrir-les-taches-de-gouvernante.png",
+          "status": "OK",
+          "detail": ""
+        },
+        {
+          "number": 2,
+          "title": "Démarrer une recouche depuis le kanban",
+          "expected": "La carte bascule dans la colonne « En cours » et la chambre passe en « Nettoyage en cours ».",
+          "observed": "La tâche est démarrée : elle quitte la colonne « À faire ».",
+          "screenshot": "r2-gouvernante-02-demarrer-une-recouche-depuis-le-kanban.png",
+          "status": "OK",
+          "detail": ""
+        },
+        {
+          "number": 3,
+          "title": "Terminer la tâche",
+          "expected": "La tâche passe « Terminé » et la chambre redevient propre (ou « à inspecter » si l'inspection est exigée).",
+          "observed": "La tâche est clôturée, la chambre est rendue au service.",
+          "screenshot": "r2-gouvernante-03-terminer-la-tache.png",
+          "status": "OK",
+          "detail": ""
+        },
+        {
+          "number": 4,
+          "title": "Tenter d'ouvrir les folios",
+          "expected": "Le profil Gouvernante n'a pas accès aux notes de séjour : Odoo doit afficher un refus nommant le modèle concerné.",
+          "observed": "L'accès aux folios est refusé, avec le motif affiché.",
+          "screenshot": "r2-gouvernante-04-tenter-d-ouvrir-les-folios.png",
+          "status": "OK",
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "key": "r3-ardoises",
+      "title": "Ardoises clients et recouvrement",
+      "persona": "Caisse (Ibrahima Sylla)",
+      "goal": "Suivre l'encours, ouvrir une ardoise, enregistrer un remboursement et vérifier le solde.",
+      "status": "OK",
+      "steps": [
+        {
+          "number": 1,
+          "title": "Ouvrir le tableau de bord Recouvrement",
+          "expected": "Encours total, balance âgée et top débiteurs sont affichés.",
+          "observed": "Le tableau de bord du recouvrement s'affiche.",
+          "screenshot": "r3-ardoises-01-ouvrir-le-tableau-de-bord-recouvrement.png",
+          "status": "OK",
+          "detail": ""
+        },
+        {
+          "number": 2,
+          "title": "Lister les ardoises",
+          "expected": "Les ardoises s'affichent avec client, montant, reste dû et ancienneté.",
+          "observed": "Les ardoises sont listées avec leur reste dû.",
+          "screenshot": "r3-ardoises-02-lister-les-ardoises.png",
+          "status": "OK",
+          "detail": ""
+        },
+        {
+          "number": 3,
+          "title": "Filtrer les ardoises ouvertes",
+          "expected": "Seules les ardoises encore dues restent affichées.",
+          "observed": "Seules les ardoises encore dues restent affichées.",
+          "screenshot": "r3-ardoises-03-filtrer-les-ardoises-ouvertes.png",
+          "status": "OK",
+          "detail": ""
+        },
+        {
+          "number": 4,
+          "title": "Ouvrir une ardoise",
+          "expected": "La fiche montre le reste dû et le bouton « Enregistrer un remboursement ».",
+          "observed": "La fiche montre le reste dû et le bouton « Enregistrer un remboursement ».",
+          "screenshot": "r3-ardoises-04-ouvrir-une-ardoise.png",
+          "status": "OK",
+          "detail": ""
+        },
+        {
+          "number": 5,
+          "title": "Assistant de remboursement",
+          "expected": "Le montant est pré-rempli avec le reste dû et le moyen de paiement est proposé.",
+          "observed": "Le montant est pré-rempli avec le reste dû et le moyen de paiement est proposé.",
+          "screenshot": "r3-ardoises-05-assistant-de-remboursement.png",
+          "status": "OK",
+          "detail": ""
+        },
+        {
+          "number": 6,
+          "title": "Enregistrer le remboursement",
+          "expected": "Le reste dû tombe à zéro et l'ardoise passe « Réglée ».",
+          "observed": "Le remboursement est enregistré : l'ardoise est soldée.",
+          "screenshot": "r3-ardoises-06-enregistrer-le-remboursement.png",
+          "status": "OK",
+          "detail": ""
+        },
+        {
+          "number": 7,
+          "title": "Tenter d'ouvrir les réservations hôtel",
+          "expected": "Le profil Caisse n'a pas de droits hôteliers : Odoo doit afficher un refus nommant le modèle concerné.",
+          "observed": "L'accès au PMS est refusé, avec le motif affiché.",
+          "screenshot": "r3-ardoises-07-tenter-d-ouvrir-les-reservations-hotel.png",
+          "status": "OK",
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "key": "r4-direction",
+      "title": "Le cockpit de la direction",
+      "persona": "Direction (Aminata Bah)",
+      "goal": "Consulter les tableaux de bord consolidés et vérifier que les chiffres concordent entre les vues.",
+      "status": "OK",
+      "steps": [
+        {
+          "number": 1,
+          "title": "Ouvrir — Ventes (POS Analytics)",
+          "expected": "Chiffre d'affaires, marge, CMV et panier moyen sont affichés.",
+          "observed": "Le tableau de bord s'affiche et présente ses indicateurs.",
+          "screenshot": "r4-direction-01-ouvrir-ventes-pos-analytics.png",
+          "status": "OK",
+          "detail": ""
+        },
+        {
+          "number": 2,
+          "title": "Ouvrir — Recouvrement (Crédit clients)",
+          "expected": "Encours, balance âgée et débiteurs à relancer sont affichés.",
+          "observed": "Le tableau de bord s'affiche et présente ses indicateurs.",
+          "screenshot": "r4-direction-02-ouvrir-recouvrement-credit-clients.png",
+          "status": "OK",
+          "detail": ""
+        },
+        {
+          "number": 3,
+          "title": "Ouvrir — Stock & Inventaire",
+          "expected": "Valorisation, ruptures, couverture et alertes sont affichées.",
+          "observed": "Le tableau de bord s'affiche et présente ses indicateurs.",
+          "screenshot": "r4-direction-03-ouvrir-stock-inventaire.png",
+          "status": "OK",
+          "detail": ""
+        },
+        {
+          "number": 4,
+          "title": "Ouvrir — Achats & Fournisseurs",
+          "expected": "Échéancier fournisseurs et évolution des prix sont affichés.",
+          "observed": "Le tableau de bord s'affiche et présente ses indicateurs.",
+          "screenshot": "r4-direction-04-ouvrir-achats-fournisseurs.png",
+          "status": "OK",
+          "detail": ""
+        },
+        {
+          "number": 5,
+          "title": "Ouvrir — Espaces & Prestations",
+          "expected": "Taux d'occupation des espaces et planning du jour s'affichent.",
+          "observed": "Le tableau de bord s'affiche et présente ses indicateurs.",
+          "screenshot": "r4-direction-05-ouvrir-espaces-prestations.png",
+          "status": "OK",
+          "detail": ""
+        },
+        {
+          "number": 6,
+          "title": "Ouvrir — Cockpit Direction",
+          "expected": "La vue consolidée reprend les quatre pôles et la balance âgée en miroir.",
+          "observed": "Le tableau de bord s'affiche et présente ses indicateurs.",
+          "screenshot": "r4-direction-06-ouvrir-cockpit-direction.png",
+          "status": "OK",
+          "detail": ""
+        },
+        {
+          "number": 7,
+          "title": "Ouvrir — Tableau de bord exécutif",
+          "expected": "Hébergement, restauration et prestations sont consolidés.",
+          "observed": "Le tableau de bord s'affiche et présente ses indicateurs.",
+          "screenshot": "r4-direction-07-ouvrir-tableau-de-bord-executif.png",
+          "status": "OK",
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "key": "r5-site-web",
+      "title": "La réservation en ligne",
+      "persona": "Client (visiteur du site)",
+      "goal": "Réserver un espace depuis le site public, sans compte, et recevoir la confirmation.",
+      "status": "OK",
+      "steps": [
+        {
+          "number": 1,
+          "title": "Ouvrir la page de réservation",
+          "expected": "La page publique s'affiche sans authentification.",
+          "observed": "La page de réservation est accessible au public.",
+          "screenshot": "r5-site-web-01-ouvrir-la-page-de-reservation.png",
+          "status": "OK",
+          "detail": ""
+        },
+        {
+          "number": 2,
+          "title": "Choisir un espace",
+          "expected": "Les espaces réservables en ligne sont listés ; ceux réservés au comptoir n'apparaissent pas.",
+          "observed": "La liste des espaces réservables s'affiche.",
+          "screenshot": "r5-site-web-02-choisir-un-espace.png",
+          "status": "OK",
+          "detail": ""
+        },
+        {
+          "number": 3,
+          "title": "Voir les créneaux libres",
+          "expected": "La grille du jour montre les créneaux encore disponibles.",
+          "observed": "La grille du jour montre les créneaux encore disponibles.",
+          "screenshot": "r5-site-web-03-voir-les-creneaux-libres.png",
+          "status": "OK",
+          "detail": ""
+        },
+        {
+          "number": 4,
+          "title": "Choisir un créneau et se présenter",
+          "expected": "Un créneau est coché et les coordonnées sont saisies ; le formulaire est prêt à partir.",
+          "observed": "Créneau sélectionné, coordonnées renseignées.",
+          "screenshot": "r5-site-web-04-choisir-un-creneau-et-se-presenter.png",
+          "status": "OK",
+          "detail": ""
+        },
+        {
+          "number": 5,
+          "title": "Valider la réservation",
+          "expected": "La page de remerciement affiche la référence de la réservation, preuve de son enregistrement côté back-office.",
+          "observed": "La réservation est confirmée et sa référence s'affiche.",
+          "screenshot": "r5-site-web-05-valider-la-reservation.png",
+          "status": "OK",
+          "detail": ""
+        },
+        {
+          "number": 6,
+          "title": "Demander un séjour",
+          "expected": "Le formulaire de demande de chambre s'affiche (dates, occupation, coordonnées).",
+          "observed": "Le formulaire de demande de séjour s'affiche.",
+          "screenshot": "r5-site-web-06-demander-un-sejour.png",
+          "status": "OK",
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "key": "r6-magasin",
+      "title": "Stock, ruptures et réapprovisionnement",
+      "persona": "Magasin (Moussa Camara)",
+      "goal": "Repérer les ruptures et les articles sous seuil, et consulter la valorisation du stock.",
+      "status": "OK",
+      "steps": [
+        {
+          "number": 1,
+          "title": "Ouvrir le tableau de bord Stock",
+          "expected": "Valorisation, nombre de références, ruptures et couverture moyenne sont affichés.",
+          "observed": "Le tableau de bord Stock s'affiche avec ses indicateurs.",
+          "screenshot": "r6-magasin-01-ouvrir-le-tableau-de-bord-stock.png",
+          "status": "OK",
+          "detail": ""
+        },
+        {
+          "number": 2,
+          "title": "Tenter d'ouvrir les ardoises clients",
+          "expected": "Le profil Magasin n'a pas de droits sur le crédit clients : Odoo doit afficher un refus nommant le modèle concerné.",
+          "observed": "L'accès au crédit clients est refusé, avec le motif affiché.",
+          "screenshot": "r6-magasin-02-tenter-d-ouvrir-les-ardoises-clients.png",
+          "status": "OK",
+          "detail": ""
+        }
+      ]
+    }
+  ]
+}

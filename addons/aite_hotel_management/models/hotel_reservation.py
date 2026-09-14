@@ -255,8 +255,10 @@ class HotelReservation(models.Model):
                 vals['name'] = self.env['ir.sequence'].next_by_code(
                     'aite.hotel.reservation') or _("Nouveau")
         reservations = super().create(vals_list)
-        for res in reservations:
-            res.partner_id.is_hotel_guest = True
+        # ``sudo`` : marquage technique du contact. La réception crée des
+        # réservations sans pour autant détenir le droit d'écriture sur
+        # res.partner (profil « Ventes : documents personnels »).
+        reservations.partner_id.sudo().write({'is_hotel_guest': True})
         return reservations
 
     def write(self, vals):

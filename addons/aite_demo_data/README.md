@@ -3,6 +3,48 @@
 **À installer uniquement sur la base de DÉMONSTRATION.** La désinstallation
 retire l'ensemble du jeu d'essai.
 
+> **Prérequis :** un **plan comptable** installé sur la société. Odoo
+> exige un journal de banque pour créer une caisse ; à défaut, le volet
+> Point de Vente est ignoré avec un avertissement et le reste du jeu
+> s'installe normalement.
+>
+> **Devise :** le jeu est calibré en **GNF**. Positionnez la devise de la
+> société *avant* toute écriture comptable — Odoo refuse d'en changer
+> ensuite.
+
+## Deux étages
+
+Le module se compose d'un **référentiel** (fichiers XML, posé à
+l'installation) et d'un **jeu opérationnel** produit par le générateur
+`aite.demo.generator`, daté **relativement au jour d'installation**.
+
+Le générateur se relance depuis l'interface —
+Paramètres → **Jeu d'essai AITE** — en trois volumes (*léger*,
+*standard*, *étendu*), avec purge optionnelle. Il est **idempotent** :
+le relancer ne duplique rien.
+
+### Ce que produit le générateur (volume « standard »)
+
+| Domaine | Volume |
+|---|---|
+| Commandes en caisse | 168, sur 21 sessions closes (pics midi / soir, écarts de caisse) |
+| Ardoises clients | 18, de 3 à 160 jours, dont 9 partiellement remboursées |
+| Notes de chambre en attente | 5, couvrant les trois motifs d'ambiguïté |
+| Tâches de gouvernante | 12, tous types, à différents stades |
+| Services hôteliers | 8 (restaurant, minibar, blanchisserie, transferts…) |
+| Tarifs saisonniers | 2 par type de chambre |
+| Commandes d'achat | 8, confirmées et en demande de prix |
+| Consignes fournisseurs | 5 |
+| Profils utilisateurs | 5 postes métier (mot de passe = identifiant) |
+
+Les profils `demo.reception`, `demo.gouvernante`, `demo.caisse`,
+`demo.magasin` et `demo.direction` servent aux démonstrations et à la
+recette applicative.
+
+> La purge **conserve l'historique de caisse** : une vente encaissée
+> porte des écritures comptables et des mouvements de stock, qu'Odoo
+> interdit de supprimer.
+
 ## Contenu (1069 enregistrements)
 | Domaine | Nombre |
 |---|---|
@@ -22,11 +64,10 @@ retire l'ensemble du jeu d'essai.
   calibrées au-dessus des seuils par construction).
 - Prix en GNF (contexte Guinée). Aucune taxe n'est posée sur les produits :
   le paramétrage fiscal reste celui de l'atelier dédié.
-- Non couvert par ce jeu : commandes POS et folios réels (ils exigent des
-  sessions de caisse / séjours vivants) — créez-en 2 ou 3 en direct pendant
-  la démo, c'est le meilleur exercice. Pour les chambres, installez la base
-  AVEC les données de démonstration Odoo : le PMS fournit hôtel, étages et
-  8 chambres.
+- Les commandes en caisse sont désormais fournies par le générateur (elles
+  exigent des sessions, que le générateur ouvre et clôture). Créer deux ou
+  trois ventes en direct pendant la démonstration reste le meilleur
+  exercice : elles alimentent la rotation du stock et la fidélité.
 
 ## Volet hôtelier (v1.1)
 | Domaine | Nombre |

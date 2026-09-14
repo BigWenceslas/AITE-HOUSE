@@ -134,7 +134,10 @@ class PosCreditPayment(models.Model):
         if company.pos_credit_journal_id:
             return company.pos_credit_journal_id
 
-        Journal = self.env['account.journal']
+        # ``sudo`` : le caissier encaisse sans détenir les droits
+        # comptables. Le choix du journal est une mécanique interne ; le
+        # contrôle d'accès porte sur le remboursement lui-même.
+        Journal = self.env['account.journal'].sudo()
         if self.method == 'cash':
             journal = Journal.search([
                 ('type', '=', 'cash'), ('company_id', '=', company.id),
@@ -173,7 +176,9 @@ class PosCreditPayment(models.Model):
             return
 
         partner = self.partner_id
-        receivable = company._get_pos_credit_account(partner)
+        # ``sudo`` pour la même raison que le journal : le caissier n'a pas
+        # accès au plan comptable.
+        receivable = company.sudo()._get_pos_credit_account(partner.sudo())
         journal = self._journal_for_method()
         if not receivable or not journal:
             # Configuration incomplète : on ne bloque pas l'encaissement.
