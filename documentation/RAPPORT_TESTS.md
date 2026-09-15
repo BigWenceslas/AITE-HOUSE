@@ -8,28 +8,28 @@ AITE Consulting SARL
 ## 1. Résumé
 
 La suite n'avait, avant cette campagne, **aucun test automatisé**. Elle en
-compte aujourd'hui **595**, tous verts, doublés d'une **recette
+compte aujourd'hui **604**, tous verts, doublés d'une **recette
 utilisateur en navigateur** de 34 étapes jouée avec les profils métier
 réels.
 
 | Indicateur | Avant | Après |
 |---|---:|---:|
-| Tests automatisés | 0 | **595** |
+| Tests automatisés | 0 | **604** |
 | Modules couverts | 0 / 12 | **12 / 12** |
 | Parcours métier bout-en-bout | 0 | **6** |
 | Scénarios de recette (navigateur) | 0 | **6** (34 étapes) |
 | Captures d'écran de recette | 0 | **34** |
-| Anomalies corrigées | — | **13** |
+| Anomalies corrigées | — | **14** |
 | Décisions de cadrage appliquées | — | **3** |
 
 La campagne a été validée sur une base **construite entièrement de
 zéro** : création, installation des 13 modules, génération du jeu
-d'essai, puis exécution des 595 tests et des 6 scénarios de recette.
+d'essai, puis exécution des 604 tests et des 6 scénarios de recette.
 
 Résultat de la dernière exécution complète :
 
 ```
-odoo.tests.result: 0 failed, 0 error(s) of 595 tests
+odoo.tests.result: 0 failed, 0 error(s) of 604 tests
 ```
 
 ---
@@ -391,11 +391,66 @@ génération.
 
 ---
 
-## 3. Point d'attention signalé, non corrigé
+## 3. Points d'attention
 
-| Sujet | Constat | Recommandation |
+Aucun point n'est laissé ouvert. Celui qui figurait ici — la bascule
+d'état du folio — a été mesuré puis traité ; le constat de départ, trop
+inquiet, est rectifié ci-dessous.
+
+---
+
+### A14 — Un folio pouvait se lire « soldé » alors qu'il ne l'était plus
+
+**Le constat initial était exagéré.** Il annonçait qu'un traitement par
+lot s'appuyant sur `state` pourrait lire une valeur périmée. La mesure,
+faite sur les quatre chemins qui déplacent l'argent d'un folio en lisant
+à chaque fois **la ligne réellement écrite en base**, dit l'inverse :
+
+| Situation | En base | |
 |---|---|---|
-| **Bascule d'état du folio** | L'état (`ouvert` → `soldé`) est écrit depuis une méthode de calcul : il ne bascule que lorsqu'un montant calculé est relu. Sans effet dans l'interface, qui lit toujours les montants | Documenté ; à revoir si un traitement par lot venait à s'appuyer sur `state` seul |
+| Règlement total encaissé | `('paid', 0)` | ✅ |
+| Règlement annulé | `('invoiced', 50 000)` | ✅ |
+| Un règlement sur deux annulé | `('invoiced', 25 000)` | ✅ |
+| Prestation ajoutée après facturation | `('invoiced', 15 000)` | ✅ |
+| `search(state='paid')` après annulation | ne le trouve plus | ✅ |
+
+La base ne porte jamais d'incohérence, et aucune recherche ne peut en
+rapporter une : Odoo vide ses écritures en attente avant chaque requête.
+**Les traitements par lot n'ont jamais été exposés.**
+
+Le défaut réel était plus étroit — et bien réel. Dans une **même
+transaction**, l'enregistrement relu juste après le geste gardait
+l'ancien état :
+
+> Une caissière annule un règlement saisi par erreur. Le solde dû
+> remonte aussitôt à 50 000, mais la note continue d'afficher
+> « Soldé » — les deux informations se contredisent à l'écran.
+
+Cause : la bascule `facturé` ⇄ `soldé` est écrite depuis le calcul des
+montants. Ce couplage est **délibéré et sûr** — en chevauchant le calcul,
+la bascule attrape *tous* les chemins qui déplacent une somme, y compris
+ceux qu'aucune action ne signale, comme l'ajout d'une prestation sur un
+folio déjà facturé. Mais un calcul ne s'exécute qu'à la relecture d'un
+montant : d'ici là, l'enregistrement en mémoire reste sur l'état
+précédent.
+
+Le contournement existait déjà à un seul endroit — `action_create_invoice`
+forçait le recalcul — sans être appliqué ailleurs.
+
+**Correction.** Une méthode `_refresh_settlement()` remet montants et
+état d'accord immédiatement, appelée par tout ce qui déplace de l'argent :
+encaissement, annulation de règlement, facturation, et écriture d'une
+ligne de folio (création, changement de prix, suppression). Le couplage
+au calcul des montants est conservé — c'est lui qui garantit qu'aucun
+chemin n'est oublié ; seule la fraîcheur de la lecture est corrigée. Le
+rafraîchissement des lignes est groupé, pour ne pas recalculer à chaque
+passage de la boucle qui pose les nuitées.
+
+> Vérifié par : 9 tests de `TestFolio`, de
+> `test_settling_the_folio_marks_it_paid` à
+> `test_removing_a_line_can_settle_the_folio`. Chacun contrôle l'état lu
+> immédiatement **et** la ligne écrite en base — les deux garanties qui
+> comptent.
 
 ---
 

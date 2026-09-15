@@ -4,7 +4,7 @@
 AITE Consulting SARL
 
 Ce guide explique comment **monter un environnement de test**, **exécuter
-les 595 tests automatisés**, **rejouer la recette utilisateur** et
+les 604 tests automatisés**, **rejouer la recette utilisateur** et
 **régénérer le jeu d'essai**. Le cahier de recette illustré, avec ses
 captures d'écran, fait l'objet d'un document séparé :
 [`GUIDE_RECETTE_UAT.md`](GUIDE_RECETTE_UAT.md).
@@ -25,7 +25,7 @@ La suite compte trois niveaux de vérification, chacun avec son rôle.
 
 | Module | Tests | Ce qui est vérifié |
 |---|---:|---|
-| `aite_hotel_management` | 198 | Moteur tarifaire, disponibilité, workflow de réservation, folio, taxes, facturation, gouvernante, assistants, droits par profil, tableau de bord |
+| `aite_hotel_management` | 207 | Moteur tarifaire, disponibilité, workflow de réservation, folio, taxes, facturation, gouvernante, assistants, droits par profil, tableau de bord |
 | `aite_pos_credit` | 86 | Ardoises, sévérité, remboursements, écritures 411, génération depuis le POS (paiement mixte), balance âgée, droits |
 | `aite_slot_booking` | 69 | Grille de créneaux, alignement, conflits par capacité, tarification, report au folio, cron no-show |
 | `aite_website_booking` | 45 | Tunnel public de bout en bout, validation du formulaire, CSRF, fiche client unique, espace client |
@@ -37,7 +37,7 @@ La suite compte trois niveaux de vérification, chacun avec son rôle.
 | `aite_purchase_dashboard` | 13 | API du tableau de bord Achats, consignes fournisseurs |
 | `aite_exec_dashboard` | 11 | Consolidation des trois pôles, mix d'activité |
 | `aite_direction_dashboard` | 11 | Cohérence du cockpit avec les quatre moteurs, balance âgée en miroir |
-| **Total** | **595** | |
+| **Total** | **604** | |
 
 Les tests sont marqués par des **étiquettes** (`aite_hotel`, `aite_credit`,
 `aite_slot`, …) pour pouvoir n'en jouer qu'une partie.
@@ -118,7 +118,7 @@ aite_exec,aite_demo,aite_journey
 Résultat attendu, en fin de journal :
 
 ```
-odoo.tests.result: 0 failed, 0 error(s) of 595 tests
+odoo.tests.result: 0 failed, 0 error(s) of 604 tests
 ```
 
 ### 3.2 Un seul module

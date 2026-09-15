@@ -348,3 +348,134 @@ class TestFolio(HotelCommon):
                                        checkin_offset=20, checkout_offset=21)
         with self.assertRaises(UserError):
             draft.action_register_deposit()
+
+    # ------------------------------------------------------------------
+    # Cohérence état / montant
+    # ------------------------------------------------------------------
+    #
+    # La bascule « facturé » ⇄ « soldé » est écrite depuis le calcul des
+    # montants. C'est ce qui la rend sûre — elle attrape tout ce qui
+    # déplace une somme — mais l'état ne se rafraîchit qu'au recalcul.
+    # Ces cas épinglent les deux garanties qui comptent : l'état et le
+    # solde ne se contredisent jamais, ni en mémoire ni en base.
+
+    def _db_row(self):
+        """État et solde tels qu'un traitement par lot les lirait."""
+        self.env.flush_all()
+        self.env.cr.execute(
+            "SELECT state, amount_residual FROM aite_hotel_folio "
+            "WHERE id = %s", (self.folio.id,))
+        return self.env.cr.fetchone()
+
+    def _pay(self, amount):
+        return self.env['aite.hotel.folio.payment'].create({
+            'folio_id': self.folio.id,
+            'amount': amount,
+            'method': 'cash',
+        })
+
+    def test_settling_the_folio_marks_it_paid(self):
+        self.folio.action_create_invoice()
+        self._pay(self.folio.amount_total)
+        self.assertEqual(self.folio.state, 'paid')
+        self.assertEqual(self.folio.amount_residual, 0.0)
+        self.assertEqual(self._db_row(), ('paid', 0.0))
+
+    def test_cancelling_a_payment_reopens_the_folio_at_once(self):
+        """Le folio ne doit pas rester « soldé » avec un solde dû.
+
+        Sans rafraîchissement explicite, l'état lu juste après
+        l'annulation était encore « soldé » alors que le solde était
+        déjà remonté — une caissière annulant une erreur de saisie
+        voyait une note soldée qui ne l'était plus.
+        """
+        self.folio.action_create_invoice()
+        payment = self._pay(self.folio.amount_total)
+        self.assertEqual(self.folio.state, 'paid')
+        payment.action_cancel()
+        self.assertEqual(self.folio.state, 'invoiced')
+        self.assertEqual(self.folio.amount_residual, 100000.0)
+
+    def test_cancelling_a_payment_leaves_the_base_coherent(self):
+        self.folio.action_create_invoice()
+        payment = self._pay(self.folio.amount_total)
+        payment.action_cancel()
+        self.assertEqual(self._db_row(), ('invoiced', 100000.0))
+
+    def test_cancelling_one_payment_of_two_reopens_the_folio(self):
+        self.folio.action_create_invoice()
+        self._pay(60000.0)
+        second = self._pay(40000.0)
+        self.assertEqual(self.folio.state, 'paid')
+        second.action_cancel()
+        self.assertEqual(self.folio.state, 'invoiced')
+        self.assertEqual(self._db_row(), ('invoiced', 40000.0))
+
+    def test_a_settled_folio_is_no_longer_found_as_paid(self):
+        """Ce que voit une recherche — le chemin des traitements par lot."""
+        self.folio.action_create_invoice()
+        payment = self._pay(self.folio.amount_total)
+        Folio = self.env['aite.hotel.folio']
+        domain = [('id', '=', self.folio.id), ('state', '=', 'paid')]
+        self.assertTrue(Folio.search(domain))
+        payment.action_cancel()
+        self.assertFalse(Folio.search(domain))
+        self.assertTrue(Folio.search(
+            [('id', '=', self.folio.id), ('amount_residual', '>', 0.0)]))
+
+    def test_a_service_added_after_invoicing_reopens_the_folio(self):
+        """Une consommation tardive rouvre la note.
+
+        Aucune action métier ne signale ce geste : c'est l'écriture de
+        la ligne elle-même qui doit remettre le folio d'aplomb.
+        """
+        self.folio.action_create_invoice()
+        self._pay(self.folio.amount_total)
+        self.assertEqual(self.folio.state, 'paid')
+        self.env['aite.hotel.folio.line'].create({
+            'folio_id': self.folio.id,
+            'line_type': 'service',
+            'service_id': self.service_resto.id,
+            'product_id': self.service_resto.product_id.id,
+            'name': "Room service tardif",
+            'quantity': 1.0,
+            'price_unit': 15000.0,
+        })
+        self.assertEqual(self.folio.state, 'invoiced')
+        self.assertEqual(self.folio.amount_residual, 15000.0)
+        self.assertEqual(self._db_row(), ('invoiced', 15000.0))
+
+    def test_posting_a_pending_payment_settles_the_folio(self):
+        self.folio.action_create_invoice()
+        payment = self._pay(self.folio.amount_total)
+        payment.action_cancel()
+        self.assertEqual(self.folio.state, 'invoiced')
+        payment.action_post()
+        self.assertEqual(self.folio.state, 'paid')
+        self.assertEqual(self._db_row(), ('paid', 0.0))
+
+    def test_repricing_a_line_reopens_the_folio(self):
+        self.folio.action_create_invoice()
+        self._pay(self.folio.amount_total)
+        line = self.folio.line_ids[0]
+        line.price_unit = line.price_unit + 5000.0
+        self.assertEqual(self.folio.state, 'invoiced')
+        self.assertEqual(self._db_row()[0], 'invoiced')
+
+    def test_removing_a_line_can_settle_the_folio(self):
+        """Retirer une prestation impayée solde la note."""
+        extra = self.env['aite.hotel.folio.line'].create({
+            'folio_id': self.folio.id,
+            'line_type': 'service',
+            'service_id': self.service_resto.id,
+            'product_id': self.service_resto.product_id.id,
+            'name': "Prestation annulée",
+            'quantity': 1.0,
+            'price_unit': 20000.0,
+        })
+        self.folio.state = 'invoiced'
+        self._pay(100000.0)
+        self.assertEqual(self.folio.state, 'invoiced')
+        extra.unlink()
+        self.assertEqual(self.folio.state, 'paid')
+        self.assertEqual(self._db_row(), ('paid', 0.0))

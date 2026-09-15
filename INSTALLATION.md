@@ -122,7 +122,7 @@ En cas de blocage, transmettre à AITE Consulting les lignes `ERROR` /
 ### Documentation de test
 
 - **[`GUIDE_TESTS.md`](documentation/GUIDE_TESTS.md)** — monter un
-  environnement de test, exécuter les 595 tests automatisés, régénérer le
+  environnement de test, exécuter les 604 tests automatisés, régénérer le
   jeu d'essai.
 - **[`GUIDE_RECETTE_UAT.md`](documentation/GUIDE_RECETTE_UAT.md)** —
   cahier de recette illustré : 6 scénarios, 34 étapes, une capture

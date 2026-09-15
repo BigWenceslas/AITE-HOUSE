@@ -1,7 +1,7 @@
 # AITE HOUSE — Cahier de recette (UAT)
 
 **Suite hôtelière AITE HOUSE sur Odoo 18 — recette applicative**
-Généré le 2026-09-15 09:01 · instance recettée : `http://127.0.0.1:8069`
+Généré le 2026-09-15 11:23 · instance recettée : `http://127.0.0.1:8069`
 
 ---
 

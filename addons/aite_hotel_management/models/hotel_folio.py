@@ -145,6 +145,31 @@ class HotelFolio(models.Model):
             elif folio.state == 'paid' and folio.amount_residual > 0.0:
                 folio.state = 'invoiced'
 
+    def _refresh_settlement(self):
+        """
+        Remet montants **et** état d'accord, tout de suite.
+
+        La bascule ``facturé`` ⇄ ``soldé`` est écrite depuis
+        ``_compute_amounts`` : c'est volontaire, et c'est ce qui la rend
+        sûre. En chevauchant le calcul des montants, elle attrape *tous*
+        les chemins qui déplacent une somme — y compris ceux auxquels
+        personne n'a pensé, comme l'ajout d'une prestation sur un folio
+        déjà facturé. Une méthode appelée à la main depuis chaque point
+        perdrait cette couverture, et l'oubli serait silencieux.
+
+        Le prix à payer est étroit mais réel : le recalcul n'a lieu qu'au
+        moment où un montant est relu. Du code qui, dans la **même
+        transaction**, encaisse ou annule puis relit ``state`` sans
+        ``search`` ni vidage intermédiaire lirait l'état d'avant. Ce qui
+        atteint la base, lui, est toujours cohérent — Odoo vide ses
+        écritures en attente avant chaque recherche.
+
+        Cette méthode ferme cet écart : les actions qui déplacent de
+        l'argent l'appellent, et l'enregistrement est juste dès la ligne
+        suivante.
+        """
+        self._compute_amounts()
+
     @api.depends('payment_ids.state')
     def _compute_payment_count(self):
         """
@@ -284,8 +309,9 @@ class HotelFolio(models.Model):
         for payment in self.payment_ids.filtered(
                 lambda p: p.state == 'posted' and p.move_id):
             payment._reconcile_with_invoice()
-        # Le compute peut basculer 'invoiced' → 'paid' si tout est réglé.
-        self._compute_amounts()
+        # Un folio déjà réglé d'avance (acompte couvrant le séjour)
+        # passe directement à 'soldé'.
+        self._refresh_settlement()
         return self.action_view_invoice()
 
     def action_view_invoice(self):
@@ -459,6 +485,39 @@ class HotelFolioLine(models.Model):
                 raise UserError(
                     _("Le folio est facturé : ses lignes ne peuvent plus "
                       "être supprimées."))
+
+    # ------------------------------------------------------------------
+    # CRUD
+    # ------------------------------------------------------------------
+    #
+    # Une ligne ajoutée, modifiée ou retirée change le total dû : le folio
+    # doit se replacer sur le bon état sans attendre la prochaine lecture
+    # d'un montant. Le rafraîchissement est groupé — ``_sync_room_lines``
+    # crée les nuitées en boucle, et recalculer à chaque passage serait
+    # payer plusieurs fois le même travail.
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        lines = super().create(vals_list)
+        lines.folio_id._refresh_settlement()
+        return lines
+
+    def write(self, vals):
+        result = super().write(vals)
+        if not self._MONEY_FIELDS.isdisjoint(vals):
+            self.folio_id._refresh_settlement()
+        return result
+
+    def unlink(self):
+        folios = self.folio_id
+        result = super().unlink()
+        folios.exists()._refresh_settlement()
+        return result
+
+    # Champs dont la modification déplace le total dû.
+    _MONEY_FIELDS = frozenset((
+        'quantity', 'price_unit', 'tax_ids', 'product_id', 'line_type',
+    ))
 
 
 class HotelFolioPayment(models.Model):
@@ -704,12 +763,14 @@ class HotelFolioPayment(models.Model):
                 except Exception:
                     pass
             pay.state = 'cancelled'
+        self.folio_id._refresh_settlement()
         return True
 
     def action_post(self):
         for pay in self:
             pay.state = 'posted'
             pay._post_accounting_entry()
+        self.folio_id._refresh_settlement()
         return True
 
     @api.model
