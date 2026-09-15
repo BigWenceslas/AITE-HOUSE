@@ -99,9 +99,70 @@ répertoire `custom_addons` entier.
 
 ---
 
-## 3. Installation
+## 3. Supprimer une base
 
-### 3.1 Le pays de la société, d'abord
+Refaire une base de démonstration suppose de détruire la précédente.
+Deux choses à savoir.
+
+**Odoo garde les pièces jointes hors de la base**, dans le *filestore*.
+Un `dropdb` seul laisse ce dossier orphelin : il ne sert plus à rien mais
+occupe le disque, et il se rappelle à vous quand une base du même nom est
+recréée. Il faut le retirer explicitement.
+
+**PostgreSQL refuse de supprimer une base encore connectée.** Le service
+Odoo garde ses connexions ouvertes même au repos : arrêtez-le, ou coupez
+les connexions.
+
+```bash
+# 1. Arrêter Odoo — sinon la base reste connectée
+sudo systemctl stop odoo18c
+
+# 2. Couper les connexions résiduelles, par sécurité
+sudo -u postgres psql -d postgres -c "
+  SELECT pg_terminate_backend(pid) FROM pg_stat_activity
+  WHERE datname = 'odoo18c_aite_house_data_test' AND pid <> pg_backend_pid();"
+
+# 3. Supprimer la base
+sudo -u postgres dropdb --if-exists odoo18c_aite_house_data_test
+
+# 4. Supprimer le filestore correspondant
+rm -rf /opt/odoo18c/filestore/filestore/odoo18c_aite_house_data_test
+```
+
+> **Le chemin du filestore dépend de votre configuration.** Il vaut
+> `<data_dir>/filestore/<nom_de_la_base>`, où `data_dir` est lu dans
+> `odoo18c.conf`. Vérifiez-le avant de lancer un `rm -rf` :
+>
+> ```bash
+> grep data_dir /opt/odoo18c/conf/odoo18c.conf
+> ls /opt/odoo18c/filestore/filestore/
+> ```
+
+`--if-exists` évite l'erreur si la base n'existe pas : la commande reste
+rejouable telle quelle.
+
+> **Cette opération est définitive.** Sur une base qui contient des
+> données réelles, faites une sauvegarde d'abord :
+>
+> ```bash
+> sudo -u postgres pg_dump -Fc odoo18c_aite_house \
+>   > /sauvegardes/aite_house_$(date +%F).dump
+> tar czf /sauvegardes/aite_house_filestore_$(date +%F).tar.gz \
+>   -C /opt/odoo18c/filestore/filestore odoo18c_aite_house
+> ```
+>
+> Une sauvegarde de base **sans son filestore** est incomplète : les
+> pièces jointes et les images seraient perdues.
+
+Pensez à relancer le service après l'opération : `sudo systemctl start
+odoo18c`. Les commandes d'installation ci-dessous n'en ont pas besoin
+(`--no-http`, `--stop-after-init`), mais l'usage quotidien si.
+
+---
+
+## 4. Installation
+
+### 4.1 Le pays de la société, d'abord
 
 C'est l'étape que l'on saute et qu'on regrette. Odoo choisit le plan
 comptable **d'après le pays de la société**. Sans pays renseigné, il
@@ -118,7 +179,7 @@ Avec le pays renseigné, la localisation pose le plan **SYSCOHADA**
 
 C'est pourquoi l'installation se fait en **trois passes**.
 
-### 3.2 Base de production — `odoo18c_aite_house`
+### 4.2 Base de production — `odoo18c_aite_house`
 
 Base vierge : la suite installée, un seul utilisateur (`admin`), aucune
 donnée métier.
@@ -154,7 +215,7 @@ Cameroun**, `admin` seul utilisateur, aucune donnée métier.
 > devise posée ne sera pas le XAF sur lequel les seuils du produit sont
 > calibrés.
 
-### 3.3 Base de démonstration — `odoo18c_aite_house_data_test`
+### 4.3 Base de démonstration — `odoo18c_aite_house_data_test`
 
 Même socle, plus le jeu d'essai complet.
 
@@ -191,7 +252,7 @@ Jeu d'essai AITE généré (normal) : {'currency': 'XAF', 'users': 5,
  'housekeeping': 12, 'purchases': 8, 'deposits': 5}
 ```
 
-### 3.4 Pourquoi séparer la comptabilité du jeu d'essai
+### 4.4 Pourquoi séparer la comptabilité du jeu d'essai
 
 Tout installer d'un coup (`-i l10n_cm,aite_demo_data`) **réussit** —
 code de sortie 0, aucune erreur — mais produit un jeu d'essai
@@ -211,15 +272,15 @@ vides. C'est ce qui rend le piège vicieux — rien ne signale l'échec.
 Vérifiez toujours `'pos_orders'` dans le compte rendu : **168** en volume
 `normal`, **0** si la caisse a été sautée.
 
-Une base déjà dans cet état se rattrape sans la refaire — voir § 5.
+Une base déjà dans cet état se rattrape sans la refaire — voir § 6.
 
 ---
 
-## 4. Mise à jour
+## 5. Mise à jour
 
 Après avoir remplacé les fichiers (§ 2.3) et **redémarré le service**.
 
-### 4.1 Un seul module
+### 5.1 Un seul module
 
 ```bash
 /opt/odoo18c/venv/bin/python3 /opt/odoo18c/odoo/odoo-bin \
@@ -227,7 +288,7 @@ Après avoir remplacé les fichiers (§ 2.3) et **redémarré le service**.
   -u aite_hotel_management --no-http --stop-after-init
 ```
 
-### 4.2 Toute la suite
+### 5.2 Toute la suite
 
 ```bash
 /opt/odoo18c/venv/bin/python3 /opt/odoo18c/odoo/odoo-bin \
@@ -241,7 +302,7 @@ aite_exec_dashboard \
 
 Sur la base de démonstration, ajoutez `,aite_demo_data` à la liste.
 
-### 4.3 Mettre à jour tout ce qui est installé
+### 5.3 Mettre à jour tout ce qui est installé
 
 ```bash
 /opt/odoo18c/venv/bin/python3 /opt/odoo18c/odoo/odoo-bin \
@@ -253,7 +314,7 @@ Sur la base de démonstration, ajoutez `,aite_demo_data` à la liste.
 écart dans un module tiers remonte au même moment. À réserver aux
 montées de version.
 
-### 4.4 Ajouter un module à une base existante
+### 5.4 Ajouter un module à une base existante
 
 ```bash
 /opt/odoo18c/venv/bin/python3 /opt/odoo18c/odoo/odoo-bin \
@@ -261,7 +322,7 @@ montées de version.
   -i aite_loyalty --no-http --stop-after-init
 ```
 
-### 4.5 Ce que `-u` recharge, et ce qu'il ne touche pas
+### 5.5 Ce que `-u` recharge, et ce qu'il ne touche pas
 
 `-u` recharge le code **et les fichiers de données XML** du module. Les
 enregistrements posés à l'installation sont remis à leur valeur d'origine
@@ -277,7 +338,7 @@ ressources front-end sont recompilées.
 
 ---
 
-## 5. Régénérer ou purger le jeu d'essai
+## 6. Régénérer ou purger le jeu d'essai
 
 Le jeu est daté **relativement au jour de génération**. Une base de
 démonstration qui vieillit sort de la période affichée par les tableaux
@@ -288,7 +349,7 @@ de bord : il suffit de la régénérer.
 > Paramètres → **Jeu d'essai AITE** → Générer
 
 C'est aussi le rattrapage d'une base installée en une seule passe
-(§ 3.4) : les journaux existent désormais, la caisse et ses 168 ventes
+(§ 4.4) : les journaux existent désormais, la caisse et ses 168 ventes
 se créent.
 
 ### Depuis la ligne de commande
@@ -323,7 +384,7 @@ l'installation.
 
 ---
 
-## 6. Vérifier après l'opération
+## 7. Vérifier après l'opération
 
 ```bash
 psql -d odoo18c_aite_house_data_test -At -c "
@@ -353,18 +414,18 @@ Sur Odoo **Enterprise**, comptez **un module de plus** :
 
 ---
 
-## 7. Dépannage
+## 8. Dépannage
 
 | Symptôme | Cause | Correction |
 |---|---|---|
-| `'pos_orders': 0` dans le compte rendu | Générateur exécuté avant le plan comptable | Régénérer le jeu d'essai (§ 5) |
-| `Ensure that there is an existing bank journal` | Aucun plan comptable sur la société | Installer la localisation, pays renseigné (§ 3.1) |
-| Montants en `$` | Pays de la société non renseigné avant la localisation | § 3.1 ; sur une base déjà écrite, Odoo refuse de changer la devise |
+| `'pos_orders': 0` dans le compte rendu | Générateur exécuté avant le plan comptable | Régénérer le jeu d'essai (§ 6) |
+| `Ensure that there is an existing bank journal` | Aucun plan comptable sur la société | Installer la localisation, pays renseigné (§ 4.1) |
+| Montants en `$` | Pays de la société non renseigné avant la localisation | § 4.1 ; sur une base déjà écrite, Odoo refuse de changer la devise |
 | `"champ aite_xxx" is undefined` | Dossier de module retiré alors que le module reste installé | Redéposer les dossiers, redémarrer, mettre à jour la liste des applications |
 | Un module n'apparaît pas dans Apps | `addons_path` ne pointe pas vers `custom_addons` | Vérifier `odoo18c.conf` |
 | Écran blanc après mise à jour | Ressources front-end en cache | **Ctrl+Shift+R** ; sur le Point de Vente, fermer et rouvrir la session |
 | `aite_hotel_gantt` reste « non installé » | Odoo Community : `web_gantt` n'existe pas | Normal — le planning s'affiche en vue calendrier |
-| Tableaux de bord vides | Jeu d'essai daté, sorti de la période | Régénérer (§ 5) |
+| Tableaux de bord vides | Jeu d'essai daté, sorti de la période | Régénérer (§ 6) |
 
 En cas de blocage, transmettre à AITE Consulting les lignes `ERROR` /
 `Traceback` du journal Odoo et le contenu de `addons_path`.
