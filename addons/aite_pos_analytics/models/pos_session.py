@@ -113,10 +113,29 @@ class PosSession(models.Model):
                 if session.order_count_computed else 0.0
             )
 
-    @api.depends('cash_register_difference', 'state')
+    @api.depends('cash_register_difference', 'state',
+                 'cash_register_balance_end_real',
+                 'cash_register_balance_start',
+                 'cash_real_transaction', 'payment_method_ids',
+                 'order_ids.payment_ids.amount')
     def _compute_cash_discrepancy_severity(self):
+        # ``cash_register_difference`` est calculé et NON stocké, et son
+        # ``@api.depends`` natif omet ``cash_register_balance_end_real``
+        # — précisément le montant que le caissier saisit en comptant sa
+        # caisse. S'y fier laissait la sévérité figée sur l'état d'avant
+        # clôture : un manquant de 250 000 restait classé d'après l'écart
+        # qui précédait le comptage. On refait donc la soustraction sur
+        # les deux termes, tous deux à jour au moment du recalcul.
+        #
+        # La garde d'Odoo est reprise telle quelle : sans moyen de
+        # paiement espèces, la caisse n'a pas de solde et il n'y a pas
+        # d'écart à classer.
         for session in self:
-            diff = session.cash_register_difference or 0.0
+            if session.payment_method_ids.filtered('is_cash_count'):
+                diff = (session.cash_register_balance_end_real
+                        - session.cash_register_balance_end)
+            else:
+                diff = 0.0
             if diff == 0.0:
                 session.cash_discrepancy_severity = 'none'
             elif diff > 0:

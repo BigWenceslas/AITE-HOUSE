@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Odoo
+*.log
+.odoorc
+odoo.conf
+
+# Recette : relevé et captures sont versionnés (ils documentent la
+# campagne), mais pas les artefacts temporaires de Playwright.
+.playwright/
+test-results/
+trace.zip

@@ -27,9 +27,14 @@ class WebsiteBooking(http.Controller):
     # ------------------------------------------------------------------
 
     def _tz(self):
+        # ``sudo`` obligatoire : la fiche partenaire de la société n'est pas
+        # lisible par le visiteur public (règle d'enregistrement sur
+        # res.partner). Sans cela, TOUT envoi du formulaire — créneau comme
+        # demande de séjour — se soldait par une page 403 : le tunnel
+        # s'affichait mais aucune réservation ne pouvait aboutir.
+        company_tz = request.env.company.sudo().partner_id.tz
         return pytz.timezone(
-            request.env.company.partner_id.tz
-            or request.env.user.tz or 'Africa/Conakry')
+            company_tz or request.env.user.sudo().tz or 'Africa/Conakry')
 
     def _local_to_utc(self, day_str, hour_float):
         """'YYYY-MM-DD' + heure décimale locale → datetime UTC naïf."""
@@ -187,15 +192,20 @@ class WebsiteBooking(http.Controller):
 
         Booking = env['aite.slot.booking'].sudo()
         try:
-            booking = Booking.create({
-                'resource_id': resource.id,
-                'partner_id': partner.id,
-                'service_id': service.id if service else False,
-                'start': fields.Datetime.to_string(start_dt),
-                'stop': fields.Datetime.to_string(stop_dt),
-                'source': 'online',
-            })
-            booking.action_confirm()
+            # Point de sauvegarde : si le créneau vient d'être pris (ou
+            # n'est pas valide), la création est annulée avec la
+            # confirmation. Sans cela, chaque tentative refusée laissait
+            # une réservation fantôme en brouillon dans le back-office.
+            with env.cr.savepoint():
+                booking = Booking.create({
+                    'resource_id': resource.id,
+                    'partner_id': partner.id,
+                    'service_id': service.id if service else False,
+                    'start': fields.Datetime.to_string(start_dt),
+                    'stop': fields.Datetime.to_string(stop_dt),
+                    'source': 'online',
+                })
+                booking.action_confirm()
         except ValidationError:
             _logger.info(
                 "Résa en ligne refusée (conflit/créneau) : %s %s %.2f",

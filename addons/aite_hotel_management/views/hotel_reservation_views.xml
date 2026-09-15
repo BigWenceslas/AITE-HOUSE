@@ -299,26 +299,26 @@
         <field name="context">{'search_default_filter_inhouse': 1}</field>
     </record>
 
-    <!-- ============ PLANNING GANTT (lignes de réservation) ============ -->
-    <record id="view_hotel_reservation_line_gantt" model="ir.ui.view">
-        <field name="name">aite.hotel.reservation.line.gantt</field>
+    <!-- ====== PLANNING DES CHAMBRES (lignes de réservation) ======
+         Vue calendrier : socle commun Community / Enterprise. Sur
+         Enterprise, le module passerelle ``aite_hotel_gantt`` ajoute en
+         tête de l'action la vue Gantt (barres par chambre). -->
+    <record id="view_hotel_reservation_line_calendar" model="ir.ui.view">
+        <field name="name">aite.hotel.reservation.line.calendar</field>
         <field name="model">aite.hotel.reservation.line</field>
         <field name="arch" type="xml">
-            <gantt string="Planning des chambres"
-                   date_start="checkin_date"
-                   date_stop="checkout_date"
-                   default_group_by="room_id"
-                   color="room_type_id"
-                   default_scale="week"
-                   scales="day,week,month"
-                   decoration-info="state == 'confirmed'"
-                   decoration-success="state == 'checked_in'"
-                   decoration-danger="state == 'no_show'"
-                   decoration-secondary="state in ('checked_out','cancelled','draft')">
+            <calendar string="Planning des chambres"
+                      date_start="checkin_date"
+                      date_stop="checkout_date"
+                      color="room_id"
+                      mode="month"
+                      quick_create="false"
+                      event_open_popup="true">
+                <field name="room_id" filters="1"/>
                 <field name="partner_id"/>
                 <field name="reservation_id"/>
                 <field name="state"/>
-            </gantt>
+            </calendar>
         </field>
     </record>
 
@@ -374,7 +374,7 @@
     <record id="action_hotel_room_planning" model="ir.actions.act_window">
         <field name="name">Planning des chambres</field>
         <field name="res_model">aite.hotel.reservation.line</field>
-        <field name="view_mode">gantt,list,form</field>
+        <field name="view_mode">calendar,list,form</field>
         <field name="domain">[('state', 'in', ('confirmed','checked_in','checked_out'))]</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">

@@ -66,15 +66,18 @@ class HotelService(models.Model):
         services = super().create(vals_list)
         for service in services:
             if not service.product_id:
-                service.product_id = self.env['product.product'].create(
-                    service._prepare_product_vals())
+                # ``sudo`` : écriture technique de l'article support —
+                # le responsable hôtel n'a pas les droits product.product.
+                service.product_id = self.env[
+                    'product.product'].sudo().create(
+                        service._prepare_product_vals())
         return services
 
     def write(self, vals):
         res = super().write(vals)
         if 'name' in vals or 'price' in vals:
             for service in self.filtered('product_id'):
-                service.product_id.write({
+                service.product_id.sudo().write({
                     'name': service.name,
                     'list_price': service.price,
                 })

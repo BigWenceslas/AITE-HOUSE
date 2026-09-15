@@ -182,8 +182,11 @@ export class MirrorAging extends Component {
     static template = "aite_direction_dashboard.MirrorAging";
     static props = { clients: Object, suppliers: Object,
                      currency: String };
-    static ORDER = [["0_30", "0–30 j"], ["31_60", "31–60 j"],
-                    ["61_90", "61–90 j"], ["90p", "+90 j"]];
+    // Libellés alignés sur ceux du moteur Crédit (get_aging) : le
+    // miroir et l'onglet « Crédit clients » doivent nommer les mêmes
+    // tranches de la même façon.
+    static ORDER = [["0_30", "0–30 j"], ["31_60", "30–60 j"],
+                    ["61_90", "60–90 j"], ["90p", "+90 j"]];
     static CLI = { "0_30": "#3B6D11", "31_60": "#854F0B",
                    "61_90": "#a3702a", "90p": "#A32D2D" };
     static SUP = { "0_30": "#185FA5", "31_60": "#5b83b0",

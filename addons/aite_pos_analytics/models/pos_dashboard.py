@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 from collections import defaultdict
 
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
 
 
 class PosAnalyticsDashboard(models.AbstractModel):
@@ -29,15 +28,26 @@ class PosAnalyticsDashboard(models.AbstractModel):
     # -------------------------------------------------------------------
 
     def _parse_period(self, date_from, date_to):
-        """Parse les bornes de période et retourne deux datetime UTC."""
+        """
+        Bornes de période, en deux ``datetime`` (fin exclusive).
+
+        Convention commune à toute la suite AITE : une période illisible
+        — champ vidé, saisie partielle, appel sans paramètre — retombe
+        sur le **mois courant** plutôt que d'interrompre la consultation.
+        Des bornes inversées sont remises dans l'ordre.
+        """
         try:
             dt_from = datetime.strptime(date_from, '%Y-%m-%d')
-            dt_to = datetime.strptime(date_to, '%Y-%m-%d') + timedelta(days=1)
+            dt_to = datetime.strptime(date_to, '%Y-%m-%d')
         except (TypeError, ValueError):
-            raise UserError(_("Format de date invalide. Attendu : YYYY-MM-DD."))
+            today = fields.Date.context_today(self)
+            dt_from = datetime.combine(today.replace(day=1),
+                                       datetime.min.time())
+            dt_to = datetime.combine(today, datetime.min.time())
         if dt_from > dt_to:
-            raise UserError(_("La date de début doit être antérieure à la date de fin."))
-        return dt_from, dt_to
+            dt_from, dt_to = dt_to, dt_from
+        # Borne haute exclusive : le jour de fin est inclus dans la période.
+        return dt_from, dt_to + timedelta(days=1)
 
     def _base_domain(self, date_from, date_to, config_id=None,
                      hour_from=None, hour_to=None, weekdays=None):
@@ -117,18 +127,21 @@ class PosAnalyticsDashboard(models.AbstractModel):
             'qty': qty, 'order_count': order_count,
         }
 
-    @staticmethod
-    def _previous_period(date_from, date_to):
+    def _previous_period(self, date_from, date_to):
         """
-        Calcule la période de comparaison immédiatement précédente, de
-        même durée. Ex. 01/06→30/06 (30 j) → 02/05→31/05.
+        Période de comparaison immédiatement précédente, de même durée.
+        Ex. 01/06→30/06 (30 j) → 02/05→31/05.
 
-        Retourne (prev_from, prev_to) au format string 'YYYY-MM-DD'.
+        Les bornes passent par ``_parse_period`` : une période illisible
+        est d'abord ramenée au mois courant, et la comparaison porte donc
+        toujours sur la période réellement affichée.
+
+        :returns: (prev_from, prev_to) au format 'YYYY-MM-DD'.
         """
-        d_from = datetime.strptime(date_from, '%Y-%m-%d')
-        d_to = datetime.strptime(date_to, '%Y-%m-%d')
-        span = (d_to - d_from).days + 1  # période inclusive
-        prev_to = d_from - timedelta(days=1)
+        dt_from, dt_to_excl = self._parse_period(date_from, date_to)
+        d_to = dt_to_excl - timedelta(days=1)          # borne inclusive
+        span = (d_to - dt_from).days + 1               # période inclusive
+        prev_to = dt_from - timedelta(days=1)
         prev_from = prev_to - timedelta(days=span - 1)
         return prev_from.strftime('%Y-%m-%d'), prev_to.strftime('%Y-%m-%d')
 

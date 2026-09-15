@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============ PLANNING GANTT (lignes de réservation) ============
+         Vue Enterprise : une barre par séjour, groupée par chambre.
+         Déplacée ici depuis aite_hotel_management pour que le socle
+         reste installable sur Odoo Community. -->
+    <record id="view_hotel_reservation_line_gantt" model="ir.ui.view">
+        <field name="name">aite.hotel.reservation.line.gantt</field>
+        <field name="model">aite.hotel.reservation.line</field>
+        <field name="arch" type="xml">
+            <gantt string="Planning des chambres"
+                   date_start="checkin_date"
+                   date_stop="checkout_date"
+                   default_group_by="room_id"
+                   color="room_type_id"
+                   default_scale="week"
+                   scales="day,week,month"
+                   decoration-info="state == 'confirmed'"
+                   decoration-success="state == 'checked_in'"
+                   decoration-danger="state == 'no_show'"
+                   decoration-secondary="state in ('checked_out','cancelled','draft')">
+                <field name="partner_id"/>
+                <field name="reservation_id"/>
+                <field name="state"/>
+            </gantt>
+        </field>
+    </record>
+
+    <!-- Le Gantt passe en tête du planning ; le calendrier du socle reste
+         accessible par le sélecteur de vues. -->
+    <record id="aite_hotel_management.action_hotel_room_planning"
+            model="ir.actions.act_window">
+        <field name="view_mode">gantt,calendar,list,form</field>
+    </record>
+
+</odoo>

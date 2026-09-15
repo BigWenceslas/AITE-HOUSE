@@ -41,7 +41,10 @@ class ResCompany(models.Model):
         default=True,
     )
     hotel_send_confirmation = fields.Boolean(
-        string="E-mail de confirmation automatique",
+        # Libellé qualifié : ``aite_slot_booking`` porte un booléen
+        # homonyme sur res.company ; deux champs de même libellé rendent
+        # l'écran Paramètres et les exports ambigus.
+        string="E-mail de confirmation automatique des réservations hôtel",
         default=False,
     )
     hotel_auto_no_show = fields.Boolean(

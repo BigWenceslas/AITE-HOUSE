@@ -1,5 +1,5 @@
 # AITE HOUSE — Suite de gestion hôtelière sur Odoo 18
-**Version du paquet : septembre 2026 · 12 modules · Odoo 18 (Community & Enterprise)**
+**Version du paquet : septembre 2026 · 13 modules · Odoo 18 (Community & Enterprise)**
 
 Éditeur : AITE Consulting SARL — Douala, Makepe Bloc F
 info@aite-consulting.com · (+237) 673 373 367 / 656 801 098 · https://aite-consulting.com
@@ -10,8 +10,10 @@ info@aite-consulting.com · (+237) 673 373 367 / 656 801 098 · https://aite-con
 
 ```
 AITE_HOUSE/
-├── addons/            les 12 modules à déposer sur le serveur
-├── documentation/     guides utilisateur, fiches produit, plaquette, flyer
+├── addons/            les 13 modules à déposer sur le serveur
+├── documentation/     guides utilisateur, fiches produit, plaquette, flyer,
+│                      guide de test, cahier de recette et captures
+├── tests_uat/         scénarios de recette (navigateur)
 └── INSTALLATION.md    ce fichier
 ```
 
@@ -30,6 +32,7 @@ AITE_HOUSE/
 | aite_purchase_dashboard | 18.0.1.0.2 | Achats : échéancier fournisseurs, OTIF, hausses de prix |
 | aite_direction_dashboard | 18.0.1.0.2 | **Cockpit Direction** : vue consolidée, cash à risque, actions |
 | aite_exec_dashboard | 18.0.1.0.2 | Tableau de bord exécutif hôtel |
+| aite_hotel_gantt | 18.0.1.0.0 | **Enterprise uniquement** : planning Gantt des chambres (auto-installé) |
 | aite_demo_data | 18.0.1.2.1 | Jeu de démonstration (établissement complet pré-chargé) |
 
 ## 3. Prérequis
@@ -37,12 +40,29 @@ AITE_HOUSE/
 - Odoo 18 (Community ou Enterprise), PostgreSQL, accès au serveur.
 - Modules Odoo standard requis (installés automatiquement) : `point_of_sale`,
   `sale`, `account`, `purchase`, `stock`, `website`, `portal`, `mail`,
-  `product`, `web`, `web_gantt`.
-- Devise de la société en FCFA (XAF) ou GNF selon le pays.
+  `product`, `web`.
+- **Un plan comptable installé sur la société** avant d'installer le Point
+  de Vente ou le jeu de démonstration : Odoo exige un journal de banque
+  pour créer une caisse. Sur une base neuve, installez le module de
+  localisation comptable de votre pays (Comptabilité → Configuration), ou
+  créez la base avec les données de démonstration Odoo.
+- **Devise de la société en GNF ou FCFA (XAF)** selon le pays, à
+  positionner **avant** toute écriture comptable — Odoo refuse ensuite
+  d'en changer.
+
+### Community ou Enterprise ?
+
+La suite s'installe sur les **deux éditions**. Le seul écart est le
+planning des chambres :
+
+- sur **Community**, il s'affiche en vue **calendrier** ;
+- sur **Enterprise**, le module `aite_hotel_gantt` s'installe
+  automatiquement et le planning s'ouvre en vue **Gantt** (barres par
+  chambre). Aucune action n'est requise.
 
 ## 4. Installation
 
-1. **Déposer** les 12 dossiers de `addons/` dans le répertoire des addons
+1. **Déposer** les 13 dossiers de `addons/` dans le répertoire des addons
    personnalisés du serveur — celui déclaré dans `addons_path` de
    `odoo.conf`. Les déposer **à côté** des dossiers existants ; ne jamais
    remplacer le répertoire entier.
@@ -57,6 +77,9 @@ AITE_HOUSE/
    5. `aite_stock_dashboard`, `aite_purchase_dashboard`
    6. `aite_direction_dashboard`, `aite_exec_dashboard`
    7. `aite_demo_data` *(uniquement sur une base de démonstration)*
+
+   Sur Enterprise, `aite_hotel_gantt` s'ajoute seul à l'étape 1 : il ne
+   figure pas dans cette liste et ne demande aucune manipulation.
 5. **Ctrl+Shift+R** dans le navigateur (les assets sont recompilés).
 6. Vérifier : l'écran **Paramètres** doit s'afficher jusqu'en bas, avec les
    sections AITE (Note de chambre, Fidélité, Crédit, Réservations…).
@@ -77,10 +100,14 @@ dernier.
 
 | Symptôme | Cause probable | Correction |
 |---|---|---|
-| `"champ aite_xxx" is undefined` sur Paramètres | Dossier(s) de module absent(s) du serveur alors que le module reste installé en base | Redéposer les 12 dossiers, redémarrer, mettre à jour la liste des applications |
+| `"champ aite_xxx" is undefined` sur Paramètres | Dossier(s) de module absent(s) du serveur alors que le module reste installé en base | Redéposer les 13 dossiers, redémarrer, mettre à jour la liste des applications |
 | Un module n'apparaît pas dans Apps | `addons_path` ne pointe pas vers le répertoire utilisé | Vérifier `odoo.conf` et la commande de lancement du service |
 | Écran blanc ou composant manquant | Cache navigateur | Ctrl+Shift+R ; sur le Point de Vente, fermer et rouvrir la session |
 | Erreur à l'installation | Dépendance Odoo absente | Installer d'abord le module standard concerné (voir §3) |
+| `Ensure that there is an existing bank journal` | Aucun plan comptable sur la société | Installer le module de localisation comptable du pays, puis relancer l'installation (voir §3) |
+| `aite_hotel_gantt` reste « non installé » | Odoo Community : `web_gantt` n'existe pas | Comportement normal — le planning s'affiche en vue calendrier |
+| Montants affichés dans la mauvaise devise | Devise de la société non positionnée | Paramètres → Sociétés → Devise, **avant** toute écriture comptable |
+| Tableaux de bord vides sur une base de démonstration | Jeu d'essai daté, devenu hors période | Paramètres → **Jeu d'essai AITE** → Générer |
 
 En cas de blocage, transmettre à AITE Consulting les lignes `ERROR` /
 `Traceback` du log Odoo et le contenu de `addons_path`.
@@ -91,6 +118,19 @@ En cas de blocage, transmettre à AITE Consulting les lignes `ERROR` /
   ligne, Fidélité, Espaces & prestations, Tableau de bord Direction.
 - **Fiches produit** : POS Analytics, POS Crédit.
 - **Plaquette commerciale** AITE HOUSE (19 pages) et **flyer**.
+
+### Documentation de test
+
+- **[`GUIDE_TESTS.md`](documentation/GUIDE_TESTS.md)** — monter un
+  environnement de test, exécuter les 604 tests automatisés, régénérer le
+  jeu d'essai.
+- **[`GUIDE_RECETTE_UAT.md`](documentation/GUIDE_RECETTE_UAT.md)** —
+  cahier de recette illustré : 6 scénarios, 34 étapes, une capture
+  d'écran par étape, joués avec les profils métier réels.
+- **[`RAPPORT_TESTS.md`](documentation/RAPPORT_TESTS.md)** — rapport de
+  campagne : anomalies trouvées, corrections apportées, points
+  d'attention.
+- `documentation/captures/` — les captures d'écran de la recette.
 
 ---
 © AITE Consulting SARL — tous droits réservés.

@@ -402,10 +402,18 @@ class AiteDirectionDashboard(models.AbstractModel):
                          '61_90': 0.0, '90p': 0.0}
         late_clients = 0
         for r in (aging_c or []):
-            lo = int(r.get('min') or 0)
-            key = ('90p' if r.get('max') in (None, False) or lo >= 91
-                   else '61_90' if lo >= 61
-                   else '31_60' if lo >= 31 else '0_30')
+            # Le moteur Crédit expose désormais la clé de tranche ; on la
+            # reprend telle quelle. Le repli par bornes ne sert plus que
+            # si un module tiers renvoie un format plus ancien.
+            key = r.get('key')
+            if key not in aging_clients:
+                lo = int(r.get('min') or 0)
+                hi = r.get('max')
+                key = ('90p' if lo >= 90
+                       else '61_90' if lo >= 60
+                       else '31_60' if lo >= 30
+                       else '0_30' if hi not in (None, False)
+                       else '90p')
             aging_clients[key] += r.get('amount', 0.0)
             if key != '0_30':
                 late_clients += r.get('count', 0)
