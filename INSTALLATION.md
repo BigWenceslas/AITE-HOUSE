@@ -120,6 +120,14 @@ En cas de blocage, transmettre à AITE Consulting les lignes `ERROR` /
 - **Fiches produit** : POS Analytics, POS Crédit.
 - **Plaquette commerciale** AITE HOUSE (19 pages) et **flyer**.
 
+### Documentation technique
+
+- **[`GUIDE_DEPLOIEMENT.md`](documentation/GUIDE_DEPLOIEMENT.md)** —
+  les commandes serveur : installation d'une base de production ou de
+  démonstration, mise à jour des modules, régénération du jeu d'essai,
+  vérifications et dépannage. C'est le pendant en ligne de commande de
+  ce fichier.
+
 ### Documentation de test
 
 - **[`GUIDE_TESTS.md`](documentation/GUIDE_TESTS.md)** — monter un

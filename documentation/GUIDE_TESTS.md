@@ -7,7 +7,9 @@ Ce guide explique comment **monter un environnement de test**, **exécuter
 les 604 tests automatisés**, **rejouer la recette utilisateur** et
 **régénérer le jeu d'essai**. Le cahier de recette illustré, avec ses
 captures d'écran, fait l'objet d'un document séparé :
-[`GUIDE_RECETTE_UAT.md`](GUIDE_RECETTE_UAT.md).
+[`GUIDE_RECETTE_UAT.md`](GUIDE_RECETTE_UAT.md). Pour installer ou mettre
+à jour la suite sur un serveur, voir
+[`GUIDE_DEPLOIEMENT.md`](GUIDE_DEPLOIEMENT.md).
 
 ---
 
