@@ -4,8 +4,8 @@
         <record id="prod_121" model="product.product">
             <field name="name">Massage relaxant 60 min</field>
             <field name="categ_id" ref="cat_spa"/>
-            <field name="list_price" eval="350000"/>
-            <field name="standard_price" eval="0"/>
+            <field name="list_price" eval="27000"/>
+            <field name="standard_price" eval="50"/>
             <field name="type">service</field>
             <field name="is_storable" eval="False"/>
             <field name="sale_ok" eval="True"/>
@@ -13,8 +13,8 @@
         <record id="prod_122" model="product.product">
             <field name="name">Massage deep tissue 90 min</field>
             <field name="categ_id" ref="cat_spa"/>
-            <field name="list_price" eval="480000"/>
-            <field name="standard_price" eval="0"/>
+            <field name="list_price" eval="37000"/>
+            <field name="standard_price" eval="50"/>
             <field name="type">service</field>
             <field name="is_storable" eval="False"/>
             <field name="sale_ok" eval="True"/>
@@ -22,8 +22,8 @@
         <record id="prod_123" model="product.product">
             <field name="name">Massage duo 60 min</field>
             <field name="categ_id" ref="cat_spa"/>
-            <field name="list_price" eval="620000"/>
-            <field name="standard_price" eval="0"/>
+            <field name="list_price" eval="47500"/>
+            <field name="standard_price" eval="50"/>
             <field name="type">service</field>
             <field name="is_storable" eval="False"/>
             <field name="sale_ok" eval="True"/>
@@ -31,8 +31,8 @@
         <record id="prod_124" model="product.product">
             <field name="name">Gommage corporel karité</field>
             <field name="categ_id" ref="cat_spa"/>
-            <field name="list_price" eval="280000"/>
-            <field name="standard_price" eval="0"/>
+            <field name="list_price" eval="21500"/>
+            <field name="standard_price" eval="50"/>
             <field name="type">service</field>
             <field name="is_storable" eval="False"/>
             <field name="sale_ok" eval="True"/>
@@ -40,8 +40,8 @@
         <record id="prod_125" model="product.product">
             <field name="name">Soin du visage éclat</field>
             <field name="categ_id" ref="cat_spa"/>
-            <field name="list_price" eval="300000"/>
-            <field name="standard_price" eval="0"/>
+            <field name="list_price" eval="23000"/>
+            <field name="standard_price" eval="50"/>
             <field name="type">service</field>
             <field name="is_storable" eval="False"/>
             <field name="sale_ok" eval="True"/>
@@ -49,8 +49,8 @@
         <record id="prod_126" model="product.product">
             <field name="name">Hammam &amp; sauna (accès 60 min)</field>
             <field name="categ_id" ref="cat_spa"/>
-            <field name="list_price" eval="180000"/>
-            <field name="standard_price" eval="0"/>
+            <field name="list_price" eval="14000"/>
+            <field name="standard_price" eval="50"/>
             <field name="type">service</field>
             <field name="is_storable" eval="False"/>
             <field name="sale_ok" eval="True"/>
@@ -58,8 +58,8 @@
         <record id="prod_127" model="product.product">
             <field name="name">Manucure</field>
             <field name="categ_id" ref="cat_spa"/>
-            <field name="list_price" eval="120000"/>
-            <field name="standard_price" eval="0"/>
+            <field name="list_price" eval="9200"/>
+            <field name="standard_price" eval="50"/>
             <field name="type">service</field>
             <field name="is_storable" eval="False"/>
             <field name="sale_ok" eval="True"/>
@@ -67,8 +67,8 @@
         <record id="prod_128" model="product.product">
             <field name="name">Pédicure</field>
             <field name="categ_id" ref="cat_spa"/>
-            <field name="list_price" eval="140000"/>
-            <field name="standard_price" eval="0"/>
+            <field name="list_price" eval="11000"/>
+            <field name="standard_price" eval="50"/>
             <field name="type">service</field>
             <field name="is_storable" eval="False"/>
             <field name="sale_ok" eval="True"/>
@@ -76,8 +76,8 @@
         <record id="prod_129" model="product.product">
             <field name="name">Coupe homme</field>
             <field name="categ_id" ref="cat_coiffure"/>
-            <field name="list_price" eval="80000"/>
-            <field name="standard_price" eval="0"/>
+            <field name="list_price" eval="6200"/>
+            <field name="standard_price" eval="50"/>
             <field name="type">service</field>
             <field name="is_storable" eval="False"/>
             <field name="sale_ok" eval="True"/>
@@ -85,8 +85,8 @@
         <record id="prod_130" model="product.product">
             <field name="name">Coupe + barbe</field>
             <field name="categ_id" ref="cat_coiffure"/>
-            <field name="list_price" eval="110000"/>
-            <field name="standard_price" eval="0"/>
+            <field name="list_price" eval="8500"/>
+            <field name="standard_price" eval="50"/>
             <field name="type">service</field>
             <field name="is_storable" eval="False"/>
             <field name="sale_ok" eval="True"/>
@@ -94,8 +94,8 @@
         <record id="prod_131" model="product.product">
             <field name="name">Taille de barbe</field>
             <field name="categ_id" ref="cat_coiffure"/>
-            <field name="list_price" eval="50000"/>
-            <field name="standard_price" eval="0"/>
+            <field name="list_price" eval="3800"/>
+            <field name="standard_price" eval="50"/>
             <field name="type">service</field>
             <field name="is_storable" eval="False"/>
             <field name="sale_ok" eval="True"/>
@@ -103,8 +103,8 @@
         <record id="prod_132" model="product.product">
             <field name="name">Coupe femme</field>
             <field name="categ_id" ref="cat_coiffure"/>
-            <field name="list_price" eval="130000"/>
-            <field name="standard_price" eval="0"/>
+            <field name="list_price" eval="10000"/>
+            <field name="standard_price" eval="50"/>
             <field name="type">service</field>
             <field name="is_storable" eval="False"/>
             <field name="sale_ok" eval="True"/>
@@ -112,8 +112,8 @@
         <record id="prod_133" model="product.product">
             <field name="name">Brushing</field>
             <field name="categ_id" ref="cat_coiffure"/>
-            <field name="list_price" eval="90000"/>
-            <field name="standard_price" eval="0"/>
+            <field name="list_price" eval="6900"/>
+            <field name="standard_price" eval="50"/>
             <field name="type">service</field>
             <field name="is_storable" eval="False"/>
             <field name="sale_ok" eval="True"/>
@@ -121,8 +121,8 @@
         <record id="prod_134" model="product.product">
             <field name="name">Tresses (forfait 2 h)</field>
             <field name="categ_id" ref="cat_coiffure"/>
-            <field name="list_price" eval="250000"/>
-            <field name="standard_price" eval="0"/>
+            <field name="list_price" eval="19000"/>
+            <field name="standard_price" eval="50"/>
             <field name="type">service</field>
             <field name="is_storable" eval="False"/>
             <field name="sale_ok" eval="True"/>
@@ -130,8 +130,8 @@
         <record id="prod_135" model="product.product">
             <field name="name">Défrisage + soin</field>
             <field name="categ_id" ref="cat_coiffure"/>
-            <field name="list_price" eval="180000"/>
-            <field name="standard_price" eval="0"/>
+            <field name="list_price" eval="14000"/>
+            <field name="standard_price" eval="50"/>
             <field name="type">service</field>
             <field name="is_storable" eval="False"/>
             <field name="sale_ok" eval="True"/>
@@ -139,8 +139,8 @@
         <record id="prod_136" model="product.product">
             <field name="name">Coloration</field>
             <field name="categ_id" ref="cat_coiffure"/>
-            <field name="list_price" eval="220000"/>
-            <field name="standard_price" eval="0"/>
+            <field name="list_price" eval="17000"/>
+            <field name="standard_price" eval="50"/>
             <field name="type">service</field>
             <field name="is_storable" eval="False"/>
             <field name="sale_ok" eval="True"/>
@@ -148,8 +148,8 @@
         <record id="prod_137" model="product.product">
             <field name="name">Chemise (pressing)</field>
             <field name="categ_id" ref="cat_pressing"/>
-            <field name="list_price" eval="15000"/>
-            <field name="standard_price" eval="0"/>
+            <field name="list_price" eval="1200"/>
+            <field name="standard_price" eval="50"/>
             <field name="type">service</field>
             <field name="is_storable" eval="False"/>
             <field name="sale_ok" eval="True"/>
@@ -157,8 +157,8 @@
         <record id="prod_138" model="product.product">
             <field name="name">Pantalon (pressing)</field>
             <field name="categ_id" ref="cat_pressing"/>
-            <field name="list_price" eval="18000"/>
-            <field name="standard_price" eval="0"/>
+            <field name="list_price" eval="1400"/>
+            <field name="standard_price" eval="50"/>
             <field name="type">service</field>
             <field name="is_storable" eval="False"/>
             <field name="sale_ok" eval="True"/>
@@ -166,8 +166,8 @@
         <record id="prod_139" model="product.product">
             <field name="name">Costume 2 pièces (pressing)</field>
             <field name="categ_id" ref="cat_pressing"/>
-            <field name="list_price" eval="45000"/>
-            <field name="standard_price" eval="0"/>
+            <field name="list_price" eval="3500"/>
+            <field name="standard_price" eval="50"/>
             <field name="type">service</field>
             <field name="is_storable" eval="False"/>
             <field name="sale_ok" eval="True"/>
@@ -175,8 +175,8 @@
         <record id="prod_140" model="product.product">
             <field name="name">Robe / boubou (pressing)</field>
             <field name="categ_id" ref="cat_pressing"/>
-            <field name="list_price" eval="30000"/>
-            <field name="standard_price" eval="0"/>
+            <field name="list_price" eval="2300"/>
+            <field name="standard_price" eval="50"/>
             <field name="type">service</field>
             <field name="is_storable" eval="False"/>
             <field name="sale_ok" eval="True"/>
@@ -184,8 +184,8 @@
         <record id="prod_141" model="product.product">
             <field name="name">Lavage au kilo</field>
             <field name="categ_id" ref="cat_pressing"/>
-            <field name="list_price" eval="12000"/>
-            <field name="standard_price" eval="0"/>
+            <field name="list_price" eval="900"/>
+            <field name="standard_price" eval="50"/>
             <field name="type">service</field>
             <field name="is_storable" eval="False"/>
             <field name="sale_ok" eval="True"/>
@@ -193,8 +193,8 @@
         <record id="prod_142" model="product.product">
             <field name="name">Repassage au kilo</field>
             <field name="categ_id" ref="cat_pressing"/>
-            <field name="list_price" eval="8000"/>
-            <field name="standard_price" eval="0"/>
+            <field name="list_price" eval="600"/>
+            <field name="standard_price" eval="50"/>
             <field name="type">service</field>
             <field name="is_storable" eval="False"/>
             <field name="sale_ok" eval="True"/>
@@ -202,8 +202,8 @@
         <record id="prod_143" model="product.product">
             <field name="name">Location salon VIP (heure)</field>
             <field name="categ_id" ref="cat_espaces"/>
-            <field name="list_price" eval="150000"/>
-            <field name="standard_price" eval="0"/>
+            <field name="list_price" eval="11500"/>
+            <field name="standard_price" eval="50"/>
             <field name="type">service</field>
             <field name="is_storable" eval="False"/>
             <field name="sale_ok" eval="True"/>
@@ -211,8 +211,8 @@
         <record id="prod_144" model="product.product">
             <field name="name">Location salon VVIP (heure)</field>
             <field name="categ_id" ref="cat_espaces"/>
-            <field name="list_price" eval="300000"/>
-            <field name="standard_price" eval="0"/>
+            <field name="list_price" eval="23000"/>
+            <field name="standard_price" eval="50"/>
             <field name="type">service</field>
             <field name="is_storable" eval="False"/>
             <field name="sale_ok" eval="True"/>

@@ -4,8 +4,8 @@
         <record id="prod_001" model="product.product">
             <field name="name">Salade d'avocat crevettes</field>
             <field name="categ_id" ref="cat_entrees"/>
-            <field name="list_price" eval="55000"/>
-            <field name="standard_price" eval="21000"/>
+            <field name="list_price" eval="4200"/>
+            <field name="standard_price" eval="1600"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -14,8 +14,8 @@
         <record id="prod_002" model="product.product">
             <field name="name">Salade composée du chef</field>
             <field name="categ_id" ref="cat_entrees"/>
-            <field name="list_price" eval="45000"/>
-            <field name="standard_price" eval="16000"/>
+            <field name="list_price" eval="3500"/>
+            <field name="standard_price" eval="1200"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -24,8 +24,8 @@
         <record id="prod_003" model="product.product">
             <field name="name">Accras de poisson (6 pcs)</field>
             <field name="categ_id" ref="cat_entrees"/>
-            <field name="list_price" eval="38000"/>
-            <field name="standard_price" eval="12000"/>
+            <field name="list_price" eval="2900"/>
+            <field name="standard_price" eval="900"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -34,8 +34,8 @@
         <record id="prod_004" model="product.product">
             <field name="name">Nems au poulet (4 pcs)</field>
             <field name="categ_id" ref="cat_entrees"/>
-            <field name="list_price" eval="35000"/>
-            <field name="standard_price" eval="11000"/>
+            <field name="list_price" eval="2700"/>
+            <field name="standard_price" eval="850"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -44,8 +44,8 @@
         <record id="prod_005" model="product.product">
             <field name="name">Soupe kandja</field>
             <field name="categ_id" ref="cat_entrees"/>
-            <field name="list_price" eval="42000"/>
-            <field name="standard_price" eval="14000"/>
+            <field name="list_price" eval="3200"/>
+            <field name="standard_price" eval="1100"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -54,8 +54,8 @@
         <record id="prod_006" model="product.product">
             <field name="name">Pastels de viande (5 pcs)</field>
             <field name="categ_id" ref="cat_entrees"/>
-            <field name="list_price" eval="32000"/>
-            <field name="standard_price" eval="10000"/>
+            <field name="list_price" eval="2500"/>
+            <field name="standard_price" eval="750"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -64,8 +64,8 @@
         <record id="prod_007" model="product.product">
             <field name="name">Velouté de patate douce</field>
             <field name="categ_id" ref="cat_entrees"/>
-            <field name="list_price" eval="30000"/>
-            <field name="standard_price" eval="9000"/>
+            <field name="list_price" eval="2300"/>
+            <field name="standard_price" eval="700"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -74,8 +74,8 @@
         <record id="prod_008" model="product.product">
             <field name="name">Poulet yassa</field>
             <field name="categ_id" ref="cat_plats"/>
-            <field name="list_price" eval="75000"/>
-            <field name="standard_price" eval="28000"/>
+            <field name="list_price" eval="5800"/>
+            <field name="standard_price" eval="2200"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -84,8 +84,8 @@
         <record id="prod_009" model="product.product">
             <field name="name">Poulet braisé entier</field>
             <field name="categ_id" ref="cat_plats"/>
-            <field name="list_price" eval="120000"/>
-            <field name="standard_price" eval="48000"/>
+            <field name="list_price" eval="9200"/>
+            <field name="standard_price" eval="3700"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -94,8 +94,8 @@
         <record id="prod_010" model="product.product">
             <field name="name">Demi-poulet braisé</field>
             <field name="categ_id" ref="cat_plats"/>
-            <field name="list_price" eval="68000"/>
-            <field name="standard_price" eval="26000"/>
+            <field name="list_price" eval="5200"/>
+            <field name="standard_price" eval="2000"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -104,8 +104,8 @@
         <record id="prod_011" model="product.product">
             <field name="name">Sauce arachide (mafé) bœuf</field>
             <field name="categ_id" ref="cat_plats"/>
-            <field name="list_price" eval="72000"/>
-            <field name="standard_price" eval="27000"/>
+            <field name="list_price" eval="5500"/>
+            <field name="standard_price" eval="2100"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -114,8 +114,8 @@
         <record id="prod_012" model="product.product">
             <field name="name">Sauce feuille de patate</field>
             <field name="categ_id" ref="cat_plats"/>
-            <field name="list_price" eval="65000"/>
-            <field name="standard_price" eval="23000"/>
+            <field name="list_price" eval="5000"/>
+            <field name="standard_price" eval="1800"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -124,8 +124,8 @@
         <record id="prod_013" model="product.product">
             <field name="name">Riz gras (au gras) poulet</field>
             <field name="categ_id" ref="cat_plats"/>
-            <field name="list_price" eval="62000"/>
-            <field name="standard_price" eval="22000"/>
+            <field name="list_price" eval="4800"/>
+            <field name="standard_price" eval="1700"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -134,8 +134,8 @@
         <record id="prod_014" model="product.product">
             <field name="name">Brochettes de bœuf (3)</field>
             <field name="categ_id" ref="cat_plats"/>
-            <field name="list_price" eval="58000"/>
-            <field name="standard_price" eval="24000"/>
+            <field name="list_price" eval="4500"/>
+            <field name="standard_price" eval="1800"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -144,8 +144,8 @@
         <record id="prod_015" model="product.product">
             <field name="name">Brochettes de poulet (3)</field>
             <field name="categ_id" ref="cat_plats"/>
-            <field name="list_price" eval="52000"/>
-            <field name="standard_price" eval="20000"/>
+            <field name="list_price" eval="4000"/>
+            <field name="standard_price" eval="1500"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -154,8 +154,8 @@
         <record id="prod_016" model="product.product">
             <field name="name">Côtelettes d'agneau grillées</field>
             <field name="categ_id" ref="cat_plats"/>
-            <field name="list_price" eval="115000"/>
-            <field name="standard_price" eval="52000"/>
+            <field name="list_price" eval="8800"/>
+            <field name="standard_price" eval="4000"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -164,8 +164,8 @@
         <record id="prod_017" model="product.product">
             <field name="name">Entrecôte grillée sauce poivre</field>
             <field name="categ_id" ref="cat_plats"/>
-            <field name="list_price" eval="130000"/>
-            <field name="standard_price" eval="60000"/>
+            <field name="list_price" eval="10000"/>
+            <field name="standard_price" eval="4600"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -174,8 +174,8 @@
         <record id="prod_018" model="product.product">
             <field name="name">Burger du complexe frites</field>
             <field name="categ_id" ref="cat_plats"/>
-            <field name="list_price" eval="78000"/>
-            <field name="standard_price" eval="30000"/>
+            <field name="list_price" eval="6000"/>
+            <field name="standard_price" eval="2300"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -184,8 +184,8 @@
         <record id="prod_019" model="product.product">
             <field name="name">Spaghetti bolognaise</field>
             <field name="categ_id" ref="cat_plats"/>
-            <field name="list_price" eval="60000"/>
-            <field name="standard_price" eval="20000"/>
+            <field name="list_price" eval="4600"/>
+            <field name="standard_price" eval="1500"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -194,8 +194,8 @@
         <record id="prod_020" model="product.product">
             <field name="name">Poulet DG (plantain)</field>
             <field name="categ_id" ref="cat_plats"/>
-            <field name="list_price" eval="85000"/>
-            <field name="standard_price" eval="34000"/>
+            <field name="list_price" eval="6500"/>
+            <field name="standard_price" eval="2600"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -204,8 +204,8 @@
         <record id="prod_021" model="product.product">
             <field name="name">Couscous royal</field>
             <field name="categ_id" ref="cat_plats"/>
-            <field name="list_price" eval="95000"/>
-            <field name="standard_price" eval="38000"/>
+            <field name="list_price" eval="7300"/>
+            <field name="standard_price" eval="2900"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -214,8 +214,8 @@
         <record id="prod_022" model="product.product">
             <field name="name">Capitaine grillé entier</field>
             <field name="categ_id" ref="cat_poissons"/>
-            <field name="list_price" eval="110000"/>
-            <field name="standard_price" eval="46000"/>
+            <field name="list_price" eval="8500"/>
+            <field name="standard_price" eval="3500"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -224,8 +224,8 @@
         <record id="prod_023" model="product.product">
             <field name="name">Capitaine braisé attiéké</field>
             <field name="categ_id" ref="cat_poissons"/>
-            <field name="list_price" eval="98000"/>
-            <field name="standard_price" eval="40000"/>
+            <field name="list_price" eval="7500"/>
+            <field name="standard_price" eval="3100"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -234,8 +234,8 @@
         <record id="prod_024" model="product.product">
             <field name="name">Bar farci aux herbes</field>
             <field name="categ_id" ref="cat_poissons"/>
-            <field name="list_price" eval="105000"/>
-            <field name="standard_price" eval="44000"/>
+            <field name="list_price" eval="8100"/>
+            <field name="standard_price" eval="3400"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -244,8 +244,8 @@
         <record id="prod_025" model="product.product">
             <field name="name">Gambas grillées (6 pcs)</field>
             <field name="categ_id" ref="cat_poissons"/>
-            <field name="list_price" eval="140000"/>
-            <field name="standard_price" eval="65000"/>
+            <field name="list_price" eval="11000"/>
+            <field name="standard_price" eval="5000"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -254,8 +254,8 @@
         <record id="prod_026" model="product.product">
             <field name="name">Brochettes de lotte</field>
             <field name="categ_id" ref="cat_poissons"/>
-            <field name="list_price" eval="88000"/>
-            <field name="standard_price" eval="36000"/>
+            <field name="list_price" eval="6800"/>
+            <field name="standard_price" eval="2800"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -264,8 +264,8 @@
         <record id="prod_027" model="product.product">
             <field name="name">Thiéboudienne (jeudi)</field>
             <field name="categ_id" ref="cat_poissons"/>
-            <field name="list_price" eval="70000"/>
-            <field name="standard_price" eval="26000"/>
+            <field name="list_price" eval="5400"/>
+            <field name="standard_price" eval="2000"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -274,8 +274,8 @@
         <record id="prod_028" model="product.product">
             <field name="name">Attiéké</field>
             <field name="categ_id" ref="cat_accomp"/>
-            <field name="list_price" eval="15000"/>
-            <field name="standard_price" eval="4500"/>
+            <field name="list_price" eval="1200"/>
+            <field name="standard_price" eval="350"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -284,8 +284,8 @@
         <record id="prod_029" model="product.product">
             <field name="name">Alloco (plantain frit)</field>
             <field name="categ_id" ref="cat_accomp"/>
-            <field name="list_price" eval="18000"/>
-            <field name="standard_price" eval="5500"/>
+            <field name="list_price" eval="1400"/>
+            <field name="standard_price" eval="400"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -294,8 +294,8 @@
         <record id="prod_030" model="product.product">
             <field name="name">Frites maison</field>
             <field name="categ_id" ref="cat_accomp"/>
-            <field name="list_price" eval="15000"/>
-            <field name="standard_price" eval="4500"/>
+            <field name="list_price" eval="1200"/>
+            <field name="standard_price" eval="350"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -304,8 +304,8 @@
         <record id="prod_031" model="product.product">
             <field name="name">Riz blanc parfumé</field>
             <field name="categ_id" ref="cat_accomp"/>
-            <field name="list_price" eval="12000"/>
-            <field name="standard_price" eval="3200"/>
+            <field name="list_price" eval="900"/>
+            <field name="standard_price" eval="250"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -314,8 +314,8 @@
         <record id="prod_032" model="product.product">
             <field name="name">Foutou banane</field>
             <field name="categ_id" ref="cat_accomp"/>
-            <field name="list_price" eval="16000"/>
-            <field name="standard_price" eval="5000"/>
+            <field name="list_price" eval="1200"/>
+            <field name="standard_price" eval="400"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -324,8 +324,8 @@
         <record id="prod_033" model="product.product">
             <field name="name">Légumes sautés</field>
             <field name="categ_id" ref="cat_accomp"/>
-            <field name="list_price" eval="17000"/>
-            <field name="standard_price" eval="5200"/>
+            <field name="list_price" eval="1300"/>
+            <field name="standard_price" eval="400"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -334,8 +334,8 @@
         <record id="prod_034" model="product.product">
             <field name="name">Salade de fruits frais</field>
             <field name="categ_id" ref="cat_desserts"/>
-            <field name="list_price" eval="30000"/>
-            <field name="standard_price" eval="10000"/>
+            <field name="list_price" eval="2300"/>
+            <field name="standard_price" eval="750"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -344,8 +344,8 @@
         <record id="prod_035" model="product.product">
             <field name="name">Dègue (mil au lait caillé)</field>
             <field name="categ_id" ref="cat_desserts"/>
-            <field name="list_price" eval="25000"/>
-            <field name="standard_price" eval="7500"/>
+            <field name="list_price" eval="1900"/>
+            <field name="standard_price" eval="600"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -354,8 +354,8 @@
         <record id="prod_036" model="product.product">
             <field name="name">Banane flambée au rhum</field>
             <field name="categ_id" ref="cat_desserts"/>
-            <field name="list_price" eval="35000"/>
-            <field name="standard_price" eval="11000"/>
+            <field name="list_price" eval="2700"/>
+            <field name="standard_price" eval="850"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -364,8 +364,8 @@
         <record id="prod_037" model="product.product">
             <field name="name">Glace 2 boules</field>
             <field name="categ_id" ref="cat_desserts"/>
-            <field name="list_price" eval="28000"/>
-            <field name="standard_price" eval="9000"/>
+            <field name="list_price" eval="2200"/>
+            <field name="standard_price" eval="700"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -374,8 +374,8 @@
         <record id="prod_038" model="product.product">
             <field name="name">Fondant au chocolat</field>
             <field name="categ_id" ref="cat_desserts"/>
-            <field name="list_price" eval="38000"/>
-            <field name="standard_price" eval="13000"/>
+            <field name="list_price" eval="2900"/>
+            <field name="standard_price" eval="1000"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -384,8 +384,8 @@
         <record id="prod_039" model="product.product">
             <field name="name">Tarte coco</field>
             <field name="categ_id" ref="cat_desserts"/>
-            <field name="list_price" eval="30000"/>
-            <field name="standard_price" eval="9500"/>
+            <field name="list_price" eval="2300"/>
+            <field name="standard_price" eval="750"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -394,8 +394,8 @@
         <record id="prod_040" model="product.product">
             <field name="name">Expresso</field>
             <field name="categ_id" ref="cat_chaudes"/>
-            <field name="list_price" eval="15000"/>
-            <field name="standard_price" eval="3000"/>
+            <field name="list_price" eval="1200"/>
+            <field name="standard_price" eval="250"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -404,8 +404,8 @@
         <record id="prod_041" model="product.product">
             <field name="name">Café au lait</field>
             <field name="categ_id" ref="cat_chaudes"/>
-            <field name="list_price" eval="18000"/>
-            <field name="standard_price" eval="4000"/>
+            <field name="list_price" eval="1400"/>
+            <field name="standard_price" eval="300"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -414,8 +414,8 @@
         <record id="prod_042" model="product.product">
             <field name="name">Cappuccino</field>
             <field name="categ_id" ref="cat_chaudes"/>
-            <field name="list_price" eval="22000"/>
-            <field name="standard_price" eval="5000"/>
+            <field name="list_price" eval="1700"/>
+            <field name="standard_price" eval="400"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -424,8 +424,8 @@
         <record id="prod_043" model="product.product">
             <field name="name">Thé à la menthe (ataya)</field>
             <field name="categ_id" ref="cat_chaudes"/>
-            <field name="list_price" eval="15000"/>
-            <field name="standard_price" eval="2500"/>
+            <field name="list_price" eval="1200"/>
+            <field name="standard_price" eval="200"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -434,8 +434,8 @@
         <record id="prod_044" model="product.product">
             <field name="name">Infusion gingembre-citron</field>
             <field name="categ_id" ref="cat_chaudes"/>
-            <field name="list_price" eval="16000"/>
-            <field name="standard_price" eval="3000"/>
+            <field name="list_price" eval="1200"/>
+            <field name="standard_price" eval="250"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -444,8 +444,8 @@
         <record id="prod_045" model="product.product">
             <field name="name">Chocolat chaud</field>
             <field name="categ_id" ref="cat_chaudes"/>
-            <field name="list_price" eval="20000"/>
-            <field name="standard_price" eval="5000"/>
+            <field name="list_price" eval="1500"/>
+            <field name="standard_price" eval="400"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -454,8 +454,8 @@
         <record id="prod_046" model="product.product">
             <field name="name">Jus de bissap 33 cl</field>
             <field name="categ_id" ref="cat_jus"/>
-            <field name="list_price" eval="18000"/>
-            <field name="standard_price" eval="5000"/>
+            <field name="list_price" eval="1400"/>
+            <field name="standard_price" eval="400"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -464,8 +464,8 @@
         <record id="prod_047" model="product.product">
             <field name="name">Jus de gingembre 33 cl</field>
             <field name="categ_id" ref="cat_jus"/>
-            <field name="list_price" eval="18000"/>
-            <field name="standard_price" eval="5000"/>
+            <field name="list_price" eval="1400"/>
+            <field name="standard_price" eval="400"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -474,8 +474,8 @@
         <record id="prod_048" model="product.product">
             <field name="name">Jus d'ananas frais</field>
             <field name="categ_id" ref="cat_jus"/>
-            <field name="list_price" eval="22000"/>
-            <field name="standard_price" eval="7000"/>
+            <field name="list_price" eval="1700"/>
+            <field name="standard_price" eval="550"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -484,8 +484,8 @@
         <record id="prod_049" model="product.product">
             <field name="name">Jus de mangue frais</field>
             <field name="categ_id" ref="cat_jus"/>
-            <field name="list_price" eval="22000"/>
-            <field name="standard_price" eval="7000"/>
+            <field name="list_price" eval="1700"/>
+            <field name="standard_price" eval="550"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -494,8 +494,8 @@
         <record id="prod_050" model="product.product">
             <field name="name">Cocktail de jus tropical</field>
             <field name="categ_id" ref="cat_jus"/>
-            <field name="list_price" eval="26000"/>
-            <field name="standard_price" eval="8500"/>
+            <field name="list_price" eval="2000"/>
+            <field name="standard_price" eval="650"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -504,8 +504,8 @@
         <record id="prod_051" model="product.product">
             <field name="name">Coca-Cola 33 cl</field>
             <field name="categ_id" ref="cat_jus"/>
-            <field name="list_price" eval="12000"/>
-            <field name="standard_price" eval="5500"/>
+            <field name="list_price" eval="900"/>
+            <field name="standard_price" eval="400"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -514,8 +514,8 @@
         <record id="prod_052" model="product.product">
             <field name="name">Fanta orange 33 cl</field>
             <field name="categ_id" ref="cat_jus"/>
-            <field name="list_price" eval="12000"/>
-            <field name="standard_price" eval="5500"/>
+            <field name="list_price" eval="900"/>
+            <field name="standard_price" eval="400"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -524,8 +524,8 @@
         <record id="prod_053" model="product.product">
             <field name="name">Sprite 33 cl</field>
             <field name="categ_id" ref="cat_jus"/>
-            <field name="list_price" eval="12000"/>
-            <field name="standard_price" eval="5500"/>
+            <field name="list_price" eval="900"/>
+            <field name="standard_price" eval="400"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -534,8 +534,8 @@
         <record id="prod_054" model="product.product">
             <field name="name">Tonic 33 cl</field>
             <field name="categ_id" ref="cat_jus"/>
-            <field name="list_price" eval="14000"/>
-            <field name="standard_price" eval="6000"/>
+            <field name="list_price" eval="1100"/>
+            <field name="standard_price" eval="450"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -544,8 +544,8 @@
         <record id="prod_055" model="product.product">
             <field name="name">Énergisant 25 cl</field>
             <field name="categ_id" ref="cat_jus"/>
-            <field name="list_price" eval="25000"/>
-            <field name="standard_price" eval="12000"/>
+            <field name="list_price" eval="1900"/>
+            <field name="standard_price" eval="900"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -554,8 +554,8 @@
         <record id="prod_056" model="product.product">
             <field name="name">Eau minérale 50 cl</field>
             <field name="categ_id" ref="cat_eaux"/>
-            <field name="list_price" eval="8000"/>
-            <field name="standard_price" eval="3000"/>
+            <field name="list_price" eval="600"/>
+            <field name="standard_price" eval="250"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -564,8 +564,8 @@
         <record id="prod_057" model="product.product">
             <field name="name">Eau minérale 1,5 L</field>
             <field name="categ_id" ref="cat_eaux"/>
-            <field name="list_price" eval="12000"/>
-            <field name="standard_price" eval="4800"/>
+            <field name="list_price" eval="900"/>
+            <field name="standard_price" eval="350"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -574,8 +574,8 @@
         <record id="prod_058" model="product.product">
             <field name="name">Eau gazeuse 50 cl</field>
             <field name="categ_id" ref="cat_eaux"/>
-            <field name="list_price" eval="15000"/>
-            <field name="standard_price" eval="6500"/>
+            <field name="list_price" eval="1200"/>
+            <field name="standard_price" eval="500"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -584,8 +584,8 @@
         <record id="prod_059" model="product.product">
             <field name="name">Bière blonde locale 65 cl</field>
             <field name="categ_id" ref="cat_bieres"/>
-            <field name="list_price" eval="20000"/>
-            <field name="standard_price" eval="9000"/>
+            <field name="list_price" eval="1500"/>
+            <field name="standard_price" eval="700"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -594,8 +594,8 @@
         <record id="prod_060" model="product.product">
             <field name="name">Bière blonde locale 33 cl</field>
             <field name="categ_id" ref="cat_bieres"/>
-            <field name="list_price" eval="14000"/>
-            <field name="standard_price" eval="6000"/>
+            <field name="list_price" eval="1100"/>
+            <field name="standard_price" eval="450"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -604,8 +604,8 @@
         <record id="prod_061" model="product.product">
             <field name="name">Bière premium 33 cl</field>
             <field name="categ_id" ref="cat_bieres"/>
-            <field name="list_price" eval="22000"/>
-            <field name="standard_price" eval="10500"/>
+            <field name="list_price" eval="1700"/>
+            <field name="standard_price" eval="800"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -614,8 +614,8 @@
         <record id="prod_062" model="product.product">
             <field name="name">Bière sans alcool 33 cl</field>
             <field name="categ_id" ref="cat_bieres"/>
-            <field name="list_price" eval="16000"/>
-            <field name="standard_price" eval="7500"/>
+            <field name="list_price" eval="1200"/>
+            <field name="standard_price" eval="600"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -624,8 +624,8 @@
         <record id="prod_063" model="product.product">
             <field name="name">Vin rouge (verre)</field>
             <field name="categ_id" ref="cat_vins"/>
-            <field name="list_price" eval="30000"/>
-            <field name="standard_price" eval="12000"/>
+            <field name="list_price" eval="2300"/>
+            <field name="standard_price" eval="900"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -634,8 +634,8 @@
         <record id="prod_064" model="product.product">
             <field name="name">Vin blanc (verre)</field>
             <field name="categ_id" ref="cat_vins"/>
-            <field name="list_price" eval="30000"/>
-            <field name="standard_price" eval="12000"/>
+            <field name="list_price" eval="2300"/>
+            <field name="standard_price" eval="900"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -644,8 +644,8 @@
         <record id="prod_065" model="product.product">
             <field name="name">Bordeaux rouge (bouteille)</field>
             <field name="categ_id" ref="cat_vins"/>
-            <field name="list_price" eval="220000"/>
-            <field name="standard_price" eval="110000"/>
+            <field name="list_price" eval="17000"/>
+            <field name="standard_price" eval="8500"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -654,8 +654,8 @@
         <record id="prod_066" model="product.product">
             <field name="name">Rosé de Provence (bouteille)</field>
             <field name="categ_id" ref="cat_vins"/>
-            <field name="list_price" eval="190000"/>
-            <field name="standard_price" eval="95000"/>
+            <field name="list_price" eval="14500"/>
+            <field name="standard_price" eval="7300"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -664,8 +664,8 @@
         <record id="prod_067" model="product.product">
             <field name="name">Champagne brut (bouteille)</field>
             <field name="categ_id" ref="cat_vins"/>
-            <field name="list_price" eval="650000"/>
-            <field name="standard_price" eval="340000"/>
+            <field name="list_price" eval="50000"/>
+            <field name="standard_price" eval="26000"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -674,8 +674,8 @@
         <record id="prod_068" model="product.product">
             <field name="name">Whisky 12 ans (dose 4 cl)</field>
             <field name="categ_id" ref="cat_vins"/>
-            <field name="list_price" eval="45000"/>
-            <field name="standard_price" eval="20000"/>
+            <field name="list_price" eval="3500"/>
+            <field name="standard_price" eval="1500"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -684,8 +684,8 @@
         <record id="prod_069" model="product.product">
             <field name="name">Rhum ambré (dose 4 cl)</field>
             <field name="categ_id" ref="cat_vins"/>
-            <field name="list_price" eval="35000"/>
-            <field name="standard_price" eval="15000"/>
+            <field name="list_price" eval="2700"/>
+            <field name="standard_price" eval="1200"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -694,8 +694,8 @@
         <record id="prod_070" model="product.product">
             <field name="name">Mojito</field>
             <field name="categ_id" ref="cat_cocktails"/>
-            <field name="list_price" eval="48000"/>
-            <field name="standard_price" eval="16000"/>
+            <field name="list_price" eval="3700"/>
+            <field name="standard_price" eval="1200"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -704,8 +704,8 @@
         <record id="prod_071" model="product.product">
             <field name="name">Piña colada</field>
             <field name="categ_id" ref="cat_cocktails"/>
-            <field name="list_price" eval="52000"/>
-            <field name="standard_price" eval="18000"/>
+            <field name="list_price" eval="4000"/>
+            <field name="standard_price" eval="1400"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -714,8 +714,8 @@
         <record id="prod_072" model="product.product">
             <field name="name">Ti-punch</field>
             <field name="categ_id" ref="cat_cocktails"/>
-            <field name="list_price" eval="42000"/>
-            <field name="standard_price" eval="14000"/>
+            <field name="list_price" eval="3200"/>
+            <field name="standard_price" eval="1100"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -724,8 +724,8 @@
         <record id="prod_073" model="product.product">
             <field name="name">Virgin bissap fizz (sans alcool)</field>
             <field name="categ_id" ref="cat_cocktails"/>
-            <field name="list_price" eval="32000"/>
-            <field name="standard_price" eval="9000"/>
+            <field name="list_price" eval="2500"/>
+            <field name="standard_price" eval="700"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>
@@ -734,8 +734,8 @@
         <record id="prod_074" model="product.product">
             <field name="name">Caïpirinha</field>
             <field name="categ_id" ref="cat_cocktails"/>
-            <field name="list_price" eval="48000"/>
-            <field name="standard_price" eval="16000"/>
+            <field name="list_price" eval="3700"/>
+            <field name="standard_price" eval="1200"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="False"/>
             <field name="available_in_pos" eval="True"/>

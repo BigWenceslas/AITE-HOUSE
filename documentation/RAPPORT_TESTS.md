@@ -156,9 +156,9 @@ folio restait à 46 000 pour une seule chambre.
 
 La **balance âgée en miroir** rangeait la totalité de l'encours client
 dans la tranche « **+90 j** », quelle que soit l'ancienneté réelle.
-Constaté à l'écran : 1 920 250 FG intégralement en « +90 j », alors que
-le moteur Crédit répartissait correctement 4 / 6 / 3 / 3 ardoises sur les
-quatre tranches.
+Constaté à l'écran : la totalité de l'encours client rangée en
+« +90 j », alors que le moteur Crédit répartissait correctement
+4 / 6 / 3 / 3 ardoises sur les quatre tranches.
 
 Cause : le cockpit reventilait les tranches d'après `min` / `max`, que
 `get_aging()` ne renvoyait pas. `max` valant `None`, la règle « pas de
@@ -222,7 +222,8 @@ saisit en comptant son tiroir. Le comptage ne déclenchait donc aucun
 recalcul, et la sévérité restait figée sur l'écart d'avant clôture.
 
 Constaté sur un cas réel : une caisse close sur un **manquant de
-250 000 FG** — au-delà du seuil critique — restait affichée « Modéré ».
+250 000 FCFA** — au-delà du seuil critique — restait affichée
+« Modéré ».
 
 **Correction.** La classification refait la soustraction sur les deux
 termes qui, eux, sont à jour au moment du recalcul (montant compté et
@@ -374,7 +375,7 @@ non sur une période calculée à partir de bornes que l'écran a rejetées.
 Le jeu d'essai annonce des prix en francs guinéens sans configurer la
 devise de la société : les montants s'affichaient en dollars.
 
-**Décision retenue : basculer en GNF si — et seulement si — la base est
+**Décision retenue : basculer en FCFA si — et seulement si — la base est
 vierge.**
 
 Le générateur ne change la devise que si la société est **encore sur une

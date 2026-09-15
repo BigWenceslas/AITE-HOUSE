@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': "AITE — Jeu d'essai démonstration",
-    'summary': """Données de démonstration du complexe (Guinée, GNF) :
+    'summary': """Données de démonstration du complexe (FCFA / XAF) :
 144 produits restaurant & boutique, 40 clients,
 13 ressources, 333 réservations sur 7 semaines,
 474 mouvements de fidélité calibrés VIP / VVIP.
@@ -57,13 +57,14 @@ Points d'attention
   la démonstration.
 * Les statuts VIP / VVIP posés sur les fiches sont **reproduits par le
   moteur** : le recalcul nocturne aboutit aux mêmes statuts.
-* Prix en GNF (contexte Guinée). Aucune taxe n'est posée sur les
-  produits : le paramétrage fiscal reste celui de l'atelier dédié.
+* Prix en FCFA (XAF), l'unité sur laquelle sont calibrés les seuils du
+  produit. Aucune taxe n'est posée sur les produits : le paramétrage
+  fiscal reste celui de l'atelier dédié.
 * La rotation et les classes de vitesse du tableau de bord Stock exigent
   un historique de ventes réelles : elles s'animent après les premières
   commandes passées en caisse pendant la démonstration.
 """,
-    'version': '18.0.1.2.1',
+    'version': '18.0.1.2.2',
     'author': 'AITE Consulting',
     'license': 'LGPL-3',
     'category': 'Hidden/Demo',
