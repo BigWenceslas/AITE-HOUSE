@@ -166,7 +166,12 @@
                             </div>
                             <div class="text-muted">
                                 <field name="room_type_id"/>
-                                · <field name="effective_price"/>
+                                <!-- Le tarif n'est pas du ressort de la
+                                     gouvernante : séparateur compris,
+                                     le bloc disparaît pour elle. -->
+                                <span groups="aite_hotel_management.group_hotel_user">
+                                    · <field name="effective_price"/>
+                                </span>
                                 <field name="currency_id" invisible="1"/>
                             </div>
                             <div t-if="record.current_line_id.raw_value"

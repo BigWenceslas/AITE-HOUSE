@@ -3,6 +3,7 @@
 from datetime import timedelta
 
 from odoo import fields
+from odoo.tools import float_is_zero
 from odoo.tests import TransactionCase, tagged
 
 from odoo.addons.aite_demo_data.models.demo_generator import SCALE
@@ -53,6 +54,62 @@ class TestDemoGenerator(TransactionCase):
             for model in ('aite.pos.credit', 'aite.hotel.housekeeping',
                           'aite.purchase.deposit', 'aite.hotel.service')
         }
+
+    # ------------------------------------------------------------------
+    # Devise
+    # ------------------------------------------------------------------
+
+    def test_currency_switches_on_an_untouched_company(self):
+        """Société encore vierge : le jeu d'essai pose sa devise."""
+        company = self.env['res.company'].create({
+            'name': "Société vierge (test)",
+            'currency_id': self.env.ref('base.USD').id,
+        })
+        self.env.user.write({'company_ids': [(4, company.id)]})
+        generator = self.generator.with_company(company)
+        self.assertEqual(generator._ensure_currency(), 'GNF')
+        self.assertEqual(company.currency_id.name, 'GNF')
+
+    def test_currency_is_left_alone_once_entries_exist(self):
+        """Une écriture comptable fige la devise : on n'y touche plus."""
+        company = self.env.company
+        before = company.currency_id.name
+        has_entries = self.env['account.move.line'].search_count(
+            [('company_id', '=', company.id)])
+        if not has_entries:
+            self.skipTest("aucune écriture sur la société courante")
+        self.generator._ensure_currency()
+        self.assertEqual(company.currency_id.name, before)
+
+    def test_currency_is_left_alone_when_deliberately_chosen(self):
+        """Une devise déjà choisie (ni USD ni EUR) n'est pas écrasée."""
+        xof = self.env['res.currency'].with_context(
+            active_test=False).search([('name', '=', 'XOF')], limit=1)
+        if not xof:
+            self.skipTest("devise XOF absente de la base")
+        xof.write({'active': True})
+        company = self.env['res.company'].create({
+            'name': "Société XOF (test)",
+            'currency_id': xof.id,
+        })
+        self.env.user.write({'company_ids': [(4, company.id)]})
+        generator = self.generator.with_company(company)
+        self.assertEqual(generator._ensure_currency(), 'XOF')
+        self.assertEqual(company.currency_id.name, 'XOF')
+
+    def test_currency_is_idempotent(self):
+        company = self.env['res.company'].create({
+            'name': "Société idempotente (test)",
+            'currency_id': self.env.ref('base.USD').id,
+        })
+        self.env.user.write({'company_ids': [(4, company.id)]})
+        generator = self.generator.with_company(company)
+        generator._ensure_currency()
+        self.assertEqual(generator._ensure_currency(), 'GNF')
+
+    def test_generation_reports_the_currency(self):
+        created = self.generator.generate_all(scale='small')
+        self.assertIn('currency', created)
 
     # ------------------------------------------------------------------
     # Profils métier
@@ -173,11 +230,60 @@ class TestDemoGenerator(TransactionCase):
         self.assertTrue(any(18 <= h <= 23 for h in hours))
 
     def test_some_sessions_show_a_cash_gap(self):
-        self.generator.generate_all(scale='large')
-        gaps = self.env['pos.session'].search(
-            [('cash_register_difference', '!=', 0)])
+        """Des clôtures doivent présenter un écart réel à traiter.
+
+        ``cash_register_difference`` est calculé et non stocké : le
+        filtrer côté SQL ne filtre rien — Odoo journalise « Non-stored
+        field … cannot be searched » et laisse passer **toutes** les
+        sessions, ce qui rendait cette vérification toujours vraie. Le
+        tri se fait donc en Python, sur la valeur réellement calculée.
+        """
+        gaps = self._generated_sessions_with_a_gap()
         self.assertTrue(
             gaps, "des écarts de caisse sont attendus pour la démonstration")
+        self.assertTrue(
+            any(s.cash_register_difference > 0 for s in gaps)
+            and any(s.cash_register_difference < 0 for s in gaps),
+            "les deux sens d'écart — excédent et manquant — sont attendus")
+
+    def test_cash_gaps_do_not_touch_every_session(self):
+        """Un écart partout ne ressemblerait pas à une caisse réelle."""
+        sessions = self._generated_sessions()
+        gaps = self._generated_sessions_with_a_gap()
+        clean = sessions - gaps
+        self.assertTrue(clean, "la plupart des clôtures doivent tomber juste")
+        self.assertGreater(len(clean), len(gaps))
+
+    def test_a_cash_gap_reaches_the_critical_grade(self):
+        """Le barème de sévérité doit être servi jusqu'en haut.
+
+        Sans manquant au-delà du seuil « critique », l'écran des écarts
+        de caisse n'a rien à montrer de son alerte la plus forte.
+        """
+        self._generated_sessions_with_a_gap()
+        graded = self._generated_sessions().mapped(
+            'cash_discrepancy_severity')
+        self.assertIn('high', graded)
+        self.assertIn('over', graded)
+
+    def _generated_sessions(self):
+        """Les sessions du jeu d'essai, et elles seules.
+
+        Une recherche globale ramènerait aussi les sessions d'une base
+        déjà vécue — le constat porterait alors sur des données qui ne
+        sont pas celles du générateur.
+        """
+        self.generator.generate_all(scale='large')
+        self.env.flush_all()
+        sessions = self.generator._tagged_all('pos.session')
+        self.assertTrue(sessions, "le jeu d'essai doit poser des sessions")
+        return sessions
+
+    def _generated_sessions_with_a_gap(self):
+        return self._generated_sessions().filtered(
+            lambda s: not float_is_zero(
+                s.cash_register_difference,
+                precision_rounding=s.currency_id.rounding))
 
     # ------------------------------------------------------------------
     # Purge

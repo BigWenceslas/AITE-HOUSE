@@ -44,6 +44,11 @@ SCALE = {
 # donner du relief à la heatmap et aux « heures de pointe ».
 SALE_HOURS = [11, 12, 12, 13, 13, 14, 18, 19, 19, 20, 20, 21, 21, 22]
 
+# Devise du jeu d'essai (contexte Guinée) et devises considérées comme
+# « encore d'origine » : au-delà, on considère que quelqu'un a choisi.
+DEMO_CURRENCY = 'GNF'
+UNTOUCHED_CURRENCIES = ('USD', 'EUR')
+
 # Profils métier : (clé, nom, login, groupes XML-ID).
 DEMO_USERS = [
     ('reception', "Awa Diallo (Réception)", 'demo.reception', [
@@ -107,6 +112,7 @@ class AiteDemoGenerator(models.AbstractModel):
         """
         cfg = SCALE.get(scale) or SCALE['normal']
         created = {}
+        created['currency'] = self._ensure_currency()
         created['users'] = len(self._generate_users())
         created['payment_methods'] = len(self._generate_payment_methods())
         created['hotel_services'] = len(self._generate_hotel_services())
@@ -177,6 +183,67 @@ class AiteDemoGenerator(models.AbstractModel):
                             raise_if_not_found=False) \
             or self.env['aite.hotel.hotel'].search(
                 [('company_id', '=', self._company().id)], limit=1)
+
+    # ------------------------------------------------------------------
+    # Devise
+    # ------------------------------------------------------------------
+
+    def _ensure_currency(self, code=DEMO_CURRENCY):
+        """
+        Positionne la devise du jeu d'essai — mais seulement si c'est sans
+        risque.
+
+        Le jeu est calibré en GNF : sur une base neuve, les montants
+        s'affichaient en dollars et les captures de démonstration
+        n'étaient pas présentables. La bascule n'a lieu que si la société
+        est **encore vierge** :
+
+        * sa devise est toujours celle d'origine d'Odoo (USD ou EUR) ;
+        * aucune écriture comptable n'existe.
+
+        Dès qu'une écriture existe, Odoo refuse le changement — et il a
+        raison : la devise d'une société n'est pas rétroactive. On
+        avertit alors sans rien toucher.
+
+        :returns: le code de devise finalement en place.
+        """
+        company = self._company()
+        current = company.currency_id
+        if current.name == code:
+            return code
+
+        target = self.env['res.currency'].with_context(
+            active_test=False).search([('name', '=', code)], limit=1)
+        if not target:
+            _logger.warning(
+                "Jeu d'essai : devise %s introuvable — devise inchangée "
+                "(%s).", code, current.name)
+            return current.name
+
+        if current.name not in UNTOUCHED_CURRENCIES:
+            _logger.info(
+                "Jeu d'essai : la société est déjà en %s — devise "
+                "laissée telle quelle.", current.name)
+            return current.name
+
+        has_entries = self.env['account.move.line'].sudo().search_count(
+            [('company_id', '=', company.id)])
+        if has_entries:
+            _logger.warning(
+                "Jeu d'essai : %s écriture(s) comptable(s) sur « %s » — "
+                "devise laissée en %s. Les montants du jeu d'essai sont "
+                "calibrés en %s ; pour une démonstration fidèle, partez "
+                "d'une base neuve et positionnez la devise avant toute "
+                "écriture.",
+                has_entries, company.name, current.name, code)
+            return current.name
+
+        target.sudo().write({'active': True})
+        company.sudo().write({'currency_id': target.id})
+        _logger.info(
+            "Jeu d'essai : devise de « %s » positionnée en %s "
+            "(société encore vierge).", company.name, code)
+        return code
 
     # ------------------------------------------------------------------
     # Utilisateurs métier
@@ -338,10 +405,20 @@ class AiteDemoGenerator(models.AbstractModel):
         created = Order.browse()
         seq = 0
 
+        closings = []
+
         for day_offset in range(days, 0, -1):
             day = today - timedelta(days=day_offset)
             key = 'pos_session_%s' % day.strftime('%Y%m%d')
-            if self._tagged('pos.session', key):
+            existing = self._tagged('pos.session', key)
+            if existing:
+                # Session déjà générée : on ne rejoue pas les ventes,
+                # mais on repose le comptage de clôture. Une base montée
+                # avec une version antérieure du générateur n'avait pas
+                # d'écart de caisse du tout ; relancer la génération la
+                # remet d'aplomb, et l'écriture est sans effet si la
+                # valeur est déjà la bonne.
+                closings.append((existing, day, day_offset))
                 continue
             session = Session.create({
                 'config_id': config.id,
@@ -397,18 +474,60 @@ class AiteDemoGenerator(models.AbstractModel):
                 order.write({'state': 'paid'})
                 created |= order
 
-            # Clôture avec, une fois sur six, un écart de caisse à traiter.
-            gap = 0.0
-            if day_offset % 6 == 0:
-                gap = -12500.0 if day_offset % 12 == 0 else 7500.0
             session.write({
                 'state': 'closed',
                 'stop_at': fields.Datetime.to_datetime(
                     '%s 23:30:00' % day),
-                'cash_register_difference': gap,
             })
+            closings.append((session, day, day_offset))
+
+        self._settle_cash_counts(closings)
         self.env.flush_all()
         return created
+
+    def _settle_cash_counts(self, closings):
+        """
+        Pose le comptage de caisse de chaque clôture, en dernier.
+
+        Une clôture sur six laisse un écart à traiter — c'est ce qui rend
+        l'écran des écarts de caisse démonstratif, et les deux sens y
+        figurent : manquant (au-delà du seuil critique, pour servir
+        l'alerte la plus forte) et excédent.
+
+        L'écart ne s'écrit pas directement : ``cash_register_difference``
+        est **calculé et non stocké**, y écrire ne produit rien. Il naît
+        de l'inscription du **montant compté** à côté du solde théorique
+        — le geste même du caissier.
+
+        Ce calage se fait en toute fin de génération, et pas au fil de
+        l'eau : le solde théorique d'une session dépend du fonds de
+        caisse hérité de la précédente, donc chaque session ouverte
+        ensuite déplace le solde des suivantes. Compter trop tôt
+        reviendrait à comparer un montant réel à un théorique déjà
+        périmé — et l'écart obtenu n'aurait plus rien à voir avec celui
+        qu'on voulait montrer.
+        """
+        self.env.flush_all()
+        sessions = self.env['pos.session'].browse()
+        for session, _day, day_offset in closings:
+            gap = 0.0
+            if day_offset % 6 == 0:
+                gap = -220000.0 if day_offset % 12 == 0 else 7500.0
+            session.invalidate_recordset(
+                ['cash_register_balance_end', 'cash_register_difference'])
+            session.write({
+                'cash_register_balance_end_real':
+                    session.cash_register_balance_end + gap,
+            })
+            sessions |= session
+        # Lire le solde théorique a mis l'écart en cache — avec un
+        # montant compté encore à zéro, puisqu'on ne l'avait pas encore
+        # posé. ``cash_register_difference`` n'étant pas stocké et son
+        # ``@api.depends`` natif ignorant le montant compté, rien ne
+        # viendrait rafraîchir cette valeur d'ici la fin de la
+        # transaction. On la jette donc nous-mêmes.
+        sessions.invalidate_recordset(
+            ['cash_register_balance_end', 'cash_register_difference'])
 
     def _pos_config(self):
         config = self.env.ref('aite_demo_data.pos_config_boutique',
@@ -482,11 +601,20 @@ class AiteDemoGenerator(models.AbstractModel):
         ], limit=30)
 
     def _cash_method(self, config):
-        """Moyen de paiement comptant de la caisse (hors ardoise/folio)."""
+        """
+        Moyen de paiement comptant de la caisse (hors ardoise/folio).
+
+        On privilégie un moyen **espèces** (``is_cash_count``) : sans
+        lui, Odoo ne tient pas de solde de caisse et les écarts de
+        clôture du jeu d'essai resteraient tous à zéro.
+        """
         methods = config.payment_method_ids
         plain = methods.filtered(
             lambda m: not getattr(m, 'is_aite_credit', False)
             and not getattr(m, 'is_room_charge', False))
+        cash = plain.filtered('is_cash_count')
+        if cash:
+            return cash[0]
         if plain:
             return plain[0]
         journal = self.env['account.journal'].sudo().search([

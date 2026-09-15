@@ -101,6 +101,95 @@ class TestHotelSecurity(HotelCommon):
         with self.assertRaises(AccessError):
             task.with_user(self.housekeeper).unlink()
 
+    # ------------------------------------------------------------------
+    # Périmètre de la gouvernante sur la fiche chambre
+    # ------------------------------------------------------------------
+
+    def test_housekeeper_does_not_see_the_room_price(self):
+        """Le tarif d'une chambre n'est pas du ressort de la gouvernante."""
+        room = self.room_101.with_user(self.housekeeper)
+        fields_for_her = room.fields_get()
+        self.assertNotIn('price_override', fields_for_her)
+        self.assertNotIn('effective_price', fields_for_her)
+        # La réception, elle, y a accès.
+        self.assertIn('price_override',
+                      self.room_101.with_user(self.receptionist).fields_get())
+
+    def test_housekeeper_cannot_change_the_room_price(self):
+        with self.assertRaises(AccessError):
+            self.room_101.with_user(self.housekeeper).write(
+                {'price_override': 1.0})
+
+    def test_housekeeper_cannot_reclassify_a_room(self):
+        """Changer le type reviendrait à changer le tarif de vente."""
+        with self.assertRaises(AccessError):
+            self.room_101.with_user(self.housekeeper).write(
+                {'room_type_id': self.type_suite.id})
+
+    def test_housekeeper_cannot_change_capacities(self):
+        with self.assertRaises(AccessError):
+            self.room_101.with_user(self.housekeeper).write(
+                {'capacity_adults': 8})
+
+    def test_housekeeper_cannot_move_a_room_to_another_hotel(self):
+        other_hotel = self.env['aite.hotel.hotel'].create({
+            'name': "Second établissement",
+            'code': 'TS2',
+            'company_id': self.company.id,
+        })
+        with self.assertRaises(AccessError):
+            self.room_101.with_user(self.housekeeper).write(
+                {'hotel_id': other_hotel.id})
+
+    def test_housekeeper_cannot_archive_a_room(self):
+        with self.assertRaises(AccessError):
+            self.room_101.with_user(self.housekeeper).write(
+                {'active': False})
+
+    def test_the_refusal_names_the_fields_and_the_way_out(self):
+        """Le message doit dire quoi, et vers qui se tourner."""
+        with self.assertRaises(AccessError) as caught:
+            self.room_101.with_user(self.housekeeper).write(
+                {'capacity_adults': 4})
+        message = str(caught.exception)
+        self.assertIn("Capacité adultes", message)
+        self.assertIn("Réception", message)
+
+    def test_housekeeper_keeps_her_own_levers(self):
+        """Elle garde l'état de ménage et le signalement hors service."""
+        room = self.room_101.with_user(self.housekeeper)
+        room.write({'hk_state': 'cleaning'})
+        self.assertEqual(self.room_101.hk_state, 'cleaning')
+        room.write({'out_of_order': True,
+                    'out_of_order_reason': "Climatisation en panne"})
+        self.assertTrue(self.room_101.out_of_order)
+        room.write({'note': "Rideau à remplacer"})
+        self.assertEqual(self.room_101.note, "Rideau à remplacer")
+
+    def test_housekeeper_quick_buttons_still_work(self):
+        room = self.room_101.with_user(self.housekeeper)
+        room.action_set_to_clean()
+        self.assertEqual(self.room_101.hk_state, 'to_clean')
+        room.action_start_cleaning()
+        self.assertEqual(self.room_101.hk_state, 'cleaning')
+        room.action_set_clean()
+        self.assertEqual(self.room_101.hk_state, 'clean')
+
+    def test_receptionist_still_prices_a_room(self):
+        room = self.room_101.with_user(self.receptionist)
+        room.write({'price_override': 77000.0})
+        self.assertEqual(self.room_101.price_override, 77000.0)
+
+    def test_checkout_still_sends_the_room_to_cleaning(self):
+        """La recouche automatique passe malgré la garde d'écriture."""
+        reservation = self._make_reservation(checkin_offset=0,
+                                             checkout_offset=2)
+        reservation.action_confirm()
+        reservation.action_checkin()
+        self.env['aite.hotel.housekeeping'].with_user(
+            self.receptionist)._create_checkout_task(self.room_101)
+        self.assertEqual(self.room_101.hk_state, 'to_clean')
+
     def test_housekeeper_cannot_read_folios(self):
         """La note de séjour n'est pas du ressort de la gouvernante."""
         reservation = self._make_reservation()

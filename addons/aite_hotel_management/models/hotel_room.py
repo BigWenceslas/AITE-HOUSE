@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import AccessError, UserError, ValidationError
 
 
 class HotelAmenity(models.Model):
@@ -233,14 +233,19 @@ class HotelRoom(models.Model):
         string="Capacité enfants", compute='_compute_capacity',
         store=True, readonly=False,
     )
+    # Données tarifaires : réservées à la Réception et au Responsable.
+    # La gouvernante travaille sur la même fiche chambre, mais le prix de
+    # vente ne relève pas de son poste — elle ne le voit pas.
     price_override = fields.Monetary(
         string="Tarif spécifique / nuit", currency_field='currency_id',
+        groups='aite_hotel_management.group_hotel_user',
         help="Laisser à 0 pour appliquer le tarif du type (et les "
              "saisons). Une valeur non nulle prime sur tout.",
     )
     effective_price = fields.Monetary(
         string="Tarif du jour", compute='_compute_effective_price',
         currency_field='currency_id',
+        groups='aite_hotel_management.group_hotel_user',
         help="Tarif applicable aujourd'hui (surcharge chambre ou moteur "
              "saisonnier du type).",
     )
@@ -371,6 +376,35 @@ class HotelRoom(models.Model):
                     room.name, room.room_type_id.code or room.room_type_id.name)
             else:
                 room.display_name = room.name
+
+    # ------------------------------------------------------------------
+    # Garde d'écriture — périmètre de la gouvernante
+    # ------------------------------------------------------------------
+
+    # Champs qui reclassent ou revalorisent une chambre : la gouvernante
+    # a besoin d'écrire sur la fiche (état de propreté, hors service),
+    # mais elle ne doit pas pouvoir changer le type, les capacités ou le
+    # tarif. Le tarif est déjà hors de sa portée (``groups`` sur le
+    # champ) ; les autres restent lisibles — son kanban affiche le code
+    # du type — donc ils se protègent ici, à l'écriture.
+    _COMMERCIAL_FIELDS = (
+        'room_type_id', 'capacity_adults', 'capacity_children',
+        'price_override', 'hotel_id', 'active',
+    )
+
+    def write(self, vals):
+        touched = set(vals) & set(self._COMMERCIAL_FIELDS)
+        if touched and not self.env.su and not self.env.user.has_group(
+                'aite_hotel_management.group_hotel_user'):
+            labels = ", ".join(
+                sorted(self._fields[name].string for name in touched))
+            raise AccessError(_(
+                "Le profil Gouvernante ne peut pas modifier : %(fields)s.\n"
+                "Ces informations relèvent de la Réception ou du "
+                "Responsable. Vous pouvez en revanche mettre à jour "
+                "l'état de ménage et signaler une chambre hors service.",
+                fields=labels))
+        return super().write(vals)
 
     # ------------------------------------------------------------------
     # Métier

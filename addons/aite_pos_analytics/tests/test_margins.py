@@ -117,29 +117,91 @@ class TestPosMargins(PosAnalyticsCommon):
     # ------------------------------------------------------------------
 
     def test_no_discrepancy(self):
-        self.session.cash_register_difference = 0.0
-        self.session.invalidate_recordset(['cash_discrepancy_severity'])
+        self._sale([(self.beer, 2, 5000.0)])
+        self._count_the_till(0.0)
         self.assertEqual(self.session.cash_discrepancy_severity, 'none')
 
     def test_surplus_is_flagged_apart(self):
-        self.session.cash_register_difference = 5000.0
-        self.session.invalidate_recordset(['cash_discrepancy_severity'])
+        self._sale([(self.beer, 2, 5000.0)])
+        self._count_the_till(-5000.0)          # 5 000 de trop en caisse
         self.assertEqual(self.session.cash_discrepancy_severity, 'over')
 
     def test_shortfall_severity_scale(self):
         Session = self.env['pos.session']
         cases = [
-            (-1.0, 'low'),
-            (-(Session.DISCREPANCY_THRESHOLD_MED), 'med'),
-            (-(Session.DISCREPANCY_THRESHOLD_HIGH), 'high'),
-            (-(Session.DISCREPANCY_THRESHOLD_HIGH + 1000.0), 'high'),
+            (1.0, 'low'),
+            (Session.DISCREPANCY_THRESHOLD_MED, 'med'),
+            (Session.DISCREPANCY_THRESHOLD_HIGH, 'high'),
+            (Session.DISCREPANCY_THRESHOLD_HIGH + 1000.0, 'high'),
         ]
-        for difference, expected in cases:
-            self.session.cash_register_difference = difference
-            self.session.invalidate_recordset(['cash_discrepancy_severity'])
-            self.assertEqual(
-                self.session.cash_discrepancy_severity, expected,
-                "écart %s attendu %s" % (difference, expected))
+        self._sale([(self.beer, 2, 5000.0)])
+        for shortfall, expected in cases:
+            with self.subTest(shortfall=shortfall):
+                self._count_the_till(shortfall)
+                self.assertEqual(
+                    self.session.cash_discrepancy_severity, expected,
+                    "manquant %s attendu %s" % (shortfall, expected))
+
+    def _count_the_till(self, shortfall):
+        """Le caissier compte sa caisse et y trouve ``shortfall`` de moins."""
+        self.session.invalidate_recordset()
+        theoretical = self.session.cash_register_balance_end
+        self.session.write({
+            'cash_register_balance_end_real': theoretical - shortfall,
+        })
+        return theoretical
+
+    def test_counting_the_till_updates_the_severity(self):
+        """Le vrai geste de clôture doit reclasser la session.
+
+        Les tests ci-dessus posent ``cash_register_difference`` en cache
+        pour vérifier le barème. Celui-ci part de l'autre bout : une
+        vente en espèces, puis le **comptage réel** du caissier — et rien
+        d'autre. C'est le seul chemin qui existe en production, et il
+        était muet : ``cash_register_difference`` est calculé, non
+        stocké, et son ``@api.depends`` natif ignore le montant compté.
+        La sévérité restait donc figée sur l'écart d'avant clôture — un
+        manquant critique s'affichait « Modéré ».
+        """
+        Session = self.env['pos.session']
+        self._sale([(self.beer, 2, 5000.0)])      # 10 000 en caisse
+        self._count_the_till(Session.DISCREPANCY_THRESHOLD_HIGH + 50000.0)
+        self.assertEqual(self.session.cash_discrepancy_severity, 'high')
+        # L'écart natif n'est rafraîchi qu'une fois le cache relu : c'est
+        # justement le piège que cette classification contourne.
+        self.session.invalidate_recordset(['cash_register_difference'])
+        self.assertEqual(
+            self.session.cash_register_difference,
+            -(Session.DISCREPANCY_THRESHOLD_HIGH + 50000.0))
+
+    def test_recounting_the_till_reclassifies_the_session(self):
+        """Un recomptage qui tombe juste doit effacer l'alerte."""
+        Session = self.env['pos.session']
+        self._sale([(self.beer, 2, 5000.0)])
+        theoretical = self._count_the_till(
+            Session.DISCREPANCY_THRESHOLD_HIGH + 50000.0)
+        self.assertEqual(self.session.cash_discrepancy_severity, 'high')
+        self.session.write({
+            'cash_register_balance_end_real': theoretical,
+        })
+        self.assertEqual(self.session.cash_discrepancy_severity, 'none')
+
+    def test_counting_the_till_walks_the_whole_scale(self):
+        """Chaque palier doit être atteignable par le comptage réel."""
+        Session = self.env['pos.session']
+        self._sale([(self.beer, 2, 5000.0)])
+        cases = [
+            (1.0, 'low'),
+            (Session.DISCREPANCY_THRESHOLD_MED, 'med'),
+            (Session.DISCREPANCY_THRESHOLD_HIGH, 'high'),
+            (-5000.0, 'over'),                     # excédent en caisse
+            (0.0, 'none'),
+        ]
+        for shortfall, expected in cases:
+            with self.subTest(shortfall=shortfall):
+                self._count_the_till(shortfall)
+                self.assertEqual(
+                    self.session.cash_discrepancy_severity, expected)
 
     def test_thresholds_are_ordered(self):
         Session = self.env['pos.session']

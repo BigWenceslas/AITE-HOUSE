@@ -4,7 +4,7 @@
 AITE Consulting SARL
 
 Ce guide explique comment **monter un environnement de test**, **exécuter
-les 572 tests automatisés**, **rejouer la recette utilisateur** et
+les 595 tests automatisés**, **rejouer la recette utilisateur** et
 **régénérer le jeu d'essai**. Le cahier de recette illustré, avec ses
 captures d'écran, fait l'objet d'un document séparé :
 [`GUIDE_RECETTE_UAT.md`](GUIDE_RECETTE_UAT.md).
@@ -25,19 +25,19 @@ La suite compte trois niveaux de vérification, chacun avec son rôle.
 
 | Module | Tests | Ce qui est vérifié |
 |---|---:|---|
-| `aite_hotel_management` | 205 | Moteur tarifaire, disponibilité, workflow de réservation, folio, taxes, facturation, gouvernante, assistants, droits par profil, tableau de bord |
-| `aite_pos_credit` | 96 | Ardoises, sévérité, remboursements, écritures 411, génération depuis le POS (paiement mixte), balance âgée, droits |
-| `aite_slot_booking` | 75 | Grille de créneaux, alignement, conflits par capacité, tarification, report au folio, cron no-show |
-| `aite_website_booking` | 49 | Tunnel public de bout en bout, validation du formulaire, CSRF, fiche client unique, espace client |
-| `aite_loyalty` | 39 | Barème de points, grand livre, segmentation VIP / VVIP, fenêtre glissante, rétrogradation |
-| `aite_stock_dashboard` | 37 | Couverture, seuils, quantité à commander, statuts d'alerte, valorisation, rotation |
-| `aite_pos_analytics` | 34 | Coût figé à la vente, marge, agrégats de session, écarts de caisse, API du tableau de bord |
-| `aite_demo_data` | 33 | Générateur de jeu d'essai, idempotence, purge, **6 parcours métier bout-en-bout** |
-| `aite_hotel_pos_link` | 25 | Note de chambre, décisions de rattachement, file d'attente, idempotence |
-| `aite_purchase_dashboard` | 17 | API du tableau de bord Achats, consignes fournisseurs |
-| `aite_direction_dashboard` | 13 | Cohérence du cockpit avec les quatre moteurs, balance âgée en miroir |
-| `aite_exec_dashboard` | 13 | Consolidation des trois pôles, mix d'activité |
-| **Total** | **572** | |
+| `aite_hotel_management` | 198 | Moteur tarifaire, disponibilité, workflow de réservation, folio, taxes, facturation, gouvernante, assistants, droits par profil, tableau de bord |
+| `aite_pos_credit` | 86 | Ardoises, sévérité, remboursements, écritures 411, génération depuis le POS (paiement mixte), balance âgée, droits |
+| `aite_slot_booking` | 69 | Grille de créneaux, alignement, conflits par capacité, tarification, report au folio, cron no-show |
+| `aite_website_booking` | 45 | Tunnel public de bout en bout, validation du formulaire, CSRF, fiche client unique, espace client |
+| `aite_demo_data` | 36 | Générateur de jeu d'essai, devise, écarts de caisse, idempotence, purge, **6 parcours métier bout-en-bout** |
+| `aite_pos_analytics` | 35 | Coût figé à la vente, marge, agrégats de session, écarts de caisse et leur sévérité, API du tableau de bord |
+| `aite_loyalty` | 35 | Barème de points, grand livre, segmentation VIP / VVIP, fenêtre glissante, rétrogradation |
+| `aite_stock_dashboard` | 33 | Couverture, seuils, quantité à commander, statuts d'alerte, valorisation, rotation |
+| `aite_hotel_pos_link` | 23 | Note de chambre, décisions de rattachement, file d'attente, idempotence |
+| `aite_purchase_dashboard` | 13 | API du tableau de bord Achats, consignes fournisseurs |
+| `aite_exec_dashboard` | 11 | Consolidation des trois pôles, mix d'activité |
+| `aite_direction_dashboard` | 11 | Cohérence du cockpit avec les quatre moteurs, balance âgée en miroir |
+| **Total** | **595** | |
 
 Les tests sont marqués par des **étiquettes** (`aite_hotel`, `aite_credit`,
 `aite_slot`, …) pour pouvoir n'en jouer qu'une partie.
@@ -79,9 +79,20 @@ planning Gantt des chambres.
 
 ### 2.3 Devise
 
-Le jeu d'essai est calibré en **GNF** (contexte Guinée). Si la société
-est encore en devise par défaut, positionnez-la **avant** de saisir des
-écritures :
+Le jeu d'essai est calibré en **GNF** (contexte Guinée) et **positionne
+lui-même la devise** de la société — mais seulement si la base est
+encore vierge : société sur une devise d'origine (`USD` ou `EUR`) **et**
+aucune écriture comptable.
+
+Le compte rendu de génération affiche la devise retenue :
+
+```
+{'currency': 'GNF', 'users': 5, ..., 'pos_orders': 168, 'credits': 18, ...}
+```
+
+Si la valeur renvoyée n'est pas `GNF`, c'est que la société a déjà été
+engagée — devise délibérément choisie, ou écritures déjà passées. Le
+générateur n'y touche pas et le journalise. Pour basculer malgré tout :
 
 > Paramètres → Sociétés → *votre société* → Devise → `GNF` (ou `XAF`)
 
@@ -107,7 +118,7 @@ aite_exec,aite_demo,aite_journey
 Résultat attendu, en fin de journal :
 
 ```
-odoo.tests.result: 0 failed, 0 error(s) of 572 tests
+odoo.tests.result: 0 failed, 0 error(s) of 595 tests
 ```
 
 ### 3.2 Un seul module

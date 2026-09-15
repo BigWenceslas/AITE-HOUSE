@@ -109,24 +109,33 @@ class TestPosDashboardApi(PosAnalyticsCommon):
             with self.subTest(endpoint=name):
                 self.assertIsNotNone(call())
 
-    def test_bad_dates_raise_a_readable_message(self):
-        """Une date illisible donne une erreur métier, pas une 500.
+    def test_bad_dates_fall_back_to_the_current_month(self):
+        """Une période illisible retombe sur le mois courant.
 
-        Choix assumé de ce module : il refuse la période plutôt que de
-        retomber silencieusement sur le mois courant comme les tableaux
-        de bord Hôtel, Stock et Crédit. Ce qui compte est que l'échec
-        soit une ``UserError`` lisible et non une trace serveur.
+        Convention commune à toute la suite : vider un champ de date ne
+        doit pas interrompre la consultation. Ce module refusait la
+        période ; il suit désormais la même règle que les tableaux de
+        bord Hôtel, Stock, Crédit et Achats.
         """
-        from odoo.exceptions import UserError
-        with self.assertRaises(UserError):
-            self.dashboard.get_kpis('pas-une-date', None)
-        with self.assertRaises(UserError):
-            self.dashboard.get_rankings('', '')
+        dt_from, dt_to = self.dashboard._parse_period('pas-une-date', None)
+        self.assertEqual(dt_from.date(), self.today.replace(day=1))
+        # Borne haute exclusive : le jour courant reste dans la période.
+        self.assertEqual(dt_to.date(), self.today + timedelta(days=1))
 
-    def test_inverted_period_is_refused(self):
-        from odoo.exceptions import UserError
-        with self.assertRaises(UserError):
-            self.dashboard.get_kpis(self.d_to, self.far_from)
+    def test_bad_dates_still_return_figures(self):
+        self._sale([(self.beer, 2, 5000.0)])
+        kpis = self.dashboard.get_kpis('', None)
+        self.assertGreaterEqual(kpis['ca'], 10000.0)
+
+    def test_inverted_period_is_reordered(self):
+        dt_from, dt_to = self.dashboard._parse_period(self.d_to,
+                                                      self.far_from)
+        self.assertLess(dt_from, dt_to)
+
+    def test_every_endpoint_survives_illegible_dates(self):
+        for name, call in self._endpoints('pas-une-date', None):
+            with self.subTest(endpoint=name):
+                self.assertIsNotNone(call(), "%s ne renvoie rien" % name)
 
     def test_endpoints_without_dates_always_answer(self):
         self.assertIsNotNone(self.dashboard.get_pos_configs())

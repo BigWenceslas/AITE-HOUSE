@@ -186,7 +186,20 @@ def scenario_housekeeping(page):
         "La tâche est clôturée, la chambre est rendue au service.",
         "Le bouton « Terminer » du kanban n'a pas produit d'effet.")
 
-    # -- Étape 4 : la gouvernante ne voit pas l'argent -----------------
+    # -- Étape 4 : le tarif est hors de son périmètre ------------------
+    ses.open_action('aite_hotel_management.action_hotel_room')
+    body = ses.text()
+    ses.check(
+        "Consulter les chambres",
+        "La gouvernante voit l'état de chaque chambre, mais ni le tarif "
+        "spécifique ni le tarif du jour : ces données relèvent de la "
+        "Réception.",
+        ("tarif" not in body.lower()
+         and ("propre" in body.lower() or "chambre" in body.lower())),
+        "Les chambres s'affichent sans aucune donnée tarifaire.",
+        "Un tarif est visible sur l'écran de la gouvernante.")
+
+    # -- Étape 5 : la gouvernante ne voit pas l'argent -----------------
     ses.open_action('aite_hotel_management.action_hotel_folio')
     ses.check(
         "Tenter d'ouvrir les folios",

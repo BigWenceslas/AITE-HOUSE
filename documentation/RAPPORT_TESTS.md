@@ -8,27 +8,28 @@ AITE Consulting SARL
 ## 1. Résumé
 
 La suite n'avait, avant cette campagne, **aucun test automatisé**. Elle en
-compte aujourd'hui **572**, tous verts, doublés d'une **recette
-utilisateur en navigateur** de 32 étapes jouée avec les profils métier
+compte aujourd'hui **595**, tous verts, doublés d'une **recette
+utilisateur en navigateur** de 34 étapes jouée avec les profils métier
 réels.
 
 | Indicateur | Avant | Après |
 |---|---:|---:|
-| Tests automatisés | 0 | **572** |
+| Tests automatisés | 0 | **595** |
 | Modules couverts | 0 / 12 | **12 / 12** |
 | Parcours métier bout-en-bout | 0 | **6** |
-| Scénarios de recette (navigateur) | 0 | **6** (33 étapes) |
-| Captures d'écran de recette | 0 | **33** |
-| Anomalies corrigées | — | **11** |
+| Scénarios de recette (navigateur) | 0 | **6** (34 étapes) |
+| Captures d'écran de recette | 0 | **34** |
+| Anomalies corrigées | — | **13** |
+| Décisions de cadrage appliquées | — | **3** |
 
 La campagne a été validée sur une base **construite entièrement de
 zéro** : création, installation des 13 modules, génération du jeu
-d'essai, puis exécution des 572 tests et des 6 scénarios de recette.
+d'essai, puis exécution des 595 tests et des 6 scénarios de recette.
 
 Résultat de la dernière exécution complète :
 
 ```
-odoo.tests.result: 0 failed, 0 error(s) of 572 tests
+odoo.tests.result: 0 failed, 0 error(s) of 595 tests
 ```
 
 ---
@@ -206,6 +207,35 @@ n'importe quelle base.
 
 ---
 
+#### A12 — Un manquant en caisse restait classé « Modéré »
+
+`cash_discrepancy_severity` classe l'écart de caisse d'une session en
+cinq niveaux, jusqu'à « Critique ». Le champ est **stocké et indexé** :
+c'est lui qui filtre les vues et alimente l'alerte du tableau de bord.
+
+Il ne bougeait jamais après le comptage de la caisse.
+
+Cause : il était calculé à partir de `cash_register_difference`, un champ
+Odoo **calculé et non stocké** dont l'`@api.depends` natif **omet**
+`cash_register_balance_end_real` — précisément le montant que le caissier
+saisit en comptant son tiroir. Le comptage ne déclenchait donc aucun
+recalcul, et la sévérité restait figée sur l'écart d'avant clôture.
+
+Constaté sur un cas réel : une caisse close sur un **manquant de
+250 000 FG** — au-delà du seuil critique — restait affichée « Modéré ».
+
+**Correction.** La classification refait la soustraction sur les deux
+termes qui, eux, sont à jour au moment du recalcul (montant compté et
+solde théorique), et se déclenche sur les champs sous-jacents. La garde
+d'Odoo est reprise telle quelle : sans moyen de paiement espèces, la
+caisse n'a pas de solde et il n'y a pas d'écart à classer.
+
+> Vérifié par : `TestPosMargins.test_counting_the_till_updates_the_severity`,
+> `test_recounting_the_till_reclassifies_the_session`,
+> `test_counting_the_till_walks_the_whole_scale`.
+
+---
+
 ### 2.3 Mineures
 
 #### A9 — Lire un compteur écrivait en base
@@ -250,16 +280,122 @@ sauvegarde : un échec ne laisse aucune trace.
 
 ---
 
-## 3. Points d'attention signalés, non corrigés
+#### A13 — Aucune session de démonstration n'avait d'écart de caisse
 
-Ces points ne sont pas des défauts, mais méritent une décision.
+Le générateur annonçait « des écarts de caisse à traiter » et écrivait
+`cash_register_difference`. Ce champ étant **calculé et non stocké**, y
+écrire ne produit rien : **toutes** les sessions du jeu d'essai
+présentaient une caisse parfaitement juste, et l'écran des écarts de
+caisse n'avait rien à montrer.
+
+Le test censé le couvrir ne pouvait pas le voir : il cherchait
+`[('cash_register_difference', '!=', 0)]`. Odoo ne sait pas filtrer sur
+un champ non stocké — il journalise *« Non-stored field … cannot be
+searched »* et **laisse passer toutes les lignes**. Le test trouvait donc
+toujours des « écarts », y compris quand il n'y en avait aucun.
+
+**Correction.**
+
+- Le générateur pose le **montant compté** à côté du solde théorique —
+  le geste réel du caissier — dans une passe finale, une fois toutes les
+  sessions créées : le solde d'une session dépend du fonds hérité de la
+  précédente, si bien que compter au fil de l'eau comparait un montant
+  réel à un théorique déjà périmé. Les manquants passent au-delà du
+  seuil critique, pour que l'alerte la plus forte soit servie.
+- Une base montée avec la version précédente se remet d'aplomb en
+  relançant la génération : les sessions déjà posées sont recomptées.
+- Le test trie en Python, sur la valeur réellement calculée, et se
+  limite aux sessions du jeu d'essai — une recherche globale rapporterait
+  aussi celles d'une base déjà vécue.
+
+> Vérifié par : `TestDemoGenerator.test_some_sessions_show_a_cash_gap`,
+> `test_cash_gaps_do_not_touch_every_session`,
+> `test_a_cash_gap_reaches_the_critical_grade`.
+
+---
+
+### 2.4 Décisions de cadrage appliquées
+
+Ces trois points n'étaient pas des défauts : la campagne les avait
+signalés comme relevant d'un choix. Le choix a été arrêté, puis mis en
+œuvre et couvert par des tests.
+
+#### D1 — Le tarif d'une chambre sort du périmètre de la gouvernante
+
+La gouvernante doit pouvoir écrire sur `aite.hotel.room` — c'est là que
+vit l'état de propreté. Mais ce même droit lui ouvrait le **tarif
+spécifique**, le **type de chambre**, les **capacités** et l'archivage :
+requalifier une chambre revient à en changer le prix de vente.
+
+**Décision retenue : restreindre les champs tarifaires à la Réception et
+au Responsable.**
+
+- `price_override` et `effective_price` portent désormais
+  `groups="…group_hotel_user"` : la gouvernante ne les voit plus, ni sur
+  la fiche, ni sur le kanban (séparateur compris), ni dans `fields_get`.
+- Une garde d'écriture sur `write()` refuse, pour elle seule, les champs
+  qui reclassent ou revalorisent une chambre — type, capacités, hôtel,
+  tarif, archivage. Le refus **nomme les champs** et indique vers qui se
+  tourner.
+- Elle conserve ses propres leviers : état de ménage, hors service et son
+  motif, note interne, boutons rapides. La recouche automatique au départ
+  du client continue de passer.
+
+> Vérifié par : 11 tests de `TestHotelSecurity`, de
+> `test_housekeeper_does_not_see_the_room_price` à
+> `test_checkout_still_sends_the_room_to_cleaning`, plus l'étape 4 du
+> scénario de recette *Le tour des chambres*.
+
+---
+
+#### D2 — Une période illisible ramène au mois courant, partout
+
+Quatre tableaux de bord sur cinq retombaient sur le **mois courant**
+quand la période était illisible — champ vidé, saisie partielle, appel
+sans paramètre. POS Analytics, lui, **refusait** par une `UserError` :
+le même geste ouvrait un tableau de bord ici, et une boîte d'erreur là.
+
+**Décision retenue : aligner POS Analytics sur les quatre autres.**
+
+`_parse_period` retombe sur le mois courant, et des bornes inversées sont
+remises dans l'ordre. `_previous_period` passe par la même porte — la
+comparaison porte donc toujours sur la période réellement affichée, et
+non sur une période calculée à partir de bornes que l'écran a rejetées.
+
+> Vérifié par : `TestPosDashboardApi.test_bad_dates_fall_back_to_the_current_month`,
+> `test_inverted_period_is_reordered`,
+> `test_every_endpoint_survives_illegible_dates`,
+> `test_endpoints_without_dates_always_answer`.
+
+---
+
+#### D3 — Le jeu d'essai pose sa devise, mais seulement sur une base vierge
+
+Le jeu d'essai annonce des prix en francs guinéens sans configurer la
+devise de la société : les montants s'affichaient en dollars.
+
+**Décision retenue : basculer en GNF si — et seulement si — la base est
+vierge.**
+
+Le générateur ne change la devise que si la société est **encore sur une
+devise d'origine** (`USD` ou `EUR`) **et** qu'elle ne porte **aucune
+écriture comptable**. Une devise délibérément choisie, ou une société
+déjà en production, n'est jamais écrasée : le générateur le journalise et
+passe son tour. La devise retenue figure dans le compte rendu de
+génération.
+
+> Vérifié par : `TestDemoGenerator.test_currency_switches_on_an_untouched_company`,
+> `test_currency_is_left_alone_once_entries_exist`,
+> `test_currency_is_left_alone_when_deliberately_chosen`,
+> `test_currency_is_idempotent`, `test_generation_reports_the_currency`.
+
+---
+
+## 3. Point d'attention signalé, non corrigé
 
 | Sujet | Constat | Recommandation |
 |---|---|---|
-| **Périmètre de la gouvernante** | Le profil *Gouvernante* a le droit d'écriture sur `aite.hotel.room` — nécessaire pour l'état de propreté, mais il ouvre aussi le tarif spécifique et la mise hors service | Restreindre par groupe au niveau des champs sensibles si le cloisonnement doit être strict |
 | **Bascule d'état du folio** | L'état (`ouvert` → `soldé`) est écrit depuis une méthode de calcul : il ne bascule que lorsqu'un montant calculé est relu. Sans effet dans l'interface, qui lit toujours les montants | Documenté ; à revoir si un traitement par lot venait à s'appuyer sur `state` seul |
-| **Dates invalides** | POS Analytics **refuse** une période illisible (`UserError`) ; Hôtel, Stock, Crédit et Achats **retombent** sur le mois courant | Choisir une convention unique pour la suite |
-| **Devise du jeu d'essai** | Le jeu annonce des prix en GNF mais ne configure pas la devise de la société | Documenté en § 2.3 du guide de test ; une bascule automatique serait trop intrusive |
 
 ---
 
@@ -299,14 +435,14 @@ d'installation.
 
 ## 5. Recette utilisateur
 
-Six scénarios joués dans Chromium, avec les profils métier, 32 étapes,
-32 captures. Le détail figure dans
+Six scénarios joués dans Chromium, avec les profils métier, 34 étapes,
+34 captures. Le détail figure dans
 [`GUIDE_RECETTE_UAT.md`](GUIDE_RECETTE_UAT.md).
 
 | Scénario | Poste | Étapes | Verdict |
 |---|---|---:|---|
 | La journée de la réception | Réception | 7 | ✅ |
-| Le tour des chambres | Gouvernante | 4 | ✅ |
+| Le tour des chambres | Gouvernante | 5 | ✅ |
 | Ardoises clients et recouvrement | Caisse | 7 | ✅ |
 | Le cockpit de la direction | Direction | 7 | ✅ |
 | La réservation en ligne | Client (public) | 6 | ✅ |
@@ -323,11 +459,11 @@ C'est la recette qui a révélé l'anomalie **A6** : le calcul était juste
 côté serveur, seul l'affichage mentait. Aucun test unitaire ne l'aurait
 vue.
 
-### Deux corrections apportées au dispositif de test lui-même
+### Trois corrections apportées au dispositif de test lui-même
 
-La relecture des captures a mis au jour deux faiblesses de la campagne,
-corrigées avant la livraison. Elles ne concernent pas le produit, mais
-elles conditionnent la valeur du rapport.
+La relecture des captures et des journaux a mis au jour trois faiblesses
+de la campagne, corrigées avant la livraison. Elles ne concernent pas le
+produit, mais elles conditionnent la valeur du rapport.
 
 1. **Un faux positif sur la réservation en ligne.** Le scénario tentait
    de choisir le créneau avec `select_option`, alors que les créneaux
@@ -345,6 +481,18 @@ elles conditionnent la valeur du rapport.
    ne démarraient pas. Chaque fixture crée maintenant son propre journal.
    La suite passe donc aussi bien sur une base neuve que sur une base
    chargée.
+
+3. **Un test vert qui ne testait rien.** Le contrôle des écarts de caisse
+   du jeu d'essai filtrait sur un champ **calculé et non stocké**. Odoo
+   ne sait pas le faire : il journalise *« Non-stored field … cannot be
+   searched »* et laisse passer toutes les lignes. Le test trouvait donc
+   toujours des écarts — y compris quand le jeu d'essai n'en produisait
+   aucun, ce qui était le cas (**A13**). C'est une ligne d'erreur dans le
+   journal d'une exécution pourtant annoncée « 0 failed » qui a mis sur
+   la piste, et de là sur **A12**. Trois tests de classification qui
+   posaient la valeur directement en cache ont été réécrits pour partir
+   du geste réel — le caissier compte son tiroir — seul chemin qui
+   existe en production.
 
 ---
 

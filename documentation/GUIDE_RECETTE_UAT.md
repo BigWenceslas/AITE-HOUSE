@@ -1,7 +1,7 @@
 # AITE HOUSE — Cahier de recette (UAT)
 
 **Suite hôtelière AITE HOUSE sur Odoo 18 — recette applicative**
-Généré le 2026-09-14 16:02 · instance recettée : `http://127.0.0.1:8069`
+Généré le 2026-09-15 09:01 · instance recettée : `http://127.0.0.1:8069`
 
 ---
 
@@ -48,13 +48,13 @@ python tests_uat/build_guide.py
 | Scénario | Poste | Étapes | Verdict |
 |---|---|---|---|
 | [La journée de la réception](#1-la-journée-de-la-réception) | Réception (Awa Diallo) | 7 | ✅ Conforme |
-| [Le tour des chambres](#2-le-tour-des-chambres) | Gouvernante (Fanta Souaré) | 4 | ✅ Conforme |
+| [Le tour des chambres](#2-le-tour-des-chambres) | Gouvernante (Fanta Souaré) | 5 | ✅ Conforme |
 | [Ardoises clients et recouvrement](#3-ardoises-clients-et-recouvrement) | Caisse (Ibrahima Sylla) | 7 | ✅ Conforme |
 | [Le cockpit de la direction](#4-le-cockpit-de-la-direction) | Direction (Aminata Bah) | 7 | ✅ Conforme |
 | [La réservation en ligne](#5-la-réservation-en-ligne) | Client (visiteur du site) | 6 | ✅ Conforme |
 | [Stock, ruptures et réapprovisionnement](#6-stock,-ruptures-et-réapprovisionnement) | Magasin (Moussa Camara) | 2 | ✅ Conforme |
 
-**Total : 33 étapes — 0 écart(s) constaté(s).**
+**Total : 34 étapes — 0 écart(s) constaté(s).**
 
 ---
 
@@ -184,7 +184,18 @@ python tests_uat/build_guide.py
 ![Terminer la tâche](captures/r2-gouvernante-03-terminer-la-tache.png)
 
 
-### 4. Tenter d'ouvrir les folios
+### 4. Consulter les chambres
+
+| | |
+|---|---|
+| **Attendu** | La gouvernante voit l'état de chaque chambre, mais ni le tarif spécifique ni le tarif du jour : ces données relèvent de la Réception. |
+| **Constaté** | Les chambres s'affichent sans aucune donnée tarifaire. |
+| **Verdict** | ✅ Conforme |
+
+![Consulter les chambres](captures/r2-gouvernante-04-consulter-les-chambres.png)
+
+
+### 5. Tenter d'ouvrir les folios
 
 | | |
 |---|---|
@@ -192,7 +203,7 @@ python tests_uat/build_guide.py
 | **Constaté** | L'accès aux folios est refusé, avec le motif affiché. |
 | **Verdict** | ✅ Conforme |
 
-![Tenter d'ouvrir les folios](captures/r2-gouvernante-04-tenter-d-ouvrir-les-folios.png)
+![Tenter d'ouvrir les folios](captures/r2-gouvernante-05-tenter-d-ouvrir-les-folios.png)
 
 
 ---

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-14 16:02",
+  "generated_at": "2026-09-15 09:01",
   "base_url": "http://127.0.0.1:8069",
   "scenarios": [
     {
@@ -110,10 +110,19 @@
         },
         {
           "number": 4,
+          "title": "Consulter les chambres",
+          "expected": "La gouvernante voit l'état de chaque chambre, mais ni le tarif spécifique ni le tarif du jour : ces données relèvent de la Réception.",
+          "observed": "Les chambres s'affichent sans aucune donnée tarifaire.",
+          "screenshot": "r2-gouvernante-04-consulter-les-chambres.png",
+          "status": "OK",
+          "detail": ""
+        },
+        {
+          "number": 5,
           "title": "Tenter d'ouvrir les folios",
           "expected": "Le profil Gouvernante n'a pas accès aux notes de séjour : Odoo doit afficher un refus nommant le modèle concerné.",
           "observed": "L'accès aux folios est refusé, avec le motif affiché.",
-          "screenshot": "r2-gouvernante-04-tenter-d-ouvrir-les-folios.png",
+          "screenshot": "r2-gouvernante-05-tenter-d-ouvrir-les-folios.png",
           "status": "OK",
           "detail": ""
         }
