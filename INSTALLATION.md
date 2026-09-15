@@ -127,6 +127,9 @@ En cas de blocage, transmettre à AITE Consulting les lignes `ERROR` /
 - **[`GUIDE_RECETTE_UAT.md`](documentation/GUIDE_RECETTE_UAT.md)** —
   cahier de recette illustré : 6 scénarios, 34 étapes, une capture
   d'écran par étape, joués avec les profils métier réels.
+- **[`CAHIER_RECETTE_AITE_HOUSE.pdf`](documentation/CAHIER_RECETTE_AITE_HOUSE.pdf)**
+  — le même cahier en **PDF paginé** (38 pages), à imprimer ou à
+  transmettre au client. Régénéré par `python tests_uat/build_pdf.py`.
 - **[`RAPPORT_TESTS.md`](documentation/RAPPORT_TESTS.md)** — rapport de
   campagne : anomalies trouvées, corrections apportées, points
   d'attention.

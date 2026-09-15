@@ -169,12 +169,18 @@ odoo-bin -d aite_test --db-filter='aite_test'
 # Dans un autre terminal
 python tests_uat/run_uat.py --url http://127.0.0.1:8069
 python tests_uat/build_guide.py
+python tests_uat/build_pdf.py        # version PDF, à transmettre
 ```
 
 - `run_uat.py` joue les six scénarios, capture chaque écran dans
   `documentation/captures/` et écrit le relevé `uat_resultats.json`.
 - `build_guide.py` en compose le cahier illustré
-  `GUIDE_RECETTE_UAT.md`.
+  `GUIDE_RECETTE_UAT.md`, pour la lecture en ligne.
+- `build_pdf.py` en compose la version paginée
+  `CAHIER_RECETTE_AITE_HOUSE.pdf`, prête à imprimer ou à envoyer : page
+  de garde, couverture des tests automatisés, puis un scénario par page.
+  Le rendu passe par le Chromium déjà installé pour la recette — rien de
+  plus à installer.
 
 Options utiles :
 
@@ -183,6 +189,7 @@ Options utiles :
 | `--headed` | Affiche le navigateur (utile pour observer ou déboguer) |
 | `--only r3` | Ne joue que les scénarios dont la clé contient `r3` |
 | `--keep-shots` | Conserve les captures des exécutions précédentes |
+| `--output` | *(build_pdf)* Chemin du PDF à produire |
 
 ---
 
