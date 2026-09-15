@@ -15,7 +15,7 @@
             <field name="room_type_id" ref="rtype_vip"/>
             <field name="room_id" ref="room_401"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="1500000"/>
+            <field name="price_night" eval="120000"/>
         </record>
         <record id="stay_002" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -31,7 +31,7 @@
             <field name="room_type_id" ref="rtype_vip"/>
             <field name="room_id" ref="room_401"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="1500000"/>
+            <field name="price_night" eval="120000"/>
         </record>
         <record id="stay_003" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -47,7 +47,7 @@
             <field name="room_type_id" ref="rtype_vip"/>
             <field name="room_id" ref="room_401"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="1500000"/>
+            <field name="price_night" eval="120000"/>
         </record>
         <record id="stay_004" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -63,7 +63,7 @@
             <field name="room_type_id" ref="rtype_vip"/>
             <field name="room_id" ref="room_401"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="1500000"/>
+            <field name="price_night" eval="120000"/>
         </record>
         <record id="stay_005" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -79,7 +79,7 @@
             <field name="room_type_id" ref="rtype_vip"/>
             <field name="room_id" ref="room_401"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="1500000"/>
+            <field name="price_night" eval="120000"/>
         </record>
         <record id="stay_006" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -95,7 +95,7 @@
             <field name="room_type_id" ref="rtype_vip"/>
             <field name="room_id" ref="room_401"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="1500000"/>
+            <field name="price_night" eval="120000"/>
         </record>
         <record id="stay_007" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -111,7 +111,7 @@
             <field name="room_type_id" ref="rtype_vip"/>
             <field name="room_id" ref="room_401"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="1500000"/>
+            <field name="price_night" eval="120000"/>
         </record>
         <record id="stay_008" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -127,7 +127,7 @@
             <field name="room_type_id" ref="rtype_vip"/>
             <field name="room_id" ref="room_401"/>
             <field name="adults" eval="3"/>
-            <field name="price_night" eval="1500000"/>
+            <field name="price_night" eval="120000"/>
         </record>
         <record id="stay_009" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -143,7 +143,7 @@
             <field name="room_type_id" ref="rtype_vip"/>
             <field name="room_id" ref="room_401"/>
             <field name="adults" eval="3"/>
-            <field name="price_night" eval="1500000"/>
+            <field name="price_night" eval="120000"/>
         </record>
         <record id="stay_010" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -159,7 +159,7 @@
             <field name="room_type_id" ref="rtype_vip"/>
             <field name="room_id" ref="room_401"/>
             <field name="adults" eval="3"/>
-            <field name="price_night" eval="1500000"/>
+            <field name="price_night" eval="120000"/>
         </record>
         <record id="stay_011" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -175,7 +175,7 @@
             <field name="room_type_id" ref="rtype_vip"/>
             <field name="room_id" ref="room_401"/>
             <field name="adults" eval="3"/>
-            <field name="price_night" eval="1500000"/>
+            <field name="price_night" eval="120000"/>
         </record>
         <record id="stay_012" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -191,7 +191,7 @@
             <field name="room_type_id" ref="rtype_vip"/>
             <field name="room_id" ref="room_401"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="1500000"/>
+            <field name="price_night" eval="120000"/>
         </record>
         <record id="stay_013" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -207,7 +207,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_301"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_014" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -223,7 +223,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_301"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_015" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -239,7 +239,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_301"/>
             <field name="adults" eval="3"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_016" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -255,7 +255,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_301"/>
             <field name="adults" eval="3"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_017" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -271,7 +271,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_301"/>
             <field name="adults" eval="3"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_018" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -287,7 +287,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_301"/>
             <field name="adults" eval="3"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_019" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -303,7 +303,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_301"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_020" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -319,7 +319,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_301"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_021" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -335,7 +335,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_301"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_022" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -351,7 +351,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_301"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_023" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -367,7 +367,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_301"/>
             <field name="adults" eval="3"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_024" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -383,7 +383,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_201"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_025" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -399,7 +399,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_201"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_026" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -415,7 +415,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_201"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_027" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -431,7 +431,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_201"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_028" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -447,7 +447,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_201"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_029" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -463,7 +463,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_201"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_030" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -479,7 +479,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_201"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_031" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -495,7 +495,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_201"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_032" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -511,7 +511,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_201"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_033" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -527,7 +527,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_201"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_034" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -543,7 +543,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_201"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_035" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -559,7 +559,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_202"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_036" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -575,7 +575,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_202"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_037" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -591,7 +591,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_202"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_038" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -607,7 +607,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_202"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_039" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -623,7 +623,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_202"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_040" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -639,7 +639,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_202"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_041" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -655,7 +655,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_202"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_042" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -671,7 +671,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_202"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_043" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -687,7 +687,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_202"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_044" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -703,7 +703,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_202"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_045" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -719,7 +719,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_202"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_046" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -735,7 +735,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_202"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_047" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -751,7 +751,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_202"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_048" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -767,7 +767,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_302"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_049" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -783,7 +783,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_302"/>
             <field name="adults" eval="3"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_050" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -799,7 +799,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_302"/>
             <field name="adults" eval="3"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_051" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -815,7 +815,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_302"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_052" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -831,7 +831,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_302"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_053" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -847,7 +847,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_302"/>
             <field name="adults" eval="3"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_054" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -863,7 +863,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_302"/>
             <field name="adults" eval="3"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_055" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -879,7 +879,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_302"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_056" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -895,7 +895,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_302"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_057" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -911,7 +911,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_302"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_058" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -927,7 +927,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_302"/>
             <field name="adults" eval="3"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_059" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -943,7 +943,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_302"/>
             <field name="adults" eval="3"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_060" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -959,7 +959,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_101"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_061" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -975,7 +975,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_101"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_062" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -991,7 +991,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_101"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_063" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1007,7 +1007,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_101"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_064" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1023,7 +1023,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_101"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_065" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1039,7 +1039,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_101"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_066" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1055,7 +1055,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_101"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_067" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1071,7 +1071,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_101"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_068" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1087,7 +1087,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_101"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_069" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1103,7 +1103,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_101"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_070" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1119,7 +1119,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_101"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_071" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1135,7 +1135,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_101"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_072" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1151,7 +1151,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_102"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_073" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1167,7 +1167,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_102"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_074" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1183,7 +1183,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_102"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_075" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1199,7 +1199,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_102"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_076" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1215,7 +1215,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_102"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_077" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1231,7 +1231,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_102"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_078" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1247,7 +1247,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_102"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_079" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1263,7 +1263,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_102"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_080" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1279,7 +1279,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_102"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_081" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1295,7 +1295,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_102"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_082" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1311,7 +1311,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_102"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_083" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1327,7 +1327,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_102"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_084" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1343,7 +1343,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_103"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_085" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1359,7 +1359,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_103"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_086" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1375,7 +1375,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_103"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_087" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1391,7 +1391,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_103"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_088" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1407,7 +1407,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_103"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_089" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1423,7 +1423,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_103"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_090" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1439,7 +1439,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_103"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_091" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1455,7 +1455,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_103"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_092" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1471,7 +1471,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_103"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_093" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1487,7 +1487,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_103"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_094" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1503,7 +1503,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_103"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_095" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1519,7 +1519,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_103"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_096" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1535,7 +1535,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_103"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_097" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1551,7 +1551,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_103"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_098" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1567,7 +1567,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_103"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_099" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1583,7 +1583,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_103"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_100" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1599,7 +1599,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_103"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_101" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1615,7 +1615,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_104"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_102" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1631,7 +1631,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_104"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_103" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1647,7 +1647,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_104"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_104" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1663,7 +1663,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_104"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_105" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1679,7 +1679,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_104"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_106" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1695,7 +1695,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_104"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_107" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1711,7 +1711,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_104"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_108" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1727,7 +1727,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_104"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_109" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1743,7 +1743,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_104"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_110" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1759,7 +1759,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_104"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_111" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1775,7 +1775,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_104"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_112" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1791,7 +1791,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_104"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_113" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1807,7 +1807,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_104"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_114" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1823,7 +1823,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_106"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_115" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1839,7 +1839,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_106"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_116" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1855,7 +1855,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_106"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_117" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1871,7 +1871,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_106"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_118" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1887,7 +1887,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_106"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_119" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1903,7 +1903,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_106"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_120" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1919,7 +1919,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_106"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_121" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1935,7 +1935,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_106"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_122" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1951,7 +1951,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_106"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_123" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1967,7 +1967,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_106"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_124" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1983,7 +1983,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_106"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_125" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -1999,7 +1999,7 @@
             <field name="room_type_id" ref="rtype_std"/>
             <field name="room_id" ref="room_106"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="450000"/>
+            <field name="price_night" eval="35000"/>
         </record>
         <record id="stay_126" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2015,7 +2015,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_203"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_127" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2031,7 +2031,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_203"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_128" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2047,7 +2047,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_203"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_129" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2063,7 +2063,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_203"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_130" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2079,7 +2079,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_203"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_131" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2095,7 +2095,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_203"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_132" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2111,7 +2111,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_203"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_133" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2127,7 +2127,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_203"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_134" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2143,7 +2143,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_203"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_135" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2159,7 +2159,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_203"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_136" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2175,7 +2175,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_203"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_137" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2191,7 +2191,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_203"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_138" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2207,7 +2207,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_203"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_139" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2223,7 +2223,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_204"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_140" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2239,7 +2239,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_204"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_141" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2255,7 +2255,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_204"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_142" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2271,7 +2271,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_204"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_143" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2287,7 +2287,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_204"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_144" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2303,7 +2303,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_204"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_145" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2319,7 +2319,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_204"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_146" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2335,7 +2335,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_204"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_147" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2351,7 +2351,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_204"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_148" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2367,7 +2367,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_204"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_149" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2383,7 +2383,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_204"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_150" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2399,7 +2399,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_204"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_151" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2415,7 +2415,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_204"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_152" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2431,7 +2431,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_204"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_153" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2447,7 +2447,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_204"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_154" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2463,7 +2463,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_205"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_155" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2479,7 +2479,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_205"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_156" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2495,7 +2495,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_205"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_157" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2511,7 +2511,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_205"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_158" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2527,7 +2527,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_205"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_159" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2543,7 +2543,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_205"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_160" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2559,7 +2559,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_205"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_161" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2575,7 +2575,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_205"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_162" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2591,7 +2591,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_205"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_163" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2607,7 +2607,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_205"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_164" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2623,7 +2623,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_205"/>
             <field name="adults" eval="1"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_165" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2639,7 +2639,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_205"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_166" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2655,7 +2655,7 @@
             <field name="room_type_id" ref="rtype_cft"/>
             <field name="room_id" ref="room_205"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="650000"/>
+            <field name="price_night" eval="50000"/>
         </record>
         <record id="stay_167" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2671,7 +2671,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_303"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_168" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2687,7 +2687,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_303"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_169" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2703,7 +2703,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_303"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_170" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2719,7 +2719,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_303"/>
             <field name="adults" eval="3"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_171" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2735,7 +2735,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_303"/>
             <field name="adults" eval="3"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_172" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2751,7 +2751,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_303"/>
             <field name="adults" eval="3"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_173" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2767,7 +2767,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_303"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_174" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2783,7 +2783,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_303"/>
             <field name="adults" eval="3"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_175" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2799,7 +2799,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_303"/>
             <field name="adults" eval="3"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_176" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2815,7 +2815,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_303"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_177" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2831,7 +2831,7 @@
             <field name="room_type_id" ref="rtype_sjr"/>
             <field name="room_id" ref="room_303"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="950000"/>
+            <field name="price_night" eval="75000"/>
         </record>
         <record id="stay_178" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2847,7 +2847,7 @@
             <field name="room_type_id" ref="rtype_vip"/>
             <field name="room_id" ref="room_402"/>
             <field name="adults" eval="3"/>
-            <field name="price_night" eval="1500000"/>
+            <field name="price_night" eval="120000"/>
         </record>
         <record id="stay_179" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2863,7 +2863,7 @@
             <field name="room_type_id" ref="rtype_vip"/>
             <field name="room_id" ref="room_402"/>
             <field name="adults" eval="3"/>
-            <field name="price_night" eval="1500000"/>
+            <field name="price_night" eval="120000"/>
         </record>
         <record id="stay_180" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2879,7 +2879,7 @@
             <field name="room_type_id" ref="rtype_vip"/>
             <field name="room_id" ref="room_402"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="1500000"/>
+            <field name="price_night" eval="120000"/>
         </record>
         <record id="stay_181" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2895,7 +2895,7 @@
             <field name="room_type_id" ref="rtype_vip"/>
             <field name="room_id" ref="room_402"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="1500000"/>
+            <field name="price_night" eval="120000"/>
         </record>
         <record id="stay_182" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2911,7 +2911,7 @@
             <field name="room_type_id" ref="rtype_vip"/>
             <field name="room_id" ref="room_402"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="1500000"/>
+            <field name="price_night" eval="120000"/>
         </record>
         <record id="stay_183" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2927,7 +2927,7 @@
             <field name="room_type_id" ref="rtype_vip"/>
             <field name="room_id" ref="room_402"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="1500000"/>
+            <field name="price_night" eval="120000"/>
         </record>
         <record id="stay_184" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2943,7 +2943,7 @@
             <field name="room_type_id" ref="rtype_vip"/>
             <field name="room_id" ref="room_402"/>
             <field name="adults" eval="3"/>
-            <field name="price_night" eval="1500000"/>
+            <field name="price_night" eval="120000"/>
         </record>
         <record id="stay_185" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2959,7 +2959,7 @@
             <field name="room_type_id" ref="rtype_vip"/>
             <field name="room_id" ref="room_402"/>
             <field name="adults" eval="3"/>
-            <field name="price_night" eval="1500000"/>
+            <field name="price_night" eval="120000"/>
         </record>
         <record id="stay_186" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2975,7 +2975,7 @@
             <field name="room_type_id" ref="rtype_vip"/>
             <field name="room_id" ref="room_402"/>
             <field name="adults" eval="3"/>
-            <field name="price_night" eval="1500000"/>
+            <field name="price_night" eval="120000"/>
         </record>
         <record id="stay_187" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -2991,7 +2991,7 @@
             <field name="room_type_id" ref="rtype_vip"/>
             <field name="room_id" ref="room_402"/>
             <field name="adults" eval="2"/>
-            <field name="price_night" eval="1500000"/>
+            <field name="price_night" eval="120000"/>
         </record>
         <record id="stay_188" model="aite.hotel.reservation">
             <field name="hotel_id" ref="hotel_main"/>
@@ -3007,7 +3007,7 @@
             <field name="room_type_id" ref="rtype_vip"/>
             <field name="room_id" ref="room_402"/>
             <field name="adults" eval="3"/>
-            <field name="price_night" eval="1500000"/>
+            <field name="price_night" eval="120000"/>
         </record>
     </data>
 </odoo>

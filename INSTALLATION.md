@@ -46,7 +46,8 @@ AITE_HOUSE/
   pour créer une caisse. Sur une base neuve, installez le module de
   localisation comptable de votre pays (Comptabilité → Configuration), ou
   créez la base avec les données de démonstration Odoo.
-- **Devise de la société en GNF ou FCFA (XAF)** selon le pays, à
+- **Devise de la société en FCFA (`XAF`)** — celle sur laquelle sont
+  calibrés les seuils du produit (écart de caisse, paliers de fidélité), à
   positionner **avant** toute écriture comptable — Odoo refuse ensuite
   d'en changer.
 

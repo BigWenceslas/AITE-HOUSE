@@ -67,8 +67,8 @@ class TestDemoGenerator(TransactionCase):
         })
         self.env.user.write({'company_ids': [(4, company.id)]})
         generator = self.generator.with_company(company)
-        self.assertEqual(generator._ensure_currency(), 'GNF')
-        self.assertEqual(company.currency_id.name, 'GNF')
+        self.assertEqual(generator._ensure_currency(), 'XAF')
+        self.assertEqual(company.currency_id.name, 'XAF')
 
     def test_currency_is_left_alone_once_entries_exist(self):
         """Une écriture comptable fige la devise : on n'y touche plus."""
@@ -83,19 +83,19 @@ class TestDemoGenerator(TransactionCase):
 
     def test_currency_is_left_alone_when_deliberately_chosen(self):
         """Une devise déjà choisie (ni USD ni EUR) n'est pas écrasée."""
-        xof = self.env['res.currency'].with_context(
-            active_test=False).search([('name', '=', 'XOF')], limit=1)
-        if not xof:
-            self.skipTest("devise XOF absente de la base")
-        xof.write({'active': True})
+        gnf = self.env['res.currency'].with_context(
+            active_test=False).search([('name', '=', 'GNF')], limit=1)
+        if not gnf:
+            self.skipTest("devise GNF absente de la base")
+        gnf.write({'active': True})
         company = self.env['res.company'].create({
-            'name': "Société XOF (test)",
-            'currency_id': xof.id,
+            'name': "Société GNF (test)",
+            'currency_id': gnf.id,
         })
         self.env.user.write({'company_ids': [(4, company.id)]})
         generator = self.generator.with_company(company)
-        self.assertEqual(generator._ensure_currency(), 'XOF')
-        self.assertEqual(company.currency_id.name, 'XOF')
+        self.assertEqual(generator._ensure_currency(), 'GNF')
+        self.assertEqual(company.currency_id.name, 'GNF')
 
     def test_currency_is_idempotent(self):
         company = self.env['res.company'].create({
@@ -105,7 +105,7 @@ class TestDemoGenerator(TransactionCase):
         self.env.user.write({'company_ids': [(4, company.id)]})
         generator = self.generator.with_company(company)
         generator._ensure_currency()
-        self.assertEqual(generator._ensure_currency(), 'GNF')
+        self.assertEqual(generator._ensure_currency(), 'XAF')
 
     def test_generation_reports_the_currency(self):
         created = self.generator.generate_all(scale='small')

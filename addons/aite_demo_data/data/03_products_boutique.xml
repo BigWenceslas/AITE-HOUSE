@@ -4,8 +4,8 @@
         <record id="prod_075" model="product.product">
             <field name="name">Arachides grillées 200 g</field>
             <field name="categ_id" ref="cat_snacks"/>
-            <field name="list_price" eval="15000"/>
-            <field name="standard_price" eval="7000"/>
+            <field name="list_price" eval="1200"/>
+            <field name="standard_price" eval="550"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -14,8 +14,8 @@
         <record id="prod_076" model="product.product">
             <field name="name">Noix de cajou 200 g</field>
             <field name="categ_id" ref="cat_snacks"/>
-            <field name="list_price" eval="45000"/>
-            <field name="standard_price" eval="24000"/>
+            <field name="list_price" eval="3500"/>
+            <field name="standard_price" eval="1800"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -24,8 +24,8 @@
         <record id="prod_077" model="product.product">
             <field name="name">Chips 90 g</field>
             <field name="categ_id" ref="cat_snacks"/>
-            <field name="list_price" eval="14000"/>
-            <field name="standard_price" eval="7000"/>
+            <field name="list_price" eval="1100"/>
+            <field name="standard_price" eval="550"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -34,8 +34,8 @@
         <record id="prod_078" model="product.product">
             <field name="name">Biscuits sablés 150 g</field>
             <field name="categ_id" ref="cat_snacks"/>
-            <field name="list_price" eval="16000"/>
-            <field name="standard_price" eval="8000"/>
+            <field name="list_price" eval="1200"/>
+            <field name="standard_price" eval="600"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -44,8 +44,8 @@
         <record id="prod_079" model="product.product">
             <field name="name">Tablette chocolat noir</field>
             <field name="categ_id" ref="cat_snacks"/>
-            <field name="list_price" eval="28000"/>
-            <field name="standard_price" eval="14000"/>
+            <field name="list_price" eval="2200"/>
+            <field name="standard_price" eval="1100"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -54,8 +54,8 @@
         <record id="prod_080" model="product.product">
             <field name="name">Chewing-gum menthe</field>
             <field name="categ_id" ref="cat_snacks"/>
-            <field name="list_price" eval="5000"/>
-            <field name="standard_price" eval="2200"/>
+            <field name="list_price" eval="400"/>
+            <field name="standard_price" eval="150"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -64,8 +64,8 @@
         <record id="prod_081" model="product.product">
             <field name="name">Bonbons assortis 150 g</field>
             <field name="categ_id" ref="cat_snacks"/>
-            <field name="list_price" eval="12000"/>
-            <field name="standard_price" eval="5500"/>
+            <field name="list_price" eval="900"/>
+            <field name="standard_price" eval="400"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -74,8 +74,8 @@
         <record id="prod_082" model="product.product">
             <field name="name">Barre céréales</field>
             <field name="categ_id" ref="cat_snacks"/>
-            <field name="list_price" eval="10000"/>
-            <field name="standard_price" eval="4800"/>
+            <field name="list_price" eval="750"/>
+            <field name="standard_price" eval="350"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -84,8 +84,8 @@
         <record id="prod_083" model="product.product">
             <field name="name">Café de Macenta moulu 250 g</field>
             <field name="categ_id" ref="cat_epicerie"/>
-            <field name="list_price" eval="65000"/>
-            <field name="standard_price" eval="32000"/>
+            <field name="list_price" eval="5000"/>
+            <field name="standard_price" eval="2500"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -94,8 +94,8 @@
         <record id="prod_084" model="product.product">
             <field name="name">Miel de Guinée forestière 350 g</field>
             <field name="categ_id" ref="cat_epicerie"/>
-            <field name="list_price" eval="55000"/>
-            <field name="standard_price" eval="26000"/>
+            <field name="list_price" eval="4200"/>
+            <field name="standard_price" eval="2000"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -104,8 +104,8 @@
         <record id="prod_085" model="product.product">
             <field name="name">Beurre de karité pur 200 g</field>
             <field name="categ_id" ref="cat_epicerie"/>
-            <field name="list_price" eval="40000"/>
-            <field name="standard_price" eval="18000"/>
+            <field name="list_price" eval="3100"/>
+            <field name="standard_price" eval="1400"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -114,8 +114,8 @@
         <record id="prod_086" model="product.product">
             <field name="name">Piment en poudre artisanal</field>
             <field name="categ_id" ref="cat_epicerie"/>
-            <field name="list_price" eval="18000"/>
-            <field name="standard_price" eval="7500"/>
+            <field name="list_price" eval="1400"/>
+            <field name="standard_price" eval="600"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -124,8 +124,8 @@
         <record id="prod_087" model="product.product">
             <field name="name">Confiture de mangue 250 g</field>
             <field name="categ_id" ref="cat_epicerie"/>
-            <field name="list_price" eval="32000"/>
-            <field name="standard_price" eval="14000"/>
+            <field name="list_price" eval="2500"/>
+            <field name="standard_price" eval="1100"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -134,8 +134,8 @@
         <record id="prod_088" model="product.product">
             <field name="name">Thé kinkéliba (sachet)</field>
             <field name="categ_id" ref="cat_epicerie"/>
-            <field name="list_price" eval="20000"/>
-            <field name="standard_price" eval="8000"/>
+            <field name="list_price" eval="1500"/>
+            <field name="standard_price" eval="600"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -144,8 +144,8 @@
         <record id="prod_089" model="product.product">
             <field name="name">Huile de palme rouge 50 cl</field>
             <field name="categ_id" ref="cat_epicerie"/>
-            <field name="list_price" eval="25000"/>
-            <field name="standard_price" eval="11000"/>
+            <field name="list_price" eval="1900"/>
+            <field name="standard_price" eval="850"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -154,8 +154,8 @@
         <record id="prod_090" model="product.product">
             <field name="name">Savon de toilette</field>
             <field name="categ_id" ref="cat_hygiene"/>
-            <field name="list_price" eval="12000"/>
-            <field name="standard_price" eval="5000"/>
+            <field name="list_price" eval="900"/>
+            <field name="standard_price" eval="400"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -164,8 +164,8 @@
         <record id="prod_091" model="product.product">
             <field name="name">Gel douche 250 ml</field>
             <field name="categ_id" ref="cat_hygiene"/>
-            <field name="list_price" eval="30000"/>
-            <field name="standard_price" eval="14000"/>
+            <field name="list_price" eval="2300"/>
+            <field name="standard_price" eval="1100"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -174,8 +174,8 @@
         <record id="prod_092" model="product.product">
             <field name="name">Shampooing 250 ml</field>
             <field name="categ_id" ref="cat_hygiene"/>
-            <field name="list_price" eval="32000"/>
-            <field name="standard_price" eval="15000"/>
+            <field name="list_price" eval="2500"/>
+            <field name="standard_price" eval="1200"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -184,8 +184,8 @@
         <record id="prod_093" model="product.product">
             <field name="name">Dentifrice</field>
             <field name="categ_id" ref="cat_hygiene"/>
-            <field name="list_price" eval="18000"/>
-            <field name="standard_price" eval="8000"/>
+            <field name="list_price" eval="1400"/>
+            <field name="standard_price" eval="600"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -194,8 +194,8 @@
         <record id="prod_094" model="product.product">
             <field name="name">Brosse à dents</field>
             <field name="categ_id" ref="cat_hygiene"/>
-            <field name="list_price" eval="10000"/>
-            <field name="standard_price" eval="4000"/>
+            <field name="list_price" eval="750"/>
+            <field name="standard_price" eval="300"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -204,8 +204,8 @@
         <record id="prod_095" model="product.product">
             <field name="name">Crème solaire SPF 50</field>
             <field name="categ_id" ref="cat_hygiene"/>
-            <field name="list_price" eval="85000"/>
-            <field name="standard_price" eval="42000"/>
+            <field name="list_price" eval="6500"/>
+            <field name="standard_price" eval="3200"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -214,8 +214,8 @@
         <record id="prod_096" model="product.product">
             <field name="name">Lingettes rafraîchissantes</field>
             <field name="categ_id" ref="cat_hygiene"/>
-            <field name="list_price" eval="15000"/>
-            <field name="standard_price" eval="6500"/>
+            <field name="list_price" eval="1200"/>
+            <field name="standard_price" eval="500"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -224,8 +224,8 @@
         <record id="prod_097" model="product.product">
             <field name="name">Répulsif moustiques 100 ml</field>
             <field name="categ_id" ref="cat_hygiene"/>
-            <field name="list_price" eval="45000"/>
-            <field name="standard_price" eval="21000"/>
+            <field name="list_price" eval="3500"/>
+            <field name="standard_price" eval="1600"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -234,8 +234,8 @@
         <record id="prod_098" model="product.product">
             <field name="name">Mouchoirs (paquet)</field>
             <field name="categ_id" ref="cat_hygiene"/>
-            <field name="list_price" eval="6000"/>
-            <field name="standard_price" eval="2500"/>
+            <field name="list_price" eval="450"/>
+            <field name="standard_price" eval="200"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -244,8 +244,8 @@
         <record id="prod_099" model="product.product">
             <field name="name">Rasoir jetable (x3)</field>
             <field name="categ_id" ref="cat_hygiene"/>
-            <field name="list_price" eval="15000"/>
-            <field name="standard_price" eval="6500"/>
+            <field name="list_price" eval="1200"/>
+            <field name="standard_price" eval="500"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -254,8 +254,8 @@
         <record id="prod_100" model="product.product">
             <field name="name">Statuette bois sculpté</field>
             <field name="categ_id" ref="cat_artisanat"/>
-            <field name="list_price" eval="180000"/>
-            <field name="standard_price" eval="80000"/>
+            <field name="list_price" eval="14000"/>
+            <field name="standard_price" eval="6200"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -264,8 +264,8 @@
         <record id="prod_101" model="product.product">
             <field name="name">Masque décoratif mural</field>
             <field name="categ_id" ref="cat_artisanat"/>
-            <field name="list_price" eval="220000"/>
-            <field name="standard_price" eval="100000"/>
+            <field name="list_price" eval="17000"/>
+            <field name="standard_price" eval="7700"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -274,8 +274,8 @@
         <record id="prod_102" model="product.product">
             <field name="name">Panier tressé</field>
             <field name="categ_id" ref="cat_artisanat"/>
-            <field name="list_price" eval="95000"/>
-            <field name="standard_price" eval="42000"/>
+            <field name="list_price" eval="7300"/>
+            <field name="standard_price" eval="3200"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -284,8 +284,8 @@
         <record id="prod_103" model="product.product">
             <field name="name">Collier de perles</field>
             <field name="categ_id" ref="cat_artisanat"/>
-            <field name="list_price" eval="60000"/>
-            <field name="standard_price" eval="25000"/>
+            <field name="list_price" eval="4600"/>
+            <field name="standard_price" eval="1900"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -294,8 +294,8 @@
         <record id="prod_104" model="product.product">
             <field name="name">Djembé décoratif</field>
             <field name="categ_id" ref="cat_artisanat"/>
-            <field name="list_price" eval="250000"/>
-            <field name="standard_price" eval="115000"/>
+            <field name="list_price" eval="19000"/>
+            <field name="standard_price" eval="8800"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -304,8 +304,8 @@
         <record id="prod_105" model="product.product">
             <field name="name">Carte postale</field>
             <field name="categ_id" ref="cat_artisanat"/>
-            <field name="list_price" eval="8000"/>
-            <field name="standard_price" eval="3000"/>
+            <field name="list_price" eval="600"/>
+            <field name="standard_price" eval="250"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -314,8 +314,8 @@
         <record id="prod_106" model="product.product">
             <field name="name">Magnet Guinée</field>
             <field name="categ_id" ref="cat_artisanat"/>
-            <field name="list_price" eval="15000"/>
-            <field name="standard_price" eval="6000"/>
+            <field name="list_price" eval="1200"/>
+            <field name="standard_price" eval="450"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -324,8 +324,8 @@
         <record id="prod_107" model="product.product">
             <field name="name">Tableau batik</field>
             <field name="categ_id" ref="cat_artisanat"/>
-            <field name="list_price" eval="160000"/>
-            <field name="standard_price" eval="70000"/>
+            <field name="list_price" eval="12500"/>
+            <field name="standard_price" eval="5400"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -334,8 +334,8 @@
         <record id="prod_108" model="product.product">
             <field name="name">Pagne lépi tissé (coupon)</field>
             <field name="categ_id" ref="cat_textile"/>
-            <field name="list_price" eval="350000"/>
-            <field name="standard_price" eval="170000"/>
+            <field name="list_price" eval="27000"/>
+            <field name="standard_price" eval="13000"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -344,8 +344,8 @@
         <record id="prod_109" model="product.product">
             <field name="name">Chemise brodée</field>
             <field name="categ_id" ref="cat_textile"/>
-            <field name="list_price" eval="280000"/>
-            <field name="standard_price" eval="130000"/>
+            <field name="list_price" eval="21500"/>
+            <field name="standard_price" eval="10000"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -354,8 +354,8 @@
         <record id="prod_110" model="product.product">
             <field name="name">Boubou brodé</field>
             <field name="categ_id" ref="cat_textile"/>
-            <field name="list_price" eval="450000"/>
-            <field name="standard_price" eval="210000"/>
+            <field name="list_price" eval="35000"/>
+            <field name="standard_price" eval="16000"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -364,8 +364,8 @@
         <record id="prod_111" model="product.product">
             <field name="name">Foulard wax</field>
             <field name="categ_id" ref="cat_textile"/>
-            <field name="list_price" eval="85000"/>
-            <field name="standard_price" eval="38000"/>
+            <field name="list_price" eval="6500"/>
+            <field name="standard_price" eval="2900"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -374,8 +374,8 @@
         <record id="prod_112" model="product.product">
             <field name="name">Sac artisanal cuir</field>
             <field name="categ_id" ref="cat_textile"/>
-            <field name="list_price" eval="320000"/>
-            <field name="standard_price" eval="150000"/>
+            <field name="list_price" eval="24500"/>
+            <field name="standard_price" eval="11500"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -384,8 +384,8 @@
         <record id="prod_113" model="product.product">
             <field name="name">Sandales cuir artisanales</field>
             <field name="categ_id" ref="cat_textile"/>
-            <field name="list_price" eval="180000"/>
-            <field name="standard_price" eval="82000"/>
+            <field name="list_price" eval="14000"/>
+            <field name="standard_price" eval="6300"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -394,8 +394,8 @@
         <record id="prod_114" model="product.product">
             <field name="name">T-shirt du complexe</field>
             <field name="categ_id" ref="cat_textile"/>
-            <field name="list_price" eval="120000"/>
-            <field name="standard_price" eval="48000"/>
+            <field name="list_price" eval="9200"/>
+            <field name="standard_price" eval="3700"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -404,8 +404,8 @@
         <record id="prod_115" model="product.product">
             <field name="name">Casquette du complexe</field>
             <field name="categ_id" ref="cat_textile"/>
-            <field name="list_price" eval="90000"/>
-            <field name="standard_price" eval="36000"/>
+            <field name="list_price" eval="6900"/>
+            <field name="standard_price" eval="2800"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -414,8 +414,8 @@
         <record id="prod_116" model="product.product">
             <field name="name">Adaptateur universel</field>
             <field name="categ_id" ref="cat_techno"/>
-            <field name="list_price" eval="65000"/>
-            <field name="standard_price" eval="30000"/>
+            <field name="list_price" eval="5000"/>
+            <field name="standard_price" eval="2300"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -424,8 +424,8 @@
         <record id="prod_117" model="product.product">
             <field name="name">Chargeur USB-C</field>
             <field name="categ_id" ref="cat_techno"/>
-            <field name="list_price" eval="85000"/>
-            <field name="standard_price" eval="40000"/>
+            <field name="list_price" eval="6500"/>
+            <field name="standard_price" eval="3100"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -434,8 +434,8 @@
         <record id="prod_118" model="product.product">
             <field name="name">Écouteurs filaires</field>
             <field name="categ_id" ref="cat_techno"/>
-            <field name="list_price" eval="55000"/>
-            <field name="standard_price" eval="25000"/>
+            <field name="list_price" eval="4200"/>
+            <field name="standard_price" eval="1900"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -444,8 +444,8 @@
         <record id="prod_119" model="product.product">
             <field name="name">Batterie externe 10 000 mAh</field>
             <field name="categ_id" ref="cat_techno"/>
-            <field name="list_price" eval="220000"/>
-            <field name="standard_price" eval="105000"/>
+            <field name="list_price" eval="17000"/>
+            <field name="standard_price" eval="8100"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
@@ -454,8 +454,8 @@
         <record id="prod_120" model="product.product">
             <field name="name">Parapluie pliant</field>
             <field name="categ_id" ref="cat_techno"/>
-            <field name="list_price" eval="70000"/>
-            <field name="standard_price" eval="32000"/>
+            <field name="list_price" eval="5400"/>
+            <field name="standard_price" eval="2500"/>
             <field name="type">consu</field>
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>

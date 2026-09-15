@@ -7,7 +7,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-42, hour=20, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-42, hour=23, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="450000"/>
+            <field name="amount_manual" eval="35000"/>
             <field name="state">no_show</field>
             <field name="source">online</field>
         </record>
@@ -18,7 +18,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-42, hour=18, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-42, hour=19, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="280000"/>
+            <field name="amount_manual" eval="21500"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -29,7 +29,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-42, hour=8, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-42, hour=8, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="45000"/>
+            <field name="amount_manual" eval="3500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -40,7 +40,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-42, hour=19, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-42, hour=20, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="350000"/>
+            <field name="amount_manual" eval="27000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -51,7 +51,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-42, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-42, hour=17, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="30000"/>
+            <field name="amount_manual" eval="2300"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -62,7 +62,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-42, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-42, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="90000"/>
+            <field name="amount_manual" eval="6900"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -72,7 +72,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-41, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-41, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">cancelled</field>
             <field name="source">desk</field>
         </record>
@@ -82,7 +82,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-41, hour=20, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-41, hour=22, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -92,7 +92,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-41, hour=20, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-41, hour=23, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="450000"/>
+            <field name="amount_manual" eval="35000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -103,7 +103,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-41, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-41, hour=18, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="180000"/>
+            <field name="amount_manual" eval="14000"/>
             <field name="state">no_show</field>
             <field name="source">desk</field>
         </record>
@@ -114,7 +114,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-41, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-41, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="350000"/>
+            <field name="amount_manual" eval="27000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -125,7 +125,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-41, hour=16, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-41, hour=17, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="280000"/>
+            <field name="amount_manual" eval="21500"/>
             <field name="state">cancelled</field>
             <field name="source">desk</field>
         </record>
@@ -136,7 +136,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-41, hour=15, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-41, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="180000"/>
+            <field name="amount_manual" eval="14000"/>
             <field name="state">no_show</field>
             <field name="source">desk</field>
         </record>
@@ -146,7 +146,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-40, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-40, hour=22, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="450000"/>
+            <field name="amount_manual" eval="35000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -156,7 +156,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-40, hour=21, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-40, hour=23, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -167,7 +167,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-40, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-40, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="130000"/>
+            <field name="amount_manual" eval="10000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -178,7 +178,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-40, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-40, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="250000"/>
+            <field name="amount_manual" eval="19000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -189,7 +189,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-40, hour=9, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-40, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="480000"/>
+            <field name="amount_manual" eval="37000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -200,7 +200,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-40, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-40, hour=15, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="3"/>
-            <field name="amount_manual" eval="45000"/>
+            <field name="amount_manual" eval="3500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -211,7 +211,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-40, hour=16, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-40, hour=17, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="350000"/>
+            <field name="amount_manual" eval="27000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -222,7 +222,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-40, hour=16, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-40, hour=17, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="130000"/>
+            <field name="amount_manual" eval="10000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -232,7 +232,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-39, hour=9, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-39, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -243,7 +243,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-39, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-39, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="250000"/>
+            <field name="amount_manual" eval="19000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -254,7 +254,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-39, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-39, hour=14, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="45000"/>
+            <field name="amount_manual" eval="3500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -265,7 +265,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-39, hour=13, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-39, hour=15, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="250000"/>
+            <field name="amount_manual" eval="19000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -276,7 +276,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-39, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-39, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="620000"/>
+            <field name="amount_manual" eval="47500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -286,7 +286,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-38, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-38, hour=20, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="1200000"/>
+            <field name="amount_manual" eval="92500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -296,7 +296,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-38, hour=20, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-38, hour=23, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="450000"/>
+            <field name="amount_manual" eval="35000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -306,7 +306,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-38, hour=20, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-38, hour=23, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="900000"/>
+            <field name="amount_manual" eval="69000"/>
             <field name="state">cancelled</field>
             <field name="source">desk</field>
         </record>
@@ -316,7 +316,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-38, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-38, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="900000"/>
+            <field name="amount_manual" eval="69000"/>
             <field name="state">cancelled</field>
             <field name="source">online</field>
         </record>
@@ -327,7 +327,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-38, hour=20, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-38, hour=21, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="280000"/>
+            <field name="amount_manual" eval="21500"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -338,7 +338,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-38, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-38, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="350000"/>
+            <field name="amount_manual" eval="27000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -349,7 +349,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-38, hour=10, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-38, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="110000"/>
+            <field name="amount_manual" eval="8500"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -360,7 +360,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-38, hour=9, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-38, hour=9, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="3"/>
-            <field name="amount_manual" eval="45000"/>
+            <field name="amount_manual" eval="3500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -371,7 +371,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-38, hour=16, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-38, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="480000"/>
+            <field name="amount_manual" eval="37000"/>
             <field name="state">cancelled</field>
             <field name="source">desk</field>
         </record>
@@ -382,7 +382,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-38, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-38, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="180000"/>
+            <field name="amount_manual" eval="14000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -392,7 +392,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-37, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-37, hour=21, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="900000"/>
+            <field name="amount_manual" eval="69000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -402,7 +402,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-37, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-37, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="600000"/>
+            <field name="amount_manual" eval="46000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -413,7 +413,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-37, hour=13, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-37, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="5"/>
-            <field name="amount_manual" eval="60000"/>
+            <field name="amount_manual" eval="4600"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -424,7 +424,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-37, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-37, hour=17, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="45000"/>
+            <field name="amount_manual" eval="3500"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -435,7 +435,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-37, hour=15, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-37, hour=16, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="280000"/>
+            <field name="amount_manual" eval="21500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -446,7 +446,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-37, hour=14, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-37, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="180000"/>
+            <field name="amount_manual" eval="14000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -457,7 +457,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-37, hour=15, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-37, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="45000"/>
+            <field name="amount_manual" eval="3500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -467,7 +467,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-36, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-36, hour=20, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="450000"/>
+            <field name="amount_manual" eval="35000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -478,7 +478,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-36, hour=20, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-36, hour=21, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="620000"/>
+            <field name="amount_manual" eval="47500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -489,7 +489,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-36, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-36, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="350000"/>
+            <field name="amount_manual" eval="27000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -500,7 +500,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-36, hour=16, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-36, hour=18, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="250000"/>
+            <field name="amount_manual" eval="19000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -511,7 +511,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-36, hour=10, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-36, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="620000"/>
+            <field name="amount_manual" eval="47500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -522,7 +522,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-36, hour=17, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-36, hour=18, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -533,7 +533,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-36, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-36, hour=13, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="6"/>
-            <field name="amount_manual" eval="72000"/>
+            <field name="amount_manual" eval="5500"/>
             <field name="state">cancelled</field>
             <field name="source">desk</field>
         </record>
@@ -543,7 +543,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-35, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-35, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -553,7 +553,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-35, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-35, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="1200000"/>
+            <field name="amount_manual" eval="92500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -563,7 +563,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-35, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-35, hour=20, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="900000"/>
+            <field name="amount_manual" eval="69000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -574,7 +574,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-35, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-35, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="250000"/>
+            <field name="amount_manual" eval="19000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -585,7 +585,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-35, hour=11, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-35, hour=12, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="350000"/>
+            <field name="amount_manual" eval="27000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -596,7 +596,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-35, hour=16, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-35, hour=17, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="620000"/>
+            <field name="amount_manual" eval="47500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -607,7 +607,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-35, hour=9, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-35, hour=10, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="280000"/>
+            <field name="amount_manual" eval="21500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -617,7 +617,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-34, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-34, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="900000"/>
+            <field name="amount_manual" eval="69000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -628,7 +628,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-34, hour=11, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-34, hour=12, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="90000"/>
+            <field name="amount_manual" eval="6900"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -639,7 +639,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-34, hour=14, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-34, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="3"/>
-            <field name="amount_manual" eval="45000"/>
+            <field name="amount_manual" eval="3500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -650,7 +650,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-34, hour=18, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-34, hour=19, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="110000"/>
+            <field name="amount_manual" eval="8500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -660,7 +660,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-33, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-33, hour=21, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">cancelled</field>
             <field name="source">desk</field>
         </record>
@@ -670,7 +670,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-33, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-33, hour=21, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="600000"/>
+            <field name="amount_manual" eval="46000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -680,7 +680,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-33, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-33, hour=22, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="450000"/>
+            <field name="amount_manual" eval="35000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -691,7 +691,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-33, hour=16, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-33, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="80000"/>
+            <field name="amount_manual" eval="6200"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -702,7 +702,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-33, hour=9, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-33, hour=9, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="45000"/>
+            <field name="amount_manual" eval="3500"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -713,7 +713,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-33, hour=10, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-33, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="250000"/>
+            <field name="amount_manual" eval="19000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -723,7 +723,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-32, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-32, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="900000"/>
+            <field name="amount_manual" eval="69000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -733,7 +733,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-32, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-32, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="600000"/>
+            <field name="amount_manual" eval="46000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -743,7 +743,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-32, hour=10, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-32, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="600000"/>
+            <field name="amount_manual" eval="46000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -754,7 +754,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-32, hour=10, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-32, hour=11, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="120000"/>
+            <field name="amount_manual" eval="9200"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -765,7 +765,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-32, hour=13, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-32, hour=14, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="130000"/>
+            <field name="amount_manual" eval="10000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -776,7 +776,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-32, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-32, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="180000"/>
+            <field name="amount_manual" eval="14000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -787,7 +787,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-32, hour=18, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-32, hour=19, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="130000"/>
+            <field name="amount_manual" eval="10000"/>
             <field name="state">no_show</field>
             <field name="source">desk</field>
         </record>
@@ -797,7 +797,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-31, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-31, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -807,7 +807,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-31, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-31, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -818,7 +818,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-31, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-31, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="620000"/>
+            <field name="amount_manual" eval="47500"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -829,7 +829,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-31, hour=16, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-31, hour=17, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="620000"/>
+            <field name="amount_manual" eval="47500"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -840,7 +840,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-31, hour=19, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-31, hour=20, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="350000"/>
+            <field name="amount_manual" eval="27000"/>
             <field name="state">cancelled</field>
             <field name="source">online</field>
         </record>
@@ -851,7 +851,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-31, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-31, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="180000"/>
+            <field name="amount_manual" eval="14000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -862,7 +862,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-31, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-31, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="350000"/>
+            <field name="amount_manual" eval="27000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -873,7 +873,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-31, hour=9, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-31, hour=10, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="80000"/>
+            <field name="amount_manual" eval="6200"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -884,7 +884,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-31, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-31, hour=17, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="5"/>
-            <field name="amount_manual" eval="60000"/>
+            <field name="amount_manual" eval="4600"/>
             <field name="state">no_show</field>
             <field name="source">desk</field>
         </record>
@@ -894,7 +894,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-30, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-30, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="600000"/>
+            <field name="amount_manual" eval="46000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -904,7 +904,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-30, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-30, hour=21, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="1200000"/>
+            <field name="amount_manual" eval="92500"/>
             <field name="state">cancelled</field>
             <field name="source">online</field>
         </record>
@@ -915,7 +915,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-30, hour=13, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-30, hour=14, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="280000"/>
+            <field name="amount_manual" eval="21500"/>
             <field name="state">no_show</field>
             <field name="source">desk</field>
         </record>
@@ -926,7 +926,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-30, hour=9, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-30, hour=10, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="480000"/>
+            <field name="amount_manual" eval="37000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -937,7 +937,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-30, hour=9, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-30, hour=10, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="480000"/>
+            <field name="amount_manual" eval="37000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -948,7 +948,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-30, hour=16, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-30, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="2"/>
-            <field name="amount_manual" eval="30000"/>
+            <field name="amount_manual" eval="2300"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -959,7 +959,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-30, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-30, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="120000"/>
+            <field name="amount_manual" eval="9200"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -970,7 +970,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-30, hour=16, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-30, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="30000"/>
+            <field name="amount_manual" eval="2300"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -981,7 +981,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-30, hour=11, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-30, hour=12, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="620000"/>
+            <field name="amount_manual" eval="47500"/>
             <field name="state">no_show</field>
             <field name="source">online</field>
         </record>
@@ -991,7 +991,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-29, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-29, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="450000"/>
+            <field name="amount_manual" eval="35000"/>
             <field name="state">no_show</field>
             <field name="source">online</field>
         </record>
@@ -1002,7 +1002,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-29, hour=16, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-29, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="5"/>
-            <field name="amount_manual" eval="75000"/>
+            <field name="amount_manual" eval="5800"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1013,7 +1013,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-29, hour=12, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-29, hour=13, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">cancelled</field>
             <field name="source">desk</field>
         </record>
@@ -1024,7 +1024,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-29, hour=16, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-29, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="5"/>
-            <field name="amount_manual" eval="60000"/>
+            <field name="amount_manual" eval="4600"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1034,7 +1034,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-28, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-28, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -1044,7 +1044,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-28, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-28, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="450000"/>
+            <field name="amount_manual" eval="35000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -1055,7 +1055,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-28, hour=10, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-28, hour=10, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="2"/>
-            <field name="amount_manual" eval="30000"/>
+            <field name="amount_manual" eval="2300"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1066,7 +1066,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-28, hour=10, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-28, hour=11, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="110000"/>
+            <field name="amount_manual" eval="8500"/>
             <field name="state">no_show</field>
             <field name="source">online</field>
         </record>
@@ -1077,7 +1077,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-28, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-28, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="90000"/>
+            <field name="amount_manual" eval="6900"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -1087,7 +1087,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-27, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-27, hour=21, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="900000"/>
+            <field name="amount_manual" eval="69000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -1097,7 +1097,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-27, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-27, hour=23, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="600000"/>
+            <field name="amount_manual" eval="46000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1107,7 +1107,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-27, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-27, hour=23, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="1200000"/>
+            <field name="amount_manual" eval="92500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1118,7 +1118,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-27, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-27, hour=15, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="180000"/>
+            <field name="amount_manual" eval="14000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1129,7 +1129,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-27, hour=9, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-27, hour=11, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="250000"/>
+            <field name="amount_manual" eval="19000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1140,7 +1140,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-27, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-27, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="250000"/>
+            <field name="amount_manual" eval="19000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1150,7 +1150,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-26, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-26, hour=21, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="600000"/>
+            <field name="amount_manual" eval="46000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1161,7 +1161,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-26, hour=9, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-26, hour=9, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="2"/>
-            <field name="amount_manual" eval="24000"/>
+            <field name="amount_manual" eval="1800"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1172,7 +1172,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-26, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-26, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="110000"/>
+            <field name="amount_manual" eval="8500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1183,7 +1183,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-26, hour=10, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-26, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="90000"/>
+            <field name="amount_manual" eval="6900"/>
             <field name="state">cancelled</field>
             <field name="source">desk</field>
         </record>
@@ -1194,7 +1194,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-26, hour=9, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-26, hour=10, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -1204,7 +1204,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-25, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-25, hour=21, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -1214,7 +1214,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-25, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-25, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="450000"/>
+            <field name="amount_manual" eval="35000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1225,7 +1225,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-25, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-25, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="620000"/>
+            <field name="amount_manual" eval="47500"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -1236,7 +1236,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-25, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-25, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="130000"/>
+            <field name="amount_manual" eval="10000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -1247,7 +1247,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-25, hour=9, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-25, hour=9, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="45000"/>
+            <field name="amount_manual" eval="3500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1258,7 +1258,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-25, hour=10, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-25, hour=11, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="120000"/>
+            <field name="amount_manual" eval="9200"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1269,7 +1269,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-25, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-25, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1280,7 +1280,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-25, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-25, hour=11, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="80000"/>
+            <field name="amount_manual" eval="6200"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1290,7 +1290,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-24, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-24, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1300,7 +1300,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-24, hour=9, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-24, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="600000"/>
+            <field name="amount_manual" eval="46000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -1310,7 +1310,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-24, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-24, hour=20, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="1200000"/>
+            <field name="amount_manual" eval="92500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1321,7 +1321,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-24, hour=15, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-24, hour=16, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="90000"/>
+            <field name="amount_manual" eval="6900"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -1332,7 +1332,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-24, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-24, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="280000"/>
+            <field name="amount_manual" eval="21500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1343,7 +1343,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-24, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-24, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="120000"/>
+            <field name="amount_manual" eval="9200"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1354,7 +1354,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-24, hour=8, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-24, hour=9, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="30000"/>
+            <field name="amount_manual" eval="2300"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -1365,7 +1365,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-24, hour=13, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-24, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="180000"/>
+            <field name="amount_manual" eval="14000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -1375,7 +1375,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-23, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-23, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1385,7 +1385,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-23, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-23, hour=20, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="600000"/>
+            <field name="amount_manual" eval="46000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1395,7 +1395,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-23, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-23, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="900000"/>
+            <field name="amount_manual" eval="69000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -1406,7 +1406,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-23, hour=9, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-23, hour=10, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="120000"/>
+            <field name="amount_manual" eval="9200"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1417,7 +1417,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-23, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-23, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="620000"/>
+            <field name="amount_manual" eval="47500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1428,7 +1428,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-23, hour=18, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-23, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="45000"/>
+            <field name="amount_manual" eval="3500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1439,7 +1439,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-23, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-23, hour=12, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="80000"/>
+            <field name="amount_manual" eval="6200"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -1450,7 +1450,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-23, hour=15, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-23, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="2"/>
-            <field name="amount_manual" eval="30000"/>
+            <field name="amount_manual" eval="2300"/>
             <field name="state">cancelled</field>
             <field name="source">desk</field>
         </record>
@@ -1461,7 +1461,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-23, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-23, hour=18, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="30000"/>
+            <field name="amount_manual" eval="2300"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1472,7 +1472,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-23, hour=13, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-23, hour=15, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="250000"/>
+            <field name="amount_manual" eval="19000"/>
             <field name="state">cancelled</field>
             <field name="source">desk</field>
         </record>
@@ -1482,7 +1482,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-22, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-22, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="600000"/>
+            <field name="amount_manual" eval="46000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -1492,7 +1492,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-22, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-22, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1503,7 +1503,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-22, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-22, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1514,7 +1514,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-22, hour=13, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-22, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="80000"/>
+            <field name="amount_manual" eval="6200"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -1525,7 +1525,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-22, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-22, hour=16, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="30000"/>
+            <field name="amount_manual" eval="2300"/>
             <field name="state">cancelled</field>
             <field name="source">online</field>
         </record>
@@ -1535,7 +1535,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-21, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-21, hour=22, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="1200000"/>
+            <field name="amount_manual" eval="92500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1546,7 +1546,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-21, hour=13, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-21, hour=14, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="350000"/>
+            <field name="amount_manual" eval="27000"/>
             <field name="state">no_show</field>
             <field name="source">online</field>
         </record>
@@ -1557,7 +1557,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-21, hour=19, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-21, hour=20, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="80000"/>
+            <field name="amount_manual" eval="6200"/>
             <field name="state">no_show</field>
             <field name="source">online</field>
         </record>
@@ -1568,7 +1568,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-21, hour=9, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-21, hour=10, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="90000"/>
+            <field name="amount_manual" eval="6900"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1578,7 +1578,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-20, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-20, hour=21, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1588,7 +1588,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-20, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-20, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="600000"/>
+            <field name="amount_manual" eval="46000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -1598,7 +1598,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-20, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-20, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="600000"/>
+            <field name="amount_manual" eval="46000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -1609,7 +1609,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-20, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-20, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="620000"/>
+            <field name="amount_manual" eval="47500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1620,7 +1620,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-20, hour=10, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-20, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="280000"/>
+            <field name="amount_manual" eval="21500"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -1631,7 +1631,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-20, hour=12, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-20, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="180000"/>
+            <field name="amount_manual" eval="14000"/>
             <field name="state">cancelled</field>
             <field name="source">desk</field>
         </record>
@@ -1641,7 +1641,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-19, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-19, hour=20, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="450000"/>
+            <field name="amount_manual" eval="35000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1652,7 +1652,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-19, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-19, hour=14, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="80000"/>
+            <field name="amount_manual" eval="6200"/>
             <field name="state">no_show</field>
             <field name="source">desk</field>
         </record>
@@ -1663,7 +1663,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-19, hour=14, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-19, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="480000"/>
+            <field name="amount_manual" eval="37000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1674,7 +1674,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-19, hour=10, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-19, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="120000"/>
+            <field name="amount_manual" eval="9200"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1684,7 +1684,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-18, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-18, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="900000"/>
+            <field name="amount_manual" eval="69000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -1695,7 +1695,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-18, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-18, hour=12, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="2"/>
-            <field name="amount_manual" eval="30000"/>
+            <field name="amount_manual" eval="2300"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1706,7 +1706,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-18, hour=11, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-18, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="6"/>
-            <field name="amount_manual" eval="72000"/>
+            <field name="amount_manual" eval="5500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1717,7 +1717,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-18, hour=16, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-18, hour=17, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="90000"/>
+            <field name="amount_manual" eval="6900"/>
             <field name="state">no_show</field>
             <field name="source">desk</field>
         </record>
@@ -1728,7 +1728,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-18, hour=16, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-18, hour=17, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="120000"/>
+            <field name="amount_manual" eval="9200"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1739,7 +1739,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-18, hour=11, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-18, hour=12, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="130000"/>
+            <field name="amount_manual" eval="10000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1750,7 +1750,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-18, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-18, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1760,7 +1760,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-17, hour=20, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-17, hour=22, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -1770,7 +1770,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-17, hour=20, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-17, hour=23, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="900000"/>
+            <field name="amount_manual" eval="69000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1780,7 +1780,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-17, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-17, hour=20, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="600000"/>
+            <field name="amount_manual" eval="46000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1791,7 +1791,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-17, hour=9, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-17, hour=10, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="110000"/>
+            <field name="amount_manual" eval="8500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1802,7 +1802,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-17, hour=13, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-17, hour=14, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -1813,7 +1813,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-17, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-17, hour=15, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="80000"/>
+            <field name="amount_manual" eval="6200"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1824,7 +1824,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-17, hour=14, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-17, hour=15, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="350000"/>
+            <field name="amount_manual" eval="27000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -1835,7 +1835,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-17, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-17, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="180000"/>
+            <field name="amount_manual" eval="14000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1845,7 +1845,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-16, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-16, hour=22, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="1200000"/>
+            <field name="amount_manual" eval="92500"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -1855,7 +1855,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-16, hour=9, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-16, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="450000"/>
+            <field name="amount_manual" eval="35000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1865,7 +1865,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-16, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-16, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="900000"/>
+            <field name="amount_manual" eval="69000"/>
             <field name="state">cancelled</field>
             <field name="source">desk</field>
         </record>
@@ -1875,7 +1875,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-16, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-16, hour=21, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="600000"/>
+            <field name="amount_manual" eval="46000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1886,7 +1886,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-16, hour=12, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-16, hour=13, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="120000"/>
+            <field name="amount_manual" eval="9200"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1897,7 +1897,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-16, hour=20, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-16, hour=21, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="180000"/>
+            <field name="amount_manual" eval="14000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1908,7 +1908,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-16, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-16, hour=11, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="30000"/>
+            <field name="amount_manual" eval="2300"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1919,7 +1919,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-16, hour=17, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-16, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="480000"/>
+            <field name="amount_manual" eval="37000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -1930,7 +1930,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-16, hour=11, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-16, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="3"/>
-            <field name="amount_manual" eval="45000"/>
+            <field name="amount_manual" eval="3500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1940,7 +1940,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-15, hour=10, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-15, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="900000"/>
+            <field name="amount_manual" eval="69000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1951,7 +1951,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-15, hour=10, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-15, hour=11, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="130000"/>
+            <field name="amount_manual" eval="10000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1962,7 +1962,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-15, hour=10, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-15, hour=11, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="110000"/>
+            <field name="amount_manual" eval="8500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -1973,7 +1973,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-15, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-15, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="90000"/>
+            <field name="amount_manual" eval="6900"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -1983,7 +1983,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-14, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-14, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="450000"/>
+            <field name="amount_manual" eval="35000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -1994,7 +1994,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-14, hour=17, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-14, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="180000"/>
+            <field name="amount_manual" eval="14000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2005,7 +2005,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-14, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-14, hour=20, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="480000"/>
+            <field name="amount_manual" eval="37000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -2016,7 +2016,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-14, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-14, hour=18, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="2"/>
-            <field name="amount_manual" eval="30000"/>
+            <field name="amount_manual" eval="2300"/>
             <field name="state">cancelled</field>
             <field name="source">online</field>
         </record>
@@ -2027,7 +2027,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-14, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-14, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="250000"/>
+            <field name="amount_manual" eval="19000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2038,7 +2038,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-14, hour=9, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-14, hour=10, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="110000"/>
+            <field name="amount_manual" eval="8500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2048,7 +2048,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-13, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-13, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="450000"/>
+            <field name="amount_manual" eval="35000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2058,7 +2058,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-13, hour=10, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-13, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">cancelled</field>
             <field name="source">desk</field>
         </record>
@@ -2068,7 +2068,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-13, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-13, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -2079,7 +2079,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-13, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-13, hour=11, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="4"/>
-            <field name="amount_manual" eval="60000"/>
+            <field name="amount_manual" eval="4600"/>
             <field name="state">cancelled</field>
             <field name="source">desk</field>
         </record>
@@ -2090,7 +2090,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-13, hour=15, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-13, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="80000"/>
+            <field name="amount_manual" eval="6200"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2101,7 +2101,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-13, hour=9, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-13, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="250000"/>
+            <field name="amount_manual" eval="19000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2111,7 +2111,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-12, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-12, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="600000"/>
+            <field name="amount_manual" eval="46000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -2121,7 +2121,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-12, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-12, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2131,7 +2131,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-12, hour=20, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-12, hour=22, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="600000"/>
+            <field name="amount_manual" eval="46000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2142,7 +2142,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-12, hour=10, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-12, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="620000"/>
+            <field name="amount_manual" eval="47500"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -2153,7 +2153,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-12, hour=14, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-12, hour=15, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="350000"/>
+            <field name="amount_manual" eval="27000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2164,7 +2164,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-12, hour=13, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-12, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="180000"/>
+            <field name="amount_manual" eval="14000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2174,7 +2174,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-11, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-11, hour=21, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="900000"/>
+            <field name="amount_manual" eval="69000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2184,7 +2184,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-11, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-11, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="600000"/>
+            <field name="amount_manual" eval="46000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -2194,7 +2194,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-11, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-11, hour=22, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="450000"/>
+            <field name="amount_manual" eval="35000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -2205,7 +2205,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-11, hour=15, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-11, hour=16, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2216,7 +2216,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-11, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-11, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="250000"/>
+            <field name="amount_manual" eval="19000"/>
             <field name="state">no_show</field>
             <field name="source">online</field>
         </record>
@@ -2227,7 +2227,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-11, hour=11, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-11, hour=12, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">cancelled</field>
             <field name="source">desk</field>
         </record>
@@ -2238,7 +2238,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-11, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-11, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="110000"/>
+            <field name="amount_manual" eval="8500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2249,7 +2249,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-11, hour=9, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-11, hour=10, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="350000"/>
+            <field name="amount_manual" eval="27000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -2260,7 +2260,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-11, hour=17, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-11, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="3"/>
-            <field name="amount_manual" eval="45000"/>
+            <field name="amount_manual" eval="3500"/>
             <field name="state">no_show</field>
             <field name="source">online</field>
         </record>
@@ -2270,7 +2270,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-10, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-10, hour=22, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="900000"/>
+            <field name="amount_manual" eval="69000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2280,7 +2280,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-10, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-10, hour=21, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="600000"/>
+            <field name="amount_manual" eval="46000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2291,7 +2291,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-10, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-10, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="620000"/>
+            <field name="amount_manual" eval="47500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2302,7 +2302,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-10, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-10, hour=14, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="30000"/>
+            <field name="amount_manual" eval="2300"/>
             <field name="state">no_show</field>
             <field name="source">desk</field>
         </record>
@@ -2313,7 +2313,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-10, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-10, hour=20, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="110000"/>
+            <field name="amount_manual" eval="8500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2324,7 +2324,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-10, hour=16, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-10, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="30000"/>
+            <field name="amount_manual" eval="2300"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -2335,7 +2335,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-10, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-10, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="180000"/>
+            <field name="amount_manual" eval="14000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2346,7 +2346,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-10, hour=9, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-10, hour=10, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="30000"/>
+            <field name="amount_manual" eval="2300"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2357,7 +2357,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-10, hour=14, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-10, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="45000"/>
+            <field name="amount_manual" eval="3500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2367,7 +2367,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-9, hour=21, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-9, hour=23, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="600000"/>
+            <field name="amount_manual" eval="46000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2377,7 +2377,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-9, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-9, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="450000"/>
+            <field name="amount_manual" eval="35000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -2387,7 +2387,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-9, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-9, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2397,7 +2397,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-9, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-9, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="600000"/>
+            <field name="amount_manual" eval="46000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -2408,7 +2408,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-9, hour=13, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-9, hour=15, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="250000"/>
+            <field name="amount_manual" eval="19000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2419,7 +2419,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-9, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-9, hour=16, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="45000"/>
+            <field name="amount_manual" eval="3500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2430,7 +2430,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-9, hour=12, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-9, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="180000"/>
+            <field name="amount_manual" eval="14000"/>
             <field name="state">cancelled</field>
             <field name="source">online</field>
         </record>
@@ -2441,7 +2441,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-9, hour=15, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-9, hour=16, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="110000"/>
+            <field name="amount_manual" eval="8500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2452,7 +2452,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-9, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-9, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="280000"/>
+            <field name="amount_manual" eval="21500"/>
             <field name="state">cancelled</field>
             <field name="source">desk</field>
         </record>
@@ -2462,7 +2462,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-8, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-8, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="600000"/>
+            <field name="amount_manual" eval="46000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2472,7 +2472,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-8, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-8, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="450000"/>
+            <field name="amount_manual" eval="35000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2483,7 +2483,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-8, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-8, hour=15, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="80000"/>
+            <field name="amount_manual" eval="6200"/>
             <field name="state">cancelled</field>
             <field name="source">desk</field>
         </record>
@@ -2494,7 +2494,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-8, hour=19, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-8, hour=20, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="80000"/>
+            <field name="amount_manual" eval="6200"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -2505,7 +2505,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-8, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-8, hour=16, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="30000"/>
+            <field name="amount_manual" eval="2300"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2516,7 +2516,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-8, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-8, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="250000"/>
+            <field name="amount_manual" eval="19000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2527,7 +2527,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-8, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-8, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -2537,7 +2537,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-7, hour=9, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-7, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="450000"/>
+            <field name="amount_manual" eval="35000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -2547,7 +2547,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-7, hour=21, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-7, hour=23, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -2557,7 +2557,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-7, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-7, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="450000"/>
+            <field name="amount_manual" eval="35000"/>
             <field name="state">no_show</field>
             <field name="source">online</field>
         </record>
@@ -2568,7 +2568,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-7, hour=17, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-7, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="30000"/>
+            <field name="amount_manual" eval="2300"/>
             <field name="state">cancelled</field>
             <field name="source">desk</field>
         </record>
@@ -2579,7 +2579,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-7, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-7, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="90000"/>
+            <field name="amount_manual" eval="6900"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2590,7 +2590,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-7, hour=10, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-7, hour=10, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="6"/>
-            <field name="amount_manual" eval="72000"/>
+            <field name="amount_manual" eval="5500"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -2601,7 +2601,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-7, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-7, hour=20, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="620000"/>
+            <field name="amount_manual" eval="47500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2611,7 +2611,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-6, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-6, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="450000"/>
+            <field name="amount_manual" eval="35000"/>
             <field name="state">no_show</field>
             <field name="source">desk</field>
         </record>
@@ -2621,7 +2621,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-6, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-6, hour=22, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="900000"/>
+            <field name="amount_manual" eval="69000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2631,7 +2631,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-6, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-6, hour=22, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="900000"/>
+            <field name="amount_manual" eval="69000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -2642,7 +2642,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-6, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-6, hour=13, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="45000"/>
+            <field name="amount_manual" eval="3500"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -2653,7 +2653,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-6, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-6, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="130000"/>
+            <field name="amount_manual" eval="10000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2664,7 +2664,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-6, hour=15, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-6, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="30000"/>
+            <field name="amount_manual" eval="2300"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2675,7 +2675,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-6, hour=12, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-6, hour=13, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="110000"/>
+            <field name="amount_manual" eval="8500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2685,7 +2685,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-5, hour=10, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-5, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="450000"/>
+            <field name="amount_manual" eval="35000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2695,7 +2695,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-5, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-5, hour=21, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="1200000"/>
+            <field name="amount_manual" eval="92500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2706,7 +2706,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-5, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-5, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="250000"/>
+            <field name="amount_manual" eval="19000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2717,7 +2717,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-5, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-5, hour=16, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="480000"/>
+            <field name="amount_manual" eval="37000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2728,7 +2728,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-5, hour=10, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-5, hour=11, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="620000"/>
+            <field name="amount_manual" eval="47500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2738,7 +2738,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-4, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-4, hour=20, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="1200000"/>
+            <field name="amount_manual" eval="92500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2748,7 +2748,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-4, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-4, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">cancelled</field>
             <field name="source">desk</field>
         </record>
@@ -2759,7 +2759,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-4, hour=11, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-4, hour=12, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="120000"/>
+            <field name="amount_manual" eval="9200"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2770,7 +2770,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-4, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-4, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">cancelled</field>
             <field name="source">desk</field>
         </record>
@@ -2781,7 +2781,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-4, hour=19, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-4, hour=20, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="120000"/>
+            <field name="amount_manual" eval="9200"/>
             <field name="state">cancelled</field>
             <field name="source">desk</field>
         </record>
@@ -2792,7 +2792,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-4, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-4, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="110000"/>
+            <field name="amount_manual" eval="8500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2803,7 +2803,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-4, hour=8, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-4, hour=9, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="3"/>
-            <field name="amount_manual" eval="36000"/>
+            <field name="amount_manual" eval="2800"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2813,7 +2813,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-3, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-3, hour=21, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2823,7 +2823,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-3, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-3, hour=23, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="600000"/>
+            <field name="amount_manual" eval="46000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -2834,7 +2834,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-3, hour=14, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-3, hour=15, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="90000"/>
+            <field name="amount_manual" eval="6900"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -2845,7 +2845,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-3, hour=10, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-3, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="180000"/>
+            <field name="amount_manual" eval="14000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2856,7 +2856,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-3, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-3, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2867,7 +2867,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-3, hour=12, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-3, hour=14, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="250000"/>
+            <field name="amount_manual" eval="19000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -2878,7 +2878,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-3, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-3, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="180000"/>
+            <field name="amount_manual" eval="14000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2889,7 +2889,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-3, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-3, hour=17, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="180000"/>
+            <field name="amount_manual" eval="14000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2899,7 +2899,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-2, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-2, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">no_show</field>
             <field name="source">desk</field>
         </record>
@@ -2909,7 +2909,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-2, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-2, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="900000"/>
+            <field name="amount_manual" eval="69000"/>
             <field name="state">no_show</field>
             <field name="source">desk</field>
         </record>
@@ -2919,7 +2919,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-2, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-2, hour=23, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="600000"/>
+            <field name="amount_manual" eval="46000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2930,7 +2930,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-2, hour=10, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-2, hour=11, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="350000"/>
+            <field name="amount_manual" eval="27000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -2941,7 +2941,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-2, hour=14, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-2, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="80000"/>
+            <field name="amount_manual" eval="6200"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -2952,7 +2952,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-2, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-2, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="350000"/>
+            <field name="amount_manual" eval="27000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2963,7 +2963,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-2, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-2, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="620000"/>
+            <field name="amount_manual" eval="47500"/>
             <field name="state">cancelled</field>
             <field name="source">desk</field>
         </record>
@@ -2974,7 +2974,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-2, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-2, hour=11, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="80000"/>
+            <field name="amount_manual" eval="6200"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -2985,7 +2985,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-2, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-2, hour=15, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="480000"/>
+            <field name="amount_manual" eval="37000"/>
             <field name="state">no_show</field>
             <field name="source">online</field>
         </record>
@@ -2995,7 +2995,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-1, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-1, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="600000"/>
+            <field name="amount_manual" eval="46000"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -3005,7 +3005,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-1, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-1, hour=21, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="1200000"/>
+            <field name="amount_manual" eval="92500"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -3015,7 +3015,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-1, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-1, hour=20, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="450000"/>
+            <field name="amount_manual" eval="35000"/>
             <field name="state">cancelled</field>
             <field name="source">desk</field>
         </record>
@@ -3026,7 +3026,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-1, hour=18, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-1, hour=19, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">done</field>
             <field name="source">desk</field>
         </record>
@@ -3037,7 +3037,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-1, hour=9, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-1, hour=10, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="280000"/>
+            <field name="amount_manual" eval="21500"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -3048,7 +3048,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=-1, hour=14, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=-1, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="2"/>
-            <field name="amount_manual" eval="30000"/>
+            <field name="amount_manual" eval="2300"/>
             <field name="state">done</field>
             <field name="source">online</field>
         </record>
@@ -3058,7 +3058,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=0, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=0, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="600000"/>
+            <field name="amount_manual" eval="46000"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3068,7 +3068,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=0, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=0, hour=22, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="1200000"/>
+            <field name="amount_manual" eval="92500"/>
             <field name="state">confirmed</field>
             <field name="source">online</field>
         </record>
@@ -3079,7 +3079,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=0, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=0, hour=16, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="480000"/>
+            <field name="amount_manual" eval="37000"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3090,7 +3090,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=0, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=0, hour=14, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="30000"/>
+            <field name="amount_manual" eval="2300"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3101,7 +3101,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=0, hour=13, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=0, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="480000"/>
+            <field name="amount_manual" eval="37000"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3112,7 +3112,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=0, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=0, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="130000"/>
+            <field name="amount_manual" eval="10000"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3123,7 +3123,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=0, hour=11, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=0, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="30000"/>
+            <field name="amount_manual" eval="2300"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3134,7 +3134,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=0, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=0, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="130000"/>
+            <field name="amount_manual" eval="10000"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3144,7 +3144,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=1, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=1, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="600000"/>
+            <field name="amount_manual" eval="46000"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3155,7 +3155,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=1, hour=20, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=1, hour=21, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="280000"/>
+            <field name="amount_manual" eval="21500"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3166,7 +3166,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=1, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=1, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="250000"/>
+            <field name="amount_manual" eval="19000"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3177,7 +3177,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=1, hour=16, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=1, hour=17, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="90000"/>
+            <field name="amount_manual" eval="6900"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3188,7 +3188,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=1, hour=10, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=1, hour=11, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="90000"/>
+            <field name="amount_manual" eval="6900"/>
             <field name="state">confirmed</field>
             <field name="source">online</field>
         </record>
@@ -3199,7 +3199,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=1, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=1, hour=18, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="45000"/>
+            <field name="amount_manual" eval="3500"/>
             <field name="state">confirmed</field>
             <field name="source">online</field>
         </record>
@@ -3209,7 +3209,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=2, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=2, hour=21, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="900000"/>
+            <field name="amount_manual" eval="69000"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3219,7 +3219,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=2, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=2, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="900000"/>
+            <field name="amount_manual" eval="69000"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3230,7 +3230,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=2, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=2, hour=16, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="45000"/>
+            <field name="amount_manual" eval="3500"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3241,7 +3241,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=2, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=2, hour=14, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="2"/>
-            <field name="amount_manual" eval="30000"/>
+            <field name="amount_manual" eval="2300"/>
             <field name="state">confirmed</field>
             <field name="source">online</field>
         </record>
@@ -3252,7 +3252,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=2, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=2, hour=13, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="5"/>
-            <field name="amount_manual" eval="75000"/>
+            <field name="amount_manual" eval="5800"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3263,7 +3263,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=2, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=2, hour=19, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="80000"/>
+            <field name="amount_manual" eval="6200"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3273,7 +3273,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=3, hour=9, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=3, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3284,7 +3284,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=3, hour=10, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=3, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="280000"/>
+            <field name="amount_manual" eval="21500"/>
             <field name="state">confirmed</field>
             <field name="source">online</field>
         </record>
@@ -3295,7 +3295,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=3, hour=17, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=3, hour=18, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="350000"/>
+            <field name="amount_manual" eval="27000"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3306,7 +3306,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=3, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=3, hour=20, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="110000"/>
+            <field name="amount_manual" eval="8500"/>
             <field name="state">confirmed</field>
             <field name="source">online</field>
         </record>
@@ -3317,7 +3317,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=3, hour=15, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=3, hour=17, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="250000"/>
+            <field name="amount_manual" eval="19000"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3328,7 +3328,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=3, hour=15, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=3, hour=16, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="620000"/>
+            <field name="amount_manual" eval="47500"/>
             <field name="state">confirmed</field>
             <field name="source">online</field>
         </record>
@@ -3339,7 +3339,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=3, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=3, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="110000"/>
+            <field name="amount_manual" eval="8500"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3349,7 +3349,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=4, hour=18, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=4, hour=21, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="900000"/>
+            <field name="amount_manual" eval="69000"/>
             <field name="state">confirmed</field>
             <field name="source">online</field>
         </record>
@@ -3359,7 +3359,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=4, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=4, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="450000"/>
+            <field name="amount_manual" eval="35000"/>
             <field name="state">confirmed</field>
             <field name="source">online</field>
         </record>
@@ -3369,7 +3369,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=4, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=4, hour=20, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="900000"/>
+            <field name="amount_manual" eval="69000"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3380,7 +3380,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=4, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=4, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="250000"/>
+            <field name="amount_manual" eval="19000"/>
             <field name="state">confirmed</field>
             <field name="source">online</field>
         </record>
@@ -3391,7 +3391,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=4, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=4, hour=16, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="5"/>
-            <field name="amount_manual" eval="75000"/>
+            <field name="amount_manual" eval="5800"/>
             <field name="state">confirmed</field>
             <field name="source">online</field>
         </record>
@@ -3402,7 +3402,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=4, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=4, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="180000"/>
+            <field name="amount_manual" eval="14000"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3413,7 +3413,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=4, hour=14, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=4, hour=15, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="4"/>
-            <field name="amount_manual" eval="48000"/>
+            <field name="amount_manual" eval="3700"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3424,7 +3424,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=4, hour=14, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=4, hour=15, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="90000"/>
+            <field name="amount_manual" eval="6900"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3435,7 +3435,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=4, hour=10, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=4, hour=11, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="120000"/>
+            <field name="amount_manual" eval="9200"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3445,7 +3445,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=5, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=5, hour=21, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3455,7 +3455,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=5, hour=21, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=5, hour=23, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3465,7 +3465,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=5, hour=20, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=5, hour=22, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="600000"/>
+            <field name="amount_manual" eval="46000"/>
             <field name="state">confirmed</field>
             <field name="source">online</field>
         </record>
@@ -3475,7 +3475,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=5, hour=17, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=5, hour=21, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="1200000"/>
+            <field name="amount_manual" eval="92500"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3486,7 +3486,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=5, hour=13, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=5, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="180000"/>
+            <field name="amount_manual" eval="14000"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3497,7 +3497,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=5, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=5, hour=20, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="300000"/>
+            <field name="amount_manual" eval="23000"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3508,7 +3508,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=5, hour=14, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=5, hour=16, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="250000"/>
+            <field name="amount_manual" eval="19000"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3519,7 +3519,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=5, hour=17, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=5, hour=19, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="480000"/>
+            <field name="amount_manual" eval="37000"/>
             <field name="state">confirmed</field>
             <field name="source">online</field>
         </record>
@@ -3530,7 +3530,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=5, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=5, hour=13, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="180000"/>
+            <field name="amount_manual" eval="14000"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3541,7 +3541,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=5, hour=12, minute=0, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=5, hour=12, minute=30, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="80000"/>
+            <field name="amount_manual" eval="6200"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>
@@ -3552,7 +3552,7 @@
             <field name="start" eval="(DateTime.today() + relativedelta(days=5, hour=9, minute=30, second=0, microsecond=0))"/>
             <field name="stop" eval="(DateTime.today() + relativedelta(days=5, hour=10, minute=0, second=0, microsecond=0))"/>
             <field name="qty" eval="1"/>
-            <field name="amount_manual" eval="30000"/>
+            <field name="amount_manual" eval="2300"/>
             <field name="state">confirmed</field>
             <field name="source">desk</field>
         </record>

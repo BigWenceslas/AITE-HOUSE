@@ -79,7 +79,7 @@ planning Gantt des chambres.
 
 ### 2.3 Devise
 
-Le jeu d'essai est calibré en **GNF** (contexte Guinée) et **positionne
+Le jeu d'essai est calibré en **XAF** (FCFA, zone CEMAC) et **positionne
 lui-même la devise** de la société — mais seulement si la base est
 encore vierge : société sur une devise d'origine (`USD` ou `EUR`) **et**
 aucune écriture comptable.
@@ -87,14 +87,14 @@ aucune écriture comptable.
 Le compte rendu de génération affiche la devise retenue :
 
 ```
-{'currency': 'GNF', 'users': 5, ..., 'pos_orders': 168, 'credits': 18, ...}
+{'currency': 'XAF', 'users': 5, ..., 'pos_orders': 168, 'credits': 18, ...}
 ```
 
-Si la valeur renvoyée n'est pas `GNF`, c'est que la société a déjà été
+Si la valeur renvoyée n'est pas `XAF`, c'est que la société a déjà été
 engagée — devise délibérément choisie, ou écritures déjà passées. Le
 générateur n'y touche pas et le journalise. Pour basculer malgré tout :
 
-> Paramètres → Sociétés → *votre société* → Devise → `GNF` (ou `XAF`)
+> Paramètres → Sociétés → *votre société* → Devise → `XAF`
 
 Odoo refuse de changer la devise une fois des écritures comptabilisées.
 
@@ -281,7 +281,7 @@ stable et cela survit aux traductions.
 | `depends on module "web_gantt"` | Enterprise attendu | Normal sur Community : le planning s'affiche en calendrier et `aite_hotel_gantt` reste non installé |
 | `Port 8069 is in use` | Une instance tourne déjà | Lancer les tests avec `--http-port=8070 --gevent-port=8073` |
 | Tableaux de bord vides | Jeu d'essai périmé | Régénérer (§ 5) |
-| Montants en `$` au lieu de `FG` | Devise de la société | Positionner `GNF` / `XAF` avant toute écriture (§ 2.3) |
+| Montants en `$` au lieu de `FCFA` | Devise de la société | Positionner `XAF` avant toute écriture (§ 2.3) |
 | `Timeout` sur la recette | Instance lente à répondre | Augmenter le délai : `page.set_default_timeout()` dans `run_uat.py` |
 
 ---

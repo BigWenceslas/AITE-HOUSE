@@ -44,9 +44,11 @@ SCALE = {
 # donner du relief à la heatmap et aux « heures de pointe ».
 SALE_HOURS = [11, 12, 12, 13, 13, 14, 18, 19, 19, 20, 20, 21, 21, 22]
 
-# Devise du jeu d'essai (contexte Guinée) et devises considérées comme
-# « encore d'origine » : au-delà, on considère que quelqu'un a choisi.
-DEMO_CURRENCY = 'GNF'
+# Devise du jeu d'essai (FCFA, zone CEMAC) et devises considérées
+# comme « encore d'origine » : au-delà, on considère que quelqu'un a
+# choisi. Les seuils métier du produit — écart de caisse, paliers de
+# fidélité — sont calibrés sur cette devise.
+DEMO_CURRENCY = 'XAF'
 UNTOUCHED_CURRENCIES = ('USD', 'EUR')
 
 # Profils métier : (clé, nom, login, groupes XML-ID).
@@ -82,14 +84,14 @@ DEMO_USERS = [
 ]
 
 HOTEL_SERVICES = [
-    ("Petit-déjeuner buffet", 'restaurant', 35000.0),
-    ("Dîner à la carte", 'restaurant', 85000.0),
-    ("Minibar — boissons", 'minibar', 15000.0),
-    ("Blanchisserie — chemise", 'laundry', 12000.0),
-    ("Blanchisserie — costume", 'laundry', 45000.0),
-    ("Transfert aéroport", 'transport', 150000.0),
-    ("Massage en chambre", 'spa', 120000.0),
-    ("Location de salle de réunion", 'other', 350000.0),
+    ("Petit-déjeuner buffet", 'restaurant', 2700.0),
+    ("Dîner à la carte", 'restaurant', 6500.0),
+    ("Minibar — boissons", 'minibar', 1150.0),
+    ("Blanchisserie — chemise", 'laundry', 900.0),
+    ("Blanchisserie — costume", 'laundry', 3500.0),
+    ("Transfert aéroport", 'transport', 11500.0),
+    ("Massage en chambre", 'spa', 9000.0),
+    ("Location de salle de réunion", 'other', 27000.0),
 ]
 
 
@@ -193,7 +195,7 @@ class AiteDemoGenerator(models.AbstractModel):
         Positionne la devise du jeu d'essai — mais seulement si c'est sans
         risque.
 
-        Le jeu est calibré en GNF : sur une base neuve, les montants
+        Le jeu est calibré en FCFA : sur une base neuve, les montants
         s'affichaient en dollars et les captures de démonstration
         n'étaient pas présentables. La bascule n'a lieu que si la société
         est **encore vierge** :
@@ -441,7 +443,7 @@ class AiteDemoGenerator(models.AbstractModel):
                 for item in range(1 + seq % 3):
                     product = products[(seq + item) % len(products)]
                     qty = 1 + (seq + item) % 3
-                    price = product.lst_price or 5000.0
+                    price = product.lst_price or 4000.0
                     subtotal = qty * price
                     total += subtotal
                     lines.append((0, 0, {
@@ -651,10 +653,10 @@ class AiteDemoGenerator(models.AbstractModel):
 
         # (âge en jours, montant, part déjà remboursée)
         profile = [
-            (3, 45000.0, 0.0), (12, 120000.0, 0.5), (25, 80000.0, 0.0),
-            (38, 250000.0, 0.3), (47, 65000.0, 0.0), (55, 180000.0, 0.75),
-            (68, 320000.0, 0.0), (75, 95000.0, 0.25), (88, 140000.0, 0.0),
-            (102, 410000.0, 0.1), (130, 75000.0, 0.0), (160, 220000.0, 0.5),
+            (3, 3500.0, 0.0), (12, 9000.0, 0.5), (25, 6000.0, 0.0),
+            (38, 19000.0, 0.3), (47, 5000.0, 0.0), (55, 14000.0, 0.75),
+            (68, 24500.0, 0.0), (75, 7500.0, 0.25), (88, 10500.0, 0.0),
+            (102, 31500.0, 0.1), (130, 5500.0, 0.0), (160, 17000.0, 0.5),
         ]
         created = Credit.browse()
         for index in range(count):
@@ -707,7 +709,7 @@ class AiteDemoGenerator(models.AbstractModel):
             created |= Pending.create({
                 'order_id': order.id,
                 'partner_id': order.partner_id.id or False,
-                'amount': 15000.0 + index * 7500.0,
+                'amount': 1200.0 + index * 600.0,
                 'note': note,
             })
         return created
@@ -787,7 +789,7 @@ class AiteDemoGenerator(models.AbstractModel):
                 continue
             days_ago = 5 + index * 7
             product = products[index % len(products)]
-            cost = product.standard_price or 10000.0
+            cost = product.standard_price or 1500.0
             order = Purchase.create({
                 'partner_id': supplier.id,
                 'company_id': company.id,
@@ -841,7 +843,7 @@ class AiteDemoGenerator(models.AbstractModel):
                 'partner_id': supplier.id,
                 'company_id': company.id,
                 'qty': 20 + index * 15,
-                'unit_value': 25000.0,
+                'unit_value': 2000.0,
                 'note': "%s consignes casiers" % MARKER,
             })
         return created

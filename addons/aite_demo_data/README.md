@@ -8,9 +8,10 @@ retire l'ensemble du jeu d'essai.
 > Point de Vente est ignoré avec un avertissement et le reste du jeu
 > s'installe normalement.
 >
-> **Devise :** le jeu est calibré en **GNF**. Positionnez la devise de la
-> société *avant* toute écriture comptable — Odoo refuse d'en changer
-> ensuite.
+> **Devise :** le jeu est calibré en **XAF** (FCFA) et pose lui-même la
+> devise si la société est encore vierge. Sur une base déjà engagée,
+> positionnez-la *avant* toute écriture comptable — Odoo refuse d'en
+> changer ensuite.
 
 ## Deux étages
 
@@ -62,7 +63,8 @@ recette applicative.
 - Les statuts VIP / VVIP posés sur les fiches sont **reproduits par le
   moteur** : le recalcul nocturne aboutit aux mêmes statuts (données
   calibrées au-dessus des seuils par construction).
-- Prix en GNF (contexte Guinée). Aucune taxe n'est posée sur les produits :
+- Prix en FCFA (zone CEMAC), l'unité sur laquelle sont calibrés les
+  seuils du produit. Aucune taxe n'est posée sur les produits :
   le paramétrage fiscal reste celui de l'atelier dédié.
 - Les commandes en caisse sont désormais fournies par le générateur (elles
   exigent des sessions, que le générateur ouvre et clôture). Créer deux ou
