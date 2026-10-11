@@ -103,11 +103,14 @@ export class KpiCard extends Component {
         badge: { type: String, optional: true },     // 'per' | 'photo'
         accent: { type: String, optional: true },
         delta: { type: [Number, { value: null }], optional: true },
+        deltaLabel: { type: String, optional: true },
         mega: { type: Boolean, optional: true },
         onClick: { type: Function, optional: true },
+        hint: { type: String, optional: true },   // phrase d'explication
     };
     get deltaText() {
-        return fmtDelta(this.props.delta);
+        const t = fmtDelta(this.props.delta);
+        return t && this.props.deltaLabel ? t + " " + this.props.deltaLabel : t;
     }
     get deltaCls() {
         return (this.props.delta || 0) >= 0 ? "up" : "down";
@@ -292,6 +295,29 @@ export class DirectionDashboard extends Component {
             : o.net_side === "clients"
                 ? "vos clients vous financent" : "position équilibrée";
         return `${c} d'ardoises · ${s} de dettes — ${who}`;
+    }
+    /* — tuile Hébergement (présente si le PMS est installé) — */
+    get hotelPaceSub() {
+        const h = this.state.data.vue && this.state.data.vue.hotel;
+        if (!h || !h.pace) return "";
+        return `${h.nights_sold} nuitée(s) vendue(s) · pace ${h.pace.nights} `
+            + `nuitée(s) pour le mois (N-1 à la même date : ${h.pace.nights_ly})`;
+    }
+    get hotelPickupSub() {
+        const h = this.state.data.vue && this.state.data.vue.hotel;
+        if (!h || !h.pickup) return "";
+        return `pickup ${h.pickup.nights} nuitée(s) prises ces `
+            + `${h.pickup.window_days} j pour les ${h.pickup.horizon_days} prochains`;
+    }
+    hotelHint(key) {
+        const h = this.state.data.vue && this.state.data.vue.hotel;
+        return (h && h.hints && h.hints[key]) || "";
+    }
+    openExec() {
+        const h = this.state.data.vue && this.state.data.vue.hotel;
+        if (h && h.exec_action) {
+            this.action.doAction(h.exec_action);
+        }
     }
     get qtyPerTicket() {
         const k = this.state.data.pos && this.state.data.pos.kpis;

@@ -19,14 +19,17 @@ Une page unique pour la direction, qui consolide les trois pôles :
   pressing.
 
 KPIs de période, mix par pôle (donut), évolution mensuelle comparée sur
-six mois. Les points de fidélité émis apparaissent automatiquement si le
+six mois. Indicateurs de performance hôtelière — taux d'occupation, ADR,
+**RevPAR**, **pickup** (nuitées prises ces 7 jours pour les 30 prochains)
+et **pace** (mois en cours vs même date l'an dernier) — avec l'écart N-1
+en couleur et une phrase d'explication par indicateur. Les points de fidélité émis apparaissent automatiquement si le
 module Fidélité est installé (détection dynamique, aucune dépendance
 dure).
 """,
     'author': "AITE CONSULTING",
     'website': "https://aiteconsulting.com",
     'category': 'Industries',
-    'version': '18.0.1.0.2',
+    'version': '18.0.1.1.0',
     'license': 'LGPL-3',
     'depends': ['web', 'point_of_sale', 'aite_hotel_management',
                 'aite_slot_booking'],

@@ -27,8 +27,9 @@ export class ExecDashboardView extends Component {
             period: "month",
             dateFrom: initial.date_from,
             dateTo: initial.date_to,
-            meta: { currency_symbol: "F", has_loyalty: false, poles: [] },
-            kpis: { mix: [] },
+            meta: { currency_symbol: "F", has_loyalty: false, poles: [],
+                    hints: {} },
+            kpis: { mix: [], deltas_ly: {}, pickup: {}, pace: {} },
             evolution: { labels: [], series: [] },
         });
 
@@ -132,6 +133,23 @@ export class ExecDashboardView extends Component {
 
     mixLine(row) {
         return this.money(row.amount) + " · " + this.pct(row.pct);
+    }
+
+    /** Phrase d'explication d'un indicateur (servie par le serveur). */
+    hint(key) {
+        return (this.state.meta.hints || {})[key] || "";
+    }
+
+    get pickupSub() {
+        const p = this.state.kpis.pickup || {};
+        return this.num(p.reservations) + " réservation(s) prise(s) ces "
+            + (p.window_days || 7) + " derniers jours";
+    }
+
+    get paceSub() {
+        const p = this.state.kpis.pace || {};
+        return "mois " + (p.month ? monthLabel(p.month) : "") + " · N-1 à la même date : "
+            + this.num(p.nights_ly) + " nuitée(s)";
     }
 
     // ------------------------------------------------------------------

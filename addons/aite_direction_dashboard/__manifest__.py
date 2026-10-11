@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 {
     'name': "AITE — Direction (vue consolidée)",
-    'summary': """Cockpit du gérant : POS, crédit clients, stock et
-achats sur une seule page — santé de l'affaire, cash à risque, balance
+    'summary': """Cockpit du gérant : POS, crédit clients, stock, achats
+et hébergement (TO, ADR, RevPAR, pickup, pace — si le PMS est installé)
+sur une seule page — santé de l'affaire, cash à risque, balance
 âgée en miroir, échéancier fournisseurs et liste d'actions. Filtres
 période / caisse / heure / jours ; drill-down vers les quatre tableaux
 de bord spécialisés, dont il orchestre les moteurs sans dupliquer les
 formules.""",
     'description': "Tableau de bord consolidé multi-onglets pour la "
                    "direction (LAVERANDAH).",
-    'version': '18.0.1.0.2',
+    'version': '18.0.1.1.0',
     'author': 'AITE Consulting',
     'license': 'LGPL-3',
     'category': 'AITE/Dashboards',

@@ -184,3 +184,36 @@ class TestDirectionDashboard(TransactionCase):
         meta = self.direction.get_meta()
         self.assertIsInstance(meta, dict)
         self.assertTrue(meta)
+
+    # ------------------------------------------------------------------
+    # F06 — tuile Hébergement (détection dynamique du PMS)
+    # ------------------------------------------------------------------
+
+    def test_overview_carries_the_hotel_tile_when_the_pms_is_installed(self):
+        d_from = fields.Date.to_string(self.today - timedelta(days=7))
+        d_to = fields.Date.to_string(self.today)
+        hotel = self.direction.get_overview(d_from, d_to).get('hotel')
+        if 'aite.hotel.dashboard' not in self.env:
+            self.assertIsNone(hotel)
+            return
+        self.assertIsNotNone(hotel)
+        for key in ('room_revenue', 'occupancy', 'adr', 'revpar',
+                    'deltas_ly', 'pickup', 'pace', 'hints'):
+            self.assertIn(key, hotel)
+        # mêmes chiffres que le PMS, aucune formule dupliquée
+        pms = self.env['aite.hotel.dashboard'].get_kpis(d_from, d_to)
+        self.assertAlmostEqual(hotel['revpar'], pms['period']['revpar'],
+                               places=2)
+        self.assertAlmostEqual(hotel['occupancy'],
+                               pms['period']['occupancy'], places=2)
+
+    def test_hotel_tile_explains_its_indicators(self):
+        if 'aite.exec.dashboard' not in self.env:
+            self.skipTest("tableau de bord exécutif absent")
+        d_from = fields.Date.to_string(self.today - timedelta(days=7))
+        hotel = self.direction.get_overview(
+            d_from, fields.Date.to_string(self.today))['hotel']
+        for key in ('occupancy', 'adr', 'revpar'):
+            self.assertGreaterEqual(len(hotel['hints'].get(key, "")), 40)
+        self.assertTrue(hotel['exec_action'])
+

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
+
+from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models, _
 
@@ -21,6 +23,14 @@ class HotelDashboard(models.AbstractModel):
     * **ADR** (Average Daily Rate) = CA hébergement / nuitées vendues.
     * **RevPAR** = CA hébergement / nuitées disponibles
       (= ADR × occupation).
+    * **Pickup** = nuitées prises (réservations créées) sur les 7 derniers
+      jours pour les 30 prochains jours.
+    * **Pace** = nuitées déjà réservées pour le mois en cours, comparées
+      à celles qui étaient réservées à la même date l'an dernier pour le
+      même mois.
+
+    Les fonctions pures (``_nights_in_window``, ``_month_bounds``,
+    ``_delta_pct``) sont testées sans Odoo (tests/vague1).
 
     Filtres transverses : ``date_from`` / ``date_to`` (YYYY-MM-DD) pour
     les flux ; ``hotel_id`` (0 / None = tous les hôtels de la société).
@@ -34,8 +44,45 @@ class HotelDashboard(models.AbstractModel):
     ]
 
     # ------------------------------------------------------------------
+    # Calcul pur (extrait et exécuté tel quel par les tests)
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _nights_in_window(checkin, checkout, start, end):
+        """
+        Nombre de nuits d'un séjour [checkin, checkout) qui tombent dans
+        la fenêtre [start, end) — toutes des dates (pas des datetimes).
+        Un séjour sans nuit (day use) compte 0.
+        """
+        if not (checkin and checkout and start and end):
+            return 0
+        first = max(checkin, start)
+        last = min(checkout, end)
+        return max(0, (last - first).days)
+
+    @staticmethod
+    def _month_bounds(day):
+        """(1er du mois de ``day``, 1er du mois suivant)."""
+        start = day.replace(day=1)
+        nxt = (start.replace(year=start.year + 1, month=1)
+               if start.month == 12
+               else start.replace(month=start.month + 1))
+        return start, nxt
+
+    @staticmethod
+    def _delta_pct(current, previous):
+        """Écart en % de ``current`` sur ``previous`` ; None sans base."""
+        if not previous:
+            return None
+        return (current - previous) / previous * 100.0
+
+    # ------------------------------------------------------------------
     # Helpers
     # ------------------------------------------------------------------
+
+    @api.model
+    def _today(self):
+        return fields.Date.context_today(self)
 
     def _parse_period(self, date_from, date_to):
         try:
@@ -87,16 +134,41 @@ class HotelDashboard(models.AbstractModel):
                 day += timedelta(days=1)
         return nights, per_day
 
-    def _room_revenue(self, hotels, dt_from, dt_to):
-        """CA hébergement HT de la période (lignes de folio « nuitée »)."""
-        lines = self.env['aite.hotel.folio.line'].search([
-            ('folio_id.hotel_id', 'in', hotels.ids),
-            ('line_type', '=', 'room'),
-            ('folio_id.state', '!=', 'cancelled'),
-            ('date', '>=', dt_from),
-            ('date', '<=', dt_to),
+    def _stay_lines(self, hotels, dt_from, dt_to):
+        """Lignes de séjour (confirmées, arrivées, parties) qui ont au
+        moins une nuit sur [dt_from, dt_to] (bornes incluses)."""
+        return self.env['aite.hotel.reservation.line'].search([
+            ('hotel_id', 'in', hotels.ids),
+            ('state', 'in', ('confirmed', 'checked_in', 'checked_out')),
+            ('checkin_date', '<',
+             fields.Datetime.to_datetime(str(dt_to)) + timedelta(days=1)),
+            ('checkout_date', '>', fields.Datetime.to_datetime(str(dt_from))),
         ])
-        return sum(lines.mapped('price_subtotal'))
+
+    def _room_revenue_by_line(self, hotels, dt_from, dt_to):
+        """
+        CA hébergement HT de la période, **nuit par nuit** : tarif de la
+        nuit × nuits du séjour qui tombent dans la période.
+
+        La nuitée du folio est une seule ligne datée du jour de
+        confirmation : s'y fier daterait tout le séjour au jour de la
+        prise, et le RevPAR d'une période passée — ou de la même période
+        l'an dernier — serait vide. Le folio reste le document de
+        facturation ; les indicateurs lisent le séjour.
+        """
+        end = dt_to + timedelta(days=1)
+        revenue = {}
+        for line in self._stay_lines(hotels, dt_from, dt_to):
+            nights = self._nights_in_window(
+                line.checkin_date.date(), line.checkout_date.date(),
+                dt_from, end)
+            revenue[line] = nights * (line.price_night or 0.0)
+        return revenue
+
+    def _room_revenue(self, hotels, dt_from, dt_to):
+        """CA hébergement HT de la période (voir ``_room_revenue_by_line``)."""
+        return sum(self._room_revenue_by_line(hotels, dt_from, dt_to)
+                   .values())
 
     def _service_revenue(self, hotels, dt_from, dt_to):
         lines = self.env['aite.hotel.folio.line'].search([
@@ -107,6 +179,64 @@ class HotelDashboard(models.AbstractModel):
             ('date', '<=', dt_to),
         ])
         return sum(lines.mapped('price_subtotal'))
+
+    def _booked_nights(self, hotels, start, end, created_before=None,
+                       created_after=None):
+        """
+        Nuitées réservées (confirmées, arrivées ou parties) dont la nuit
+        tombe dans [start, end), avec filtre optionnel sur la date de
+        prise de la réservation (``create_date`` de la ligne).
+        """
+        domain = [
+            ('hotel_id', 'in', hotels.ids),
+            ('state', 'in', ('confirmed', 'checked_in', 'checked_out')),
+            ('checkin_date', '<', fields.Datetime.to_datetime(str(end))),
+            ('checkout_date', '>', fields.Datetime.to_datetime(str(start))),
+        ]
+        if created_before:
+            domain.append(('create_date', '<=', created_before))
+        if created_after:
+            domain.append(('create_date', '>=', created_after))
+        lines = self.env['aite.hotel.reservation.line'].search(domain)
+        nights = 0
+        for line in lines:
+            nights += self._nights_in_window(
+                line.checkin_date.date(), line.checkout_date.date(),
+                start, end)
+        return nights, len(lines)
+
+    def _pickup(self, hotels, today, window_days=7, horizon_days=30):
+        """Nuitées prises ces ``window_days`` jours pour les
+        ``horizon_days`` prochains jours (aujourd'hui compris)."""
+        since = datetime.combine(today - timedelta(days=window_days),
+                                 datetime.min.time())
+        nights, count = self._booked_nights(
+            hotels, today, today + timedelta(days=horizon_days),
+            created_after=since)
+        return {
+            'nights': nights,
+            'reservations': count,
+            'window_days': window_days,
+            'horizon_days': horizon_days,
+        }
+
+    def _pace(self, hotels, today):
+        """Mois en cours : nuitées déjà réservées, face à celles qui
+        l'étaient à la même date l'an dernier pour le même mois."""
+        start, nxt = self._month_bounds(today)
+        nights, _count = self._booked_nights(hotels, start, nxt)
+        ly_start = start - relativedelta(years=1)
+        ly_nxt = nxt - relativedelta(years=1)
+        same_date_ly = datetime.combine(
+            today - relativedelta(years=1), datetime.max.time())
+        nights_ly, _c = self._booked_nights(
+            hotels, ly_start, ly_nxt, created_before=same_date_ly)
+        return {
+            'month': start.strftime('%Y-%m'),
+            'nights': nights,
+            'nights_ly': nights_ly,
+            'delta': self._delta_pct(nights, nights_ly),
+        }
 
     # ------------------------------------------------------------------
     # Méta / filtres
@@ -192,11 +322,10 @@ class HotelDashboard(models.AbstractModel):
         span = (dt_to - dt_from).days + 1
         prev = period_stats(
             dt_from - timedelta(days=span), dt_from - timedelta(days=1))
-
-        def delta(cur, old):
-            if not old:
-                return None
-            return (cur - old) / old * 100.0
+        # Même période l'an dernier (comparaison N-1).
+        last_year = period_stats(dt_from - relativedelta(years=1),
+                                 dt_to - relativedelta(years=1))
+        delta = self._delta_pct
 
         return {
             'today': {
@@ -217,6 +346,19 @@ class HotelDashboard(models.AbstractModel):
                 'total_revenue': delta(current['total_revenue'],
                                        prev['total_revenue']),
             },
+            'last_year': last_year,
+            'deltas_ly': {
+                'occupancy': delta(current['occupancy'],
+                                   last_year['occupancy']),
+                'adr': delta(current['adr'], last_year['adr']),
+                'revpar': delta(current['revpar'], last_year['revpar']),
+                'room_revenue': delta(current['room_revenue'],
+                                      last_year['room_revenue']),
+                'total_revenue': delta(current['total_revenue'],
+                                       last_year['total_revenue']),
+            },
+            'pickup': self._pickup(hotels, today),
+            'pace': self._pace(hotels, today),
         }
 
     # ------------------------------------------------------------------
@@ -309,20 +451,14 @@ class HotelDashboard(models.AbstractModel):
 
     @api.model
     def get_revenue_by_type(self, date_from, date_to, hotel_id=None):
-        """CA hébergement HT ventilé par type de chambre."""
+        """CA hébergement HT ventilé par type de chambre (nuit par nuit,
+        même source que les indicateurs de période)."""
         dt_from, dt_to = self._parse_period(date_from, date_to)
         hotels = self._hotels(hotel_id)
-        lines = self.env['aite.hotel.folio.line'].search([
-            ('folio_id.hotel_id', 'in', hotels.ids),
-            ('line_type', '=', 'room'),
-            ('folio_id.state', '!=', 'cancelled'),
-            ('date', '>=', dt_from),
-            ('date', '<=', dt_to),
-        ])
         totals = defaultdict(float)
-        for line in lines:
-            rtype = line.reservation_line_id.room_type_id
-            totals[rtype.name or _("Autre")] += line.price_subtotal
+        for line, amount in self._room_revenue_by_line(
+                hotels, dt_from, dt_to).items():
+            totals[line.room_type_id.name or _("Autre")] += amount
         items = sorted(totals.items(), key=lambda kv: -kv[1])
         return {
             'labels': [name for name, _v in items],

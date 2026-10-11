@@ -370,6 +370,45 @@ class AiteDirectionDashboard(models.AbstractModel):
             'today': fields.Date.context_today(self).isoformat(),
         }
 
+    def _hotel_block(self, date_from, date_to):
+        """
+        Tuile Hébergement : relue depuis le fournisseur du PMS si le
+        module hôtelier est installé (détection dynamique, aucune
+        dépendance dure) ; None sinon et la tuile n'apparaît pas.
+        Les phrases d'explication viennent du tableau de bord exécutif
+        quand il est là (un seul texte pour un seul chiffre).
+        """
+        if 'aite.hotel.dashboard' not in self.env:
+            return None
+        try:
+            hk = self.env['aite.hotel.dashboard'].get_kpis(
+                date_from, date_to)
+        except Exception:  # noqa: BLE001 — le cockpit reste servi
+            return None
+        period = hk.get('period') or {}
+        hints = {}
+        exec_action = False
+        if 'aite.exec.dashboard' in self.env:
+            hints = (self.env['aite.exec.dashboard'].get_meta()
+                     .get('hints') or {})
+            action = self.env.ref(
+                'aite_exec_dashboard.action_aite_exec_dashboard',
+                raise_if_not_found=False)
+            exec_action = action.id if action else False
+        return {
+            'room_revenue': period.get('room_revenue') or 0.0,
+            'total_revenue': period.get('total_revenue') or 0.0,
+            'nights_sold': period.get('nights_sold') or 0,
+            'occupancy': period.get('occupancy') or 0.0,
+            'adr': period.get('adr') or 0.0,
+            'revpar': period.get('revpar') or 0.0,
+            'deltas_ly': hk.get('deltas_ly') or {},
+            'pickup': hk.get('pickup') or {},
+            'pace': hk.get('pace') or {},
+            'hints': hints,
+            'exec_action': exec_action,
+        }
+
     @api.model
     def get_overview(self, date_from, date_to, config_id=None,
                      tranche=None, weekdays=None):
@@ -419,6 +458,7 @@ class AiteDirectionDashboard(models.AbstractModel):
                 late_clients += r.get('count', 0)
         return {
             'pos': p, 'credit': c, 'stock': s, 'purchase': a,
+            'hotel': self._hotel_block(date_from, date_to),
             'cash_risk': risk,
             'cash_risk_parts': {'late': c.get('late_amount', 0.0),
                                 'coulage': s.get('pertes', 0.0)},

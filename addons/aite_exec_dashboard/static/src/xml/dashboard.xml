@@ -2,9 +2,15 @@
 <templates xml:space="preserve">
 
     <t t-name="aite_exec_dashboard.KpiCard">
-        <div t-att-class="'aed-kpi ' + (props.mega ? 'aed-kpi-mega aed-accent-' + props.accent : '')">
-            <div class="aed-kpi-label" t-esc="props.label"/>
+        <div t-att-class="'aed-kpi ' + (props.mega ? 'aed-kpi-mega aed-accent-' + props.accent : '')"
+             t-att-title="props.hint || undefined">
+            <div class="aed-kpi-label">
+                <t t-esc="props.label"/>
+                <span t-if="props.hint" class="aed-kpi-help" t-att-title="props.hint"
+                      role="img" aria-label="Explication">?</span>
+            </div>
             <div class="aed-kpi-value" t-esc="props.value"/>
+            <div t-if="hasDelta" t-att-class="'aed-kpi-delta ' + deltaCls" t-esc="deltaText"/>
             <div t-if="props.sub" class="aed-kpi-sub" t-esc="props.sub"/>
         </div>
     </t>
@@ -65,6 +71,37 @@
                              label="'Prestations'"
                              value="money(state.kpis.slots_ca)"
                              sub="num(state.kpis.slots_count) + ' prestation(s) réalisée(s)'"/>
+                </div>
+
+                <div class="aed-section-title">Hébergement — indicateurs de performance
+                    <span class="aed-section-hint" t-att-title="hint('last_year')">écarts vs même période N-1</span>
+                </div>
+                <div class="aed-grid aed-grid-5">
+                    <KpiCard label="'Taux d\'occupation'"
+                             value="pct(state.kpis.occupancy)"
+                             hint="hint('occupancy')"
+                             delta="state.kpis.deltas_ly.occupancy"
+                             sub="num(state.kpis.nights_sold) + ' nuitée(s) vendue(s)'"/>
+                    <KpiCard label="'ADR — prix moyen par nuit'"
+                             value="money(state.kpis.adr)"
+                             hint="hint('adr')"
+                             delta="state.kpis.deltas_ly.adr"
+                             sub="'CA hébergement ÷ nuitées vendues'"/>
+                    <KpiCard label="'RevPAR'"
+                             value="money(state.kpis.revpar)"
+                             hint="hint('revpar')"
+                             delta="state.kpis.deltas_ly.revpar"
+                             sub="'par chambre disponible, vendue ou non'"/>
+                    <KpiCard label="'Pickup 7 j → 30 j'"
+                             value="num(state.kpis.pickup.nights) + ' nuitée(s)'"
+                             hint="hint('pickup')"
+                             sub="pickupSub"/>
+                    <KpiCard label="'Pace du mois'"
+                             value="num(state.kpis.pace.nights) + ' nuitée(s)'"
+                             hint="hint('pace')"
+                             delta="state.kpis.pace.delta"
+                             deltaLabel="'vs même date N-1'"
+                             sub="paceSub"/>
                 </div>
 
                 <div class="aed-grid aed-grid-4" t-if="state.meta.has_loyalty">

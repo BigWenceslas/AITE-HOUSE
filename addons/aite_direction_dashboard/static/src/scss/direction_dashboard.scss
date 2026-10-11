@@ -146,6 +146,12 @@
                  font-weight: 700; }
     .add-b-photo { background: #eeede8; color: var(--add-muted); }
     .add-b-per { background: #f3eff2; color: var(--add-violet); }
+    .add-help {
+        display: inline-block; margin-left: 6px; width: 14px; height: 14px;
+        line-height: 14px; border-radius: 50%; background: #714B67;
+        color: #fff; font-size: 9px; text-align: center; cursor: help;
+        text-transform: none; letter-spacing: 0;
+    }
     .add-delta { font-size: 12px; font-weight: 700; margin-left: 6px;
                  &.up { color: var(--add-vert); }
                  &.down { color: var(--add-rouge); } }

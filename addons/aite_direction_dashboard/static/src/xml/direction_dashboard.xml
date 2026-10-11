@@ -5,11 +5,16 @@
     <div t-att-class="'add-card ' + (props.mega ? 'add-mega ' : '')
                       + (props.accent ? 'add-al-' + props.accent : '')
                       + (props.onClick ? ' add-clickable' : '')"
+         t-att-title="props.hint || undefined"
          t-on-click="() => props.onClick and props.onClick()">
         <span t-if="props.badge"
               t-att-class="'add-badge add-b-' + props.badge"
               t-esc="props.badge === 'per' ? 'période' : 'photo'"/>
-        <div class="add-lbl" t-esc="props.label"/>
+        <div class="add-lbl">
+            <t t-esc="props.label"/>
+            <span t-if="props.hint" class="add-help" t-att-title="props.hint"
+                  role="img" aria-label="Explication">?</span>
+        </div>
         <div class="add-val">
             <t t-esc="props.value"/>
             <span t-if="props.delta !== undefined and props.delta !== null"
@@ -261,6 +266,40 @@
                                  + ' réfs en alerte · coulage ' + pct(o.stock.coul_pct)"
                             onClick="() => this.setTab('stock')"/>
                     </div>
+                    <t t-if="o.hotel">
+                        <div class="add-sect">HÉBERGEMENT — écarts vs même période
+                            N-1 ; cliquer une carte ouvre le tableau de bord exécutif</div>
+                        <div class="add-row">
+                            <KpiCard accent="'vert'" badge="'per'"
+                                label="'CA hébergement'"
+                                value="money(o.hotel.room_revenue)"
+                                delta="o.hotel.deltas_ly.room_revenue"
+                                hint="hotelHint('last_year')"
+                                sub="hotelPaceSub"
+                                onClick="() => this.openExec()"/>
+                            <KpiCard badge="'per'"
+                                label="'Taux d\'occupation'"
+                                value="pct(o.hotel.occupancy)"
+                                delta="o.hotel.deltas_ly.occupancy"
+                                hint="hotelHint('occupancy')"
+                                sub="hotelPickupSub"
+                                onClick="() => this.openExec()"/>
+                            <KpiCard badge="'per'"
+                                label="'ADR — prix moyen par nuit'"
+                                value="money(o.hotel.adr)"
+                                delta="o.hotel.deltas_ly.adr"
+                                hint="hotelHint('adr')"
+                                sub="'CA hébergement ÷ nuitées vendues'"
+                                onClick="() => this.openExec()"/>
+                            <KpiCard accent="'teal'" badge="'per'"
+                                label="'RevPAR'"
+                                value="money(o.hotel.revpar)"
+                                delta="o.hotel.deltas_ly.revpar"
+                                hint="hotelHint('revpar')"
+                                sub="'par chambre disponible, vendue ou non'"
+                                onClick="() => this.openExec()"/>
+                        </div>
+                    </t>
                     <div class="add-sect">TENDANCES</div>
                     <div class="add-row">
                         <div class="add-panel">

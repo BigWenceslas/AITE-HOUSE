@@ -145,6 +145,60 @@ class TestExecDashboard(TransactionCase):
         self.assertEqual(kpis['basket'], 0.0)
         self.assertEqual(kpis['adr'], 0.0)
 
+    # ------------------------------------------------------------------
+    # F06 — RevPAR, pickup, pace, N-1, phrases d'explication
+    # ------------------------------------------------------------------
+
+    def test_meta_explains_every_hotel_indicator(self):
+        hints = self.dashboard.get_meta().get('hints') or {}
+        for key in ('occupancy', 'adr', 'revpar', 'pickup', 'pace',
+                    'last_year'):
+            self.assertGreaterEqual(len(hints.get(key, "")), 40, key)
+
+    def test_kpis_expose_the_performance_indicators(self):
+        self._stay()
+        kpis = self.dashboard.get_kpis(
+            fields.Date.to_string(self.today - timedelta(days=7)),
+            fields.Date.to_string(self.today))
+        for key in ('revpar', 'nights_sold', 'deltas_ly', 'pickup', 'pace'):
+            self.assertIn(key, kpis)
+        self.assertEqual(kpis['pickup']['window_days'], 7)
+        self.assertEqual(kpis['pickup']['horizon_days'], 30)
+        self.assertEqual(kpis['pace']['month'], self.today.strftime('%Y-%m'))
+        for key in ('occupancy', 'adr', 'revpar'):
+            self.assertIn(key, kpis['deltas_ly'])
+
+    def test_revpar_is_the_one_of_the_pms(self):
+        """Un seul chiffre pour une seule chose : le RevPAR vient du PMS."""
+        self._stay()
+        d_from = fields.Date.to_string(self.today - timedelta(days=7))
+        d_to = fields.Date.to_string(self.today)
+        kpis = self.dashboard.get_kpis(d_from, d_to)
+        pms = self.env['aite.hotel.dashboard'].get_kpis(d_from, d_to)
+        self.assertAlmostEqual(kpis['revpar'], pms['period']['revpar'],
+                               places=2)
+        self.assertAlmostEqual(kpis['adr'] * kpis['occupancy'] / 100.0,
+                               kpis['revpar'], delta=1.0)
+
+    def test_pickup_counts_the_stay_taken_today(self):
+        """Le séjour de ce test est pris aujourd'hui pour aujourd'hui :
+        il entre dans le pickup 7 j → 30 j."""
+        before = self.dashboard.get_kpis(
+            fields.Date.to_string(self.today),
+            fields.Date.to_string(self.today))['pickup']['nights']
+        self._stay()
+        after = self.dashboard.get_kpis(
+            fields.Date.to_string(self.today),
+            fields.Date.to_string(self.today))['pickup']['nights']
+        self.assertEqual(after - before, 2)
+
+    def test_empty_period_has_no_year_on_year_delta(self):
+        kpis = self.dashboard.get_kpis(
+            fields.Date.to_string(self.today - timedelta(days=900)),
+            fields.Date.to_string(self.today - timedelta(days=895)))
+        self.assertEqual(kpis['revpar'], 0.0)
+        self.assertIsNone(kpis['deltas_ly']['revpar'])
+
     def test_evolution_returns_one_point_per_month(self):
         data = self.dashboard.get_evolution(months=6)
         labels = data['labels'] if isinstance(data, dict) else data

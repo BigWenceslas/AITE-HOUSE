@@ -164,13 +164,24 @@
         display: grid;
         gap: 10px;
     }
+    .aed-grid-5 { grid-template-columns: repeat(5, 1fr); }
     .aed-grid-4 { grid-template-columns: repeat(4, 1fr); }
     .aed-grid-2 { grid-template-columns: repeat(2, 1fr); }
     @media (max-width: 1100px) {
+        .aed-grid-5 { grid-template-columns: repeat(3, 1fr); }
         .aed-grid-4 { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 700px) {
-        .aed-grid-4, .aed-grid-2 { grid-template-columns: 1fr; }
+        .aed-grid-5, .aed-grid-4, .aed-grid-2 { grid-template-columns: 1fr; }
+    }
+    .aed-section-hint {
+        margin-left: 8px;
+        font-size: 11px;
+        font-weight: 400;
+        text-transform: none;
+        letter-spacing: 0;
+        color: var(--aed-muted);
+        cursor: help;
     }
 
     /* ---- KPI ---- */
@@ -204,6 +215,22 @@
         font-size: 11px;
         margin-top: 6px;
         font-weight: 600;
+    }
+    .aed-up { color: var(--aed-success); }
+    .aed-down { color: var(--aed-danger); }
+    .aed-kpi-help {
+        display: inline-block;
+        margin-left: 6px;
+        width: 15px;
+        height: 15px;
+        line-height: 15px;
+        border-radius: 50%;
+        background: var(--aed-primary);
+        color: #fff;
+        font-size: 10px;
+        text-align: center;
+        text-transform: none;
+        cursor: help;
     }
     .aed-kpi-sub {
         font-size: 11px;

@@ -17,6 +17,26 @@ _POLE_LABELS = {
     'slots': "Prestations",
 }
 
+# Une phrase par indicateur hôtelier, pour un gérant qui découvre le
+# vocabulaire. Servie par ``get_meta`` (infobulles) et reprise telle
+# quelle par le cockpit Direction : un seul texte pour un seul chiffre.
+KPI_HINTS = {
+    'occupancy': "Taux d'occupation : part des chambres disponibles qui "
+                 "ont été vendues sur la période (chambres hors service "
+                 "exclues).",
+    'adr': "ADR (prix moyen) : ce que rapporte en moyenne une chambre "
+           "vendue par nuit, hors taxes et hors services.",
+    'revpar': "RevPAR : ce que rapporte chaque chambre disponible, "
+              "vendue ou non — c'est l'indicateur qui combine prix et "
+              "remplissage.",
+    'pickup': "Pickup : nuitées prises ces 7 derniers jours pour les 30 "
+              "prochains jours — la demande qui arrive en ce moment.",
+    'pace': "Pace : nuitées déjà réservées pour le mois en cours, "
+            "comparées à celles qui l'étaient à la même date l'an dernier.",
+    'last_year': "Écart en couleur : par rapport à la même période l'an "
+                 "dernier (vert = mieux, rouge = moins bien).",
+}
+
 
 class ExecDashboard(models.AbstractModel):
     """
@@ -183,6 +203,7 @@ class ExecDashboard(models.AbstractModel):
             'has_loyalty': self._has_loyalty(),
             'today': fields.Date.to_string(today),
             'month_start': fields.Date.to_string(today.replace(day=1)),
+            'hints': dict(KPI_HINTS),
             'poles': [
                 {'key': k, 'label': _POLE_LABELS[k],
                  'color': _POLE_COLORS[k]}
@@ -194,10 +215,18 @@ class ExecDashboard(models.AbstractModel):
     def get_kpis(self, date_from, date_to):
         dt_from, dt_to = self._parse_period(date_from, date_to)
 
-        # Hébergement
+        # Hébergement — occupation, ADR, RevPAR, N-1, pickup et pace sont
+        # relus depuis le fournisseur du PMS : mêmes chiffres que son
+        # propre tableau de bord, aucune formule dupliquée ici.
         hotel_ca = self._hotel_revenue(dt_from, dt_to)
-        occupancy = 0.0
-        adr = 0.0
+        occupancy = adr = revpar = 0.0
+        nights_sold = 0
+        deltas_ly = {'occupancy': None, 'adr': None, 'revpar': None,
+                     'room_revenue': None}
+        pickup = {'nights': 0, 'reservations': 0,
+                  'window_days': 7, 'horizon_days': 30}
+        pace = {'month': dt_to.strftime('%Y-%m'), 'nights': 0,
+                'nights_ly': 0, 'delta': None}
         try:
             hk = self.env['aite.hotel.dashboard'].get_kpis(
                 fields.Date.to_string(dt_from),
@@ -205,6 +234,11 @@ class ExecDashboard(models.AbstractModel):
             period = hk.get('period') or {}
             occupancy = period.get('occupancy') or 0.0
             adr = period.get('adr') or 0.0
+            revpar = period.get('revpar') or 0.0
+            nights_sold = period.get('nights_sold') or 0
+            deltas_ly.update(hk.get('deltas_ly') or {})
+            pickup.update(hk.get('pickup') or {})
+            pace.update(hk.get('pace') or {})
         except Exception:
             pass  # le consolidé reste servi même si le PMS évolue
 
@@ -224,6 +258,11 @@ class ExecDashboard(models.AbstractModel):
             'hotel_ca': hotel_ca,
             'occupancy': occupancy,
             'adr': adr,
+            'revpar': revpar,
+            'nights_sold': nights_sold,
+            'deltas_ly': deltas_ly,
+            'pickup': pickup,
+            'pace': pace,
             'pos_ca': pos_ca,
             'tickets': tickets,
             'basket': basket,

@@ -18,6 +18,15 @@ export function fmtInt(value) {
     return (value || 0).toLocaleString("fr-FR");
 }
 
+/** Écart en % avec son sens : « ▲ +12,5 % » / « ▼ 3,0 % ». */
+export function fmtDelta(value) {
+    if (value === null || value === undefined) {
+        return "";
+    }
+    const sign = value >= 0 ? "▲ +" : "▼ ";
+    return sign + fmtPct(Math.abs(value));
+}
+
 export const PERIOD_PRESETS = [
     { key: "month", label: "Ce mois" },
     { key: "quarter", label: "Ce trimestre" },
