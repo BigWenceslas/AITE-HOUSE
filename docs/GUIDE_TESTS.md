@@ -4,7 +4,7 @@
 AITE Consulting SARL
 
 Ce guide explique comment **monter un environnement de test**, **exécuter
-les 604 tests automatisés**, **rejouer la recette utilisateur** et
+les 613 tests automatisés**, **rejouer la recette utilisateur** et
 **régénérer le jeu d'essai**. Le cahier de recette illustré, avec ses
 captures d'écran, fait l'objet d'un document séparé :
 [`GUIDE_RECETTE_UAT.md`](GUIDE_RECETTE_UAT.md).
@@ -35,9 +35,9 @@ La suite compte trois niveaux de vérification, chacun avec son rôle.
 | `aite_stock_dashboard` | 33 | Couverture, seuils, quantité à commander, statuts d'alerte, valorisation, rotation |
 | `aite_hotel_pos_link` | 23 | Note de chambre, décisions de rattachement, file d'attente, idempotence |
 | `aite_purchase_dashboard` | 13 | API du tableau de bord Achats, consignes fournisseurs |
-| `aite_exec_dashboard` | 11 | Consolidation des trois pôles, mix d'activité |
-| `aite_direction_dashboard` | 11 | Cohérence du cockpit avec les quatre moteurs, balance âgée en miroir |
-| **Total** | **604** | |
+| `aite_exec_dashboard` | 16 | Consolidation des trois pôles, mix d'activité, RevPAR / pickup / pace / N-1 (F06) |
+| `aite_direction_dashboard` | 15 | Cohérence du cockpit avec les quatre moteurs, balance âgée en miroir, rangée Hébergement (F06), accès de l'administrateur |
+| **Total** | **613** | |
 
 Les tests sont marqués par des **étiquettes** (`aite_hotel`, `aite_credit`,
 `aite_slot`, …) pour pouvoir n'en jouer qu'une partie.
@@ -118,7 +118,7 @@ aite_exec,aite_demo,aite_journey
 Résultat attendu, en fin de journal :
 
 ```
-odoo.tests.result: 0 failed, 0 error(s) of 604 tests
+odoo.tests.result: 0 failed, 0 error(s) of 613 tests
 ```
 
 ### 3.2 Un seul module

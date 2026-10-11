@@ -16,7 +16,7 @@ Dépôt git : `BigWenceslas/AITE-HOUSE`. Chaque session Claude Code travaille su
 ```
 addons/            les 16 modules livrables (c'est CECI qu'on livre au client) :
                    12 du socle + aite_hotel_gantt (passerelle Enterprise) + 3 de la vague 1
-addons/<m>/tests/  tests unitaires Odoo (TransactionCase, 604 tests, étiquettes aite_*)
+addons/<m>/tests/  tests unitaires Odoo (TransactionCase, 613 tests, étiquettes aite_*)
 dev/               environnement : setup_env.sh, srv.sh, run_tests.sh, odoo.conf, seeds, audit
 tests/vague1/      scénarios « utilisateur novice » (odoo shell) + tests purs + captures Playwright
 tests/socle/       tests purs des 12 modules du socle (unittest, sans Odoo)
