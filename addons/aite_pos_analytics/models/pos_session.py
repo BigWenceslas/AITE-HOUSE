@@ -71,12 +71,16 @@ class PosSession(models.Model):
     # --- Classification écart de caisse ---
 
     cash_discrepancy_severity = fields.Selection(
+        # Libellés en clair : Odoo exporte lui-même les valeurs d'une
+        # sélection pour traduction ; un ``_()`` au niveau de la classe
+        # s'exécute avant qu'une langue soit connue et déclenche un
+        # avertissement à chaque chargement du module.
         selection=[
-            ('none', _("Aucun écart")),
-            ('over', _("Excédent")),
-            ('low', _("Modéré")),
-            ('med', _("Élevé")),
-            ('high', _("Critique")),
+            ('none', "Aucun écart"),
+            ('over', "Excédent"),
+            ('low', "Modéré"),
+            ('med', "Élevé"),
+            ('high', "Critique"),
         ],
         string="Sévérité écart caisse",
         compute='_compute_cash_discrepancy_severity',

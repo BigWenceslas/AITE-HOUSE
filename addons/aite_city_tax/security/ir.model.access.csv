@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_city_tax_rate_user,aite.city.tax.rate.user,model_aite_city_tax_rate,aite_hotel_management.group_hotel_user,1,0,0,0
+access_city_tax_rate_manager,aite.city.tax.rate.manager,model_aite_city_tax_rate,aite_hotel_management.group_hotel_manager,1,1,1,1
+access_city_tax_report_user,aite.city.tax.report.user,model_aite_city_tax_report,aite_hotel_management.group_hotel_user,1,0,0,0
+access_city_tax_report_manager,aite.city.tax.report.manager,model_aite_city_tax_report,aite_hotel_management.group_hotel_manager,1,0,0,0

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_guest_stats_pivot" model="ir.ui.view">
+        <field name="name">aite.guest.stats.pivot</field>
+        <field name="model">aite.guest.stats</field>
+        <field name="arch" type="xml">
+            <pivot string="Statistiques d'hébergement" sample="1">
+                <field name="month" type="row"/>
+                <field name="resident_type" type="col"/>
+                <field name="arrivals" type="measure"/>
+                <field name="nights" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="view_guest_stats_graph" model="ir.ui.view">
+        <field name="name">aite.guest.stats.graph</field>
+        <field name="model">aite.guest.stats</field>
+        <field name="arch" type="xml">
+            <graph string="Nuitées par mois" type="bar" stacked="1" sample="1">
+                <field name="month"/>
+                <field name="resident_type"/>
+                <field name="nights" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    <record id="view_guest_stats_list" model="ir.ui.view">
+        <field name="name">aite.guest.stats.list</field>
+        <field name="model">aite.guest.stats</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false" delete="false">
+                <field name="month"/>
+                <field name="arrival_date"/>
+                <field name="hotel_id" optional="hide"/>
+                <field name="registration_id"/>
+                <field name="nationality_id"/>
+                <field name="resident_type"/>
+                <field name="purpose" optional="show"/>
+                <field name="nights" sum="Nuitées"/>
+                <field name="arrivals" sum="Arrivées"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_guest_stats_search" model="ir.ui.view">
+        <field name="name">aite.guest.stats.search</field>
+        <field name="model">aite.guest.stats</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="month"/>
+                <field name="nationality_id"/>
+                <filter name="residents" string="Résidents"
+                        domain="[('resident_type', '=', 'resident')]"/>
+                <filter name="non_residents" string="Non-résidents"
+                        domain="[('resident_type', '=', 'non_resident')]"/>
+                <group expand="1" string="Regrouper par">
+                    <filter name="group_month" string="Mois"
+                            context="{'group_by': 'month'}"/>
+                    <filter name="group_nationality" string="Nationalité"
+                            context="{'group_by': 'nationality_id'}"/>
+                    <filter name="group_purpose" string="Motif"
+                            context="{'group_by': 'purpose'}"/>
+                    <filter name="group_hotel" string="Hôtel"
+                            context="{'group_by': 'hotel_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_guest_stats" model="ir.actions.act_window">
+        <field name="name">Statistiques d'hébergement</field>
+        <field name="res_model">aite.guest.stats</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="search_view_id" ref="view_guest_stats_search"/>
+        <field name="context">{'search_default_group_month': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Pas encore de statistiques
+            </p>
+            <p>
+                Elles se construisent toutes seules à partir des fiches
+                d'enregistrement des clients arrivés : arrivées, nuitées,
+                résidents / non-résidents, nationalités, motifs. Changez
+                le regroupement (Nationalité, Motif) pour obtenir chaque
+                tableau demandé par le ministère du Tourisme, et exportez
+                en Excel depuis le tableau croisé.
+            </p>
+        </field>
+    </record>
+</odoo>

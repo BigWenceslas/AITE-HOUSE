@@ -64,7 +64,7 @@ Points d'attention
   un historique de ventes réelles : elles s'animent après les premières
   commandes passées en caisse pendant la démonstration.
 """,
-    'version': '18.0.1.2.2',
+    'version': '18.0.1.2.3',
     'author': 'AITE Consulting',
     'license': 'LGPL-3',
     'category': 'Hidden/Demo',
@@ -87,6 +87,7 @@ Points d'attention
         'aite_exec_dashboard',
     ],
     'data': [
+        'data/00_company.xml',
         'data/01_product_categories.xml',
         'data/02_products_restaurant.xml',
         'data/03_products_boutique.xml',

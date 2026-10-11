@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue pivot : mois × hôtel, le tableau à reporter sur la déclaration -->
+    <record id="view_city_tax_report_pivot" model="ir.ui.view">
+        <field name="name">aite.city.tax.report.pivot</field>
+        <field name="model">aite.city.tax.report</field>
+        <field name="arch" type="xml">
+            <pivot string="Taxe de séjour collectée" sample="1">
+                <field name="month" type="row"/>
+                <field name="hotel_id" type="col"/>
+                <field name="units" type="measure"/>
+                <field name="amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_city_tax_report_list" model="ir.ui.view">
+        <field name="name">aite.city.tax.report.list</field>
+        <field name="model">aite.city.tax.report</field>
+        <field name="arch" type="xml">
+            <list string="Taxe de séjour — détail" create="false" edit="false"
+                  delete="false">
+                <field name="month"/>
+                <field name="checkout_date"/>
+                <field name="hotel_id" optional="show"/>
+                <field name="reservation_id"/>
+                <field name="partner_id"/>
+                <field name="units" sum="Nuitées taxées"/>
+                <field name="amount" sum="Taxe collectée"/>
+                <field name="folio_state" widget="badge"
+                       decoration-warning="folio_state == 'open'"
+                       decoration-success="folio_state in ('invoiced', 'paid')"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_city_tax_report_graph" model="ir.ui.view">
+        <field name="name">aite.city.tax.report.graph</field>
+        <field name="model">aite.city.tax.report</field>
+        <field name="arch" type="xml">
+            <graph string="Taxe de séjour par mois" type="bar" sample="1">
+                <field name="month"/>
+                <field name="amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_city_tax_report_search" model="ir.ui.view">
+        <field name="name">aite.city.tax.report.search</field>
+        <field name="model">aite.city.tax.report</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="partner_id"/>
+                <field name="reservation_id"/>
+                <field name="month"/>
+                <filter name="this_month" string="Départs du mois"
+                        domain="[('checkout_date', '>=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d')),
+                                 ('checkout_date', '&lt;', (context_today() + relativedelta(months=1, day=1)).strftime('%Y-%m-%d'))]"/>
+                <filter name="last_month" string="Départs du mois dernier"
+                        domain="[('checkout_date', '>=', (context_today() + relativedelta(months=-1, day=1)).strftime('%Y-%m-%d')),
+                                 ('checkout_date', '&lt;', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter name="closed" string="Séjours terminés (à déclarer)"
+                        domain="[('folio_state', 'in', ('invoiced', 'paid'))]"/>
+                <filter name="open" string="Séjours en cours (prévision)"
+                        domain="[('folio_state', '=', 'open')]"/>
+                <group expand="1" string="Regrouper par">
+                    <filter name="group_month" string="Mois"
+                            context="{'group_by': 'month'}"/>
+                    <filter name="group_hotel" string="Hôtel"
+                            context="{'group_by': 'hotel_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_city_tax_report" model="ir.actions.act_window">
+        <field name="name">Taxe de séjour — état mensuel</field>
+        <field name="res_model">aite.city.tax.report</field>
+        <field name="view_mode">pivot,list,graph</field>
+        <field name="search_view_id" ref="view_city_tax_report_search"/>
+        <field name="context">{'search_default_group_month': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucune taxe de séjour collectée pour l'instant
+            </p>
+            <p>
+                Dès qu'un séjour est confirmé, sa taxe de séjour apparaît
+                ici. Chaque mois, filtrez « Départs du mois dernier » :
+                le total <b>Taxe collectée</b> est le montant à déclarer
+                et à reverser avant le 15.
+            </p>
+        </field>
+    </record>
+
+</odoo>

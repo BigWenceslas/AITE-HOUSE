@@ -73,7 +73,7 @@ python tests_uat/build_guide.py
 | **Constaté** | Occupation, arrivées, départs et room board sont affichés. |
 | **Verdict** | ✅ Conforme |
 
-![Ouvrir le Front Desk](captures/r1-front-desk-01-ouvrir-le-front-desk.png)
+![Ouvrir le Front Desk](captures_uat/r1-front-desk-01-ouvrir-le-front-desk.png)
 
 
 ### 2. Consulter les arrivées du jour
@@ -84,7 +84,7 @@ python tests_uat/build_guide.py
 | **Constaté** | La liste des arrivées du jour s'affiche. |
 | **Verdict** | ✅ Conforme |
 
-![Consulter les arrivées du jour](captures/r1-front-desk-02-consulter-les-arrivees-du-jour.png)
+![Consulter les arrivées du jour](captures_uat/r1-front-desk-02-consulter-les-arrivees-du-jour.png)
 
 
 ### 3. Ouvrir le planning des chambres
@@ -95,7 +95,7 @@ python tests_uat/build_guide.py
 | **Constaté** | Le planning s'ouvre et présente les séjours. |
 | **Verdict** | ✅ Conforme |
 
-![Ouvrir le planning des chambres](captures/r1-front-desk-03-ouvrir-le-planning-des-chambres.png)
+![Ouvrir le planning des chambres](captures_uat/r1-front-desk-03-ouvrir-le-planning-des-chambres.png)
 
 
 ### 4. Lister les réservations
@@ -106,7 +106,7 @@ python tests_uat/build_guide.py
 | **Constaté** | La liste des réservations du séjour s'affiche. |
 | **Verdict** | ✅ Conforme |
 
-![Lister les réservations](captures/r1-front-desk-04-lister-les-reservations.png)
+![Lister les réservations](captures_uat/r1-front-desk-04-lister-les-reservations.png)
 
 
 ### 5. Ouvrir une réservation
@@ -117,7 +117,7 @@ python tests_uat/build_guide.py
 | **Constaté** | La fiche réservation s'ouvre avec son folio. |
 | **Verdict** | ✅ Conforme |
 
-![Ouvrir une réservation](captures/r1-front-desk-05-ouvrir-une-reservation.png)
+![Ouvrir une réservation](captures_uat/r1-front-desk-05-ouvrir-une-reservation.png)
 
 
 ### 6. Consulter les folios
@@ -128,7 +128,7 @@ python tests_uat/build_guide.py
 | **Constaté** | Les folios s'affichent avec leur solde. |
 | **Verdict** | ✅ Conforme |
 
-![Consulter les folios](captures/r1-front-desk-06-consulter-les-folios.png)
+![Consulter les folios](captures_uat/r1-front-desk-06-consulter-les-folios.png)
 
 
 ### 7. Ouvrir la réservation rapide
@@ -139,7 +139,7 @@ python tests_uat/build_guide.py
 | **Constaté** | L'assistant de réservation rapide s'ouvre. |
 | **Verdict** | ✅ Conforme |
 
-![Ouvrir la réservation rapide](captures/r1-front-desk-07-ouvrir-la-reservation-rapide.png)
+![Ouvrir la réservation rapide](captures_uat/r1-front-desk-07-ouvrir-la-reservation-rapide.png)
 
 
 ---
@@ -159,7 +159,7 @@ python tests_uat/build_guide.py
 | **Constaté** | Les tâches de ménage du jour sont listées. |
 | **Verdict** | ✅ Conforme |
 
-![Ouvrir les tâches de gouvernante](captures/r2-gouvernante-01-ouvrir-les-taches-de-gouvernante.png)
+![Ouvrir les tâches de gouvernante](captures_uat/r2-gouvernante-01-ouvrir-les-taches-de-gouvernante.png)
 
 
 ### 2. Démarrer une recouche depuis le kanban
@@ -170,7 +170,7 @@ python tests_uat/build_guide.py
 | **Constaté** | La tâche est démarrée : elle quitte la colonne « À faire ». |
 | **Verdict** | ✅ Conforme |
 
-![Démarrer une recouche depuis le kanban](captures/r2-gouvernante-02-demarrer-une-recouche-depuis-le-kanban.png)
+![Démarrer une recouche depuis le kanban](captures_uat/r2-gouvernante-02-demarrer-une-recouche-depuis-le-kanban.png)
 
 
 ### 3. Terminer la tâche
@@ -181,7 +181,7 @@ python tests_uat/build_guide.py
 | **Constaté** | La tâche est clôturée, la chambre est rendue au service. |
 | **Verdict** | ✅ Conforme |
 
-![Terminer la tâche](captures/r2-gouvernante-03-terminer-la-tache.png)
+![Terminer la tâche](captures_uat/r2-gouvernante-03-terminer-la-tache.png)
 
 
 ### 4. Consulter les chambres
@@ -192,7 +192,7 @@ python tests_uat/build_guide.py
 | **Constaté** | Les chambres s'affichent sans aucune donnée tarifaire. |
 | **Verdict** | ✅ Conforme |
 
-![Consulter les chambres](captures/r2-gouvernante-04-consulter-les-chambres.png)
+![Consulter les chambres](captures_uat/r2-gouvernante-04-consulter-les-chambres.png)
 
 
 ### 5. Tenter d'ouvrir les folios
@@ -203,7 +203,7 @@ python tests_uat/build_guide.py
 | **Constaté** | L'accès aux folios est refusé, avec le motif affiché. |
 | **Verdict** | ✅ Conforme |
 
-![Tenter d'ouvrir les folios](captures/r2-gouvernante-05-tenter-d-ouvrir-les-folios.png)
+![Tenter d'ouvrir les folios](captures_uat/r2-gouvernante-05-tenter-d-ouvrir-les-folios.png)
 
 
 ---
@@ -223,7 +223,7 @@ python tests_uat/build_guide.py
 | **Constaté** | Le tableau de bord du recouvrement s'affiche. |
 | **Verdict** | ✅ Conforme |
 
-![Ouvrir le tableau de bord Recouvrement](captures/r3-ardoises-01-ouvrir-le-tableau-de-bord-recouvrement.png)
+![Ouvrir le tableau de bord Recouvrement](captures_uat/r3-ardoises-01-ouvrir-le-tableau-de-bord-recouvrement.png)
 
 
 ### 2. Lister les ardoises
@@ -234,7 +234,7 @@ python tests_uat/build_guide.py
 | **Constaté** | Les ardoises sont listées avec leur reste dû. |
 | **Verdict** | ✅ Conforme |
 
-![Lister les ardoises](captures/r3-ardoises-02-lister-les-ardoises.png)
+![Lister les ardoises](captures_uat/r3-ardoises-02-lister-les-ardoises.png)
 
 
 ### 3. Filtrer les ardoises ouvertes
@@ -245,7 +245,7 @@ python tests_uat/build_guide.py
 | **Constaté** | Seules les ardoises encore dues restent affichées. |
 | **Verdict** | ✅ Conforme |
 
-![Filtrer les ardoises ouvertes](captures/r3-ardoises-03-filtrer-les-ardoises-ouvertes.png)
+![Filtrer les ardoises ouvertes](captures_uat/r3-ardoises-03-filtrer-les-ardoises-ouvertes.png)
 
 
 ### 4. Ouvrir une ardoise
@@ -256,7 +256,7 @@ python tests_uat/build_guide.py
 | **Constaté** | La fiche montre le reste dû et le bouton « Enregistrer un remboursement ». |
 | **Verdict** | ✅ Conforme |
 
-![Ouvrir une ardoise](captures/r3-ardoises-04-ouvrir-une-ardoise.png)
+![Ouvrir une ardoise](captures_uat/r3-ardoises-04-ouvrir-une-ardoise.png)
 
 
 ### 5. Assistant de remboursement
@@ -267,7 +267,7 @@ python tests_uat/build_guide.py
 | **Constaté** | Le montant est pré-rempli avec le reste dû et le moyen de paiement est proposé. |
 | **Verdict** | ✅ Conforme |
 
-![Assistant de remboursement](captures/r3-ardoises-05-assistant-de-remboursement.png)
+![Assistant de remboursement](captures_uat/r3-ardoises-05-assistant-de-remboursement.png)
 
 
 ### 6. Enregistrer le remboursement
@@ -278,7 +278,7 @@ python tests_uat/build_guide.py
 | **Constaté** | Le remboursement est enregistré : l'ardoise est soldée. |
 | **Verdict** | ✅ Conforme |
 
-![Enregistrer le remboursement](captures/r3-ardoises-06-enregistrer-le-remboursement.png)
+![Enregistrer le remboursement](captures_uat/r3-ardoises-06-enregistrer-le-remboursement.png)
 
 
 ### 7. Tenter d'ouvrir les réservations hôtel
@@ -289,7 +289,7 @@ python tests_uat/build_guide.py
 | **Constaté** | L'accès au PMS est refusé, avec le motif affiché. |
 | **Verdict** | ✅ Conforme |
 
-![Tenter d'ouvrir les réservations hôtel](captures/r3-ardoises-07-tenter-d-ouvrir-les-reservations-hotel.png)
+![Tenter d'ouvrir les réservations hôtel](captures_uat/r3-ardoises-07-tenter-d-ouvrir-les-reservations-hotel.png)
 
 
 ---
@@ -309,7 +309,7 @@ python tests_uat/build_guide.py
 | **Constaté** | Le tableau de bord s'affiche et présente ses indicateurs. |
 | **Verdict** | ✅ Conforme |
 
-![Ouvrir — Ventes (POS Analytics)](captures/r4-direction-01-ouvrir-ventes-pos-analytics.png)
+![Ouvrir — Ventes (POS Analytics)](captures_uat/r4-direction-01-ouvrir-ventes-pos-analytics.png)
 
 
 ### 2. Ouvrir — Recouvrement (Crédit clients)
@@ -320,7 +320,7 @@ python tests_uat/build_guide.py
 | **Constaté** | Le tableau de bord s'affiche et présente ses indicateurs. |
 | **Verdict** | ✅ Conforme |
 
-![Ouvrir — Recouvrement (Crédit clients)](captures/r4-direction-02-ouvrir-recouvrement-credit-clients.png)
+![Ouvrir — Recouvrement (Crédit clients)](captures_uat/r4-direction-02-ouvrir-recouvrement-credit-clients.png)
 
 
 ### 3. Ouvrir — Stock & Inventaire
@@ -331,7 +331,7 @@ python tests_uat/build_guide.py
 | **Constaté** | Le tableau de bord s'affiche et présente ses indicateurs. |
 | **Verdict** | ✅ Conforme |
 
-![Ouvrir — Stock & Inventaire](captures/r4-direction-03-ouvrir-stock-inventaire.png)
+![Ouvrir — Stock & Inventaire](captures_uat/r4-direction-03-ouvrir-stock-inventaire.png)
 
 
 ### 4. Ouvrir — Achats & Fournisseurs
@@ -342,7 +342,7 @@ python tests_uat/build_guide.py
 | **Constaté** | Le tableau de bord s'affiche et présente ses indicateurs. |
 | **Verdict** | ✅ Conforme |
 
-![Ouvrir — Achats & Fournisseurs](captures/r4-direction-04-ouvrir-achats-fournisseurs.png)
+![Ouvrir — Achats & Fournisseurs](captures_uat/r4-direction-04-ouvrir-achats-fournisseurs.png)
 
 
 ### 5. Ouvrir — Espaces & Prestations
@@ -353,7 +353,7 @@ python tests_uat/build_guide.py
 | **Constaté** | Le tableau de bord s'affiche et présente ses indicateurs. |
 | **Verdict** | ✅ Conforme |
 
-![Ouvrir — Espaces & Prestations](captures/r4-direction-05-ouvrir-espaces-prestations.png)
+![Ouvrir — Espaces & Prestations](captures_uat/r4-direction-05-ouvrir-espaces-prestations.png)
 
 
 ### 6. Ouvrir — Cockpit Direction
@@ -364,7 +364,7 @@ python tests_uat/build_guide.py
 | **Constaté** | Le tableau de bord s'affiche et présente ses indicateurs. |
 | **Verdict** | ✅ Conforme |
 
-![Ouvrir — Cockpit Direction](captures/r4-direction-06-ouvrir-cockpit-direction.png)
+![Ouvrir — Cockpit Direction](captures_uat/r4-direction-06-ouvrir-cockpit-direction.png)
 
 
 ### 7. Ouvrir — Tableau de bord exécutif
@@ -375,7 +375,7 @@ python tests_uat/build_guide.py
 | **Constaté** | Le tableau de bord s'affiche et présente ses indicateurs. |
 | **Verdict** | ✅ Conforme |
 
-![Ouvrir — Tableau de bord exécutif](captures/r4-direction-07-ouvrir-tableau-de-bord-executif.png)
+![Ouvrir — Tableau de bord exécutif](captures_uat/r4-direction-07-ouvrir-tableau-de-bord-executif.png)
 
 
 ---
@@ -395,7 +395,7 @@ python tests_uat/build_guide.py
 | **Constaté** | La page de réservation est accessible au public. |
 | **Verdict** | ✅ Conforme |
 
-![Ouvrir la page de réservation](captures/r5-site-web-01-ouvrir-la-page-de-reservation.png)
+![Ouvrir la page de réservation](captures_uat/r5-site-web-01-ouvrir-la-page-de-reservation.png)
 
 
 ### 2. Choisir un espace
@@ -406,7 +406,7 @@ python tests_uat/build_guide.py
 | **Constaté** | La liste des espaces réservables s'affiche. |
 | **Verdict** | ✅ Conforme |
 
-![Choisir un espace](captures/r5-site-web-02-choisir-un-espace.png)
+![Choisir un espace](captures_uat/r5-site-web-02-choisir-un-espace.png)
 
 
 ### 3. Voir les créneaux libres
@@ -417,7 +417,7 @@ python tests_uat/build_guide.py
 | **Constaté** | La grille du jour montre les créneaux encore disponibles. |
 | **Verdict** | ✅ Conforme |
 
-![Voir les créneaux libres](captures/r5-site-web-03-voir-les-creneaux-libres.png)
+![Voir les créneaux libres](captures_uat/r5-site-web-03-voir-les-creneaux-libres.png)
 
 
 ### 4. Choisir un créneau et se présenter
@@ -428,7 +428,7 @@ python tests_uat/build_guide.py
 | **Constaté** | Créneau sélectionné, coordonnées renseignées. |
 | **Verdict** | ✅ Conforme |
 
-![Choisir un créneau et se présenter](captures/r5-site-web-04-choisir-un-creneau-et-se-presenter.png)
+![Choisir un créneau et se présenter](captures_uat/r5-site-web-04-choisir-un-creneau-et-se-presenter.png)
 
 
 ### 5. Valider la réservation
@@ -439,7 +439,7 @@ python tests_uat/build_guide.py
 | **Constaté** | La réservation est confirmée et sa référence s'affiche. |
 | **Verdict** | ✅ Conforme |
 
-![Valider la réservation](captures/r5-site-web-05-valider-la-reservation.png)
+![Valider la réservation](captures_uat/r5-site-web-05-valider-la-reservation.png)
 
 
 ### 6. Demander un séjour
@@ -450,7 +450,7 @@ python tests_uat/build_guide.py
 | **Constaté** | Le formulaire de demande de séjour s'affiche. |
 | **Verdict** | ✅ Conforme |
 
-![Demander un séjour](captures/r5-site-web-06-demander-un-sejour.png)
+![Demander un séjour](captures_uat/r5-site-web-06-demander-un-sejour.png)
 
 
 ---
@@ -470,7 +470,7 @@ python tests_uat/build_guide.py
 | **Constaté** | Le tableau de bord Stock s'affiche avec ses indicateurs. |
 | **Verdict** | ✅ Conforme |
 
-![Ouvrir le tableau de bord Stock](captures/r6-magasin-01-ouvrir-le-tableau-de-bord-stock.png)
+![Ouvrir le tableau de bord Stock](captures_uat/r6-magasin-01-ouvrir-le-tableau-de-bord-stock.png)
 
 
 ### 2. Tenter d'ouvrir les ardoises clients
@@ -481,7 +481,7 @@ python tests_uat/build_guide.py
 | **Constaté** | L'accès au crédit clients est refusé, avec le motif affiché. |
 | **Verdict** | ✅ Conforme |
 
-![Tenter d'ouvrir les ardoises clients](captures/r6-magasin-02-tenter-d-ouvrir-les-ardoises-clients.png)
+![Tenter d'ouvrir les ardoises clients](captures_uat/r6-magasin-02-tenter-d-ouvrir-les-ardoises-clients.png)
 
 
 ---

@@ -11,6 +11,8 @@
         <record id="group_hotel_housekeeping" model="res.groups">
             <field name="name">Gouvernante</field>
             <field name="category_id" ref="module_category_hotel"/>
+            <!-- Cocher un profil hôtel suffit : l'utilisateur devient interne. -->
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
             <field name="comment">Gère les tâches de ménage et l'état des chambres ; consulte les séjours.</field>
         </record>
 
@@ -25,7 +27,14 @@
             <field name="name">Responsable</field>
             <field name="category_id" ref="module_category_hotel"/>
             <field name="implied_ids" eval="[(4, ref('group_hotel_user'))]"/>
+            <field name="users" eval="[(4, ref('base.user_admin')), (4, ref('base.user_root'))]"/>
             <field name="comment">Configure hôtels, chambres, tarifs ; annule, supprime, check-in anticipé.</field>
+        </record>
+
+        <!-- L'administrateur système reçoit le profil Responsable : le premier
+             utilisateur voit l'application sans manipulation de droits. -->
+        <record id="base.group_system" model="res.groups">
+            <field name="implied_ids" eval="[(4, ref('group_hotel_manager'))]"/>
         </record>
 
         <!-- ============ Règles multi-sociétés ============ -->

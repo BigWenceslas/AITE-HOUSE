@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="report_registration_card" model="ir.actions.report">
+        <field name="name">Fiche d'enregistrement</field>
+        <field name="model">aite.guest.registration</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">aite_guest_registry.report_registration_card_document</field>
+        <field name="report_file">aite_guest_registry.report_registration_card_document</field>
+        <field name="print_report_name">'Fiche - %s %s' % (object.last_name, object.first_name or '')</field>
+        <field name="binding_model_id" ref="model_aite_guest_registration"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_registration_card_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page" style="font-size:11px">
+                        <div class="row mb-2">
+                            <div class="col-7">
+                                <h2 class="mb-0">FICHE D'ENREGISTREMENT CLIENT</h2>
+                                <div class="text-muted">Registre des voyageurs — <span t-field="doc.hotel_id.name"/></div>
+                            </div>
+                            <div class="col-5 text-end">
+                                <div><b>N°</b> <span t-field="doc.name"/></div>
+                                <div><b>Chambre</b> <span t-field="doc.room_id.name"/></div>
+                                <div><b>Réservation</b> <span t-field="doc.reservation_id.name"/></div>
+                            </div>
+                        </div>
+
+                        <table class="table table-sm table-bordered mb-2">
+                            <tr><th colspan="4" class="bg-light">IDENTITÉ</th></tr>
+                            <tr>
+                                <td style="width:22%"><b>Nom</b></td>
+                                <td style="width:28%" class="text-uppercase"><span t-field="doc.last_name"/></td>
+                                <td style="width:22%"><b>Prénom(s)</b></td>
+                                <td><span t-field="doc.first_name"/></td>
+                            </tr>
+                            <tr>
+                                <td><b>Né(e) le</b></td><td><span t-field="doc.birth_date"/></td>
+                                <td><b>À</b></td><td><span t-field="doc.birth_place"/></td>
+                            </tr>
+                            <tr>
+                                <td><b>Sexe</b></td><td><span t-field="doc.gender"/></td>
+                                <td><b>Nationalité</b></td><td><span t-field="doc.nationality_id.name"/></td>
+                            </tr>
+                            <tr>
+                                <td><b>Profession</b></td><td><span t-field="doc.profession"/></td>
+                                <td><b>Téléphone</b></td><td><span t-field="doc.phone"/></td>
+                            </tr>
+                            <tr><th colspan="4" class="bg-light">PIÈCE D'IDENTITÉ</th></tr>
+                            <tr>
+                                <td><b>Type</b></td><td><span t-field="doc.id_type"/></td>
+                                <td><b>Numéro</b></td><td><span t-field="doc.id_number"/></td>
+                            </tr>
+                            <tr>
+                                <td><b>Délivrée le</b></td><td><span t-field="doc.id_issued_on"/></td>
+                                <td><b>Par</b></td><td><span t-field="doc.id_issued_by"/></td>
+                            </tr>
+                            <tr><th colspan="4" class="bg-light">DOMICILE &amp; DÉPLACEMENT</th></tr>
+                            <tr>
+                                <td><b>Adresse</b></td><td colspan="3"><span t-field="doc.address"/></td>
+                            </tr>
+                            <tr>
+                                <td><b>Pays de résidence</b></td><td><span t-field="doc.country_id.name"/></td>
+                                <td><b>Motif du séjour</b></td><td><span t-field="doc.purpose"/></td>
+                            </tr>
+                            <tr>
+                                <td><b>Provenance</b></td><td><span t-field="doc.coming_from"/></td>
+                                <td><b>Destination</b></td><td><span t-field="doc.going_to"/></td>
+                            </tr>
+                            <tr><th colspan="4" class="bg-light">SÉJOUR</th></tr>
+                            <tr>
+                                <td><b>Arrivée</b></td><td><span t-field="doc.arrival_date"/></td>
+                                <td><b>Départ prévu</b></td><td><span t-field="doc.departure_date"/></td>
+                            </tr>
+                            <tr>
+                                <td><b>Nuits</b></td><td><span t-field="doc.nights"/></td>
+                                <td><b>Accompagnants</b></td>
+                                <td><t t-esc="max(0, len(doc.reservation_id.registration_ids) - 1)"/></td>
+                            </tr>
+                        </table>
+
+                        <div class="row mt-3">
+                            <div class="col-6">
+                                <div><b>Signature du client</b></div>
+                                <div style="border:1px solid #999;height:60px;margin-top:4px"></div>
+                                <div class="text-muted small mt-1">Je certifie l'exactitude des informations ci-dessus.</div>
+                            </div>
+                            <div class="col-6">
+                                <div><b>Cachet et signature de l'établissement</b></div>
+                                <div style="border:1px solid #999;height:60px;margin-top:4px"></div>
+                                <div class="text-muted small mt-1">Fiche établie le <span t-esc="doc.create_date and doc.create_date.strftime('%d/%m/%Y')"/>.</div>
+                            </div>
+                        </div>
+                        <p class="text-muted small mt-2 mb-0">
+                            Document établi conformément aux obligations d'enregistrement
+                            des clients des établissements d'hébergement touristique.
+                            Conservé par l'établissement et présenté à toute réquisition
+                            des autorités compétentes.
+                        </p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

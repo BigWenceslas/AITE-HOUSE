@@ -6,8 +6,8 @@ Exécute les scénarios de recette AITE HOUSE dans un vrai navigateur.
     python tests_uat/run_uat.py --url http://127.0.0.1:8069
 
 Produit :
-  * ``documentation/captures/*.png`` — une capture par étape ;
-  * ``documentation/uat_resultats.json`` — le relevé des constats.
+  * ``docs/captures_uat/*.png`` — une capture par étape ;
+  * ``docs/uat_resultats.json`` — le relevé des constats.
 """
 import argparse
 import os
@@ -43,7 +43,7 @@ def main():
     parser.add_argument('--shots', default=uat_common.SHOTS_DIR,
                         help="Dossier des captures d'écran")
     parser.add_argument('--report',
-                        default=os.path.join(HERE, '..', 'documentation',
+                        default=os.path.join(HERE, '..', 'docs',
                                              'uat_resultats.json'))
     parser.add_argument('--headed', action='store_true',
                         help="Afficher le navigateur (débogage)")

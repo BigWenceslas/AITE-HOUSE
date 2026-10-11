@@ -224,8 +224,16 @@ class SlotBooking(models.Model):
             if not (rec.start and rec.stop and rec.resource_id):
                 continue
             res = rec.resource_id
-            s_local = fields.Datetime.context_timestamp(rec, rec.start)
-            e_local = fields.Datetime.context_timestamp(rec, rec.stop)
+            # Les horaires d'ouverture et la journée sont ceux de
+            # l'établissement, pas ceux de l'utilisateur connecté : un
+            # administrateur réglé sur Bruxelles (ou l'installation des
+            # données de démonstration) ne doit pas voir refuser un
+            # créneau valable à Douala.
+            tz = (rec.company_id.partner_id.tz or res.company_id.partner_id.tz
+                  or self.env.user.tz or 'UTC')
+            local = rec.with_context(tz=tz)
+            s_local = fields.Datetime.context_timestamp(local, rec.start)
+            e_local = fields.Datetime.context_timestamp(local, rec.stop)
             if s_local.date() != e_local.date():
                 raise ValidationError(_(
                     "Un créneau ne peut pas franchir minuit "

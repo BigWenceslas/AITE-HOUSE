@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_city_tax_rate_list" model="ir.ui.view">
+        <field name="name">aite.city.tax.rate.list</field>
+        <field name="model">aite.city.tax.rate</field>
+        <field name="arch" type="xml">
+            <list string="Barèmes de taxe de séjour" editable="bottom"
+                  default_order="country_id, stars desc">
+                <field name="country_id"/>
+                <field name="stars"/>
+                <field name="amount"/>
+                <field name="currency_id" options="{'no_create': True}"/>
+                <field name="basis"/>
+                <field name="count_children" optional="show"/>
+                <field name="legal_reference" optional="show"/>
+                <field name="active" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_city_tax_rate_search" model="ir.ui.view">
+        <field name="name">aite.city.tax.rate.search</field>
+        <field name="model">aite.city.tax.rate</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="country_id"/>
+                <field name="legal_reference"/>
+                <filter name="archived" string="Archivés"
+                        domain="[('active', '=', False)]"/>
+                <group expand="1" string="Regrouper par">
+                    <filter name="group_country" string="Pays"
+                            context="{'group_by': 'country_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_city_tax_rate" model="ir.actions.act_window">
+        <field name="name">Barèmes de taxe de séjour</field>
+        <field name="res_model">aite.city.tax.rate</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'search_default_group_country': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucun barème de taxe de séjour
+            </p>
+            <p>
+                Un barème = un montant par nuitée pour un pays et une
+                catégorie d'établissement. Les barèmes officiels du
+                Cameroun, de la Côte d'Ivoire, du Sénégal et de la Guinée
+                sont fournis à l'installation ; ajoutez ici un pays ou
+                corrigez un montant après une loi de finances.
+            </p>
+        </field>
+    </record>
+
+</odoo>

@@ -91,7 +91,7 @@
               action="action_hotel_housekeeping"
               sequence="10"/>
     <menuitem id="menu_hotel_room_rack"
-              name="Room rack (chambres)"
+              name="Chambres (liste)"
               parent="menu_hotel_housekeeping_section"
               action="action_hotel_room"
               sequence="20"/>

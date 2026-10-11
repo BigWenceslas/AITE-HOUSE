@@ -1,5 +1,5 @@
 # AITE HOUSE — Suite de gestion hôtelière sur Odoo 18
-**Version du paquet : septembre 2026 · 13 modules · Odoo 18 (Community & Enterprise)**
+**Version du paquet : octobre 2026 (vague 1) · 16 modules · Odoo 18 (Community & Enterprise)**
 
 Éditeur : AITE Consulting SARL — Douala, Makepe Bloc F
 info@aite-consulting.com · (+237) 673 373 367 / 656 801 098 · https://aite-consulting.com
@@ -10,37 +10,41 @@ info@aite-consulting.com · (+237) 673 373 367 / 656 801 098 · https://aite-con
 
 ```
 AITE_HOUSE/
-├── addons/            les 13 modules à déposer sur le serveur
-├── documentation/     guides utilisateur, fiches produit, plaquette, flyer,
-│                      guide de test, cahier de recette et captures
-├── tests_uat/         scénarios de recette (navigateur)
-└── INSTALLATION.md    ce fichier
+├── addons/            les 16 modules à déposer sur le serveur
+├── docs/              ce fichier, notes de version, guides utilisateur, fiches
+│                      produit, plaquette, guide de test, cahiers de recette
+├── recette/           cahier de recette (139 cas) et plan de recette
+├── tests/, tests_uat/ scénarios « utilisateur novice » et recette navigateur
+└── ROADMAP.md         ce qui est livré, ce qui reste
 ```
 
 ## 2. Les modules
 
 | Module | Version | Rôle |
 |---|---|---|
-| aite_hotel_management | 18.0.1.0.2 | **Socle hôtelier** : chambres, réservations, séjours, folios, main courante, facturation |
-| aite_slot_booking | 18.0.1.0.2 | Espaces & prestations réservables au créneau (salles, piscine, billard…) |
+| aite_hotel_management | 18.0.1.0.3 | **Socle hôtelier** : chambres, réservations, séjours, folios, main courante, facturation |
+| aite_slot_booking | 18.0.1.0.3 | Espaces & prestations réservables au créneau (salles, piscine, billard…) |
 | aite_website_booking | 18.0.1.0.0 | Réservation en ligne depuis le site web, acompte |
 | aite_hotel_pos_link | 18.0.1.0.0 | **Note de chambre** : report des consommations du bar sur le folio |
 | aite_pos_credit | 18.0.2.0.2 | Crédit clients (ardoises) : plafonds, encours, recouvrement |
-| aite_loyalty | 18.0.1.0.0 | Fidélité : points, niveaux VIP & VVIP |
+| aite_loyalty | 18.0.1.0.1 | Fidélité : points, niveaux VIP & VVIP |
 | aite_pos_analytics | 18.0.2.1.0 | Analyses des ventes : heures de pointe, marges, CMV |
 | aite_stock_dashboard | 18.0.1.1.2 | Stock : ruptures, coulage, couverture, inventaires |
 | aite_purchase_dashboard | 18.0.1.0.2 | Achats : échéancier fournisseurs, OTIF, hausses de prix |
 | aite_direction_dashboard | 18.0.1.0.2 | **Cockpit Direction** : vue consolidée, cash à risque, actions |
 | aite_exec_dashboard | 18.0.1.0.2 | Tableau de bord exécutif hôtel |
 | aite_hotel_gantt | 18.0.1.0.0 | **Enterprise uniquement** : planning Gantt des chambres (auto-installé) |
-| aite_demo_data | 18.0.1.2.1 | Jeu de démonstration (établissement complet pré-chargé) |
+| aite_demo_data | 18.0.1.2.3 | Jeu de démonstration (établissement complet pré-chargé) |
+| aite_city_tax | 18.0.1.0.0 | **Taxe de séjour** automatique : barèmes par pays et étoiles, ligne sur le folio, état mensuel |
+| aite_guest_registry | 18.0.1.0.1 | **Registre des clients** : fiche d'enregistrement au check-in, registre de police, statistiques |
+| aite_housekeeping | 18.0.1.0.2 | **Gouvernante & maintenance** : tableau des chambres, « Ma journée », inspections, pannes, objets trouvés |
 
 ## 3. Prérequis
 
 - Odoo 18 (Community ou Enterprise), PostgreSQL, accès au serveur.
 - Modules Odoo standard requis (installés automatiquement) : `point_of_sale`,
   `sale`, `account`, `purchase`, `stock`, `website`, `portal`, `mail`,
-  `product`, `web`.
+  `product`, `web`, `maintenance` (Community).
 - **Un plan comptable installé sur la société** avant d'installer le Point
   de Vente ou le jeu de démonstration : Odoo exige un journal de banque
   pour créer une caisse. Sur une base neuve, installez le module de
@@ -63,7 +67,7 @@ planning des chambres :
 
 ## 4. Installation
 
-1. **Déposer** les 13 dossiers de `addons/` dans le répertoire des addons
+1. **Déposer** les 16 dossiers de `addons/` dans le répertoire des addons
    personnalisés du serveur — celui déclaré dans `addons_path` de
    `odoo.conf`. Les déposer **à côté** des dossiers existants ; ne jamais
    remplacer le répertoire entier.
@@ -77,7 +81,11 @@ planning des chambres :
    4. `aite_loyalty`
    5. `aite_stock_dashboard`, `aite_purchase_dashboard`
    6. `aite_direction_dashboard`, `aite_exec_dashboard`
-   7. `aite_demo_data` *(uniquement sur une base de démonstration)*
+   7. `aite_city_tax`, `aite_guest_registry`, `aite_housekeeping` (vague 1 —
+      voir `NOTES_DE_VERSION_vague1.md` : renseigner ensuite le **pays** et la
+      **catégorie (étoiles)** de chaque hôtel, c'est tout ce que la taxe de
+      séjour demande)
+   8. `aite_demo_data` *(uniquement sur une base de démonstration)*
 
    Sur Enterprise, `aite_hotel_gantt` s'ajoute seul à l'étape 1 : il ne
    figure pas dans cette liste et ne demande aucune manipulation.
@@ -101,7 +109,7 @@ dernier.
 
 | Symptôme | Cause probable | Correction |
 |---|---|---|
-| `"champ aite_xxx" is undefined` sur Paramètres | Dossier(s) de module absent(s) du serveur alors que le module reste installé en base | Redéposer les 13 dossiers, redémarrer, mettre à jour la liste des applications |
+| `"champ aite_xxx" is undefined` sur Paramètres | Dossier(s) de module absent(s) du serveur alors que le module reste installé en base | Redéposer les 16 dossiers, redémarrer, mettre à jour la liste des applications |
 | Un module n'apparaît pas dans Apps | `addons_path` ne pointe pas vers le répertoire utilisé | Vérifier `odoo.conf` et la commande de lancement du service |
 | Écran blanc ou composant manquant | Cache navigateur | Ctrl+Shift+R ; sur le Point de Vente, fermer et rouvrir la session |
 | Erreur à l'installation | Dépendance Odoo absente | Installer d'abord le module standard concerné (voir §3) |
@@ -122,19 +130,20 @@ En cas de blocage, transmettre à AITE Consulting les lignes `ERROR` /
 
 ### Documentation de test
 
-- **[`GUIDE_TESTS.md`](documentation/GUIDE_TESTS.md)** — monter un
+- **[`GUIDE_TESTS.md`](GUIDE_TESTS.md)** — monter un
   environnement de test, exécuter les 604 tests automatisés, régénérer le
   jeu d'essai.
-- **[`GUIDE_RECETTE_UAT.md`](documentation/GUIDE_RECETTE_UAT.md)** —
+- **[`GUIDE_RECETTE_UAT.md`](GUIDE_RECETTE_UAT.md)** —
   cahier de recette illustré : 6 scénarios, 34 étapes, une capture
   d'écran par étape, joués avec les profils métier réels.
-- **[`CAHIER_RECETTE_AITE_HOUSE.pdf`](documentation/CAHIER_RECETTE_AITE_HOUSE.pdf)**
+- **[`CAHIER_RECETTE_AITE_HOUSE.pdf`](CAHIER_RECETTE_AITE_HOUSE.pdf)**
   — le même cahier en **PDF paginé** (38 pages), à imprimer ou à
   transmettre au client. Régénéré par `python tests_uat/build_pdf.py`.
-- **[`RAPPORT_TESTS.md`](documentation/RAPPORT_TESTS.md)** — rapport de
+- **[`RAPPORT_TESTS.md`](RAPPORT_TESTS.md)** — rapport de
   campagne : anomalies trouvées, corrections apportées, points
   d'attention.
-- `documentation/captures/` — les captures d'écran de la recette.
+- `captures_uat/` — les captures d'écran de la recette navigateur ;
+  `../recette/` — le cahier de recette fonctionnel (139 cas, 16 domaines) et son plan.
 
 ---
 © AITE Consulting SARL — tous droits réservés.

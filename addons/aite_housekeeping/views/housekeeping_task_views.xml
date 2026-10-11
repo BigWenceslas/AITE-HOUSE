@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ═══ « Ma journée » : la liste de l'équipière, pensée pour le téléphone ═══ -->
+    <record id="view_my_day_kanban" model="ir.ui.view">
+        <field name="name">aite.hotel.housekeeping.kanban.myday</field>
+        <field name="model">aite.hotel.housekeeping</field>
+        <field name="priority">60</field>
+        <field name="arch" type="xml">
+            <kanban quick_create="false" records_draggable="false"
+                    class="o_kanban_mobile">
+                <field name="state"/>
+                <field name="task_type"/>
+                <field name="priority"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex flex-column p-2"
+                             t-attf-class="#{record.priority.raw_value == '1' ? 'border-start border-4 border-danger' : ''}">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <strong class="fs-3">Chambre <field name="room_id"/></strong>
+                                <field name="state" widget="badge"
+                                       decoration-warning="state == 'todo'"
+                                       decoration-info="state == 'in_progress'"
+                                       decoration-success="state == 'done'"/>
+                            </div>
+                            <div class="fw-bold"><field name="task_label"/></div>
+                            <div t-if="record.guest_name.raw_value" class="text-muted small">
+                                <i class="fa fa-user me-1" title="Client"/><field name="guest_name"/>
+                            </div>
+                            <div t-if="record.note.raw_value" class="small text-danger">
+                                <i class="fa fa-exclamation-circle me-1" title="Consigne"/><field name="note"/>
+                            </div>
+                            <div class="mt-2 d-flex gap-2">
+                                <button name="action_start" type="object"
+                                        class="btn btn-primary flex-fill"
+                                        invisible="state != 'todo'">
+                                    <i class="fa fa-play me-1" title="Commencer"/>Je commence
+                                </button>
+                                <button name="action_done" type="object"
+                                        class="btn btn-success flex-fill"
+                                        invisible="state != 'in_progress' or task_type == 'inspection'">
+                                    <i class="fa fa-check me-1" title="Terminé"/>C'est fait
+                                </button>
+                                <button name="action_open_inspection" type="object"
+                                        class="btn btn-success flex-fill"
+                                        invisible="state != 'in_progress' or task_type != 'inspection'">
+                                    <i class="fa fa-list-ul me-1" title="Checklist"/>Passer la checklist
+                                </button>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="action_my_day" model="ir.actions.act_window">
+        <field name="name">Ma journée</field>
+        <field name="res_model">aite.hotel.housekeeping</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="view_id" ref="view_my_day_kanban"/>
+        <field name="domain">[('state', 'in', ('todo', 'in_progress')), ('date', '&lt;=', context_today().strftime('%Y-%m-%d'))]</field>
+        <field name="context">{'search_default_my_tasks': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Rien à faire pour l'instant</p>
+            <p>Les chambres qui vous sont affectées apparaîtront ici.
+               Si vous attendez du travail, demandez à la gouvernante de
+               <b>répartir les chambres du jour</b>.</p>
+        </field>
+    </record>
+
+    <!-- ═══ Fiche d'inspection (checklist) ═══ -->
+    <record id="view_housekeeping_inspection_form" model="ir.ui.view">
+        <field name="name">aite.hotel.housekeeping.form.inspection</field>
+        <field name="model">aite.hotel.housekeeping</field>
+        <field name="priority">70</field>
+        <field name="arch" type="xml">
+            <form string="Inspection">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Chambre <field name="room_id" readonly="1" class="d-inline"/></h1>
+                        <div class="text-muted">
+                            <field name="task_label" readonly="1"/> ·
+                            contrôle <field name="checks_summary" readonly="1" class="d-inline"/>
+                        </div>
+                    </div>
+                    <p class="text-muted">Cochez chaque point conforme. Un point non
+                       coché renverra la chambre en nettoyage avec votre remarque.</p>
+                    <field name="check_ids" nolabel="1">
+                        <list editable="bottom" create="false" delete="false">
+                            <field name="sequence" column_invisible="1"/>
+                            <field name="ok" widget="boolean_toggle" string="OK"/>
+                            <field name="item_id" readonly="1" string="Point de contrôle"/>
+                            <field name="remark" placeholder="Remarque si non conforme"
+                                   optional="show"/>
+                        </list>
+                    </field>
+                </sheet>
+                <footer>
+                    <button name="action_check_all" type="object" string="Tout cocher"
+                            class="btn-secondary"/>
+                    <button name="action_done" type="object" string="Valider l'inspection"
+                            class="btn-primary"/>
+                    <button string="Fermer" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Fiche tâche du socle : onglet checklist + horodatage -->
+    <record id="view_hotel_housekeeping_form_hk" model="ir.ui.view">
+        <field name="name">aite.hotel.housekeeping.form.hk</field>
+        <field name="model">aite.hotel.housekeeping</field>
+        <field name="inherit_id" ref="aite_hotel_management.view_hotel_housekeeping_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <notebook>
+                    <page string="Checklist d'inspection" name="checks"
+                          invisible="task_type != 'inspection'">
+                        <field name="check_ids">
+                            <list editable="bottom">
+                                <field name="ok" widget="boolean_toggle"/>
+                                <field name="item_id"/>
+                                <field name="remark"/>
+                            </list>
+                        </field>
+                    </page>
+                    <page string="Suivi" name="timing">
+                        <group>
+                            <field name="started_at"/>
+                            <field name="done_at"/>
+                            <field name="duration_min"/>
+                        </group>
+                    </page>
+                </notebook>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Recherche : « mes tâches » -->
+    <record id="view_hotel_housekeeping_search_hk" model="ir.ui.view">
+        <field name="name">aite.hotel.housekeeping.search.hk</field>
+        <field name="model">aite.hotel.housekeeping</field>
+        <field name="inherit_id" ref="aite_hotel_management.view_hotel_housekeeping_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[1]" position="before">
+                <filter name="my_tasks" string="Mes chambres"
+                        domain="['|', ('assigned_to', '=', uid), ('assigned_to', '=', False)]"/>
+                <filter name="unassigned" string="Non affectées"
+                        domain="[('assigned_to', '=', False)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Checklist : paramétrage -->
+    <record id="view_checklist_item_list" model="ir.ui.view">
+        <field name="name">aite.hk.checklist.item.list</field>
+        <field name="model">aite.hk.checklist.item</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="active" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_checklist_item" model="ir.actions.act_window">
+        <field name="name">Points de contrôle (inspection)</field>
+        <field name="res_model">aite.hk.checklist.item</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Aucun point de contrôle</p>
+            <p>Listez ce que la gouvernante vérifie dans une chambre avant
+               de la déclarer prête : lit, salle de bain, linge, minibar…</p>
+        </field>
+    </record>
+
+</odoo>

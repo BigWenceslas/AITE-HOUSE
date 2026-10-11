@@ -62,6 +62,11 @@ class TestHousekeeping(HotelCommon):
     def test_inspection_task_validates_the_room(self):
         self.room_101.hk_state = 'inspect'
         task = self._task(task_type='inspection')
+        # Avec ``aite_housekeeping`` installé, l'inspection porte une
+        # checklist et tout point non coché renvoie la chambre en
+        # nettoyage : l'inspectrice la passe entièrement avant de valider.
+        if 'check_ids' in task._fields:
+            task.check_ids.write({'ok': True})
         task.action_done()
         self.assertEqual(self.room_101.hk_state, 'clean')
 

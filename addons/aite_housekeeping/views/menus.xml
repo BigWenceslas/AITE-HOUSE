@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_room_board" name="Tableau des chambres"
+              parent="aite_hotel_management.menu_hotel_housekeeping_section"
+              action="action_room_board" sequence="5"/>
+    <menuitem id="menu_my_day" name="Ma journée"
+              parent="aite_hotel_management.menu_hotel_housekeeping_section"
+              action="action_my_day" sequence="8"/>
+    <menuitem id="menu_assign" name="Répartir les chambres du jour"
+              parent="aite_hotel_management.menu_hotel_housekeeping_section"
+              action="action_assign_wizard" sequence="12"
+              groups="aite_hotel_management.group_hotel_user"/>
+    <menuitem id="menu_room_maintenance" name="Pannes &amp; réparations"
+              parent="aite_hotel_management.menu_hotel_housekeeping_section"
+              action="action_room_maintenance" sequence="30"/>
+    <menuitem id="menu_lost_found" name="Objets trouvés"
+              parent="aite_hotel_management.menu_hotel_housekeeping_section"
+              action="action_lost_found" sequence="40"/>
+    <!-- Le tableau des chambres remplace l'ancien menu « Chambres (liste) » -->
+    <record id="aite_hotel_management.menu_hotel_room_rack" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <menuitem id="menu_checklist_items" name="Points de contrôle (inspection)"
+              parent="aite_hotel_management.menu_hotel_config_section"
+              action="action_checklist_item" sequence="70"/>
+</odoo>

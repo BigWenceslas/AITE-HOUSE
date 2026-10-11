@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_hotel_folio_form_city_tax" model="ir.ui.view">
+        <field name="name">aite.hotel.folio.form.city.tax</field>
+        <field name="model">aite.hotel.folio</field>
+        <field name="inherit_id" ref="aite_hotel_management.view_hotel_folio_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Totaux : la taxe de séjour entre hébergement/services et le HT -->
+            <xpath expr="//field[@name='amount_service']" position="after">
+                <field name="amount_city_tax"
+                       invisible="not amount_city_tax"/>
+            </xpath>
+
+            <!-- Bouton de recalcul (cas rare : barème modifié après coup) -->
+            <xpath expr="//header/button[@name='action_cancel']" position="before">
+                <button name="action_refresh_city_tax" type="object"
+                        string="Recalculer la taxe de séjour"
+                        class="btn-link"
+                        invisible="state != 'open' or move_id"
+                        groups="aite_hotel_management.group_hotel_manager"
+                        help="Recalcule la ligne « Taxe de séjour » à partir du barème de l'hôtel et des occupants. Automatique dans la grande majorité des cas."/>
+            </xpath>
+
+            <!-- Lignes : la taxe se distingue et ne s'édite pas à la main -->
+            <xpath expr="//field[@name='line_ids']/list" position="attributes">
+                <attribute name="decoration-warning">line_type == 'city_tax'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']/list/field[@name='line_type']"
+                   position="attributes">
+                <attribute name="decoration-warning">line_type == 'city_tax'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']/list/field[@name='quantity']"
+                   position="attributes">
+                <attribute name="readonly">line_type == 'city_tax'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']/list/field[@name='price_unit']"
+                   position="attributes">
+                <attribute name="readonly">line_type == 'city_tax'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']/list/field[@name='name']"
+                   position="attributes">
+                <attribute name="readonly">line_type == 'city_tax'</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Liste des folios : colonne optionnelle -->
+    <record id="view_hotel_folio_list_city_tax" model="ir.ui.view">
+        <field name="name">aite.hotel.folio.list.city.tax</field>
+        <field name="model">aite.hotel.folio</field>
+        <field name="inherit_id" ref="aite_hotel_management.view_hotel_folio_list"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='amount_total']" position="before">
+                <field name="amount_city_tax" optional="hide" sum="Taxe de séjour"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

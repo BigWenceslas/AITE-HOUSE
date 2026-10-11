@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ═══ Tableau des chambres (gouvernante) : colonnes = état de ménage ═══ -->
+    <record id="view_room_board_kanban" model="ir.ui.view">
+        <field name="name">aite.hotel.room.kanban.board</field>
+        <field name="model">aite.hotel.room</field>
+        <field name="priority">50</field>
+        <field name="arch" type="xml">
+            <!-- default_order : Odoo 18 trie les colonnes d'une sélection par
+                 ordre alphabétique de la clé ; « desc » donne l'ordre du
+                 travail : À nettoyer → En cours → À inspecter → Propre. -->
+            <kanban default_group_by="hk_state" default_order="hk_state desc, name"
+                    quick_create="false"
+                    records_draggable="false" group_create="false"
+                    group_delete="false" group_edit="false">
+                <field name="hk_state"/>
+                <field name="status"/>
+                <field name="out_of_order"/>
+                <field name="occupancy_state"/>
+                <field name="maintenance_open_count"/>
+                <field name="today_task_id"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex flex-column p-2"
+                             t-attf-class="#{record.out_of_order.raw_value ? 'bg-danger-subtle' : ''}">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <strong class="fs-3"><field name="name"/></strong>
+                                <span t-if="record.maintenance_open_count.raw_value"
+                                      class="badge text-bg-danger" title="Pannes ouvertes">
+                                    <i class="fa fa-wrench me-1" title="Maintenance"/>
+                                    <t t-esc="record.maintenance_open_count.raw_value"/>
+                                </span>
+                            </div>
+                            <div class="fw-bold text-primary"><field name="hk_hint"/></div>
+                            <div class="text-muted small">
+                                <field name="room_type_id"/>
+                                <span t-if="record.floor_id.raw_value"> · <field name="floor_id"/></span>
+                            </div>
+                            <div t-if="record.guest_name.raw_value" class="mt-1">
+                                <i class="fa fa-user me-1" title="Client"/><field name="guest_name"/>
+                            </div>
+                            <div t-if="record.arrival_hint.raw_value" class="text-info small">
+                                <i class="fa fa-clock-o me-1" title="Arrivée"/><field name="arrival_hint"/>
+                            </div>
+                            <div t-if="record.assigned_to.raw_value" class="small">
+                                <i class="fa fa-female me-1" title="Affectée à"/><field name="assigned_to"/>
+                            </div>
+                            <div class="mt-2 d-flex flex-wrap gap-1">
+                                <button name="action_hk_start" type="object"
+                                        class="btn btn-sm btn-primary"
+                                        invisible="hk_state != 'to_clean' or out_of_order">
+                                    <i class="fa fa-play me-1" title="Commencer"/>Commencer
+                                </button>
+                                <button name="action_hk_done" type="object"
+                                        class="btn btn-sm btn-success"
+                                        invisible="hk_state != 'cleaning'">
+                                    <i class="fa fa-check me-1" title="Terminé"/>Terminé
+                                </button>
+                                <button name="action_hk_inspect_ok" type="object"
+                                        class="btn btn-sm btn-success"
+                                        invisible="hk_state != 'inspect'"
+                                        groups="aite_hotel_management.group_hotel_user">
+                                    <i class="fa fa-check me-1" title="Conforme"/>Conforme
+                                </button>
+                                <button name="action_hk_inspect_ko" type="object"
+                                        class="btn btn-sm btn-outline-danger"
+                                        invisible="hk_state != 'inspect'"
+                                        groups="aite_hotel_management.group_hotel_user">
+                                    À refaire
+                                </button>
+                                <button name="action_set_to_clean" type="object"
+                                        class="btn btn-sm btn-outline-secondary"
+                                        invisible="hk_state != 'clean' or out_of_order">
+                                    À nettoyer
+                                </button>
+                                <button name="action_report_issue" type="object"
+                                        class="btn btn-sm btn-outline-danger"
+                                        title="Signaler un problème (panne, dégât)">
+                                    <i class="fa fa-wrench" title="Signaler"/>
+                                </button>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="action_room_board" model="ir.actions.act_window">
+        <field name="name">Tableau des chambres</field>
+        <field name="res_model">aite.hotel.room</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="view_id" ref="view_room_board_kanban"/>
+        <field name="search_view_id" ref="aite_hotel_management.view_hotel_room_search"/>
+        <field name="context">{'default_group_by': 'hk_state'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Aucune chambre pour l'instant</p>
+            <p>Les chambres se créent dans <b>Configuration → Chambres</b>.
+               Elles apparaîtront ici, classées par état de ménage :
+               à nettoyer, en cours, à inspecter, propre.</p>
+        </field>
+    </record>
+
+    <!-- ═══ Fiche chambre : bouton maintenance + onglet ═══ -->
+    <record id="view_hotel_room_form_hk" model="ir.ui.view">
+        <field name="name">aite.hotel.room.form.hk</field>
+        <field name="model">aite.hotel.room</field>
+        <field name="inherit_id" ref="aite_hotel_management.view_hotel_room_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_report_issue" type="object"
+                        string="Signaler un problème" icon="fa-wrench"
+                        class="btn-secondary"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_maintenance" type="object"
+                        class="oe_stat_button" icon="fa-wrench">
+                    <field name="maintenance_open_count" widget="statinfo"
+                           string="Pannes ouvertes"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

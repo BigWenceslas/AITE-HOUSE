@@ -5,8 +5,8 @@ Compose le cahier de recette illustré à partir des résultats UAT.
 
     python tests_uat/build_guide.py
 
-Lit ``documentation/uat_resultats.json`` (produit par ``run_uat.py``) et
-écrit ``documentation/GUIDE_RECETTE_UAT.md``, où chaque étape est
+Lit ``docs/uat_resultats.json`` (produit par ``run_uat.py``) et
+écrit ``docs/GUIDE_RECETTE_UAT.md``, où chaque étape est
 accompagnée de sa capture d'écran et de son constat.
 """
 import json
@@ -14,7 +14,7 @@ import os
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DOC = os.path.abspath(os.path.join(HERE, '..', 'documentation'))
+DOC = os.path.abspath(os.path.join(HERE, '..', 'docs'))
 RESULTS = os.path.join(DOC, 'uat_resultats.json')
 OUTPUT = os.path.join(DOC, 'GUIDE_RECETTE_UAT.md')
 
@@ -95,7 +95,7 @@ STEP = """
 | **Constaté** | {observed} |
 | **Verdict** | {verdict} |
 
-![{title}](captures/{screenshot})
+![{title}](captures_uat/{screenshot})
 """
 
 STEP_NO_SHOT = """

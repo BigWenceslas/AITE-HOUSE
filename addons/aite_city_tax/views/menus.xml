@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Facturation → état mensuel (là où le gérant va chercher ses chiffres) -->
+    <menuitem id="menu_city_tax_report"
+              name="Taxe de séjour"
+              parent="aite_hotel_management.menu_hotel_billing_section"
+              action="action_city_tax_report"
+              sequence="30"
+              groups="aite_hotel_management.group_hotel_manager"/>
+
+    <!-- Configuration → barèmes -->
+    <menuitem id="menu_city_tax_rates"
+              name="Barèmes de taxe de séjour"
+              parent="aite_hotel_management.menu_hotel_config_section"
+              action="action_city_tax_rate"
+              sequence="65"/>
+
+</odoo>

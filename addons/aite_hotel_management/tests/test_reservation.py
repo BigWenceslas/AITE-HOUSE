@@ -389,12 +389,17 @@ class TestReservation(HotelCommon):
     def test_dates_default_to_hotel_hours(self):
         """Les valeurs par défaut suivent les horaires de l'établissement."""
         Reservation = self.env['aite.hotel.reservation']
+        # Le défaut suit le premier hôtel de la société : sur une base
+        # avec les données de démonstration, ce n'est pas forcément
+        # celui du test (13 h chez l'hôtel de démo, 14 h ici).
+        first_hotel = self.env['aite.hotel.hotel'].search(
+            [('company_id', '=', self.env.company.id)], limit=1)
         checkin = Reservation._default_checkin()
         local = fields.Datetime.context_timestamp(self.env.user, checkin)
-        self.assertEqual(local.hour, 14)
+        self.assertEqual(local.hour, int(first_hotel.checkin_hour))
         checkout = Reservation._default_checkout()
         local_out = fields.Datetime.context_timestamp(self.env.user, checkout)
-        self.assertEqual(local_out.hour, 12)
+        self.assertEqual(local_out.hour, int(first_hotel.checkout_hour))
         self.assertEqual((checkout.date() - checkin.date()).days, 1)
 
     def test_display_name_of_line_shows_room_and_guest(self):

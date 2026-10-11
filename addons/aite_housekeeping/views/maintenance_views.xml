@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Demande de maintenance : la chambre et le blocage, bien visibles -->
+    <record id="view_maintenance_request_form_room" model="ir.ui.view">
+        <field name="name">maintenance.request.form.room</field>
+        <field name="model">maintenance.request</field>
+        <field name="inherit_id" ref="maintenance.hr_equipment_request_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='equipment_id']" position="before">
+                <field name="room_id" options="{'no_create': True}"/>
+                <field name="blocks_room" invisible="not room_id"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_maintenance_request_search_room" model="ir.ui.view">
+        <field name="name">maintenance.request.search.room</field>
+        <field name="model">maintenance.request</field>
+        <field name="inherit_id" ref="maintenance.hr_equipment_request_view_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="room_id"/>
+                <filter name="rooms_only" string="Chambres"
+                        domain="[('room_id', '!=', False)]"/>
+                <filter name="blocking" string="Chambres bloquées"
+                        domain="[('blocks_room', '=', True), ('stage_id.done', '=', False)]"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_maintenance_request_kanban_room" model="ir.ui.view">
+        <field name="name">maintenance.request.kanban.room</field>
+        <field name="model">maintenance.request</field>
+        <field name="inherit_id" ref="maintenance.hr_equipment_request_view_kanban"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="before">
+                <field name="room_id"/>
+                <field name="blocks_room"/>
+            </xpath>
+        </field>
+    </record>
+    <!-- Action dédiée : pannes des chambres -->
+    <record id="action_room_maintenance" model="ir.actions.act_window">
+        <field name="name">Pannes &amp; réparations</field>
+        <field name="res_model">maintenance.request</field>
+        <field name="view_mode">kanban,list,form,calendar</field>
+        <field name="domain">[('room_id', '!=', False)]</field>
+        <field name="context">{'search_default_todo': 1, 'default_maintenance_type': 'corrective'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Aucune panne signalée</p>
+            <p>Depuis le <b>tableau des chambres</b>, le bouton
+               <i class="fa fa-wrench" title="Signaler"/> signale un problème
+               (climatiseur, plomberie, électricité…). La demande arrive
+               ici ; quand elle passe en « Réparé », la chambre revient
+               en vente toute seule.</p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ═══ CAMEROUN — barème DGI (loi de finances 2017), par personne et par nuit ═══ -->
+        <record id="rate_cm_5" model="aite.city.tax.rate">
+            <field name="country_id" ref="base.cm"/>
+            <field name="stars">5</field>
+            <field name="amount">5000</field>
+            <field name="currency_id" ref="base.XAF"/>
+            <field name="basis">person</field>
+            <field name="count_children" eval="False"/>
+            <field name="legal_reference">Loi de finances 2017 — déclaration mensuelle DGI (formulaire I/PL-TVA-IR)</field>
+        </record>
+        <record id="rate_cm_4" model="aite.city.tax.rate">
+            <field name="country_id" ref="base.cm"/>
+            <field name="stars">4</field>
+            <field name="amount">4000</field>
+            <field name="currency_id" ref="base.XAF"/>
+            <field name="basis">person</field>
+            <field name="count_children" eval="False"/>
+            <field name="legal_reference">Loi de finances 2017 — déclaration mensuelle DGI (formulaire I/PL-TVA-IR)</field>
+        </record>
+        <record id="rate_cm_3" model="aite.city.tax.rate">
+            <field name="country_id" ref="base.cm"/>
+            <field name="stars">3</field>
+            <field name="amount">3000</field>
+            <field name="currency_id" ref="base.XAF"/>
+            <field name="basis">person</field>
+            <field name="count_children" eval="False"/>
+            <field name="legal_reference">Loi de finances 2017 — déclaration mensuelle DGI (formulaire I/PL-TVA-IR)</field>
+        </record>
+        <record id="rate_cm_2" model="aite.city.tax.rate">
+            <field name="country_id" ref="base.cm"/>
+            <field name="stars">2</field>
+            <field name="amount">1000</field>
+            <field name="currency_id" ref="base.XAF"/>
+            <field name="basis">person</field>
+            <field name="count_children" eval="False"/>
+            <field name="legal_reference">Loi de finances 2017 — déclaration mensuelle DGI (formulaire I/PL-TVA-IR)</field>
+        </record>
+        <record id="rate_cm_1" model="aite.city.tax.rate">
+            <field name="country_id" ref="base.cm"/>
+            <field name="stars">1</field>
+            <field name="amount">500</field>
+            <field name="currency_id" ref="base.XAF"/>
+            <field name="basis">person</field>
+            <field name="count_children" eval="False"/>
+            <field name="legal_reference">Loi de finances 2017 — déclaration mensuelle DGI (formulaire I/PL-TVA-IR)</field>
+        </record>
+        <record id="rate_cm_0" model="aite.city.tax.rate">
+            <field name="country_id" ref="base.cm"/>
+            <field name="stars">0</field>
+            <field name="amount">500</field>
+            <field name="currency_id" ref="base.XAF"/>
+            <field name="basis">person</field>
+            <field name="count_children" eval="False"/>
+            <field name="legal_reference">Loi de finances 2017 — « autres établissements et meublés »</field>
+        </record>
+
+        <!-- ═══ CÔTE D'IVOIRE — taxe communale de nuitée (annexe fiscale 2026, art. 15), par chambre et par nuit ═══ -->
+        <record id="rate_ci_5" model="aite.city.tax.rate">
+            <field name="country_id" ref="base.ci"/>
+            <field name="stars">5</field>
+            <field name="amount">2000</field>
+            <field name="currency_id" ref="base.XOF"/>
+            <field name="basis">room</field>
+            <field name="legal_reference">Annexe fiscale 2026 — taxe communale de nuitée (3★ et plus). La taxe de développement touristique (2,5 % du HT) relève de la TVA/compta.</field>
+        </record>
+        <record id="rate_ci_4" model="aite.city.tax.rate">
+            <field name="country_id" ref="base.ci"/>
+            <field name="stars">4</field>
+            <field name="amount">2000</field>
+            <field name="currency_id" ref="base.XOF"/>
+            <field name="basis">room</field>
+            <field name="legal_reference">Annexe fiscale 2026 — taxe communale de nuitée (3★ et plus)</field>
+        </record>
+        <record id="rate_ci_3" model="aite.city.tax.rate">
+            <field name="country_id" ref="base.ci"/>
+            <field name="stars">3</field>
+            <field name="amount">2000</field>
+            <field name="currency_id" ref="base.XOF"/>
+            <field name="basis">room</field>
+            <field name="legal_reference">Annexe fiscale 2026 — taxe communale de nuitée (3★ et plus)</field>
+        </record>
+        <record id="rate_ci_2" model="aite.city.tax.rate">
+            <field name="country_id" ref="base.ci"/>
+            <field name="stars">2</field>
+            <field name="amount">1500</field>
+            <field name="currency_id" ref="base.XOF"/>
+            <field name="basis">room</field>
+            <field name="legal_reference">Annexe fiscale 2026 — taxe communale de nuitée (2★)</field>
+        </record>
+        <record id="rate_ci_1" model="aite.city.tax.rate">
+            <field name="country_id" ref="base.ci"/>
+            <field name="stars">1</field>
+            <field name="amount">1000</field>
+            <field name="currency_id" ref="base.XOF"/>
+            <field name="basis">room</field>
+            <field name="legal_reference">Annexe fiscale 2026 — taxe communale de nuitée (1★)</field>
+        </record>
+        <record id="rate_ci_0" model="aite.city.tax.rate">
+            <field name="country_id" ref="base.ci"/>
+            <field name="stars">0</field>
+            <field name="amount">500</field>
+            <field name="currency_id" ref="base.XOF"/>
+            <field name="basis">room</field>
+            <field name="legal_reference">Annexe fiscale 2026 — taxe communale de nuitée (sans étoile)</field>
+        </record>
+
+        <!-- ═══ SÉNÉGAL — taxe de promotion touristique (loi 2012-04) : 1 000 F par nuitée, toutes catégories ═══ -->
+        <record id="rate_sn_5" model="aite.city.tax.rate">
+            <field name="country_id" ref="base.sn"/>
+            <field name="stars">5</field>
+            <field name="amount">1000</field>
+            <field name="currency_id" ref="base.XOF"/>
+            <field name="basis">room</field>
+            <field name="legal_reference">Loi n° 2012-04 du 3 janvier 2012 — taxe de promotion touristique</field>
+        </record>
+        <record id="rate_sn_4" model="aite.city.tax.rate">
+            <field name="country_id" ref="base.sn"/>
+            <field name="stars">4</field>
+            <field name="amount">1000</field>
+            <field name="currency_id" ref="base.XOF"/>
+            <field name="basis">room</field>
+            <field name="legal_reference">Loi n° 2012-04 — taxe de promotion touristique</field>
+        </record>
+        <record id="rate_sn_3" model="aite.city.tax.rate">
+            <field name="country_id" ref="base.sn"/>
+            <field name="stars">3</field>
+            <field name="amount">1000</field>
+            <field name="currency_id" ref="base.XOF"/>
+            <field name="basis">room</field>
+            <field name="legal_reference">Loi n° 2012-04 — taxe de promotion touristique</field>
+        </record>
+        <record id="rate_sn_2" model="aite.city.tax.rate">
+            <field name="country_id" ref="base.sn"/>
+            <field name="stars">2</field>
+            <field name="amount">1000</field>
+            <field name="currency_id" ref="base.XOF"/>
+            <field name="basis">room</field>
+            <field name="legal_reference">Loi n° 2012-04 — taxe de promotion touristique</field>
+        </record>
+        <record id="rate_sn_1" model="aite.city.tax.rate">
+            <field name="country_id" ref="base.sn"/>
+            <field name="stars">1</field>
+            <field name="amount">1000</field>
+            <field name="currency_id" ref="base.XOF"/>
+            <field name="basis">room</field>
+            <field name="legal_reference">Loi n° 2012-04 — taxe de promotion touristique</field>
+        </record>
+        <record id="rate_sn_0" model="aite.city.tax.rate">
+            <field name="country_id" ref="base.sn"/>
+            <field name="stars">0</field>
+            <field name="amount">1000</field>
+            <field name="currency_id" ref="base.XOF"/>
+            <field name="basis">room</field>
+            <field name="legal_reference">Loi n° 2012-04 — taxe de promotion touristique</field>
+        </record>
+
+        <!-- ═══ GUINÉE — taxe de promotion touristique (LFR 2024) : 10 000 GNF par personne et par nuit ═══ -->
+        <record id="rate_gn_5" model="aite.city.tax.rate">
+            <field name="country_id" ref="base.gn"/>
+            <field name="stars">5</field>
+            <field name="amount">10000</field>
+            <field name="currency_id" ref="base.GNF"/>
+            <field name="basis">person</field>
+            <field name="count_children" eval="False"/>
+            <field name="legal_reference">Loi de finances rectificative 2024 — taxe de promotion touristique</field>
+        </record>
+        <record id="rate_gn_4" model="aite.city.tax.rate">
+            <field name="country_id" ref="base.gn"/>
+            <field name="stars">4</field>
+            <field name="amount">10000</field>
+            <field name="currency_id" ref="base.GNF"/>
+            <field name="basis">person</field>
+            <field name="count_children" eval="False"/>
+            <field name="legal_reference">LFR 2024 — taxe de promotion touristique</field>
+        </record>
+        <record id="rate_gn_3" model="aite.city.tax.rate">
+            <field name="country_id" ref="base.gn"/>
+            <field name="stars">3</field>
+            <field name="amount">10000</field>
+            <field name="currency_id" ref="base.GNF"/>
+            <field name="basis">person</field>
+            <field name="count_children" eval="False"/>
+            <field name="legal_reference">LFR 2024 — taxe de promotion touristique</field>
+        </record>
+        <record id="rate_gn_2" model="aite.city.tax.rate">
+            <field name="country_id" ref="base.gn"/>
+            <field name="stars">2</field>
+            <field name="amount">10000</field>
+            <field name="currency_id" ref="base.GNF"/>
+            <field name="basis">person</field>
+            <field name="count_children" eval="False"/>
+            <field name="legal_reference">LFR 2024 — taxe de promotion touristique</field>
+        </record>
+        <record id="rate_gn_1" model="aite.city.tax.rate">
+            <field name="country_id" ref="base.gn"/>
+            <field name="stars">1</field>
+            <field name="amount">10000</field>
+            <field name="currency_id" ref="base.GNF"/>
+            <field name="basis">person</field>
+            <field name="count_children" eval="False"/>
+            <field name="legal_reference">LFR 2024 — taxe de promotion touristique</field>
+        </record>
+        <record id="rate_gn_0" model="aite.city.tax.rate">
+            <field name="country_id" ref="base.gn"/>
+            <field name="stars">0</field>
+            <field name="amount">10000</field>
+            <field name="currency_id" ref="base.GNF"/>
+            <field name="basis">person</field>
+            <field name="count_children" eval="False"/>
+            <field name="legal_reference">LFR 2024 — taxe de promotion touristique</field>
+        </record>
+
+    </data>
+</odoo>

@@ -22,7 +22,7 @@ BASE_URL = os.environ.get('AITE_UAT_URL', 'http://127.0.0.1:8069')
 SHOTS_DIR = os.environ.get(
     'AITE_UAT_SHOTS',
     os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                 '..', 'documentation', 'captures'))
+                 '..', 'docs', 'captures_uat'))
 
 # Profils du jeu d'essai : (login, mot de passe, libellé métier).
 USERS = {

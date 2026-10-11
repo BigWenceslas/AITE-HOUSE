@@ -258,12 +258,14 @@ class HotelRoom(models.Model):
     note = fields.Text(string="Notes internes")
 
     # --- Axe gouvernante -------------------------------------------------
+    # Valeurs dans l'ordre du travail (à nettoyer → en cours → à inspecter
+    # → propre) : c'est l'ordre des colonnes du tableau des chambres.
     hk_state = fields.Selection(
         selection=[
-            ('clean', "Propre"),
             ('to_clean', "À nettoyer"),
             ('cleaning', "Nettoyage en cours"),
             ('inspect', "À inspecter"),
+            ('clean', "Propre"),
         ],
         string="État ménage", default='clean', required=True, index=True,
     )

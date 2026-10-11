@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Front desk : le registre là où travaille la réception -->
+    <menuitem id="menu_guest_registration"
+              name="Registre des clients"
+              parent="aite_hotel_management.menu_hotel_frontdesk"
+              action="action_guest_registration"
+              sequence="45"/>
+    <!-- Facturation / états : le registre imprimable et les statistiques -->
+    <menuitem id="menu_police_register_report"
+              name="Registre de police (impression)"
+              parent="aite_hotel_management.menu_hotel_billing_section"
+              action="action_police_register_wizard"
+              sequence="40"/>
+    <menuitem id="menu_guest_stats"
+              name="Statistiques d'hébergement"
+              parent="aite_hotel_management.menu_hotel_billing_section"
+              action="action_guest_stats"
+              sequence="50"
+              groups="aite_hotel_management.group_hotel_manager"/>
+</odoo>

@@ -1,0 +1,19 @@
+; Configuration Odoo 18 de développement AITE HOUSE
+; Copier en dev/odoo.conf et adapter les chemins (setup_env.sh le fait automatiquement).
+[options]
+; 1) le dossier addons d'Odoo 18 ; 2) les modules AITE :
+;    le socle s'installe tel quel sur Community (planning en vue calendrier) ;
+;    sur Odoo Enterprise, ajouter le dossier enterprise/ au addons_path et le
+;    module passerelle aite_hotel_gantt s'installe seul (planning Gantt).
+addons_path = __ODOO_DIR__/addons,__ROOT__/addons
+db_host = __PG_HOST__
+db_port = 5432
+db_user = odoo
+db_password = odoo
+data_dir = __ROOT__/dev/filestore
+admin_passwd = admin
+http_port = 8069
+log_level = warn
+; limite de temps généreuse pour les scénarios joués dans odoo-bin shell
+limit_time_cpu = 600
+limit_time_real = 1200

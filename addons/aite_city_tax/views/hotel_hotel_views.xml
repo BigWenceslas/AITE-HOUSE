@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Fiche hôtel : un onglet qui explique, en clair, ce qui sera facturé -->
+    <record id="view_hotel_hotel_form_city_tax" model="ir.ui.view">
+        <field name="name">aite.hotel.hotel.form.city.tax</field>
+        <field name="model">aite.hotel.hotel</field>
+        <field name="inherit_id" ref="aite_hotel_management.view_hotel_hotel_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Taxe de séjour" name="city_tax">
+                    <group>
+                        <group string="Réglage">
+                            <field name="city_tax_enabled"/>
+                            <field name="country_id" readonly="1"
+                                   string="Pays (fiche hôtel)"/>
+                            <field name="stars" readonly="1"
+                                   string="Catégorie (fiche hôtel)"/>
+                        </group>
+                        <group string="Ce qui s'applique"
+                               invisible="not city_tax_enabled">
+                            <field name="city_tax_rate_id" readonly="1"
+                                   options="{'no_open': True}"/>
+                            <field name="city_tax_amount" readonly="1"
+                                   invisible="not city_tax_rate_id"/>
+                            <field name="city_tax_basis" readonly="1"
+                                   invisible="not city_tax_rate_id"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-info" role="status">
+                        <i class="fa fa-info-circle me-2" title="Information"/>
+                        <field name="city_tax_help" readonly="1" nolabel="1"
+                               class="d-inline"/>
+                    </div>
+                    <p class="text-muted">
+                        La taxe est ajoutée automatiquement à chaque folio et
+                        recalculée si les dates, les chambres ou le nombre de
+                        personnes changent. Elle n'entre pas dans la base de
+                        la TVA. Pour modifier un montant (nouvelle loi de
+                        finances) : <b>Hôtel → Configuration → Taxe de séjour →
+                        Barèmes</b>.
+                    </p>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

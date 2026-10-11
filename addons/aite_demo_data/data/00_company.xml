@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Fuseau de l'établissement de démonstration.
+
+             Les heures du jeu d'essai (créneaux, ventes, séjours) sont
+             écrites en UTC et pensées pour un établissement à UTC+0
+             (Africa/Conakry, comme les profils de démonstration créés par
+             le générateur). Les règles « un créneau ne franchit pas
+             minuit » et « dans les horaires d'ouverture » s'évaluent dans
+             le fuseau de la société : sans ce réglage, installer le jeu
+             d'essai depuis un compte réglé sur Bruxelles échouait. Base
+             de DÉMONSTRATION uniquement. -->
+        <record id="base.main_partner" model="res.partner">
+            <field name="tz">Africa/Conakry</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ═══ Liste « fenêtre du séjour » : saisie rapide ligne par ligne ═══ -->
+    <record id="view_guest_registration_list_inline" model="ir.ui.view">
+        <field name="name">aite.guest.registration.list.inline</field>
+        <field name="model">aite.guest.registration</field>
+        <field name="arch" type="xml">
+            <list string="Fiches d'enregistrement" editable="bottom"
+                  decoration-success="state == 'done'"
+                  decoration-warning="state == 'draft'">
+                <field name="room_id" string="Chambre" readonly="1"/>
+                <field name="reservation_line_id" column_invisible="1"/>
+                <field name="last_name"/>
+                <field name="first_name"/>
+                <field name="birth_date" optional="show"/>
+                <field name="nationality_id" options="{'no_create': True}"/>
+                <field name="id_type"/>
+                <field name="id_number"/>
+                <field name="country_id" string="Résidence" optional="hide"/>
+                <field name="phone" optional="hide"/>
+                <field name="is_main_guest" optional="show"/>
+                <field name="signed" optional="show"/>
+                <field name="missing_info" string="Il manque"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'"
+                       decoration-warning="state == 'draft'"/>
+                <field name="reservation_id" column_invisible="1"/>
+                <button name="action_print_card" type="object" icon="fa-print"
+                        title="Imprimer la fiche"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ═══ Liste registre (lecture, police) ═══ -->
+    <record id="view_guest_registration_list" model="ir.ui.view">
+        <field name="name">aite.guest.registration.list</field>
+        <field name="model">aite.guest.registration</field>
+        <field name="arch" type="xml">
+            <list string="Registre des clients"
+                  decoration-warning="state == 'draft'">
+                <field name="arrival_date"/>
+                <field name="departure_date"/>
+                <field name="room_id"/>
+                <field name="last_name"/>
+                <field name="first_name"/>
+                <field name="birth_date" optional="show"/>
+                <field name="nationality_id"/>
+                <field name="id_type" optional="show"/>
+                <field name="id_number"/>
+                <field name="coming_from" optional="hide"/>
+                <field name="going_to" optional="hide"/>
+                <field name="hotel_id" optional="hide"/>
+                <field name="reservation_id" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'"
+                       decoration-warning="state == 'draft'"/>
+                <field name="signed" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ═══ Formulaire d'une fiche ═══ -->
+    <record id="view_guest_registration_form" model="ir.ui.view">
+        <field name="name">aite.guest.registration.form</field>
+        <field name="model">aite.guest.registration</field>
+        <field name="arch" type="xml">
+            <form string="Fiche d'enregistrement">
+                <header>
+                    <button name="action_print_card" type="object"
+                            string="Imprimer la fiche" class="btn-primary"
+                            icon="fa-print"/>
+                    <button name="action_mark_signed" type="object"
+                            string="Marquer signée" invisible="signed"/>
+                    <button name="action_copy_back_to_partner" type="object"
+                            string="Mémoriser sur la fiche client"
+                            invisible="not partner_id"
+                            help="Enregistre la pièce et la nationalité sur le contact : la prochaine fois, tout sera pré-rempli."/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-warning" role="status"
+                         invisible="not missing_info">
+                        <i class="fa fa-exclamation-triangle me-2" title="À compléter"/>
+                        Pour compléter la fiche, il manque :
+                        <field name="missing_info" readonly="1" nolabel="1"
+                               class="d-inline fw-bold"/>
+                    </div>
+                    <div class="oe_title">
+                        <label for="last_name"/>
+                        <h1 class="d-flex gap-2">
+                            <field name="last_name" placeholder="NOM"
+                                   class="text-uppercase"/>
+                            <field name="first_name" placeholder="Prénom(s)"/>
+                        </h1>
+                        <field name="name" readonly="1" class="text-muted"/>
+                    </div>
+                    <group>
+                        <group string="Séjour">
+                            <field name="reservation_id"
+                                   options="{'no_create': True}"/>
+                            <field name="reservation_line_id" string="Chambre du séjour"
+                                   options="{'no_create': True, 'no_open': True}"
+                                   invisible="room_id"/>
+                            <field name="room_id" string="Chambre" invisible="not room_id"/>
+                            <field name="arrival_date"/>
+                            <field name="departure_date"/>
+                            <field name="nights"/>
+                            <field name="purpose"/>
+                            <field name="is_main_guest"/>
+                            <field name="partner_id"/>
+                        </group>
+                        <group string="Identité">
+                            <field name="gender"/>
+                            <field name="birth_date"/>
+                            <field name="birth_place"/>
+                            <field name="nationality_id"
+                                   options="{'no_create': True}"/>
+                            <field name="profession"/>
+                            <field name="is_resident"/>
+                        </group>
+                        <group string="Pièce d'identité">
+                            <field name="id_type"/>
+                            <field name="id_number"/>
+                            <field name="id_issued_on"/>
+                            <field name="id_issued_by"/>
+                            <field name="id_expires_on"/>
+                        </group>
+                        <group string="Adresse &amp; déplacement">
+                            <field name="address"/>
+                            <field name="country_id"
+                                   options="{'no_create': True}"/>
+                            <field name="phone" widget="phone"/>
+                            <field name="email" widget="email"/>
+                            <field name="coming_from"/>
+                            <field name="going_to"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Photo de la pièce">
+                            <field name="id_image" widget="image" nolabel="1"
+                                   options="{'size': [260, 180]}"/>
+                        </group>
+                        <group string="Signature &amp; observation">
+                            <field name="signed"/>
+                            <field name="note"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_guest_registration_search" model="ir.ui.view">
+        <field name="name">aite.guest.registration.search</field>
+        <field name="model">aite.guest.registration</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="last_name"
+                       filter_domain="['|', ('last_name', 'ilike', self), ('first_name', 'ilike', self)]"
+                       string="Nom / prénom"/>
+                <field name="id_number"/>
+                <field name="nationality_id"/>
+                <field name="room_id"/>
+                <field name="reservation_id"/>
+                <filter name="today_arrivals" string="Arrivées du jour"
+                        domain="[('arrival_date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter name="in_house" string="Présents"
+                        domain="[('reservation_id.state', '=', 'checked_in')]"/>
+                <filter name="draft" string="À compléter"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter name="unsigned" string="Non signées"
+                        domain="[('signed', '=', False)]"/>
+                <separator/>
+                <filter name="foreigners" string="Non-résidents"
+                        domain="[('is_resident', '=', False)]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_arrival" string="Date d'arrivée"
+                            context="{'group_by': 'arrival_date:day'}"/>
+                    <filter name="group_nationality" string="Nationalité"
+                            context="{'group_by': 'nationality_id'}"/>
+                    <filter name="group_hotel" string="Hôtel"
+                            context="{'group_by': 'hotel_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_guest_registration" model="ir.actions.act_window">
+        <field name="name">Registre des clients</field>
+        <field name="res_model">aite.guest.registration</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_guest_registration_list"/>
+        <field name="search_view_id" ref="view_guest_registration_search"/>
+        <field name="context">{'search_default_group_arrival': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Le registre des clients est vide
+            </p>
+            <p>
+                À chaque <b>check-in</b>, une fiche est créée pour le client
+                et pré-remplie depuis sa fiche contact ; ajoutez les autres
+                occupants depuis le bouton <b>Fiches clients</b> de la
+                réservation. Ce registre est l'état chronologique à
+                présenter en cas de contrôle — exportez-le en un clic
+                (⚙ → Exporter) ou imprimez-le depuis
+                <b>Facturation → Registre de police</b>.
+            </p>
+        </field>
+    </record>
+
+</odoo>

@@ -50,5 +50,9 @@
         <field name="view_mode">kanban,list,form</field>
         <field name="domain">[('loyalty_tier','in',('vip','vvip'))]</field>
         <field name="context">{'search_default_customer': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Aucun client VIP ou VVIP pour l'instant</p>
+            <p>Le statut se calcule tout seul à partir des points gagnés sur les 12 derniers mois (séjours, bar, prestations). Dès qu'un client franchit le palier VIP, il apparaît ici avec son niveau et ses points ; vous pouvez aussi <b>Ajuster des points</b> depuis le menu Fidélité (geste commercial).</p>
+        </field>
     </record>
 </odoo>

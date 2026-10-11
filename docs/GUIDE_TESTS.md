@@ -173,7 +173,7 @@ python tests_uat/build_pdf.py        # version PDF, à transmettre
 ```
 
 - `run_uat.py` joue les six scénarios, capture chaque écran dans
-  `documentation/captures/` et écrit le relevé `uat_resultats.json`.
+  `docs/captures_uat/` et écrit le relevé `uat_resultats.json`.
 - `build_guide.py` en compose le cahier illustré
   `GUIDE_RECETTE_UAT.md`, pour la lecture en ligne.
 - `build_pdf.py` en compose la version paginée

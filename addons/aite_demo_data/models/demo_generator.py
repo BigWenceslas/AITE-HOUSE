@@ -617,21 +617,29 @@ class AiteDemoGenerator(models.AbstractModel):
         cash = plain.filtered('is_cash_count')
         if cash:
             return cash[0]
-        if plain:
-            return plain[0]
+        # Pas d'espèces sur la caisse (Odoo 18 ne crée plus qu'un moyen
+        # « Carte » avec une caisse neuve) : on en ajoute un dès qu'un
+        # journal de caisse existe — avant de se rabattre sur la carte,
+        # sinon aucune clôture ne porterait d'écart.
         journal = self.env['account.journal'].sudo().search([
             ('type', '=', 'cash'),
             ('company_id', '=', self._company().id),
         ], limit=1)
-        if not journal:
-            return self.env['pos.payment.method']
-        method = self.env['pos.payment.method'].sudo().create({
-            'name': "Espèces (démo)",
-            'journal_id': journal.id,
-            'company_id': self._company().id,
-        })
-        config.sudo().write({'payment_method_ids': [(4, method.id)]})
-        return method
+        if journal:
+            Method = self.env['pos.payment.method'].sudo()
+            method = Method.search([
+                ('journal_id', '=', journal.id),
+                ('company_id', '=', self._company().id),
+            ], limit=1) or Method.create({
+                'name': "Espèces (démo)",
+                'journal_id': journal.id,
+                'company_id': self._company().id,
+            })
+            config.sudo().write({'payment_method_ids': [(4, method.id)]})
+            return method
+        if plain:
+            return plain[0]
+        return self.env['pos.payment.method']
 
     # ------------------------------------------------------------------
     # Ardoises clients

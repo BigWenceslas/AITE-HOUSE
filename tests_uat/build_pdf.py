@@ -22,7 +22,7 @@ from html import escape
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..'))
-DOC = os.path.join(ROOT, 'documentation')
+DOC = os.path.join(ROOT, 'docs')
 RESULTS = os.path.join(DOC, 'uat_resultats.json')
 GUIDE_TESTS = os.path.join(DOC, 'GUIDE_TESTS.md')
 OUTPUT = os.path.join(DOC, 'CAHIER_RECETTE_AITE_HOUSE.pdf')
@@ -77,8 +77,8 @@ def badge(status):
 
 def step_block(step):
     shot = step.get('screenshot')
-    if shot and os.path.exists(os.path.join(DOC, 'captures', shot)):
-        figure = ('<figure><img src="captures/%s" alt="%s"></figure>'
+    if shot and os.path.exists(os.path.join(DOC, 'captures_uat', shot)):
+        figure = ('<figure><img src="captures_uat/%s" alt="%s"></figure>'
                   % (escape(shot), escape(step['title'])))
     else:
         figure = ('<p class="missing">Capture indisponible : %s</p>'
@@ -395,7 +395,7 @@ def main():
     coverage, total_tests = read_automated_coverage()
     html = build_html(data, coverage, total_tests)
 
-    # Le HTML vit dans documentation/ le temps du rendu : les captures y
+    # Le HTML vit dans docs/ le temps du rendu : les captures y
     # sont référencées en chemin relatif.
     html_path = os.path.join(DOC, '.cahier_recette.html')
     with open(html_path, 'w', encoding='utf-8') as handle:

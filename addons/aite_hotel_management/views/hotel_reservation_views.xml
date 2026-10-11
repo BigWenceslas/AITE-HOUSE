@@ -281,6 +281,10 @@
         <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="view_hotel_reservation_search"/>
         <field name="context">{'search_default_filter_arrivals_today': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Aucune arrivée prévue aujourd'hui</p>
+            <p>Les réservations <b>confirmées</b> dont la date d'arrivée est aujourd'hui apparaissent ici. Ouvrez-en une et cliquez <b>Check-in</b> à l'arrivée du client : la chambre passe « occupée » et le registre des clients s'ouvre.</p>
+        </field>
     </record>
 
     <record id="action_hotel_departures_today" model="ir.actions.act_window">
@@ -289,6 +293,10 @@
         <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="view_hotel_reservation_search"/>
         <field name="context">{'search_default_filter_departures_today': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Aucun départ prévu aujourd'hui</p>
+            <p>Les séjours en cours dont le départ est aujourd'hui apparaissent ici. Cliquez <b>Check-out</b> pour encaisser le solde et générer la facture ; la chambre passe « à nettoyer ».</p>
+        </field>
     </record>
 
     <record id="action_hotel_inhouse" model="ir.actions.act_window">
@@ -297,6 +305,10 @@
         <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="view_hotel_reservation_search"/>
         <field name="context">{'search_default_filter_inhouse': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Aucun client présent</p>
+            <p>Tous les séjours en cours (clients arrivés) sont listés ici. Depuis un séjour : folio, règlements, fiches d'enregistrement, changement de chambre.</p>
+        </field>
     </record>
 
     <!-- ====== PLANNING DES CHAMBRES (lignes de réservation) ======

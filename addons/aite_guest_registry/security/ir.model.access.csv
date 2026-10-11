@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_guest_registration_hk,aite.guest.registration.hk,model_aite_guest_registration,aite_hotel_management.group_hotel_housekeeping,1,0,0,0
+access_guest_registration_user,aite.guest.registration.user,model_aite_guest_registration,aite_hotel_management.group_hotel_user,1,1,1,0
+access_guest_registration_manager,aite.guest.registration.manager,model_aite_guest_registration,aite_hotel_management.group_hotel_manager,1,1,1,1
+access_guest_stats_user,aite.guest.stats.user,model_aite_guest_stats,aite_hotel_management.group_hotel_user,1,0,0,0
+access_guest_stats_manager,aite.guest.stats.manager,model_aite_guest_stats,aite_hotel_management.group_hotel_manager,1,0,0,0
+access_police_register_wizard_user,aite.police.register.wizard.user,model_aite_police_register_wizard,aite_hotel_management.group_hotel_user,1,1,1,1

@@ -15,3 +15,15 @@ odoo.conf
 .playwright/
 test-results/
 trace.zip
+
+# environnement de développement local (dev/setup_env.sh)
+dev/odoo.conf
+dev/odoo.pid
+dev/odoo_server.log
+dev/filestore/
+.pytest_cache/
+# captures de travail
+captures/nouvelles/
+# fichiers temporaires LibreOffice / éditeurs
+.~lock.*
+*.swp
