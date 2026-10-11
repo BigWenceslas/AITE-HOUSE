@@ -9,12 +9,12 @@ Référence : étude comparative AITE HOUSE vs marché (10 oct. 2026) — 63 fon
 
 | | |
 |---|---|
-| **Modules livrables** | **15** = 12 modules du socle (sept. 2026) + 3 modules de la vague 1 (oct. 2026) — ≈ 49 000 lignes |
-| **Vague 1 (9 fonctionnalités)** | **4 terminées** (F01 à F04) · **2 partielles** (F06, F07 : briques déjà dans le socle) · **3 à faire** (F05, F08, F09) |
+| **Modules livrables** | **16** = 12 modules du socle (sept. 2026) + `aite_hotel_gantt` (passerelle Enterprise) + 3 modules de la vague 1 (oct. 2026) — ≈ 50 000 lignes |
+| **Vague 1 (9 fonctionnalités)** | **5 terminées** (F01 à F04, F06) · **1 partielle** (F07 : briques déjà dans le socle) · **3 à faire** (F05, F08, F09) |
 | **Vague 2 (8)** | 2 partielles faites en avance (F14 statistiques, F16 objets trouvés) · 6 à faire |
 | **Vague 3 (9)** | 1 partielle (F19 checklists d'inspection) · 8 à faire |
 | **Grille marché (63 critères)** | avant la vague 1 : 18 couverts / 16 partiels / 29 absents → **aujourd'hui : 26 couverts / 18 partiels / 19 absents** |
-| **Qualité** | 110 vérifications de parcours « utilisateur novice » + 14 tests unitaires sur Odoo 18 réel ; 26 écrans audités (0 erreur, chaque état vide explique quoi faire) ; cahier de recette : 139 cas, 16 domaines |
+| **Qualité** | 613 tests Odoo (`addons/*/tests`) + 143 vérifications de parcours « utilisateur novice » + 28 tests purs, sur Odoo 18 réel ; 33 écrans audités (0 erreur, chaque état vide explique quoi faire) ; cahier de recette : 146 cas, 17 domaines |
 
 Légende des statuts : ✅ **Fait** (livré et testé) · 🟡 **Partiel** (une partie existe, le reste est décrit) · ⬜ **À faire**
 
@@ -25,22 +25,22 @@ Légende des statuts : ✅ **Fait** (livré et testé) · 🟡 **Partiel** (une 
 | # | Module | Version | Rôle | Fichiers | État |
 |---|---|---|---|---|---|
 | 1 | `aite_hotel_management` | **18.0.1.0.3** | **Socle PMS** : hôtels, étages, chambres, types, équipements, réservations multi-chambres, check-in/out, folios (lignes hébergement/services, paiements, facture unique), main courante, tarifs saisonniers, commissions d'agents, planning Gantt, ménage de base, tableau de bord, cron quotidien (no-show, ménage) | 51 | ✅ corrigé le 11/10 |
-| 2 | `aite_slot_booking` | 18.0.1.0.2 | Espaces & prestations au créneau (salles VIP/VVIP, SPA, coiffure, pressing), conflits, no-show, report au folio | 25 | ✅ |
+| 2 | `aite_slot_booking` | **18.0.1.0.3** | Espaces & prestations au créneau (salles VIP/VVIP, SPA, coiffure, pressing), conflits, no-show, report au folio | 25 | ✅ |
 | 3 | `aite_website_booking` | 18.0.1.0.0 | Réservation en ligne (site web) : espaces, prestations, demandes de séjour, acompte | 8 | ✅ |
 | 4 | `aite_hotel_pos_link` | 18.0.1.0.0 | **Note de chambre** : moyen de paiement POS → folio du séjour, file de rattachement | 13 | ✅ |
-| 5 | `aite_pos_credit` | 18.0.2.0.2 | Crédit clients (ardoises) POS + Ventes : plafonds, encours, remboursements, écritures 411, recouvrement | 38 | ✅ |
-| 6 | `aite_loyalty` | 18.0.1.0.0 | Fidélité unifiée : points, historisation, statut Standard/VIP/VVIP automatique | 16 | ✅ |
-| 7 | `aite_pos_analytics` | 18.0.2.1.0 | Analyses ventes POS : CA, marge, CMV, écarts de caisse, heures de pointe, produits | 36 | ✅ |
+| 5 | `aite_pos_credit` | **18.0.2.0.3** | Crédit clients (ardoises) POS + Ventes : plafonds, encours, remboursements, écritures 411, recouvrement | 38 | ✅ |
+| 6 | `aite_loyalty` | **18.0.1.0.1** | Fidélité unifiée : points, historisation, statut Standard/VIP/VVIP automatique | 16 | ✅ |
+| 7 | `aite_pos_analytics` | **18.0.2.1.1** | Analyses ventes POS : CA, marge, CMV, écarts de caisse, heures de pointe, produits | 36 | ✅ |
 | 8 | `aite_stock_dashboard` | 18.0.1.1.2 | Stock : valorisation, couverture, ruptures, rotation, coulage, inventaires, dépôts | 19 | ✅ |
 | 9 | `aite_purchase_dashboard` | 18.0.1.0.2 | Achats : dettes 401 / balance âgée / échéancier, créances 409, OTIF, hausses de prix | 19 | ✅ |
-| 10 | `aite_direction_dashboard` | 18.0.1.0.2 | **Cockpit Direction** consolidé : POS + crédit + stock + achats, cash à risque, actions | 9 | ✅ |
-| 11 | `aite_exec_dashboard` | 18.0.1.0.2 | Tableau de bord exécutif du complexe : hébergement (CA, **TO, ADR**), POS, prestations, fidélité | 14 | ✅ |
-| 12 | `aite_demo_data` | 18.0.1.2.1 | Jeu de démonstration complet (base de démo uniquement) | 17 | ✅ |
+| 10 | `aite_direction_dashboard` | **18.0.1.1.0** | **Cockpit Direction** consolidé : POS + crédit + stock + achats + **hébergement (TO, ADR, RevPAR, N-1)**, cash à risque, actions | 9 | ✅ |
+| 11 | `aite_exec_dashboard` | **18.0.1.1.0** | Tableau de bord exécutif du complexe : hébergement (CA, **TO, ADR, RevPAR, pickup, pace, écarts N-1**), POS, prestations, fidélité | 14 | ✅ |
+| 12 | `aite_demo_data` | **18.0.1.2.3** | Jeu de démonstration complet (base de démo uniquement) | 17 | ✅ |
 | 13 | `aite_city_tax` | **18.0.1.0.0** | **Taxe de séjour** automatique (barèmes CM/CI/SN/GN par étoiles), ligne auto sur folio hors TVA, état mensuel | 16 | ✅ **nouveau** |
-| 14 | `aite_guest_registry` | **18.0.1.0.0** | **Registre des clients** : fiche d'enregistrement au check-in, registre de police, statistiques d'hébergement | 20 | ✅ **nouveau** |
-| 15 | `aite_housekeeping` | **18.0.1.0.1** | **Gouvernante & maintenance** : tableau des chambres, « Ma journée » mobile, répartition, inspections, pannes → app Maintenance, hors service auto, objets trouvés | 21 | ✅ **nouveau** |
+| 14 | `aite_guest_registry` | **18.0.1.0.1** | **Registre des clients** : fiche d'enregistrement au check-in, registre de police, statistiques d'hébergement | 20 | ✅ **nouveau** |
+| 15 | `aite_housekeeping` | **18.0.1.0.2** | **Gouvernante & maintenance** : tableau des chambres, « Ma journée » mobile, répartition, inspections, pannes → app Maintenance, hors service auto, objets trouvés | 21 | ✅ **nouveau** |
 
-Dépendances Odoo standard : `point_of_sale`, `sale`, `account`, `purchase`, `stock`, `website`, `portal`, `mail`, `product`, `web`, `maintenance` (Community) et `web_gantt` (**Enterprise**, socle uniquement — variante Community validée en test, non packagée).
+Dépendances Odoo standard : `point_of_sale`, `sale`, `account`, `purchase`, `stock`, `website`, `portal`, `mail`, `product`, `web`, `maintenance` (Community) et `web_gantt` (**Enterprise**, module passerelle `aite_hotel_gantt` uniquement, auto-installé : le socle s'installe tel quel sur Community, planning en calendrier).
 
 ### Correctif du socle livré le 11/10 (18.0.1.0.2 → 18.0.1.0.3)
 Défauts trouvés par les tests « novice » :
@@ -62,7 +62,7 @@ Défauts trouvés par les tests « novice » :
 | **F03** | Fiche d'enregistrement + registre de police + photo de la pièce + export | ✅ Fait | `aite_guest_registry` | Fiche créée au check-in, pré-remplie depuis le contact ; bandeau « x fiche(s) à compléter » + bouton « Fiches clients x/y » ; liste éditable avec colonne « Il manque » ; photo de la pièce (`id_image`) ; fiche PDF signable ; **registre de police** A4 paysage sur période ; mémorisation de la pièce sur le contact. 35/35 vérifications. | Format officiel DGSN/MINTOUL à confirmer ; e-signature (Odoo Sign, EE) en option. |
 | **F04** | Taxe de séjour automatique + état mensuel | ✅ Fait | `aite_city_tax` | 24 barèmes CM/CI/SN/GN (data `noupdate`) ; ligne « Taxe de séjour » ajoutée au folio à la confirmation, recalculée (dates, chambres, occupants, étoiles), figée après facture, hors TVA, exclue de « Services » ; onglet hôtel avec phrase « ce qui sera facturé » ; état mensuel pivot (vue SQL). 35/35 vérifications + 14 tests unitaires. | Articles CGI exacts et clé de répartition 80/20 à confirmer avant usage externe (barèmes modifiables sans code). |
 | **F05** | Clôture journalière (night audit) | ⬜ À faire | `aite_hotel_management` (ou `aite_night_audit`) | Point d'accroche existant : cron `_cron_daily_tasks` (no-show, ménage) dans le socle. | Voir §4 — nuitées postées, rapport du jour, contrôles bloquants, verrouillage de la date. |
-| **F06** | RevPAR / ADR / TO / pace / pickup | 🟡 Partiel | `aite_exec_dashboard` | Le tableau de bord exécutif affiche déjà **TO et ADR** (hébergement). | RevPAR, pace, pickup, comparaison N-1, tuile dans le cockpit Direction. Voir §4. |
+| **F06** | RevPAR / ADR / TO / pace / pickup | ✅ Fait | `aite_hotel_management` (fournisseur) + `aite_exec_dashboard` + `aite_direction_dashboard` | Fournisseur du PMS : **pickup** (nuitées prises ces 7 j pour les 30 prochains), **pace** (mois en cours vs même date N-1), **même période N-1** et écarts ; CA hébergement calculé **nuit par nuit** depuis les séjours. Tableau exécutif : rangée TO / ADR / RevPAR / pickup / pace, écart N-1 en couleur, une phrase d'explication par indicateur (« ? »). Cockpit Direction : rangée Hébergement (mêmes chiffres, mêmes phrases, clic → tableau exécutif). 33/33 vérifications + 14 tests purs + tests Odoo. | Vue SQL `aite.hotel.kpi.daily` non nécessaire (calcul direct, à reconsidérer au-delà de ~200 chambres). |
 | **F07** | Saisons, packages, restrictions, tarifs sociétés/agences | 🟡 Partiel | `aite_hotel_management` | **Tarifs saisonniers** par type de chambre et plage de dates (`aite.hotel.season.price`, priorité hôtel > tous hôtels, prix le plus bas) ; **commissions d'agents** sur la réservation (`agent_id`, taux/montant). | Restrictions (séjour minimum, stop-sell, fermé à l'arrivée), packages pension (PDJ / demi-pension / complète = services auto), tarifs négociés par société/agence. Voir §4. |
 | **F08** | Groupes & allotements | ⬜ À faire | `aite_hotel_management` (ou `aite_hotel_groups`) | — | Blocks par type/dates, rooming list importable, dates de release + cron, facture maître. Voir §4. |
 | **F09** | Multi-folios & routage des charges | ⬜ À faire | `aite_hotel_management` | Un folio par séjour ; la note de chambre POS sait rattacher au folio ouvert. | Plusieurs folios par réservation (chambre / société / événement), règles de routage, split de facture. À faire **après F08**. Voir §4. |
@@ -98,12 +98,12 @@ Défauts trouvés par les tests « novice » :
 
 ## 4. Reste de la vague 1 — notes de conception
 
-Ordre recommandé : **F06 → F05 → F07 → F08 → F09** (du plus court au plus long ; F09 dépend de F08). Chaque fonctionnalité suit la méthode du §6 : parcours novice joués sur un Odoo réel, audit des menus, captures, puis ajout au cahier de recette.
+Ordre recommandé : ~~F06~~ (livré) → **F05 → F07 → F08 → F09** (du plus court au plus long ; F09 dépend de F08). Chaque fonctionnalité suit la méthode du §6 : parcours novice joués sur un Odoo réel, audit des menus, captures, puis ajout au cahier de recette.
 
-### F06 — Indicateurs RevPAR / ADR / TO / pace / pickup (effort S)
-- **Où** : `aite_exec_dashboard` (déjà TO + ADR) et une tuile dans `aite_direction_dashboard`.
-- **Quoi** : vue SQL `aite.hotel.kpi.daily` (par hôtel et par jour : chambres disponibles = chambres − hors service, chambres occupées, CA hébergement, arrivées, départs) → TO = occupées / disponibles ; ADR = CA hébergement / occupées ; **RevPAR** = CA hébergement / disponibles ; **pickup** = nuitées prises sur les 7 derniers jours pour les 30 prochains ; **pace** = nuitées déjà réservées pour le mois M vs même date l'an dernier.
-- **Intuitif** : chaque indicateur porte une infobulle d'une phrase (« RevPAR : ce que rapporte chaque chambre disponible, vendue ou non ») ; comparaison N-1 en couleur.
+### F06 — Indicateurs RevPAR / ADR / TO / pace / pickup — ✅ livré le 11/10
+- **Choix** : pas de vue SQL `aite.hotel.kpi.daily` ; le fournisseur `aite.hotel.dashboard` calcule à la demande (volumes LAVERANDAH : quelques dizaines de chambres). Le tableau exécutif et le cockpit Direction **relisent** ce fournisseur : aucune formule dupliquée, mêmes chiffres partout.
+- **Correction de fond** : la nuitée du folio est une seule ligne datée du jour de confirmation ; le CA hébergement des indicateurs se calcule désormais nuit par nuit depuis les lignes de séjour (`_room_revenue_by_line`), sinon toute période passée — et la comparaison N-1 — était vide.
+- **Phrases** : `KPI_HINTS` dans `aite_exec_dashboard` (servies par `get_meta`, reprises par le cockpit).
 
 ### F05 — Clôture journalière / night audit (effort M)
 - **Où** : Hôtel → Facturation → **Clôture du jour** ; modèle `aite.hotel.night.audit` (date, hôtel, état brouillon/clôturé, lignes de contrôle, totaux).
@@ -135,7 +135,7 @@ Ordre recommandé : **F06 → F05 → F07 → F08 → F09** (du plus court au pl
 | Guides utilisateur PDF (Note de chambre, Réservation en ligne, Fidélité, Espaces & prestations, Tableau de bord Direction) | ✅ |
 | Fiches produit POS Analytics, POS Crédit | ✅ |
 | Étude comparative (19 pages) + benchmarks | ✅ |
-| Cahier de recette (139 cas, 16 domaines A-P) + plan de recette (14 pages) | ✅ |
+| Cahier de recette (146 cas, 17 domaines A-Q) + plan de recette (15 pages) | ✅ |
 | Kit éditorial (relance chaîne, contenu #1, 5 articles de blog) | ✅ |
 | Guides utilisateur des 3 nouveaux modules | ⬜ À produire (captures disponibles dans `captures/`) |
 
@@ -160,7 +160,7 @@ Ordre recommandé : **F06 → F05 → F07 → F08 → F09** (du plus court au pl
 |---|---|---|
 | Fiche de police CM | Format officiel DGSN / MINTOUL à confirmer (la fiche livrée reprend les champs des registres usuels) | F03 — ajustement du PDF |
 | Taxe de séjour | Articles CGI exacts, clé de répartition 80/20 commune/État, calendrier de la taxation en temps réel | F04 / F15 — texte légal dans l'onglet |
-| Édition Odoo | Packager la variante **Community** du socle (dépendance `web_gantt` optionnelle, planning calendrier) ? Patch prêt dans `dev/patches/` | Prospects Community |
+| Édition Odoo | ✅ Réglé : le socle s'installe sur Community (planning calendrier) ; `aite_hotel_gantt` ajoute le Gantt sur Enterprise | — |
 | Plaquette | Mentions légales page Contact : RC/DLA/2022/A/80 · NUI P029416901505B (ancienne brochure) ou RC/DLA/2019/B/1043 · NUI M021912751893C (offre 2025) ? | Documentation commerciale |
 | POS LAVERANDAH | Impression du ticket : les 4 informations de diagnostic n'ont pas été reçues (modèle d'imprimante, mode d'impression, navigateur, message d'erreur) | Support client |
 
@@ -174,3 +174,5 @@ Ordre recommandé : **F06 → F05 → F07 → F08 → F09** (du plus court au pl
 | 2026-09 | Paquet `AITE_HOUSE_suite_complete` (12 modules, documentation) ; plaquette 19 pages ; kit éditorial |
 | 2026-10-10 | Étude comparative (63 critères, 26 fonctionnalités, 3 vagues) ; cahier de recette 114 cas (domaines A-M) |
 | 2026-10-11 | **Vague 1 — livraison 1** : `aite_city_tax`, `aite_guest_registry` 18.0.1.0.0, `aite_housekeeping` 18.0.1.0.1 ; socle 18.0.1.0.3 ; cahier de recette 139 cas ; export développement pour Claude Code |
+| 2026-10-11 | Dépôt git unifié (`BigWenceslas/AITE-HOUSE`) : export vague 1 + campagne de tests de septembre ; environnement Odoo 18 reproductible (`dev/`) |
+| 2026-10-11 | **F06 livré** : RevPAR, pickup, pace, écarts N-1 (tableau exécutif 18.0.1.1.0, cockpit Direction 18.0.1.1.0) ; correctifs trouvés en campagne : droits admin POS/Crédit, fuseau des créneaux, jeu d'essai ; cahier de recette 146 cas (domaine Q) |

@@ -300,8 +300,8 @@ export class DirectionDashboard extends Component {
     get hotelPaceSub() {
         const h = this.state.data.vue && this.state.data.vue.hotel;
         if (!h || !h.pace) return "";
-        return `${h.nights_sold} nuitée(s) vendue(s) · pace ${h.pace.nights} `
-            + `nuitée(s) pour le mois (N-1 à la même date : ${h.pace.nights_ly})`;
+        return `${h.nights_sold} nuitée(s) vendue(s) · pace du mois : `
+            + `${h.pace.nights} (N-1 : ${h.pace.nights_ly})`;
     }
     get hotelPickupSub() {
         const h = this.state.data.vue && this.state.data.vue.hotel;

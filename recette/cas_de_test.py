@@ -25,6 +25,8 @@ DOMAINES = [
     ("N", "Taxe de séjour", "aite_city_tax"),
     ("O", "Registre des clients & statistiques", "aite_guest_registry"),
     ("P", "Gouvernante, inspections & maintenance", "aite_housekeeping"),
+    ("Q", "Indicateurs hôteliers — RevPAR, pickup, pace",
+     "aite_exec_dashboard, aite_direction_dashboard"),
 ]
 
 CAS = [
@@ -809,4 +811,54 @@ CAS = [
      "Personnaliser la checklist d'inspection",
      "1. Configuration → Points de contrôle.\n2. Ajouter un point.",
      "Les nouvelles inspections incluent le point ajouté."),
+
+    # ══════════ Q — INDICATEURS HÔTELIERS (F06) ══════════
+    ("Q01", "Q", 1, "Séjours confirmés sur la période, 2 chambres ou plus",
+     "Lire le taux d'occupation, l'ADR et le RevPAR",
+     "1. Hôtel → Direction.\n2. Période « Ce mois ».\n3. Lire la rangée "
+     "« Hébergement — indicateurs de performance ».",
+     "TO = nuitées vendues ÷ (chambres en service × jours) ; ADR = CA "
+     "des nuitées ÷ nuitées vendues ; RevPAR = CA des nuitées ÷ chambres "
+     "disponibles, et RevPAR = ADR × TO. Une chambre hors service ne "
+     "compte pas comme disponible."),
+    ("Q02", "Q", 2, "Tableau exécutif ouvert",
+     "Comprendre un indicateur sans formation",
+     "1. Survoler le « ? » de chaque carte (TO, ADR, RevPAR, pickup, "
+     "pace).",
+     "Chaque carte affiche une phrase en français qui dit ce que mesure "
+     "l'indicateur ; celle du RevPAR précise « chaque chambre "
+     "disponible, vendue ou non »."),
+    ("Q03", "Q", 2, "Séjours sur la même période l'année précédente",
+     "Comparer avec l'an dernier",
+     "1. Choisir une période qui a un historique N-1.\n2. Lire l'écart "
+     "sous TO, ADR et RevPAR.",
+     "Un écart en % s'affiche, vert s'il est positif, rouge s'il est "
+     "négatif ; sans historique N-1, aucun écart n'est affiché (pas de "
+     "« 0 % » trompeur)."),
+    ("Q04", "Q", 2, "Réservations prises cette semaine pour le mois à venir",
+     "Lire le pickup",
+     "1. Créer et confirmer une réservation pour dans 10 jours.\n2. "
+     "Recharger le tableau exécutif.",
+     "Le pickup « 7 j → 30 j » augmente du nombre de nuits de la "
+     "réservation ; une réservation pour dans 40 jours ne le change "
+     "pas."),
+    ("Q05", "Q", 3, "Réservations du mois en cours et historique N-1",
+     "Lire le pace du mois",
+     "1. Lire la carte « Pace du mois ».",
+     "Elle donne les nuitées déjà réservées pour le mois, et celles qui "
+     "l'étaient à la même date l'an dernier pour le même mois ; une "
+     "réservation N-1 prise après cette date n'est pas comptée."),
+    ("Q06", "Q", 1, "Modules hôtel et Direction installés",
+     "Retrouver les mêmes chiffres dans le cockpit Direction",
+     "1. Hôtel → Direction (tableau exécutif) : noter TO, ADR, RevPAR.\n"
+     "2. Direction → Vue d'ensemble, même période.\n3. Cliquer une carte "
+     "de la rangée « Hébergement ».",
+     "TO, ADR et RevPAR sont identiques sur les deux écrans ; le clic "
+     "ouvre le tableau de bord exécutif."),
+    ("Q07", "Q", 1, "Base neuve, administrateur sans réglage de droits",
+     "Ouvrir le cockpit Direction au premier clic",
+     "1. Se connecter en administrateur.\n2. Ouvrir Direction → Vue "
+     "d'ensemble, puis chaque onglet.",
+     "Aucune erreur d'accès : l'administrateur reçoit d'office les "
+     "profils Manager (Analyses POS) et Responsable (Crédit clients)."),
 ]

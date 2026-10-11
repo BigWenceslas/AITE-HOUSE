@@ -30,4 +30,12 @@
         <field name="comment">Accès complet aux analyses POS, export et configuration.</field>
     </record>
 
+    <!-- L'administrateur système reçoit le profil Manager : sur une base
+         neuve, le premier utilisateur ouvre les analyses (et le cockpit
+         Direction qui les consolide) sans manipulation de droits. Même
+         schéma que le socle hôtelier. -->
+    <record id="base.group_system" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('group_aite_pos_analytics_manager'))]"/>
+    </record>
+
 </odoo>

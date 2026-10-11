@@ -26,9 +26,9 @@ AITE_HOUSE/
 | aite_slot_booking | 18.0.1.0.3 | Espaces & prestations réservables au créneau (salles, piscine, billard…) |
 | aite_website_booking | 18.0.1.0.0 | Réservation en ligne depuis le site web, acompte |
 | aite_hotel_pos_link | 18.0.1.0.0 | **Note de chambre** : report des consommations du bar sur le folio |
-| aite_pos_credit | 18.0.2.0.2 | Crédit clients (ardoises) : plafonds, encours, recouvrement |
+| aite_pos_credit | 18.0.2.0.3 | Crédit clients (ardoises) : plafonds, encours, recouvrement |
 | aite_loyalty | 18.0.1.0.1 | Fidélité : points, niveaux VIP & VVIP |
-| aite_pos_analytics | 18.0.2.1.0 | Analyses des ventes : heures de pointe, marges, CMV |
+| aite_pos_analytics | 18.0.2.1.1 | Analyses des ventes : heures de pointe, marges, CMV |
 | aite_stock_dashboard | 18.0.1.1.2 | Stock : ruptures, coulage, couverture, inventaires |
 | aite_purchase_dashboard | 18.0.1.0.2 | Achats : échéancier fournisseurs, OTIF, hausses de prix |
 | aite_direction_dashboard | 18.0.1.0.2 | **Cockpit Direction** : vue consolidée, cash à risque, actions |

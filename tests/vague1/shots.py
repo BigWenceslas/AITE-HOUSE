@@ -30,7 +30,9 @@ def login(page, user=LOGIN, password=PASSWORD):
     page.goto(BASE + "/web/login", wait_until="domcontentloaded")
     page.fill("input[name=login]", user)
     page.fill("input[name=password]", password)
-    page.click("button[type=submit]")
+    # Avec le module Site web, la page porte d'autres boutons « submit »
+    # cachés (recherche, abonnement) : viser le bouton visible.
+    page.click("button[type=submit]:visible")
     page.wait_for_selector(".o_navbar, .o_home_menu, .o_action_manager",
                            timeout=45000)
 

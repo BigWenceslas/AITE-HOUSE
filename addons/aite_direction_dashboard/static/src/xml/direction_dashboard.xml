@@ -271,7 +271,7 @@
                             N-1 ; cliquer une carte ouvre le tableau de bord exécutif</div>
                         <div class="add-row">
                             <KpiCard accent="'vert'" badge="'per'"
-                                label="'CA hébergement'"
+                                label="'CA des nuitées (HT)'"
                                 value="money(o.hotel.room_revenue)"
                                 delta="o.hotel.deltas_ly.room_revenue"
                                 hint="hotelHint('last_year')"

@@ -21,6 +21,14 @@
             <field name="comment">Gère, annule, rouvre les ardoises ; accès au tableau de bord.</field>
         </record>
 
+        <!-- L'administrateur système reçoit le profil Responsable : sur une
+             base neuve, le tableau de bord du recouvrement et le cockpit
+             Direction s'ouvrent au premier clic. Même schéma que le socle
+             hôtelier. -->
+        <record id="base.group_system" model="res.groups">
+            <field name="implied_ids" eval="[(4, ref('group_pos_credit_manager'))]"/>
+        </record>
+
         <!-- ============ Règles multi-sociétés ============
              Sans ces règles, un utilisateur d'une société voyait les
              ardoises et les remboursements des autres sociétés du

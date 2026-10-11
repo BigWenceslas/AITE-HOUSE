@@ -6,7 +6,7 @@ Suite de gestion hôtelière d'**AITE Consulting** (Douala) sur **Odoo 18**, cli
 
 Lis d'abord `ROADMAP.md` (ce qui est fait, ce qui reste, notes de conception) puis
 `docs/NOTES_DE_VERSION_vague1.md`. Le travail en cours : **terminer la vague 1** dans
-l'ordre **F06 → F05 → F07 → F08 → F09** (voir ROADMAP §4).
+l'ordre **F05 → F07 → F08 → F09** (F06 livré ; voir ROADMAP §4).
 
 Dépôt git : `BigWenceslas/AITE-HOUSE`. Chaque session Claude Code travaille sur sa branche
 `claude/...`, commits en français, puis pull request vers `main`.
@@ -32,7 +32,7 @@ captures/          captures d'écran de la vague 1 (documentation, plaquette)
 ```bash
 dev/setup_env.sh            # clone Odoo 18 à côté (../odoo18), deps, base aite_dev en fr_FR, seeds
 dev/srv.sh start            # http://localhost:8069 — admin / admin (amina, rose, gouv : mdp = login)
-dev/run_tests.sh            # tests purs + 3 scénarios + audit des menus → doit finir par « TOUT EST VERT »
+dev/run_tests.sh            # tests purs + 4 scénarios + audit des menus → doit finir par « TOUT EST VERT »
 ```
 PostgreSQL doit tourner (rôle `odoo`/`odoo`, créé par le script). Variables : `PYTHON`
 (interpréteur ; Odoo 18 veut Python 3.10–3.12 → `uv venv --python 3.12 ../venv312` puis
@@ -112,6 +112,11 @@ Aucune copie patchée n'est nécessaire : `dev/odoo.conf` pointe directement sur
 
 - `pkill -f`/`pgrep` tuent le shell courant dans certains environnements → utiliser `dev/srv.sh` (pidfile).
 - Playwright : `networkidle` n'arrive jamais sur Odoo (long-polling) → attendre un sélecteur.
+  Le module Site web ajoute des boutons `submit` cachés à la page de connexion → cliquer
+  `button[type=submit]:visible`. Après une modification JS/XML, le serveur garde l'ancien
+  paquet d'assets : mettre le module à niveau (`-u`) avant de reprendre une capture.
+- Le serveur lancé par `dev/srv.sh` meurt avec le shell dans les sessions Claude Code cloud :
+  le lancer en tâche de fond (`exec $PYTHON odoo-bin -c dev/odoo.conf -d aite_dev`).
 - Un kanban groupé par étage avec colonne « Aucun » repliée paraît **vide** ; Odoo 18 trie les
   colonnes d'une sélection par **ordre alphabétique de la clé** → `default_order` explicite.
 - Un utilisateur créé avec un seul groupe « hôtel » n'est pas interne si le groupe n'implique pas

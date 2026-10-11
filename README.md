@@ -44,9 +44,9 @@ docs/          installation, notes de version, guides PDF, étude comparative, g
 | aite_slot_booking | 18.0.1.0.3 | Espaces & prestations au créneau |
 | aite_website_booking | 18.0.1.0.0 | Réservation en ligne |
 | aite_hotel_pos_link | 18.0.1.0.0 | Note de chambre (POS → folio) |
-| aite_pos_credit | 18.0.2.0.2 | Crédit clients (ardoises) |
+| aite_pos_credit | 18.0.2.0.3 | Crédit clients (ardoises) |
 | aite_loyalty | 18.0.1.0.1 | Fidélité VIP / VVIP |
-| aite_pos_analytics | 18.0.2.1.0 | Analyses des ventes POS |
+| aite_pos_analytics | 18.0.2.1.1 | Analyses des ventes POS |
 | aite_stock_dashboard | 18.0.1.1.2 | Stock & inventaires |
 | aite_purchase_dashboard | 18.0.1.0.2 | Achats & fournisseurs |
 | aite_direction_dashboard | 18.0.1.0.2 | Cockpit Direction |
