@@ -71,7 +71,7 @@ REF = 'Loi de finances 2017 — déclaration mensuelle DGI (formulaire I/PL-TVA-
 BAREMES_L = []
 for i, (cat, mt) in enumerate([('Non classé / meublé', '500'), ('1 ★', '500'), ('2 ★', '1 000'), ('3 ★', '3 000'),
                                 ('4 ★', '4 000'), ('5 ★', '5 000')]):
-    BAREMES_L.append({'id': 'c7-b%d' % i, 'cellules': ['Cameroun', cat, (('<span class="d"><b>%s</b></span>' % mt)
+    BAREMES_L.append({'id': 'c7-b%d' % i, 'cellules': ['Cameroun', cat, (('<span class="d"><b>%s</b></span>' % mt,)
                                                                          if cat == '3 ★' else mt), 'XAF',
                                                        'Par personne et par nuit', '', REF],
                       'classe': 'survol' if cat == '3 ★' else ''})
@@ -105,9 +105,9 @@ ETAT = pivot('c7-etat', 'Taxe de séjour — état mensuel', 'Mois',
              ['1 011', '3 033 000,00'])
 
 # ---------------------------------------------------- fiches clients (O01) --
-FICHES_COLS = [('Chambre', '230px'), ('Nom', '130px'), ('Prénom(s)', '140px'), ('Date de naissance', '180px'),
-               ('Nationalité', '140px'), ('Type de pièce', '250px'), ('N° de pièce', '150px'), ('Client principal', '150px'),
-               ('Il manque', '1fr'), ('Fiche', '150px'), ('', '40px')]
+FICHES_COLS = [('Chambre', '200px'), ('Nom', '100px'), ('Prénom(s)', '110px'), ('Date de naissance', '170px'),
+               ('Nationalité', '120px'), ('Type de pièce', '230px'), ('N° de pièce', '130px'), ('Client principal', '140px'),
+               ('Il manque', '1fr'), ('Fiche', '130px'), ('', '40px')]
 FICHES_L = []
 for i, (nom, prenom, piece, num_, principal) in enumerate([
         ('Ngono', 'Estelle', "Carte nationale d'identité", '114208815', True),
@@ -155,8 +155,9 @@ STATS = pivot('c7-stats', "Statistiques d'hébergement", 'Mois',
                ('2026-10', ['22', '71', '66', '185', '88', '256'])],
               ['101', '285', '298', '726', '399', '1 011'])
 
+# Neuf menus : la barre de la vidéo n'a pas la place du nom de la société.
 ECRAN = fenetre('app-c7', 'Hôtel', MENUS, [HOTEL, BAREMES, ETAT, FICHES, STATS], actif='Configuration',
-                societe=demo.SOCIETE, initiale=NOM[0], avatar='#854F0B', calques=ASSISTANT + RAPPORT)
+                societe='', initiale=NOM[0], avatar='#854F0B', calques=ASSISTANT + RAPPORT)
 
 
 def aller(depuis, vers):

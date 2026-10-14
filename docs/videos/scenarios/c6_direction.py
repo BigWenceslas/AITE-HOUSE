@@ -37,13 +37,13 @@ from moteur import anneau, cacher, clic, compter, defiler, montrer, pause, vue
 NOM, ROLE = demo.POSTES['direction']
 
 
-def barre(ident, app, menus, actif=None):
+def barre(ident, app, menus, actif=None, societe=demo.SOCIETE):
     """Une barre d'application de rechange, posée sur celle de la fenêtre."""
     entrees = ''.join('<span class="menu%s">%s</span>' % (' actif' if m == actif else '', e(m)) for m in menus)
     return ('<div class="o-haut barre-app masque" id="%s"><span class="grille">%s</span><span class="nom-app">%s</span>%s'
             '<span class="droite"><span class="pictos">%s</span><span class="societe">%s</span>'
             '<span class="avatar" style="background:#854F0B">%s</span></span></div>'
-            % (ident, ICONES['grille'], e(app), entrees, ICONES['bulle'], e(demo.SOCIETE), e(NOM[0])))
+            % (ident, ICONES['grille'], e(app), entrees, ICONES['bulle'], e(societe), e(NOM[0])))
 
 
 MENUS_HOTEL = ['Direction', 'Front Desk', 'Réservations', 'Espaces & Prestations', 'Notes de chambre en attente',
@@ -52,8 +52,8 @@ BARRES = (barre('c6-nav-pos', 'Point de Vente', ['Tableau de bord', 'Commandes',
                                                  'Configuration'], 'Analyse AITE')
           + barre('c6-nav-achats', 'Achats', ['Commandes', 'Tableau de bord AITE', 'Produits', 'Rapports', 'Configuration'],
                   'Tableau de bord AITE')
-          + barre('c6-nav-esp', 'Hôtel', MENUS_HOTEL, 'Espaces & Prestations')
-          + barre('c6-nav-exec', 'Hôtel', MENUS_HOTEL, 'Direction'))
+          + barre('c6-nav-esp', 'Hôtel', MENUS_HOTEL, 'Espaces & Prestations', '')
+          + barre('c6-nav-exec', 'Hôtel', MENUS_HOTEL, 'Direction', ''))
 
 # ----------------------------------------------------------- le cockpit --
 VUES = ["Vue d'ensemble", 'Ventes (POS)', 'Crédit clients', 'Stock', 'Achats', 'À traiter']
