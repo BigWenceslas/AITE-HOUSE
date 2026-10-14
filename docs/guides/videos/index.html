@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AITE HOUSE — Vidéos</title>
+<style>
+  :root { --marine: #2A0F2B; --marine-700: #5A2160; --or: #ED9720; --sable: #ED9720; --fond: #F6F4F7;
+          --texte: #1C2B39; --texte-2: #4A5B6B; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif; background: var(--fond); color: var(--texte); }
+  header { background: linear-gradient(110deg, #902C8F, var(--marine)); color: #fff; padding: 40px 16px 34px;
+           border-bottom: 5px solid var(--sable); }
+  .cadre { max-width: 1240px; margin: 0 auto; padding: 0 16px; }
+  header .k { font-size: 13px; font-weight: 700; letter-spacing: .22em; color: #F7BE6A; text-transform: uppercase; }
+  header h1 { margin: 10px 0 8px; font-size: 34px; }
+  header p { margin: 0; max-width: 760px; line-height: 1.55; color: #F3E8F3; }
+  main { padding: 28px 0 48px; }
+  .grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 22px; }
+  article { background: #fff; border-radius: 14px; overflow: hidden; border: 1px solid #E3E8EE;
+            box-shadow: 0 6px 18px rgba(42,15,43,.06); }
+  video { display: block; width: 100%; aspect-ratio: 16 / 9; background: var(--marine); }
+  .corps { padding: 16px 18px 18px; }
+  .num { font-size: 12px; font-weight: 800; letter-spacing: .16em; color: #8A4E00; }
+  h2 { margin: 6px 0 4px; font-size: 19px; }
+  .meta { font-size: 14px; color: var(--texte-2); }
+  .liens { margin-top: 12px; display: flex; gap: 14px; flex-wrap: wrap; font-size: 14px; }
+  .liens a { color: #714B67; font-weight: 600; text-decoration: none; }
+  .liens a:hover { text-decoration: underline; }
+  footer { padding: 0 16px 40px; font-size: 13px; color: var(--texte-2); text-align: center; }
+</style>
+</head>
+<body>
+<header><div class="cadre"><div class="k">AITE HOUSE · Suite hôtelière sur Odoo 18</div>
+<h1>Vidéos de présentation</h1>
+<p>La solution présentée poste par poste, à partir des fiches de recette : chaque geste est rejoué dans
+l'interface, avec ses vrais libellés, sur des données de démonstration fictives.</p></div></header>
+<main><div class="cadre"><div class="grille">
+<article><video controls preload="none" poster="01-presentation.jpg" src="01-presentation.mp4"></video><div class="corps"><div class="num">01</div><h2>La suite hôtelière complète</h2><div class="meta">10 min 18 s · 25.1 Mo</div><div class="liens"><a href="../GUIDE_RECETTE_UAT.md">Document de référence</a><a href="01-presentation.mp4" download>Télécharger</a></div></div></article>
+</div></div></main>
+<footer>AITE Consulting · AITE HOUSE · générée par docs/videos/produire.py</footer>
+</body>
+</html>
