@@ -36,7 +36,53 @@ développeurs → Transcodage multimédia** (activer *Remplacer les paramètres
 de transcodage* / *Activer le transcodage*). Android convertit alors le HEVC
 en H.264 pour les applis qui ne le gèrent pas.
 
-## Solution 2 : convertir les vidéos existantes avec le script
+## Solution 2 : l'appli « Prêt à poster » (Android, sans terminal)
+
+Le dossier `app/` contient une appli web installable (PWA) qui fait la même
+conversion que le script, **directement dans Chrome sur le Pixel**, avec
+une interface tactile :
+
+1. choisir une vidéo, ou la **partager depuis Google Photos** une fois
+   l'appli installée ;
+2. cocher WhatsApp, Statut, TikTok et/ou Facebook ;
+3. **Convertir**, puis **Envoyer…** ouvre le menu de partage Android
+   (WhatsApp, TikTok, Facebook…) ou **Enregistrer** range la vidéo dans
+   Téléchargements.
+
+Rien ne quitte le téléphone : Chrome décode le HEVC et encode le H.264 avec
+les puces matérielles du Tensor G3 (API WebCodecs), et la bibliothèque
+[Mediabunny](https://mediabunny.dev) 1.60.0 (licence MPL-2.0, copie dans
+`app/`) lit et écrit les MP4. Les images passent par une toile sRGB
+8 bits : c'est là que le HDR est ramené en SDR, que l'image est réduite en
+1080p et que le format 9:16 avec fond flouté est composé. Le son AAC du
+Pixel est recopié sans perte.
+
+### Mettre l'appli en ligne (une seule fois)
+
+L'appli n'est faite que de fichiers statiques, mais elle doit être servie
+en **HTTPS** pour pouvoir s'installer et recevoir les partages :
+
+- **Netlify Drop** (le plus simple, gratuit) : ouvrir
+  <https://app.netlify.com/drop> sur un ordinateur et y glisser le dossier
+  `app/`. Netlify donne une adresse `https://…netlify.app`.
+- **GitHub Pages** : publier le dossier `app/` (dépôt public, ou offre
+  payante pour un dépôt privé).
+- N'importe quel hébergement statique HTTPS (Cloudflare Pages, serveur
+  d'AITE…).
+
+### Installer sur le Pixel
+
+1. Ouvrir l'adresse dans **Chrome**.
+2. Menu **⋮ › Installer l'application** (ou *Ajouter à l'écran d'accueil*).
+3. L'icône « Prêt à poster » apparaît avec les autres applis. Dans Google
+   Photos, **Partager › Prêt à poster** ouvre directement la vidéo dans
+   l'appli.
+
+Pendant la conversion, garder l'écran allumé et l'appli au premier plan
+(l'appli le demande au téléphone, mais Android met en pause les pages en
+arrière-plan).
+
+## Solution 3 : convertir les vidéos existantes avec le script (PC ou Termux)
 
 ### Sur PC
 

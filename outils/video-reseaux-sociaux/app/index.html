@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prêt à poster</title>
+<meta name="description" content="Convertit les vidéos du Pixel pour WhatsApp, TikTok et Facebook, directement sur le téléphone.">
+<meta name="theme-color" content="#0f6b5c">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icone.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icone-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- debut-contenu -->
+<main class="page">
+  <header>
+    <h1>Prêt à poster</h1>
+    <p>Les vidéos du Pixel, converties sur le téléphone pour WhatsApp, TikTok et Facebook. Rien n'est envoyé sur internet.</p>
+  </header>
+
+  <section class="bloc" aria-labelledby="t-video">
+    <h2 id="t-video">Vidéo</h2>
+    <label class="choisir">
+      <input id="choisir" type="file" accept="video/*">
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="13" height="14" rx="2"/><path d="m16 10 5-3v10l-5-3"/></svg>
+      Choisir une vidéo
+    </label>
+    <div class="source" id="source" hidden>
+      <span class="source-nom" id="source-nom"></span>
+      <span class="source-details" id="source-details"></span>
+      <div class="badges" id="source-badges"></div>
+    </div>
+    <p class="note">Les vidéos HDR et HEVC du Pixel sont ramenées en H.264 standard : fini les couleurs délavées.</p>
+  </section>
+
+  <section class="bloc" aria-labelledby="t-pour">
+    <h2 id="t-pour">Pour où ?</h2>
+    <div class="profils">
+      <label class="profil p-wa"><input type="checkbox" name="profil" id="p-whatsapp" value="whatsapp" checked><span><b>WhatsApp</b><small>1080p, 30 i/s, léger</small></span></label>
+      <label class="profil p-st"><input type="checkbox" name="profil" id="p-statut" value="statut"><span><b>Statut</b><small>morceaux de 59 s</small></span></label>
+      <label class="profil p-tt"><input type="checkbox" name="profil" id="p-tiktok" value="tiktok"><span><b>TikTok</b><small>9:16, aussi pour les Reels</small></span></label>
+      <label class="profil p-fb"><input type="checkbox" name="profil" id="p-facebook" value="facebook"><span><b>Facebook</b><small>1080p haute qualité</small></span></label>
+    </div>
+    <div class="reglage">
+      <span>Images par seconde</span>
+      <div class="segments" role="radiogroup" aria-label="Images par seconde">
+        <label><input type="radio" name="ips" id="ips-30" value="30" checked><span>30 i/s</span></label>
+        <label><input type="radio" name="ips" id="ips-60" value="60"><span>60 i/s si possible</span></label>
+      </div>
+    </div>
+    <div class="reglage">
+      <span>Vidéo horizontale sur TikTok</span>
+      <div class="segments" role="radiogroup" aria-label="Vidéo horizontale sur TikTok">
+        <label><input type="radio" name="vertical" id="v-flou" value="flou" checked><span>Fond flouté</span></label>
+        <label><input type="radio" name="vertical" id="v-recadrer" value="recadrer"><span>Recadrer</span></label>
+      </div>
+    </div>
+  </section>
+
+  <p class="erreur" id="erreur" role="alert" hidden></p>
+
+  <div class="progression" id="progression" hidden>
+    <div class="progression-ligne"><span id="progression-libelle"></span><span id="progression-pc">0 %</span></div>
+    <div class="barre" id="barre" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+    <p class="note">Gardez l'écran allumé et cette page ouverte pendant la conversion.</p>
+  </div>
+  <button class="bouton" id="convertir" type="button" disabled>Convertir</button>
+  <button class="bouton secondaire" id="annuler" type="button" hidden>Annuler</button>
+
+  <section class="bloc" id="resultats" aria-labelledby="t-res" hidden>
+    <h2 id="t-res">Prêtes à poster</h2>
+    <div class="liste" id="liste-resultats"></div>
+  </section>
+
+  <details class="aide">
+    <summary>Astuces pour le Pixel 8 Pro</summary>
+    <ul>
+      <li><b>Depuis Google Photos :</b> installez cette page (menu ⋮ de Chrome › <i>Ajouter à l'écran d'accueil</i>). « Prêt à poster » apparaît alors dans le menu <i>Partager</i> de Google Photos.</li>
+      <li><b>Éviter de convertir :</b> Pixel Caméra › Paramètres › Vidéo : désactivez <i>HDR 10 bits</i> et choisissez 1080p 30 i/s.</li>
+      <li><b>WhatsApp :</b> touchez <i>HD</i> avant d'envoyer, sinon la vidéo est réduite.</li>
+      <li><b>TikTok :</b> activez <i>Paramètres › Données › Importer en haute qualité</i>.</li>
+      <li><b>Facebook :</b> <i>Paramètres › Multimédia › Qualité vidéo</i> sur HD.</li>
+    </ul>
+  </details>
+</main>
+
+<template id="modele-resultat">
+  <article class="resultat">
+    <div class="r-titre"></div>
+    <p class="r-details"></p>
+    <video controls playsinline preload="metadata"></video>
+    <p class="r-alerte" hidden>Le son n'a pas pu être converti sur ce téléphone : la vidéo est muette.</p>
+    <div class="r-actions">
+      <button class="bouton r-partager" type="button">Envoyer…</button>
+      <button class="bouton secondaire r-enregistrer" type="button">Enregistrer</button>
+    </div>
+    <p class="r-etat" aria-live="polite"></p>
+  </article>
+</template>
+<!-- fin-contenu -->
+<script type="module">
+  import * as MB from './mediabunny.min.mjs';
+  import { demarrer } from './app.js';
+  demarrer(MB);
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
+</script>
+</body>
+</html>
