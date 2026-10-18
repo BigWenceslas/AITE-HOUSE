@@ -27,7 +27,7 @@ POSTES = {
     'direction': ('Danielle Eyenga', 'Directrice'),
     'conformite': ('Danielle Eyenga', 'Directrice'),
 }
-EQUIPIERES = ('Amina', 'Rose')
+EQUIPIERES = ('Clarisse', 'Sidonie')
 
 # Les séjours qui traversent la vidéo.
 RESA = 'RES/2026/0214'

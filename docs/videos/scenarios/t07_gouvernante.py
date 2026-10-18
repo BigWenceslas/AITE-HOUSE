@@ -26,11 +26,9 @@ ref_muk/300-gouv-tableau.png).
 
 Les équipières viennent de demo.EQUIPIERES, la source unique des données de
 la série (comme scenarios/c2_gouvernante.py) : aucun prénom n'est codé ici.
-Elles n'ont que le profil Gouvernante. Les prénoms actuels (« Amina »,
-« Rose ») sont aussi ceux des comptes amina et rose des seeds
-(dev/seeds/seed_housekeeping.py:5-6) : une demande est faite pour les
-changer dans demo.py, DESIGN.md:61 et c2_gouvernante.py ; ce fichier suivra
-sans modification (E1, E2 = sorted(demo.EQUIPIERES)).
+Elles n'ont que le profil Gouvernante. Leurs prénoms (« Clarisse »,
+« Sidonie ») sont fictifs, absents des seeds et des jeux de recette
+(E1, E2 = sorted(demo.EQUIPIERES)).
 
 Comment l'équipière arrive sur « Ma journée ». Avec le seul profil
 Gouvernante, l'icône de l'application Hôtel ouvre le tableau de bord Front

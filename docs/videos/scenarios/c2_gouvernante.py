@@ -27,7 +27,7 @@ from ecrans import (assistant, bouton, carte, e, entree, erreur_acces, fenetre, 
 from moteur import anneau, cacher, choisir, clic, classe, etat, fermer, montrer, ouvrir, pause, saisir, texte, vue
 
 NOM, ROLE = demo.POSTES['gouvernante']
-AMINA, ROSE = demo.EQUIPIERES
+EQ1, EQ2 = demo.EQUIPIERES
 
 
 def carte_chambre(ident, numero, hint, type_etage, client=None, arrivee=None, equipiere=None, boutons=(), panne=None,
@@ -51,17 +51,17 @@ def carte_chambre(ident, numero, hint, type_etage, client=None, arrivee=None, eq
 
 
 # ------------------------------------------------- Tableau des chambres --
-C102 = carte_chambre('c2-102', '102', 'À nettoyer', 'Standard · Rez-de-chaussée', equipiere=AMINA,
+C102 = carte_chambre('c2-102', '102', 'À nettoyer', 'Standard · Rez-de-chaussée', equipiere=EQ1,
                      boutons=[bouton('c2-102-go', 'Commencer', 'primaire', 'play')])
-C105 = carte_chambre('c2-105', '105', 'À nettoyer', 'Standard · Rez-de-chaussée', equipiere=ROSE,
+C105 = carte_chambre('c2-105', '105', 'À nettoyer', 'Standard · Rez-de-chaussée', equipiere=EQ2,
                      boutons=[bouton('c2-105-go', 'Commencer', 'primaire', 'play')])
 C102_INSP = carte_chambre('c2-102i', '102', 'À inspecter par la gouvernante', 'Standard · Rez-de-chaussée',
-                          equipiere=AMINA, boutons=[bouton('c2-102-ok', 'Conforme', 'vert', 'coche'),
+                          equipiere=EQ1, boutons=[bouton('c2-102-ok', 'Conforme', 'vert', 'coche'),
                                                     bouton('c2-102-ko', 'À refaire', 'rouge-contour')],
                           classe_='masque')
-C102_REDO = carte_chambre('c2-102r', '102', 'À nettoyer', 'Standard · Rez-de-chaussée', equipiere=AMINA,
+C102_REDO = carte_chambre('c2-102r', '102', 'À nettoyer', 'Standard · Rez-de-chaussée', equipiere=EQ1,
                           boutons=[bouton('c2-102r-go', 'Commencer', 'primaire', 'play')], classe_='masque')
-C201 = carte_chambre('c2-201', '201', 'Nettoyage en cours', 'Confort · 1er étage', client='Martin Ebode', equipiere=ROSE,
+C201 = carte_chambre('c2-201', '201', 'Nettoyage en cours', 'Confort · 1er étage', client='Martin Ebode', equipiere=EQ2,
                      boutons=[bouton('c2-201-done', 'Terminé', 'vert', 'coche')])
 C203 = carte_chambre('c2-203', '203', 'Propre — prête pour l\'arrivée', 'Confort · 1er étage', client='Joël Kamga',
                      arrivee='Arrivée prévue 14h00', boutons=[bouton('c2-203-sale', 'À nettoyer', 'blanc')],
@@ -155,7 +155,7 @@ CHAPITRE = {
          'gestes': [pause(0.6), anneau('#c2-col-1', d=1.2), anneau('#c2-203-hint', d=1.4), anneau('#c2-203', d=1.4),
                     pause(0.4)]},
         {'titre': 'Ma journée, sur le téléphone', 'texte': 'Un bouton par étape : « Je commence », puis « C\'est fait ».',
-         'voix': "Amina, l'équipière, ouvre Ma journée sur son téléphone. Un bouton par étape : Je commence, puis "
+         'voix': "Clarisse, l'équipière, ouvre Ma journée sur son téléphone. Un bouton par étape : Je commence, puis "
                  "C'est fait. Comme l'inspection est exigée, la chambre passe à inspecter.",
          'gestes': [ouvrir('c2-tel'), pause(0.6), clic('#c2-t102-go'), etat('#c2-t102-etat', 'En cours', 'info'),
                     cacher('#c2-t102-go', d=0.2), montrer('#c2-t102-fin', d=0.3, y=0), pause(0.8),

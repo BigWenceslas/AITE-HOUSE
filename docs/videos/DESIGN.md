@@ -58,7 +58,7 @@ Claire Durand réserve le salon VIP Wouri en ligne ; on retrouve sa
 réservation dans le planning des espaces de la direction.
 
 Les personnes sont **fictives**, une par poste : Mireille Ateba (réception),
-Josiane Fouda (gouvernante, avec Amina et Rose), Hervé Tchakounté (caisse du
+Josiane Fouda (gouvernante, avec Clarisse et Sidonie), Hervé Tchakounté (caisse du
 bar), Claire Durand (cliente), Serge Nana (magasin), Danielle Eyenga
 (direction). Les jeux d'essai de recette et les données du client pilote
 n'apparaissent jamais.
