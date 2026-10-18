@@ -17,10 +17,12 @@ message d'Odoo 18 et les groupes qui lisent aite.hotel.reservation
 (aite_hotel_management/security/ir.model.access.csv).
 
 Données harmonisées avec scenarios/t10_ardoises.py : ARD/0024 d'Armand Mvogo,
-ouverte le 18/08/2026 sur la commande « Bar de la terrasse/0017 », 20 000 FCFA
+ouverte le 18/08/2026 sur la commande « Bar de la terrasse/0884 », 20 000 FCFA
 remboursés en espèces le 30/09, réglée le 14/10 à 15:30 en Orange Money
 (OM261014.1530.A55120). Le tableau de bord et la liste sont lus le 14/10
-avant ce règlement (encours 150 000 FCFA, les cinq ardoises de demo.py).
+avant ce règlement (encours 150 000 FCFA, les cinq ardoises de demo.py) ; écart du recouvré
+« 12,1 % vs N-1 », comme scenarios/t15_direction.py. Numéro de commande selon
+la règle des tickets du bar (caisse ouverte le 04/05, ~8,3 tickets par jour).
 """
 
 import demo
@@ -40,7 +42,7 @@ RECOUVREMENT = vue_tdb('c3-dash', (
                    ('Origine', ['Toutes', 'Point de vente', 'Ventes'], 0)])
     + tdb_section('Encours & recouvrement', [
         kpi('c3-k-enc', 'Encours total (dû)', '150 000 FCFA', '5 clients débiteurs', 'rouge'),
-        kpi('c3-k-rec', 'Recouvré (période)', '37 000 FCFA', '4 remboursements', 'vert', ('12,4 % vs N-1', 'haut')),
+        kpi('c3-k-rec', 'Recouvré (période)', '37 000 FCFA', '4 remboursements', 'vert', ('12,1 % vs N-1', 'haut')),
         kpi('c3-k-new', 'Nouvelles ardoises (période)', '18 500 FCFA', '1 ardoise ouverte', 'ambre'),
         kpi('c3-k-taux', 'Taux de recouvrement', '19,8 %', 'recouvré / (encours + recouvré)', 'violet')])
     + tdb_section('Indicateurs de risque', [
@@ -81,7 +83,7 @@ FEUILLE = (
     + deux_colonnes(
         groupe('', [champ('Client', 'Armand Mvogo', gras=True), champ("Date d'ouverture", '18/08/2026', gras=True),
                     champ('Origine', '<span class="puce gris">Point de vente</span>', html=True),
-                    champ('Commande POS d\'origine', 'Bar de la terrasse/0017', lien_=True), champ("Caisse d'origine", 'Bar de la terrasse')]),
+                    champ('Commande POS d\'origine', 'Bar de la terrasse/0884', lien_=True), champ("Caisse d'origine", 'Bar de la terrasse')]),
         groupe('', [champ('Montant initial', '64 500 FCFA', gras=True), champ('Déjà remboursé', '20 000 FCFA', 'c3-deja'),
                     champ('Reste dû', '44 500 FCFA', 'c3-reste'), champ('Âge (jours)', '57'),
                     champ('Sévérité', 'En retard', 'c3-sev')]))

@@ -104,9 +104,9 @@ FRONT = vue_tdb('c1-front', (
 ), initiale=True)
 
 # ---------------------------------------------------- Arrivées du jour --
-COLS_ARR = [('Référence', '190px'), ('Client', '200px'), ('Arrivée', '226px'), ('Départ', '226px'), ('Nuits', '70px', 'd'),
-            ('Nb chambres', '130px', 'd'), ('Total hébergement (HT)', '230px', 'd'), ('Solde folio', '140px', 'd'),
-            ('Registre', '150px'), ('État', '1fr')]
+COLS_ARR = [('Référence', '178px'), ('Client', '178px'), ('Arrivée', '212px'), ('Départ', '212px'), ('Nuits', '64px', 'd'),
+            ('Nb chambres', '124px', 'd'), ('Total hébergement (HT)', '212px', 'd'), ('Solde folio', '132px', 'd'),
+            ('Registre', '140px'), ('État', '1fr')]
 # Ordre du code (checkin_date desc, puis la plus récente) : Claire Durand (18:00), Estelle Ngono, Martin Ebode.
 # Le matin, l'acompte d'Estelle n'est pas encore encaissé : son solde est encore le folio entier (102 000),
 # il passe à 57 000 (demo.ARRIVEES) à l'étape de l'acompte.
@@ -125,7 +125,7 @@ ARRIVEES = vue_liste('c1-arrivees', 'Arrivées du jour', COLS_ARR, [
 # Séjours de scenarios/t02_planning.py (SEJOURS), une barre par nuit : (semaine, jour, nuits, libellé).
 NUMEROS = [28, 29, 30, 1, 2, 3, 4] + list(range(5, 32)) + [1]
 assert NUMEROS[16] == 14
-PLANNING = calendrier('c1-planning', 'octobre 2026', NUMEROS, gris={0, 1, 2, 34}, aujourdhui=16, evenements=[
+SEJOURS_MOIS = [
     (0, 0, 1, '101 · Patrick Nkoulou', '#D5F5E3'), (0, 2, 2, '301 · Armand Mvogo', '#E8D5F0'),
     (0, 3, 2, '102 · Boris Nguema', '#D6EAF8'), (0, 4, 2, '104 · Franck Moukoko', '#FDEBD0'),
     (1, 0, 2, '302 · Sylvie Mbarga', '#FCE4D6'), (1, 1, 3, '205 · Pauline Ekotto', '#D5F5E3'),
@@ -136,7 +136,34 @@ PLANNING = calendrier('c1-planning', 'octobre 2026', NUMEROS, gris={0, 1, 2, 34}
     (2, 6, 1, '204 · Joël Kamga', '#E8D5F0'), (3, 0, 1, '204 · Joël Kamga', '#E8D5F0'),
     (3, 2, 2, '102 · Christelle Ndongo', '#D6EAF8'), (3, 3, 2, '302 · Carine Manga', '#FCE4D6'),
     (3, 5, 2, '401 · Aristide Bella', '#FADBD8'), (4, 2, 3, '205 · Blaise Atangana', '#D5F5E3'),
-    (4, 4, 2, '104 · Mathieu Nkodo', '#FDEBD0')])
+    (4, 4, 2, '104 · Mathieu Nkodo', '#FDEBD0')]
+
+
+def planning_mois(identifiant, evenements):
+    """Le calendrier de ecrans.calendrier, dont chaque semaine grandit avec ses séjours, comme le mois
+    d'Odoo 18 (FullCalendar, dayMaxEventRows = event_limit 5 : calendar_arch_parser.js:26) : le 14/10,
+    quatre séjours se chevauchent (Brigitte Essomba, Estelle Ngono, Martin Ebode, Claire Durand)."""
+    html = calendrier(identifiant, 'octobre 2026', NUMEROS, gris={0, 1, 2, 34}, aujourdhui=16, evenements=[])
+    rangs, semaines = {}, {s: '' for s in range(5)}
+    for s, j, d, lib, coul in evenements:
+        r = 0
+        while any(rangs.get((s, k, r)) for k in range(j, j + d)):
+            r += 1
+        for k in range(j, j + d):
+            rangs[(s, k, r)] = True
+        semaines[s] += ('<div class="c-ev" style="left:calc(%d * 100%% / 7 + 4px);width:calc(%d * 100%% / 7 - 8px);'
+                        'top:%dpx;background:%s"><span class="ell">%s</span></div>' % (j, d, 46 + r * 31, coul, e(lib)))
+    hauteurs = [46 + 31 * (1 + max([r for (s_, _, r) in rangs if s_ == s] or [-1])) + 2 for s in range(5)]
+    lignes = ' '.join('minmax(%dpx, 1fr)' % h for h in hauteurs)
+    couches = ''.join('<div class="c-evs %s-sem" style="position:relative;inset:auto;grid-row:%d;grid-column:1 / span 7">'
+                      '%s</div>' % (identifiant, s + 1, semaines[s]) for s in range(5))
+    vide = '<div class="c-evs" id="%s-evs"></div>' % identifiant
+    assert html.count(vide) == 1 and html.count('<div class="c-grille">') == 1
+    return (html.replace(vide, couches)
+            .replace('<div class="c-grille">', '<div class="c-grille" style="grid-template-rows:%s">' % lignes))
+
+
+PLANNING = planning_mois('c1-planning', SEJOURS_MOIS)
 
 # ------------------------------------------------------- Réservation --
 STATUTS = ['Brouillon', 'Confirmée', 'Arrivé', 'Parti']
@@ -254,7 +281,7 @@ CHAPITRE = {
         {'titre': 'Le planning des chambres', 'texte': 'Chaque séjour sur sa chambre, mois par mois.',
          'voix': "Le planning des chambres montre chaque séjour sur sa chambre. En calendrier sur la version "
                  "Community, en Gantt sur Enterprise, sans rien régler.",
-         'gestes': [vue('c1-planning'), animer('#c1-planning-evs', {'autoAlpha': 0}, {'autoAlpha': 1}, d=0.8),
+         'gestes': [vue('c1-planning'), animer('#c1-planning .c1-planning-sem', {'autoAlpha': 0}, {'autoAlpha': 1}, d=0.8),
                     pause(1.2), anneau('#c1-planning .auj', d=1.6)]},
         {'titre': "La réservation et l'acompte", 'texte': 'Mobile Money, espèces ou carte, avec la référence de la transaction.',
          'voix': "Voici la réservation d'Estelle Ngono : deux nuits en chambre Confort. À son arrivée, elle verse un "
