@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Tutoriel 8 — Réservation en ligne : vos clients réservent seuls, sans double vente.
+"""Tutoriel 8 — Réservation en ligne : vos clients réservent seuls, sur les créneaux vraiment libres.
 
 Format marketing du pilote ``t07_gouvernante.py`` : accroche, révélation,
 sept étapes (le site public, puis la réception), résultats, appel.
@@ -17,52 +17,82 @@ Sources des écrans (libellés vérifiés mot pour mot par ``grep -rF`` dans
   autre. » (l. 74-130) ; « Demande de séjour » et ses champs (l. 233-277) ;
   page « Merci ! » d'un créneau et d'un séjour (l. 280-300). Menu du site
   « Réservation » : ``data/website_menu_data.xml`` ; autres entrées de
-  l'en-tête (Accueil, Contactez-nous, Se connecter) et du pied de page
-  (Liens utiles, À propos de nous, Produits, Services, Juridique,
-  Rejoignez-nous) : traduction française d'Odoo 18
-  (``odoo18/addons/website/i18n/fr.po``, ``portal/i18n/fr.po``).
+  l'en-tête (Accueil, Contactez-nous, Se connecter) et pied de page par
+  défaut d'Odoo 18 (``odoo18/addons/website/views/website_templates.xml``
+  l. 1661-1690 : « Liens utiles », « À propos de nous » et son texte,
+  « Rejoignez-nous ») dans sa traduction française
+  (``odoo18/addons/website/i18n/fr.po`` l. 2388, 4539, 4617, 7865, 9309,
+  11846, 12967, 15364, 15701-15713 ; ``portal/i18n/fr.po`` « Se connecter »).
 - Tunnel — ``aite_website_booking/controllers/main.py`` : routes
   ``auth='public'`` (l. 69-146, 228-238) ; seules les ressources
   « Réservable en ligne » (l. 59-63, 78-91) ; grille = ``get_day_grid``, seuls
   les créneaux ``free`` (l. 92-100) ; fin = début + un pas, création
   ``source='online'`` puis ``action_confirm`` sous point de sauvegarde, refus
   → retour sur la grille avec ``error=slot`` (l. 157-222) ; demande de séjour
-  en brouillon, canal ``website``, arrivée 14:00 et départ 11:00 (l. 236-278).
+  en brouillon, canal ``website``, arrivée 14:00 et départ 11:00 (l. 236-278) ;
+  téléphone normalisé (``models/website_booking.py`` l. 21-31, ``+33639982147``).
 - Moteur de créneaux — ``aite_slot_booking/models/booking_resource.py``
   (``get_day_grid``, « source de vérité unique » du site et du tableau de
-  bord, l. 27-30, 157-223 ; champ « Réservable en ligne », l. 74-77) ;
+  bord, l. 27-30, 157-223 : seules les réservations confirmées ou réalisées
+  occupent la grille, l. 182-183 ; champ « Réservable en ligne », l. 74-77) ;
   ``models/booking_booking.py`` (états, « Origine » Comptoir / En ligne
   l. 87-101, montant = heures × tarif horaire ``_slot_price`` l. 126-138,
   conflit refusé au-delà de la capacité ``_check_no_conflict`` l. 260-282) ;
   ``data/slot_sequence_data.xml`` (référence ``RES/%(y)s/`` sur 4 chiffres
   → RES/26/0418).
 - Réception — tableau de bord ``aite_slot_booking/static/src/xml/dashboard.xml``
-  (titre, filtres Jour / Période stats / Famille, quatre indicateurs,
-  « Planning du <t t-esc="state.day"/> », couloirs, « x/y créneaux libres »,
-  l. 18-128), ``static/src/js/views/slot_dashboard_view.js`` (repères toutes
-  les deux heures l. 204-215, texte des créneaux libres l. 221-231, clic sur
-  un bloc → fiche l. 322-330), ``static/src/js/services/utils.js`` (formats
-  montant, %, heures), ``static/src/scss/slot_dashboard.scss`` (couleurs),
-  ``models/slot_dashboard.py`` (indicateurs ``get_kpis`` l. 124-176 : CA des
-  réalisées, heures réservées / heures ouvrées, réservations à venir) ;
-  fiche ``views/booking_booking_views.xml`` (boutons et statusbar l. 37-59,
-  champs l. 60-91) ; nom de l'action ``views/slot_dashboard_actions.xml``.
+  (titre, filtres Jour / Période stats / Famille / Ressource, quatre
+  indicateurs, « Chargement… » pendant le rechargement l. 71-73, « Planning
+  du <t t-esc="state.day"/> », couloirs, « x/y créneaux libres », l. 18-128),
+  ``static/src/js/views/slot_dashboard_view.js`` (un changement de jour
+  recharge tout l'écran, l. 72-112 ; repères toutes les deux heures
+  l. 204-215, texte des créneaux libres l. 221-231, clic sur un bloc → fiche
+  l. 322-330), ``static/src/js/services/utils.js`` (formats montant, %,
+  heures), ``static/src/scss/slot_dashboard.scss`` (couleurs, l. 148-152),
+  ``models/slot_dashboard.py`` (couleurs des familles l. 22-25, indicateurs
+  ``get_kpis`` l. 124-176 : CA des réalisées, heures réservées / heures
+  ouvrées, réservations à venir) ; fiche ``views/booking_booking_views.xml``
+  (boutons et statusbar l. 37-59, champs l. 60-91, ``<chatter/>`` l. 92) ;
+  nom de l'action ``views/slot_dashboard_actions.xml``. Discussion : message
+  de création « %s créé » (``odoo18/addons/mail/models/mail_thread.py``
+  l. 452-458, ``mail/i18n/fr.po`` l. 269-270) et suivi de l'état (champ
+  ``tracking=True``, booking_booking.py l. 95), signés par l'utilisateur
+  courant (mail_thread.py l. 2913-2919), soit l'utilisateur public du site
+  (``odoo18/addons/website/models/ir_http.py`` l. 175-182) dont le contact
+  s'appelle « Public user » (``odoo18/odoo/addons/base/data/res_partner_data.xml``
+  l. 28-31) avec l'avatar gris par défaut (base/models/res_partner.py
+  l. 344-350) ; date « Aujourd'hui » / « Aujourd'hui à HH:MM »
+  (mail/static/src/core/common/message_model.js l. 225-251) ; boutons
+  « Envoyer message », « Note », « Suivre » (mail/i18n/fr.po), pas
+  d'« Activités » (le modèle n'hérite que de ``mail.thread``) ; mise en page :
+  ref_muk/027.
 - Réservations hôtel — ``aite_hotel_management/views/hotel_reservation_views.xml``
-  (liste l. 5-33, filtre « Brouillons » l. 240 et regroupement « Canal »
-  l. 253), ``models/hotel_reservation.py`` (« Canal » et « Site web »
-  l. 70-80, ordre ``checkin_date desc`` l. 27, Confirmer vérifie la
-  disponibilité puis ouvre le folio l. 288-337) ; ``models/hotel_room.py``
-  l. 431-446 (seules les lignes confirmées ou en séjour occupent une
-  chambre) ; capture réelle de la liste regroupée (groupes repliés, totaux
-  par groupe sans symbole) prise en lecture sur la base MuK ; colonne
-  « Registre » / « Aucune fiche » :
-  ``aite_guest_registry/views/hotel_reservation_views.xml`` l. 57-67 ;
-  menus ``aite_hotel_management/views/hotel_menus.xml`` et
-  ``aite_slot_booking/views/slot_menus.xml``.
+  (liste l. 5-33, décorations, filtres « Arrivées du jour », « Départs du
+  jour », « Clients présents », « Brouillons », « Confirmées », « No-show »,
+  regroupements « État », « Client », « Hôtel », « Canal », « Date
+  d'arrivée » l. 225-262 ; action sans filtre par défaut, vues
+  list,kanban,form,calendar l. 265-279), ``models/hotel_reservation.py``
+  (« Canal » et « Site web » l. 70-80, ordre ``checkin_date desc, id desc``
+  l. 27, nuits / chambres / total stockés et donc sommés par groupe
+  l. 64-116, Confirmer vérifie la disponibilité puis ouvre le folio
+  l. 288-337, heures standard 14:00 / 12:00 l. 152-165) ;
+  ``models/hotel_room.py`` l. 431-446 (seules les lignes confirmées ou en
+  séjour occupent une chambre) ; colonne « Registre » / « Aucune fiche » :
+  ``aite_guest_registry/views/hotel_reservation_views.xml`` l. 57-67 ; menus
+  ``aite_hotel_management/views/hotel_menus.xml`` et
+  ``aite_slot_booking/views/slot_menus.xml``. Cadre web d'Odoo 18
+  (``odoo18/addons/web/i18n/fr.po``) : « Filtres », « Regrouper par »,
+  « Favoris », « Ajouter un filtre personnalisé », « Ajouter un groupe
+  personnalisé », « Enregistrer la recherche actuelle », « Rechercher… » ;
+  menu de recherche ``web/static/src/search/search_bar_menu/search_bar_menu.xml``
+  l. 4-135 ; sommes : ``web/static/src/views/list/list_renderer.js`` l. 561-660
+  (liste simple : avec la devise ; liste regroupée : sans devise, à deux
+  décimales — ``web/static/src/core/currency.js`` l. 32-51).
 - Thème MuK et mise en page : captures de référence
   ``../aite-videos/ref_muk/500-site-reservation.png``, ``501-site-espaces.png``,
-  ``502-site-chambres.png``, ``049-…-tableau-de-bord.png``, ``050-…``,
-  ``306-reception-reservations.png`` ; captures de recette
+  ``502-site-chambres.png``, ``027-…-fiche.png``, ``049-…-tableau-de-bord.png``,
+  ``050-…``, ``306-reception-reservations.png`` (engrenage, flèches du pager,
+  sélecteur de vues, sélecteur de colonnes) ; captures de recette
   ``docs/captures_uat/r5-site-web-0[1-6]-*.png`` (modèle visuel seulement,
   jamais incrustées).
 
@@ -70,77 +100,153 @@ Douleurs de l'accroche : ``recette/cas_de_test.py`` l. 132-137 (B03, double
 réservation d'un créneau) et l. 178-182 (C03, réservation « sans aucune
 ressaisie ») ; ``docs/etude_comparative/benchmark_pms.md`` l. 150 (moteur de
 réservation direct : 10 leaders sur 10) ; ``docs/etude_comparative/build_etude.py``
-l. 420 (SaaS étrangers à 280-480 KFCFA par mois) ;
+l. 420 (SaaS étrangers à 280-480 KFCFA par mois : Cloudbeds, Mews,
+SiteMinder, c'est-à-dire PMS et channel manager) ;
 ``docs/etude_comparative/benchmark_afrique_odoo.md`` l. 153 (Community :
 « moteur de réservation à développer »).
 
+Promesse : bornée à ce que le code garantit. Un salon ou une prestation se
+réserve en ligne et se confirme aussitôt (``_confirm_slot``) ; un séjour
+n'est qu'une demande en brouillon (``rooms_submit``). Le refus d'un créneau
+déjà confirmé est prouvé pour des validations successives
+(``test_double_booking_is_refused``) : le contrôle ne pose ni verrou ni
+contrainte SQL (voir les écarts), d'où l'absence de toute promesse absolue
+(« sans double vente », « jamais »).
+
 Résultats : trois parcours publics (``website_templates.xml`` l. 10-38) ;
 une seule grille pour le site et la réception (``booking_resource.py``
-l. 27-30, ``slot_dashboard.py`` l. 116, ``controllers/main.py`` l. 93) ;
+l. 27-30, ``slot_dashboard.py`` l. 107-117, ``controllers/main.py`` l. 93) ;
 45 tests Odoo du module, dont ``test_double_booking_is_refused``
 (``docs/GUIDE_TESTS.md`` l. 31, ``aite_website_booking/tests/test_controllers.py``
 l. 155-173 : 22 tests, ``test_helpers.py`` : 23 tests).
 
 Données : fictives (``demo.py``). Claire Durand (cliente), Mireille Ateba
-(réception), les salons « Sanaga », « Nyong », « Dibamba » et les autres
-clients sont inventés ; les tarifs horaires (11 500 / 23 000) reprennent
-ceux du jeu de démonstration, pas ses noms. « Aujourd'hui » vaut le
-14/10/2026 (``demo.ARRIVEES``) ; le salon est réservé pour le samedi
-17/10/2026 (une date future : une heure passée serait encore proposée,
-voir les écarts).
+(réception). Les salons « Wouri », « Sanaga » et « Bonabéri » et leurs tarifs
+(11 500 / 23 000 FCFA l'heure) sont ceux du chapitre 4 de la présentation
+(``scenarios/c4_site_web.py`` l. 44-46 : Claire y réserve le salon Wouri,
+RES/26/0418) ; « Cabine SPA 1 » et « Fauteuil femme 1 » comme au
+tutoriel 9. Les réservations confirmées de la liste de l'hôtel, celle de
+Rodrigue Tamba et le brouillon de Jacques Owona sont ceux du tutoriel 2
+(``scenarios/t02_planning.py`` l. 196-204, 241-252, 563-590 ; tarifs
+Standard 35 000, Confort 45 000, Suite Junior 75 000, Suite VIP 120 000) ;
+le solde d'une réservation confirmée non réglée égale son total, comme dans
+``demo.ARRIVEES``. Les demandes du site (RES/2026/0223, RES/2026/0224), le
+visiteur Arnaud Fotsing et les clients des couloirs sont inventés. Numéros
+de fiction : plage ARCEP réservée à la fiction (+33 6 39 98 …) et numéros
+camerounais en 6 00 00 00 …; adresses ``exemple.cm`` comme dans ``demo.py``.
+« Aujourd'hui » vaut le mercredi 14/10/2026 (``demo.ARRIVEES``). Claire
+réserve le salon à 07:52, avant l'ouverture : la grille du jour commence
+donc à 09:00 sans heure déjà passée ; Mireille ouvre le tableau de bord en
+fin de matinée (prestations de 9 h à 11 h réalisées). Le salon est réservé
+pour le samedi 17/10/2026.
 
-Écarts rejoués tels quels : « Planning du 2026-10-17 » (date ISO,
-``dashboard.xml`` l. 99) ; menu « Front Desk » en anglais
+Écarts rejoués tels quels (voir le rapport) : « Planning du 2026-10-17 »
+(date ISO, ``dashboard.xml`` l. 99) ; menu « Front Desk » en anglais
 (``hotel_menus.xml`` l. 18) ; deux numérotations « RES » (RES/26/0418 pour
-le créneau, RES/2026/0221 pour le séjour) ; départ de la demande de séjour
-à 11:00, fixé en dur (``controllers/main.py`` l. 264-267).
+le créneau, RES/2026/0224 pour le séjour) ; départ de la demande de séjour
+à 11:00, fixé en dur (``controllers/main.py`` l. 264-267) ; discussion signée
+« Public user » (nom anglais du contact public) et « … créé » au masculin ;
+sommes de groupe sans devise et à deux décimales (« 90 000,00 »).
 """
 
 import demo
-from ecrans import (APPS_PROFIL, bouton, champ, cp_fiche, deux_colonnes, e, entree, fenetre_muk, groupe,
+from ecrans import (APPS_PROFIL, ICONES, bouton, champ, cp_fiche, deux_colonnes, e, entree, fenetre_muk, groupe,
                     icone, navigateur, s_vue, statusbar, titre_fiche, vue_fiche, vue_libre)
 from marketing import bulle, dezoom, reaction, zoom
-from moteur import anneau, cacher, clic, classe, montrer, pause, saisir, texte, vue
-from scenarios.c4_site_web import s_carte
+from moteur import animer, anneau, cacher, clic, classe, curseur, montrer, pause, saisir, texte, vue
 
 NOM, ROLE = demo.POSTES['client']                 # Claire Durand, la cliente
-RECEPTION = demo.POSTES['reception'][0]           # Mireille Ateba
+RECEPTION, ROLE_RECEPTION = demo.POSTES['reception']   # Mireille Ateba, réceptionniste
+VISITEUR, ROLE_VISITEUR = 'Arnaud Fotsing', 'Autre visiteur'
 SITE = 'Complexe Hôtelier'
-TEL_CLAIRE = '+33 6 45 21 87 90'
-TEL_CLAIRE_N = '+33645218790'                     # _norm_phone : chiffres et « + » de tête
-MAIL_CLAIRE = 'claire.durand@exemple.fr'
-SALON = 'Salon VIP Sanaga'
+TEL_HOTEL = '+237 6 00 00 00 10'
+TEL_CLAIRE = '+33 6 39 98 21 47'                  # plage ARCEP réservée à la fiction
+TEL_CLAIRE_N = '+33639982147'                     # _norm_phone : chiffres et « + » de tête
+MAIL_CLAIRE = 'claire.durand@exemple.cm'
+TEL_VISITEUR = '+237 6 00 00 00 27'
+SALON = 'Salon VIP Wouri'
 REF_CRENEAU = 'RES/26/0418'                       # séquence RES/%(y)s/ (créneaux)
-REF_SEJOUR = 'RES/2026/0221'                      # séquence RES/%(year)s/ (séjours)
+REF_SEJOUR = 'RES/2026/0224'                      # séquence RES/%(year)s/ (séjours)
+REF_YANNICK = 'RES/2026/0223'
+HEURE_RESA = '07:52'                              # l'heure où Claire a réservé le salon
 
-# Une icône de calendrier (champ date du navigateur) et l'icône « regrouper
-# par » des facettes d'Odoo 18, redessinées en SVG.
+# Une icône de calendrier (champ date du navigateur), l'icône « regrouper
+# par » des facettes d'Odoo 18 et celles du cadre web, redessinées en SVG.
 CAL = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4.5" width="18" '
        'height="16" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg>')
 COUCHES = ('<svg viewBox="0 0 24 24" fill="#fff"><path d="M12 3l9 4.5-9 4.5-9-4.5z"/><path d="M3 12l9 4.5 9-4.5" '
            'fill="none" stroke="#fff" stroke-width="2"/><path d="M3 16.5l9 4.5 9-4.5" fill="none" stroke="#fff" '
            'stroke-width="2"/></svg>')
+COUCHES_N = COUCHES.replace('#fff', '#212529')
+ROUAGE = ('<svg viewBox="0 0 24 24" fill="#495057"><path d="M10.3 2h3.4l.5 2.6 1.9.8 2.2-1.5 2.4 2.4-1.5 2.2.8 1.9 '
+          '2.6.5v3.4l-2.6.5-.8 1.9 1.5 2.2-2.4 2.4-2.2-1.5-1.9.8-.5 2.6h-3.4l-.5-2.6-1.9-.8-2.2 1.5-2.4-2.4 1.5-2.2-.8-1.9'
+          'L2 13.7v-3.4l2.6-.5.8-1.9-1.5-2.2 2.4-2.4 2.2 1.5 1.9-.8z"/><circle cx="12" cy="12" r="3.4" fill="#fff"/></svg>')
+V_LISTE = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round">'
+           '<path d="M4 6h16M4 12h16M4 18h16"/></svg>')
+V_KANBAN = ('<svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="4" width="7.5" height="16" rx="1"/>'
+            '<rect x="13.5" y="4" width="7.5" height="10" rx="1"/></svg>')
+V_CAL = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" '
+         'height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M7 14h3M14 14h3M7 17.5h3" stroke-width="2.4"/>'
+         '</svg>')
+REGLAGES = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">'
+            '<path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>')
+ETOILE = ('<svg viewBox="0 0 24 24" fill="#E8A33D"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2 6.3 20.3l1.2-6.4'
+          'L2.8 9.5l6.4-.8z"/></svg>')
+ENVELOPPE = ('<svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.5 5h19v14h-19z" fill="none" stroke="currentColor" '
+             'stroke-width="2"/><path d="M3 6l9 7 9-7" fill="none" stroke="currentColor" stroke-width="2"/></svg>')
+NOTE = ('<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 3h16v12l-6 6H4z"/><path d="M14 21v-6h6" fill="#fff" '
+        'opacity=".55"/></svg>')
+OEIL = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1.5 12S5.5 5 12 5s10.5 7 '
+        '10.5 7-4 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3.2" fill="currentColor"/></svg>')
+TROMBONE = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path '
+            'd="M20 11.5l-8.2 8.2a5 5 0 01-7.1-7.1l8.6-8.6a3.4 3.4 0 014.8 4.8l-8.4 8.4a1.7 1.7 0 01-2.4-2.4l7.6-7.6"/></svg>')
+ABONNES = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4.2"/>'
+           '<path d="M4 21c0-4.6 3.6-7.4 8-7.4s8 2.8 8 7.4z"/></svg>')
+SILHOUETTE = ('<svg viewBox="0 0 40 40"><rect width="40" height="40" fill="#D9DCE0"/><circle cx="20" cy="15" r="7.5" '
+              'fill="#A3A9B1"/><path d="M5 40c0-9 6.6-14 15-14s15 5 15 14z" fill="#A3A9B1"/></svg>')
+SPIN = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round">'
+        '<path d="M12 3a9 9 0 109 9" /></svg>')
+
+
+def svg(code, classe_='t08-svg'):
+    return '<span class="%s">%s</span>' % (classe_, code)
+
+
+def s_carte(ident, titre, texte_, bouton_, contour=False, prix=None):
+    """Une carte du site (même gabarit que ``scenarios/c4_site_web.s_carte``)."""
+    px = '<div class="px">%s</div>' % e(prix) if prix else ''
+    return ('<div class="s-carte" id="%s"><div class="h">%s</div><div class="p">%s</div>%s'
+            '<div class="s-bouton%s" id="%s-bt">%s</div></div>'
+            % (ident, e(titre), e(texte_), px, ' contour' if contour else '', ident, e(bouton_)))
 
 
 # ======================================================== le site public ==
 
 NAV = ('<div class="s-nav t08-nav"><span class="s-logo t08-logo">%s</span><span class="s-m">Accueil</span>'
        '<span class="s-m actif">Réservation</span><span class="s-m">Contactez-nous</span>'
-       '<span class="t08-loupe">%s</span><span class="s-tel t08-tel">%s+237 6 99 00 00 00</span>'
+       '<span class="t08-loupe">%s</span><span class="s-tel t08-tel">%s%s</span>'
        '<span class="t08-connexion">Se connecter</span><span class="bt primaire s-bt t08-contact">Contactez-nous</span>'
-       '</div>' % (e(SITE), icone('loupe'), icone('telephone')))
+       '</div>' % (e(SITE), icone('loupe'), icone('telephone'), e(TEL_HOTEL)))
+
+A_PROPOS = ("Nous sommes une équipe de passionnés dont le but est d'améliorer la vie de chacun grâce à des produits "
+            "disruptifs. Nous fabriquons d'excellents produits pour résoudre vos problèmes commerciaux.")
+A_PROPOS_2 = ("Nos produits sont conçus pour les petites et moyennes entreprises désireuses d'optimiser leurs "
+              "performances.")
 
 
 def pied(haut):
-    """Le pied de page du site, qui suit le contenu et file sous le bord de
-    la fenêtre (rubriques du pied de page par défaut d'Odoo 18, en français :
-    « Liens utiles », « Rejoignez-nous » ; coordonnées fictives)."""
+    """Le pied de page par défaut d'Odoo 18, en français, qui suit le contenu
+    et file sous le bord de la fenêtre : « Liens utiles », « À propos de
+    nous » (texte d'origine, non personnalisé), « Rejoignez-nous » (les
+    coordonnées, fictives, de l'établissement)."""
     liens = ''.join('<div class="t08-pl">%s</div>' % x for x in (
         'Accueil', 'À propos de nous', 'Produits', 'Services', 'Juridique', 'Contactez-nous'))
     return ('<div class="t08-pied" style="top:%dpx"><div class="t08-pc"><div class="t08-ph">Liens utiles</div>%s</div>'
+            '<div class="t08-pc t08-pc-m"><div class="t08-ph">À propos de nous</div><div class="t08-pt">%s</div>'
+            '<div class="t08-pt">%s</div></div>'
             '<div class="t08-pc t08-pc-d"><div class="t08-ph">Rejoignez-nous</div><div class="t08-pl">Contactez-nous</div>'
-            '<div class="t08-pl">reservation@exemple.cm</div><div class="t08-pl">+237 6 99 00 00 00</div></div></div>'
-            % (haut, liens))
+            '<div class="t08-pl">reservation@exemple.cm</div><div class="t08-pl">%s</div></div></div>'
+            % (haut, liens, e(A_PROPOS), e(A_PROPOS_2), e(TEL_HOTEL)))
 
 
 def vue_site(ident, contenu, haut_pied=None, initiale=False):
@@ -168,13 +274,14 @@ ACCUEIL = vue_site('t08-accueil', (
 ESPACES = vue_site('t08-espaces', (
     '<div class="s-h1">Espaces VIP & VVIP</div><div class="s-cartes t08-salons" id="t08-salons">%s%s%s</div>'
     % (s_carte('t08-e1', SALON, 'Ouvert de 09:00 à 23:00', 'Voir les créneaux', True, '11 500 FCFA / heure'),
-       s_carte('t08-e2', 'Salon VIP Nyong', 'Ouvert de 09:00 à 23:00', 'Voir les créneaux', True, '11 500 FCFA / heure'),
-       s_carte('t08-e3', 'Salon VVIP Dibamba', 'Ouvert de 10:00 à 23:00', 'Voir les créneaux', True,
+       s_carte('t08-e2', 'Salon VIP Sanaga', 'Ouvert de 09:00 à 23:00', 'Voir les créneaux', True, '11 500 FCFA / heure'),
+       s_carte('t08-e3', 'Salon VVIP Bonabéri', 'Ouvert de 10:00 à 23:00', 'Voir les créneaux', True,
                '23 000 FCFA / heure'))), haut_pied=440)
 
 # Les créneaux libres du salon (pas d'une heure, 09:00 → 23:00), cohérents
-# avec le planning de la réception : le mercredi 14/10 (12:00-14:00 et
-# 16:00-20:00 vendus), et le samedi 17/10 (12:00-14:00 et 19:00-21:00 vendus).
+# avec le planning de la réception : le mercredi 14/10 à 07:52 (12:00-14:00
+# et 16:00-20:00 vendus, aucune heure encore passée), et le samedi 17/10
+# (12:00-14:00 et 19:00-21:00 vendus).
 LIBRES_14 = ['09:00', '10:00', '11:00', '14:00', '15:00', '20:00', '21:00', '22:00']
 LIBRES_17 = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00', '18:00', '21:00', '22:00']
 
@@ -208,7 +315,7 @@ def grille(ident, date, heures, coche=None, nom='', tel='', alerte=False, saisie
 GRILLE_14 = grille('t08-g14', '14/10/2026', LIBRES_14, saisie_date=True)
 GRILLE_17 = grille('t08-g17', '17/10/2026', LIBRES_17)
 # Un autre visiteur avait ouvert la même page avant Claire : seize heures y est encore libre.
-AUTRE = grille('t08-ga', '17/10/2026', LIBRES_17, coche='16:00', nom='Arnaud Fotsing', tel='+237 699 52 18 40')
+AUTRE = grille('t08-ga', '17/10/2026', LIBRES_17, coche='16:00', nom=VISITEUR, tel=TEL_VISITEUR)
 # Sa validation est refusée : il revient sur la grille, seize heures n'y est plus.
 REFUS = grille('t08-gr', '17/10/2026', [h for h in LIBRES_17 if h != '16:00'], alerte=True)
 
@@ -220,6 +327,11 @@ MERCI = vue_site('t08-merci', (
     'ou espèces</b>.</div><div class="t08-retour-bt"><span class="s-bouton contour">Retour aux réservations</span></div>'
     '</div>' % (REF_CRENEAU, e(SALON))), haut_pied=480)
 
+def avec_calendrier(champ_html):
+    """Un champ date du navigateur : l'icône du calendrier à droite."""
+    return '<div class="t08-dw">%s<span class="t08-cal">%s</span></div>' % (champ_html, CAL)
+
+
 SEJOUR = s_vue('t08-sejour', (
     '<div class="s-form t08-form-s"><div class="s-h1 t08-h1">Demande de séjour</div>'
     '<div class="s-p">Notre réception confirme votre chambre et vous rappelle rapidement.</div>'
@@ -229,7 +341,8 @@ SEJOUR = s_vue('t08-sejour', (
     '<div class="s-ligne"><div><div class="s-lab">Téléphone</div>%s</div><div><div class="s-lab">E-mail</div>%s</div></div>'
     '<div class="s-lab">Message (optionnel)</div><div class="t08-zone"></div>'
     '<div class="s-gros-bt t08-gros" id="t08-envoyer">Envoyer la demande</div></div>'
-    % (entree('t08-s-arr', 'jj/mm/aaaa'), entree('t08-s-dep', 'jj/mm/aaaa'), entree('t08-s-ad', '', '2'),
+    % (avec_calendrier(entree('t08-s-arr', 'jj/mm/aaaa')), avec_calendrier(entree('t08-s-dep', 'jj/mm/aaaa')),
+       entree('t08-s-ad', '', '2'),
        entree('t08-s-nom'), entree('t08-s-tel'), entree('t08-s-mail'))))
 
 MERCI_SEJOUR = vue_site('t08-merci2', (
@@ -277,31 +390,34 @@ def bloc(client, de, a, etat='confirmed', ident=None):
     return {'client': client, 'de': de, 'a': a, 'etat': etat, 'id': ident}
 
 
-VIOLET, VERT, BRUN = '#714B67', '#0F6E56', '#854F0B'
+# Couleurs des familles (slot_dashboard.py l. 22-25), reprises comme couleur de chaque ressource.
+VIOLET, VERT, BLEU, BRUN = '#714B67', '#0F6E56', '#185FA5', '#854F0B'
 # Les cinq ressources de l'établissement de démonstration : (nom, couleur,
 # ouverture, fermeture, pas en minutes).
-RESSOURCES = [(SALON, VIOLET, 9, 23, 60), ('Salon VIP Nyong', VIOLET, 9, 23, 60), ('Salon VVIP Dibamba', VIOLET, 10, 23, 60),
-              ('Cabine massage 1', VERT, 9, 21, 30), ('Fauteuil tresses 1', BRUN, 9, 20, 30)]
+RESSOURCES = [(SALON, VIOLET, 9, 23, 60), ('Salon VIP Sanaga', VIOLET, 9, 23, 60),
+              ('Salon VVIP Bonabéri', VIOLET, 10, 23, 60), ('Cabine SPA 1', VERT, 9, 21, 30),
+              ('Fauteuil femme 1', BLEU, 9, 20, 30)]
 # Le mercredi 14/10 (aujourd'hui, en fin de matinée) : deux prestations du
 # matin réalisées, cinq réservations confirmées à venir.
 JOUR_14 = [[bloc('Cécile Ondoa', 12, 14), bloc('Bertrand Mvondo', 16, 20)],
            [bloc('Thierry Ngando', 18, 22)],
            [bloc('Rachel Ebongue', 14, 17)],
-           [bloc('Estelle Ngono', 10, 11, 'done'), bloc('Nadia Belinga', 16, 17.5)],
-           [bloc('Linda Eboa', 9, 11, 'done')]]
+           [bloc('Nadine Ebalé', 10, 11, 'done'), bloc('Nadia Belinga', 16, 17.5)],
+           [bloc('Odile Ekwalla', 9, 11, 'done')]]
 # Le samedi 17/10 : la réservation en ligne de Claire est déjà dans le couloir du salon.
-JOUR_17 = [[bloc('Aline Nkengue', 12, 14), bloc(NOM, 16, 17, ident='t08-bk-claire'), bloc('Rodrigue Tchoua', 19, 21)],
-           [bloc('Carine Mbida', 10, 12), bloc('Joseph Ekani', 18, 20)],
+JOUR_17 = [[bloc('Aline Nkengue', 12, 14), bloc(NOM, 16, 17, ident='t08-bk-claire'), bloc('Gilbert Tchoua', 19, 21)],
+           [bloc('Josué Mbida', 10, 12), bloc('Joseph Ekani', 18, 20)],
            [bloc('Grâce Nguene', 15, 19)],
            [bloc('Nadège Owona', 11, 12), bloc('Sandrine Kemajou', 15, 16.5)],
-           [bloc('Gisèle Tamba', 9.5, 11.5), bloc('Linda Eboa', 14, 15)]]
+           [bloc('Gisèle Kouam', 9.5, 11.5), bloc('Odile Ekwalla', 14, 15)]]
 COULOIRS_14 = ''.join(couloir('t08-c14-%d' % i, *r, blocs=j) for i, (r, j) in enumerate(zip(RESSOURCES, JOUR_14), 1))
 COULOIRS_17 = ''.join(couloir('t08-c17-%d' % i, *r, blocs=j) for i, (r, j) in enumerate(zip(RESSOURCES, JOUR_17), 1))
 
 # Les indicateurs de la période « Aujourd'hui » (slot_dashboard.get_kpis),
 # cohérents avec le planning du 14/10 : CA des deux prestations réalisées
 # (20 000 + 15 000), heures réservées (confirmées + réalisées) sur les heures
-# ouvrées des cinq ressources (64 h), aucune ressource de pressing.
+# ouvrées des cinq ressources (64 h), aucune ressource de pressing. Ils ne
+# dépendent pas du jour affiché : ils restent les mêmes au 17/10.
 HEURES = sum(b['a'] - b['de'] for jour in JOUR_14 for b in jour)
 OUVERTES = sum(r[3] - r[2] for r in RESSOURCES)
 A_VENIR = sum(1 for jour in JOUR_14 for b in jour if b['etat'] == 'confirmed')
@@ -313,86 +429,213 @@ TDB = vue_libre('t08-tdb', (
     '<div class="t08-d-sous">Planning des créneaux · SPA, coiffure, pressing, espaces VIP / VVIP</div></div>'
     '<span class="t08-d-nouv">+ Nouvelle réservation</span></div>'
     '<div class="t08-d-filtres"><div class="t08-d-rang"><span class="t08-d-lab">Jour</span>%s'
-    '<span class="t08-d-date"><span id="t08-jour">14/10/2026</span><span class="t08-cal">%s</span></span>%s%s'
+    '<span class="t08-d-date" id="t08-d-date"><span id="t08-jour">14/10/2026</span><span class="t08-cal">%s</span></span>%s%s'
     '<span class="t08-esp"></span><span class="t08-d-lab">Période stats</span>%s%s%s</div>'
     '<div class="t08-d-rang"><span class="t08-d-lab">Famille</span>%s%s%s%s%s%s</div>'
     '<div class="t08-d-rang"><span class="t08-d-lab">Ressource</span>%s%s</div></div>'
+    '<div class="t08-corps" id="t08-corps">'
     '<div class="t08-d-sect">Activité de la période</div><div class="t08-d-kpis">%s%s%s%s</div>'
     '<div class="t08-d-sect" id="t08-plan-t">Planning du 2026-10-14</div>'
     '<div class="t08-d-carte"><div class="t08-lanes" id="t08-l14">%s</div>'
     '<div class="t08-lanes t08-dessus masque" id="t08-l17">%s</div></div></div>'
+    '<div class="t08-charge masque" id="t08-charge">%sChargement…</div></div>'
     % (chip('‹', ident='t08-prec'), CAL, chip('›', ident='t08-suiv'), chip("Aujourd'hui"),
        chip("Aujourd'hui", True), chip('Cette semaine'), chip('Ce mois'),
        chip('Toutes', True), chip('Espace VIP / VVIP', point=VIOLET), chip('SPA', point=VERT),
-       chip('Coiffure', point='#185FA5'), chip('Pressing', point=BRUN), chip('Autre', point='#888780'),
+       chip('Coiffure', point=BLEU), chip('Pressing', point=BRUN), chip('Autre', point='#888780'),
        chip('Toutes', True), ''.join(chip(r[0], point=r[1]) for r in RESSOURCES),
        kpi_t08('CA prestations réalisées', '35 000 FCFA', '2 réalisée(s)', 'a-violet'),
        kpi_t08('Taux de remplissage', REMPLISSAGE, '%s réservées / %d h ouvrées' % (HEURES_TXT, OUVERTES), 'a-bleu'),
        kpi_t08('No-show', '0 %', '0 rendez-vous manqué(s)', 'a-rouge'),
        kpi_t08('Retraits pressing en attente', '0', '%d réservation(s) à venir' % A_VENIR, 'a-ambre'),
-       COULOIRS_14, COULOIRS_17)), initiale=True, fond='tdb')
+       COULOIRS_14, COULOIRS_17, svg(SPIN, 't08-spin'))), initiale=True, fond='tdb')
 
-FICHE = vue_fiche(
-    't08-fiche', cp_fiche('Espaces & Prestations — Tableau de bord', REF_CRENEAU),
+
+# --------------------------------------------- la fiche, et sa discussion --
+def message(texte_html, ident=None):
+    """Un message de la discussion, signé par l'utilisateur public du site."""
+    return ('<div class="t08-ch-msg"%s><span class="t08-ch-av">%s</span><div><div class="t08-ch-a"><b>Public user</b> '
+            '<small>Aujourd\'hui à %s</small></div><div class="t08-ch-t">%s</div></div></div>'
+            % (' id="%s"' % ident if ident else '', SILHOUETTE, HEURE_RESA, texte_html))
+
+
+DISCUSSION = (
+    '<div class="chatter t08-chat"><div class="t08-ch-bts"><span class="bt primaire">%sEnvoyer message</span>'
+    '<span class="bt gris">%sNote</span><span class="t08-ch-i">%s</span><span class="t08-ch-i">%s</span>'
+    '<span class="t08-ch-i">%s</span><span class="t08-ch-i">%s<sup>0</sup></span></div>'
+    '<div class="t08-ch-jour"><span>Aujourd\'hui</span></div>%s%s</div>'
+    % (svg(ENVELOPPE, 't08-ch-ico'), svg(NOTE, 't08-ch-ico'), icone('loupe', 't08-svg'), svg(OEIL), svg(TROMBONE),
+       svg(ABONNES),
+       message('<span class="t08-anc">Brouillon</span><span class="t08-sep">→</span><span class="t08-nouv">Confirmée'
+               '</span> <i>(État)</i>', 't08-ch-suivi'),
+       message('Réservation de créneau (espace / prestation) créé', 't08-ch-cree')))
+
+
+def avec_discussion(vue_html, panneau):
+    """Pose la discussion à droite de la fiche, comme ``ecrans.avec_chatter``
+    (qui ajoute un bouton « Activités » : ce modèle n'en a pas)."""
+    debut = vue_html.index('>') + 1
+    tete = vue_html[:debut].replace('class="vue', 'class="vue avec-chatter', 1)
+    return tete + vue_html[debut:-len('</div>')] + panneau + '</div>'
+
+
+FICHE = avec_discussion(vue_fiche(
+    't08-fiche', cp_fiche('Espaces & Prestations — Tableau de bord', REF_CRENEAU).replace(
+        '<span class="ref">%s</span>' % REF_CRENEAU,
+        '<span class="ref">%s<span class="t08-rouage">%s</span></span>' % (REF_CRENEAU, ROUAGE), 1),
     [bouton('t08-realisee', 'Réalisée', 'primaire'), bouton(None, "Renvoyer l'e-mail", 'gris'),
      bouton(None, 'No-show', 'gris'), bouton(None, 'Annuler', 'gris')],
     statusbar('t08-sb', ['Brouillon', 'Confirmée', 'Réalisée'], 1),
     titre_fiche(REF_CRENEAU)
     + deux_colonnes(champ('Client', NOM) + champ('Téléphone', TEL_CLAIRE_N) + champ('Ressource', SALON)
-                    + champ('Prestation', '') + champ('Origine', 'En ligne', 't08-f-origine', gras=False),
+                    + champ('Prestation', '') + champ('Origine', 'En ligne', 't08-f-origine'),
                     champ('Début', '17/10/2026 16:00:00') + champ('Fin', '17/10/2026 17:00:00')
                     + champ('Durée (h)', '01:00') + champ('Montant', '11 500 FCFA', 't08-f-montant')
                     + champ('Prix manuel', '0 FCFA'))
     + groupe('Séjour (note de chambre)', [champ('Folio du séjour', ''), champ('Ligne de folio', '')])
-    + '<div class="t08-note">Note interne…</div>')
+    + '<div class="t08-note">Note interne…</div>'), DISCUSSION)
 
-# Les réservations hôtel : brouillons regroupés par canal (groupes repliés).
-COLS = '150px 180px 205px 205px 64px 104px 1fr 116px 136px 118px'
+
+# ------------------------------------------------- les réservations hôtel --
+# Tarifs des types de chambre et chambres du tutoriel 2 (t02_planning.py l. 196-204).
+PRIX = {'STD': 35000, 'CFT': 45000, 'SJR': 75000, 'VIP': 120000}
+TYPE = {'101': 'STD', '102': 'STD', '103': 'STD', '104': 'STD', '106': 'STD', '201': 'CFT', '202': 'CFT', '203': 'CFT',
+        '204': 'CFT', '205': 'CFT', '301': 'SJR', '302': 'SJR', '303': 'SJR', '401': 'VIP', '402': 'VIP'}
+
+
+def fcfa(n):
+    return '{:,.0f}'.format(n).replace(',', ' ') + ' FCFA'
+
+
+# (référence, client, arrivée, départ, nuits, chambre — None : pas encore de
+# chambre —, état). Ordre de la liste : arrivée décroissante, puis id
+# décroissant (hotel_reservation.py l. 27).
+TOUTES = [
+    ('RES/2026/0220', 'Viviane Eyoum', '04/11/2026 14:00:00', '06/11/2026 12:00:00', 2, '303', 'confirmed'),
+    ('RES/2026/0219', 'Mathieu Nkodo', '30/10/2026 14:00:00', '01/11/2026 12:00:00', 2, '104', 'confirmed'),
+    ('RES/2026/0215', 'Blaise Atangana', '28/10/2026 14:00:00', '31/10/2026 12:00:00', 3, '205', 'confirmed'),
+    (REF_YANNICK, 'Yannick Mbassi', '24/10/2026 14:00:00', '26/10/2026 11:00:00', 2, None, 'draft'),
+    ('RES/2026/0218', 'Aristide Bella', '24/10/2026 14:00:00', '26/10/2026 12:00:00', 2, '401', 'confirmed'),
+    ('RES/2026/0217', 'Olivier Ndzana', '23/10/2026 14:00:00', '25/10/2026 12:00:00', 2, '106', 'confirmed'),
+    ('RES/2026/0212', 'Carine Manga', '22/10/2026 14:00:00', '24/10/2026 12:00:00', 2, '302', 'confirmed'),
+    ('RES/2026/0216', 'Christelle Ndongo', '21/10/2026 14:00:00', '23/10/2026 12:00:00', 2, '102', 'confirmed'),
+    (REF_SEJOUR, NOM, '20/10/2026 14:00:00', '23/10/2026 11:00:00', 3, None, 'draft'),
+    ('RES/2026/0221', 'Rodrigue Tamba', '19/10/2026 14:00:00', '21/10/2026 12:00:00', 2, '203', 'confirmed'),
+    ('RES/2026/0211', 'Joël Kamga', '18/10/2026 14:00:00', '20/10/2026 12:00:00', 2, '204', 'confirmed'),
+    ('RES/2026/0205', 'Paul Abessolo', '16/10/2026 14:00:00', '18/10/2026 12:00:00', 2, '301', 'confirmed'),
+]
+# Le brouillon de Jacques Owona, saisi au comptoir (canal « Direct / comptoir ») au tutoriel 2.
+JACQUES = ('RES/2026/0222', 'Jacques Owona', '15/10/2026 14:00:00', '17/10/2026 12:00:00', 2, '204', 'draft')
+BROUILLONS = [r for r in TOUTES if r[6] == 'draft'] + [JACQUES]
+
+COLS = '142px 168px 180px 180px 50px 94px 1fr 118px 126px 108px 28px'
 TETE = ['Référence', 'Client', 'Arrivée', 'Départ', 'Nuits', 'Nb chambres', 'Total hébergement (HT)', 'Solde folio',
         'Registre', 'État']
 DROITE = {4, 5, 6, 7}
 
 
-def ligne_resa(ident, cellules, masque=False):
-    cs = []
-    for k, c in enumerate(cellules):
-        if k == 8:
-            cs.append('<span><span class="puce rouge t08-badge">%s</span></span>' % e(c))
-        elif k == 9:
-            cs.append('<span><span class="puce orange t08-badge">%s</span></span>' % e(c))
-        else:
-            cs.append('<span class="ell%s">%s</span>' % (' d' if k in DROITE else '', e(c)))
-    return ('<div class="ligne t08-ligne%s" id="%s" style="grid-template-columns:40px %s"><span class="cb"></span>%s</div>'
-            % (' masque' if masque else '', ident, COLS, ''.join(cs)))
+def total_resa(r):
+    return r[4] * PRIX[TYPE[r[5]]] if r[5] else 0
+
+
+def ligne_resa(ident, r, masque=False):
+    """Une ligne de la liste : texte bleu (decoration-info, foncé pour le
+    contraste) si confirmée ; solde = total tant que rien n'est réglé ; pas de
+    folio (solde 0) pour un brouillon."""
+    total = total_resa(r)
+    confirmee = r[6] == 'confirmed'
+    valeurs = [r[0], r[1], r[2], r[3], str(r[4]), '1' if r[5] else '0', fcfa(total), fcfa(total if confirmee else 0)]
+    cs = ['<span class="ell%s">%s</span>' % (' d' if k in DROITE else '', e(v)) for k, v in enumerate(valeurs)]
+    cs.append('<span><span class="puce rouge t08-badge">Aucune fiche</span></span>')
+    cs.append('<span><span class="puce %s t08-badge"%s>%s</span></span>'
+              % ('info' if confirmee else 'orange', ' id="%s-etat"' % ident, 'Confirmée' if confirmee else 'Brouillon'))
+    cs.append('<span></span>')
+    return ('<div class="ligne t08-ligne%s%s" id="%s" style="grid-template-columns:40px %s"><span class="cb"></span>%s'
+            '</div>' % (' t08-conf' if confirmee else '', ' masque' if masque else '', ident, COLS, ''.join(cs)))
+
+
+def tete_liste():
+    return ('<div class="tete" style="grid-template-columns:40px %s"><span class="cb"></span>%s'
+            '<span class="t08-optcol">%s</span></div>'
+            % (COLS, ''.join('<span class="ell%s">%s</span>' % (' d' if k in DROITE else '', e(t))
+                             for k, t in enumerate(TETE)), REGLAGES))
+
+
+def total_liste(valeur, ident=None, masque=False):
+    return ('<div class="total t08-total%s"%s style="grid-template-columns:40px %s">%s<span class="d">%s</span>%s</div>'
+            % (' masque' if masque else '', ' id="%s"' % ident if ident else '', COLS, '<span></span>' * 7, e(valeur),
+               '<span></span>' * 4))
 
 
 def groupe_resa(ident, libelle, nuits, chambres, total):
+    """Un groupe replié : libellé « Canal (nombre) », sommes des colonnes
+    stockées ; la somme monétaire est formatée sans devise, à deux décimales."""
     return ('<div class="ligne t08-grp" id="%s" style="grid-template-columns:40px %s"><span></span>'
             '<span class="t08-grp-l"><b id="%s-fl">▸</b> %s</span><span class="d">%s</span><span class="d">%s</span>'
-            '<span class="d">%s</span><span></span><span></span><span></span></div>'
-            % (ident, COLS, ident, e(libelle), nuits, chambres, total))
+            '<span class="d">%s</span>%s</div>'
+            % (ident, COLS, ident, e(libelle), nuits, chambres, total, '<span></span>' * 4))
 
 
-RECH = ('<div class="recherche t08-rech">%s<span class="facette">%s<span class="ell">Brouillons</span><span class="fx">×'
-        '</span></span><span class="facette">%s<span class="ell">Canal</span><span class="fx">×</span></span>'
-        '<span class="ph">Rechercher…</span><span class="deroule">▾</span></div>'
-        % (icone('loupe', 'loupe'), icone('filtre', 'fic'), '<span class="fic">%s</span>' % COUCHES))
+def rid(r):
+    return 't08-r-' + r[0][-4:]
+
+
+def deux(n):
+    return '{:,.0f}'.format(n).replace(',', ' ') + ',00'
+
+
+def recherche_t08(ident, facettes, masque=False):
+    """La barre de recherche et ses facettes : (libellé, icône svg)."""
+    f = ''.join('<span class="facette">%s<span class="ell">%s</span><span class="fx">×</span></span>'
+                % ('<span class="fic">%s</span>' % ic, e(lib)) for lib, ic in facettes)
+    return ('<div class="recherche t08-rech%s" id="%s">%s%s<span class="ph">%s</span><span class="deroule">▾</span></div>'
+            % (' masque' if masque else '', ident, icone('loupe', 'loupe'), f, '' if facettes else 'Rechercher…'))
+
+
+FILTRE = ICONES['filtre']
+LISTE_A = ('<div class="liste t08-liste" id="t08-la">%s%s</div>'
+           % (tete_liste(), ''.join(ligne_resa(rid(r) + 'a', r) for r in TOUTES)))
+LISTE_B = ('<div class="liste t08-liste masque" id="t08-lb">%s%s%s</div>'
+           % (tete_liste(), ''.join(ligne_resa(rid(r) + 'b', r) for r in BROUILLONS),
+              total_liste(fcfa(sum(total_resa(r) for r in BROUILLONS)))))
+WEB = [r for r in BROUILLONS if r[0] in (REF_YANNICK, REF_SEJOUR)]
+LISTE_C = ('<div class="liste t08-liste masque" id="t08-lc">%s%s%s%s%s%s</div>'
+           % (tete_liste(),
+              groupe_resa('t08-g-dir', 'Direct / comptoir (1)', JACQUES[4], 1, deux(total_resa(JACQUES))),
+              groupe_resa('t08-g-web', 'Site web (%d)' % len(WEB), sum(r[4] for r in WEB), 0, deux(0)),
+              ''.join(ligne_resa(rid(r), r, masque=True) for r in WEB),
+              total_liste(deux(total_resa(JACQUES)), 't08-tot-c2', masque=True),
+              # tant que le groupe est replié, la somme suit directement les groupes (hors du flux :
+              # les lignes masquées, qui gardent leur place, passent dessous)
+              total_liste(deux(total_resa(JACQUES)), 't08-tot-c1').replace('class="total t08-total"',
+                                                                         'class="total t08-total t08-tot-c1"', 1)))
+
+
+def item(libelle, ident=None, classe_=''):
+    return '<div class="%s"%s>%s</div>' % (('t08-mi ' + classe_).strip(), ' id="%s"' % ident if ident else '', e(libelle))
+
+
+MENU_RECH = (
+    '<div class="t08-menu masque" id="t08-menu">'
+    '<div class="t08-mcol"><div class="t08-mt">%sFiltres</div>%s%s%s<hr>%s%s%s<hr>%s</div>'
+    '<div class="t08-mcol"><div class="t08-mt">%sRegrouper par</div>%s%s%s%s%s<hr>%s</div>'
+    '<div class="t08-mcol"><div class="t08-mt">%sFavoris</div>%s</div></div>'
+    % (svg(FILTRE, 't08-mic t08-mic-f'), item('Arrivées du jour'), item('Départs du jour'), item('Clients présents'),
+       item('Brouillons', 't08-mf-brouillons'), item('Confirmées'), item('No-show'), item('Ajouter un filtre personnalisé'),
+       svg(COUCHES_N, 't08-mic'), item('État'), item('Client'), item('Hôtel'), item('Canal', 't08-mg-canal'),
+       item("Date d'arrivée", classe_='t08-acc'), item('Ajouter un groupe personnalisé', classe_='t08-acc'),
+       svg(ETOILE, 't08-mic'), item('Enregistrer la recherche actuelle', classe_='t08-acc')))
+
 RESAS = vue_libre('t08-resas', (
-    '<div class="cp"><span class="bt primaire">Nouveau</span><span class="titre">Réservations</span>%s'
-    '<span class="pager">1-2 / 2</span></div><div class="liste t08-liste">'
-    '<div class="tete" style="grid-template-columns:40px %s"><span class="cb"></span>%s</div>%s%s%s%s'
-    '<div class="total t08-total" style="grid-template-columns:40px %s"><span></span><span></span><span></span>'
-    '<span></span><span></span><span></span><span></span><span class="d">90 000</span><span></span><span></span>'
-    '<span></span></div></div>'
-    % (RECH, COLS, ''.join('<span class="ell%s">%s</span>' % (' d' if k in DROITE else '', e(t))
-                           for k, t in enumerate(TETE)),
-       groupe_resa('t08-g-tel', 'Téléphone / WhatsApp (1)', '2', '1', '90 000'),
-       groupe_resa('t08-g-web', 'Site web (2)', '5', '0', '0'),
-       ligne_resa('t08-r-0219', ['RES/2026/0219', 'Yannick Mbassi', '24/10/2026 14:00:00', '26/10/2026 11:00:00', '2',
-                                 '0', '0 FCFA', '0 FCFA', 'Aucune fiche', 'Brouillon'], masque=True),
-       ligne_resa('t08-r-0221', [REF_SEJOUR, NOM, '20/10/2026 14:00:00', '23/10/2026 11:00:00', '3', '0', '0 FCFA',
-                                 '0 FCFA', 'Aucune fiche', 'Brouillon'], masque=True),
-       COLS)))
+    '<div class="cp t08-cp"><span class="bt primaire">Nouveau</span><span class="titre t08-titre">Réservations'
+    '<span class="t08-rouage">%s</span></span>%s%s%s'
+    '<span class="t08-pager"><span id="t08-pager">1-80 / 224</span><span class="t08-fl">‹</span>'
+    '<span class="t08-fl">›</span></span><span class="t08-vues"><span class="actif">%s</span><span>%s</span>'
+    '<span>%s</span></span></div><div class="t08-pile">%s%s%s</div>%s'
+    % (ROUAGE, recherche_t08('t08-rech-a', []),
+       recherche_t08('t08-rech-b', [('Brouillons', FILTRE)], masque=True),
+       recherche_t08('t08-rech-c', [('Brouillons', FILTRE), ('Canal', COUCHES)], masque=True),
+       V_LISTE, V_KANBAN, V_CAL, LISTE_A, LISTE_B, LISTE_C, MENU_RECH)))
 
 MENUS = ['Front Desk', 'Réservations', 'Espaces & Prestations', 'Notes de chambre en attente', 'Facturation',
          'Fidélité', 'Gouvernante']
@@ -411,7 +654,26 @@ BACK = BACK.replace('<span class="menu">Réservations</span>',
 ECRAN = (navigateur(SITE_WEB)
          + navigateur(BACK, identifiant='t08-nav-bo').replace('class="navigateur"', 'class="navigateur masque"', 1))
 
-CSS = """
+
+def perso_css(cle, nom, role):
+    """La pastille du personnage change avec l'acteur de l'étape : la classe
+    ``cle`` posée sur ``#tu-perso`` remplace le nom, le rôle et l'initiale."""
+    return ("#tu-perso.%(c)s > span:last-child, #tu-perso.%(c)s .av { font-size: 0; }\n"
+            "#tu-perso.%(c)s .av::after { content: '%(i)s'; font-size: 20px; }\n"
+            "#tu-perso.%(c)s > span:last-child::before { content: '%(n)s'; font-size: 21px; font-weight: 700; }\n"
+            "#tu-perso.%(c)s > span:last-child::after { content: ' · %(r)s'; font-size: 21px; white-space: pre; }\n"
+            % {'c': cle, 'i': nom[0], 'n': nom, 'r': role})
+
+
+def acteur(cle=None):
+    """Les gestes qui passent la pastille au visiteur (``t08-pa``), à la
+    réceptionniste (``t08-pm``) ou, sans clé, à Claire."""
+    autres = [c for c in ('t08-pa', 't08-pm') if c != cle]
+    return [classe('#tu-perso', ajouter=[cle] if cle else [], retirer=autres),
+            animer('#tu-perso', {'scale': 0.88}, {'scale': 1}, d=0.35, avec=True)]
+
+
+CSS = perso_css('t08-pa', VISITEUR, ROLE_VISITEUR) + perso_css('t08-pm', RECEPTION, ROLE_RECEPTION) + """
 .app.t08-site { left: 0; top: 40px; width: 1720px; height: 796px; border-radius: 0; box-shadow: none; z-index: 1;
   background: #fff; color: #212529; }
 .t08-site .s-nav { padding: 0 150px; gap: 24px; }
@@ -439,6 +701,7 @@ CSS = """
 .t08-ligne-date { display: flex; gap: 10px; align-items: flex-end; margin-top: 6px; }
 .t08-date { position: relative; width: 270px; }
 .t08-date .entree { margin-top: 0; }
+.t08-dw { position: relative; }
 #t08-g14-date-ph { color: #212529; font-weight: 500; }
 .t08-cal { position: absolute; right: 16px; top: 50%; width: 22px; height: 22px; margin-top: -11px; color: #212529;
   display: inline-flex; }
@@ -462,10 +725,12 @@ CSS = """
 .t08-l12 { grid-template-columns: 1fr 2fr; }
 .t08-pied { position: absolute; left: 0; right: 0; height: 420px; background: #111827; padding: 54px 150px 0;
   display: flex; gap: 0; }
-.t08-pc { width: 300px; }
-.t08-pc-d { margin-left: auto; width: 440px; }
+.t08-pc { width: 240px; flex: none; }
+.t08-pc-m { width: 560px; margin-left: 40px; }
+.t08-pc-d { margin-left: auto; width: 420px; }
 .t08-ph { font-size: 25px; font-weight: 500; color: #F8F9FA; margin-bottom: 18px; }
 .t08-pl { font-size: 20px; line-height: 1.6; color: #9DB8CA; }
+.t08-pt { font-size: 19px; line-height: 1.55; color: #CED4DA; margin-bottom: 14px; }
 .t08-zone { margin-top: 10px; height: 74px; border: 1px solid #CED4DA; border-radius: 6px; background: #fff; }
 
 .t08-m { position: relative; }
@@ -492,7 +757,8 @@ CSS = """
 #t08-prec, #t08-suiv { width: 40px; justify-content: center; padding: 0; font-size: 20px; background: #F5F5F4; }
 .t08-point { width: 11px; height: 11px; border-radius: 50%; display: inline-block; flex: none; }
 .t08-d-date { position: relative; height: 40px; width: 180px; border: 1px solid rgba(0,0,0,.12); border-radius: 8px;
-  display: inline-flex; align-items: center; padding-left: 12px; font-size: 16px; color: #2B2A28; }
+  display: inline-flex; align-items: center; padding-left: 12px; font-size: 16px; color: #2B2A28; background: #fff; }
+.t08-d-date.focus { border-color: #4A7892; box-shadow: 0 0 0 3px rgba(74,120,146,.25); }
 .t08-d-date .t08-cal { right: 10px; width: 18px; height: 18px; margin-top: -9px; }
 .t08-esp { flex: 1; }
 .t08-d-sect { margin: 10px 4px 6px; font-size: 15px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
@@ -519,48 +785,117 @@ CSS = """
   line-height: 30px; padding: 0 6px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .t08-bk.fait { background: #0F6E56; }
 .t08-libre { width: 175px; flex: none; text-align: right; font-size: 15px; color: #0F6E56; white-space: nowrap; }
+.t08-charge { position: absolute; left: 18px; right: 18px; top: 236px; padding: 40px; text-align: center; font-size: 18px;
+  color: #6E6D68; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.t08-spin { width: 20px; height: 20px; display: inline-flex; }
+.t08-spin svg { width: 100%; height: 100%; }
 
-#t08-fiche .feuille-cadre { right: 22px; }
+.t08-rouage { width: 18px; height: 18px; display: inline-flex; margin-left: 10px; vertical-align: -2px; }
+.t08-rouage svg { width: 100%; height: 100%; }
+.t08-svg { width: 20px; height: 20px; display: inline-flex; }
+.t08-svg svg { width: 100%; height: 100%; }
 .t08-note { margin-top: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--o-filet); font-size: 19px; color: #6C757D; }
 #t08-fiche .st-et { color: #545B62; }
 #t08-fiche .st-et.actif { color: #212529; }
 #t08-fiche .grp { margin-top: 18px; }
+#t08-fiche .ch { grid-template-columns: 190px 1fr; }
+#t08-fiche .bb-groupe .bt { padding: 0 14px; }
+.t08-chat { background: #F8F9FA; padding: 14px 16px; }
+.t08-ch-bts { display: flex; align-items: center; gap: 6px; }
+.t08-ch-bts .bt { height: 40px; font-size: 17px; padding: 0 11px; display: inline-flex; align-items: center; gap: 7px; }
+.t08-ch-ico { width: 17px; height: 17px; display: inline-flex; }
+.t08-ch-ico svg { width: 100%; height: 100%; }
+.t08-ch-i { width: 32px; height: 40px; display: inline-flex; align-items: center; justify-content: center; color: #495057;
+  position: relative; }
+.t08-ch-bts .bt + .t08-ch-i { margin-left: auto; }
+.t08-ch-i .t08-svg, .t08-ch-i svg { width: 19px; height: 19px; }
+.t08-ch-i sup { position: absolute; right: 0; top: 6px; font-size: 12px; color: #495057; }
+.t08-ch-jour { position: relative; margin: 22px 0 6px; text-align: center; font-size: 15px; color: #495057; }
+.t08-ch-jour::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px solid #DEE2E6; }
+.t08-ch-jour span { position: relative; padding: 0 12px; background: #F8F9FA; }
+.t08-ch-msg { display: flex; gap: 12px; margin-top: 14px; font-size: 17px; color: #495057; }
+.t08-ch-av { width: 40px; height: 40px; border-radius: 6px; overflow: hidden; flex: none; display: inline-flex; }
+.t08-ch-av svg { width: 100%; height: 100%; }
+.t08-ch-a b { color: #212529; }
+.t08-ch-a small { margin-left: 4px; font-size: 13px; color: #495057; }
+.t08-ch-t { margin-top: 4px; line-height: 1.4; }
+.t08-anc { font-weight: 700; color: #495057; padding: 0 4px; }
+.t08-sep { margin: 0 6px; color: #495057; }
+.t08-nouv { font-weight: 700; color: #0E7490; }
+.t08-ch-t i { color: #495057; }
 
-.t08-rech { margin-left: 150px; width: 700px; }
+.t08-cp { position: relative; display: block; }
+.t08-cp > .bt { position: absolute; left: 22px; top: 17px; height: 46px; }
+.t08-titre { position: absolute; left: 156px; top: 22px; display: inline-flex; align-items: center; }
+.t08-rech { position: absolute; left: 520px; top: 15px; width: 600px; margin-left: 0; }
+.t08-rech .facette { height: 34px; font-size: 18px; }
 .t08-rech .facette .fic svg { width: 100%; height: 100%; }
-.t08-liste .ligne, .t08-liste .tete, .t08-liste .total { column-gap: 12px; }
-.t08-liste .tete { font-size: 18px; }
-.t08-ligne { font-size: 18px; }
-.t08-grp { background: #F1F3F5; font-weight: 500; }
+.t08-pager { position: absolute; right: 196px; top: 17px; height: 46px; display: flex; align-items: center; gap: 0;
+  font-size: 19px; color: #495057; }
+.t08-pager > span:first-child { margin-right: 14px; }
+.t08-fl { width: 40px; height: 42px; display: inline-flex; align-items: center; justify-content: center; background: #E9ECEF;
+  color: #343A40; font-size: 24px; }
+.t08-fl + .t08-fl { border-left: 1px solid #fff; }
+.t08-vues { position: absolute; right: 22px; top: 18px; display: flex; }
+.t08-vues span { width: 50px; height: 42px; display: inline-flex; align-items: center; justify-content: center;
+  background: #E9ECEF; color: #343A40; }
+.t08-vues span + span { border-left: 1px solid #fff; }
+.t08-vues span.actif { background: #CFDCE5; box-shadow: inset 0 0 0 1px #4A7892; }
+.t08-vues svg { width: 22px; height: 22px; }
+.t08-pile { position: absolute; left: 0; right: 0; top: 80px; bottom: 0; }
+.t08-liste { position: absolute; left: 0; right: 0; top: 0; }
+.t08-liste .ligne, .t08-liste .tete, .t08-liste .total { column-gap: 10px; padding-right: 14px; }
+.t08-liste .tete { font-size: 16px; height: 50px; }
+.liste .ligne.t08-ligne { height: 50px; font-size: 16px; color: #495057; }
+.liste .ligne.t08-ligne.t08-conf { color: #0E7490; }
+.t08-optcol { display: inline-flex; width: 20px; height: 20px; color: #495057; }
+.t08-optcol svg { width: 100%; height: 100%; }
+.liste .ligne.t08-grp { height: 50px; background: #F1F3F5; font-weight: 500; font-size: 17px; }
+.t08-tot-c1 { position: absolute; left: 0; right: 0; top: 150px; }
 .t08-grp-l { grid-column: 2 / span 4; white-space: nowrap; }
 .t08-grp-l b { display: inline-block; width: 18px; font-weight: 400; }
-.t08-badge { height: 28px; font-size: 15px; }
+.t08-badge { height: 26px; font-size: 14px; padding: 0 10px; }
 .t08-badge.orange { background: #F3B21B; color: #2B2100; }
-.t08-total { color: #212529; }
+.liste .total.t08-total { height: 50px; color: #212529; font-size: 16px; }
+.t08-menu { position: absolute; right: 424px; top: 72px; padding: 18px 0; display: flex; z-index: 30;
+  background: #fff; border: 1px solid #DEE2E6; border-radius: 6px; box-shadow: 0 10px 28px rgba(0,0,0,.18);
+  font-size: 18px; color: #212529; }
+.t08-mcol { flex: none; padding: 0 22px; border-right: 1px solid #DEE2E6; }
+.t08-mcol:last-child { border-right: 0; }
+.t08-mt { display: flex; align-items: center; gap: 10px; height: 36px; padding-left: 8px; font-size: 20px; font-weight: 500; }
+.t08-mic { width: 18px; height: 18px; display: inline-flex; color: #4A7892; }
+.t08-mic svg { width: 100%; height: 100%; }
+.t08-mic-f svg path { fill: #4A7892; }
+.t08-mi { position: relative; height: 36px; display: flex; align-items: center; padding-left: 32px; white-space: nowrap; }
+.t08-mi.coche { font-weight: 600; }
+.t08-mi.coche::before { content: '✓'; position: absolute; left: 10px; color: #4A7892; font-weight: 700; }
+.t08-mi.t08-acc::after { content: '▾'; margin-left: 8px; color: #495057; font-size: 15px; }
+.t08-mcol hr { border: 0; border-top: 1px solid #DEE2E6; margin: 6px 0 6px 8px; }
 """
 
 TUTORIEL = {
     'slug': 't08-site-web',
     'profil': 't08_site_web',
     'numero': 8,
-    'titre': 'Réservation en ligne : vos clients réservent seuls, sans double vente',
+    'titre': 'Réservation en ligne : vos clients réservent seuls, sur les créneaux vraiment libres',
     'fonction': 'Réservation en ligne',
     'personnage': (NOM, ROLE),
     'accroche': {
         'kicker': 'La réservation en ligne',
         'question': 'Votre site sait-il ce qui est *vraiment* libre ?',
         'douleurs': [('echange', 'Le même salon vendu deux fois'),
-                     ('cahier', 'Chaque réservation ressaisie au back-office'),
-                     ('globe', 'Pas de réservation directe ? 10 PMS leaders sur 10 en ont une'),
-                     ('pieces', 'SaaS étrangers : 280 à 480 KFCFA par mois'),
-                     ('cadenas', 'Odoo Community : moteur de réservation « à développer »')],
+                     ('cahier', 'Chaque réservation ressaisie à la main'),
+                     ('globe', 'Les 10 PMS leaders\u00a0: réservation directe'),
+                     ('pieces', 'PMS étrangers\u00a0: 280\u00a0à\u00a0480\u00a0KFCFA par\u00a0mois'),
+                     ('cadenas', 'Odoo Community\u00a0: réservation «\u00a0à\u00a0développer\u00a0»')],
         'voix': "Votre site sait-il ce qui est vraiment libre ? Un salon vendu deux fois, des réservations ressaisies "
                 "à la main, des abonnements étrangers coûteux.",
     },
     'revelation': {
-        'promesse': "Le client réserve seul, parmi les créneaux libres : c'est confirmé et déjà au planning.",
-        'voix': "Avec Aïte haousse, vos clients réservent seuls : confirmé tout de suite, et déjà inscrit à la "
-                "réception.",
+        'promesse': "Salons et prestations réservés en ligne, confirmés et déjà au planning ; les séjours arrivent en "
+                    "demande.",
+        'voix': "Avec Aïte haousse, vos clients réservent seuls salons et prestations, confirmés tout de suite. Les "
+                "séjours, eux, arrivent en demande à la réception.",
     },
     'temps': ['Choisir', 'Réserver', 'Retrouver'],
     'app': 't08-site',
@@ -570,7 +905,7 @@ TUTORIEL = {
     'bulles': {
         'b-public': 'Pages publiques : ni compte à créer, ni mot de passe.',
         'b-grille': "La même grille qu'à la réception.",
-        'b-refus': 'Créneau pris entre-temps : la seconde réservation est refusée.',
+        'b-refus': 'Créneau confirmé entre-temps : la validation tardive est refusée.',
         'b-origine': 'Créée et confirmée par le site : rien à ressaisir.',
         'b-brouillon': "Aucune chambre n'est bloquée tant que la réception n'a pas confirmé.",
     },
@@ -587,8 +922,8 @@ TUTORIEL = {
                     pause(2.2), clic('#t08-vip-bt'), vue('t08-espaces', 'site'), pause(0.4),
                     anneau('#t08-salons', d=1.4), pause(0.6), clic('#t08-e1-bt'), vue('t08-g14', 'site'), pause(0.3)]},
         {'temps': 0, 'titre': 'Les créneaux encore libres',
-         'texte': 'Une date, et la grille ne propose que les heures disponibles.',
-         'voix': "Claire choisit samedi : la grille ne montre que les heures encore libres. Ce qui est déjà réservé, "
+         'texte': 'Une date, et la grille ne propose que les créneaux libres ce jour-là.',
+         'voix': "Claire choisit samedi : la grille ne montre que les heures encore libres. Ce qui est déjà confirmé, "
                  "au comptoir ou en ligne, n'y figure plus. Elle coche seize heures, pour une heure.",
          'gestes': [clic('#t08-g14-date', fx=0.3), saisir('t08-g14-date', '17/10/2026'), clic('#t08-g14-voir'),
                     vue('t08-g17', 'site'), pause(0.2), zoom('#t08-g17-creneaux', s=1.55, d=0.7),
@@ -596,55 +931,77 @@ TUTORIEL = {
                     classe('#t08-g17-h16', ajouter=['coche']), pause(0.7), dezoom(d=0.6)]},
         {'temps': 1, 'titre': 'Réservé, confirmé sur-le-champ',
          'texte': "Nom, téléphone, e-mail : la référence s'affiche, l'acompte se règle au comptoir.",
-         'voix': "Nom, téléphone, courriel, puis Réserver ce créneau : c'est confirmé sur-le-champ, avec sa référence. "
-                 "L'acompte se règle au comptoir, Orange Moni, MTN MoMo ou espèces.",
-         'gestes': [saisir('t08-g17-nom', NOM), saisir('t08-g17-tel', TEL_CLAIRE), saisir('t08-g17-mail', MAIL_CLAIRE),
-                    clic('#t08-g17-reserver'), vue('t08-merci', 'site'), zoom('#t08-merci-bloc', s=1.4, d=0.7),
-                    anneau('#t08-merci-ref', d=1.4), reaction('r-merci', d=3.0), pause(0.6),
-                    anneau('#t08-acompte', d=1.6), pause(0.6), dezoom(d=0.6)]},
-        {'temps': 1, 'titre': 'Pas de double vente',
-         'texte': 'Un second visiteur valide le même créneau : refusé, il en choisit un autre.',
+         'voix': "Nom, téléphone, courriel, puis Réserver ce créneau : c'est confirmé sur-le-champ, et la référence "
+                 "s'affiche aussitôt. L'acompte se règle au comptoir : Orange Moni, MTN MoMo ou espèces.",
+         'gestes': [clic('#t08-g17-nom', fx=0.2, d=0.35, puis=0.05), saisir('t08-g17-nom', NOM, d=0.6),
+                    clic('#t08-g17-tel', fx=0.2, d=0.35, puis=0.05), saisir('t08-g17-tel', TEL_CLAIRE, d=0.75),
+                    clic('#t08-g17-mail', fx=0.2, d=0.35, puis=0.05), saisir('t08-g17-mail', MAIL_CLAIRE, d=0.95),
+                    clic('#t08-g17-reserver'), vue('t08-merci', 'site'), zoom('#t08-merci-bloc', s=1.4, d=0.6),
+                    anneau('#t08-merci-ref', d=1.3), reaction('r-merci', d=3.0), pause(0.3),
+                    anneau('#t08-acompte', d=1.5), pause(0.3), dezoom(d=0.5)]},
+        {'temps': 1, 'titre': 'Une validation tardive est refusée',
+         'texte': "Un second visiteur valide le même créneau : refusé, le site lui demande d'en choisir un autre.",
          'voix': "Un autre visiteur, resté sur la page, valide seize heures à son tour : trop tard. Le site refuse la "
                  "seconde réservation, lui demande un autre créneau, et seize heures a disparu de la grille.",
-         'gestes': [vue('t08-ga', 'site'), pause(0.4), anneau('#t08-ga-h16', d=1.0), clic('#t08-ga-reserver'),
-                    vue('t08-gr', 'site'), pause(0.3), zoom('#t08-gr-alerte', s=1.5, d=0.7),
-                    bulle('b-refus', '#t08-gr-alerte', cote='bas', d=2.6), pause(2.3), dezoom(d=0.6),
-                    anneau('#t08-gr-creneaux', d=1.4)]},
+         'gestes': acteur('t08-pa') + [
+             vue('t08-ga', 'site', avec=True), pause(0.4), anneau('#t08-ga-h16', d=1.0), clic('#t08-ga-reserver'),
+             vue('t08-gr', 'site'), pause(0.3), zoom('#t08-gr-alerte', s=1.5, d=0.7),
+             bulle('b-refus', '#t08-gr-alerte', cote='bas', d=2.6), pause(2.3), dezoom(d=0.6),
+             anneau('#t08-gr-creneaux', d=1.4)]},
         {'temps': 1, 'titre': 'Demander un séjour',
-         'texte': 'Dates, adultes, coordonnées : la demande part à la réception, avec sa référence.',
+         'texte': 'Dates, adultes, coordonnées : la demande arrive en brouillon dans les réservations, avec sa '
+                  'référence.',
          'voix': "Pour une chambre, Claire envoie une demande de séjour : ses dates, le nombre d'adultes, ses "
                  "coordonnées. Sa référence s'affiche aussitôt. La réception vérifiera la disponibilité, puis lui "
                  "confirmera la chambre et le tarif.",
-         'gestes': [vue('t08-accueil', 'site'), pause(0.2), clic('#t08-ch-bt'), vue('t08-sejour', 'site'),
-                    saisir('t08-s-arr', '20/10/2026'), saisir('t08-s-dep', '23/10/2026'), saisir('t08-s-nom', NOM),
-                    saisir('t08-s-tel', TEL_CLAIRE), saisir('t08-s-mail', MAIL_CLAIRE), clic('#t08-envoyer'),
-                    vue('t08-merci2', 'site'), pause(0.3), anneau('#t08-merci2-ref', d=1.5), pause(0.5)]},
+         'gestes': acteur() + [
+             vue('t08-accueil', 'site', avec=True), pause(0.2), clic('#t08-ch-bt', d=0.5), vue('t08-sejour', 'site'),
+             clic('#t08-s-arr', fx=0.2, d=0.4, puis=0.05), saisir('t08-s-arr', '20/10/2026', d=0.45),
+             clic('#t08-s-dep', fx=0.2, d=0.35, puis=0.05), saisir('t08-s-dep', '23/10/2026', d=0.45),
+             clic('#t08-s-nom', fx=0.2, d=0.35, puis=0.05), saisir('t08-s-nom', NOM, d=0.6),
+             clic('#t08-s-tel', fx=0.2, d=0.35, puis=0.05), saisir('t08-s-tel', TEL_CLAIRE, d=0.7),
+             clic('#t08-s-mail', fx=0.2, d=0.35, puis=0.05), saisir('t08-s-mail', MAIL_CLAIRE, d=0.9),
+             clic('#t08-envoyer', d=0.5), vue('t08-merci2', 'site'), pause(0.2), anneau('#t08-merci2-ref', d=1.4)]},
         {'temps': 2, 'titre': 'Déjà au planning de la réception',
          'texte': 'Confirmée, origine « En ligne », montant calculé : rien à ressaisir.',
-         'voix': "À la réception, Mireille ouvre le tableau de bord Espaces et Prestations et passe à samedi : la "
+         'voix': "À la réception, Mireille ouvre le tableau de bord Espaces et Prestations, puis passe à samedi : la "
                  "réservation de Claire occupe déjà le salon. Confirmée, origine en ligne, onze mille cinq cents "
                  "francs calculés tout seuls : rien à ressaisir.",
-         'gestes': [montrer('#t08-nav-bo', d=0.45, y=0), pause(0.4), clic('#t08-suiv'),
-                    texte('#t08-jour', '15/10/2026'), texte('#t08-plan-t', 'Planning du 2026-10-15'),
-                    clic('#t08-suiv', deplacer=False, puis=0.1), texte('#t08-jour', '16/10/2026'),
-                    texte('#t08-plan-t', 'Planning du 2026-10-16'),
-                    clic('#t08-suiv', deplacer=False, puis=0.1), texte('#t08-jour', '17/10/2026'),
-                    texte('#t08-plan-t', 'Planning du 2026-10-17'), montrer('#t08-l17', d=0.3, y=0), pause(0.3),
-                    anneau('#t08-c17-1', d=1.4), anneau('#t08-bk-claire', d=1.2), clic('#t08-bk-claire'),
-                    vue('t08-fiche', 'odoo'), pause(0.3), bulle('b-origine', '#t08-f-origine', cote='bas', d=2.4),
-                    pause(2.2), anneau('#t08-f-montant', d=1.5), pause(0.6)]},
+         'gestes': acteur('t08-pm') + [
+             montrer('#t08-nav-bo', d=0.45, y=0, avec=True), pause(0.4),
+             clic('#t08-jour', fx=0.12, d=0.6), classe('#t08-d-date', ajouter=['focus']), pause(0.15),
+             texte('#t08-jour', '17/10/2026'), pause(0.1),
+             cacher('#t08-corps', d=0.1), montrer('#t08-charge', d=0.1, y=0, avec=True), pause(0.4),
+             texte('#t08-plan-t', 'Planning du 2026-10-17'), montrer('#t08-l17', d=0.05, y=0),
+             cacher('#t08-charge', d=0.1), animer('#t08-corps', {'autoAlpha': 0}, {'autoAlpha': 1}, d=0.25, avec=True),
+             classe('#t08-d-date', retirer=['focus']), pause(0.3),
+             anneau('#t08-c17-1', d=1.4), anneau('#t08-bk-claire', d=1.2), clic('#t08-bk-claire'),
+             vue('t08-fiche', 'odoo'), curseur('#t08-sb-1', fx=0.5, fy=0.75, d=0.5), pause(0.1),
+             anneau('#t08-f-origine', d=1.1), bulle('b-origine', '#t08-ch-cree', cote='bas', d=2.4), pause(1.4),
+             anneau('#t08-f-montant', d=1.5), pause(0.3)]},
         {'temps': 2, 'titre': 'La demande de séjour, en brouillon',
-         'texte': "Canal « Site web » : la chambre n'est bloquée qu'à la confirmation.",
-         'voix': "La demande de séjour, elle, attend en brouillon, avec le site pour canal. Mireille y ajoute une "
-                 "chambre et clique sur Confirmer : la disponibilité est vérifiée, la chambre bloquée, le folio "
-                 "ouvert.",
-         'gestes': [clic('#t08-m-res'), montrer('#t08-dd-res', d=0.2, y=0), clic('#t08-dd-res-1', d=0.4),
+         'texte': "Brouillons regroupés par canal : la chambre ne sera bloquée qu'à la confirmation.",
+         'voix': "Côté chambres, Mireille ouvre la liste des réservations, puis filtre les brouillons et les regroupe "
+                 "par canal : la demande de Claire attend là, venue du site, encore sans chambre. Il suffira d'y en "
+                 "ajouter une et de confirmer : la disponibilité est vérifiée, la chambre bloquée, le folio ouvert.",
+         'gestes': [clic('#t08-m-res', d=0.45), montrer('#t08-dd-res', d=0.15, y=0), clic('#t08-dd-res-1', d=0.3),
                     cacher('#t08-dd-res', d=0.15), classe('#t08-m-ep', retirer=['actif']),
-                    classe('#t08-m-res', ajouter=['actif']), vue('t08-resas', 'odoo'), pause(0.4),
-                    clic('#t08-g-web', fx=0.12), texte('#t08-g-web-fl', '▾'), montrer('#t08-r-0219', d=0.25, y=0),
-                    montrer('#t08-r-0221', d=0.25, y=0, avec=True), zoom('#t08-r-0221', s=1.35, d=0.7),
-                    anneau('#t08-r-0221', d=1.2), bulle('b-brouillon', '#t08-r-0221', cote='bas', d=2.6),
-                    pause(2.2), dezoom(d=0.6)]},
+                    classe('#t08-m-res', ajouter=['actif'], avec=True), vue('t08-resas', 'odoo'),
+                    clic('#t08-rech-a .deroule', d=0.45), montrer('#t08-menu', d=0.2, y=-6),
+                    clic('#t08-mf-brouillons', d=0.4), classe('#t08-mf-brouillons', ajouter=['coche']),
+                    cacher('#t08-rech-a', d=0.1), montrer('#t08-rech-b', d=0.15, y=0, avec=True),
+                    cacher('#t08-la', d=0.15, avec=True), montrer('#t08-lb', d=0.2, y=0, avec=True),
+                    texte('#t08-pager', '1-3 / 3', avec=True), pause(0.2),
+                    clic('#t08-mg-canal', d=0.4), classe('#t08-mg-canal', ajouter=['coche']),
+                    cacher('#t08-rech-b', d=0.1), montrer('#t08-rech-c', d=0.15, y=0, avec=True),
+                    cacher('#t08-lb', d=0.15, avec=True), montrer('#t08-lc', d=0.2, y=0, avec=True),
+                    texte('#t08-pager', '1-2 / 2', avec=True), pause(0.2),
+                    clic('#t08-rech-c .deroule', d=0.35), cacher('#t08-menu', d=0.15),
+                    clic('#t08-g-web', fx=0.12, d=0.45), texte('#t08-g-web-fl', '▾'), cacher('#t08-tot-c1', d=0.1),
+                    montrer('#t08-r-0223', d=0.25, y=0, avec=True), montrer('#t08-r-0224', d=0.25, y=0, avec=True),
+                    montrer('#t08-tot-c2', d=0.25, y=0, avec=True),
+                    zoom('#t08-r-0224', s=1.12, d=0.6), anneau('#t08-r-0224-etat', d=1.2),
+                    bulle('b-brouillon', '#t08-r-0224', cote='bas', d=2.6), pause(2.0), dezoom(d=0.6)]},
     ],
     'resultats': {
         'titre': 'Réservé en ligne, retrouvé à la réception',
@@ -654,10 +1011,10 @@ TUTORIEL = {
             {'valeur': '1', 'compter': 1, 'unite': 'grille', 'icone': 'horloge',
              'texte': 'de disponibilités pour le site et la réception : une seule source'},
             {'valeur': '45', 'compter': 45, 'unite': 'tests', 'icone': 'bouclier',
-             'texte': "automatisés du tunnel public, dont le refus d'une double réservation"},
+             'texte': "automatisés du tunnel public, dont le refus d'un créneau déjà pris"},
         ],
         'voix': "Trois parcours publics, une seule grille pour le site et la réception, et quarante-cinq tests "
-                "automatisés, dont le refus d'une double réservation.",
+                "automatisés, dont le refus d'un créneau déjà pris.",
     },
     'cta': {
         'appel': 'Demandez votre démonstration',
@@ -665,5 +1022,5 @@ TUTORIEL = {
         'voix': "Aïte haousse, par Aïte Consulting. Demandez votre démonstration, et retrouvez tous nos tutoriels sur "
                 "notre chaîne.",
     },
-    'vignette': {'etape': 6, 'apres': 6.0},
+    'vignette': {'etape': 2, 'apres': 7.0},
 }

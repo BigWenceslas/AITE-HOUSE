@@ -129,6 +129,11 @@ la présentation : scenarios/c6_direction.py (vue « Achats »).
    toISOString, en UTC (utils.js:78, :94).
 4. Sigles anglais « DPO » et « OTIF » dans les titres de cartes
    (dashboard.xml:100, :113).
+5. « Hausses > 5 % » alors que le code compte Δ ≥ seuil (dashboard.xml:468,
+   purchase_dashboard.py:115, :658) ; « — » en vert pour un impact nul
+   (purchase_dashboard_view.js:276-278) ; « À payer sous 8–30 j » figé alors
+   que la fenêtre d'alerte se règle (dashboard.xml:231) — sans effet visible
+   ici, l'alerte restant à 7 jours.
 """
 
 import math
@@ -1006,7 +1011,7 @@ CSS = """
 .t14-nom.t14-wrap { white-space: normal; align-items: flex-start; }
 .t14-nom.t14-wrap .t14-pt { margin-top: 6px; }
 /* registre des consignes (liste éditable native) */
-.t14-cpl .fil { margin-left: 4px; }
+.t14-cpl .fil { margin-left: 4px; white-space: nowrap; }
 .t14-cpl .fil .parent { color: #3F6A83; }
 .t14-cpl .fil .ref { display: inline-flex; align-items: center; gap: 10px; font-size: 22px; }
 .t14-gear-cp { width: 18px; height: 18px; color: #495057; display: inline-flex; }
@@ -1110,9 +1115,9 @@ TUTORIEL = {
                  "proches.",
          'gestes': [defiler('#t14-in-dash', 0, d=0.5), clic('#t14-tab-dash-2', d=0.6), vue('t14-dettes'),
                     anneau('#t14-g-aging2', d=1.1), anneau('#t14-g-ech', d=1.1),
-                    defiler('#t14-in-dettes', -548, d=0.9), curseur('#t14-dt-r1-st', fx=1.45, fy=0.9, d=0.5),
-                    zoom('#t14-dt-r3', s=1.3, fx=0.5, d=0.8, avec=True),
-                    bulle('b-urgence', '#t14-dt-r1-st', cote='haut', d=2.4), anneau('#t14-dt-r1-st', d=0.8),
+                    defiler('#t14-in-dettes', -519, d=0.9), curseur('#t14-dt-r1-st', fx=1.45, fy=0.9, d=0.5),
+                    zoom('#t14-dt-r3', s=1.2, fx=0.5, d=0.8, avec=True),
+                    bulle('b-urgence', '#t14-dt-carte h3', cote='droite', d=2.4), anneau('#t14-dt-r1-st', d=0.8),
                     anneau('#t14-dt-r3-st', d=0.8), anneau('#t14-dt-r6-st', d=0.8), dezoom(d=0.6)]},
         {'temps': 1, 'titre': 'Avoirs & consignes',
          'texte': "Les casiers consignés chez vos fournisseurs, et les avoirs à déduire du prochain paiement.",
@@ -1120,7 +1125,8 @@ TUTORIEL = {
                  "avoirs ouverts, à déduire du prochain paiement. Car un avoir oublié, c'est une perte sèche.",
          'gestes': [defiler('#t14-in-dettes', 0, d=0.5), clic('#t14-tab-dettes-3', d=0.6), vue('t14-avoirs'),
                     curseur('#t14-c-dep', fx=0.93, fy=0.86, d=0.5), anneau('#t14-c-dep', d=1.1, avec=True),
-                    anneau('#t14-c-avr', d=1.1), defiler('#t14-in-avoirs', -62, d=0.6), anneau('#t14-cs-tab', d=1.2),
+                    anneau('#t14-c-avr', d=1.1), defiler('#t14-in-avoirs', -62, d=0.6),
+                    curseur('#t14-c-avr', fx=0.95, fy=0.88, d=0.5), anneau('#t14-cs-tab', d=1.2, avec=True),
                     anneau('#t14-av-tab', d=1.2), anneau('#t14-av-note', d=1.4), reaction('r-avoir', d=2.6), pause(1.6)]},
         {'temps': 1, 'titre': 'Le registre des consignes',
          'texte': 'Une ligne par fournisseur : la valeur immobilisée se recalcule seule.',
@@ -1166,7 +1172,7 @@ TUTORIEL = {
                  "chiffré.",
          'gestes': [defiler('#t14-in-four', 0, d=0.5), clic('#t14-tab-four-5', d=0.6), vue('t14-prix'),
                     compter('#t14-p-imp-v', 0, IMPACT, d=1.2, avant='−', apres=' FCFA'), anneau('#t14-p-top', d=1.1),
-                    defiler('#t14-in-prix', -293, d=0.8), curseur('#t14-g-idx', fx=0.9, fy=0.42, d=0.5),
+                    defiler('#t14-in-prix', -293, d=0.8), curseur('#t14-g-idx', fx=0.91, fy=0.17, d=0.5),
                     anneau('#t14-g-idx', d=1.1, avec=True), zoom('#t14-pr-r1', s=1.4, d=0.8), bulle('b-prix', '#t14-pr-r1-imp', cote='bas', d=2.6), pause(2.0),
                     dezoom(d=0.6), reaction('r-prix', d=2.8, avec=True), pause(1.8)]},
     ],

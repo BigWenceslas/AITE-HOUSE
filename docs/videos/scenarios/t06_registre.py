@@ -26,7 +26,7 @@ titre retenu, « tout part du check-in », l'est (hotel_reservation.py:96-110).
 1. Arrivées du jour — aite_hotel_management/views/hotel_menus.xml:17-46
    (Front Desk et ses sous-menus, séquences 10 à 50) ;
    views/hotel_reservation_views.xml:5-33 (colonnes, décoration info des
-   réservations confirmées, somme « Total hébergement ») et :225-239, :291-300
+   réservations confirmées, somme « Total hébergement ») et :229-232, :278-288
    (filtre et action « Arrivées du jour ») ; colonne « Registre » ajoutée par
    aite_guest_registry/views/hotel_reservation_views.xml:56-69 (badge rouge
    « Aucune fiche », voir écart 2) ; libellés des champs :
@@ -86,11 +86,11 @@ titre retenu, « tout part du check-in », l'est (hotel_reservation.py:96-110).
    « arrival_date desc, id desc » : models/guest_registration.py:20.
    Facette « Date d'arrivée: Jour » et groupes « 11 oct. 2026 (3) » :
    captures/nouvelles/13_registre_liste.png ; ref_muk/026.
-6. Statistiques d'hébergement — views/guest_stats_views.xml:4-12 (pivot :
+6. Statistiques d'hébergement — views/guest_stats_views.xml:3-14 (pivot :
    mois en lignes, Résident / Non-résident en colonnes, mesures Arrivées et
-   Nuitées), :35-59 (regroupements Mois, Nationalité, Motif, Hôtel ;
-   filtres Résidents / Non-résidents), :60-79 (action, regroupée par mois
-   par défaut, vues pivot, graphique, liste) ; models/guest_stats.py:5-97
+   Nuitées), :43-66 (filtres Résidents / Non-résidents, regroupements Mois,
+   Nationalité, Motif, Hôtel), :67-86 (action, regroupée par mois par
+   défaut, vues pivot, graphique, liste) ; models/guest_stats.py:5-97
    (une ligne par fiche des séjours Arrivé ou Parti : 1 arrivée, ses nuits
    = nuitées ; mois « 2026-10 » par to_char, voir écart 3 ; relue à chaque
    lecture) ; models/guest_registration.py:174-180 (résident = pays de
@@ -117,7 +117,7 @@ Résultats : « 1 clic » — le check-in crée et pré-remplit la fiche du clie
 principal (hotel_reservation.py:96-110) ; « 6 informations » obligatoires
 suivies par « Il manque » (guest_registration.py:182-206, 234-241) ;
 « 4 regroupements » des statistiques : Mois, Nationalité, Motif, Hôtel
-(guest_stats_views.xml:43-57).
+(guest_stats_views.xml:54-63).
 
 Données (fictives, demo.py) : Complexe Hôtelier — Démo, Démo Hôtellerie
 SARL ; Estelle Ngono, RES/2026/0214, chambre 204 [CFT], 2 adultes, du 14 au
@@ -135,7 +135,7 @@ vérifiées), octobre détaillé par nationalité (sommes égales aux totaux).
    ne s'imprime pas depuis l'interface : action_print place des dates dans
    le contexte (wizard/police_register_wizard.py:65-68) ; le client web les
    renvoie sérialisées en chaînes (odoo18 web/static/src/webclient/actions/
-   action_service.js:1322-1326, reports/utils.js:14-20 ; controllers/
+   action_service.js:1323-1327, reports/utils.js:14-20 ; controllers/
    report.py:35-37) et le gabarit appelle strftime dessus
    (report/police_register_report.xml:66) : QWebException. La vidéo ne
    montre donc pas ce PDF ; elle montre le registre des clients (liste) et
@@ -651,7 +651,7 @@ TUTORIEL = {
         'b-fiche': 'La fiche du client principal est déjà créée, pré-remplie depuis son contact.',
         'b-complete': 'Six informations obligatoires : la fiche passe Complète toute seule.',
         'b-pdf': 'Une page par occupant : identité, pièce, domicile, séjour, deux signatures.',
-        'b-orange': 'En orange, les fiches à compléter. Les filtres À compléter et Non signées les isolent.',
+        'b-orange': 'En orange, les fiches à compléter. Les filtres À compléter et Non signées isolent ce qui reste à faire.',
         'b-stats': 'Une fiche, une arrivée ; ses nuits, les nuitées. Résident ou non : selon le pays de résidence.',
     },
     'reactions': {
@@ -721,10 +721,10 @@ TUTORIEL = {
                     pause(2.6), zoom('#t06-p1-sig', s=1.5, d=0.7, fx=0.5), anneau('#t06-p1-sig', d=1.4),
                     pause(0.6), dezoom(d=0.6), anneau('#t06-p2', d=1.0)]},
         {'temps': 2, 'titre': 'Le registre des clients',
-         'texte': "Toutes les personnes hébergées, jour par jour : l'état à présenter en cas de contrôle.",
-         'voix': "Le soir, Mireille ouvre le registre des clients : toutes les personnes hébergées, jour après jour. "
-                 "Les fiches incomplètes ressortent en orange, comme celle de Claire Durand. C'est l'état à présenter "
-                 "en cas de contrôle.",
+         'texte': "Toutes les fiches, jour par jour : l'état à présenter en cas de contrôle.",
+         'voix': "Le soir, Mireille ouvre le registre des clients : toutes les fiches d'enregistrement, jour après "
+                 "jour. Les fiches incomplètes ressortent en orange, comme celle de Claire Durand. C'est l'état à "
+                 "présenter en cas de contrôle.",
          'gestes': [cacher('#t06-pdf', d=0.3), clic(MENU_FD, d=0.6), montrer('#t06-dd', d=0.25, y=-8),
                     classe('#t06-dd-reg', ajouter=['survol']), clic('#t06-dd-reg', d=0.5), cacher('#t06-dd', d=0.15),
                     vue('t06-registre'), pause(0.4), clic('#t06-rg-g0', fx=0.1, d=0.6), cacher('#t06-rg-a', d=0.15),
@@ -740,7 +740,7 @@ TUTORIEL = {
                     clic('#t06-pv-a-oct th', fx=0.3, d=0.6), montrer('#t06-pvm', d=0.25, y=-6),
                     classe('#t06-pvm-nat', ajouter=['survol']), clic('#t06-pvm-nat', d=0.5), cacher('#t06-pvm', d=0.15),
                     cacher('#t06-pv-a', d=0.15), montrer('#t06-pv-b', d=0.3, y=0, avec=True),
-                    zoom('#t06-pv-b', s=1.3, d=0.8, fx=0.7, fy=0.75), anneau('#t06-pv-b-fra', d=1.2),
+                    zoom('#t06-pv-b', s=1.3, d=0.8, fx=0.78, fy=0.75), anneau('#t06-pv-b-fra', d=1.2),
                     bulle('b-stats', '#t06-pv-b-fra', cote='droite', d=3.0), pause(2.8), dezoom(d=0.6)]},
     ],
     'resultats': {
@@ -762,5 +762,5 @@ TUTORIEL = {
         'voix': "Aïte haousse, par Aïte Consulting. Demandez votre démonstration ; prochain tutoriel : la gouvernante "
                 "et la maintenance.",
     },
-    'vignette': {'etape': 4, 'apres': 2.6},
+    'vignette': {'etape': 4, 'apres': 2.9},
 }

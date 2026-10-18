@@ -77,9 +77,13 @@ mot) :
   (liste « Réservations de créneaux » : colonnes, couleurs, badge d'état,
   somme du Montant, filtre « Aujourd'hui » par défaut).
 - Odoo 18 (../odoo18) : addons/web/static/src/core/errors/error_dialogs.xml:4-12
-  et i18n/fr.po (« Erreur de validation », « Fermer ») ; addons/mail/i18n/fr.po
-  (« %s créé ») ; addons/web/static/src/views/fields/badge/badge_field.js:26-38
-  (badge gris d'un brouillon) ; list_renderer.js (somme avec la devise).
+  et i18n/fr.po (« Erreur de validation », « Fermer », « Rechercher… ») ;
+  addons/mail/i18n/fr.po (« %s créé », « Envoyer message », « Note », « Suivre »,
+  « Abonné(e) », « Aujourd'hui à %(time)s ») ; addons/mail/static/src/chatter/web/
+  chatter.xml:58-75 (« Suivre » devient « Abonné(e) ») et addons/mail/models/
+  mail_thread.py:294-300 (le créateur d'une fiche en est abonné) ;
+  addons/web/static/src/views/fields/badge/badge_field.js:26-38 (badge gris d'un
+  brouillon) ; list_renderer.js (somme avec la devise).
 - Fenêtre MuK, fiche et discussion : captures prises en lecture seule sur la
   base aite_muk avec demo.reception (fiche RES/26/0286 pressing, RES/26/0282
   salon, RES/26/0324 no-show : « Envoyer message », « Note », « Suivre »,
@@ -126,7 +130,7 @@ comme au chapitre 6). La journée rejouée est le jeudi 15/10/2026.
 import demo
 from ecrans import APPS_PROFIL, ICONES, e, entree, fenetre_muk, graphe_anneau, navigateur, vue_libre, vue_tdb
 from marketing import bulle, dezoom, reaction, zoom
-from moteur import anneau, cacher, choisir, clic, classe, defiler, fermer, montrer, ouvrir, pause, saisir, texte, vue
+from moteur import anneau, cacher, choisir, clic, classe, curseur, defiler, fermer, montrer, ouvrir, pause, saisir, texte, vue
 
 NOM, ROLE = demo.POSTES['reception']
 JOUR = '15/10/2026'
@@ -383,19 +387,21 @@ def separateur(texte_):
     return '<div class="t09-sep"><span>%s</span></div>' % e(texte_)
 
 
-def discussion(p, etats):
+def discussion(p, etats, abonne=False):
     """La discussion à droite (thème MuK) : « Envoyer message », « Note », « Suivre » ;
     le modèle n'hérite pas des activités (booking_booking.py:33). ``etats`` :
-    ses contenus successifs, superposés (``<p>-ch<n>``)."""
+    ses contenus successifs, superposés (``<p>-ch<n>``). Le créateur d'une fiche
+    en est abonné (mail_thread.py:294-300) : « Abonné(e) » une fois enregistrée."""
     piles = ''.join('<div class="t09-ch-etat%s" id="%s-ch%d">%s</div>' % ('' if i == 0 else ' masque', p, i, h)
                     for i, h in enumerate(etats))
     return ('<div class="t09-chatter"><div class="t09-ch-bts"><span class="bt primaire">%sEnvoyer message</span>'
-            '<span class="bt gris">%sNote</span><span class="t09-ch-ic">%s</span><span class="t09-suivre">Suivre</span>'
-            '</div><div class="t09-ch-fil">%s</div></div>'
-            % (ico(ENVELOPPE, 't09-bi'), ico(NOTE_I, 't09-bi'), ICONES['loupe'], piles))
+            '<span class="bt gris">%sNote</span><span class="t09-ch-ic">%s</span><span class="t09-suivre%s" id="%s-suivre">'
+            '%s</span></div><div class="t09-ch-fil">%s</div></div>'
+            % (ico(ENVELOPPE, 't09-bi'), ico(NOTE_I, 't09-bi'), ICONES['loupe'], ' abonne' if abonne else '', p,
+               'Abonné(e)' if abonne else 'Suivre', piles))
 
 
-def fiche(p, parent, ref, pager, groupes, sb, gauche, droite, bas, etats_discussion, sale=False):
+def fiche(p, parent, ref, pager, groupes, sb, gauche, droite, bas, etats_discussion, sale=False, abonne=False):
     """Une réservation de créneau : panneau, boutons et barre d'état, feuille, discussion.
 
     ``groupes`` : les bandes de boutons successives, superposées (``<p>-g<n>``) ;
@@ -418,7 +424,7 @@ def fiche(p, parent, ref, pager, groupes, sb, gauche, droite, bas, etats_discuss
                '<div class="t09-cols"><div id="%s-gauche">%s</div><div id="%s-droite">%s</div></div>%s'
                '<div class="t09-noteint">Note interne…</div></div>' % (p, p, e(ref), p, gauche, p, droite, bas))
     return vue_libre(p, '<div class="t09-f">%s<div class="t09-f-g">%s%s</div>%s</div>'
-                     % (cp, hd, feuille, discussion(p, etats_discussion)))
+                     % (cp, hd, feuille, discussion(p, etats_discussion, abonne)))
 
 
 def groupe_sejour(p, folio='', ligne_=''):
@@ -497,13 +503,14 @@ PRESSING = fiche(
        ch('Retiré', case('t09-pres-retire'), ident='t09-pres-l-ret'))
     + groupe_sejour('t09-pres', 'FOL/2026/0209', 'Chemise — RES/26/0141'),
     [separateur("Aujourd'hui") + message(NOM, "Aujourd'hui à 08:36", suivi('Confirmée', 'Réalisée'))
-     + message(NOM, "Aujourd'hui à 08:34", suivi('Brouillon', 'Confirmée')) + message(NOM, '', CREE, suite=True)])
+     + message(NOM, "Aujourd'hui à 08:34", suivi('Brouillon', 'Confirmée')) + message(NOM, '', CREE, suite=True)],
+    abonne=True)
 
 # --------------------------------------------------- la liste du jour --
 ETAT_LISTE = {'done': ('Réalisée', 't09-ok', 'ok'), 'confirmed': ('Confirmée', 't09-info', 'info'),
               'draft': ('Brouillon', 't09-muet', 'gris')}
-COLS = [('Référence', '146px'), ('Début', '208px'), ('Client', '1fr'), ('Ressource', '206px'), ('Famille', '176px'),
-        ('Prestation', '1.25fr'), ('Montant', '150px', 'd'), ('État', '124px')]
+COLS = [('Référence', '138px'), ('Début', '200px'), ('Client', '1fr'), ('Ressource', '192px'), ('Famille', '168px'),
+        ('Prestation', '1.45fr'), ('Montant', '142px', 'd'), ('État', '120px')]
 GAB = '40px ' + ' '.join(c[1] for c in COLS)
 
 
@@ -675,7 +682,7 @@ CSS = """
 .t09-grp { margin-top: 12px; }
 .t09-grp-t { font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: .02em; color: #212529;
   padding-bottom: 6px; border-bottom: 1px solid #DEE2E6; margin-bottom: 4px; }
-.t09-noteint { margin-top: 12px; padding: 8px 2px; font-size: 17px; color: #ADB5BD; border-bottom: 1px solid #EEF0F2; }
+.t09-noteint { margin-top: 12px; padding: 8px 2px; font-size: 17px; color: #6C757D; border-bottom: 1px solid #EEF0F2; }
 .t09-ch .case i { width: 20px; height: 20px; }
 .t09-m2o { position: relative; }
 .t09-dd { position: absolute; left: 0; top: 30px; width: 330px; z-index: 12; padding: 6px 0; background: #fff; border-radius: 4px;
@@ -692,6 +699,7 @@ CSS = """
 .t09-ch-ic { margin-left: auto; width: 20px; height: 20px; display: inline-flex; }
 .t09-ch-ic svg { width: 20px; height: 20px; }
 .t09-suivre { margin-left: 14px; font-size: 16px; color: #495057; }
+.t09-suivre.abonne { color: #1E7B34; }
 .t09-ch-fil { position: relative; margin-top: 8px; }
 .t09-ch-etat { position: absolute; left: 0; right: 0; top: 0; }
 .t09-sep { display: flex; align-items: center; gap: 12px; margin: 10px 0 4px; font-size: 13px; color: #6C757D; }
@@ -741,7 +749,7 @@ CSS = """
 .t09-mail-h { height: 58px; display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid #EEF0F2; }
 .t09-ret { font-size: 34px; color: #2E6F8E; line-height: 1; }
 .t09-mail-o { padding: 18px 22px 14px; font-size: 22px; font-weight: 700; line-height: 1.3; color: #212529; border-bottom: 1px solid #EEF0F2; }
-.t09-mail-c { padding: 14px 22px; font-family: Calibri, Arial, sans-serif; font-size: 18px; line-height: 1.45; color: #2B2A28; }
+.t09-mail-c { padding: 14px 22px; font-size: 18px; line-height: 1.45; color: #2B2A28; }
 .t09-mail-c p { margin: 0 0 12px; }
 .t09-mail-t { margin: 4px 0 14px; display: flex; flex-direction: column; gap: 6px; }
 .t09-mail-t div { display: grid; grid-template-columns: 112px 1fr; column-gap: 10px; font-size: 17px; }
@@ -766,7 +774,7 @@ TUTORIEL = {
                      ('document', 'Le massage oublié sur la note de chambre'),
                      ('sablier', 'Le rendez-vous manqué bloque la cabine'),
                      ('boite', 'Les dépôts pressing qui attendent'),
-                     ('graphe', 'Quel espace rapporte, lequel dort ?')],
+                     ('graphe', 'Quel espace rapporte, lequel dort\u00a0?')],
         'voix': "Deux clients pour un seul salon ? Un massage oublié sur la note de chambre, un rendez-vous manqué qui "
                 "bloque la cabine : la réception perd le fil.",
     },
@@ -794,97 +802,103 @@ TUTORIEL = {
     'etapes': [
         {'temps': 0, 'titre': 'Le planning du jour',
          'texte': 'Salons, cabines, fauteuils, comptoir : une ligne par ressource, chaque réservation à son heure.',
-         'voix': "Sur le tableau de bord, Mireille voit toute sa journée : les salons VIP, les cabines de spa, les "
-                 "fauteuils de coiffure et le comptoir de pressinng. Une ligne par ressource, chaque réservation à son "
-                 "heure, et les créneaux encore libres.",
-         'gestes': [pause(0.3), anneau('#t09-d1-kpis', d=1.6), pause(0.4), defiler('#t09-in1', -330, d=1.1),
-                    zoom('#t09-d1-l3', s=1.45, fx=0.42), anneau('#t09-d1-t3', d=1.2),
-                    bulle('b-libres', '#t09-d1-x3', cote='bas', d=3.0), pause(2.8), dezoom(d=0.6),
-                    anneau('#t09-d1-l0', d=1.0), anneau('#t09-d1-l7', d=1.0)]},
+         'voix': "Sur le tableau de bord, Mireille voit toute sa journée : salons VIP, cabines de spa, fauteuils de "
+                 "coiffure et comptoir de pressinng. Une ligne par ressource, chaque réservation à son heure, et les "
+                 "créneaux encore libres.",
+         'gestes': [curseur('#t09-d1-l5', fx=0.55, d=0.6), anneau('#t09-d1-kpis', d=1.4, avec=True),
+                    defiler('#t09-in1', -330, d=1.0),
+                    zoom('#t09-d1-pl', s=1.25, d=0.8), anneau('#t09-d1-t3', d=1.2),
+                    bulle('b-libres', '#t09-d1-x0', cote='haut', d=3.0), anneau('#t09-d1-x0', d=1.2, avec=True),
+                    pause(1.6), dezoom(d=0.6), anneau('#t09-d1-l7', d=1.0)]},
         {'temps': 1, 'titre': 'Réserver un soin',
          'texte': 'Cliente, cabine, prestation, début : la fin et le montant se calculent seuls.',
          'voix': "Estelle Ngono, en chambre deux cent quatre, veut un massage à quinze heures. Mireille choisit la "
-                 "cliente, la cabine, puis le soin : seules les prestations de spa sont proposées. Elle saisit l'heure "
-                 "de début : la fin et le montant se remplissent tout seuls.",
-         'gestes': [defiler('#t09-in1', 0, d=0.6), clic('#t09-d1-nouv', d=0.6), vue('t09-spa'),
-                    clic('#t09-spa-cli', fx=0.3, d=0.5), choisir('t09-spa-cli', CLIENT),
+                 "cliente, la cabine, puis le soin : seules les prestations de spa sont proposées. Elle saisit le "
+                 "début : la fin et le montant se remplissent seuls.",
+         'gestes': [defiler('#t09-in1', 0, d=0.5, puis=0.05), clic('#t09-d1-nouv', d=0.5), vue('t09-spa'),
+                    clic('#t09-spa-cli', fx=0.3, d=0.4, puis=0.05), choisir('t09-spa-cli', CLIENT, puis=0.1),
                     montrer('#t09-spa-save', d=0.2, y=0, avec=True),
-                    texte('#t09-spa-tel-val', TEL), clic('#t09-spa-res', fx=0.3, d=0.5),
-                    choisir('t09-spa-res', 'Cabine SPA 1'), clic('#t09-spa-pre', fx=0.3, d=0.5),
-                    montrer('#t09-spa-dd', d=0.25, y=-6), pause(0.9), clic('#t09-spa-dd0', d=0.4),
-                    cacher('#t09-spa-dd', d=0.15), choisir('t09-spa-pre', 'Massage relaxant 60 min'),
-                    texte('#t09-spa-mnt-val', '27 000 FCFA'),
-                    clic('#t09-spa-deb', fx=0.3, d=0.5), saisir('t09-spa-deb', JOUR + ' 15:00:00', d=1.0),
+                    texte('#t09-spa-tel-val', TEL, puis=0.05), clic('#t09-spa-res', fx=0.3, d=0.4, puis=0.05),
+                    choisir('t09-spa-res', 'Cabine SPA 1', puis=0.1), clic('#t09-spa-pre', fx=0.3, d=0.4, puis=0.05),
+                    montrer('#t09-spa-dd', d=0.2, y=-6), pause(0.7), clic('#t09-spa-dd0', d=0.35, puis=0.05),
+                    cacher('#t09-spa-dd', d=0.15), choisir('t09-spa-pre', 'Massage relaxant 60 min', puis=0.1),
+                    texte('#t09-spa-mnt-val', '27 000 FCFA', puis=0.05),
+                    clic('#t09-spa-deb', fx=0.3, d=0.4, puis=0.05), saisir('t09-spa-deb', JOUR + ' 15:00:00', d=0.8),
                     texte('#t09-spa-fin-val', JOUR + ' 16:00:00'), texte('#t09-spa-dur-val', '01:00', avec=True),
-                    zoom('#t09-spa-droite', s=1.45, fx=0.4), anneau('#t09-spa-droite', d=1.6),
-                    bulle('b-calcul', '#t09-spa-l-mnt', cote='bas', d=2.8), pause(2.4), dezoom(d=0.6)]},
+                    zoom('#t09-spa-droite', s=1.3, fx=0.62, d=0.7), curseur('#t09-spa-l-mnt', fx=0.1, d=0.5, avec=True),
+                    anneau('#t09-spa-l-mnt', d=1.4),
+                    bulle('b-calcul', '#t09-spa-l-mnt', cote='droite', d=2.8, avec=True), pause(1.6), dezoom(d=0.5)]},
         {'temps': 2, 'titre': 'Confirmer : le créneau est bloqué',
          'texte': "La réservation passe en Confirmée ; l'e-mail de confirmation part tout seul.",
          'voix': "Un clic sur Confirmer : le créneau est bloqué, et la cliente reçoit aussitôt son imèle de "
                  "confirmation, avec l'heure, la cabine et le montant.",
-         'gestes': [clic('#t09-spa-b-conf', d=0.6), cacher('#t09-spa-save', d=0.15),
-                    texte('#t09-spa-titre', 'RES/26/0158'), texte('#t09-spa-ref', 'RES/26/0158', avec=True),
-                    cacher('#t09-spa-g0', d=0.15), montrer('#t09-spa-g1', d=0.25, y=0, avec=True),
-                    classe('#t09-spa-sb0', retirer=['actif']), classe('#t09-spa-sb1', ajouter=['actif']),
-                    cacher('#t09-spa-ch0', d=0.1), montrer('#t09-spa-ch1', d=0.35, y=8),
-                    anneau('#t09-spa-sb', d=1.1), ouvrir('t09-tel'),
-                    bulle('b-mail', '#t09-tel', cote='gauche', d=3.2), anneau('#t09-mail-o', d=1.3),
-                    pause(2.4), fermer('t09-tel')]},
+         'gestes': [clic('#t09-spa-b-conf', d=0.5), cacher('#t09-spa-save', d=0.1),
+                    texte('#t09-spa-titre', 'RES/26/0158', avec=True), texte('#t09-spa-ref', 'RES/26/0158', avec=True),
+                    cacher('#t09-spa-g0', d=0.1, avec=True), montrer('#t09-spa-g1', d=0.25, y=0, avec=True),
+                    classe('#t09-spa-sb0', retirer=['actif'], avec=True),
+                    classe('#t09-spa-sb1', ajouter=['actif'], avec=True),
+                    cacher('#t09-spa-ch0', d=0.1, avec=True), montrer('#t09-spa-ch1', d=0.35, y=8, avec=True),
+                    texte('#t09-spa-suivre', 'Abonné(e)', avec=True), classe('#t09-spa-suivre', ajouter=['abonne'], avec=True),
+                    curseur('#t09-spa-sb1', fx=0.5, d=0.5), anneau('#t09-spa-sb', d=1.0, avec=True), ouvrir('t09-tel'),
+                    bulle('b-mail', '#t09-tel', cote='gauche', d=3.4), anneau('#t09-mail-o', d=1.3),
+                    pause(1.8), fermer('t09-tel')]},
         {'temps': 2, 'titre': 'Un salon déjà pris ? Refusé.',
          'texte': "À l'heure, au tarif horaire du salon ; un créneau complet est refusé à la confirmation.",
          'voix': "Brigitte Essomba veut le salon VIP Wouri ce soir, de vingt à vingt-trois heures. Sans prestation, "
                  "le tarif horaire fait le prix : quarante-cinq mille francs. Mais le salon est déjà réservé : la "
-                 "confirmation est refusée, et le message dit pourquoi.",
-         'gestes': [clic('#t09-spa-nv', d=0.5), vue('t09-salon'),
-                    clic('#t09-salon-cli', fx=0.3, d=0.45), choisir('t09-salon-cli', 'Brigitte Essomba'),
-                    montrer('#t09-salon-save', d=0.2, y=0, avec=True), texte('#t09-salon-tel-val', '+237 690 27 51 84'),
-                    clic('#t09-salon-res', fx=0.3, d=0.45), choisir('t09-salon-res', 'Salon VIP Wouri'),
-                    clic('#t09-salon-deb', fx=0.3, d=0.45), saisir('t09-salon-deb', JOUR + ' 20:00:00', d=0.8),
-                    clic('#t09-salon-fin', fx=0.3, d=0.4), saisir('t09-salon-fin', JOUR + ' 23:00:00', d=0.8),
+                 "confirmation est refusée, avec la raison.",
+         'gestes': [clic('#t09-spa-nv', d=0.45), vue('t09-salon'),
+                    clic('#t09-salon-cli', fx=0.3, d=0.4, puis=0.05), choisir('t09-salon-cli', 'Brigitte Essomba', puis=0.1),
+                    montrer('#t09-salon-save', d=0.2, y=0, avec=True),
+                    texte('#t09-salon-tel-val', '+237 690 27 51 84', puis=0.05),
+                    clic('#t09-salon-res', fx=0.3, d=0.4, puis=0.05), choisir('t09-salon-res', 'Salon VIP Wouri', puis=0.1),
+                    clic('#t09-salon-deb', fx=0.3, d=0.4, puis=0.05), saisir('t09-salon-deb', JOUR + ' 20:00:00', d=0.6),
+                    clic('#t09-salon-fin', fx=0.3, d=0.35, puis=0.05), saisir('t09-salon-fin', JOUR + ' 23:00:00', d=0.6),
                     texte('#t09-salon-dur-val', '03:00'), texte('#t09-salon-mnt-val', '45 000 FCFA', avec=True),
-                    anneau('#t09-salon-l-mnt', d=1.2), clic('#t09-salon-b-conf', d=0.5),
-                    cacher('#t09-salon-save', d=0.1), texte('#t09-salon-titre', 'RES/26/0159'),
-                    texte('#t09-salon-ref', 'RES/26/0159', avec=True), cacher('#t09-salon-ch0', d=0.05),
-                    montrer('#t09-salon-ch1', d=0.05, y=0), ouvrir('t09-err'),
-                    zoom('#t09-err', s=1.3, d=0.7), reaction('r-conflit', d=3.0), pause(2.8), dezoom(d=0.5),
+                    anneau('#t09-salon-l-mnt', d=1.0, avec=True), clic('#t09-salon-b-conf', d=0.45),
+                    cacher('#t09-salon-save', d=0.1), texte('#t09-salon-titre', 'RES/26/0159', avec=True),
+                    texte('#t09-salon-ref', 'RES/26/0159', avec=True), cacher('#t09-salon-ch0', d=0.05, avec=True),
+                    montrer('#t09-salon-ch1', d=0.05, y=0, avec=True), texte('#t09-salon-suivre', 'Abonné(e)', avec=True),
+                    classe('#t09-salon-suivre', ajouter=['abonne'], avec=True), ouvrir('t09-err'),
+                    zoom('#t09-err', s=1.3, d=0.7), reaction('r-conflit', d=3.4), pause(1.3), dezoom(d=0.5),
                     clic('#t09-err-ok', d=0.4), fermer('t09-err')]},
         {'temps': 3, 'titre': 'Réalisée : sur la note de chambre',
          'texte': 'La prestation est reportée seule sur le folio du séjour, une seule fois.',
          'voix': "Seize heures, le massage est fait. Un clic sur Réalisée : la prestation est reportée toute seule "
                  "sur le folio de la chambre deux cent quatre, une seule fois. Elle sera réglée au départ, avec le "
                  "séjour.",
-         'gestes': naviguer('resa', [vue('t09-liste'), pause(0.4)]) + [
-             texte('#t09-spa-par', PARENT_LISTE), texte('#t09-spa-pg', '5 / 11', avec=True),
-             classe('#t09-l-0158', ajouter=['survol']), clic('#t09-l-0158', fx=0.3, d=0.5), vue('t09-spa'),
-             clic('#t09-spa-b-done', d=0.5), cacher('#t09-spa-g1', d=0.15),
-             classe('#t09-spa-sb1', retirer=['actif']), classe('#t09-spa-sb2', ajouter=['actif']),
-             texte('#t09-spa-folio-val', 'FOL/2026/0214'),
+         'gestes': naviguer('resa', [vue('t09-liste'), pause(0.2)]) + [
+             texte('#t09-spa-par', PARENT_LISTE, avec=True), texte('#t09-spa-pg', '5 / 11', avec=True),
+             classe('#t09-l-0158', ajouter=['survol'], avec=True), clic('#t09-l-0158', fx=0.3, d=0.45),
+             vue('t09-spa'), clic('#t09-spa-b-done', d=0.45), cacher('#t09-spa-g1', d=0.1),
+             classe('#t09-spa-sb1', retirer=['actif'], avec=True), classe('#t09-spa-sb2', ajouter=['actif'], avec=True),
+             texte('#t09-spa-folio-val', 'FOL/2026/0214', avec=True),
              texte('#t09-spa-ligne', 'Massage relaxant 60 min — RES/26/0158', avec=True),
-             cacher('#t09-spa-ch1', d=0.1), montrer('#t09-spa-ch2', d=0.3, y=8),
-             zoom('#t09-spa-sejour', s=1.5, fx=0.35), anneau('#t09-spa-sejour', d=1.6),
-             bulle('b-folio', '#t09-spa-sejour', cote='haut', d=3.0), pause(2.6), dezoom(d=0.6)]},
+             cacher('#t09-spa-ch1', d=0.1, avec=True), montrer('#t09-spa-ch2', d=0.3, y=8, avec=True),
+             zoom('#t09-spa-sejour', s=1.5, fx=0.35, d=0.7), anneau('#t09-spa-sejour', d=1.4),
+             bulle('b-folio', '#t09-spa-sejour', cote='bas', d=3.0, avec=True), pause(1.8), dezoom(d=0.5)]},
         {'temps': 3, 'titre': 'Pressing : la quantité fait le prix',
          'texte': '4 chemises × 1 200 FCFA, déjà sur la note ; au retrait, Marquer retiré.',
          'voix': "Ce matin, Martin Ebode a déposé quatre chemises : le montant a suivi la quantité, et sa note de "
                  "chambre est déjà à jour. Ce soir, il les récupère : Marquer retiré, et le dépôt sort des retraits "
                  "en attente.",
          'gestes': [classe('#t09-l-0158', retirer=['survol', 't09-info'], ajouter=['t09-ok']),
-                    classe('#t09-l-0158-e', retirer=['info'], ajouter=['ok']), texte('#t09-l-0158-e', 'Réalisée'),
-                    clic('#t09-spa-par', d=0.5), vue('t09-liste'), pause(0.3),
-                    classe('#t09-l-0141', ajouter=['survol']), clic('#t09-l-0141', fx=0.3, d=0.5),
-                    vue('t09-pres'), anneau('#t09-pres-l-qte', d=1.3), anneau('#t09-pres-l-mnt', d=1.3),
-                    reaction('r-pressing', d=2.8), anneau('#t09-pres-sejour', d=1.3), pause(0.6),
-                    clic('#t09-pres-b-ret', d=0.5), cacher('#t09-pres-g0', d=0.15),
-                    classe('#t09-pres-retire', ajouter=['coche']), anneau('#t09-pres-l-ret', d=1.2), pause(0.6)]},
+                    classe('#t09-l-0158-e', retirer=['info'], ajouter=['ok'], avec=True),
+                    texte('#t09-l-0158-e', 'Réalisée', avec=True),
+                    clic('#t09-spa-par', d=0.45), vue('t09-liste'), pause(0.2),
+                    classe('#t09-l-0141', ajouter=['survol'], avec=True), clic('#t09-l-0141', fx=0.3, d=0.45),
+                    vue('t09-pres'), anneau('#t09-pres-l-qte', d=0.9), anneau('#t09-pres-l-mnt', d=0.9),
+                    reaction('r-pressing', d=3.0, avec=True), anneau('#t09-pres-sejour', d=1.2),
+                    clic('#t09-pres-b-ret', d=0.45), cacher('#t09-pres-g0', d=0.1),
+                    classe('#t09-pres-retire', ajouter=['coche'], avec=True), anneau('#t09-pres-l-ret', d=1.2)]},
         {'temps': 3, 'titre': 'Le bilan du soir',
          'texte': "Chiffre d'affaires, remplissage, retraits en attente ; un client absent passe seul en No-show.",
-         'voix': "Le soir, le tableau de bord fait le bilan : chiffre d'affaires réalisé, remplissage, retraits en "
-                 "attente. Et si un client confirmé ne vient pas, la réservation passe toute seule en rendez-vous "
-                 "manqué, six heures après la fin du créneau.",
+         'voix': "Le soir, le tableau de bord fait le bilan : chiffre d'affaires, remplissage, retraits en attente. Et "
+                 "un client confirmé qui ne vient pas passe tout seul en rendez-vous manqué, six heures après la fin.",
          'gestes': naviguer('tdb', [vue('t09-tdb2'), defiler('#t09-in2', -330, d=0.01)]) + [
-             pause(0.3), anneau('#t09-d2-ca', d=1.3), anneau('#t09-d2-pr', d=1.2), anneau('#t09-d2-t3', d=1.2),
-             zoom('#t09-d2-ns', s=1.4, fx=0.5, fy=0.6), bulle('b-absent', '#t09-d2-ns', cote='bas', d=3.2),
-             pause(3.0), dezoom(d=0.6)]},
+             anneau('#t09-d2-ca', d=1.1), anneau('#t09-d2-remp', d=1.0), anneau('#t09-d2-pr', d=1.0),
+             anneau('#t09-d2-t3', d=1.0), curseur('#t09-d2-t3', fx=0.5, d=0.5, avec=True), bulle('b-absent', '#t09-d2-ns', cote='gauche', d=3.4),
+             anneau('#t09-d2-ns', d=1.4, avec=True), pause(2.4)]},
     ],
     'resultats': {
         'titre': 'Tous vos espaces, un seul planning',
@@ -896,8 +910,8 @@ TUTORIEL = {
             {'valeur': '69', 'compter': 69, 'unite': 'tests', 'icone': 'bouclier',
              'texte': 'automatisés sur le moteur : créneaux, conflits, prix, report au folio, no-show'},
         ],
-        'voix': "Cinq familles sur un seul planninng, trois automatismes actifs dès l'installation, et soixante-neuf "
-                "tests automatisés sur le moteur de réservation.",
+        'voix': "Cinq familles sur un seul planninng, trois automatismes dès l'installation, soixante-neuf tests "
+                "automatisés.",
     },
     'cta': {
         'appel': 'Demandez votre démonstration',
@@ -905,5 +919,5 @@ TUTORIEL = {
         'voix': "Aïte haousse, par Aïte Consulting. Demandez votre démonstration, et retrouvez tous nos tutoriels sur "
                 "notre chaîne.",
     },
-    'vignette': {'etape': 4, 'apres': 11.0},
+    'vignette': {'etape': 4, 'apres': 13.0},
 }
