@@ -104,8 +104,8 @@ FRONT = vue_tdb('c1-front', (
 ), initiale=True)
 
 # ---------------------------------------------------- Arrivées du jour --
-COLS_ARR = [('Référence', '178px'), ('Client', '178px'), ('Arrivée', '212px'), ('Départ', '212px'), ('Nuits', '64px', 'd'),
-            ('Nb chambres', '124px', 'd'), ('Total hébergement (HT)', '212px', 'd'), ('Solde folio', '132px', 'd'),
+COLS_ARR = [('Référence', '178px'), ('Client', '178px'), ('Arrivée', '202px'), ('Départ', '202px'), ('Nuits', '64px', 'd'),
+            ('Nb chambres', '124px', 'd'), ('Total hébergement (HT)', '232px', 'd'), ('Solde folio', '132px', 'd'),
             ('Registre', '140px'), ('État', '1fr')]
 # Ordre du code (checkin_date desc, puis la plus récente) : Claire Durand (18:00), Estelle Ngono, Martin Ebode.
 # Le matin, l'acompte d'Estelle n'est pas encore encaissé : son solde est encore le folio entier (102 000),

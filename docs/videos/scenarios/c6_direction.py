@@ -290,7 +290,7 @@ CHAPITRE = {
                  "paiement, et le taux de service des fournisseurs, livré à l'heure et complet.",
          'gestes': changer_app('c6-nav-pos', 'c6-nav-achats', 'c6-achats')
                    + [pause(0.4), anneau('#c6-a-dette', d=1.0), anneau('#c6-a-7j', d=1.2), anneau('#c6-a-otif', d=1.4)]},
-        {'titre': 'Les espaces et prestations', 'texte': 'Le planning du jour, ressource par ressource.',
+        {'titre': 'Les espaces et prestations', 'texte': 'Le remplissage du jour, et le planning de samedi, ressource par ressource.',
          'voix': "Les espaces et prestations montrent le remplissage du jour et le planning de chaque salon, cabine "
                  "ou fauteuil. Samedi, la réservation faite par Claire sur le site est déjà là, sur le salon Wouri.",
          'gestes': changer_app('c6-nav-achats', 'c6-nav-esp', 'c6-espaces')
