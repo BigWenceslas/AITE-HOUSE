@@ -400,7 +400,7 @@ def rendre(projet, scenario, muet):
 # des deux côtés, et les crêtes saturaient après l'encodage AAC.
 MONO = 'pan=mono|c0=0.5*c0+0.5*c1'
 SONIE = -16.0        # LUFS, la sonie de chaque vidéo livrée
-PLAFOND = 0.794      # −2 dBFS : la marge que l'encodage AAC consomme
+PLAFOND = 0.708      # −3 dBFS, mesuré sur-échantillonné : la marge que l'encodage AAC consomme
 
 
 def sonie(source):
@@ -429,8 +429,11 @@ def compresser(source, scenario, dossier, muet, instant, sortie=SORTIE_DEPOT):
         audio = ['-an']
     else:
         gain = SONIE - sonie(source)
-        audio = ['-af', '%s,volume=%.2fdB,alimiter=limit=%.3f:level=false' % (MONO, gain, PLAFOND),
-                 '-c:a', 'aac', '-b:a', '96k']
+        # passe-bas à 15 kHz, limiteur sur-échantillonné à attaque courte : sans cela, un
+        # transitoire aigu (son d'ouverture, clic, accord final) ressortait de l'AAC au-dessus de 0 dBFS
+        audio = ['-af', '%s,lowpass=f=15000,volume=%.2fdB,aresample=192000,alimiter=limit=%.3f:attack=1:level=false,aresample=48000'
+                 % (MONO, gain, PLAFOND),
+                 '-c:a', 'aac', '-b:a', '128k']
     r = lancer(['ffmpeg', '-v', 'error', '-y', '-i', source, '-c:v', 'libx264', '-preset', 'slow', '-crf', '28',
                 '-pix_fmt', 'yuv420p', '-movflags', '+faststart'] + audio + [cible])
     if r.returncode != 0:
