@@ -50,18 +50,35 @@ sur un téléphone.
 
 ## Données de démonstration
 
-Une seule source, `demo.py`, pour que le même séjour traverse la vidéo :
-Estelle Ngono, réservation `RES/2026/0214`, folio `FOL/2026/0214`, chambre
-`204 [CFT]` (Confort, 45 000 FCFA la nuit), du 14/10 au 16/10/2026, dans le
-« Complexe Hôtelier — Démo » (3 ★, Cameroun) de « Démo Hôtellerie SARL ».
-Claire Durand réserve le salon VIP Wouri en ligne ; on retrouve sa
-réservation dans le planning des espaces de la direction.
+Une seule source, `demo.py`, et la fiche d'harmonisation de la série, pour
+que le même séjour traverse les chapitres et les tutoriels : Estelle Ngono,
+réservation `RES/2026/0214`, folio `FOL/2026/0214`, chambre `204 [CFT]`
+(Confort, 45 000 FCFA la nuit), du 14/10 au 16/10/2026, dans le « Complexe
+Hôtelier — Démo » (3 ★, Cameroun) de « Démo Hôtellerie SARL ». Jour de
+référence : le mercredi 14/10/2026.
+
+L'hôtel compte **20 chambres vendables** : 101-107 [STD] au rez-de-chaussée
+(la 105 hors service), 201-206 [CFT] au 1er étage, 301-304 [SJR] au 2e,
+401-403 [VIP] au 3e ; Standard 35 000, Confort 45 000, Suite Junior 75 000,
+Suite VIP 120 000 FCFA la nuit. La société de démonstration est **sans
+TVA** : hébergement, bar, restaurant et achats s'affichent HT = TTC ; seule
+la taxe de séjour (3 000 FCFA par personne et par nuit, 3 ★) s'ajoute au
+folio. Le folio d'Estelle : 102 000 FCFA, acompte MTN Mobile Money de
+45 000, 57 000 FCFA dus.
+
+Claire Durand réserve en ligne le salon VIP Wouri pour le samedi 17/10 à
+16:00 (`RES/26/0131`) ; on retrouve sa réservation dans le planning des
+espaces de la direction.
 
 Les personnes sont **fictives**, une par poste : Mireille Ateba (réception),
 Josiane Fouda (gouvernante, avec Clarisse et Sidonie), Hervé Tchakounté (caisse du
 bar), Claire Durand (cliente), Serge Nana (magasin), Danielle Eyenga
 (direction). Les jeux d'essai de recette et les données du client pilote
-n'apparaissent jamais.
+n'apparaissent jamais (pas de « Paul Durand », nom des seeds). Les
+téléphones sont des **numéros de fiction** : « +237 6 00 00 00 xx » (deux
+chiffres finaux propres à chaque personne : Estelle 01, l'hôtel 10) et, pour
+Claire, la plage française réservée à la fiction (+33 6 39 98 21 47) ;
+adresses `exemple.cm` / `exemple.fr`.
 
 ## Ouverture et fin
 

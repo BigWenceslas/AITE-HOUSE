@@ -73,8 +73,11 @@ couverture 18,4 j, rotation 1,6×, 212 000 FCFA dormants sur 4 réfs, 2 réfs
 sous seuil, et les cinq lignes de son tableau d'alertes (Eau minérale 1,5 L
 0 / 12 → 120, Bière blonde 65 cl 30 / 14 → 110, Jus d'ananas 1 L 18 / 4 → 22,
 Arachides grillées 25 / 6 → 35, Vin rouge 75 cl 40 / 2 → —). Coûts repris
-de scenarios/t14_achats.py:232-253 et :319-328 (COMMANDES, PRIX) ; Bière
-blonde 65 cl à 1 500 FCFA comme t04 et t10. AGREGATS expose ces chiffres
+de scenarios/t14_achats.py (COMMANDES, PRIX) ; Bière blonde 65 cl à 1 500
+FCFA comme t04 et t10 ; prix de vente communs avec t12_ventes.py (ARTICLES),
+vins 75 cl compris (rouge 12 000, blanc et rosé 11 000 FCFA ; les prix des
+références que t12 ne vend pas, invisibles ici, compensent pour garder
+6 950 000 FCFA au prix de vente). AGREGATS expose ces chiffres
 pour le cockpit de direction (t15), avec ce que _penalty_rows et
 _build_actions en tirent.
 
@@ -165,28 +168,28 @@ ARTICLES = [
     ('Pistaches 100 g', 'Snacks & confiseries', 1200, 2500, 2, 8, 12),
     ('Chocolat noir 100 g', 'Snacks & confiseries', 900, 2000, 1, 3, 12),
     ('Bonbons à la menthe', 'Snacks & confiseries', 50, 100, 28, 85, 68),
-    ('Vin rouge 75 cl', 'Vins & spiritueux', 4500, 10000, 4, 36, 60),
-    ('Vin blanc 75 cl', 'Vins & spiritueux', 4000, 9000, 8, 24, 48),
-    ('Vin rosé 75 cl', 'Vins & spiritueux', 4000, 9000, 2, 10, 5),
+    ('Vin rouge 75 cl', 'Vins & spiritueux', 4500, 12000, 4, 36, 60),
+    ('Vin blanc 75 cl', 'Vins & spiritueux', 4000, 11000, 8, 24, 48),
+    ('Vin rosé 75 cl', 'Vins & spiritueux', 4000, 11000, 2, 10, 5),
     ('Champagne brut 75 cl', 'Vins & spiritueux', 22000, 45000, 3, 9, 51),
     ('Whisky 12 ans 70 cl', 'Vins & spiritueux', 18000, 40000, 3, 9, 45),
     ('Cognac VSOP 70 cl', 'Vins & spiritueux', 28000, 60000, 1, 2, 0),
     ('Rhum ambré 70 cl', 'Vins & spiritueux', 9000, 20000, 3, 8, 20),
     ('Gin 70 cl', 'Vins & spiritueux', 10000, 22000, 2, 7, 16),
     ('Liqueur de café 70 cl', 'Vins & spiritueux', 8000, 18000, 1, 7, 3),
-    ('Vodka 70 cl', 'Vins & spiritueux', 8000, 16000, 2, 7, 20),
-    ('Vin mousseux 75 cl', 'Vins & spiritueux', 6000, 12000, 6, 17, 24),
-    ('Porto 75 cl', 'Vins & spiritueux', 7500, 15000, 2, 6, 12),
+    ('Vodka 70 cl', 'Vins & spiritueux', 8000, 14000, 2, 7, 20),
+    ('Vin mousseux 75 cl', 'Vins & spiritueux', 6000, 11000, 6, 17, 24),
+    ('Porto 75 cl', 'Vins & spiritueux', 7500, 13500, 2, 6, 12),
     ('Vermouth 75 cl', 'Vins & spiritueux', 5000, 10000, 1, 3, 12),
-    ('Tequila 70 cl', 'Vins & spiritueux', 12000, 24000, 4, 14, 12),
-    ('Pastis 70 cl', 'Vins & spiritueux', 7000, 14000, 1, 3, 12),
-    ('Vin rouge réserve 75 cl', 'Vins & spiritueux', 9000, 18000, 4, 14, 36),
+    ('Tequila 70 cl', 'Vins & spiritueux', 12000, 22000, 4, 14, 12),
+    ('Pastis 70 cl', 'Vins & spiritueux', 7000, 11000, 1, 3, 12),
+    ('Vin rouge réserve 75 cl', 'Vins & spiritueux', 9000, 16000, 4, 14, 36),
     ('Whisky 18 ans 70 cl', 'Vins & spiritueux', 32000, 64000, 1, 3, 8),
-    ('Brandy 70 cl', 'Vins & spiritueux', 6000, 12000, 6, 17, 16),
+    ('Brandy 70 cl', 'Vins & spiritueux', 6000, 11000, 6, 17, 16),
     ('Vin blanc moelleux 75 cl', 'Vins & spiritueux', 5000, 10000, 4, 10, 24),
     ('Crème de cassis 70 cl', 'Vins & spiritueux', 6500, 13000, 1, 2, 8),
     ('Vin rouge du Cap 75 cl', 'Vins & spiritueux', 5500, 11000, 7, 22, 48),
-    ('Rhum blanc 70 cl', 'Vins & spiritueux', 6000, 12000, 2, 6, 16),
+    ('Rhum blanc 70 cl', 'Vins & spiritueux', 6000, 11000, 2, 6, 16),
     ('Poivre de Penja 100 g', 'Épicerie fine locale', 2000, 4500, 0, 8, 3),
     ("Café de l'Ouest 250 g", 'Épicerie fine locale', 2000, 4000, 0, 25, 15),
     ("Miel d'Oku 500 g", 'Épicerie fine locale', 3500, 7000, 0, 11, 9),

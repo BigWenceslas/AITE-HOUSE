@@ -17,6 +17,13 @@ sécurité, 7 j d'horizon, critique sous 3 j). Les chiffres des lignes sont
 calculés avec ces règles. Menus du profil Magasin relevés sur une base de
 recette (load_menus). Le refus reprend la capture de recette
 r6-magasin-02 (modèle aite.pos.credit, groupes POS Crédit).
+
+Chiffres harmonisés avec scenarios/t13_stock.py (AGREGATS, calculés par le
+vrai code de _metrics sur le stock de la série) : valeur à commander
+303 050 FCFA (les 126 300 FCFA d'origine étaient impossibles avec ces
+lignes) ; écart d'inventaire net de la période −41 500 FCFA, affiché avec
+son signe (gap_net, rendu « -41 500 FCFA » par fmtMoney) ; emplacements
+« Bar » et « Cave » (dernier segment de WH/Bar et WH/Cave).
 """
 
 import demo
@@ -37,7 +44,7 @@ def tete(prefixe, actif):
                     for i, o in enumerate(ONGLETS))
     return (tdb_entete('Stock & Inventaire — Tableau de bord', 'Valorisation · alertes de réappro · rotation · écarts & coulage')
             + tdb_filtres([('Période', ["Aujourd'hui", 'Cette semaine', 'Ce mois', '3 mois'], 2),
-                           ('Emplacement', ['Tous', 'Stock'], 0), ('Catégorie', CATEGORIES, 0)])
+                           ('Emplacement', ['Tous', 'Bar', 'Cave'], 0), ('Catégorie', CATEGORIES, 0)])
             + '<div class="tdb-filtres"><div class="tdb-rang">%s</div></div>' % chips)
 
 
@@ -52,8 +59,8 @@ TABLEAU = vue_tdb('c5-dash', '<div id="c5-in">%s</div>' % (
     + tdb_section('Indicateurs', [
         kpi('c5-k-couv', 'Couverture moyenne', '18,4 j', 'rotation moyenne 1,6× / mois'),
         kpi('c5-k-dorm', 'Stock dormant', '212 000 FCFA', '4 réfs (+60 j de couverture)'),
-        kpi('c5-k-seuil', 'Sous seuil de commande', '2 réfs', 'valeur à commander 126 300 FCFA'),
-        kpi('c5-k-ecart', "Écarts d'inventaire (période)", '41 500 FCFA', '3 réfs concernées')])
+        kpi('c5-k-seuil', 'Sous seuil de commande', '2 réfs', 'valeur à commander 303 050 FCFA'),
+        kpi('c5-k-ecart', "Écarts d'inventaire (période)", '-41 500 FCFA', '3 réfs concernées')])
     + tdb_section('Valorisation & flux', [])
     + graphes(graphe_anneau('c5-g-cat', 'Valeur du stock par catégorie',
                             [('Vins & spiritueux', 34, '#714B67'), ('Bières', 22, '#185FA5'),
@@ -88,7 +95,7 @@ ALERTES = vue_tdb('c5-alertes', '<div id="c5-in2">%s</div>' % (
         kpi('c5-a-rupt', 'En rupture', '1', 'références à zéro', 'rouge'),
         kpi('c5-a-crit', 'Critiques', '1', 'couverture sous 3 jours', 'ambre'),
         kpi('c5-a-seuil', 'Sous seuil de commande', '2 réfs', 'point de commande atteint'),
-        kpi('c5-a-cmd', 'Valeur à commander', '126 300 FCFA', 'suggestion de réappro')])
+        kpi('c5-a-cmd', 'Valeur à commander', '303 050 FCFA', 'suggestion de réappro')])
     + '<div class="g-carte" style="height:auto;margin-top:14px;padding:16px 0 4px"><div class="g-titre" style="padding:0 20px">'
       'Références à traiter (triées par urgence)</div>%s</div>'
       % table(COLS, LIGNES, ajouter=None, identifiant='c5-table')

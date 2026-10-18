@@ -160,7 +160,7 @@ c6_direction.py:100-108 (CA 3 120 000, marge 1 747 200 soit 56,0 %, CMV
 1 372 800 soit 2 681 F/u, 128 tickets, panier 24 375, 512 unités, 42 articles
 actifs sur 48, meilleur article « Bière blonde 65 cl » à 486 000 F) et de
 t15_direction.py (CA en hausse de 9,4 %) ; articles, prix et coûts du bar et
-de la cave repris de t13_stock.py:116-141 (Bière blonde 65 cl : 1 500 F pour
+de la cave repris de t13_stock.py (ARTICLES) (Bière blonde 65 cl : 1 500 F pour
 650 F, soit 850 F de marge, comme t04:285, au TICKET de t10_ardoises.py et
 au PRIX de t14_achats.py), plats de la
 carte de t04:274-281 ; articles sans taxe, comme au ticket de t04 (t04:37-44,
@@ -302,7 +302,7 @@ def pct(a, b):
 # ------------------------------------------------------------- données --
 # Les articles vendus du 01/10 au 13/10/2026 : (nom, catégorie, prix de vente,
 # coût unitaire, quantité au bar, quantité au restaurant, remboursé). Noms,
-# prix et coûts du bar et de la cave : scenarios/t13_stock.py:116-141 (Bière
+# prix et coûts du bar et de la cave : scenarios/t13_stock.py (ARTICLES) (Bière
 # blonde 65 cl à 1 500 F pour 650 F, comme t04:285, le TICKET de t10_ardoises.py
 # et les PRIX de t14_achats.py) ;
 # plats et accompagnements : la carte de t04_note_chambre.py:274-281 (Poisson
@@ -328,7 +328,7 @@ ARTICLES = [
     ('Cola 33 cl', 'Jus & softs', 1000, 300, 2, 1, False),
     ('Tonic 33 cl', 'Jus & softs', 1000, 350, 2, 0, False),
     ('Jus de bissap 50 cl', 'Jus & softs', 1000, 400, 0, 1, False),
-    ('Jus de gingembre 50 cl', 'Jus & softs', 1000, 350, 0, 1, False),
+    ('Jus de gingembre 50 cl', 'Jus & softs', 1000, 400, 0, 1, False),
     ('Citronnade 50 cl', 'Jus & softs', 1000, 300, 0, 0, RESTO),
     ('Arachides grillées', 'Snacks & confiseries', 700, 250, 1, 0, False),
     ('Chips de plantain', 'Snacks & confiseries', 800, 300, 1, 0, False),
@@ -355,7 +355,7 @@ ARTICLES = [
     ('Poulet DG', 'Plats', 8000, 3600, 0, 10, False),
     ('Eru', 'Plats', 5000, 2100, 0, 3, False),
     ('Mbongo tchobi', 'Plats', 6000, 2700, 0, 2, False),
-    ('Koki', 'Plats', 3000, 1200, 0, 1, False),
+    ('Koki', 'Plats', 3000, 1150, 0, 1, False),
     ('Okok', 'Plats', 4000, 1700, 0, 1, False),
     ('Kondrè', 'Plats', 6000, 2700, 0, 1, False),
     ('Plantain frit', 'Accompagnements', 1500, 500, 1, 2, False),
@@ -1410,7 +1410,7 @@ TUTORIEL = {
     },
     'cta': {
         'appel': 'Demandez votre démonstration',
-        'suivant': 'Le stock et le réapprovisionnement',
+        'suivant': 'Stock bar & cave',
         'voix': "Aïte haousse, par Aïte Consulting. Demandez votre démonstration, et retrouvez tous nos tutoriels sur "
                 "notre chaîne.",
     },

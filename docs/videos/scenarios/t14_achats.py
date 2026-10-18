@@ -82,10 +82,10 @@ reprennent _open_bill_rows / get_open_invoices :225-267, _order_rows
 arrondi au franc, « 62,5 % », « 18,7 j ») et de purchase_dashboard_view.js:
 203-289. Réglages par défaut : 7 j, 2 j, 40 %, 5 % (models/
 res_config_settings.py:20-38). Le jeu est fictif : un bar-hôtel de Douala
-et ses cinq fournisseurs (Boissons du Wouri SARL, Dépôt Akwa Distribution,
+et ses quatre fournisseurs (Boissons du Wouri SARL, Dépôt Akwa Distribution,
 Épicerie Fine Bonapriso, Hygiène Pro Littoral — repris de scenarios/
-c6_direction.py — et Primeurs de Deïdo), dix commandes du mois, huit factures
-ouvertes, trois avoirs, trois lignes de consignes ; articles et coûts repris
+c6_direction.py), huit commandes du mois, quatre factures ouvertes, trois
+avoirs, trois lignes de consignes ; articles et coûts repris
 de scenarios/t13_stock.py. Aujourd'hui : vendredi 16/10/2026, période « Ce
 mois ». Références : commandes « P00151 », factures « BILL/2026/10/0001 »,
 avoirs « RBILL/2026/10/0001 », au format relevé sur la base de démonstration
@@ -123,7 +123,7 @@ la présentation : scenarios/c6_direction.py (vue « Achats »).
    < −0,005, c'est-à-dire les lignes CRÉDITRICES du 401 (purchase_
    dashboard.py:386-399, :409, :705), alors que le commentaire :386-387
    annonce les soldes débiteurs (paiements non lettrés, avoirs). D'où
-   1 772 700 FCFA d'« acomptes » sans paiement d'avance et une créance plus
+   1 226 600 FCFA d'« acomptes » sans paiement d'avance et une créance plus
    grosse que la dette. Correction attendue dans le module (hors de ce
    fichier) : test qui reproduit le défaut, domaine amount_residual > 0,005,
    debit_total += line.amount_residual, version 18.0.1.0.3. _domaine_409()
@@ -169,9 +169,17 @@ moyenne pondérée des achats de la fenêtre ; de même pour les sept autres
 articles. Le prix ancien (fenêtre 120 à 210 jours : 20/03 → 18/06) est celui
 de mai-juin.
 
-Jeu indépendant de scenarios/t15_direction.py (tutoriel suivant, au 14/10) :
-les dettes fournisseurs qu'il affiche (1 280 000 FCFA) ne reprennent pas les
-factures de ce tutoriel.
+Mêmes chiffres que la vue Achats de la présentation (scenarios/
+c6_direction.py) et que le cockpit de scenarios/t15_direction.py (tutoriel
+suivant, lu le 14/10), contrôlés par assert : achats de la période
+1 850 000 FCFA (Wouri 52 %, Akwa 26 %, Bonapriso 14 %, Hygiène 8 %), dette
+fournisseurs 1 280 000 FCFA sur 4 factures, dont 180 000 FCFA échus (1
+facture) et 420 000 FCFA à payer sous 7 jours (1 facture), 4 fournisseurs
+actifs, OTIF 83,3 %. Aucune facture ne change de statut entre le 14 et le
+16/10 (contrôlé). Restent propres à ce tutoriel, calculés par le code et
+différents de c6 : « 8 commandes · 6 réceptions » (c6 : 6 · 5), 224 000 FCFA
+de commandes en cours (c6 : 640 000), DPO 14,7 j (c6 : 24 j), et la créance
+409 tant que le défaut 1 n'est pas corrigé.
 """
 
 import math
@@ -218,8 +226,8 @@ JOURS = (AUJ - DU).days + 1
 # palette suit cet ordre (purchase_dashboard.py:40-44, :211-219).
 PALETTE = ['#714B67', '#185FA5', '#3B6D11', '#0F6E56', '#854F0B', '#A32D2D', '#5B4B8A', '#B0655A']
 WOURI, AKWA, BONA = 'Boissons du Wouri SARL', 'Dépôt Akwa Distribution', 'Épicerie Fine Bonapriso'
-HYG, DEIDO = 'Hygiène Pro Littoral', 'Primeurs de Deïdo'
-FOURNISSEURS = sorted([WOURI, AKWA, BONA, HYG, DEIDO], key=lambda n: n.lower())
+HYG = 'Hygiène Pro Littoral'
+FOURNISSEURS = sorted([WOURI, AKWA, BONA, HYG], key=lambda n: n.lower())
 COULEUR = {n: PALETTE[i] for i, n in enumerate(FOURNISSEURS)}
 
 
@@ -231,25 +239,21 @@ def j(jour, mois, an=2026):
 # (date, fournisseur, référence, prévue, reçue, receipt_status, lignes)
 COMMANDES = [
     (j(1, 10), WOURI, 'P00151', j(2, 10), j(2, 10), 'full',
-     [('Bière blonde 65 cl', 360, 650), ('Bière brune 65 cl', 240, 700), ('Bière sans alcool 33 cl', 72, 450)]),
-    (j(2, 10), AKWA, 'P00152', j(3, 10), j(4, 10), 'full',
+     [('Bière blonde 65 cl', 360, 650), ('Bière brune 65 cl', 240, 700), ('Bière sans alcool 33 cl', 40, 450)]),
+    (j(2, 10), AKWA, 'P00152', j(3, 10), j(3, 10), 'full',
      [('Eau minérale 1,5 L', 240, 300), ('Cola 33 cl', 240, 300), ("Jus d'ananas 1 L", 60, 900)]),
-    (j(5, 10), HYG, 'P00153', j(7, 10), j(11, 10), 'full',
-     [('Détergent sol 5 L', 30, 2750), ('Eau de Javel 5 L', 42, 1500)]),
+    (j(5, 10), HYG, 'P00153', j(7, 10), j(7, 10), 'full',
+     [('Détergent sol 5 L', 32, 2750), ('Eau de Javel 5 L', 40, 1500)]),
     (j(6, 10), AKWA, 'P00154', j(7, 10), j(7, 10), 'full',
      [('Eau minérale 50 cl', 288, 150), ('Cola 33 cl', 216, 300), ('Eau minérale 1,5 L', 240, 300)]),
     (j(7, 10), WOURI, 'P00155', j(8, 10), j(8, 10), 'full',
-     [('Bière blonde 65 cl', 480, 650), ('Bière brune 65 cl', 240, 700), ('Bière sans alcool 33 cl', 96, 450)]),
+     [('Bière blonde 65 cl', 340, 650), ('Bière brune 65 cl', 270, 700), ('Bière sans alcool 33 cl', 40, 450)]),
     (j(9, 10), BONA, 'P00156', j(12, 10), j(12, 10), 'partial',
-     [('Whisky 12 ans 70 cl', 12, 18000), ('Vin rouge 75 cl', 24, 4500)]),
-    (j(10, 10), DEIDO, 'P00157', j(11, 10), j(11, 10), 'full',
-     [('Plantain (régime)', 16, 2500), ('Oignons (sac 25 kg)', 3, 14000)]),
-    (j(12, 10), WOURI, 'P00158', j(13, 10), None, 'pending',
-     [('Bière blonde 65 cl', 360, 650), ('Bière brune 65 cl', 240, 700), ('Bière sans alcool 33 cl', 120, 450)]),
-    (j(14, 10), DEIDO, 'P00159', j(15, 10), j(15, 10), 'full',
-     [('Plantain (régime)', 20, 2500), ('Tomates (cagette)', 6, 7500)]),
-    (j(15, 10), AKWA, 'P00160', j(17, 10), None, 'pending',
-     [('Eau minérale 1,5 L', 216, 300), ('Cola 33 cl', 216, 300), ("Jus d'ananas 1 L", 96, 900)]),
+     [('Whisky 12 ans 70 cl', 8, 18000), ('Vin rouge 75 cl', 24, 4500)]),
+    (j(12, 10), WOURI, 'P00157', j(13, 10), None, 'pending',
+     [('Bière blonde 65 cl', 100, 650), ('Bière brune 65 cl', 60, 700), ('Bière sans alcool 33 cl', 20, 450)]),
+    (j(15, 10), AKWA, 'P00158', j(17, 10), None, 'pending',
+     [('Eau minérale 1,5 L', 120, 300), ('Cola 33 cl', 120, 300), ("Jus d'ananas 1 L", 40, 900)]),
 ]
 
 
@@ -273,17 +277,13 @@ CMD = _commandes()
 # Les factures fournisseurs comptabilisées non soldées :
 # (fournisseur, référence, date de facture, échéance, total, déjà payé)
 FACTURES = [
-    (BONA, 'BILL/2026/08/0014', j(9, 8), j(8, 9), 135000, 0),
-    (HYG, 'BILL/2026/09/0003', j(7, 9), j(7, 10), 92000, 46000),
-    (AKWA, 'BILL/2026/09/0011', j(16, 9), j(16, 10), 164000, 0),
-    (WOURI, 'BILL/2026/10/0001', j(2, 10), j(17, 10), 434400, 0),
-    (AKWA, 'BILL/2026/10/0002', j(4, 10), j(3, 11), 198000, 0),
-    (AKWA, 'BILL/2026/10/0003', j(7, 10), j(6, 11), 180000, 0),
-    (WOURI, 'BILL/2026/10/0004', j(8, 10), j(23, 10), 523200, 0),
-    (HYG, 'BILL/2026/10/0006', j(11, 10), j(10, 11), 145500, 0),
+    (BONA, 'BILL/2026/08/0014', j(9, 8), j(8, 9), 180000, 0),
+    (WOURI, 'BILL/2026/10/0001', j(2, 10), j(17, 10), 420000, 0),
+    (WOURI, 'BILL/2026/10/0004', j(9, 10), j(24, 10), 428000, 0),
+    (BONA, 'BILL/2026/10/0005', j(12, 10), j(11, 11), 252000, 0),
 ]
-# Les factures de la période déjà soldées (Primeurs de Deïdo, payées comptant).
-FACTURES_PAYEES = [(DEIDO, 'BILL/2026/10/0005', j(11, 10), 82000), (DEIDO, 'BILL/2026/10/0007', j(15, 10), 95000)]
+# Les factures de la période déjà soldées (Dépôt Akwa Distribution, payées comptant à la livraison).
+FACTURES_PAYEES = [(AKWA, 'BILL/2026/10/0002', j(3, 10), 198000), (AKWA, 'BILL/2026/10/0003', j(7, 10), 180000)]
 
 
 def _factures():
@@ -507,11 +507,22 @@ TOP_ARTICLES = sorted(_PAR_ARTICLE.items(), key=lambda kv: -kv[1])[:8]
 FLUX = [('Mai', 3980000, 3760000), ('Juin', 3620000, 3900000), ('Juil', 4310000, 4050000),
         ('Août', 3870000, 3640000), ('Sep', 4420000, 4180000), ('Oct', FAC_PERIODE, 1214000)]
 
-assert (len(CMD), len(RECUS), len(FAC)) == (10, 8, 8)
-assert [f['status'] for f in FAC] == ['En retard'] * 2 + ['À payer bientôt'] * 3 + ['À échoir'] * 3
+assert (len(CMD), len(RECUS), len(FAC)) == (8, 6, 4)
+assert [f['status'] for f in FAC] == ['En retard', 'À payer bientôt', 'À échoir', 'À échoir']
+# Les chiffres de la présentation (c6_direction.py, vue Achats) et du cockpit (t15_direction.py) : achats de la
+# période, dette sur 4 factures, 1 échue, à payer sous 7 j, 4 fournisseurs actifs (52 / 26 / 14 / 8 %), OTIF.
+assert (ACHATS, ENCOURS, sum(f['residual'] for f in RETARD), len(RETARD), sum(f['residual'] for f in SOON), len(SOON)) == (
+    1850000, 1280000, 180000, 1, 420000, 1)
+assert [round(r['part']) for r in FOUR] == [52, 26, 14, 8] and pct(OTIF) == '83,3 %'
+# Le cockpit de t15 lit ces dettes le 14/10 : aucune facture n'a changé de statut entre le 14 et le 16/10.
+for _f in FAC:
+    _le14 = _F['_invoice_metrics'](_f['residual'], max(0, (date(2026, 10, 14) - _f['due']).days),
+                                   max(0, (_f['due'] - date(2026, 10, 14)).days), CFG['soon'])
+    assert _le14['status'] == _f['status'], _f['ref']
 assert TOP['nom'] == WOURI and TOP['badge'] == 'Dépendance' and 50 < TOP['part'] < 60
 assert PX[0]['nom'] == 'Bière blonde 65 cl' and PX[0]['badge'] == 'Hausse forte' and NB_HAUSSES == 3
 assert [c['status'] for c in CMD if c['ref'] == 'P00156'] == ['Reçue incomplète']
+OD_EPI = '#t14-od-r%d' % (1 + [c['ref'] for c in CMD].index('P00156'))     # la commande de l'épicerie, incomplète
 
 
 # ----------------------------------------------- les écrans rejoués --
@@ -1182,9 +1193,9 @@ TUTORIEL = {
          'gestes': [defiler('#t14-in-dash', 0, d=0.5), clic('#t14-tab-dash-2', d=0.6), vue('t14-dettes'),
                     anneau('#t14-g-aging2', d=1.1), anneau('#t14-g-ech', d=1.1),
                     defiler('#t14-in-dettes', -519, d=0.9), curseur('#t14-dt-r1-st', fx=1.45, fy=0.9, d=0.5),
-                    zoom('#t14-dt-r3', s=1.2, fx=0.5, d=0.8, avec=True),
+                    zoom('#t14-dt-r2', s=1.2, fx=0.5, d=0.8, avec=True),
                     bulle('b-urgence', '#t14-dt-carte h3', cote='droite', d=2.4), anneau('#t14-dt-r1-st', d=0.8),
-                    anneau('#t14-dt-r3-st', d=0.8), anneau('#t14-dt-r6-st', d=0.8), dezoom(d=0.6)]},
+                    anneau('#t14-dt-r2-st', d=0.8), anneau('#t14-dt-r3-st', d=0.8), dezoom(d=0.6)]},
         {'temps': 1, 'titre': 'Avoirs & consignes',
          'texte': "Les casiers consignés chez vos fournisseurs, et les avoirs à déduire du prochain paiement.",
          'voix': "De l'autre côté, ce qu'on vous doit : les casiers consignés chez vos fournisseurs, en valeur, et les "
@@ -1219,9 +1230,9 @@ TUTORIEL = {
          'gestes': [clic('#t14-cs-parent', d=0.6), texte('#t14-k-409-v', money(CREANCES_APRES['total'])),
                     vue('t14-dash'), pause(0.2), clic('#t14-tab-dash-4', d=0.6), vue('t14-cmd'),
                     anneau('#t14-o-otif', d=1.1), defiler('#t14-in-cmd', -323, d=0.8),
-                    curseur('#t14-od-r5-st', fx=1.25, fy=0.8, d=0.5),
-                    zoom('#t14-od-r5', s=1.35, fx=0.62, d=0.8, avec=True), anneau('#t14-od-r5-full', d=1.0),
-                    bulle('b-otif', '#t14-od-r5-full', cote='haut', d=2.8), pause(2.0), dezoom(d=0.6)]},
+                    curseur(OD_EPI + '-st', fx=1.25, fy=0.8, d=0.5),
+                    zoom(OD_EPI, s=1.35, fx=0.62, d=0.8, avec=True), anneau(OD_EPI + '-full', d=1.0),
+                    bulle('b-otif', OD_EPI + '-full', cote='haut', d=2.8), pause(2.0), dezoom(d=0.6)]},
         {'temps': 2, 'titre': 'Fournisseurs',
          'texte': 'Part des achats, encours, retards, OTIF ; dès 40 %, le badge Dépendance.',
          'voix': "Côté fournisseurs, Boissons du Wouri pèse plus de la moitié des achats du mois : dès quarante pour "

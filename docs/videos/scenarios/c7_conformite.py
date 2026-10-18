@@ -22,6 +22,21 @@ Libellés relevés dans :
   report/police_register_report.xml (assistant « Imprimer le registre de
   police », son texte, ses champs, et l'en-tête du registre imprimé),
   views/guest_stats_views.xml (pivot « Statistiques d'hébergement »).
+
+Rejoué tel que le code l'affiche : le libellé du barème est calculé et
+stocké à l'installation, en anglais et avec le code de devise (« Cameroon —
+3 ★ : 3 000 XAF », city_tax_rate.py:71-80 ; ECARTS.md n° 39, comme t05) ;
+au check-in, seule la fiche du client principal est créée
+(aite_guest_registry/models/hotel_reservation.py:96-110), pré-remplie depuis
+le contact, nom coupé au premier espace (« Estelle » / « Ngono »,
+guest_registration.py:255-280, écart 8 de t06) : d'où le bandeau « 1 fiche(s)
+à compléter · 1 occupant(s) sans fiche » du chapitre 1 ; l'accompagnant,
+Arnaud Ngono, est saisi ensuite (scenarios/t06_registre.py). Registre de
+police imprimé : arrivées de la période triées par date d'arrivée, chambre
+et nom (wizard/police_register_wizard.py:46-53), nom en capitales, libellé
+du type de pièce (report/police_register_report.xml:80-90) ; extrait de six
+lignes sur 54, séjours de scenarios/t02_planning.py (SEJOURS) et fiches de
+t06 (la 105 est hors service toute la série).
 """
 
 import demo
@@ -55,7 +70,7 @@ FEUILLE = (
     + deux_colonnes(groupe('Réglage', [champ('Collecter la taxe de séjour', CASE, html=True),
                                        champ('Pays (fiche hôtel)', 'Cameroun', lien_=True),
                                        champ('Catégorie (fiche hôtel)', demo.ETOILES)]),
-                    groupe("Ce qui s'applique", [champ('Barème appliqué', 'Cameroun — 3 ★ : 3 000 XAF', 'c7-bareme'),
+                    groupe("Ce qui s'applique", [champ('Barème appliqué', 'Cameroon — 3 ★ : 3 000 XAF', 'c7-bareme'),
                                                  champ('Montant par nuitée', '3 000'),
                                                  champ('Base', 'Par personne et par nuit')]))
     + '<div class="alerte-info" id="c7-phrase">%s Chaque séjour portera une ligne « Taxe de séjour » de 3 000 XAF par '
@@ -105,21 +120,19 @@ ETAT = pivot('c7-etat', 'Taxe de séjour — état mensuel', 'Mois',
              ['1 011', '3 033 000,00'])
 
 # ---------------------------------------------------- fiches clients (O01) --
-FICHES_COLS = [('Chambre', '200px'), ('Nom', '100px'), ('Prénom(s)', '110px'), ('Date de naissance', '170px'),
+FICHES_COLS = [('Chambre', '150px'), ('Nom', '110px'), ('Prénom(s)', '110px'), ('Date de naissance', '170px'),
                ('Nationalité', '120px'), ('Type de pièce', '230px'), ('N° de pièce', '130px'), ('Client principal', '140px'),
-               ('Il manque', '1fr'), ('Fiche', '130px'), ('', '40px')]
-FICHES_L = []
-for i, (nom, prenom, piece, num_, principal) in enumerate([
-        ('Ngono', 'Estelle', "Carte nationale d'identité", '114208815', True),
-        ('Ngono', 'Arnaud', "Carte nationale d'identité", '116502371', False)]):
-    FICHES_L.append({'id': 'c7-f%d' % i, 'classe': 'avert', 'cellules': [
-        '204 · %s' % demo.CLIENT, nom, prenom, cell_html('<span class="ell" id="c7-dn%d"></span>' % i), 'Cameroun', piece,
-        num_, cell_html('<span class="case%s"><i>%s</i></span>' % (' coche' if principal else '',
-                                                                   icone('coche') if principal else '')),
-        cell_html('<span class="ell" id="c7-im%d" style="color:#8A6100">la date de naissance</span>' % i),
-        cell_puce('À compléter', 'orange', 'c7-et%d' % i), cell_html('<span>%s</span>' % icone('imprimer'))]})
+               ('Signée par le client', '140px'), ('Il manque', '1fr'), ('Fiche', '130px'), ('', '40px')]
+CASE_VIDE = '<span class="case"><i></i></span>'
+# La fiche créée au check-in : celle du client principal, pré-remplie depuis le contact (nom coupé au premier espace).
+FICHES_L = [{'id': 'c7-f0', 'classe': 'avert', 'cellules': [
+    '204 [CFT]', cell_html('<span class="ell" id="c7-nom0">Estelle</span>'),
+    cell_html('<span class="ell" id="c7-pre0">Ngono</span>'), cell_html('<span class="ell" id="c7-dn0"></span>'),
+    'Cameroun', "Carte nationale d'identité", '114208815', cell_html(CASE), cell_html(CASE_VIDE),
+    cell_html('<span class="ell" id="c7-im0" style="color:#8A6100">la date de naissance</span>'),
+    cell_puce('À compléter', 'orange', 'c7-et0'), cell_html('<span>%s</span>' % icone('imprimer'))]}]
 FICHES = vue_liste('c7-fiches', 'Fiches clients — %s' % demo.RESA, FICHES_COLS, FICHES_L,
-                   facettes=[(None, 'Réservation %s' % demo.RESA)], pager='1-2 / 2')
+                   facettes=[(None, 'Réservation %s' % demo.RESA)], pager='1-1 / 1')
 
 # ----------------------------------------------------- registre de police --
 ASSISTANT = assistant('c7-as', 'Imprimer le registre de police', (
@@ -129,13 +142,14 @@ ASSISTANT = assistant('c7-as', 'Imprimer le registre de police', (
                [m_champ('Inclure les fiches incomplètes', CASE), m_champ('Fiches trouvées', '<b>54</b>')])),
     [('c7-imprimer', 'Imprimer', 'primaire', 'imprimer'), ('c7-annuler', 'Annuler', 'gris', None)], haut=140)
 
+CNI = "Carte nationale d'identité"
 PERSONNES = [
-    ('08/10/2026', '10/10/2026', '102', 'Mvondo', 'Cyrille', '04/02/1984', 'Cameroun', 'CNI', '112 004 517', 'Yaoundé', 'Kribi'),
-    ('09/10/2026', '12/10/2026', '201', 'Martin', 'Sophie', '21/07/1979', 'France', 'Passeport', '18FR22914', 'Paris', 'Limbé'),
-    ('11/10/2026', '13/10/2026', '105', 'Abena', 'Grace', '09/11/1992', 'Cameroun', 'CNI', '115 330 284', 'Bafoussam', 'Bafoussam'),
-    ('12/10/2026', '15/10/2026', '203', 'Kamga', 'Joël', '30/05/1988', 'Cameroun', 'CNI', '113 870 106', 'Dschang', 'Dschang'),
-    ('14/10/2026', '16/10/2026', '204', 'Ngono', 'Estelle', '12/03/1991', 'Cameroun', 'CNI', '114 208 815', 'Yaoundé', 'Yaoundé'),
-    ('14/10/2026', '16/10/2026', '204', 'Ngono', 'Arnaud', '27/08/1989', 'Cameroun', 'CNI', '116 502 371', 'Yaoundé', 'Yaoundé'),
+    ('08/10/2026', '10/10/2026', '103', 'MENGUE', 'Esther', '04/02/1984', 'Cameroun', CNI, '112004517', 'Yaoundé', 'Kribi'),
+    ('09/10/2026', '12/10/2026', '401', 'ABEGA', 'Laurent', '21/07/1979', 'France', 'Passeport', '18FR22914', 'Paris', 'Limbé'),
+    ('10/10/2026', '13/10/2026', '101', 'OWONO', 'Cyrille', '09/11/1982', 'Cameroun', CNI, '115330284', 'Bafoussam', 'Bafoussam'),
+    ('13/10/2026', '16/10/2026', '202', 'ESSOMBA', 'Brigitte', '30/05/1988', 'Cameroun', CNI, '113870106', 'Édéa', 'Édéa'),
+    ('14/10/2026', '16/10/2026', '204', 'NGONO', 'Estelle', '12/03/1991', 'Cameroun', CNI, '114208815', 'Yaoundé', 'Yaoundé'),
+    ('14/10/2026', '16/10/2026', '204', 'NGONO', 'Arnaud', '27/08/1989', 'Cameroun', CNI, '116502371', 'Yaoundé', 'Yaoundé'),
 ]
 RAPPORT = ('<div class="rapport masque" id="c7-rapport"><h2>REGISTRE DES CLIENTS HÉBERGÉS</h2>'
            '<div class="sous">%s — du 08/10/2026 au 14/10/2026 — 54 personne(s)</div><table><tr>%s</tr>%s</table>'
@@ -194,15 +208,14 @@ CHAPITRE = {
          'gestes': aller('Configuration', 'Facturation') + [vue('c7-etat'), pause(0.4), anneau('#c7-etat-2', d=1.6),
                                                             anneau('#c7-etat-tot', d=1.2), anneau('#c7-etat-export', d=1.0)]},
         {'titre': 'Le registre des clients', 'texte': 'Fiches pré-remplies au check-in ; « Il manque » dit quoi ajouter.',
-         'voix': "Au check-in, une fiche d'enregistrement est créée pour chaque occupant, pré-remplie depuis le "
-                 "contact. La colonne Il manque dit ce qu'il reste à demander : ici, la date de naissance. Une fois "
-                 "saisie, la fiche passe Complète.",
+         'voix': "Au check-in, la fiche du client principal est créée, pré-remplie depuis le contact ; on vérifie "
+                 "l'ordre du nom et du prénom. La colonne Il manque dit ce qu'il reste à demander : ici, la date de "
+                 "naissance. Une fois saisie, la fiche passe Complète.",
          'gestes': aller('Facturation', 'Réservations') + [
-             vue('c7-fiches'), pause(0.4), anneau('#c7-im0', d=1.4),
+             vue('c7-fiches'), pause(0.4), anneau('#c7-nom0', d=0.9), texte('#c7-nom0', 'Ngono'),
+             texte('#c7-pre0', 'Estelle', avec=True), anneau('#c7-im0', d=1.4),
              texte('#c7-dn0', '12/03/1991'), texte('#c7-im0', ''), etat('#c7-et0', 'Complète', 'vert'),
-             classe('#c7-f0', retirer=['avert']),
-             texte('#c7-dn1', '27/08/1989'), texte('#c7-im1', ''), etat('#c7-et1', 'Complète', 'vert'),
-             classe('#c7-f1', retirer=['avert']), anneau('#c7-et1', d=1.0)]},
+             classe('#c7-f0', retirer=['avert']), anneau('#c7-et0', d=1.0)]},
         {'titre': 'Le registre de police', 'texte': 'Toutes les personnes hébergées sur la période, prêt pour un contrôle.',
          'voix': "Le registre de police s'imprime pour n'importe quelle période : toutes les personnes hébergées, "
                  "dans l'ordre d'arrivée, avec leur pièce d'identité. C'est le document à présenter en cas de "

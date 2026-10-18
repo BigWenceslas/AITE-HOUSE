@@ -19,6 +19,19 @@ data/housekeeping_data.xml (les 8 points de contrôle),
 wizard/report_issue_wizard*.py|xml (« Signaler un problème »). Le refus
 d'accès reprend le message d'Odoo 18 en français et les groupes de
 aite_hotel_management/security/hotel_security.xml.
+
+La journée rejouée est celle de scenarios/t07_gouvernante.py, le jeudi
+15/10/2026 au matin (fiche d'harmonisation de la série) : Estelle Ngono en
+204 [CFT] et Martin Ebode en 104 [STD] sont présents (ménage quotidien),
+Gaston Mbida est attendu en 103 [STD] à 14:00 (« Recouche à faire » : à
+nettoyer avant une arrivée, aite_housekeeping/models/hotel_room.py:73-75 ;
+« Arrivée prévue 14h00 », :59-61) ; la 203 [CFT] est libre (« Propre —
+libre ») : la panne bloquante retire donc une chambre libre de la vente
+(maintenance_request.py:51-54). La 105 est hors service toute la série : elle
+n'est pas dans la colonne « À nettoyer ». Colonnes dans l'ordre où Odoo 18
+les affiche (À nettoyer, À inspecter, Nettoyage en cours, Propre : écart 1 de
+t07) ; seules quelques cartes par colonne sont rejouées. Titre de
+l'assistant : « Signaler un problème — chambre %s » (hotel_room.py:149-159).
 """
 
 import demo
@@ -53,26 +66,26 @@ def carte_chambre(ident, numero, hint, type_etage, client=None, arrivee=None, eq
 # ------------------------------------------------- Tableau des chambres --
 C102 = carte_chambre('c2-102', '102', 'À nettoyer', 'Standard · Rez-de-chaussée', equipiere=EQ1,
                      boutons=[bouton('c2-102-go', 'Commencer', 'primaire', 'play')])
-C105 = carte_chambre('c2-105', '105', 'À nettoyer', 'Standard · Rez-de-chaussée', equipiere=EQ2,
-                     boutons=[bouton('c2-105-go', 'Commencer', 'primaire', 'play')])
+C103 = carte_chambre('c2-103', '103', 'Recouche à faire', 'Standard · Rez-de-chaussée', client='Gaston Mbida',
+                     arrivee='Arrivée prévue 14h00', equipiere=EQ2,
+                     boutons=[bouton('c2-103-go', 'Commencer', 'primaire', 'play')])
 C102_INSP = carte_chambre('c2-102i', '102', 'À inspecter par la gouvernante', 'Standard · Rez-de-chaussée',
                           equipiere=EQ1, boutons=[bouton('c2-102-ok', 'Conforme', 'vert', 'coche'),
                                                     bouton('c2-102-ko', 'À refaire', 'rouge-contour')],
                           classe_='masque')
 C102_REDO = carte_chambre('c2-102r', '102', 'À nettoyer', 'Standard · Rez-de-chaussée', equipiere=EQ1,
                           boutons=[bouton('c2-102r-go', 'Commencer', 'primaire', 'play')], classe_='masque')
-C201 = carte_chambre('c2-201', '201', 'Nettoyage en cours', 'Confort · 1er étage', client='Martin Ebode', equipiere=EQ2,
-                     boutons=[bouton('c2-201-done', 'Terminé', 'vert', 'coche')])
-C203 = carte_chambre('c2-203', '203', 'Propre — prête pour l\'arrivée', 'Confort · 1er étage', client='Joël Kamga',
-                     arrivee='Arrivée prévue 14h00', boutons=[bouton('c2-203-sale', 'À nettoyer', 'blanc')],
-                     panne='masque')
+C104 = carte_chambre('c2-104', '104', 'Nettoyage en cours', 'Standard · Rez-de-chaussée', client='Martin Ebode',
+                     equipiere=EQ2, boutons=[bouton('c2-104-done', 'Terminé', 'vert', 'coche')])
+C203 = carte_chambre('c2-203', '203', 'Propre — libre', 'Confort · 1er étage',
+                     boutons=[bouton('c2-203-sale', 'À nettoyer', 'blanc')], panne='masque')
 C204 = carte_chambre('c2-204', '204', 'Propre — client présent', 'Confort · 1er étage', client=demo.CLIENT,
                      boutons=[bouton('c2-204-sale', 'À nettoyer', 'blanc')])
 
 TABLEAU = vue_kanban('c2-tableau', 'Tableau des chambres', [
-    ('À nettoyer', '2', ['<div class="pile">%s%s</div>' % (C102, C102_REDO), C105], 'c2-col-1'),
-    ('Nettoyage en cours', '1', [C201], 'c2-col-2'),
+    ('À nettoyer', '2', ['<div class="pile">%s%s</div>' % (C102, C102_REDO), C103], 'c2-col-1'),
     ('À inspecter', '0', [C102_INSP], 'c2-col-3'),
+    ('Nettoyage en cours', '1', [C104], 'c2-col-2'),
     ('Propre', '2', [C203, C204], 'c2-col-4')], initiale=True)
 
 # ------------------------------------------------------ Ma journée (téléphone) --
@@ -109,7 +122,7 @@ INSPECTION = assistant('c2-as-insp', 'Inspection — chambre 102', (
      ('c2-fermer', 'Fermer', 'gris', None)], haut=26, largeur=1260)
 
 # ------------------------------------------------------ Signaler un problème --
-PROBLEME = assistant('c2-as-pb', 'Signaler un problème', m_champs([
+PROBLEME = assistant('c2-as-pb', 'Signaler un problème — chambre 203', m_champs([
     m_champ('Chambre', e('203 [CFT]')),
     m_champ('Quel est le problème ?', entree('c2-pb', 'Ex. : climatiseur en panne, fuite lavabo…')),
     m_champ('Urgence', '<span class="etoiles">%s%s%s</span>' % (icone('etoile'), icone('etoile'),
@@ -149,10 +162,10 @@ CHAPITRE = {
     'ecran': ECRAN,
     'vues_initiales': {'odoo': 'c2-tableau'},
     'etapes': [
-        {'titre': 'Le tableau des chambres', 'texte': 'À nettoyer, en cours, à inspecter, propre : une colonne par état.',
-         'voix': "Le tableau des chambres se lit sans explication : à nettoyer, en cours, à inspecter, propre. "
-                 "Chaque carte dit l'état en une phrase, le client présent, l'arrivée prévue et l'équipière.",
-         'gestes': [pause(0.6), anneau('#c2-col-1', d=1.2), anneau('#c2-203-hint', d=1.4), anneau('#c2-203', d=1.4),
+        {'titre': 'Le tableau des chambres', 'texte': 'À nettoyer, à inspecter, en cours, propre : une colonne par état.',
+         'voix': "Le tableau des chambres se lit sans explication : à nettoyer, à inspecter, en cours, propre. "
+                 "Chaque carte dit l'état en une phrase, le client, l'arrivée prévue et l'équipière.",
+         'gestes': [pause(0.6), anneau('#c2-col-1', d=1.2), anneau('#c2-103-hint', d=1.4), anneau('#c2-103', d=1.4),
                     pause(0.4)]},
         {'titre': 'Ma journée, sur le téléphone', 'texte': 'Un bouton par étape : « Je commence », puis « C\'est fait ».',
          'voix': "Clarisse, l'équipière, ouvre Ma journée sur son téléphone. Un bouton par étape : Je commence, puis "
@@ -172,8 +185,8 @@ CHAPITRE = {
                     fermer('c2-as-insp'), cacher('#c2-102i', d=0.3), montrer('#c2-102r', d=0.4),
                     texte('#c2-col-3-n', '(0)'), texte('#c2-col-1-n', '(2)'), anneau('#c2-102r', d=1.4)]},
         {'titre': 'Signaler une panne', 'texte': 'La chambre est retirée de la vente tant que la réparation n\'est pas faite.',
-         'voix': "Dans la chambre deux cent trois, le climatiseur est en panne. La clé de la carte ouvre Signaler un "
-                 "problème. La case « ne peut pas être vendue » retire la chambre de la vente.",
+         'voix': "Dans la deux cent trois, libre ce jour-là, le climatiseur est en panne. La clé de la carte ouvre "
+                 "Signaler un problème. La case « ne peut pas être vendue » retire la chambre de la vente.",
          'gestes': [clic('#c2-203-cle'), ouvrir('c2-as-pb'), saisir('c2-pb', 'Climatiseur en panne'),
                     classe('#c2-bloque', ajouter=['coche']), anneau('#c2-bloque', d=1.2), clic('#c2-pb-ok'),
                     fermer('c2-as-pb'), classe('#c2-203', ajouter=['hors-service']),

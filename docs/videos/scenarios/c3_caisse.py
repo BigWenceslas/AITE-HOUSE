@@ -15,6 +15,12 @@ remboursement », moyens de paiement, bouton « Encaisser »). Menus du profil
 Caisse relevés sur une base de recette (load_menus). Le refus reprend le
 message d'Odoo 18 et les groupes qui lisent aite.hotel.reservation
 (aite_hotel_management/security/ir.model.access.csv).
+
+Données harmonisées avec scenarios/t10_ardoises.py : ARD/0024 d'Armand Mvogo,
+ouverte le 18/08/2026 sur la commande « Bar de la terrasse/0017 », 20 000 FCFA
+remboursés en espèces le 30/09, réglée le 14/10 à 15:30 en Orange Money
+(OM261014.1530.A55120). Le tableau de bord et la liste sont lus le 14/10
+avant ce règlement (encours 150 000 FCFA, les cinq ardoises de demo.py).
 """
 
 import demo
@@ -75,7 +81,7 @@ FEUILLE = (
     + deux_colonnes(
         groupe('', [champ('Client', 'Armand Mvogo', gras=True), champ("Date d'ouverture", '18/08/2026', gras=True),
                     champ('Origine', '<span class="puce gris">Point de vente</span>', html=True),
-                    champ('Commande POS d\'origine', 'Bar — Commande 00412'), champ("Caisse d'origine", 'Bar de la terrasse')]),
+                    champ('Commande POS d\'origine', 'Bar de la terrasse/0017', lien_=True), champ("Caisse d'origine", 'Bar de la terrasse')]),
         groupe('', [champ('Montant initial', '64 500 FCFA', gras=True), champ('Déjà remboursé', '20 000 FCFA', 'c3-deja'),
                     champ('Reste dû', '44 500 FCFA', 'c3-reste'), champ('Âge (jours)', '57'),
                     champ('Sévérité', 'En retard', 'c3-sev')]))

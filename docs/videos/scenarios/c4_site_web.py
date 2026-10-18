@@ -13,8 +13,22 @@ placeholders, « Réserver ce créneau », mention de l'acompte, page « Merci !
 pour un créneau et pour un séjour, « Demande de séjour », « Envoyer la
 demande »), aite_slot_booking/data/slot_sequence_data.xml (référence
 RES/AA/NNNN). L'en-tête du site (logo, menus) est celui du site de
-l'établissement : il est rejoué neutre, au nom de l'hôtel de démonstration.
+l'établissement : il est rejoué neutre, au nom de l'hôtel de démonstration,
+avec le menu « Contactez-nous » d'Odoo et le téléphone de l'hôtel de la série.
+
+Données harmonisées avec scenarios/t08_site_web.py (le même parcours, en
+tutoriel) : tarifs des salons 15 000 et 25 000 FCFA / heure (ceux du
+tutoriel 9) ; Claire Durand (+33 6 39 98 21 47, plage réservée à la fiction ;
+claire.durand@exemple.fr) réserve le salon VIP Wouri pour le samedi
+17/10/2026 à 16:00, référence RES/26/0131 ; créneaux libres du 17/10
+(12:00-14:00 et 19:00-21:00 déjà vendus) ; sa demande de séjour du 20 au
+23/10 devient RES/2026/0224.
 """
+
+TEL_CLAIRE = '+33 6 39 98 21 47'
+TARIF_SALON, TARIF_VVIP = '15 000 FCFA / heure', '25 000 FCFA / heure'
+TEL_HOTEL = '+237 6 00 00 00 10'
+
 
 import demo
 from ecrans import e, entree, s_vue, site
@@ -41,15 +55,15 @@ ACCUEIL = s_vue('c4-accueil', (
 
 ESPACES = s_vue('c4-espaces', (
     '<div class="s-h1">Espaces VIP & VVIP</div><div class="s-cartes">%s%s%s</div>'
-    % (s_carte('c4-e1', 'Salon VIP Wouri', 'Ouvert de 09:00 à 23:00', 'Voir les créneaux', True, '11 500 FCFA / heure'),
-       s_carte('c4-e2', 'Salon VIP Sanaga', 'Ouvert de 09:00 à 23:00', 'Voir les créneaux', True, '11 500 FCFA / heure'),
-       s_carte('c4-e3', 'Salon VVIP Bonabéri', 'Ouvert de 10:00 à 23:00', 'Voir les créneaux', True, '23 000 FCFA / heure'))))
+    % (s_carte('c4-e1', 'Salon VIP Wouri', 'Ouvert de 09:00 à 23:00', 'Voir les créneaux', True, TARIF_SALON),
+       s_carte('c4-e2', 'Salon VIP Sanaga', 'Ouvert de 09:00 à 23:00', 'Voir les créneaux', True, TARIF_SALON),
+       s_carte('c4-e3', 'Salon VVIP Bonabéri', 'Ouvert de 10:00 à 23:00', 'Voir les créneaux', True, TARIF_VVIP))))
 
-HEURES = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00']
+HEURES = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00', '18:00', '21:00', '22:00']     # libres le 17/10
 CRENEAUX = ''.join('<span class="creneau" id="c4-h%s"><i></i>%s</span>' % (h[:2], h) for h in HEURES)
 CRENEAU = s_vue('c4-creneau', (
     '<div class="s-form"><div class="s-p" style="margin-top:0">← Tous les espaces</div>'
-    '<div class="s-h1" style="font-size:54px;margin-top:6px">Salon VIP Wouri</div><div class="s-p">11 500 FCFA / heure</div>'
+    '<div class="s-h1" style="font-size:54px;margin-top:6px">Salon VIP Wouri</div><div class="s-p">%s</div>'
     '<div class="s-lab">Date</div><div style="display:flex;gap:10px;margin-top:8px;width:480px;align-items:flex-end">'
     '<div style="flex:1">%s</div><span class="bt" style="background:#212529;color:#fff;height:58px;flex:none;'
     'padding:0 20px" id="c4-voir">Voir ce jour</span></div>'
@@ -57,12 +71,12 @@ CRENEAU = s_vue('c4-creneau', (
     '<div class="s-lab" style="font-size:24px;margin-top:22px">Vos coordonnées</div><div class="s-ligne3">%s%s%s</div>'
     '<div class="s-gros-bt" id="c4-reserver">Réserver ce créneau</div>'
     '<div class="s-note">Acompte à régler au comptoir — Orange Money, MTN MoMo ou espèces.</div></div>'
-    % (entree('c4-date', 'jj/mm/aaaa'), CRENEAUX, entree('c4-nom', 'Nom complet'), entree('c4-tel', 'Téléphone'),
+    % (TARIF_SALON, entree('c4-date', 'jj/mm/aaaa'), CRENEAUX, entree('c4-nom', 'Nom complet'), entree('c4-tel', 'Téléphone'),
        entree('c4-mail', 'E-mail (confirmation)'))))
 
 MERCI = s_vue('c4-merci', (
     '<div class="s-merci"><div class="h">Merci !</div>'
-    '<div class="p">Votre réservation <b>RES/26/0418</b> est <b>confirmée</b>.</div>'
+    '<div class="p">Votre réservation <b>RES/26/0131</b> est <b>confirmée</b>.</div>'
     '<div class="q" style="color:var(--o-texte)">Salon VIP Wouri</div>'
     '<div class="q">Un e-mail de confirmation vous a été envoyé.</div>'
     '<div class="s-alerte" id="c4-acompte">L\'acompte se règle au comptoir à votre arrivée — <b>Orange Money, MTN MoMo '
@@ -82,12 +96,14 @@ SEJOUR = s_vue('c4-sejour', (
 
 MERCI_SEJOUR = s_vue('c4-merci2', (
     '<div class="s-merci"><div class="h">Merci !</div>'
-    '<div class="p">Votre demande de séjour <b>RES/2026/0221</b> est bien transmise.</div>'
+    '<div class="p">Votre demande de séjour <b>RES/2026/0224</b> est bien transmise.</div>'
     '<div class="q" id="c4-rappel">Notre réception vous confirme la chambre et le tarif très rapidement.</div>'
     '<div style="margin-top:22px"><span class="s-bouton contour" style="display:inline-flex;padding:0 22px">'
     'Retour aux réservations</span></div></div>'))
 
-ECRAN = site('app-c4', [ACCUEIL, ESPACES, CRENEAU, MERCI, SEJOUR, MERCI_SEJOUR], 'Complexe Hôtelier')
+# L'en-tête partagé (ecrans.site) écrit « Nous contacter » et un autre numéro : on rejoue celui de l'hôtel (t08).
+ECRAN = (site('app-c4', [ACCUEIL, ESPACES, CRENEAU, MERCI, SEJOUR, MERCI_SEJOUR], 'Complexe Hôtelier')
+         .replace('Nous contacter', 'Contactez-nous').replace('+237 6 99 00 00 00', TEL_HOTEL))
 
 CHAPITRE = {
     'court': 'Site web',
@@ -114,12 +130,12 @@ CHAPITRE = {
         {'titre': 'Les créneaux libres', 'texte': 'La grille du jour ne montre que ce qui est encore disponible.',
          'voix': "Elle choisit une date : la grille ne montre que les créneaux encore libres. Elle coche seize "
                  "heures.",
-         'gestes': [vue('c4-creneau', 'site'), saisir('c4-date', '15/10/2026'), clic('#c4-voir'), pause(0.3),
+         'gestes': [vue('c4-creneau', 'site'), saisir('c4-date', '17/10/2026'), clic('#c4-voir'), pause(0.3),
                     clic('#c4-h16'), classe('#c4-h16', ajouter=['coche'])]},
         {'titre': 'Se présenter et réserver', 'texte': 'Nom, téléphone, e-mail : la confirmation part toute seule.',
          'voix': "Puis ses coordonnées : nom, téléphone, e-mail pour la confirmation. Un clic sur Réserver ce "
                  "créneau ; l'acompte se réglera au comptoir, en Orange Moni, MTN MoMo ou espèces.",
-         'gestes': [saisir('c4-nom', NOM), saisir('c4-tel', '+33 6 45 21 87 90'),
+         'gestes': [saisir('c4-nom', NOM), saisir('c4-tel', TEL_CLAIRE),
                     saisir('c4-mail', 'claire.durand@exemple.fr'), clic('#c4-reserver')]},
         {'titre': 'Réservation confirmée', 'texte': 'La référence prouve que la réservation est déjà au back-office.',
          'voix': "La page de remerciement affiche la référence de la réservation : elle est déjà dans le planning "
@@ -129,7 +145,7 @@ CHAPITRE = {
          'voix': "Pour une chambre, Claire envoie une demande de séjour : dates, nombre d'adultes et coordonnées. "
                  "La demande arrive à la réception en brouillon, prête à confirmer.",
          'gestes': [vue('c4-sejour', 'site'), saisir('c4-s-arr', '20/10/2026'), saisir('c4-s-dep', '23/10/2026'),
-                    saisir('c4-s-nom', NOM), saisir('c4-s-tel', '+33 6 45 21 87 90'),
+                    saisir('c4-s-nom', NOM), saisir('c4-s-tel', TEL_CLAIRE),
                     saisir('c4-s-mail', 'claire.durand@exemple.fr'), clic('#c4-envoyer'),
                     vue('c4-merci2', 'site'), anneau('#c4-merci2 .p b', d=1.4)]},
     ],

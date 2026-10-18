@@ -24,9 +24,21 @@ Libellés relevés dans :
   cartes, onglets, « negMoney ») ;
 - aite_slot_booking/static/src/xml (« Espaces & Prestations », filtres,
   « Activité de la période », « Planning du <jour> », « créneaux libres »).
-Les dates ISO (« 2026-10-01 → 2026-10-15 », « Planning du 2026-10-15 ») et
+Les dates ISO (« 2026-09-30 → 2026-10-14 », « Planning du 2026-10-17 ») et
 les pourcentages à point décimal de POS Analytics sont rejoués tels que
 le code les affiche : relevés dans ECARTS.md.
+
+Jour rejoué : le mercredi 14/10/2026, comme scenarios/t15_direction.py. La
+période « Ce mois » démarre la veille du 1er à Douala (écart 1 de t15) :
+« 2026-09-30 → 2026-10-14 », quinze jours ; 192 nuitées sur 20 chambres × 15
+jours = 300, d'où 64,0 % et RevPAR 28 800 FCFA. Espaces & Prestations : les
+indicateurs de la période par défaut, « Aujourd'hui » (slot_dashboard_view.js
+:30-34), et le planning du samedi 17/10, celui de scenarios/t08_site_web.py
+(JOUR_17, mêmes ressources, mêmes réservations) : la réservation en ligne de
+Claire Durand (RES/26/0131, 16:00-17:00) est sur le salon Wouri. Indicateurs
+du 14/10 repris de t08 : 61 800 FCFA réalisés (5 prestations), 20 h
+réservées sur 109 h ouvrées (huit ressources), aucun no-show, 2 retraits
+pressing en attente, 6 réservations à venir.
 """
 
 import demo
@@ -142,36 +154,56 @@ ACHATS = vue_tdb('c6-achats', (
                             etiquettes=['Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct']))))
 
 # ---------------------------------------------------- espaces & prestations --
+# Les huit ressources (scenarios/t09_espaces.py, même ordre ; couleur de la famille) et le planning du
+# samedi 17/10 (scenarios/t08_site_web.py, JOUR_17) : (nom, couleur, ouverture, fermeture, pas en minutes,
+# [(début h, fin h, client, identifiant)]). Créneaux libres = créneaux entièrement vides (booking_resource.py:106-142).
 RESSOURCES = [
-    # (nom, couleur, [(début h, fin h, client)], libres / total)
-    ('Salon VIP Wouri', '#714B67', [(16, 17, demo.POSTES['client'][0])], '13/14'),
-    ('Salon VIP Sanaga', '#714B67', [(11, 14, 'Paul Essomba')], '11/14'),
-    ('Salon VVIP Bonabéri', '#714B67', [(19, 23, 'Famille Ndjock')], '9/13'),
-    ('Cabine SPA 1', '#0F6E56', [(10, 11, 'Linda Ewané'), (15, 16, 'Carine Mbappé')], '22/24'),
-    ('Cabine SPA 2', '#0F6E56', [(14, 15, 'Rachel Bilong')], '23/24'),
-    ('Fauteuil homme 1', '#854F0B', [(9, 10, 'Yves Tchana'), (17, 18, 'Boris Kamga')], '20/22'),
+    ('Salon VIP Wouri', '#714B67', 9, 23, 60, [(12, 14, 'Aline Nkengue', None),
+                                               (16, 17, demo.POSTES['client'][0], 'c6-bk-claire'),
+                                               (19, 21, 'Gilbert Tchoua', None)]),
+    ('Salon VIP Sanaga', '#714B67', 9, 23, 60, [(10, 12, 'Josué Mbida', None), (18, 20, 'Joseph Ekani', None)]),
+    ('Salon VVIP Bonabéri', '#714B67', 10, 23, 60, [(15, 19, 'Grâce Nguene', None)]),
+    ('Cabine SPA 1', '#0F6E56', 9, 21, 30, [(11, 12, 'Nadège Owona', None), (15, 16.5, 'Sandrine Kemajou', None)]),
+    ('Cabine SPA 2', '#0F6E56', 9, 21, 30, [(10, 11, 'Pauline Etame', None)]),
+    ('Fauteuil homme 1', '#185FA5', 9, 20, 30, [(9, 9.5, 'Armel Tsala', None), (14, 14.5, 'Hugo Biyong', None)]),
+    ('Fauteuil femme 1', '#185FA5', 9, 20, 30, [(9.5, 11.5, 'Gisèle Kouam', None), (14, 15, 'Odile Ekwalla', None)]),
 ]
 
 
-def ligne_planning(i, nom, couleur, creneaux, libres):
-    barres = ''.join('<span class="pl-b" style="left:%.2f%%;width:%.2f%%">%s</span>'
-                     % ((d - 9) * 100 / 14.0, (f - d) * 100 / 14.0, e(c)) for d, f, c in creneaux)
+def libres(ouv, ferm, pas, creneaux):
+    """« x/y » : les créneaux du pas de la ressource qui ne touchent aucune réservation."""
+    step, h, n, total = pas / 60.0, float(ouv), 0, 0
+    while h + step <= ferm + 1e-6:
+        total += 1
+        n += 0 if any(d < h + step and f > h for d, f, _, _ in creneaux) else 1
+        h += step
+    return '%d/%d' % (n, total)
+
+
+assert [libres(*r[2:]) for r in RESSOURCES] == ['9/14', '10/14', '9/13', '19/24', '22/24', '20/22', '16/22']
+
+
+def ligne_planning(i, nom, couleur, ouv, ferm, pas, creneaux):
+    barres = ''.join('<span class="pl-b"%s style="left:%.2f%%;width:%.2f%%">%s</span>'
+                     % (' id="%s"' % ident if ident else '', (d - 9) * 100 / 14.0, (f - d) * 100 / 14.0, e(c))
+                     for d, f, c, ident in creneaux)
     return ('<div class="pl-l" id="c6-pl%d"><span class="pl-n"><i style="background:%s"></i>%s</span>'
             '<div class="pl-p">%s</div><span class="pl-x">%s créneaux libres</span></div>'
-            % (i, couleur, e(nom), barres, libres))
+            % (i, couleur, e(nom), barres, libres(ouv, ferm, pas, creneaux)))
 
 
 ESPACES = vue_tdb('c6-espaces', (
     tdb_entete('Espaces & Prestations', 'Planning des créneaux · SPA, coiffure, pressing, espaces VIP / VVIP',
                'Nouvelle réservation')
-    + tdb_filtres([('Jour', ['‹', '15/10/2026', '›', "Aujourd'hui"], -1),
+    + tdb_filtres([('Jour', ['‹', '17/10/2026', '›', "Aujourd'hui"], -1),
+                   ('Période stats', ["Aujourd'hui", 'Cette semaine', 'Ce mois'], 0),
                    ('Famille', ['Toutes', 'Espace VIP / VVIP', 'SPA', 'Coiffure', 'Pressing', 'Autre'], 0)])
     + tdb_section('Activité de la période', [
-        kpi('c6-e-ca', 'CA prestations réalisées', '1 240 000 FCFA', '46 réalisée(s)', 'violet'),
-        kpi('c6-e-remp', 'Taux de remplissage', '38,5 %', '502 h réservées / 1 304 h ouvrées', 'bleu'),
-        kpi('c6-e-ns', 'No-show', '2,2 %', '1 rendez-vous manqué(s)', 'rouge'),
-        kpi('c6-e-pr', 'Retraits pressing en attente', '6', '14 réservation(s) à venir', 'ambre')])
-    + '<div class="tdb-sect">Planning du 2026-10-15</div><div class="pl">'
+        kpi('c6-e-ca', 'CA prestations réalisées', '61 800 FCFA', '5 réalisée(s)', 'violet'),
+        kpi('c6-e-remp', 'Taux de remplissage', '18,3 %', '20 h réservées / 109 h ouvrées', 'bleu'),
+        kpi('c6-e-ns', 'No-show', '0 %', '0 rendez-vous manqué(s)', 'rouge'),
+        kpi('c6-e-pr', 'Retraits pressing en attente', '2', '6 réservation(s) à venir', 'ambre')])
+    + '<div class="tdb-sect">Planning du 2026-10-17</div><div class="pl">'
       '<div class="pl-h"><span></span><div><span>09:00</span><span>11:00</span><span>13:00</span><span>15:00</span>'
       '<span>17:00</span><span>19:00</span><span>21:00</span><span>23:00</span></div><span></span></div>%s</div>'
       % ''.join(ligne_planning(i, *r) for i, r in enumerate(RESSOURCES))))
@@ -183,7 +215,7 @@ EXEC = vue_tdb('c6-exec', (
     tdb_entete('Direction — Vue consolidée', 'Hébergement · Restauration & boutique · Prestations')
     + tdb_filtres([('Période', ['Ce mois', 'Ce trimestre', 'Cette année'], 0)])
     + '<div style="height:14px"></div><div class="tdb-grille c4">%s</div>' % ''.join([
-        kpi('c6-x-tot', "Chiffre d'affaires total", '13 000 000 FCFA', 'Période 2026-10-01 → 2026-10-15', 'violet'),
+        kpi('c6-x-tot', "Chiffre d'affaires total", '13 000 000 FCFA', 'Période 2026-09-30 → 2026-10-14', 'violet'),
         kpi('c6-x-heb', 'Hébergement', '8 640 000 FCFA', 'Occupation 64,0 % · ADR 45 000 FCFA', 'violet'),
         kpi('c6-x-pos', 'Restauration & boutique', '3 120 000 FCFA', '128 tickets · panier 24 375 FCFA', 'bleu'),
         kpi('c6-x-pre', 'Prestations', '1 240 000 FCFA', '46 prestation(s) réalisée(s)', 'teal')])
@@ -259,10 +291,10 @@ CHAPITRE = {
          'gestes': changer_app('c6-nav-pos', 'c6-nav-achats', 'c6-achats')
                    + [pause(0.4), anneau('#c6-a-dette', d=1.0), anneau('#c6-a-7j', d=1.2), anneau('#c6-a-otif', d=1.4)]},
         {'titre': 'Les espaces et prestations', 'texte': 'Le planning du jour, ressource par ressource.',
-         'voix': "Les espaces et prestations montrent le remplissage et le planning de chaque salon, cabine ou "
-                 "fauteuil. La réservation faite par Claire sur le site est déjà là, sur le salon Wouri.",
+         'voix': "Les espaces et prestations montrent le remplissage du jour et le planning de chaque salon, cabine "
+                 "ou fauteuil. Samedi, la réservation faite par Claire sur le site est déjà là, sur le salon Wouri.",
          'gestes': changer_app('c6-nav-achats', 'c6-nav-esp', 'c6-espaces')
-                   + [pause(0.4), anneau('#c6-e-remp', d=1.0), anneau('#c6-pl0 .pl-b', d=1.8), anneau('#c6-pl0 .pl-x', d=0.9)]},
+                   + [pause(0.4), anneau('#c6-e-remp', d=1.0), anneau('#c6-bk-claire', d=1.8), anneau('#c6-pl0 .pl-x', d=0.9)]},
         {'titre': 'Le tableau de bord exécutif', 'texte': 'Hébergement, restauration et prestations, consolidés.',
          'voix': "Le tableau de bord exécutif consolide les trois pôles : hébergement, restauration et boutique, "
                  "prestations. La restauration y affiche exactement le chiffre de l'analyse des ventes.",

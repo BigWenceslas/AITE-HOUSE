@@ -1113,6 +1113,7 @@ CSS = """
 .t10-det { display: inline-flex; height: 30px; align-items: center; padding: 0 12px; border: 1px solid #6C757D; border-radius: 5px;
   font-size: 15px; color: #495057; }
 .t10-card-top { height: 440px; padding-top: 4px; }
+.t10-tab-p .t10-tr { height: 37px; }          /* cinq remboursements dans la période : la carte les tient tous */
 .t10-card-top .t10-tab { margin-top: 4px; }
 """
 

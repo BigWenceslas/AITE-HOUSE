@@ -114,20 +114,44 @@ addons/aite_direction_dashboard/tests/test_dashboard_api.py:84-124 (mêmes
 chiffres que les tableaux spécialisés), exec_dashboard.py:20-38 (six
 phrases d'explication).
 
-Données : demo.py (Complexe Hôtelier — Démo, Démo Hôtellerie SARL, ardoises
-ARD/0017 à ARD/0042 : encours 150 000 FCFA, 101 500 au-delà de 30 jours,
-âges au 14/10/2026) ; caisses « Bar de la terrasse » et « Restaurant »,
-fournisseurs et chiffres de l'hôtel repris de scenarios/c6_direction.py ;
-Christian Atangana, Nadège Owona et Rodrigue Manga (ardoises soldées dans
-la période) sont des noms fictifs ajoutés. Le jour rejoué est le
-14/10/2026, navigateur en français à Douala. Les chiffres se tiennent :
-CA des nuitées = 192 nuitées × 45 000 = 8 640 000 ; 20 chambres × 15 jours
-= 300 nuitées disponibles, d'où 64,0 % et RevPAR 28 800 = 45 000 × 64 % ;
+Données : demo.py (Complexe Hôtelier — Démo, Démo Hôtellerie SARL, les
+cinq ardoises ouvertes de demo.ARDOISES : encours 150 000 FCFA, 101 500
+au-delà de 30 jours, âges au 14/10/2026) ; caisses « Bar de la terrasse »
+et « Restaurant », fournisseurs et chiffres de l'hôtel repris de scenarios/
+c6_direction.py. Le jour rejoué est le mercredi 14/10/2026 au matin
+(navigateur en français à Douala), avant le règlement d'Armand Mvogo à
+15:30 et la vente de Cédric Ngassa à 13:47 (t10_ardoises.py) : son
+ardoise ARD/0024 est encore due, d'où « Relancer Armand Mvogo » ; la voix
+dit « mercredi matin ». Crédit clients = le tableau de bord Recouvrement de
+c3_caisse.py et de t10_ardoises.py (indicateurs(True)) sur la même période
+(30/09 → 14/10) : recouvré 37 000 FCFA en 4 remboursements (Armand Mvogo,
+20 000 en espèces le 30/09 ; Ruth Bekolo, 3 000 en Orange Money le 02/10 ;
+Brigitte Essomba, 12 000 en MTN Mobile Money le 06/10 ; Francis Tsala,
+2 000 en MTN Mobile Money le 10/10), ▲ +12,1 % contre 33 000 du 15 au 29/09 ;
+nouveaux crédits 18 500 (ARD/0042), ▼ 63,0 % contre 50 000 ; taux 19,8 %,
+affiché « 20 % » (pct(…, 0), direction_dashboard.xml) ; 2 ardoises soldées
+(Ruth Bekolo en 20 j, Francis Tsala en 16 j), délai moyen 18 j ; encours de
+fin de mois de t10_ardoises.py (OUVERTES_MOIS, RECOUVRE_MOIS). Stock =
+t13_stock.AGREGATS (vrai calcul) : 2 réfs en alerte, coulage 0,6 %,
+« Commander » Bière blonde 65 cl 21 000 et Eau minérale 1,5 L 12 000 FCFA
+perdus par jour, commande suggérée 2 réfs pour 303 050 FCFA, écarts
+négatifs 41 500 FCFA. Prix d'achat : les deux premières hausses de
+t14_achats.PX dans l'ordre de get_price_moves (Bière blonde +8 %, Bière
+brune +3 %, Boissons du Wouri SARL). Dettes fournisseurs = t14_achats.py et
+c6 (1 280 000 sur 4 factures, 180 000 échus, 420 000 sous 7 j ; aucun
+statut ne change entre le 14 et le 16/10). Les chiffres se tiennent : CA
+des nuitées = 192 nuitées × 45 000 = 8 640 000 ; 20 chambres × 15 jours =
+300 nuitées disponibles, d'où 64,0 % et RevPAR 28 800 = 45 000 × 64 % ;
 cash à risque = 101 500 + 41 500 ; position nette = 150 000 − 1 280 000 ;
-restauration TTC = 3 120 000 HT × 1,1925 (écart 2) ; mix trié et arrondi
-comme _mix_rows. Top débiteurs : à encours égal (30 000), Brigitte
-Essomba (ARD/0039, plus récente) sort avant Sylvie Mbarga (ARD/0017) — tri
-stable sur des ardoises lues en create_date desc (pos_credit.py:23).
+tableau exécutif = celui de c6 : 8 640 000 + 3 120 000 (sans TVA, le
+TTC égale le HT ; panier 3 120 000 / 128 = 24 375) + 1 240 000 =
+13 000 000 FCFA, mix 66,5 / 24,0 / 9,5 % trié et arrondi comme _mix_rows ;
+points fidélité 10 480 = un point par 1 000 FCFA (règle de t11_fidelite.py)
+sur 8 640 000 de folios, 1 240 000 de prestations et environ 600 000 FCFA
+de tickets du bar rattachés à un client. Top débiteurs : à encours égal
+(30 000), Brigitte Essomba (ARD/0039, plus récente) sort avant Sylvie
+Mbarga (ARD/0017) — tri stable sur des ardoises lues en create_date desc
+(pos_credit.py:23).
 
 Cadrages choisis pour ne pas filmer les défauts du produit (non corrigés :
 les modules ne sont pas modifiés par les vidéos) :
@@ -141,8 +165,8 @@ les modules ne sont pas modifiés par les vidéos) :
   l'étape recouvrirait la rangée) ;
 - étape 6 : le tableau exécutif défile aussitôt ouvert (les quatre cartes
   de pôle et « Période 2026-09-30 → … » sortent du cadre), puis zoom sur
-  pickup / pace : ni le total ni « Hébergement » / « Restauration &
-  boutique » (écart 2) ne restent lisibles, la voix ne les cite pas ;
+  pickup / pace : ni le total ni les pôles ne restent lisibles, la voix ne
+  les cite pas ;
 - zooms des étapes 1 et 3 assez serrés (1,85 et 1,8) pour que le champ
   « Du 30/09/2026 » (écart 1) ne soit jamais en gros plan.
 
@@ -162,12 +186,12 @@ pas « vs N-1 » et toLocaleString écrit un trait d'union).
    le cockpit, « Période 2026-09-30 → 2026-10-14 » dans l'exécutif
    (direction_dashboard.js:57-78, utils.js:36-49) ; date ISO dans
    l'exécutif et dans « Derniers remboursements ».
-2. Deux chiffres d'hébergement et de restauration pour la même période :
-   « CA des nuitées (HT) » 8 640 000 (nuit par nuit, direction_dashboard.py
-   :399) contre « Hébergement » 7 912 400 (folios TTC datés au départ,
-   exec_dashboard.py:142-161, :221) ; CA encaissé HT 3 120 000 (price_subtotal)
-   contre « Restauration & boutique » TTC 3 720 600 (amount_total,
-   exec_dashboard.py:247).
+2. Deux bases différentes pour la même période : « CA des nuitées (HT) »
+   compte nuit par nuit (direction_dashboard.py:399), « Hébergement » les
+   folios TTC datés au départ (exec_dashboard.py:142-161, :221) ; « CA
+   encaissé » est HT (price_subtotal), « Restauration & boutique » TTC
+   (amount_total, exec_dashboard.py:247). Sans TVA et avec ce jeu (repris
+   de c6), les montants coïncident : l'écart n'est pas visible ici.
 3. Graphique « CA vs Achats » : les barres du CA restent à zéro (clés de
    mois différentes) ; côté fournisseurs du miroir à 0 sur les quatre
    tranches (clés amount / date / planned absentes) ; aucune ligne « Payer
@@ -179,7 +203,8 @@ pas « vs N-1 » et toLocaleString écrit un trait d'union).
    nouveaux » et annonce « l'encours monte » quand il baisse
    (direction_dashboard.xml:461-465, js:407-412) ; « Délai moyen de
    remboursement » affiche le nombre brut, sans arrondi
-   (direction_dashboard.xml:447 ; ici une moyenne entière).
+   (direction_dashboard.xml:447 ; ici une moyenne entière) ; pas d'accord
+   du pluriel : « 1 ardoises ouvertes » (:460).
 6. Pourcentages : « 64,0 % » dans le cockpit, « 64 % » dans l'exécutif ;
    carte « Prestations » sans liseré teal (dashboard.xml:70, classe absente
    de exec_dashboard.scss:195-199) ; espaces fines des montants de
@@ -193,13 +218,30 @@ pas « vs N-1 » et toLocaleString écrit un trait d'union).
    explique le sigle, mais le sigle reste en tête.
 """
 
+import contextlib
+import io
+
 import demo
+from scenarios import t13_stock
+with contextlib.redirect_stderr(io.StringIO()):     # l'avertissement 409 de t14 ne concerne pas ce tutoriel
+    from scenarios import t14_achats
 from ecrans import APPS_PROFIL, ICONES, e, fenetre_muk, icone, navigateur, vue_libre
 from marketing import bulle, dezoom, reaction, zoom
 from moteur import anneau, cacher, classe, clic, compter, curseur, defiler, montrer, pause, texte, vue
 
 NOM, ROLE = demo.POSTES['direction']
 SOCIETE = demo.SOCIETE
+# Le stock de t13_stock.py (AGREGATS, calculé par le vrai code) et les prix d'achat de t14_achats.py (PX).
+STOCK = {k: (v.replace('\xa0', ' ') if isinstance(v, str) else v) for k, v in t13_stock.AGREGATS.items()}
+COMMANDER = [(n, m.replace('\xa0', ' ')) for n, m in t13_stock.AGREGATS['commander']][:2]
+NB_CMD, VAL_CMD = STOCK['commande_suggeree'][0], STOCK['commande_suggeree'][1].replace('\xa0', ' ')
+# price_up (direction_dashboard.py:580-584) : les hausses dans l'ordre de get_price_moves (dépense décroissante),
+# les deux premières seulement (:310) ; « %+.0f %% · <fournisseur> ».
+HAUSSES = [(p['nom'], '%+.0f %% · %s' % ((p['p1'] / float(p['p0']) - 1) * 100, p['four']))
+           for p in t14_achats.PX if p['p1'] > p['p0']][:2]
+assert [h[0] for h in HAUSSES] == ['Bière blonde 65 cl', 'Bière brune 65 cl']
+assert (STOCK['coulage_pct'], STOCK['pertes'], STOCK['ecarts_negatifs'], STOCK['alertes']) == ('0,6 %', '41 500 FCFA',
+                                                                                             '41 500 FCFA', 2)
 FCFA = ' FCFA'
 NNBSP = ' '          # l'espace fine que toLocaleString pose dans les montants de l'exécutif
 
@@ -324,7 +366,7 @@ POLES = rangee(
     carte('t15-p-tix', 'Ventes — tickets', '128', 'panier moyen 24 375 FCFA', 'per'),
     carte('t15-p-ard', 'Encours ardoises', '150 000 FCFA', '5 clients · 101 500 au-delà de 30 j', 'photo', 'ambre'),
     carte('t15-p-four', 'Dettes fournisseurs', '1 280 000 FCFA', '180 000 échues · 420 000 sous 7 j', 'photo', 'info'),
-    carte('t15-p-stock', 'Stock — valeur / alertes', '3 185 000 FCFA', '2 réfs en alerte · coulage 1,3 %', 'photo'),
+    carte('t15-p-stock', 'Stock — valeur / alertes', '3 185 000 FCFA', '%d réfs en alerte · coulage %s' % (STOCK['alertes'], STOCK['coulage_pct']), 'photo'),
     ident='t15-poles')
 HOTEL = rangee(
     carte('t15-x-ca', 'CA des nuitées (HT)', '8 640 000 FCFA', '192 nuitée(s) vendue(s) · pace du mois : 412 (N-1 : 387)',
@@ -339,8 +381,11 @@ HOTEL = rangee(
 
 # Tendances (direction_dashboard.xml:42-107) : 6 mois, barres CA à zéro (écart 3).
 MOIS = ['Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct']
-ACHATS = [1620000, 1710000, 1540000, 1880000, 1760000, 980000]
-ENCOURS = [121000, 139500, 158000, 171500, 186500, 150000]
+# Factures fournisseurs par mois : celles de t14_achats.py (FLUX ; octobre : les factures de la période).
+ACHATS = [f[1] for f in t14_achats.FLUX]
+# Encours de fin de mois, à rebours (direction_dashboard.py:149-166) : ceux que donnent les flux mensuels de
+# t10_ardoises.py (OUVERTES_MOIS, RECOUVRE_MOIS) ; octobre : la photo du 14/10 au matin.
+ENCOURS = [16000, 19000, 25000, 94500, 148500, 150000]
 
 
 def trend_svg():
@@ -360,10 +405,10 @@ def trend_svg():
     points = ''.join('<circle cx="%.1f" cy="%.1f" r="3.5" fill="#854F0B"/>' % p for p in pts)
     return ('<svg viewBox="0 0 560 212" class="t15-trend"><g stroke="#eeede8" stroke-width="1"><line x1="40" y1="20" '
             'x2="545" y2="20"/><line x1="40" y1="100" x2="545" y2="100"/><line x1="40" y1="180" x2="545" y2="180"/></g>'
-            '<g font-size="9" fill="#62615C" text-anchor="end"><text x="36" y="23">1 880 000</text><text x="36" y="183">0'
-            '</text></g><g font-size="9" fill="#854F0B" text-anchor="start"><text x="548" y="23">186 500</text>'
+            '<g font-size="9" fill="#62615C" text-anchor="end"><text x="36" y="23">%s</text><text x="36" y="183">0'
+            '</text></g><g font-size="9" fill="#854F0B" text-anchor="start"><text x="548" y="23">150 000</text>'
             '<text x="548" y="183">0</text></g>%s<polyline points="%s" fill="none" stroke="#854F0B" stroke-width="2.5"/>'
-            '%s</svg>' % (''.join(corps), ligne, points))
+            '%s</svg>' % ('{:,}'.format(mb).replace(',', ' '), ''.join(corps), ligne, points))
 
 
 LEGENDE_TREND = ('<div class="t15-legend"><i class="t15-dot" style="background:#714B67"></i>CA encaissé'
@@ -400,28 +445,27 @@ CREDIT_KPI = (
     rangee(carte('t15-c-enc', 'Encours total', '150 000 FCFA', '5 clients débiteurs', 'photo', 'ambre', True),
            carte('t15-c-late', 'Au-delà de 30 j', '101 500 FCFA', "67,7 % de l'encours", 'photo', 'rouge'),
            carte('t15-c-old', 'Plus ancienne ardoise', '104 j', 'Sylvie Mbarga · 30 000 FCFA', 'photo'),
-           carte('t15-c-delai', 'Délai moyen de remboursement', '10 j', '3 ardoises soldées', 'photo'))
-    + rangee(carte('t15-c-rec', 'Recouvré', '82 500 FCFA', '6 remboursements', 'per', 'vert', delta='▲ +61,8 %'),
-             carte('t15-c-new', 'Nouveaux crédits', '41 000 FCFA', '2 ardoises ouvertes', 'per', 'ambre',
-                   delta='▼ 36,9 %'),
-             carte('t15-c-flux', 'Flux net', '−41 500 FCFA', "recouvré − nouveaux : l'encours monte", 'per', 'teal'),
-             carte('t15-c-taux', 'Taux de recouvrement', '35 %', 'ardoise moyenne 30 000 FCFA', 'per')))
+           carte('t15-c-delai', 'Délai moyen de remboursement', '18 j', '2 ardoises soldées', 'photo'))
+    + rangee(carte('t15-c-rec', 'Recouvré', '37 000 FCFA', '4 remboursements', 'per', 'vert', delta='▲ +12,1 %'),
+             carte('t15-c-new', 'Nouveaux crédits', '18 500 FCFA', '1 ardoises ouvertes', 'per', 'ambre',
+                   delta='▼ 63,0 %'),
+             carte('t15-c-flux', 'Flux net', '−18 500 FCFA', "recouvré − nouveaux : l'encours monte", 'per', 'teal'),
+             carte('t15-c-taux', 'Taux de recouvrement', '20 %', 'ardoise moyenne 30 000 FCFA', 'per')))
 # couleurs de la balance âgée telles que keyOf les choisit (écart 4)
 AGING = (hbar('0–30 j', 67.8, '#3B6D11', '48 500', '2 cl.') + hbar('30–60 j', 100, '#3B6D11', '71 500', '2 cl.')
          + hbar('60–90 j', 2, '#854F0B', '0', '0 cl.') + hbar('+90 j', 42.0, '#a3702a', '30 000', '1 cl.'))
 SPARK = ('<svg viewBox="0 0 520 120" class="t15-spark"><polyline points="%s" fill="none" stroke="#854F0B" '
          'stroke-width="2.5"/></svg>'
-         % ' '.join('%.1f,%.1f' % (15 + i * 490 / 6.0 + 490 / 12.0, 105 - v / 186500.0 * 90) for i, v in enumerate(ENCOURS)))
+         % ' '.join('%.1f,%.1f' % (15 + i * 490 / 6.0 + 490 / 12.0, 105 - v / float(max(ENCOURS)) * 90) for i, v in enumerate(ENCOURS)))
 # tri stable par encours sur des ardoises lues en create_date desc : à encours égal, ARD/0039 (Essomba, plus
 # récente) sort avant ARD/0017 (Mbarga) — pos_credit.py:23, pos_credit_dashboard.py:388-427
 TOP_DEB = mini([(None, 'Armand Mvogo', '44 500 FCFA', pill('57 j')), (None, 'Brigitte Essomba', '30 000 FCFA', pill('22 j')),
                 (None, 'Sylvie Mbarga', '30 000 FCFA', pill('104 j', True)), (None, 'Joël Kamga', '27 000 FCFA', pill('39 j')),
                 (None, 'Patrick Nkoulou', '18 500 FCFA', pill('5 j'))], 't15-c-top-t')
-REMB = mini([(None, 'Christian Atangana', '15 000 FCFA', 'Orange Money · 2026-10-12'),
-             (None, 'Armand Mvogo', '20 000 FCFA', 'MTN Mobile Money · 2026-10-08'),
-             (None, 'Nadège Owona', '22 500 FCFA', 'Espèces · 2026-10-06'),
-             (None, 'Brigitte Essomba', '12 000 FCFA', 'Orange Money · 2026-10-03'),
-             (None, 'Rodrigue Manga', '8 000 FCFA', 'MTN Mobile Money · 2026-10-02')])
+REMB = mini([(None, 'Francis Tsala', '2 000 FCFA', 'MTN Mobile Money · 2026-10-10'),
+             (None, 'Brigitte Essomba', '12 000 FCFA', 'MTN Mobile Money · 2026-10-06'),
+             (None, 'Ruth Bekolo', '3 000 FCFA', 'Orange Money · 2026-10-02'),
+             (None, 'Armand Mvogo', '20 000 FCFA', 'Espèces · 2026-09-30')])
 CREDIT_PANNEAUX = ('<div class="t15-row">%s%s</div>'
                    % (panneau('Balance âgée clients', 'Crédit v2',
                               AGING + '<h3 class="t15-mt">Encours — 6 mois (fin de mois)</h3>' + SPARK
@@ -446,17 +490,15 @@ VUE_TODO = ('<div class="vue t15-pane" id="t15-b-todo"><div class="t15-defil">%s
                     ('t15-r-kamga', 'Relancer Joël Kamga', '27 000 FCFA', '39 j')]), 't15-s-credit', 'URGENT'),
                 panneau('Fournisseurs', 'Achats', mini([
                     (None, 'Régulariser 1 facture(s) échue(s)', '180 000 FCFA', 'échu')]), 't15-s-four', 'URGENT'),
-                panneau('Stock', 'Stock', mini([
-                    (None, 'Commander Bière blonde 65 cl', '46 800 FCFA', 'perd / jour'),
-                    (None, 'Commander Eau minérale 1,5 L', '12 000 FCFA', 'perd / jour'),
-                    (None, 'Lancer la commande suggérée (5 réfs)', '385 000 FCFA', 'sous seuil')]), 't15-s-stock',
+                panneau('Stock', 'Stock', mini(
+                    [(None, 'Commander %s' % n, m, 'perd / jour') for n, m in COMMANDER]
+                    + [(None, 'Lancer la commande suggérée (%d réfs)' % NB_CMD, VAL_CMD, 'sous seuil')]), 't15-s-stock',
                         'URGENT'),
                 panneau('Coulage & écarts', 'Stock', mini([
-                    (None, "Écarts d'inventaire négatifs", '27 000 FCFA', 'contrôler')]), 't15-s-coul', 'À SURVEILLER'),
-                panneau("Prix d'achat", 'Achats', mini([
-                    (None, 'Renégocier Bière blonde 65 cl', '', '+8 % · Boissons du Wouri SARL'),
-                    (None, 'Renégocier Savon liquide 5 L', '', '+12 % · Hygiène Pro Littoral')]), 't15-s-prix',
-                        'À SURVEILLER')])))
+                    (None, "Écarts d'inventaire négatifs", STOCK['ecarts_negatifs'], 'contrôler')]), 't15-s-coul',
+                        'À SURVEILLER'),
+                panneau("Prix d'achat", 'Achats', mini([(None, 'Renégocier %s' % n, '', h) for n, h in HAUSSES]),
+                        't15-s-prix', 'À SURVEILLER')])))
 
 COCKPIT = vue_libre('t15-cockpit', TOP + '<div class="t15-corps" id="t15-corps">%s%s%s</div>'
                     % (VUE_ENSEMBLE, VUE_CREDIT, VUE_TODO), initiale=True, fond='tdb')
@@ -476,9 +518,18 @@ def ek(ident, libelle, valeur, sous, accent=None, delta=None, aide=False):
 TIP_PACE = ('<div class="infobulle masque t15-tip" id="t15-tip-pace" data-layout-allow-overlap '
             'data-layout-allow-occlusion>Pace : nuitées déjà réservées pour le mois en cours, comparées à celles qui '
             'l\'étaient à la même date l\'an dernier.</div>')
-MIX = [('Hébergement', '#714B67', 7912400, '7 912 400', '61,5 %'),
-       ('Restauration & boutique', '#185FA5', 3720600, '3 720 600', '28,9 %'),
-       ('Prestations', '#0F6E56', 1240000, '1 240 000', '9,6 %')]
+# Les chiffres du tableau exécutif de la présentation (c6_direction.py) : 8 640 000 + 3 120 000 + 1 240 000
+# = 13 000 000 FCFA ; parts arrondies à une décimale et triées (exec_dashboard.py:66-82).
+MIX = [('Hébergement', '#714B67', 8640000, '8 640 000'), ('Restauration & boutique', '#185FA5', 3120000, '3 120 000'),
+       ('Prestations', '#0F6E56', 1240000, '1 240 000')]
+TOTAL_EXEC = sum(m[2] for m in MIX)
+MIX = [m + (('%.1f' % (m[2] * 100.0 / TOTAL_EXEC)).replace('.', ',') + ' %',) for m in MIX]
+assert TOTAL_EXEC == 13000000 and [m[4] for m in MIX] == ['66,5 %', '24,0 %', '9,5 %']
+# Points fidélité émis du 30/09 au 14/10 : un point par tranche de 1 000 FCFA (aite_loyalty, _points_for, comme
+# t11_fidelite.py), sur les folios de la période (8 640 points), les prestations réalisées (1 240) et les tickets
+# du bar rattachés à un client (environ 600 000 FCFA, 600 points) : 10 480 points, sous les 13 000 qu'un client
+# sur chaque franc donnerait.
+POINTS = 8640 + 1240 + 600
 
 
 def anneau_mix():
@@ -498,8 +549,9 @@ def anneau_mix():
             % (''.join(arcs), leg, liste))
 
 
-EVO = [(14.2, 6.8, 2.1), (13.6, 6.5, 2.0), (16.9, 7.6, 2.6), (17.8, 7.9, 2.8), (16.4, 7.2, 2.4), (7.4, 3.5, 1.2)]
-# millions de FCFA par mois : hébergement, restauration & boutique, prestations (octobre : au 14)
+EVO = [(14.2, 5.5, 2.1), (13.6, 6.1, 2.0), (16.9, 7.0, 2.6), (17.8, 7.3, 2.8), (16.4, 6.1, 2.4), (8.1, 3.1, 1.2)]
+# millions de FCFA par mois : hébergement, restauration & boutique (les mois de t12_ventes.py, EVO_TOUT),
+# prestations ; octobre : du 01 au 14, sans le 30/09
 EVO_LAB = ['mai 26', 'juin 26', 'juil 26', 'août 26', 'sept 26', 'oct 26']
 
 
@@ -524,11 +576,11 @@ EXEC = vue_libre('t15-exec', '<div class="t15-x" id="t15-exec-defil" data-layout
                      '<span class="t15-xesp"></span><span class="t15-xlab t15-xdu">Du</span>%s<span class="t15-xlab t15-xdu">'
                      'au</span>%s</div>' % (date_in('t15-xdu', '30/09/2026'), date_in('t15-xau', '14/10/2026')),
                      '<div class="t15-xg4">%s</div>' % ''.join([
-                         ek('t15-e-tot', "Chiffre d'affaires total", ex('12 873 000'), 'Période 2026-09-30 → 2026-10-14',
+                         ek('t15-e-tot', "Chiffre d'affaires total", ex('13 000 000'), 'Période 2026-09-30 → 2026-10-14',
                             'primary'),
-                         ek('t15-e-heb', 'Hébergement', ex('7 912 400'), 'Occupation 64 % · ADR ' + ex('45 000'),
+                         ek('t15-e-heb', 'Hébergement', ex('8 640 000'), 'Occupation 64 % · ADR ' + ex('45 000'),
                             'primary'),
-                         ek('t15-e-pos', 'Restauration & boutique', ex('3 720 600'), '128 tickets · panier ' + ex('29 067'),
+                         ek('t15-e-pos', 'Restauration & boutique', ex('3 120 000'), '128 tickets · panier ' + ex('24 375'),
                             'info'),
                          ek('t15-e-pre', 'Prestations', ex('1 240 000'), '46 prestation(s) réalisée(s)', 'teal')]),
                      '<div class="t15-xsect">Hébergement — indicateurs de performance <span>écarts vs même période N-1'
@@ -544,7 +596,7 @@ EXEC = vue_libre('t15-exec', '<div class="t15-x" id="t15-exec-defil" data-layout
                             '18 réservation(s) prise(s) ces 7 derniers jours', aide=True),
                          ek('t15-e-pace', 'Pace du mois', '412 nuitée(s)', 'mois oct 26 · N-1 à la même date : 387 nuitée(s)',
                             delta='▲ +6,5 % vs même date N-1', aide=True)]),
-                     '<div class="t15-xg4">%s</div>' % ek('t15-e-fid', 'Points fidélité émis', '12' + NNBSP + '480',
+                     '<div class="t15-xg4">%s</div>' % ek('t15-e-fid', 'Points fidélité émis', '{:,}'.format(POINTS).replace(',', NNBSP),
                                                           'Tous services confondus'),
                      '<div class="t15-xsect">Répartition &amp; évolution</div>',
                      '<div class="t15-xg2"><div class="t15-xcard" id="t15-e-mix"><h3>Mix du chiffre d\'affaires par pôle</h3>'
@@ -735,7 +787,7 @@ TUTORIEL = {
     'etapes': [
         {'temps': 0, 'titre': "La santé de l'affaire",
          'texte': 'Le chiffre encaissé, la marge, le cash à risque, et vos ardoises face à vos dettes.',
-         'voix': "Danielle ouvre Direction. En tête, la santé de l'affaire : le chiffre encaissé et son écart, la "
+         'voix': "Mercredi matin, Danielle ouvre Direction. En tête, la santé de l'affaire : le chiffre encaissé et son écart, la "
                  "marge réalisée, l'argent à risque, et ce que vos clients vous doivent face à vos dettes "
                  "fournisseurs.",
          'gestes': [clic('#t15-app-app-direction', d=0.6), compter('#t15-k-ca-v', 0, 3120000, d=1.2, apres=' FCFA'),
