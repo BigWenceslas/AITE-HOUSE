@@ -52,11 +52,31 @@ Sources des libellés (tous relevés mot pour mot) :
 Les chiffres de l'écran sont calculés : les statuts, points de commande,
 quantités à commander, couvertures et classes de rotation sortent du VRAI
 code de _metrics, extrait de addons/ à l'import (comme tests/socle/
-test_stock_logic.py), appliqué à un jeu fictif de 24 références d'un bar et
+test_stock_logic.py), appliqué à un jeu fictif de 58 références d'un bar et
 d'une cave, avec les réglages par défaut ; les cartes reprennent les
-agrégats de get_kpis et les formats de utils.js. Deux emplacements internes
-fictifs, WH/Bar et WH/Cave, s'affichent « Bar » et « Cave ». Aujourd'hui :
-16/10/2026.
+agrégats de get_kpis et les formats de utils.js. Emplacements : l'entrepôt
+crée toujours WH/Stock ; ici il est renommé WH/Cave et WH/Bar est créé à
+côté, seuls emplacements internes (_internal_locations, triés par nom
+complet) : get_locations n'en garde que le dernier segment, « Bar » et
+« Cave » (stock_dashboard.py:141-145 et :283). Aujourd'hui : mercredi
+14/10/2026, le jour de toute la série (demo.ARRIVEE).
+
+Une seule source pour ce stock dans toute la série : la vidéo de
+présentation, déjà livrée (docs/guides/videos/01-presentation.mp4), le
+montre dans scenarios/c5_magasin.py:44-92 et c6_direction.py:70, :77. Le jeu
+ci-dessous a été calibré pour que le vrai calcul retrouve ses chiffres
+(contrôlés par des assert) : 3 185 000 FCFA au coût, 6 950 000 FCFA au
+prix de vente (marge +3 765 000 FCFA, 54,2 %), 58 références, 1 940
+unités, « 1 rupture · 1 sous 3 j » (Eau minérale 1,5 L, Bière blonde
+65 cl), coulage 41 500 FCFA soit 0,6 % du CA estimé (carte verte),
+couverture 18,4 j, rotation 1,6×, 212 000 FCFA dormants sur 4 réfs, 2 réfs
+sous seuil, et les cinq lignes de son tableau d'alertes (Eau minérale 1,5 L
+0 / 12 → 120, Bière blonde 65 cl 30 / 14 → 110, Jus d'ananas 1 L 18 / 4 → 22,
+Arachides grillées 25 / 6 → 35, Vin rouge 75 cl 40 / 2 → —). Coûts repris
+de scenarios/t14_achats.py:232-253 et :319-328 (COMMANDES, PRIX) ; Bière
+blonde 65 cl à 1 500 FCFA comme t04 et t10. AGREGATS expose ces chiffres
+pour le cockpit de direction (t15), avec ce que _penalty_rows et
+_build_actions en tirent.
 
 Sources des affirmations : douleurs — docs/guides/
 AITE_HOUSE_plaquette_commerciale.pdf p. 12 (« Une rupture de bière un samedi
@@ -64,17 +84,21 @@ soir, c'est du CA perdu chaque heure », « la marge qui dort en cave », « vou
 savez où est chaque casier »), dashboard.xml:427-429 (« offert non tracé »,
 « ajuster pour que ça tombe juste »), __manifest__.py:13 (« piloter le stock
 au lieu de le subir ») ; bénéfices et résultats — _metrics, get_kpis,
-res_config_settings.py, stock_dashboard_view.js:170-175 (6 onglets).
+res_config_settings.py, stock_dashboard_view.js:170-175 (6 onglets) ; carte
+verte sous le seuil, rouge au-delà — coulAccent, stock_dashboard_view.js:
+330-333 ; « à arrondir au casier » — dashboard.xml:219 ; le profil Magasin
+n'a pas l'application Achats (ecrans.APPS_PROFIL['magasin']), d'où la
+réaction « je la transmets aux achats ».
 
 Captures de référence (modèle visuel, jamais incrustées) :
 ../aite-videos/ref_muk/012-inventaire-tableau-de-bord-aite.png et
 -pleine.png ; docs/captures_uat/r6-magasin-01-ouvrir-le-tableau-de-bord-stock.png.
-Chapitre déjà rejoué dans la présentation : scenarios/c5_magasin.py.
 
 Écarts rejoués tels quels (voir le rapport) : « Ce mois » démarre la veille
 du 1er à Douala (utils.js:84,100, toISOString en UTC) d'où « 30/09/2026 » ;
-dates ISO du journal (stock_dashboard.py:656) ; « 2 rupture » sans pluriel
-(dashboard.xml:110) ; carte « Critiques » ambre et badge « Critique » rouge
+dates ISO du journal (stock_dashboard.py:656), montrées sans zoom ; pluriel
+non géré dans « N rupture · N sous 3 j » (dashboard.xml:110), invisible ici
+(une seule rupture) ; carte « Critiques » ambre et badge « Critique » rouge
 (dashboard.xml:165, stock_dashboard.py:82) ; graduations « 0.5 % » à point
 décimal (stock_dashboard_view.js:675) ; libellé « Pertes (écarts − + casse) »
 (dashboard.xml:376).
@@ -88,7 +112,7 @@ import textwrap
 import demo
 from ecrans import APPS_PROFIL, ICONES, e, fenetre_muk, graphe_anneau, navigateur, tdb_entete, vue_tdb
 from marketing import bulle, dezoom, reaction, zoom
-from moteur import anneau, cacher, clic, compter, curseur, defiler, pause, saisir, texte, vue
+from moteur import anneau, classe, clic, compter, curseur, defiler, pause, saisir, texte, vue
 
 NOM, ROLE = demo.POSTES['magasin']
 ICI = os.path.dirname(os.path.abspath(__file__))
@@ -111,33 +135,67 @@ METRICS = _metrics_du_module()
 # Réglages par défaut de la société (res_config_settings.py:20-48).
 SEC, HOR, CRIT, DORM, DELAI, SEUIL_COUL = 2, 7, 3, 60, 3, 2.0
 
-# Le bar et la cave du Complexe Hôtelier — Démo (fictif) :
+# Le bar et la cave de Démo Hôtellerie SARL (demo.SOCIETE), 58 références fictives :
 # (article, catégorie, coût, prix de vente, au bar, en cave, vendus sur 30 jours)
 ARTICLES = [
     ('Bière blonde 65 cl', 'Bières', 650, 1500, 12, 18, 420),
-    ('Bière brune 65 cl', 'Bières', 700, 1500, 24, 66, 240),
-    ('Bière blonde 33 cl', 'Bières', 400, 1000, 0, 0, 270),
-    ('Bière sans alcool 33 cl', 'Bières', 450, 1000, 12, 12, 30),
+    ('Bière brune 65 cl', 'Bières', 700, 1500, 24, 108, 240),
+    ('Bière blonde 33 cl', 'Bières', 400, 1000, 24, 96, 210),
+    ('Bière sans alcool 33 cl', 'Bières', 450, 1000, 12, 36, 36),
+    ('Panaché 33 cl', 'Bières', 400, 1000, 12, 36, 45),
     ('Eau minérale 1,5 L', 'Eaux', 300, 1000, 0, 0, 360),
-    ('Eau minérale 50 cl', 'Eaux', 150, 500, 36, 84, 300),
-    ('Eau gazeuse 1 L', 'Eaux', 500, 1500, 12, 30, 120),
+    ('Eau minérale 50 cl', 'Eaux', 150, 500, 58, 172, 140),
+    ('Eau gazeuse 1 L', 'Eaux', 500, 1500, 16, 49, 45),
     ("Jus d'ananas 1 L", 'Jus & softs', 900, 2000, 6, 12, 120),
-    ('Soda orange 33 cl', 'Jus & softs', 300, 1000, 10, 24, 210),
-    ('Cola 33 cl', 'Jus & softs', 300, 1000, 24, 72, 270),
-    ('Tonic 33 cl', 'Jus & softs', 350, 1000, 12, 36, 60),
-    ('Jus de bissap 50 cl', 'Jus & softs', 400, 1000, 10, 20, 90),
+    ('Soda orange 33 cl', 'Jus & softs', 300, 1000, 27, 80, 138),
+    ('Cola 33 cl', 'Jus & softs', 300, 1000, 27, 80, 140),
+    ('Tonic 33 cl', 'Jus & softs', 350, 1000, 8, 22, 45),
+    ('Jus de bissap 50 cl', 'Jus & softs', 400, 1000, 3, 10, 47),
+    ('Malt 33 cl', 'Jus & softs', 380, 900, 9, 26, 45),
+    ('Jus de gingembre 50 cl', 'Jus & softs', 400, 1000, 14, 44, 35),
+    ('Jus de mangue 1 L', 'Jus & softs', 900, 2000, 2, 4, 24),
+    ('Limonade 33 cl', 'Jus & softs', 300, 1000, 16, 47, 39),
+    ('Boisson énergisante 25 cl', 'Jus & softs', 600, 1500, 6, 17, 24),
+    ('Jus de corossol 1 L', 'Jus & softs', 1000, 2200, 2, 7, 15),
     ('Arachides grillées', 'Snacks & confiseries', 250, 700, 10, 15, 180),
-    ('Chips de plantain', 'Snacks & confiseries', 300, 800, 15, 25, 90),
-    ('Chocolat noir 100 g', 'Snacks & confiseries', 900, 2000, 6, 24, 6),
-    ('Vin rouge 75 cl', 'Vins & spiritueux', 4500, 12000, 4, 36, 60),
-    ('Vin blanc 75 cl', 'Vins & spiritueux', 4000, 11000, 4, 20, 45),
-    ('Vin rosé 75 cl', 'Vins & spiritueux', 4000, 11000, 2, 28, 12),
-    ('Champagne brut 75 cl', 'Vins & spiritueux', 22000, 45000, 2, 10, 3),
-    ('Whisky 12 ans 70 cl', 'Vins & spiritueux', 18000, 40000, 2, 6, 15),
-    ('Cognac VSOP 70 cl', 'Vins & spiritueux', 28000, 60000, 1, 5, 0),
-    ('Rhum ambré 70 cl', 'Vins & spiritueux', 9000, 20000, 2, 8, 9),
-    ('Gin 70 cl', 'Vins & spiritueux', 10000, 22000, 2, 4, 12),
-    ('Liqueur de café 70 cl', 'Vins & spiritueux', 8000, 18000, 1, 8, 3),
+    ('Chips de plantain', 'Snacks & confiseries', 300, 800, 23, 69, 60),
+    ('Chips de manioc', 'Snacks & confiseries', 300, 800, 14, 44, 35),
+    ('Noix de cajou 100 g', 'Snacks & confiseries', 800, 1800, 8, 25, 24),
+    ('Biscuits salés', 'Snacks & confiseries', 300, 800, 14, 44, 35),
+    ('Pistaches 100 g', 'Snacks & confiseries', 1200, 2500, 2, 8, 12),
+    ('Chocolat noir 100 g', 'Snacks & confiseries', 900, 2000, 1, 3, 12),
+    ('Bonbons à la menthe', 'Snacks & confiseries', 50, 100, 28, 85, 68),
+    ('Vin rouge 75 cl', 'Vins & spiritueux', 4500, 10000, 4, 36, 60),
+    ('Vin blanc 75 cl', 'Vins & spiritueux', 4000, 9000, 8, 24, 48),
+    ('Vin rosé 75 cl', 'Vins & spiritueux', 4000, 9000, 2, 10, 5),
+    ('Champagne brut 75 cl', 'Vins & spiritueux', 22000, 45000, 3, 9, 51),
+    ('Whisky 12 ans 70 cl', 'Vins & spiritueux', 18000, 40000, 3, 9, 45),
+    ('Cognac VSOP 70 cl', 'Vins & spiritueux', 28000, 60000, 1, 2, 0),
+    ('Rhum ambré 70 cl', 'Vins & spiritueux', 9000, 20000, 3, 8, 20),
+    ('Gin 70 cl', 'Vins & spiritueux', 10000, 22000, 2, 7, 16),
+    ('Liqueur de café 70 cl', 'Vins & spiritueux', 8000, 18000, 1, 7, 3),
+    ('Vodka 70 cl', 'Vins & spiritueux', 8000, 16000, 2, 7, 20),
+    ('Vin mousseux 75 cl', 'Vins & spiritueux', 6000, 12000, 6, 17, 24),
+    ('Porto 75 cl', 'Vins & spiritueux', 7500, 15000, 2, 6, 12),
+    ('Vermouth 75 cl', 'Vins & spiritueux', 5000, 10000, 1, 3, 12),
+    ('Tequila 70 cl', 'Vins & spiritueux', 12000, 24000, 4, 14, 12),
+    ('Pastis 70 cl', 'Vins & spiritueux', 7000, 14000, 1, 3, 12),
+    ('Vin rouge réserve 75 cl', 'Vins & spiritueux', 9000, 18000, 4, 14, 36),
+    ('Whisky 18 ans 70 cl', 'Vins & spiritueux', 32000, 64000, 1, 3, 8),
+    ('Brandy 70 cl', 'Vins & spiritueux', 6000, 12000, 6, 17, 16),
+    ('Vin blanc moelleux 75 cl', 'Vins & spiritueux', 5000, 10000, 4, 10, 24),
+    ('Crème de cassis 70 cl', 'Vins & spiritueux', 6500, 13000, 1, 2, 8),
+    ('Vin rouge du Cap 75 cl', 'Vins & spiritueux', 5500, 11000, 7, 22, 48),
+    ('Rhum blanc 70 cl', 'Vins & spiritueux', 6000, 12000, 2, 6, 16),
+    ('Poivre de Penja 100 g', 'Épicerie fine locale', 2000, 4500, 0, 8, 3),
+    ("Café de l'Ouest 250 g", 'Épicerie fine locale', 2000, 4000, 0, 25, 15),
+    ("Miel d'Oku 500 g", 'Épicerie fine locale', 3500, 7000, 0, 11, 9),
+    ('Cacao en poudre 250 g', 'Épicerie fine locale', 1500, 3500, 0, 20, 12),
+    ('Piment confit 200 g', 'Épicerie fine locale', 1200, 2800, 0, 7, 9),
+    ('Confiture de goyave 340 g', 'Épicerie fine locale', 1500, 3500, 0, 9, 9),
+    ("Thé noir de l'Ouest 100 g", 'Épicerie fine locale', 1500, 3500, 0, 4, 6),
+    ('Huile de palme rouge 1 L', 'Épicerie fine locale', 1200, 2500, 0, 12, 12),
+    ('Poivre blanc de Penja 100 g', 'Épicerie fine locale', 2500, 5000, 0, 5, 6),
 ]
 
 
@@ -219,27 +277,54 @@ DORMANTS = sorted([r for r in LIGNES if r['classe'] == 'Dormant'], key=lambda r:
 VAL_CMD = sum(r['cmd'] * r['cout'] for r in LIGNES)
 VAL_DORM = sum(r['value'] for r in DORMANTS)
 
-# La période « Ce mois », vue d'un poste à Douala le 16/10/2026 : periodRange
-# convertit le 1er octobre à minuit local en UTC (toISOString), d'où le 30/09.
-DU, AU, JOURS = '30/09/2026', '16/10/2026', 17
+# La période « Ce mois », vue d'un poste à Douala le mercredi 14/10/2026 (le jour
+# de toute la série, demo.ARRIVEE) : periodRange convertit le 1er octobre à minuit
+# local en UTC (toISOString), d'où le 30/09 ; quinze jours, du 30/09 au 14/10 inclus.
+DU, AU, JOURS = '30/09/2026', '14/10/2026', 15
 CA_EST = sum(r['vday'] * JOURS * r['prix'] for r in LIGNES)        # sorties clients × prix de vente
 SORTIES = sum(r['vday'] * JOURS * r['cout'] for r in LIGNES)       # valorisées au coût (CMV)
 # Le journal des écarts et casses de la période : (date ISO, type, article, quantité signée, référence).
 ECARTS = [
-    ('2026-10-14', 'Casse / rebut', 'Champagne brut 75 cl', -2, 'SP/00007'),
+    ('2026-10-13', 'Casse / rebut', 'Champagne brut 75 cl', -1, 'SP/00007'),
     ('2026-10-09', 'Ajustement inv.', 'Whisky 12 ans 70 cl', -1, 'Offert non tracé'),
-    ('2026-10-12', 'Ajustement inv.', 'Bière blonde 65 cl', -7, 'Erreur de saisie'),
-    ('2026-10-05', 'Casse / rebut', 'Vin rouge 75 cl', -1, 'SP/00006'),
-    ('2026-10-12', 'Ajustement inv.', 'Arachides grillées', -4, 'Périmé'),
-    ('2026-10-12', 'Ajustement inv.', 'Soda orange 33 cl', 2, 'Erreur de saisie'),
+    ('2026-10-12', 'Ajustement inv.', 'Arachides grillées', -6, 'Périmé'),
 ]
 ECARTS = sorted(ECARTS, key=lambda g: g[3] * PAR_NOM[g[2]]['cout'])          # tri par valeur signée
 PERTES = sum(-q * PAR_NOM[a]['cout'] for _, _, a, q, _ in ECARTS if q < 0)
 ECART_NET = sum(q * PAR_NOM[a]['cout'] for _, _, a, q, _ in ECARTS)
 COUL = PERTES / CA_EST * 100.0
 
-assert (len(RUPT), len(CRITQ), len(SOUS), len(DORMANTS)) == (2, 1, 3, 5)
-assert COUL > SEUIL_COUL      # la carte « Coulage » passe au rouge
+assert (len(RUPT), len(CRITQ), len(SOUS), len(DORMANTS)) == (1, 1, 2, 4)
+assert COUL <= SEUIL_COUL     # la carte « Coulage » reste verte (coulAccent)
+
+# Les chiffres que la vidéo de présentation, déjà livrée, montre pour ce même stock
+# (scenarios/c5_magasin.py:47-56, c6_direction.py:70 et :77) : le jeu ci-dessus les
+# retrouve par le vrai calcul. Deux chiffres de c5 ne se retrouvent pas, parce qu'ils
+# sont impossibles avec ses propres lignes : « valeur à commander 126 300 FCFA »
+# (les quatre lignes en alerte de c5 font déjà 136 050 FCFA aux coûts de t14) et
+# « Écarts d'inventaire 41 500 FCFA » sans signe (le code affiche gap_net, négatif).
+def _sp(*v):
+    return tuple(x.replace('\xa0', ' ') if isinstance(x, str) else x for x in v)
+
+
+assert _sp(len(LIGNES), int(UNITES), money(TOT_VAL), money(TOT_VENTE)) == (58, 1940, '3 185 000 FCFA', '6 950 000 FCFA')
+assert _sp(pct(MARGE / TOT_VENTE * 100), money(MARGE)) == ('54,2 %', '3 765 000 FCFA')
+assert (days(UNITES / VDAY), rotx(VDAY * 30 / UNITES)) == ('18,4 j', '1,6×')
+assert _sp(money(VAL_DORM), money(PERTES), pct(COUL)) == ('212 000 FCFA', '41 500 FCFA', '0,6 %')
+assert [r['nom'] for r in RUPT + CRITQ] == ['Eau minérale 1,5 L', 'Bière blonde 65 cl']
+assert (len(set(a for _, _, a, _, _ in ECARTS)), ECART_NET) == (3, -41500)
+
+# Les agrégats de ce stock, pour les vidéos qui le citent (le cockpit de direction,
+# t15) : get_kpis, puis _penalty_rows et _build_actions de aite_direction_dashboard
+# (models/direction_dashboard.py:194-217 et :265-290) appliqués à ces lignes.
+PENALITES = sorted([(r['nom'], r['vday'] * r['prix']) for r in RUPT + CRITQ], key=lambda x: -x[1])
+AGREGATS = {
+    'valeur': money(TOT_VAL), 'alertes': len(RUPT) + len(CRITQ), 'coulage_pct': pct(COUL), 'pertes': money(PERTES),
+    'commander': [(n, money(v)) for n, v in PENALITES],          # « Commander … — … perd / jour »
+    'commande_suggeree': (len(SOUS), money(VAL_CMD)),            # « Lancer la commande suggérée (N réfs) »
+    'ecarts_negatifs': money(-ECART_NET),                        # « Écarts d'inventaire négatifs »
+}
+assert [_sp(*c) for c in AGREGATS['commander']] == [('Bière blonde 65 cl', '21 000 FCFA'), ('Eau minérale 1,5 L', '12 000 FCFA')]
 
 
 # ----------------------------------------------- les écrans rejoués --
@@ -248,7 +333,8 @@ CAL = ('<svg class="t13-cal" viewBox="0 0 24 24" fill="none" stroke="currentColo
        '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>')
 ONGLETS = ['Tableau de bord', 'Alertes & réappro', 'Stock complet', 'Rotation & dormants', 'Inventaires & écarts',
            'Mouvements']
-CATEGORIES = ['Bières', 'Eaux', 'Jus & softs', 'Snacks & confiseries', 'Vins & spiritueux']
+# get_categories : triées par nom (« Épicerie… » passe après « Vins… »).
+CATEGORIES = ['Bières', 'Eaux', 'Jus & softs', 'Snacks & confiseries', 'Vins & spiritueux', 'Épicerie fine locale']
 LIEUX = [('Bar', '#714B67'), ('Cave', '#185FA5')]
 BADGE = {'red': 'rouge', 'amber': 'ambre', 'teal': 'vert', 'blue': 'bleu', 'gray': 'gris'}
 
@@ -386,7 +472,7 @@ def _vue_tableau():
              '%d références · %s unités' % (len(LIGNES), qty(UNITES)), 'bleu'),
         _kpi('t13-k-pv', 'Valeur stock — prix de vente', money(TOT_VENTE), sous_marge, 'vert'),
         _kpi('t13-k-rupt', 'Ruptures & critiques', '%d réfs' % (len(RUPT) + len(CRITQ)),
-             '%d rupture · %d sous %d j' % (len(RUPT), len(CRITQ), CRIT), 'rouge'),
+             '%d rupture · %d sous %d j' % (len(RUPT), len(CRITQ), CRIT), 'rouge'),            # dashboard.xml:110
         _kpi('t13-k-coul', 'Coulage (période)', money(PERTES),
              '%s du CA estimé · seuil %s' % (pct(COUL), pct(SEUIL_COUL)), 'rouge' if COUL > SEUIL_COUL else 'vert'),
     ]
@@ -399,16 +485,15 @@ def _vue_tableau():
     par_cat = {}
     for r in LIGNES:
         par_cat[r['cat']] = par_cat.get(r['cat'], 0) + r['value']
-    palette = ['#714B67', '#185FA5', '#3B6D11', '#854F0B', '#A32D2D']
+    palette = ['#714B67', '#185FA5', '#3B6D11', '#854F0B', '#A32D2D', '#0F6E56']       # CATEG_PALETTE (utils.js:19-23)
     parts = [(c, v, palette[i]) for i, (c, v) in enumerate(sorted(par_cat.items(), key=lambda kv: -kv[1]))]
-    # entrées (réceptions) et sorties (ventes) au coût, de mai à octobre (au 16)
-    flux = [('Mai', [2410000, 2290000]), ('Juin', [2050000, 2220000]), ('Juil', [2480000, 2300000]),
-            ('Août', [2120000, 2260000]), ('Sep', [2330000, 2210000]), ('Oct', [980000, 1190000])]
+    # entrées (réceptions) et sorties (ventes) au coût, de mai à octobre (du 1er au 14) : get_flux_months
+    flux = [('Mai', [5820000, 5760000]), ('Juin', [5640000, 5710000]), ('Juil', [6150000, 6020000]),
+            ('Août', [5890000, 5950000]), ('Sep', [6080000, 5990000]), ('Oct', [2650000, _arrondi(SORTIES * 14 / 15)])]
     graphes = ('<div class="tdb-grille c2">%s%s</div>' % (
         graphe_anneau('t13-g-cat', 'Valeur du stock par catégorie', parts),
         _g('t13-g-flux', 'Entrées vs Sorties — 6 mois (au coût)',
-           _barres_v(flux, 0, 2500000, [(0, '0'), (500000, '500 k'), (1000000, '1,0 M'), (1500000, '1,5 M'),
-                                        (2000000, '2,0 M'), (2500000, '2,5 M')],
+           _barres_v(flux, 0, 7000000, [(v * 1000000, '0' if v == 0 else '%d,0 M' % v) for v in range(0, 8)],
                      [lambda v: '#3B6D11', lambda v: '#714B67'],
                      [('Entrées (réceptions)', '#3B6D11'), ('Sorties (ventes)', '#714B67')]))))
     contenu = (_tete('dash', 0) + _section("Vue d'ensemble", cartes1) + _section('Indicateurs', cartes2)
@@ -475,6 +560,10 @@ def _totaux(rows):
 
 
 TOUT, FILTRE = _totaux(LIGNES), _totaux(BIERES)
+# La bière blonde 65 cl, en critique : sa ligne dans les alertes et dans le Stock complet filtré.
+AL_B65 = '#t13-al-r%d' % (1 + [r['nom'] for r in ALERTES].index('Bière blonde 65 cl'))
+ST_B65 = '#t13-st-r%d' % (1 + [r['nom'] for r in BIERES].index('Bière blonde 65 cl'))
+assert (AL_B65, ST_B65) == ('#t13-al-r2', '#t13-st-r4') and qty(PAR_NOM['Bière blonde 65 cl']['cmd']) == '110'
 
 
 def _vue_stock():
@@ -512,11 +601,11 @@ def _vue_rotation():
     ]
     top = sorted([r for r in LIGNES if r['rot'] > 0], key=lambda r: -r['rot'])[:8]
     g_rot = _g('t13-g-rot', 'Top 8 — rotation la plus rapide',
-               _barres_h([(r['nom'], r['rot']) for r in top], 16, '#0F6E56',
-                         [(v, str(v)) for v in range(0, 17, 2)]))
+               _barres_h([(r['nom'], r['rot']) for r in top], 14, '#0F6E56',
+                         [(v, str(v)) for v in range(0, 15, 2)]))
     g_dorm = _g('t13-g-dorm', 'Dormants — valeur immobilisée',
-                _barres_h([(r['nom'], r['value']) for r in DORMANTS[:8]], 300000, '#A32D2D',
-                          [(v, '0' if v == 0 else '%d k' % (v // 1000)) for v in range(0, 300001, 50000)]))
+                _barres_h([(r['nom'], r['value']) for r in DORMANTS[:8]], 90000, '#A32D2D',
+                          [(v, '0' if v == 0 else '%d k' % (v // 1000)) for v in range(0, 90001, 10000)]))
     rot = sorted(LIGNES, key=lambda r: -r['rot'])[:6]
     table = _table('t13-rt', COLS_ROT, [
         ('t13-rt-r%d' % n, [_c(r['nom'], cls='t13-b'), _c(r['cat'], cls='t13-mu'), _c(qty(r['stock']), True),
@@ -548,11 +637,11 @@ def _vue_ecarts():
         par_cat[PAR_NOM[a]['cat']] = par_cat.get(PAR_NOM[a]['cat'], 0) + q * PAR_NOM[a]['cout']
     cats = sorted(par_cat.items(), key=lambda kv: kv[1])
     g_ecart = _g('t13-g-ecart', 'Écarts valorisés par catégorie',
-                 _barres_v([(c, [v]) for c, v in cats], -70000, 10000,
-                           [(v, '0' if v == 0 else '%d k' % (v // 1000)) for v in range(-70000, 10001, 10000)],
+                 _barres_v([(c, [v]) for c, v in cats], -40000, 0,
+                           [(v, '0' if v == 0 else '%d k' % (v // 1000)) for v in range(-40000, 1, 10000)],
                            [lambda v: '#A32D2D' if v < 0 else '#3B6D11']))
     g_coul = _g('t13-g-coul', 'Coulage mensuel vs seuil (6 mois)',
-                _courbe(['Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct'], [1.2, 0.9, 1.6, 1.1, 1.4, round(COUL, 1)],
+                _courbe(['Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct'], [1.2, 0.9, 2.4, 1.1, 1.4, round(COUL * JOURS / 14, 2)],
                         SEUIL_COUL, 3.0, [(x / 2.0, ('%g' % (x / 2.0)) + ' %') for x in range(0, 7)]))
     lignes = []
     for n, (date, typ, art, q, ref) in enumerate(ECARTS, 1):
@@ -586,8 +675,9 @@ CSS = """
 .t13 .tdb-sect { margin: 14px 2px 8px; color: #57564F; }
 .t13 .kpi { min-height: 0; padding: 13px 18px 12px; }
 .t13 .kpi-l { font-size: 14px; }
-.t13 .kpi-v { margin-top: 6px; font-size: 32px; color: #212529; }
+.t13 .kpi-v { margin-top: 6px; font-size: 32px; color: #212529; font-variant-numeric: normal; }
 .t13 .kpi-s { white-space: normal; overflow: visible; line-height: 1.3; color: #5F666D; }
+#t13-k-pv-s, #t13-s-pv-s { white-space: nowrap; font-size: 13.5px; letter-spacing: -.01em; }
 .t13-pt { display: inline-block; width: 11px; height: 11px; border-radius: 50%; margin-right: 8px; }
 .t13-date { height: 38px; padding: 0 12px; border: 1px solid #DEE2E6; border-radius: 8px; display: inline-flex; align-items: center;
   gap: 14px; font-size: 17px; color: #212529; }
@@ -601,7 +691,8 @@ CSS = """
 .t13-carte { margin-top: 14px; background: #fff; border-radius: 12px; padding: 14px 18px 12px; }
 .t13-ct { display: flex; align-items: center; justify-content: space-between; height: 44px; margin-bottom: 8px; }
 .t13-carte h3, .t13-g h3 { font-size: 19px; font-weight: 600; color: #2B2A28; white-space: nowrap; }
-.t13-wrap { height: 480px; overflow: hidden; }
+.t13-wrap { max-height: 480px; overflow: hidden; }
+.t13-vide { display: none; }
 .t13-th, .t13-tr { display: grid; align-items: center; column-gap: 12px; padding: 0 12px; }
 .t13-th { height: 40px; background: #F5F5F4; font-size: 13px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
   color: #5F5E5A; white-space: nowrap; }
@@ -609,7 +700,7 @@ CSS = """
 .t13-d { text-align: right; font-variant-numeric: tabular-nums; }
 .t13-b { font-weight: 700; }
 .t13-mu { color: #5F666D; }
-.t13-neg { color: #C82333; }
+.t13-neg { color: #C82333; font-variant-numeric: normal; }
 .t13-pos { color: #1E7B34; }
 .t13-badge { display: inline-flex; align-items: center; height: 26px; padding: 0 9px; border-radius: 6px; font-size: 14px; font-weight: 700; }
 .t13-badge.rouge { background: #C82333; color: #fff; }
@@ -689,10 +780,10 @@ TUTORIEL = {
         'b-urgence': "Trié par urgence : la rupture d'abord, puis le critique, puis le sous seuil.",
         'b-calcul': 'Calculé sur les ventes des 30 derniers jours : rien à saisir.',
         'b-dormant': 'Dormant : 60 jours de couverture ou plus.',
-        'b-coulage': 'Pertes au-dessus du seuil de 2 % : la carte passe au rouge.',
+        'b-coulage': 'Sous le seuil de 2 % : la carte reste verte. Au-delà, elle passe au rouge.',
     },
     'reactions': {
-        'r-cmd': "La commande est chiffrée : il ne reste qu'à la passer.",
+        'r-cmd': "La quantité est calculée : je l'arrondis au casier et je la transmets aux achats.",
         'r-fin': "Le coulage du mois se voit d'un coup d'œil.",
     },
     'etapes': [
@@ -703,7 +794,8 @@ TUTORIEL = {
                  "les ruptures et le coulage du mois.",
          'gestes': [compter('#t13-k-cout-v', 0, TOT_VAL, d=1.2, apres=' FCFA'),
                     anneau('#app-t13 .o-haut .menu.actif', d=1.1, avec=True),
-                    zoom('#t13-k-pv', s=1.6, fx=0.0, d=0.8), bulle('b-marge', '#t13-k-pv', cote='bas', d=3.0), pause(2.6),
+                    curseur('#t13-k-pv', fx=0.93, fy=0.3, d=0.6),
+                    zoom('#t13-k-pv', s=1.6, fx=0.0, d=0.8), bulle('b-marge', '#t13-k-pv', cote='haut', d=3.0), pause(2.6),
                     dezoom(d=0.6), anneau('#t13-k-rupt', d=1.3), anneau('#t13-k-coul', d=1.6)]},
         {'temps': 1, 'titre': "Les alertes, par ordre d'urgence",
          'texte': 'Rupture, critique, sous seuil, puis OK : la liste se trie seule.',
@@ -711,54 +803,55 @@ TUTORIEL = {
                  "urgence : les ruptures d'abord, puis les critiques, puis ce qui passe sous le point de commande.",
          'gestes': [clic('#t13-tab-dash-1'), vue('t13-alertes'), pause(0.3), anneau('#t13-a-rupt', d=0.9),
                     anneau('#t13-a-crit', d=0.9), defiler('#t13-in-al', -330, d=0.9),
-                    anneau('#t13-al-r1-st', d=0.8), anneau('#t13-al-r3-st', d=0.8), anneau('#t13-al-r4-st', d=0.8),
+                    anneau('#t13-al-r1-st', d=0.8), anneau('#t13-al-r2-st', d=0.8), anneau('#t13-al-r3-st', d=0.8),
                     bulle('b-urgence', '#t13-al-r8-nom', cote='droite', d=2.8), pause(2.6)]},
         {'temps': 1, 'titre': 'Combien commander',
          'texte': 'Point de commande et quantité suggérée, calculés sur les ventes réelles.',
          'voix': "Le point de commande et la quantité à commander se calculent sur les ventes des trente derniers jours "
                  "et le délai de livraison. Pour la bière blonde en soixante-cinq centilitres, en critique : cent dix "
                  "à commander, sans rien calculer.",
-         'gestes': [zoom('#t13-al-r3', s=1.3, d=0.8), bulle('b-calcul', '#t13-al-h5', cote='haut', d=3.2), pause(3.4),
-                    anneau('#t13-al-r3-nom', d=1.0), anneau('#t13-al-r3-cmd', d=1.4), dezoom(d=0.6),
-                    reaction('r-cmd', d=3.0), pause(2.6), defiler('#t13-in-al', -399, d=0.7),
+         'gestes': [zoom(AL_B65, s=1.3, fx=0.45, d=0.8), bulle('b-calcul', AL_B65 + '-cmd', cote='bas', d=3.2), pause(3.4),
+                    anneau(AL_B65 + '-nom', d=1.0), anneau(AL_B65 + '-cmd', d=1.4), dezoom(d=0.6),
+                    reaction('r-cmd', d=3.2), pause(2.8), defiler('#t13-in-al', -399, d=0.7),
                     anneau('#t13-al-note', d=1.6)]},
         {'temps': 2, 'titre': 'Chaque casier, dépôt par dépôt',
          'texte': 'Stock complet : la quantité au bar et en cave, la valeur, la couverture.',
          'voix': "Dans Stock complet, Serge tape bière : il ne reste que les quatre bières, avec la quantité au bar et "
-                 "en cave, la valeur au coût, la couverture en jours et le statut. La bière blonde en petite bouteille ? "
-                 "Plus rien, ni au bar ni en cave.",
+                 "en cave, la valeur au coût, la couverture en jours et le statut. La blonde en grande bouteille : "
+                 "douze au bar, dix-huit en cave, et déjà critique.",
          'gestes': [defiler('#t13-in-al', 0, d=0.7), clic('#t13-tab-al-2'), vue('t13-stock'), pause(0.2),
                     defiler('#t13-in-st', -300, d=0.8), clic('#t13-rech'), saisir('t13-rech', 'Bière'),
-                    cacher('#t13-st-autres', d=0.3),
+                    classe('#t13-st-autres', ajouter=['t13-vide']),
                     texte('#t13-s-ref-v', FILTRE['ref']), texte('#t13-s-un-v', FILTRE['un'], avec=True),
                     texte('#t13-s-val-v', FILTRE['val'], avec=True), texte('#t13-s-pv-v', FILTRE['pv'], avec=True),
                     texte('#t13-s-pv-s', FILTRE['pv-s'], avec=True),
-                    zoom('#t13-st', s=1.3, fy=0.22, d=0.8), curseur('#t13-st-r4', fx=0.3, fy=1.6, d=0.6, avec=True),
-                    anneau('#t13-st-r1-bar', d=0.8),
-                    anneau('#t13-st-r1-cave', d=0.8), anneau('#t13-st-r4-bar', d=0.7), anneau('#t13-st-r4-cave', d=0.7),
-                    anneau('#t13-st-r4-st', d=1.1), dezoom(d=0.6)]},
+                    zoom('#t13-st', s=1.3, fy=0.22, d=0.8), curseur(ST_B65, fx=0.12, fy=0.5, d=0.6, avec=True),
+                    anneau(ST_B65 + '-bar', d=0.9), anneau(ST_B65 + '-cave', d=0.9), anneau(ST_B65 + '-st', d=1.2),
+                    pause(0.8), dezoom(d=0.6)]},
         {'temps': 2, 'titre': "L'argent qui dort",
          'texte': 'Rotation par référence, et la valeur immobilisée des dormants.',
          'voix': "Rotation et dormants montre ce qui tourne et ce qui dort. Dès soixante jours de couverture, une "
-                 "référence est dormante : ici, cinq références, du champagne au cognac, immobilisent six cent cinquante "
-                 "et un mille francs.",
+                 "référence est dormante : ici, quatre références, du cognac au poivre de Penja, immobilisent deux "
+                 "cent douze mille francs.",
          'gestes': [defiler('#t13-in-st', 0, d=0.7), clic('#t13-tab-st-3'), vue('t13-rotation'),
                     compter('#t13-r-dorm-v', 0, VAL_DORM, d=1.2, apres=' FCFA'), anneau('#t13-r-dorm', d=1.2),
                     defiler('#t13-in-rot', -330, d=0.8), anneau('#t13-g-rot', d=1.2),
-                    curseur('#t13-g-dorm', fx=0.62, fy=0.32, d=0.6), zoom('#t13-g-dorm', s=1.4, d=0.8), bulle('b-dormant', '#t13-g-dorm', cote='gauche', d=3.0),
-                    pause(2.8), dezoom(d=0.6)]},
+                    curseur('#t13-g-dorm', fx=0.62, fy=0.32, d=0.6), zoom('#t13-g-dorm', s=1.4, fx=0.75, d=0.8),
+                    bulle('b-dormant', '#t13-g-dorm', cote='bas', d=3.0), pause(2.8), dezoom(d=0.6)]},
         {'temps': 2, 'titre': 'Le coulage, face au seuil',
          'texte': 'Chaque écart et chaque casse valorisés ; au-delà du seuil, la carte passe au rouge.',
          'voix': "Enfin, Inventaires et écarts valorise chaque ajustement et chaque casse au coût. Ce mois-ci, les "
-                 "pertes dépassent le seuil de deux pour cent du chiffre estimé : la carte passe au rouge. Le journal "
-                 "montre d'où elles viennent : deux bouteilles de champagne cassées, un ouiski offert sans être noté.",
+                 "pertes restent sous le seuil de deux pour cent du chiffre estimé : la carte reste verte. Le journal "
+                 "montre d'où elles viennent : une bouteille de champagne cassée, un ouiski offert sans être noté, des "
+                 "arachides périmées ; chaque ajustement porte son motif.",
          'gestes': [defiler('#t13-in-rot', 0, d=0.7), clic('#t13-tab-rot-4'), vue('t13-ecarts'), pause(0.2),
                     anneau('#t13-e-pertes', d=1.2), curseur('#t13-e-pertes', fx=0.85, fy=0.7, d=0.6, avec=True),
-                    bulle('b-coulage', '#t13-e-pertes', cote='haut', d=2.8), pause(2.4),
+                    bulle('b-coulage', '#t13-e-pertes', cote='bas', d=2.6), pause(2.2),
                     defiler('#t13-in-ec', -200, d=0.8), curseur('#t13-g-coul', fx=0.86, fy=0.38, d=0.6),
-                    anneau('#t13-g-coul', d=1.3, avec=True), reaction('r-fin', d=2.8),
-                    pause(2.0), defiler('#t13-in-ec', -562, d=0.8), zoom('#t13-j', s=1.3, d=0.8),
-                    anneau('#t13-j-r1-nom', d=1.2), anneau('#t13-j-r2-ref', d=1.2), dezoom(d=0.6)]},
+                    anneau('#t13-g-coul', d=1.3, avec=True),
+                    defiler('#t13-in-ec', -562, d=0.8), zoom('#t13-j', s=1.45, fx=1.0, fy=0.9, d=0.8),
+                    anneau('#t13-j-r1-nom', d=1.1), anneau('#t13-j-r2-ref', d=1.1), dezoom(d=0.6),
+                    reaction('r-fin', d=2.6), pause(1.6)]},
     ],
     'resultats': {
         'titre': "Un stock piloté, au lieu d'être subi",
