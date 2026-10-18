@@ -94,6 +94,28 @@ header p { margin: 0; color: var(--doux); }
 .choisir:focus-within { outline: 3px solid var(--accent); outline-offset: 2px; }
 .choisir input { position: absolute; opacity: 0; width: 1px; height: 1px; }
 
+.aide-selecteur {
+  display: grid;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--hdr-pale);
+  font-size: 0.93rem;
+}
+.aide-selecteur p { margin: 0; }
+.adresse { display: flex; gap: 8px; align-items: center; min-width: 0; }
+.adresse code {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.85rem;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--surface);
+  user-select: all;
+}
+.adresse .bouton { width: auto; min-height: 40px; font-size: 0.95rem; }
+
 .source { display: grid; gap: 4px; min-width: 0; }
 .source-nom { font-weight: 600; overflow-wrap: anywhere; }
 .source-details { color: var(--doux); font-size: 0.9rem; font-variant-numeric: tabular-nums; }

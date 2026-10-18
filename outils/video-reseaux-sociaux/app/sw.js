@@ -1,9 +1,9 @@
 // Met l'appli en cache pour qu'elle s'ouvre sans réseau, et reçoit les
 // vidéos partagées depuis Google Photos (share_target du manifeste).
 
-const VERSION = 'pret-a-poster-v1';
+const VERSION = 'pret-a-poster-v2';
 const FICHIERS = [
-  './', './index.html', './style.css', './app.js', './mediabunny.min.mjs',
+  './index.html', './style.css', './app.js', './mediabunny.min.mjs',
   './manifest.webmanifest', './icone.svg', './icone-192.png', './icone-512.png',
 ];
 
@@ -33,7 +33,7 @@ self.addEventListener('fetch', (e) => {
           headers: { 'Content-Type': video.type || 'video/mp4', 'X-Nom': encodeURIComponent(video.name || 'video.mp4') },
         }));
       }
-      return Response.redirect(new URL('./?partage=1', self.registration.scope).href, 303);
+      return Response.redirect(new URL('./index.html?partage=1', self.registration.scope).href, 303);
     })());
     return;
   }

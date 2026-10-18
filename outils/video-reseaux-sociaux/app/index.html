@@ -29,6 +29,10 @@
       <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="13" height="14" rx="2"/><path d="m16 10 5-3v10l-5-3"/></svg>
       Choisir une vidéo
     </label>
+    <div class="aide-selecteur" id="aide-selecteur" role="status" hidden>
+      <p><b>Le sélecteur de vidéos ne s'ouvre pas ?</b> La page est sans doute ouverte dans une appli (Claude, WhatsApp…) qui ne donne pas accès aux fichiers. Ouvrez-la dans <b>Chrome</b> : copiez l'adresse ci-dessous et collez-la dans la barre d'adresse de Chrome.</p>
+      <div class="adresse"><code id="adresse"></code><button class="bouton secondaire" id="copier-adresse" type="button">Copier</button></div>
+    </div>
     <div class="source" id="source" hidden>
       <span class="source-nom" id="source-nom"></span>
       <span class="source-details" id="source-details"></span>

@@ -3,7 +3,7 @@
   "short_name": "Prêt à poster",
   "description": "Convertit les vidéos du Pixel pour WhatsApp, TikTok et Facebook, directement sur le téléphone.",
   "lang": "fr",
-  "start_url": "./",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f4f1",

@@ -32,6 +32,7 @@ export async function demarrer(mediabunny) {
     e.target.value = '';
   });
   $('#convertir').addEventListener('click', lancer);
+  surveillerSelecteur();
   $('#annuler').addEventListener('click', () => {
     annulee = true;
     conversion?.cancel();
@@ -50,6 +51,34 @@ export async function demarrer(mediabunny) {
 
   await recupererPartage();
   majBouton();
+}
+
+// Dans la visionneuse intégrée d'une appli (l'appli Claude Android, par
+// exemple), toucher le champ fichier ne fait rien. Quand le sélecteur
+// s'ouvre, la page perd le focus ; sans cela au bout de 1,5 s, on explique
+// comment ouvrir la page dans Chrome.
+function surveillerSelecteur() {
+  const adresse = document.querySelector('main').dataset.adresse || location.href.split(/[?#]/)[0];
+  $('#adresse').textContent = adresse;
+  $('#copier-adresse').addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(adresse);
+      $('#copier-adresse').textContent = 'Copiée';
+    } catch {
+      getSelection().selectAllChildren($('#adresse'));
+    }
+  });
+  $('.choisir').addEventListener('click', () => {
+    let ouvert = false;
+    const marquer = () => { ouvert = true; };
+    window.addEventListener('blur', marquer, { once: true });
+    document.addEventListener('visibilitychange', marquer, { once: true });
+    setTimeout(() => {
+      window.removeEventListener('blur', marquer);
+      document.removeEventListener('visibilitychange', marquer);
+      if (!ouvert && !fichier) $('#aide-selecteur').hidden = false;
+    }, 1500);
+  });
 }
 
 // Vidéo reçue par « Partager » depuis Google Photos (appli installée) :
@@ -72,6 +101,7 @@ async function recupererPartage() {
 
 async function charger(f) {
   fichier = f;
+  $('#aide-selecteur').hidden = true;
   infos = null;
   effacerErreur();
   $('#source').hidden = false;
