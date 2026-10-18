@@ -177,8 +177,8 @@ import demo
 from ecrans import (APPS_PROFIL, ICONES, e, entree, fenetre_muk, fenetre_pos, icone, navigateur, pos_produits,
                     recherche, statusbar, vue_fiche)
 from marketing import bulle, dezoom, reaction, zoom
-from moteur import (animer, anneau, cacher, choisir, clic, classe, compter, defiler, fermer, montrer, notifier, ouvrir,
-                    pause, saisir, texte, vue)
+from moteur import (animer, anneau, cacher, choisir, clic, classe, compter, curseur, defiler, fermer, montrer, notifier,
+                    ouvrir, pause, saisir, texte, vue)
 
 NOM, ROLE = demo.POSTES['caisse']                  # Hervé Tchakounté, caissier du bar
 AUJ = date(2026, 10, 14)
@@ -312,9 +312,9 @@ PAVE = ''.join('<span class="pk%s" id="t10-k%s">%s</span>' % (c, {'+/-': 'pm', '
 PAIEMENT = (
     '<div class="vue" id="t10-paie"><div class="pos-vente">'
     '<div class="pos-g"><div class="pos-modes">%s</div>'
-    '<div class="pos-cf"><span id="t10-cli"><span class="ico">%s</span><span class="pile t10-cli-p">'
-    '<b id="t10-cli-0">Client</b><b class="t10-nomcli masque" id="t10-cli-1">%s</b></span></span>'
-    '<span><span class="ico">%s</span>Facture<i></i></span></div>'
+    '<div class="pos-cf"><span id="t10-cli"><em class="t10-ico">%s</em><em class="t10-cli-p">'
+    '<b id="t10-cli-0">Client</b><b class="t10-nomcli masque" id="t10-cli-1">%s</b></em></span>'
+    '<span><em class="t10-ico">%s</em>Facture<i></i></span></div>'
     '<div class="pos-ardoise" id="t10-ard"><span class="ico">%s</span>Mettre sur ardoise</div>'
     '<div class="pos-pave">%s</div>'
     '<div class="pos-rv"><span>Retour</span><span class="v t10-off">Valider</span></div></div>'
@@ -603,6 +603,14 @@ def donut(parts, r=78):
         arcs.append('<circle r="%.1f" cx="100" cy="100" fill="none" stroke="%s" stroke-width="%.1f" '
                     'stroke-dasharray="%.1f %.1f" stroke-dashoffset="%.1f"/>' % (rm, coul, r * 0.44, lg, c - lg, -debut))
         debut += lg
+    import math
+    sep, ang = [], 0.0
+    for _lib, v, _c in parts:
+        x1, y1 = 100 + (r - r * 0.44) * math.cos(ang), 100 + (r - r * 0.44) * math.sin(ang)
+        x2, y2 = 100 + (r + 2) * math.cos(ang), 100 + (r + 2) * math.sin(ang)
+        sep.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#fff" stroke-width="2"/>' % (x1, y1, x2, y2))
+        ang += 2 * math.pi * v / total
+    arcs.extend(sep)
     leg = ''.join('<div class="t10-leg"><i style="background:%s"></i>%s</div>' % (coul, e(lib)) for lib, _v, coul in parts)
     return ('<div class="t10-donut"><svg viewBox="0 0 200 200" width="200" height="200"><g transform="rotate(-90 100 100)">'
             '%s</g></svg><div class="t10-legs">%s</div></div>' % (''.join(arcs), leg))
@@ -720,7 +728,7 @@ TDB = (
        section('Âge de la dette & évolution'),
        carte_g("Balance âgée (aging) de l'encours", barres('t10-g-age', AGING, ['#3B6D11', '#854F0B', '#A32D2D',
                                                                                  '#5E1B1B'],
-                                                           [t[0] for t in TRANCHES], 70000, 10000),
+                                                           [t[0] for t in TRANCHES], 70000, 10000, h=160),
                "Plus la dette est ancienne, plus le risque d'impayé est élevé.", 't10-c-age'),
        carte_g('Nouvelles ardoises vs Recouvré (6 mois)',
                courbes('t10-g-evo', [(OUVERTES_MOIS, '#A32D2D'), (RECOUVRE_MOIS, '#3B6D11')], MOIS, 90000, 10000)
@@ -731,7 +739,7 @@ TDB = (
                "Où le crédit est accordé — toutes périodes (photo de l'encours)."),
        carte_g('Remboursements par jour (période)', barres('t10-g-jour', PAR_JOUR, ['#714B67'] * len(JOURS),
                                                             [j.strftime('%d/%m') for j in JOURS], 45000, 5000,
-                                                            h=200)),
+                                                            h=190)),
        section('Remboursements (période)'),
        carte_g('Répartition par moyen de paiement', donut([(m, v, COUL_MOYEN[m]) for m, v in PAR_MOYEN])),
        '<div class="t10-card"><div class="t10-ch-h"><h3>Derniers remboursements</h3><span class="t10-lk">Tout voir</span>'
@@ -754,11 +762,12 @@ CSS = """
 #t10-pos .pos-num { min-width: 70px; justify-content: center; }
 #t10-paie .pos-mode .ico { width: 28px; height: 28px; color: #495057; }
 #t10-paie .pos-mode .ico svg { width: 28px; height: 28px; }
-#t10-paie .pos-cf .ico { width: 18px; height: 18px; display: inline-flex; }
-#t10-paie .pos-cf .ico svg { width: 18px; height: 18px; }
+#t10-paie .pos-cf em { font-style: normal; }
+.t10-ico { width: 18px; height: 18px; display: inline-flex; color: #343A40; }
+.t10-ico svg { width: 18px; height: 18px; }
 #t10-cli { gap: 10px; }
-.t10-cli-p { min-width: 150px; text-align: center; }
-.t10-cli-p b { font-weight: 400; }
+.t10-cli-p { display: inline-grid; }
+.t10-cli-p b { grid-area: 1 / 1; font-weight: 400; text-align: center; }
 .t10-cli-p .t10-nomcli { font-weight: 500; color: #3F6A83; }
 #t10-paie .pos-ardoise .ico svg { width: 20px; height: 20px; }
 .pos-rv .v.t10-off { background: #A3BCCB; }
@@ -823,7 +832,7 @@ CSS = """
 .t10-rl { padding: 6px 0; font-size: 16px; }
 .t10-rl .a b { font-weight: 700; }
 .t10-rm { display: flex; justify-content: space-between; line-height: 1.6; }
-.t10-tx .t10-rm span:first-child { font-weight: 700; }
+.t10-tx .t10-rm:first-child span:first-child { font-weight: 700; }
 .t10-rm.t10-total { font-size: 21px; font-weight: 700; margin-bottom: 4px; }
 .t10-tk-paie { padding: 4px 6px; margin: 0 -6px; }
 .t10-gen { margin-top: 18px; text-align: center; color: #495057; }
@@ -850,6 +859,8 @@ CSS = """
 .t10-stat .st-t { display: flex; flex-direction: column; line-height: 1.15; font-size: 17px; color: var(--o-texte-2); }
 .t10-stat .st-t b { font-weight: 600; color: #3F6A83; }
 #t10-fiche .feuille { padding: 18px 30px 30px; min-height: 0; }
+#t10-sb .st-et { color: #5C636A; }
+#t10-sb .st-et.actif { color: var(--o-texte); }
 .t10-titre { font-size: 34px; margin-bottom: 12px; }
 .t10-cols { gap: 50px; }
 .t10-ch { grid-template-columns: 238px 1fr; min-height: 35px; font-size: 18px; }
@@ -882,6 +893,7 @@ CSS = """
 .t10-date { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #CED4DA; padding: 6px 4px; }
 .t10-date .ico { width: 18px; height: 18px; display: inline-flex; color: var(--o-texte-2); }
 .t10-date .ico svg { width: 18px; height: 18px; }
+.m-ch .v .entree.t10-sel, .m-ch .v .entree.t10-ref { font-size: 19px; }
 .t10-note { margin-top: 16px; padding: 8px 4px; border-bottom: 1px solid #CED4DA; color: #6C757D; font-size: 19px; }
 /* le tableau de bord */
 .t10-tdb { position: absolute; inset: 0; background: #E8E6E0; overflow: hidden; }
@@ -904,7 +916,7 @@ CSS = """
 .t10-dt .ico svg { width: 16px; height: 16px; }
 .t10-fl2 { color: #6E6D68; }
 .t10-sect { height: 40px; display: flex; align-items: center; justify-content: space-between; padding: 6px 2px 0;
-  font-size: 15px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: #6E6D68; }
+  font-size: 15px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: #55544F; }
 .t10-lk { font-size: 16px; font-weight: 500; letter-spacing: 0; text-transform: none; color: #3F6A83; }
 .t10-g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
 .t10-g2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
@@ -962,9 +974,9 @@ TUTORIEL = {
     'personnage': (NOM, ROLE),
     'accroche': {
         'kicker': 'Le crédit au bar',
-        'question': 'Qui vous doit *combien*, et depuis quand ?',
+        'question': 'Qui vous doit *combien,* et depuis quand ?',
         'douleurs': [('cahier', "L'ardoise tenue sur un cahier"),
-                     ('interrogation', 'Qui doit combien ? Depuis quand ?'),
+                     ('interrogation', 'Des montants oubliés'),
                      ('calculatrice', 'Les remboursements partiels mal notés'),
                      ('sablier', 'Des dettes qui vieillissent sans relance'),
                      ('telephone', 'MTN MoMo, Orange Money : hors du logiciel'),
@@ -1010,10 +1022,11 @@ TUTORIEL = {
                     anneau('#t10-st-du', d=1.4)]},
         {'temps': 0, 'titre': 'Mettre sur ardoise',
          'texte': "Pas de client, pas d'ardoise : la caisse le demande, puis valide la vente.",
-         'voix': "Le reste part sur l'ardoise. Sans client, la caisse refuse et ouvre la liste des clients. Hervé "
-                 "choisit Cédric, touche Mettre sur ardoise, et la vente est validée. Sur le ticket, les deux paiements.",
-         'gestes': [clic('#t10-ard', d=0.6), notifier('t10-toast-cli', duree=2.2), pause(0.5), ouvrir('t10-dlg'),
-                    saisir('t10-q', 'Ngassa', d=0.6), cacher('#t10-tous', d=0.15),
+         'voix': "Le reste part sur l'ardoise. Mais sans client, pas d'ardoise : la caisse le signale, et ouvre la "
+                 "liste des clients. Hervé choisit Cédric, touche à nouveau Mettre sur ardoise, et la vente est validée. "
+                 "Sur le ticket, les deux paiements : cinq mille en espèces, sept mille cinq cents sur l'ardoise.",
+         'gestes': [clic('#t10-ard', d=0.6), notifier('t10-toast-cli', duree=1.7), pause(0.3), ouvrir('t10-dlg'),
+                    pause(0.9), saisir('t10-q', 'Ngassa', d=0.6), cacher('#t10-tous', d=0.15),
                     montrer('#t10-trouves', d=0.25, y=0, avec=True), clic('#t10-c-ngassa', fx=0.2, d=0.5),
                     fermer('t10-dlg'), cacher('#t10-cli-0', d=0.15), montrer('#t10-cli-1', d=0.25, y=0, avec=True),
                     pause(0.3), clic('#t10-ard', d=0.5), vue('t10-recu', 'pos'), pause(0.4),
@@ -1023,7 +1036,8 @@ TUTORIEL = {
          'texte': 'ARD/0043, en tête de liste, avec sa caisse : 7 500 FCFA dus, pas un de plus.',
          'voix': "Côté bureau, dans POS Crédit, l'ardoise est déjà là, en tête de liste, avec sa caisse d'origine : "
                  "sept mille cinq cents francs dus, pas un de plus. Les couleurs suivent l'âge de la dette.",
-         'gestes': [montrer('#nav-bo', d=0.45, y=0), pause(0.4), zoom('#t10-r0', s=1.45, d=0.7, fx=0.42),
+         'gestes': [montrer('#nav-bo', d=0.45, y=0), curseur('#t10-r0', fx=0.06, d=0.6, avec=True), pause(0.2),
+                    zoom('#t10-r0', s=1.45, d=0.7, fx=0.42),
                     anneau('#t10-r0', d=1.6), pause(0.9), dezoom(d=0.5), anneau('#t10-r4-sev', d=0.9),
                     anneau('#t10-r7-sev', d=0.9), bulle('b-sev', '#t10-h-sev', cote='gauche', d=2.8), pause(1.4),
                     anneau('#t10-tot', d=1.2)]},
@@ -1034,7 +1048,7 @@ TUTORIEL = {
                  "la référence, et encaisse.",
          'gestes': [classe('#t10-r6', ajouter=['survol']), clic('#t10-r6', fx=0.25, d=0.6), vue('t10-fiche'),
                     pause(0.3), anneau('#t10-f-reste', d=1.0), clic('#t10-b-remb', d=0.5), ouvrir('t10-as'),
-                    bulle('b-pre', '#t10-as-mt', cote='bas', d=2.4), anneau('#t10-as-mt', d=1.2),
+                    bulle('b-pre', '#t10-as-mt', cote='haut', d=2.4), anneau('#t10-as-mt', d=1.2),
                     clic('#t10-as-moy', d=0.5), choisir('t10-as-moy', 'Orange Money'),
                     clic('#t10-as-ref', d=0.4), saisir('t10-as-ref', REF_OM, d=1.0), clic('#t10-as-ok', d=0.5),
                     fermer('t10-as')]},
@@ -1072,9 +1086,10 @@ TUTORIEL = {
          'texte': 'Les débiteurs par encours, avec l\'âge de leur dette et leur dernier paiement.',
          'voix': "Plus bas, les débiteurs, du plus gros encours au plus petit, avec l'âge de leur dette et leur "
                  "dernier paiement. Hervé sait qui relancer en premier.",
-         'gestes': [defiler('#t10-defil', -1312, d=1.1), pause(0.3), zoom('#t10-top', s=1.35, d=0.7, fy=0.3),
-                    anneau('#t10-d1', d=1.4), bulle('b-top', '#t10-d1-det', cote='gauche', d=2.4), pause(1.2),
-                    dezoom(d=0.5), reaction('r-relance', d=2.6), pause(1.4)]},
+         'gestes': [defiler('#t10-defil', -1312, d=1.1), pause(0.3), anneau('#t10-d0', d=1.0),
+                    anneau('#t10-d1', d=1.2), anneau('#t10-d1 .puce', d=1.0),
+                    bulle('b-top', '#t10-d1-det', cote='haut', d=2.6), pause(1.0),
+                    reaction('r-relance', d=2.6), pause(1.4)]},
     ],
     'resultats': {
         'titre': 'Le crédit client, enfin sous contrôle',

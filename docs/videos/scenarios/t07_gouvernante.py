@@ -405,8 +405,8 @@ def carte_ch(k, num, hint, type_etage, client=None, arrivee=None, equipiere=None
         corps += '<div class="lg" id="%s-eq">%s%s</div>' % (ident, ico(FEMME), e(equipiere))
     bts = ''.join(b(ident) for b in boutons)
     bts += '<span class="bt rouge-contour t07-cle" id="%s-cle">%s</span>' % (ident, icone('cle'))
-    return ('<div class="k-carte%s" id="%s"><div class="num-ch"><span>%s</span>%s</div>%s<div class="bts">%s</div></div>'
-            % (' hors-service' if hs else '', ident, e(num), badge, corps, bts))
+    return ('<div class="k-carte%s" id="%s"><div class="num-ch"><span>%s</span>%s</div>%s<div class="bts" id="%s-bts">%s'
+            '</div></div>' % (' hors-service' if hs else '', ident, e(num), badge, corps, ident, bts))
 
 
 def COMMENCER(i):
@@ -569,16 +569,20 @@ def telephone_(ident, initiale, cartes, menu=False):
                ident, KANBAN, ICONES['loupe'], cartes, menu_tel(ident) if menu else ''))
 
 
-CARTES_401_202 = lambda p: (  # noqa: E731 — les deux ménages quotidiens de Blandine, sous la 103
-    tache('%s401' % p, '401 [VIP]', 'Ménage quotidien (client présent)', 'Claire Durand', boutons=bts_tel('%s401' % p))
-    + tache('%s202' % p, '202 [CFT]', 'Ménage quotidien (client présent)', 'Brigitte Essomba',
-            boutons=bts_tel('%s202' % p)))
+def menages_blandine(p):
+    """Les deux ménages quotidiens de Blandine, sous la 103 (ordre « date desc, priority desc, id desc »)."""
+    return (tache('%s401' % p, '401 [VIP]', 'Ménage quotidien (client présent)', 'Claire Durand',
+                  boutons=bts_tel('%s401' % p))
+            + tache('%s202' % p, '202 [CFT]', 'Ménage quotidien (client présent)', 'Brigitte Essomba',
+                    boutons=bts_tel('%s202' % p)))
+
+
 TEL_A = telephone_('t07-tel-a', BLANDINE[0], tache('t07-ta103', '103 [STD]', 'Recouche complète (départ)', GASTON,
-                                                    boutons=bts_tel('t07-ta103')) + CARTES_401_202('t07-ta'), menu=True)
+                                                    boutons=bts_tel('t07-ta103')) + menages_blandine('t07-ta'), menu=True)
 NOTE_103 = 'Inspection refusée. À reprendre : Salle de bain nettoyée, serviettes changées — serviettes manquantes'
 TEL_B = telephone_('t07-tel-b', BLANDINE[0], tache('t07-tb103', '103 [STD]', 'URGENT — Recouche complète (départ)',
                                                     GASTON, note=NOTE_103, urgent=True, boutons=bts_tel('t07-tb103'))
-                   + CARTES_401_202('t07-tb'))
+                   + menages_blandine('t07-tb'))
 
 # ---------------------------------------- Tâches de ménage (action « Gouvernante ») --
 def carte_t(ident, chambre_, equipiere, en_cours=False):
@@ -1020,7 +1024,7 @@ TUTORIEL = {
              classe('#t07-bloque', ajouter=['coche']), clic('#t07-pb-ok', d=0.5), fermer('t07-as-pb'),
              notifier('t07-toast-pb', duree=2.0), cacher('#t07-b3', d=0.2, avec=True),
              montrer('#t07-b4', d=0.35, y=0, avec=True),
-             pause(0.7), zoom('#t07-b4-102', s=1.6, d=0.7), bulle('b-hs', '#t07-b4-102-h', cote='droite', d=2.3),
+             pause(0.7), zoom('#t07-b4-102', s=1.6, d=0.7), bulle('b-hs', '#t07-b4-102-bts', cote='droite', d=2.3),
              pause(1.5), dezoom(d=0.6)]},
         {'temps': 2, 'titre': 'Pannes & réparations',
          'texte': 'Josiane passe la demande à Réparé : la chambre revient en vente, à nettoyer.',
