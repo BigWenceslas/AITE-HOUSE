@@ -33,7 +33,7 @@ EQUIPIERES = ('Clarisse', 'Sidonie')
 RESA = 'RES/2026/0214'
 FOLIO = 'FOL/2026/0214'
 CLIENT = 'Estelle Ngono'
-CLIENT_TEL = '+237 677 41 28 90'
+CLIENT_TEL = '+237 6 00 00 00 01'
 CLIENT_MAIL = 'estelle.ngono@exemple.cm'
 ARRIVEE = '14/10/2026 14:00:00'
 DEPART = '16/10/2026 12:00:00'
@@ -43,8 +43,9 @@ PRIX_NUIT = '45 000 FCFA'
 TOTAL_HEB = '90 000 FCFA'
 
 ARRIVEES = [
-    # (référence, client, arrivée, départ, nuits, chambres, total, solde)
-    ('RES/2026/0214', 'Estelle Ngono', '14/10/2026 14:00:00', '16/10/2026 12:00:00', '2', '1', '90 000 FCFA', '90 000 FCFA'),
+    # (référence, client, arrivée, départ, nuits, chambres, total hébergement HT, solde du folio)
+    # Solde d'Estelle après l'acompte de 45 000 : folio 102 000 (2 × 45 000 + taxe de séjour 12 000) − 45 000.
+    ('RES/2026/0214', 'Estelle Ngono', '14/10/2026 14:00:00', '16/10/2026 12:00:00', '2', '1', '90 000 FCFA', '57 000 FCFA'),
     ('RES/2026/0209', 'Martin Ebode', '14/10/2026 14:00:00', '17/10/2026 12:00:00', '3', '1', '105 000 FCFA', '35 000 FCFA'),
     ('RES/2026/0201', 'Claire Durand', '14/10/2026 18:00:00', '15/10/2026 12:00:00', '1', '1', '120 000 FCFA', '0 FCFA'),
 ]

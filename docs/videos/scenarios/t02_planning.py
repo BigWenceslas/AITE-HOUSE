@@ -93,13 +93,14 @@ ces dates est refusée à la confirmation.
    commission », « Occupation », onglets « Chambres » / « Demandes
    particulières », colonnes des lignes, icône ⇄ « Changer de chambre ») ;
    aite_guest_registry/views/hotel_reservation_views.xml:11-47 (« Fiches
-   clients », « Fiches d'enregistrement ») ; canaux « Direct / comptoir »,
-   « Téléphone / WhatsApp » (hotel_reservation.py:70-78). Statusbar réduite à
+   clients », « Fiches d'enregistrement ») ; canal « Direct / comptoir », le
+   canal par défaut que la Réservation rapide ne demande pas
+   (hotel_reservation.py:70-78, hotel_booking_wizard.py:105-118). Statusbar réduite à
    l'état courant et boutons sur deux rangées, discussion à droite :
    ref_muk/027 (fiche). Discussion d'Odoo 18 : « Envoyer message », « Note »,
-   « Activités », séparateurs de date (« Aujourd'hui », « 10 oct. 2026 »),
-   « Aujourd'hui à 10:12 », « 10 oct., 16:05 » (odoo18/addons/mail/static/src/
-   core/common/message_model.js:225-262 ; mail/i18n/fr.po:10407-10408), suivi
+   « Activités », séparateur de date « Aujourd'hui », « Aujourd'hui à 10:12 »
+   (odoo18/addons/mail/static/src/core/common/message_model.js:225-262 ;
+   mail/i18n/fr.po:10407-10408), suivi
    « ancien → nouveau (Champ) » (mail/static/src/core/web/message_patch.xml:
    15-19), message de
    création « %s créé » (mail_thread.py:458, fr.po:269-270) appliqué à
@@ -119,13 +120,13 @@ ces dates est refusée à la confirmation.
    (tracking=True, :61) ; test_reservation.py:370-376
    (test_extending_stay_updates_folio). Le bouton « Folio » affiche le solde
    (folio_amount_residual, views/hotel_reservation_views.xml:70-80 ;
-   hotel_reservation.py:121-124). Convention de la série, nuitée sans TVA
-   (t01_reception.py:143-147, t03_folio.py:116-118 : « aucun taux n'est livré
-   par les modules ») et taxe de séjour 3 ★ de 3 000 FCFA par personne et par
-   nuit : Estelle Ngono 102 000 FCFA moins l'acompte de 45 000 FCFA versé à
-   09:15 (t01, REF_MOMO MP261014.0915), soit 57 000 FCFA à 10:12, puis
-   153 000 - 45 000 = 108 000 FCFA ; Rodrigue Tamba, sans acompte :
-   90 000 + 12 000 = 102 000 FCFA.
+   hotel_reservation.py:121-124). Convention de la série (fiche
+   d'harmonisation) : aucun article sans TVA, taxe de séjour 3 ★ de
+   3 000 FCFA par personne et par nuit. Rodrigue Tamba (RES/2026/0221), sans
+   acompte, réservé pour une nuit en 201 : 45 000 + 6 000 = 51 000 FCFA ;
+   prolongé d'une nuit : 90 000 + 12 000 = 102 000 FCFA, le folio de la
+   série (t03_folio.py, t08_site_web.py). Estelle Ngono n'est ni prolongée
+   ni déplacée : elle garde la 204 du 14 au 16/10 (fiche d'harmonisation).
 7. Changer de chambre — wizard/hotel_room_change_wizard_views.xml:4-52
    (« Changer de chambre », groupes « Séjour » / « Nouvelle chambre »,
    « Client », « Chambre actuelle », « Arrivée », « Départ », « Nouvelle
@@ -135,11 +136,15 @@ ces dates est refusée à la confirmation.
    odoo18/odoo/fields.py:767), bandeau « Surclassement gracieux : la nouvelle
    chambre sera facturée au tarif actuel du séjour. », « Changer la
    chambre », « Annuler ») ; wizard/hotel_room_change_wizard.py:20-95
-   (aides, prix, message « Surclassement gracieux : le tarif de %(price)s /
-   nuit est conservé. », posté parce que le prix de la suite diffère) ;
-   hotel_reservation.py:680-707 (disponibilité contrôlée, message
+   (aides, prix ; le message « Surclassement gracieux : le tarif de
+   %(price)s / nuit est conservé. » n'est posté que si la case est cochée et
+   que le prix change : ici, de la 201 à la 203, deux Confort à 45 000, la
+   case reste décochée et la bulle en dit seulement l'usage, d'après son
+   aide) ; hotel_reservation.py:680-707 (disponibilité contrôlée, message
    « Changement de chambre : %(old)s → %(new)s. », folio resynchronisé) ;
-   tests test_reservation.py:305-333, test_wizards.py:241-258.
+   tests test_reservation.py:305-333, test_wizards.py:241-258. Rodrigue
+   Tamba finit en 203, du 19 au 21/10 : la réservation de la série
+   (t03_folio.py, t08_site_web.py).
 
 Chiffres des résultats : 31 tests automatisés — addons/aite_hotel_management/
 tests/test_room_pricing.py:209-249 (7 tests de disponibilité),
@@ -159,45 +164,50 @@ installé, aite_hotel_gantt ne s'installe pas seul à la mise à niveau.
 
 ÉCARTS rejoués tels quels (signalés, jamais corrigés) : dates ISO en heure
 UTC dans le refus de disponibilité (« du 2026-10-15 13:00:00 au 2026-10-17
-11:00:00 », hotel_reservation.py:299-305 ; CLAUDE.md règle 6) ; montant brut
-« 45000.0 » sans FCFA dans le message de surclassement
-(hotel_room_change_wizard.py:92-94) ; titre « Odoo » de la Réservation
+11:00:00 », hotel_reservation.py:299-305 ; CLAUDE.md règle 6) ; titre « Odoo » de la Réservation
 rapide après la recherche ; « Supprimer » proposé sur un séjour dans la
 fenêtre de détail du planning (calendrier sans delete="0") ; date de la
 fenêtre de détail au format « octobre 14-16, 2026 » (cadre Odoo) ; anglais
 résiduel « Front Desk », « Check-in », « No-show » ; « Réservation hôtelière
-créé » (accord du message de création d'Odoo). Non rejoué mais relevé : un
+créé » (accord du message de création d'Odoo). Non rejoués mais relevés : un
 séjour « Arrivé » dont le départ est dépassé ne bloque plus sa chambre
-(room.is_available ne compare que les dates).
+(room.is_available ne compare que les dates) ; montant brut « 45000.0 » sans
+FCFA dans le message de surclassement (hotel_room_change_wizard.py:92-94),
+qui n'apparaît pas ici.
 
-Écarts de la série (non corrigés ici, signalés) : le tutoriel 5 compte la
-nuitée avec TVA 19,25 % (t05_taxe_sejour.py:127-136 : 119 325 puis
-178 988 FCFA) quand t01, t03, t06 et ce tutoriel la comptent sans TVA ;
-Martin Ebode est placé en 104 [STD] comme dans t07 (gouvernante, :386-387)
-et comme le veut son tarif (105 000 FCFA pour 3 nuits, demo.ARRIVEES),
-alors que c1 le loge en 206 et c2 / t06 en 201 [CFT] ; ce tutoriel prolonge
-Estelle Ngono jusqu'au 17/10 en suite 402, quand t03, t06 et t07 la gardent
-en 204 jusqu'au 16/10 ; le téléphone d'Estelle (demo.CLIENT_TEL, format d'un
-vrai mobile) vient de demo.py, partagé.
+Cohérence de la série (fiche d'harmonisation) : nuitées sans TVA partout
+(t01, t03, t05, t06) ; Martin Ebode en 104 [STD] comme dans t06 et t07, et
+comme le veut son tarif (105 000 FCFA pour 3 nuits, demo.ARRIVEES) ; Estelle
+Ngono en 204 du 14 au 16/10, jamais prolongée ni déplacée. Limite assumée :
+le calendrier d'Odoo n'empile que cinq séjours par case avant « +N en plus »
+(voir 2.) ; le planning ne peut donc pas montrer les 55-65 % d'occupation des
+tableaux de bord (t01, t15) sans masquer le séjour d'Estelle derrière un
+« +N en plus » : il garde une occupation lisible, jusqu'à cinq séjours par
+jour, et les nuits passées ne sont qu'en partie remplies.
 
 Voix : « planning » s'écrit « planinng » dans les phrases de la voix
 seulement (Kokoro lit « planning » à l'anglaise ; « planinng » donne la
 prononciation française [planiŋ]), jamais à l'écran.
 
 Données : demo.py (Complexe Hôtelier — Démo, Démo Hôtellerie SARL, Estelle
-Ngono, RES/2026/0214, FOL/2026/0214, chambre 204 [CFT] Confort à 45 000 FCFA
-la nuit, arrivée le 14/10/2026 à 14 h, départ le 16/10/2026 à 12 h ; Claire
-Durand, RES/2026/0201) ; structure des chambres et étages du module de
-démonstration (aite_demo_data/data/10_hotel_structure.xml : 101-105 au
-rez-de-chaussée, 105 hors service donc sans séjour, 106 et 201-204 au 1er
-étage, 205, 301-303, 401-402 au 2e étage ; types STD, CFT, SJR, VIP) ;
-tarifs : Standard 35 000, Suite Junior 75 000, Suite VIP 120 000 FCFA
-(10_hotel_structure.xml:41-66), Confort 45 000 FCFA (demo.PRIX_NUIT). Les
-autres clients sont fictifs (Martin Ebode, RES/2026/0209, 104 [STD], du
-14/10/2026 14:00:00 au 17/10/2026 12:00:00 : demo.ARRIVEES ; téléphones de
-Rodrigue Tamba et Jacques Owona dans une plage manifestement fictive,
-+237 6 00 00 00 xx) ; « aujourd'hui » est le mercredi 14/10/2026,
-comme dans la vidéo de présentation.
+Ngono, RES/2026/0214, chambre 204 [CFT] Confort à 45 000 FCFA la nuit,
+arrivée le 14/10/2026 à 14 h, départ le 16/10/2026 à 12 h ; Claire Durand,
+RES/2026/0201, 401 [VIP]) ; les 20 chambres de la série (fiche
+d'harmonisation) : 101-107 [STD] au rez-de-chaussée, dont la 105 hors
+service, donc sans séjour et absente du filtre « Chambre » (le calendrier
+ne liste que les chambres des séjours chargés) ; 201-206 [CFT] au 1er
+étage, 301-304 [SJR] au 2e, 401-403 [VIP] au 3e ; tarifs Standard 35 000,
+Confort 45 000, Suite Junior 75 000, Suite VIP 120 000 FCFA. Couleurs des
+chambres : relevées sur la base MuK, puis, pour 107, 206, 304 et 403, la
+suite de la palette d'Odoo ($o-colors-secondary, odoo18/addons/web/static/
+src/scss/secondary_variables.scss:11-18). Les autres clients sont fictifs
+(Martin Ebode, RES/2026/0209, 104 [STD], du 14/10/2026 14:00:00 au
+17/10/2026 12:00:00 : demo.ARRIVEES ; Brigitte Essomba en 202 du 13 au
+16/10, Gaston Mbida en 103 du 15 au 17/10, Joël Kamga en 204 du 18 au 20/10,
+Aristide Bella en 401 du 24 au 26/10 ; téléphones de Rodrigue Tamba et
+Jacques Owona dans la plage de fiction +237 6 00 00 00 xx) ;
+« aujourd'hui » est le mercredi 14/10/2026, comme dans la vidéo de
+présentation.
 """
 
 import datetime as dt
@@ -226,18 +236,23 @@ def fcfa(n):
 J0 = dt.date(2026, 9, 28)          # le lundi de la semaine 40 : première case du mois affiché
 AUJ = dt.date(2026, 10, 14)        # aujourd'hui (mercredi) : arrivée d'Estelle Ngono
 
-# Chambres de l'hôtel de démonstration : type, étage ; couleurs du calendrier
-# relevées sur la base MuK (ref_muk/028, panneau « Chambre »).
+# Les 20 chambres de la série (fiche d'harmonisation) : type, étage ; couleurs du
+# calendrier relevées sur la base MuK (ref_muk/028, panneau « Chambre »), puis la
+# suite de la palette d'Odoo pour 107, 206, 304 et 403. La 105, hors service, n'a
+# aucun séjour : le filtre « Chambre » ne la liste pas.
 TYPES = {'STD': ('Standard', 35000), 'CFT': ('Confort', 45000), 'SJR': ('Suite Junior', 75000),
          'VIP': ('Suite VIP', 120000)}
 CHAMBRES = {
     '101': ('STD', 'Rez-de-chaussée', '#EE2F8A'), '102': ('STD', 'Rez-de-chaussée', '#61C36E'),
     '103': ('STD', 'Rez-de-chaussée', '#9872E6'), '104': ('STD', 'Rez-de-chaussée', '#AA4B6B'),
-    '106': ('STD', '1er étage', '#97743A'), '201': ('CFT', '1er étage', '#F7CD1F'), '202': ('CFT', '1er étage', '#4285F4'),
-    '203': ('CFT', '1er étage', '#8E24AA'), '204': ('CFT', '1er étage', '#D6145F'), '205': ('CFT', '2e étage', '#173E43'),
+    '106': ('STD', 'Rez-de-chaussée', '#97743A'), '107': ('STD', 'Rez-de-chaussée', '#999966'),
+    '201': ('CFT', '1er étage', '#F7CD1F'), '202': ('CFT', '1er étage', '#4285F4'), '203': ('CFT', '1er étage', '#8E24AA'),
+    '204': ('CFT', '1er étage', '#D6145F'), '205': ('CFT', '1er étage', '#173E43'), '206': ('CFT', '1er étage', '#E9D362'),
     '301': ('SJR', '2e étage', '#348F50'), '302': ('SJR', '2e étage', '#AA3A38'), '303': ('SJR', '2e étage', '#795548'),
-    '401': ('VIP', '2e étage', '#5E0231'), '402': ('VIP', '2e étage', '#6BE585'),
+    '304': ('SJR', '2e étage', '#B56969'),
+    '401': ('VIP', '3e étage', '#5E0231'), '402': ('VIP', '3e étage', '#6BE585'), '403': ('VIP', '3e étage', '#649173'),
 }
+assert len(CHAMBRES) == 19           # 20 chambres, moins la 105 hors service
 
 
 def D(mois, jour):
@@ -254,6 +269,8 @@ SEJOURS = [
     ('106', 'Hugues Ondoa', D(10, 5), D(10, 6)), ('205', 'Pauline Ekotto', D(10, 6), D(10, 9)),
     ('202', 'Nadine Ekambi', D(10, 7), D(10, 9)), ('103', 'Esther Mengue', D(10, 8), D(10, 10)),
     ('401', 'Laurent Abega', D(10, 9), D(10, 12)), ('101', 'Cyrille Owono', D(10, 10), D(10, 13)),
+    ('107', 'Ernest Abomo', D(10, 5), D(10, 7)), ('206', 'Nathalie Kotto', D(10, 5), D(10, 8)),
+    ('403', 'Alice Ngo Mbe', D(10, 9), D(10, 11)), ('304', 'Ulrich Ekane', D(10, 12), D(10, 13)),
     ('302', 'Gisèle Abanda', D(10, 12), D(10, 14)), ('202', 'Brigitte Essomba', D(10, 13), D(10, 16)),
     ('204', demo.CLIENT, D(10, 14), D(10, 16)), ('104', 'Martin Ebode', D(10, 14), D(10, 17)),
     ('401', 'Claire Durand', D(10, 14), D(10, 15)),
@@ -263,14 +280,15 @@ SEJOURS = [
     ('401', 'Aristide Bella', D(10, 24), D(10, 26)), ('205', 'Blaise Atangana', D(10, 28), D(10, 31)),
     ('104', 'Mathieu Nkodo', D(10, 30), D(11, 1)), ('303', 'Viviane Eyoum', D(11, 4), D(11, 6)),
 ]
-# Réservé au téléphone pendant le tutoriel (Réservation rapide) ; puis le séjour d'Estelle
-# prolongé d'une nuit et passé en suite 402 (surclassement gracieux).
-RODRIGUE = ('203', 'Rodrigue Tamba', D(10, 19), D(10, 21))
-ESTELLE_FIN = ('402', demo.CLIENT, D(10, 14), D(10, 17))
+# Rodrigue Tamba, réservé au téléphone pendant le tutoriel (Réservation rapide) : une
+# nuit en 201 ; il rappelle, reste une nuit de plus et passe en 203 — la réservation
+# de la série (203, du 19 au 21/10). Estelle Ngono, elle, ne bouge pas.
+RODRIGUE = ('201', 'Rodrigue Tamba', D(10, 19), D(10, 20))
+RODRIGUE_FIN = ('203', 'Rodrigue Tamba', D(10, 19), D(10, 21))
 ETATS = {
     'initial': SEJOURS,
     'reserve': SEJOURS + [RODRIGUE],
-    'final': [s for s in SEJOURS if s[1] != demo.CLIENT] + [RODRIGUE, ESTELLE_FIN],
+    'final': SEJOURS + [RODRIGUE_FIN],
 }
 
 # Les réservations confirmées de la liste de départ (référence, client, arrivée, départ, chambre).
@@ -291,22 +309,20 @@ CONFIRMEES = [
 ]
 
 # Le bouton « Folio » affiche le solde du folio (folio_amount_residual). Convention de la série
-# (t01_reception.py:143-147, t03_folio.py:116-118) : nuitée sans TVA, taxe de séjour 3 ★ de
-# 3 000 FCFA par personne et par nuit. Estelle Ngono : 2 nuits × 45 000 + 2 × 2 × 3 000 = 102 000,
-# moins l'acompte de 45 000 versé à 09:15 (t01) = 57 000 ; prolongée d'une nuit : 3 × 45 000
-# + 3 × 2 × 3 000 = 153 000, moins 45 000 = 108 000. Rodrigue Tamba, sans acompte : 102 000.
+# (fiche d'harmonisation) : nuitée sans TVA, taxe de séjour 3 ★ de 3 000 FCFA par personne et
+# par nuit. Rodrigue Tamba, deux adultes, sans acompte : une nuit, 45 000 + 2 × 3 000 = 51 000 ;
+# prolongé d'une nuit, 2 × 45 000 + 2 × 2 × 3 000 = 102 000 (t03_folio.py, t08_site_web.py).
 TAXE_NUIT_PERS = 3000
-ACOMPTE_ESTELLE = 45000
 
 
 def solde_folio(nuits, acompte=0, prix=45000, personnes=2):
     return fcfa(nuits * prix + nuits * personnes * TAXE_NUIT_PERS - acompte)
 
 
-FOLIO_AVANT, FOLIO_APRES = solde_folio(2, ACOMPTE_ESTELLE), solde_folio(3, ACOMPTE_ESTELLE)
-FOLIO_RODRIGUE = solde_folio(2)
-assert (FOLIO_AVANT, FOLIO_APRES, FOLIO_RODRIGUE) == ('57 000 FCFA', '108 000 FCFA', '102 000 FCFA')
-TOTAL_APRES = fcfa(3 * 45000)
+FOLIO_AVANT, FOLIO_RODRIGUE = solde_folio(1), solde_folio(2)
+TOTAL_AVANT, TOTAL_APRES = fcfa(45000), fcfa(2 * 45000)
+assert (FOLIO_AVANT, FOLIO_RODRIGUE, TOTAL_AVANT, TOTAL_APRES) == (
+    '51 000 FCFA', '102 000 FCFA', '45 000 FCFA', '90 000 FCFA')
 
 
 # ------------------------------------------------------------ le planning --
@@ -396,9 +412,9 @@ def _barre(s, hauts, ident=None, cache=False):
 
 def _ident(s):
     if s['cli'] == demo.CLIENT and s['r'] == 2:
-        return 't02-b-estelle' if s['ch'] == '204' else 't02-b-estelle2'
+        return 't02-b-estelle'
     if s['cli'] == RODRIGUE[1]:
-        return 't02-b-rodrigue'
+        return 't02-b-rodrigue' if s['ch'] == RODRIGUE[0] else 't02-b-rodrigue2'
     return None
 
 
@@ -412,7 +428,7 @@ def couches():
         assert etats[k][1] == niv0, 'la hauteur des semaines change : %s' % k
         cles = {_cle(s) for s in etats[k][0]}
         for s in base:
-            assert _cle(s) in cles or s['cli'] == demo.CLIENT, 'une barre change de rangée : %s %s' % (k, s['cli'])
+            assert _cle(s) in cles, 'une barre change de rangée : %s %s' % (k, s['cli'])
     html = ''.join(_barre(s, hauts, _ident(s)) for s in base)
     deja = {_cle(s) for s in base}
     for k in ('reserve', 'final'):

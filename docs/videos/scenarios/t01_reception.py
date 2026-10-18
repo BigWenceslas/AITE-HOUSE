@@ -15,9 +15,9 @@ Facturation) ») et la bulle de l'étape 6 le redit. Données fictives : demo.py
 RES/2026/0214, FOL/2026/0214, chambre 204 [CFT], 45 000 FCFA la nuit) ;
 types, étages et prix des autres chambres composés pour la démonstration
 (Standard 35 000, Confort 45 000, Suite Junior 75 000, Suite VIP 120 000).
-Téléphone de la cliente neutralisé (« +237 600 00 00 00 ») au lieu de
-demo.CLIENT_TEL, qui ressemble à un vrai numéro MTN ; référence MoMo
-numérique, comme les identifiants de transaction MTN. La société de
+Téléphone de la cliente : demo.CLIENT_TEL, dans la plage de fiction
+« +237 6 00 00 00 xx » de la série ; référence MoMo numérique, comme les
+identifiants de transaction MTN. La société de
 démonstration est paramétrée sans TVA (articles de nuitée et de service sans
 taxe de vente) : « Taxes 0 FCFA » et Total TTC = Total HT. Une société
 assujettie verrait la TVA de 19,25 % (benchmark_afrique_odoo.md:14) sur les
@@ -36,10 +36,21 @@ Sources des libellés (addons/, vérifiés mot pour mot par grep -rF) :
   ses quatre puces, les deux dates « → » et « Appliquer » (:45-60 ; période
   « Ce mois » = du 1er du mois à aujourd'hui, js/services/hotel_utils.js
   :70-95), Photo du jour, Performance de la période, les huit cartes et leurs
-  sous-titres, les deux graphiques). Chiffres cohérents entre eux : 15 / 24
-  chambres ce soir ; 183 nuitées sur 14 jours × 24 chambres = 54,5 %, moyenne
-  des 14 points de la courbe (chambres occupées par jour / 24) ; ADR × 183 =
-  8 564 400 ; RevPAR = 8 564 400 / 336. Format des montants et des
+  sous-titres, les deux graphiques). Chiffres de l'hôtel de la série
+  (20 chambres, fiche d'harmonisation), cohérents entre eux et avec le
+  cockpit de la direction (t15_direction.py : 192 nuitées du 30/09 au 14/10,
+  ADR 45 000) : 13 / 20 chambres ce soir (65,0 %), 13 séjours en cours,
+  22 clients présents ; du 01/10 au 14/10, 179 nuitées (192 moins les 13 de
+  la nuit du 30/09) sur 14 jours × 20 chambres = 280 disponibles, soit
+  63,9 % — la somme des 14 points de la courbe (chambres occupées par
+  jour / 20 : 11, 12, 13, 13, 14, 15, 14, 12, 12, 12, 13, 14, 11, 13) ;
+  ADR 45 000 × 179 = 8 055 000 ; RevPAR = 8 055 000 / 280 = 28 768 ; CA
+  = 8 055 000 + 440 000 de services. Anneau du CA hébergement : 78 nuitées
+  Standard (2 730 000), 84 Confort (3 780 000), 11 Suite Junior (825 000),
+  6 Suite VIP (720 000), soit 179 nuitées et 8 055 000. Le Front Desk ne
+  compte que les chambres qui ne sont pas hors service
+  (hotel_dashboard.py:105-109) : « / 20 » suppose la 105 encore vendable ce
+  matin-là (elle est hors service au tutoriel 7, le 15/10). Format des montants et des
   pourcentages : captures ref_muk/021-h-tel.png et aite_dev (« 38 125 FCFA »,
   « 8,9 % »). Le bouton ouvre la réservation rapide (même assistant que le menu).
 - Réservation rapide : wizard/hotel_booking_wizard_views.xml:8-72 (champs,
@@ -65,7 +76,11 @@ Sources des libellés (addons/, vérifiés mot pour mot par grep -rF) :
 - Registre des clients : aite_guest_registry/views/hotel_reservation_views.xml
   :11-48 (« Fiches clients », bandeau « Registre des clients : … — compléter
   maintenant », « Registre des clients à jour. », « Imprimer les fiches »,
-  « Fiches d'enregistrement ») et :62-66 (colonne Registre) ;
+  « Fiches d'enregistrement ») et :62-66 (colonne Registre) ; au check-in,
+  « 1 fiche(s) à compléter · 1 occupant(s) sans fiche », 0/2 ; au départ, le
+  registre est à jour (2/2, bandeau vert) : t06_registre.py complète les deux
+  fiches le 14/10 (la date de naissance, exigée pour une fiche complète,
+  n'est jamais pré-remplie : guest_registration.py:182-199, :256-280) ;
   models/hotel_reservation.py:31-36 (Aucune fiche, À compléter, Registre à
   jour), :77-90 (« 1 fiche(s) à compléter · 1 occupant(s) sans fiche »),
   :96-108 (fiche du client principal créée et pré-remplie au check-in).
@@ -133,11 +148,6 @@ dans addons/aite_hotel_management/tests (décompte des « def test_ »).
   demo.reception n'a pas ce droit (aite_demo_data/models/demo_generator.py
   :55-59). La réceptionniste du tutoriel a donc ce droit (pastille, barre
   MuK avec Facturation, bulle de l'étape 6).
-- Le registre reste « à compléter » au départ (1 fiche à compléter, 1
-  occupant sans fiche, 0/2) : la date de naissance, exigée pour une fiche
-  complète (aite_guest_registry/models/guest_registration.py:182-199), n'est
-  jamais pré-remplie (:256-280) et le check-out
-  n'en dépend pas ; le tutoriel ne prétend pas le contraire.
 - Après « Valider le départ », l'application ouvre la facture comptable
   (écran standard d'Odoo, non rejoué) : le montage passe au folio facturé.
 - « ADR », « RevPAR », « Front Desk », « room board », « check-out attendus
@@ -176,8 +186,8 @@ NOM, ROLE = demo.POSTES['reception']
 # l'application Facturation dans sa barre (account_menuitem.xml:5-6).
 ROLE = ROLE + ' (droit Facturation)'
 APPS = APPS_PROFIL['reception'][:3] + ['Facturation'] + APPS_PROFIL['reception'][3:]
-# Numéro neutralisé (série 600 00 00 00), manifestement fictif.
-TEL = '+237 600 00 00 00'
+# Numéro de la plage de fiction de la série (demo.py).
+TEL = demo.CLIENT_TEL
 MENUS =['Front Desk', 'Réservations', 'Espaces & Prestations', 'Notes de chambre en attente', 'Facturation',
          'Fidélité', 'Gouvernante']
 
@@ -197,6 +207,35 @@ def badge(texte_, genre):
 
 
 # ------------------------------------------------------------ Front Desk --
+# Les chiffres du Front Desk (hotel_dashboard.py:269-356), période « Ce mois »
+# du 01/10 au 14/10 : 20 chambres de la série × 14 jours. Les nuitées sont
+# celles du cockpit de la direction (t15 : 192 du 30/09 au 14/10) moins les
+# 13 de la nuit du 30/09 ; ADR 45 000 comme au cockpit.
+CHAMBRES_VENDABLES, JOURS = 20, 14
+DISPO = CHAMBRES_VENDABLES * JOURS
+PAR_JOUR = [11, 12, 13, 13, 14, 15, 14, 12, 12, 12, 13, 14, 11, 13]     # chambres occupées, nuit du 01/10 au 14/10
+NUITEES = sum(PAR_JOUR)
+TYPES_CA = {'STD': ('Standard', 35000, '#854F0B'), 'CFT': ('Confort', 45000, '#3B6D11'),
+            'SJR': ('Suite Junior', 75000, '#185FA5'), 'VIP': ('Suite VIP', 120000, '#714B67')}
+NUITEES_TYPE = {'STD': 78, 'CFT': 84, 'SJR': 11, 'VIP': 6}
+CA_HEB = sum(n * TYPES_CA[k][1] for k, n in NUITEES_TYPE.items())
+CA_SERV = 440000
+ADR = CA_HEB / NUITEES
+assert (NUITEES, sum(NUITEES_TYPE.values()), CA_HEB, ADR) == (179, 179, 8055000, 45000)
+assert NUITEES + 13 == 192 and PAR_JOUR[-1] == 13 and max(PAR_JOUR) <= CHAMBRES_VENDABLES - 1
+
+
+def fcfa(n):
+    return '{:,}'.format(int(round(n))).replace(',', ' ') + ' FCFA'
+
+
+def pct(x):
+    return ('%.1f' % x).replace('.', ',')
+
+
+assert (pct(NUITEES * 100.0 / DISPO), fcfa(CA_HEB / DISPO), pct(13 * 100.0 / CHAMBRES_VENDABLES)) == (
+    '63,9', '28 768 FCFA', '65,0')
+
 FRONT = vue_tdb('t1-front', (
     tdb_entete('Front Desk — Réception', 'Occupation, arrivées & départs, room board · ' + demo.SOCIETE,
                'Nouvelle réservation')
@@ -204,24 +243,25 @@ FRONT = vue_tdb('t1-front', (
         '</div></div>', '<span class="t1-esp"></span><span class="t1-date">01/10/2026</span><span class="t1-fl">→</span>'
         '<span class="t1-date">14/10/2026</span><span class="chip t1-appl">Appliquer</span></div></div>')
     + tdb_section('Photo du jour', [
-        kpi('t1-k-occ', 'Occupation ce soir', '62,5 %', '15 / 24 chambres occupées', 'violet'),
+        kpi('t1-k-occ', 'Occupation ce soir', '65,0 %', '13 / 20 chambres occupées', 'violet'),
         kpi('t1-k-arr', 'Arrivées attendues', '2', 'réservations confirmées du jour', 'bleu'),
         kpi('t1-k-dep', 'Départs prévus', '2', "check-out attendus aujourd'hui", 'ambre'),
-        kpi('t1-k-pre', 'Clients présents', '27', '15 séjours en cours', 'vert')])
+        kpi('t1-k-pre', 'Clients présents', '22', '13 séjours en cours', 'vert')])
     + tdb_section('Performance de la période', [
-        kpi('t1-k-to', "Taux d'occupation", '54,5 %', '183 nuitées vendues', None, ('7,3 % vs N-1', 'haut')),
-        kpi('t1-k-adr', 'ADR — prix moyen / nuit', '46 800 FCFA', 'CA hébergement / nuitées vendues', None,
+        kpi('t1-k-to', "Taux d'occupation", '%s %%' % pct(NUITEES * 100.0 / DISPO), '%d nuitées vendues' % NUITEES,
+            None, ('7,3 % vs N-1', 'haut')),
+        kpi('t1-k-adr', 'ADR — prix moyen / nuit', fcfa(ADR), 'CA hébergement / nuitées vendues', None,
             ('2,0 % vs N-1', 'haut')),
-        kpi('t1-k-rev', 'RevPAR', '25 489 FCFA', 'revenu / chambre disponible', None, ('9,4 % vs N-1', 'haut')),
-        kpi('t1-k-ca', "Chiffre d'affaires (HT)", '9 004 400 FCFA', 'Hébergement 8 564 400 FCFA · Services 440 000 FCFA',
-            None, ('9,2 % vs N-1', 'haut'))])
+        kpi('t1-k-rev', 'RevPAR', fcfa(CA_HEB / DISPO), 'revenu / chambre disponible', None, ('9,4 % vs N-1', 'haut')),
+        kpi('t1-k-ca', "Chiffre d'affaires (HT)", fcfa(CA_HEB + CA_SERV),
+            'Hébergement %s · Services %s' % (fcfa(CA_HEB), fcfa(CA_SERV)), None, ('9,2 % vs N-1', 'haut'))])
     + '<div class="t1-graphes">%s</div>' % graphes(
         graphe_courbe('t1-g-occ', "Taux d'occupation par jour",
-                      [41.7, 50, 50, 54.2, 62.5, 70.8, 66.7, 50, 45.8, 50, 54.2, 58.3, 45.8, 62.5],
+                      [n * 100.0 / CHAMBRES_VENDABLES for n in PAR_JOUR],
                       etiquettes=['01/10', '03/10', '05/10', '07/10', '09/10', '11/10', '14/10']),
         graphe_anneau('t1-g-type', 'CA hébergement par type de chambre',
-                      [('Suite VIP', 31, '#714B67'), ('Confort', 30, '#3B6D11'), ('Suite Junior', 22, '#185FA5'),
-                       ('Standard', 17, '#854F0B')]))
+                      [(TYPES_CA[k][0], NUITEES_TYPE[k] * TYPES_CA[k][1], TYPES_CA[k][2])
+                       for k in sorted(NUITEES_TYPE, key=lambda k: -NUITEES_TYPE[k] * TYPES_CA[k][1])]))
 ), initiale=True)
 
 # Le menu déroulant « Front Desk » (hotel_menus.xml, sous-menus par séquence).
@@ -248,7 +288,7 @@ RAPIDE = assistant('t1-rap', 'Réservation rapide', (
 
 RESULTATS = [
     # (id, chambre, type, étage, capacité adultes, prix / nuit, total séjour)
-    ('t1-rr-103', '103 [STD]', 'Standard', 'Rez-de-chaussée', '2', '35 000 FCFA', '70 000 FCFA'),
+    ('t1-rr-102', '102 [STD]', 'Standard', 'Rez-de-chaussée', '2', '35 000 FCFA', '70 000 FCFA'),
     ('t1-rr-204', '204 [CFT]', 'Confort', '1er étage', '2', '45 000 FCFA', '90 000 FCFA'),
     ('t1-rr-205', '205 [CFT]', 'Confort', '1er étage', '2', '45 000 FCFA', '90 000 FCFA'),
     ('t1-rr-303', '303 [SJR]', 'Suite Junior', '2e étage', '3', '75 000 FCFA', '150 000 FCFA'),
@@ -305,9 +345,13 @@ FEUILLE_RESA = (
         + '<div class="masque t1-cireel" id="t1-cireel">%s</div>' % champ('Check-in réel', '14/10/2026 14:06:12')
         + groupe('Occupation', [champ('Nb chambres', '1'), champ('Adultes', '2'), champ('Enfants', '0')]))
     + onglets(['Chambres', 'Demandes particulières']) + LIGNE_CH)
+# Au check-in : le bandeau d'avertissement ; au départ, les deux fiches
+# complétées (t06_registre.py, le 14/10) : « Registre des clients à jour. ».
 BANDEAUX = (
     '<div class="bandeau masque" id="t1-bandeau">%s<span><b>Registre des clients :</b>1 fiche(s) à compléter · '
-    '1 occupant(s) sans fiche — <span class="act">compléter maintenant</span></span></div>' % icone('fiche'))
+    '1 occupant(s) sans fiche — <span class="act">compléter maintenant</span></span></div>'
+    '<div class="bandeau t1-ok t1-cache" id="t1-bandeau-ok">%s<b>Registre des clients à jour.</b>'
+    '<span class="act">Imprimer les fiches</span></div>' % (icone('fiche'), icone('coche')))
 B_CONF = [bouton('t1-b-checkin', 'Check-in', 'primaire'), bouton('t1-b-acompte', 'Encaisser un acompte'),
           bouton(None, 'Envoyer la confirmation'), bouton(None, "Fiches d'enregistrement", ico='imprimer'),
           bouton(None, 'No-show'), bouton(None, 'Annuler')]
@@ -522,6 +566,9 @@ CSS = """
   border-bottom: 1px solid #DEE2E6; margin: 4px 0 8px; color: #212529; }
 #t1-as-co .alerte-info { margin: 18px 0 4px; }
 #t1-b-libres { max-width: none; white-space: nowrap; }
+.t1-cache { display: none !important; }
+#app-t1 .bandeau.t1-ok { background: #D4EDDA; border-color: #C3E6CB; color: #155724; }
+#app-t1 .bandeau.t1-ok .act { color: #155724; margin-left: 12px; }
 #t1-b-taxe { max-width: 760px; }
 #t1-b-momo { max-width: 400px; }
 #t1-b-facture { max-width: 400px; }
@@ -572,9 +619,9 @@ TUTORIEL = {
                                                         "présents, d'un coup d'œil.",
          'voix': "Le matin, Mireille ouvre le Front Desk : l'occupation de ce soir, les arrivées attendues, les "
                  "départs prévus. Une cliente demande une chambre : nouvelle réservation.",
-         'gestes': [compter('#t1-k-occ-v', 0, 62.5, d=1.0, decimales=1, apres=' %'),
+         'gestes': [compter('#t1-k-occ-v', 0, 65.0, d=1.0, decimales=1, apres=' %'),
                     compter('#t1-k-arr-v', 0, 2, d=0.8, avec=True), compter('#t1-k-dep-v', 0, 2, d=0.8, avec=True),
-                    compter('#t1-k-pre-v', 0, 27, d=0.9, avec=True),
+                    compter('#t1-k-pre-v', 0, 22, d=0.9, avec=True),
                     animer('#t1-g-occ', {'scaleX': 1}, {'scaleX': 0}, d=1.6, avec=True),
                     anneau('#t1-k-occ', d=1.1, decale=0.3), anneau('#t1-k-arr', d=1.1), anneau('#t1-k-dep', d=1.1),
                     clic('#t1-front .tdb-bt', d=0.7)]},
@@ -636,11 +683,15 @@ TUTORIEL = {
                     texte('#t1-st-folio-v', SOLDE_2, avec=True), anneau('#t1-fl3', d=1.0), anneau('#t1-ft-ttc', d=1.0)]},
         {'temps': 3, 'titre': 'Le départ et la facture', 'texte': 'Le check-out récapitule le folio ; la facture en '
                                                                   'reprend les lignes.',
-         'voix': "Le jour du départ, Mireille revient à la réservation et lance le check-out. L'assistant récapitule "
+         'voix': "Le jour du départ, le registre est à jour ; Mireille lance le check-out. L'assistant récapitule "
                  "le total, l'acompte déjà encaissé et le solde dû ; la facture est cochée d'office. La chambre part "
                  "aussitôt au ménage, et la facture reprend le folio.",
          'gestes': [clic('#t1-folio .fil .parent', d=0.6),
-                    vue('t1-resa'), clic('#t1-b-checkout'), ouvrir('t1-as-co'), zoom('#t1-as-co', s=1.2, d=0.7),
+                    # entre-temps, les deux fiches ont été complétées (t06) : registre à jour, 2/2
+                    classe('#t1-bandeau', ajouter=['t1-cache'], avec=True),
+                    classe('#t1-bandeau-ok', retirer=['t1-cache'], avec=True),
+                    texte('#t1-st-fiches-v', '2/2', avec=True),
+                    vue('t1-resa'), anneau('#t1-bandeau-ok', d=0.9), clic('#t1-b-checkout'), ouvrir('t1-as-co'), zoom('#t1-as-co', s=1.2, d=0.7),
                     bulle('t1-b-facture', '#t1-co-fact', cote='bas', d=2.3), pause(1.6), dezoom(d=0.5),
                     clic('#t1-co-ok'), fermer('t1-as-co'), defiler('#t1-folio-defil', 0, d=0.05),
                     classe('#t1-fsb-0', retirer=['actif'], avec=True), classe('#t1-fsb-1', ajouter=['actif'], avec=True),
