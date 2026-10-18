@@ -138,6 +138,41 @@ Les captures de référence du thème MuK (modèle visuel, jamais incrustées)
 se prennent sur une base de démonstration où `muk_web_theme` est installé,
 hors du dépôt (`../aite-videos/ref_muk`).
 
+### La série livrée (`docs/guides/videos/`)
+
+| N° | Vidéo | Fonctionnalité | Durée | Poids |
+|---|---|---|---|---|
+| 1 | `02-tutoriel-reception.mp4` | La réception, de la réservation à la facture | 2 min 06 | 8,3 Mo |
+| 2 | `03-tutoriel-planning.mp4` | Planning des chambres | 2 min 04 | 8,9 Mo |
+| 3 | `04-tutoriel-folio.mp4` | Le folio du séjour | 2 min 09 | 8,5 Mo |
+| 4 | `05-tutoriel-note-chambre.mp4` | Note de chambre | 2 min 15 | 7,5 Mo |
+| 5 | `06-tutoriel-taxe-sejour.mp4` | Taxe de séjour automatique | 1 min 59 | 7,1 Mo |
+| 6 | `07-tutoriel-registre.mp4` | Fiche de police et statistiques | 2 min 06 | 8,4 Mo |
+| 7 | `08-tutoriel-gouvernante.mp4` | Gouvernante & maintenance | 2 min 07 | 8,1 Mo |
+| 8 | `09-tutoriel-site-web.mp4` | Réservation en ligne | 2 min 05 | 7,6 Mo |
+| 9 | `10-tutoriel-espaces.mp4` | Espaces & Prestations | 2 min 05 | 8,1 Mo |
+| 10 | `11-tutoriel-ardoises.mp4` | Ardoises & recouvrement | 1 min 58 | 7,6 Mo |
+| 11 | `12-tutoriel-fidelite.mp4` | Fidélité & statuts VIP | 2 min 01 | 8,0 Mo |
+| 12 | `13-tutoriel-ventes.mp4` | Analyse des ventes | 2 min 12 | 8,7 Mo |
+| 13 | `14-tutoriel-stock.mp4` | Stock bar & cave | 2 min 04 | 8,6 Mo |
+| 14 | `15-tutoriel-achats.mp4` | Achats & fournisseurs | 2 min 04 | 9,3 Mo |
+| 15 | `16-tutoriel-direction.mp4` | Cockpit Direction | 1 min 52 | 7,0 Mo |
+
+Le tutoriel 14 rejoue les cartes « Créances (409) / Acomptes (4091) » du
+tableau de bord Achats telles que le module les calcule aujourd'hui, c'est-à-dire
+fausses (`ECARTS.md`, n° 22) : **ne pas le publier** avant la correction de
+`aite_purchase_dashboard`, puis le refaire.
+
+Une seule donnée de démonstration traverse toute la série et la présentation :
+20 chambres, société sans TVA, numéros de téléphone dans la plage de fiction
+`+237 6 00 00 00 xx` (voir `DESIGN.md`). Un chiffre repris d'un tutoriel à
+l'autre (ardoises, stock, achats, cockpit) se lit au même endroit dans le code
+du scénario de référence (`demo.py`, `t13_stock.AGREGATS`, `c6_direction.py`).
+
+Son : voix, bruitages et musique ramenés à −16 LUFS, passe-bas à 15 kHz et
+limiteur sur-échantillonné à −3 dBFS avant l'AAC 128 kb/s, pour que les
+crêtes vraies restent sous −2 dBFS.
+
 ## Écrire un chapitre
 
 `scenarios/cN_<poste>.py` définit un dictionnaire `CHAPITRE` : `court`
