@@ -102,7 +102,7 @@ Sources des libellés (relevés mot pour mot) :
    pos_credit_dashboard.scss, .apc-flabel, .apc-section-title,
    .apc-kpi-label, en-têtes de tableau) ; « Ce mois » par défaut :
    static/src/js/views/dashboard_view.js:30-50 ; formats : :175-226
-   (« 154 000 FCFA », « 104 j », « ▲ 156 % vs N-1 », vert quand c'est bon
+   (« 113 000 FCFA », « 104 j », « ▲ 147 % vs N-1 », vert quand c'est bon
    signe, « flux période : … ») et static/src/js/services/utils.js:21-45
    (couleurs des moyens, des tranches et des sévérités), :51-71 ; légendes
    masquées des barres : dashboard_view.js:255-290, 400-425 ; calculs :
