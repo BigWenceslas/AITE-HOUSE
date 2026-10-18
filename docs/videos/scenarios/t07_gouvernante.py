@@ -10,8 +10,7 @@ une panne qui retire une chambre libre de la vente, puis passe elle-même la
 demande à « Réparé » : la chambre revient en vente, à nettoyer.
 
 Profil rejoué, et dit à l'écran. Josiane a le profil Réception, qui implique
-Gouvernante (aite_hotel_management/security/hotel_security.xml:11-24), comme
-le compte gouv des seeds (dev/seeds/seed_housekeeping.py:7-8). Le menu
+Gouvernante (aite_hotel_management/security/hotel_security.xml:11-24). Le menu
 « Répartir les chambres du jour » et son assistant sont réservés à ce profil
 (aite_housekeeping/views/menus.xml:9-12 ; security/ir.model.access.csv:9), de
 même que les boutons « Conforme » / « À refaire » (views/hotel_room_views.xml
@@ -45,11 +44,13 @@ actions/action_service.js:571-572). Ce n'est pas un réglage du module : la
 légende de l'étape 3 le dit (« sa page d'accueil »).
 
 La journée rejouée : le jeudi 15/10/2026, le matin.
-- L'hôtel de démonstration compte 16 chambres
-  (aite_demo_data/data/10_hotel_structure.xml:68-160). Au rez-de-chaussée :
-  101-105, dont la 105 hors service (:92-98). Au 1er étage : 106 et 201-204.
-  Au 2e étage : 205, 301-303, 401-402. Types : Standard, Confort, Suite
-  Junior, Suite VIP.
+- L'hôtel de la série compte 20 chambres vendables, la liste commune à
+  tous les tutoriels (fiche d'harmonisation de la série ; le module
+  aite_demo_data en déclare 16, aite_demo_data/data/10_hotel_structure.xml
+  :68-160). Au rez-de-chaussée : 101-107 [STD], dont la 105 hors service
+  (:92-98). Au 1er étage : 201-206 [CFT]. Au 2e étage : 301-304 [SJR]. Au
+  3e étage : 401-403 [VIP]. Types : Standard, Confort, Suite Junior, Suite
+  VIP.
 - Les séjours du 15/10 viennent de scenarios/t02_planning.py:213-228
   (SEJOURS) et de demo.ARRIVEES. Brigitte Essomba est en 202 (13-16/10),
   Estelle Ngono en 204 (14-16/10) et Claire Durand en 401 : elle part le
@@ -57,9 +58,9 @@ La journée rejouée : le jeudi 15/10/2026, le matin.
   103 le 15/10 à 14:00. Martin Ebode (RES/2026/0209) paie 105 000 FCFA pour
   3 nuits, soit 35 000 FCFA la nuit, le tarif Standard (demo.ARRIVEES ;
   t02_planning.py:196) : il est placé en 104 [STD], comme au planning de t02
-  (t02_planning.py:223 et :255). t06_registre.py:124 et :440 le mettent
-  encore en 201 [CFT] « comme dans t07 » : à aligner sur 104 [STD] (demande
-  faite). Toutes les autres chambres sont libres ce jour-là.
+  (t02_planning.py:223 et :255) et au registre de t06. Toutes les autres
+  chambres (101, 102, 106, 107, 201, 203, 205, 206, 301-304, 402, 403) sont
+  libres et propres ce jour-là ; elles n'entrent pas dans la répartition.
 - Les tâches du jour. Le ménage quotidien des chambres occupées est créé
   chaque matin : 104, 202, 204 et 401 (réglage « Ménage quotidien
   automatique », coché par défaut, aite_hotel_management/models/
@@ -381,13 +382,12 @@ def ligne(libelle, valeur_html, aide=False, ident=None, lecture=False):
 
 # ------------------------------------------------- Tableau des chambres --
 TYPES = {'STD': 'Standard', 'CFT': 'Confort', 'SJR': 'Suite Junior', 'VIP': 'Suite VIP'}
-# Les 16 chambres de l'hôtel de démonstration (aite_demo_data/data/10_hotel_structure.xml:68-160).
-CHAMBRES = [('101', 'STD', 'Rez-de-chaussée'), ('102', 'STD', 'Rez-de-chaussée'), ('103', 'STD', 'Rez-de-chaussée'),
-            ('104', 'STD', 'Rez-de-chaussée'), ('105', 'STD', 'Rez-de-chaussée'), ('106', 'STD', '1er étage'),
-            ('201', 'CFT', '1er étage'), ('202', 'CFT', '1er étage'), ('203', 'CFT', '1er étage'),
-            ('204', 'CFT', '1er étage'), ('205', 'CFT', '2e étage'), ('301', 'SJR', '2e étage'),
-            ('302', 'SJR', '2e étage'), ('303', 'SJR', '2e étage'), ('401', 'VIP', '2e étage'),
-            ('402', 'VIP', '2e étage')]
+# Les 20 chambres de la série (101-107 au rez-de-chaussée, 2xx au 1er, 3xx au 2e, 4xx au 3e étage).
+CHAMBRES = ([('%d' % n, 'STD', 'Rez-de-chaussée') for n in range(101, 108)]
+            + [('%d' % n, 'CFT', '1er étage') for n in range(201, 207)]
+            + [('%d' % n, 'SJR', '2e étage') for n in range(301, 305)]
+            + [('%d' % n, 'VIP', '3e étage') for n in range(401, 404)])
+assert len(CHAMBRES) == 20
 # Les clients présents le 15/10 (t02_planning.py SEJOURS, demo.ARRIVEES ; Martin Ebode en Standard).
 CLIENTS = {'104': 'Martin Ebode', '202': 'Brigitte Essomba', '204': demo.CLIENT, '401': 'Claire Durand'}
 # La répartition : tâches triées étage puis chambre, équipières par nom, tour de rôle.

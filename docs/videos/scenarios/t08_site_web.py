@@ -140,7 +140,7 @@ coupe homme 6 200, tresses 19 000, chemise 4 800) sont ceux du tutoriel 9
 (``scenarios/t09_espaces.py`` l. 192-219), qui suit celui-ci. Indicateurs du
 14/10 recalculés sur ces huit ressources : 109 h ouvrées comme au tutoriel 9,
 et deux dépôts de pressing non retirés, que le tutoriel 9 compte encore le
-15/10 au matin avec celui de Martin Ebode (``RETRAITS``, 3 puis 2). La
+15/10 au matin avec celui de Samuel Etoga (``RETRAITS``, 3 puis 2). La
 référence du créneau, RES/26/0131, précède celles que le tutoriel 9 crée le
 15/10 (RES/26/0158 à 11:09). Claire reprend l'adresse de la série
 (claire.durand@exemple.fr, ``t04_note_chambre.py`` l. 333) : le site
@@ -196,12 +196,12 @@ TEL_HOTEL = '+237 6 00 00 00 10'
 TEL_CLAIRE = '+33 6 39 98 21 47'                  # saisi sur le site (plage ARCEP réservée à la fiction)
 MAIL_CLAIRE = 'claire.durand@exemple.fr'          # l'adresse de Claire dans la série (t04_note_chambre.py l. 333)
 # find_or_create_partner cherche d'abord le téléphone normalisé (égalité stricte,
-# website_booking.py l. 80-82 : pas de fiche à « +33639982147 »), puis l'e-mail
-# (l. 83-85) : la fiche existante de Claire est retrouvée, sans doublon. La
-# réservation affiche donc le téléphone déjà enregistré sur ce contact
-# (partner_phone = related partner_id.phone, booking_booking.py l. 53-54), celui
-# du tutoriel 4.
-TEL_FICHE = '+33 6 12 48 90 31'
+# website_booking.py l. 80-82 : la fiche porte le numéro avec ses espaces, pas
+# « +33639982147 »), puis l'e-mail (l. 83-85) : la fiche existante de Claire est
+# retrouvée, sans doublon. La réservation affiche donc le téléphone déjà
+# enregistré sur ce contact (partner_phone = related partner_id.phone,
+# booking_booking.py l. 53-54) : le même numéro, celui de Claire dans toute la série.
+TEL_FICHE = TEL_CLAIRE
 TEL_VISITEUR = '+237 6 00 00 00 27'
 SALON = 'Salon VIP Wouri'
 REF_CRENEAU = 'RES/26/0131'                       # séquence RES/%(y)s/ (créneaux), avant celles du 15/10 (t09)
@@ -568,10 +568,12 @@ FICHE = avec_discussion(vue_fiche(
 
 
 # ------------------------------------------------- les réservations hôtel --
-# Tarifs des types de chambre et chambres du tutoriel 2 (t02_planning.py l. 231-260).
+# Tarifs des types de chambre (t02_planning.py l. 231-260) et les 20 chambres de la série : 101-107 Standard
+# (la 105 hors service, jamais vendue), 201-206 Confort, 301-304 Suite Junior, 401-403 Suite VIP.
 PRIX = {'STD': 35000, 'CFT': 45000, 'SJR': 75000, 'VIP': 120000}
-TYPE = {'101': 'STD', '102': 'STD', '103': 'STD', '104': 'STD', '106': 'STD', '201': 'CFT', '202': 'CFT', '203': 'CFT',
-        '204': 'CFT', '205': 'CFT', '301': 'SJR', '302': 'SJR', '303': 'SJR', '401': 'VIP', '402': 'VIP'}
+TYPE = dict([('%d' % n, 'STD') for n in range(101, 108) if n != 105] + [('%d' % n, 'CFT') for n in range(201, 207)]
+            + [('%d' % n, 'SJR') for n in range(301, 305)] + [('%d' % n, 'VIP') for n in range(401, 404)])
+assert len(TYPE) == 19                            # 20 chambres, moins la 105 hors service
 
 
 # (référence, client, arrivée, départ, nuits, chambre — None : pas encore de

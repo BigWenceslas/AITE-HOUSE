@@ -113,7 +113,7 @@ l'installation (res_config_settings.py:20-35) ; 69 tests Odoo du module
 docs/GUIDE_TESTS.md:30).
 
 Données : demo.py (Complexe Hôtelier — Démo, Démo Hôtellerie SARL, Estelle
-Ngono, +237 677 41 28 90 ; Patrick Nkoulou, Brigitte Essomba ; réceptionniste
+Ngono, demo.CLIENT_TEL ; Patrick Nkoulou, Brigitte Essomba ; réceptionniste
 Mireille Ateba). Les folios de la série sont chiffrés au tutoriel 3 (liste du
 16/10 vers 11 h 45, t03_folio.py:424-452) : ceux d'Estelle Ngono
 (FOL/2026/0214, 112 800 FCFA sans prestation), de Martin Ebode (FOL/2026/0209,
@@ -122,15 +122,15 @@ n'ont pas de place pour une prestation du 15/10. Seul celui de Brigitte
 Essomba (202 [CFT], 13-16/10, t02_planning.py:257) en a : 157 500 FCFA le
 14/10 au soir (t04_note_chambre.py:368-390), 198 000 le 16/10 (t03:447),
 soit 40 500 FCFA de services entre les deux. Le massage (27 000 FCFA) est
-donc le sien, reporté sur FOL/2026/0210, numéro du tutoriel 3 (t04 le nomme
-FOL/2026/0218, qui est au t02 la réservation d'Aristide Bella : écart de la
-série, signalé) ; son téléphone est celui du t04 (:328). Estelle Ngono tient
+donc le sien, reporté sur FOL/2026/0210, numéro du tutoriel 3 retenu pour
+toute la série ; son téléphone est celui du tutoriel 10 (+237 6 00 00 00 32,
+t10_ardoises.py, TELEPHONES). Estelle Ngono tient
 la demande de salon refusée (étape 4, un brouillon : rien sur son folio). Le
 dépôt pressing est celui d'un client de passage, Samuel Etoga (fictif, sans
-séjour, donc sans folio ; téléphone de la plage fictive de la série +237 6 00
-00 00 xx, t02_planning.py:197-199). Les autres noms (Paul
-Essomba, Famille Ndjock, Linda Ewané, Rachel Bilong, Yves Tchana, Boris Kamga,
-Carine Mbappé) sont ceux, fictifs, du chapitre 6 (scenarios/c6_direction.py).
+séjour, donc sans folio ; téléphone de la plage fictive de la série,
++237 6 00 00 00 42, le …31 étant celui d'Armand Mvogo au tutoriel 10).
+Les autres noms (Paul Essomba, Famille Ndjock, Linda Ewané, Rachel Bilong, Yves Tchana, Boris Kamga,
+Carine Ndongo) sont ceux, fictifs, du chapitre 6 (scenarios/c6_direction.py).
 Ressources, catalogue et tarifs sont fictifs (salons Wouri, Sanaga, Bonabéri
 comme au chapitre 6). La journée rejouée est le jeudi 15/10/2026.
 
@@ -150,10 +150,10 @@ comme au chapitre 6). La journée rejouée est le jeudi 15/10/2026.
    (mail/data/ir_cron_data.xml:4-12) : jusqu'à une heure d'attente, alors que
    le guide (AITE_Guide_Espaces_Prestations.pdf §2.3) dit « dès le clic sur
    Confirmer ». La vidéo ne dit pas « aussitôt ».
-7. Série : le folio de Brigitte Essomba est FOL/2026/0210 au tutoriel 3
-   (t03_folio.py:447) mais FOL/2026/0218 au tutoriel 4
-   (t04_note_chambre.py:47, :217), numéro de la réservation d'Aristide Bella
-   au tutoriel 2 (t02_planning.py:281). Ce tutoriel suit le tutoriel 3.
+7. Série : le folio de Brigitte Essomba est FOL/2026/0210, celui du
+   tutoriel 3 (t03_folio.py:447), retenu pour toute la série
+   (FOL/2026/0218 est le numéro de la réservation d'Aristide Bella au
+   tutoriel 2). Ce tutoriel suit le tutoriel 3.
 """
 
 import demo
@@ -166,11 +166,11 @@ JOUR = '15/10/2026'
 JOUR_ISO = '2026-10-15'
 CLIENT, TEL = demo.CLIENT, demo.CLIENT_TEL
 # La cliente du massage : Brigitte Essomba, chambre 202 [CFT] du 13 au 16/10 (t02_planning.py:257), son
-# téléphone de t04_note_chambre.py:328 ; son folio FOL/2026/0210 (t03_folio.py:447) passe de 157 500 FCFA
+# téléphone du tutoriel 10 (t10_ardoises.py, TELEPHONES) ; son folio FOL/2026/0210 (t03_folio.py:447) passe de 157 500 FCFA
 # le 14/10 au soir (t04_note_chambre.py:368-390) à 198 000 FCFA le 16/10 (t03) : le massage y a sa place.
-SPA_CLI, SPA_TEL, SPA_FOLIO = 'Brigitte Essomba', '+237 675 88 12 40', 'FOL/2026/0210'
+SPA_CLI, SPA_TEL, SPA_FOLIO = 'Brigitte Essomba', '+237 6 00 00 00 32', 'FOL/2026/0210'
 # Le dépôt pressing : un client de passage, sans séjour donc sans folio (numéro de la plage fictive de la série).
-DEPOT, DEPOT_TEL = 'Samuel Etoga', '+237 6 00 00 00 31'
+DEPOT, DEPOT_TEL = 'Samuel Etoga', '+237 6 00 00 00 42'
 MENUS = ['Front Desk', 'Réservations', 'Espaces & Prestations', 'Notes de chambre en attente', 'Facturation',
          'Fidélité', 'Gouvernante']
 PARENT_TDB = 'Espaces & Prestations — Tableau de bord'
@@ -243,7 +243,7 @@ RESAS = [
     ('0141', DEPOT, 'pressing', 'Chemise', 8.5, 9.0, 4800, 'done', 'done', 'done'),
     ('0138', 'Yves Tchana', 'fh1', 'Coupe homme', 9.0, 9.5, 6200, 'done', 'done', 'done'),
     ('0145', 'Linda Ewané', 'spa1', 'Massage relaxant 60 min', 10.0, 11.0, 27000, 'done', 'done', 'done'),
-    ('0142', 'Carine Mbappé', 'ff1', 'Tresses (forfait 2 h)', 10.0, 12.0, 19000, 'confirmed', 'done', 'done'),
+    ('0142', 'Carine Ndongo', 'ff1', 'Tresses (forfait 2 h)', 10.0, 12.0, 19000, 'confirmed', 'done', 'done'),
     ('0133', 'Paul Essomba', 'sanaga', '', 11.0, 14.0, 45000, 'confirmed', 'done', 'done'),
     ('0150', 'Rachel Bilong', 'spa2', 'Soin du visage éclat', 14.0, 15.0, 23000, 'confirmed', 'done', 'done'),
     ('0158', SPA_CLI, 'spa1', 'Massage relaxant 60 min', 15.0, 16.0, 27000, None, 'confirmed', 'done'),

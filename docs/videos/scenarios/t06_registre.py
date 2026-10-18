@@ -73,8 +73,8 @@ benchmark_afrique_odoo.md:69). Le MINTOUL ne paraît que dans la douleur
    depuis le contact : nom coupé au premier espace, nationalité, pièce,
    adresse, téléphone ; jamais la date de naissance). Le contact
    « Estelle Ngono » (demo.CLIENT) donne donc Nom « Estelle » et Prénom(s)
-   « Ngono » (:259-261, voir écart 8 ; captures/11_fiches_du_sejour.png :
-   « Ngo Bikaï Solange » → Nom « Ngo ») : la vidéo le montre, et Mireille
+   « Ngono » (:259-261, voir écart 8 ; captures/11_fiches_du_sejour.png
+   montre la même coupe sur un contact de recette) : la vidéo le montre, et Mireille
    remet l'ordre avant de saisir la date de naissance. Boutons « Enregistrer »
    / « Ignorer » d'une ligne en saisie et fil d'Ariane à deux niveaux :
    odoo18/addons/web/static/src/views/list/list_controller.xml:7-13 et
@@ -163,7 +163,7 @@ SARL ; Estelle Ngono, RES/2026/0214, chambre 204 [CFT], 2 adultes, du 14 au
 16/10/2026, contact « Bonapriso Douala Cameroun » (t04_note_chambre.py:334 ;
 t11 : elle habite Douala) ; Martin Ebode (RES/2026/0209, Kribi, chambre
 104 [STD] : 105 000 FCFA pour 3 nuits = 35 000 FCFA, tarif Standard, comme
-dans t07_gouvernante.py:59-63 et t02_planning.py:196 et :258) et Claire Durand
+dans t07_gouvernante.py (CLIENTS) et t02_planning.py:196 et :258) et Claire Durand
 (RES/2026/0201, Lyon, France, chambre 401 [VIP] comme dans t02) ; leurs
 montants comme dans t01. Ajoutés ici, fictifs : Arnaud Ngono
 (l'accompagnant d'Estelle, repris de scenarios/c7_conformite.py), dates de
@@ -172,9 +172,13 @@ nationalité et sa pièce (cliente connue). Les fiches de Claire et de Martin,
 créées à leur check-in et pas encore reprises, gardent le nom coupé au
 premier espace (Nom « Claire », Prénom(s) « Durand » ; Nom « Martin »,
 Prénom(s) « Ebode ») : rejoué tel quel (écart 8). Groupes du registre du
-08 au 14/10 : 9, 8, 9, 7, 10, 7 et 4 fiches = 54 (c7).
-Les statistiques d'août à octobre 2026 sont celles de c7 (sommes
-vérifiées), octobre détaillé par nationalité (sommes égales aux totaux).
+08 au 14/10 : 9, 8, 9, 7, 10, 7 et 4 fiches = 54 (c7), soit 4 à 10
+arrivées par jour pour les 20 chambres de l'hôtel (environ 1,5 occupant par
+chambre). Les statistiques d'août à octobre 2026 sont celles de c7 (sommes
+vérifiées), octobre détaillé par nationalité (sommes égales aux totaux) ;
+octobre est partiel (du 01 au 14/10), d'où « en cours de mois » dans la
+voix. Plausibles pour 20 chambres : 408 nuitées en septembre, soit environ
+270 nuits-chambres sur 600 possibles (20 × 30) à 1,5 occupant.
 
 Écarts relevés dans l'application, rejoués tels quels ou évités :
 1. Le registre de police (Facturation → Registre de police (impression))
@@ -827,7 +831,7 @@ TUTORIEL = {
                     anneau('#t06-rg-estelle', d=1.0)]},
         {'temps': 3, 'titre': "Les statistiques d'hébergement",
          'texte': 'Côté direction : arrivées et nuitées, résidents et non-résidents, par mois et par nationalité.',
-         'voix': "En fin de mois, Danielle, la directrice, ouvre les statistiques d'hébergement : arrivées et nuitées, "
+         'voix': "En cours de mois, Danielle, la directrice, ouvre les statistiques d'hébergement : arrivées et nuitées, "
                  "résidents et non-résidents, tirées des mêmes fiches. Un clic sur le mois, puis Nationalité : le "
                  "détail par pays.",
          'gestes': [montrer('#t06-nav-dir', d=0.5, y=0), classe('#tu-perso', ajouter=['t06-pd'], avec=True),
