@@ -32,7 +32,9 @@ import sys
 ICI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, ICI)
 
+import marketing  # noqa: E402
 import moteur  # noqa: E402
+import musique  # noqa: E402
 import presentateur  # noqa: E402
 import sons  # noqa: E402
 
@@ -46,8 +48,32 @@ SORTIE_DEPOT = os.path.join(RACINE, 'docs', 'guides', 'videos')
 # Le document de référence de chaque vidéo, relatif à docs/.
 GUIDES = {'presentation': 'GUIDE_RECETTE_UAT.md'}
 
-# Les vidéos de la série.
-ORDRE = ['presentation']
+# Les tutoriels marketing, une vidéo par fonctionnalité (scenarios/t*.py).
+TUTORIELS = ['t01_reception', 't02_planning', 't03_folio', 't04_note_chambre', 't05_taxe_sejour', 't06_registre',
+             't07_gouvernante', 't08_site_web', 't09_espaces', 't10_ardoises', 't11_fidelite', 't12_ventes',
+             't13_stock', 't14_achats', 't15_direction']
+
+# Les vidéos de la série : la présentation, puis les tutoriels.
+ORDRE = ['presentation'] + TUTORIELS
+
+# Les icônes des applications de la barre MuK, celles que livrent les modules
+# (jamais redessinées) : chemin relatif au dossier d'Odoo 18, ou au dépôt.
+ODOO = os.environ.get('ODOO_DIR', os.path.abspath(os.path.join(RACINE, '..', 'odoo18')))
+ICONES_APPS = {
+    'direction': ('odoo', 'addons/web/static/img/default_icon_app.png'),
+    'discussion': ('odoo', 'addons/mail/static/description/icon.png'),
+    'hotel': ('depot', 'addons/aite_hotel_management/static/description/icon.png'),
+    'tableaux': ('odoo', 'addons/spreadsheet_dashboard/static/description/icon.png'),
+    'pos-credit': ('depot', 'addons/aite_pos_credit/static/description/icon.png'),
+    'point-de-vente': ('odoo', 'addons/point_of_sale/static/description/icon.png'),
+    'facturation': ('odoo', 'addons/account/static/description/icon.png'),
+    'site-web': ('odoo', 'addons/website/static/description/icon.png'),
+    'achats': ('odoo', 'addons/purchase/static/description/icon.png'),
+    'inventaire': ('odoo', 'addons/stock/static/description/icon.png'),
+    'maintenance': ('odoo', 'addons/maintenance/static/description/icon.png'),
+    'apps': ('odoo', 'odoo/addons/base/static/description/modules.png'),
+    'parametres': ('odoo', 'odoo/addons/base/static/description/settings.png'),
+}
 
 # La police de l'interface rejouée : Inter, installée sur la machine de
 # production (paquet fonts-inter) ; copiée dans le projet, jamais dans le dépôt.
@@ -139,9 +165,16 @@ def prononcer(texte):
     return texte
 
 
+def est_tutoriel(scenario):
+    return 'accroche' in scenario
+
+
 def textes_voix(scenario):
     """Toutes les phrases de la vidéo, par case : scènes fixes, cartes de
-    chapitre (``chap-N``) et étapes (``cN-etape-M``)."""
+    chapitre (``chap-N``) et étapes (``cN-etape-M``) ; pour un tutoriel,
+    accroche, révélation, étapes (``etape-N``), résultats, appel à l'action."""
+    if est_tutoriel(scenario):
+        return {case: prononcer(t) for case, t in marketing.textes_voix(scenario).items()}
     textes = dict(scenario.get('voix', {}))
     for n, chap in enumerate(scenario['chapitres'], 1):
         if chap.get('voix'):
@@ -244,19 +277,26 @@ def synthetiser(dossier, textes, moteur_voix='kokoro', voix_id=None, modele='ele
 def charger(profil):
     module = importlib.import_module('scenarios.%s' % profil)
     importlib.reload(module)
-    return module.SCENARIO
+    return getattr(module, 'TUTORIEL', None) or module.SCENARIO
 
 
-def ecrire_projet(dossier, scenario, gsap, voix, pres=None):
+def ecrire_projet(dossier, scenario, gsap, voix, pres=None, avec_musique=True):
     """``pres`` (mode présentateur) : {'enregistrement', 'debuts', 'nom',
     'fonction', 'recadrage'}, voir presentateur.py."""
     slug = scenario['slug']
     projet = os.path.join(dossier, 'fr', slug)
     assets = os.path.join(projet, 'assets')
-    for sous in ('fonts', 'logos', 'voix', 'sons', 'presentateur'):
+    for sous in ('fonts', 'logos', 'voix', 'sons', 'presentateur', 'icones'):
         shutil.rmtree(os.path.join(assets, sous), ignore_errors=True)
         os.makedirs(os.path.join(assets, sous), exist_ok=True)
     shutil.copy(os.path.join(ICI, 'shared', 'aite.css'), assets)
+    shutil.copy(os.path.join(ICI, 'shared', 'aite-marketing.css'), assets)
+    if est_tutoriel(scenario):
+        for nom, (base, relatif) in ICONES_APPS.items():
+            source = os.path.join(ODOO if base == 'odoo' else RACINE, relatif)
+            if not os.path.exists(source):
+                sys.exit('Icône introuvable : %s (ODOO_DIR = %s)' % (source, ODOO))
+            shutil.copy(source, os.path.join(assets, 'icones', nom + '.png'))
     shutil.copy(os.path.join(ICI, 'shared', 'aite-motion.js'), assets)
     shutil.copy(gsap, assets)
     for graisse in GRAISSES:
@@ -282,11 +322,16 @@ def ecrire_projet(dossier, scenario, gsap, voix, pres=None):
     # Les bruitages (son d'ouverture, clics) accompagnent la voix : une vidéo
     # muette n'en a pas.
     medaillon = {'video': 'assets/presentateur/piste.mp4', 'nom': pres['nom'], 'fonction': pres['fonction']} if pres else None
-    video = moteur.Video(scenario, durees_voix=durees, fichiers_voix=relatifs,
-                         bruitages='assets/sons/bruitages.wav' if voix else None, presentateur=medaillon)
+    classe = marketing.Tutoriel if est_tutoriel(scenario) else moteur.Video
+    video = classe(scenario, durees_voix=durees, fichiers_voix=relatifs,
+                   bruitages='assets/sons/bruitages.wav' if voix else None, presentateur=medaillon)
     html, total = video.construire()
     if video.bruitages:
-        sons.piste(video.sons, total, os.path.join(projet, video.bruitages))
+        piste = os.path.join(projet, video.bruitages)
+        sons.piste(video.sons, total, piste)
+        if est_tutoriel(scenario) and avec_musique:
+            # la musique de fond, mêlée aux bruitages, s'efface sous la voix
+            musique.piste(total, video.phrases(), piste, piste, debut_plein=video.t_plein, debut_fin=video.t_cta)
     if pres:
         presentateur.piste_video(pres['enregistrement'], pres['debuts'], video.plages, total, moteur.AVANT_VOIX,
                                  os.path.join(projet, medaillon['video']), pres.get('recadrage'))
@@ -395,8 +440,12 @@ def compresser(source, scenario, dossier, muet, instant, sortie=SORTIE_DEPOT):
 
 
 def nom_livre(scenario):
-    """``NN-profil`` : le nom de la vidéo livrée, NN son rang dans ``ORDRE``."""
-    return '%02d-%s' % (ORDRE.index(scenario['profil']) + 1, scenario['slug'].split('-', 1)[-1])
+    """``NN-profil`` : le nom de la vidéo livrée, NN son rang dans ``ORDRE`` ;
+    ``NN-tutoriel-fonction`` pour un tutoriel."""
+    rang = ORDRE.index(scenario['profil']) + 1
+    if est_tutoriel(scenario):
+        return '%02d-tutoriel-%s' % (rang, scenario['slug'].split('-', 1)[-1])
+    return '%02d-%s' % (rang, scenario['slug'].split('-', 1)[-1])
 
 
 def vignette(cible, instant):
@@ -441,9 +490,9 @@ PAGE = """<!doctype html>
 </head>
 <body>
 <header><div class="cadre"><div class="k">AITE HOUSE · Suite hôtelière sur Odoo 18</div>
-<h1>Vidéos de présentation</h1>
-<p>La solution présentée poste par poste, à partir des fiches de recette : chaque geste est rejoué dans
-l'interface, avec ses vrais libellés, sur des données de démonstration fictives.</p></div></header>
+<h1>Vidéos de présentation et tutoriels</h1>
+<p>La solution présentée poste par poste, puis un tutoriel par fonctionnalité : chaque geste est rejoué dans
+l'interface (Odoo 18, thème MuK), avec ses vrais libellés, sur des données de démonstration fictives.</p></div></header>
 <main><div class="cadre"><div class="grille">
 %(cartes)s
 </div></div></main>
@@ -461,7 +510,7 @@ def ecrire_index():
             scenario = charger(profil)
         except ModuleNotFoundError:
             continue
-        nom = '%02d-%s' % (rang, scenario['slug'].split('-', 1)[-1])
+        nom = nom_livre(scenario)
         video = os.path.join(SORTIE_DEPOT, nom + '.mp4')
         if not os.path.exists(video):
             continue
@@ -469,11 +518,13 @@ def ecrire_index():
         mo = os.path.getsize(video) / 1e6
         pdf = GUIDES.get(profil)
         lien_pdf = '<a href="../%s">Document de référence</a>' % pdf if pdf else ''
+        genre = ('TUTORIEL %d' % scenario['numero']) if est_tutoriel(scenario) else 'PRÉSENTATION'
         cartes.append(
             '<article><video controls preload="none" poster="%s.jpg" src="%s.mp4"></video><div class="corps">'
-            '<div class="num">%02d</div><h2>%s</h2><div class="meta">%d min %02d s · %.1f Mo</div>'
+            '<div class="num">%02d · %s</div><h2>%s</h2><div class="meta">%d min %02d s · %.1f Mo</div>'
             '<div class="liens">%s<a href="%s.mp4" download>Télécharger</a></div></div></article>'
-            % (nom, nom, rang, escape_html(scenario['titre']), int(duree) // 60, int(duree) % 60, mo, lien_pdf, nom))
+            % (nom, nom, rang, genre, escape_html(scenario['titre']), int(duree) // 60, int(duree) % 60, mo,
+               lien_pdf, nom))
     with open(os.path.join(SORTIE_DEPOT, 'index.html'), 'w', encoding='utf-8') as f:
         f.write(PAGE.replace('%(cartes)s', '\n'.join(cartes)))
     return len(cartes)
@@ -502,7 +553,7 @@ def produire(profil, args, gsap):
                 'fonction': args.presentateur_fonction, 'recadrage': args.recadrage}
     elif not args.muet:
         voix = synthetiser(args.dossier, textes_voix(scenario), args.moteur_voix, args.voix_id)
-    projet, total, video = ecrire_projet(args.dossier, scenario, gsap, voix, pres)
+    projet, total, video = ecrire_projet(args.dossier, scenario, gsap, voix, pres, avec_musique=not args.sans_musique)
     journal('  projet', projet, '— %.1f s' % total)
     for alerte in video.alertes:
         journal('  ⚠', alerte)
@@ -555,6 +606,7 @@ def main():
     p.add_argument('--planche', action='store_true', help='planche contact (snapshots)')
     p.add_argument('--rendu', action='store_true', help='rendu MP4 et compression')
     p.add_argument('--sans-check', action='store_true')
+    p.add_argument('--sans-musique', action='store_true', help='tutoriels : sans la musique de fond')
     p.add_argument('--vignettes', action='store_true',
                    help='refaire seulement les vignettes des vidéos livrées, sans rendu ; avec les options de voix '
                         'de la série, dont dépend le découpage')
@@ -569,6 +621,8 @@ def main():
     args.dossier = os.path.abspath(args.dossier)
     if args.presentateur and len(profils) != 1:
         p.error('un enregistrement par vidéo : --presentateur avec un seul profil')
+    if args.presentateur and any(p_.startswith('t') and p_[1:3].isdigit() for p_ in profils):
+        p.error('le mode présentateur ne prend pas encore en charge les tutoriels')
     # une vidéo avec présentateur ne remplace jamais la série livrée sans --sortie explicite
     args.sortie = args.sortie or (os.path.join(args.dossier, 'presentateur') if args.presentateur else SORTIE_DEPOT)
     gsap = preparer(args.dossier)

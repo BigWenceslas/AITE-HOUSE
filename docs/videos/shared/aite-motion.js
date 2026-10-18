@@ -35,6 +35,17 @@
       var r = e.getBoundingClientRect();
       P[cle] = { x: r.left + r.width * c.fx, y: r.top + r.height * c.fy, w: r.width, h: r.height, l: r.left, t: r.top, el: e };
     });
+    /* Tutoriels : le cadre du navigateur (bornes du zoom) et la taille des
+       bulles, mesurés pendant que leurs calques sont visibles. */
+    var nav = document.querySelector('#navigateur');
+    if (nav) {
+      var rn = nav.getBoundingClientRect();
+      P.__nav = { l: rn.left, t: rn.top, w: rn.width, h: rn.height };
+    }
+    P.__bulles = {};
+    Array.prototype.forEach.call(document.querySelectorAll('.bulle'), function (b) {
+      P.__bulles['#' + b.id] = { w: b.offsetWidth, h: b.offsetHeight };
+    });
     couches.forEach(function (c, i) {
       if (styles[i] === null) { c.removeAttribute('style'); } else { c.setAttribute('style', styles[i]); }
     });
@@ -91,6 +102,46 @@
       tl.set(o.sel, { x: p.l - m, y: p.t + dy - m, width: p.w + 2 * m, height: p.h + 2 * m }, o.t);
       tl.fromTo(o.sel, { autoAlpha: 0, scale: 1.08 }, { autoAlpha: 1, scale: 1, duration: 0.35, ease: 'power2.out', immediateRender: false }, o.t);
       tl.to(o.sel, { autoAlpha: 0, duration: 0.3 }, o.t + o.d);
+    },
+
+    /* La caméra des tutoriels s'approche d'une cible : elle la centre à
+       l'échelle s, sans jamais laisser voir le bord du navigateur. */
+    camera: function (tl, o, P, plan) {
+      var p = P[o.cle];
+      var dy = decalage(plan, p.el, o.t);
+      var s = o.s, cx = p.x, cy = p.y + dy;
+      var tx = 960 - cx * s, ty = 560 - cy * s;
+      var n = P.__nav;
+      if (n) {
+        var minx = 1920 - (n.l + n.w) * s, maxx = -n.l * s;
+        tx = minx <= maxx ? Math.min(maxx, Math.max(minx, tx)) : (minx + maxx) / 2;
+        var miny = 1080 - (n.t + n.h) * s, maxy = -n.t * s;
+        ty = miny <= maxy ? Math.min(maxy, Math.max(miny, ty)) : (miny + maxy) / 2;
+      }
+      tl.to('#cam', { x: tx, y: ty, scale: s, transformOrigin: '0px 0px', duration: o.d, ease: 'power2.inOut' }, o.t);
+    },
+
+    /* Une bulle s'ouvre à côté d'une cible (droite, gauche, haut, bas),
+       gardée dans le cadre du navigateur, puis se referme. */
+    bulle: function (tl, o, P, plan) {
+      var p = P[o.cle];
+      var dy = decalage(plan, p.el, o.t);
+      var b = P.__bulles[o.sel] || { w: 400, h: 90 };
+      var m = 22, x, y;
+      var top = p.t + dy;
+      if (o.cote === 'gauche') { x = p.l - b.w - m; y = top + p.h / 2 - b.h / 2; }
+      else if (o.cote === 'haut') { x = p.l + p.w / 2 - b.w / 2; y = top - b.h - m; }
+      else if (o.cote === 'bas') { x = p.l + p.w / 2 - b.w / 2; y = top + p.h + m; }
+      else { x = p.l + p.w + m; y = top + p.h / 2 - b.h / 2; }
+      var n = P.__nav;
+      if (n) {
+        x = Math.min(n.l + n.w - b.w - 14, Math.max(n.l + 14, x));
+        y = Math.min(n.t + n.h - b.h - 14, Math.max(n.t + 54, y));
+      }
+      tl.set(o.sel, { x: x, y: y }, o.t);
+      tl.fromTo(o.sel, { autoAlpha: 0, scale: 0.86 },
+        { autoAlpha: 1, scale: 1, duration: 0.38, ease: 'back.out(2)', immediateRender: false }, o.t);
+      tl.to(o.sel, { autoAlpha: 0, duration: 0.25 }, o.t + o.d);
     },
 
     saisie: function (tl, o) {
@@ -150,7 +201,10 @@
      du haut seulement. Le contenu des assistants, les scènes, les légendes,
      le contraste et les débordements du cadre restent contrôlés. */
   function deroger() {
-    var sel = '.app .o-haut *, .app .o-contenu *, .app .s-nav *, .app .s-page *';
+    var sel = '.app .o-haut *, .app .o-contenu *, .app .s-nav *, .app .s-page *, .app .muk-apps *, '
+      /* tutoriels : la caméra qui zoome passe par-dessus les pastilles du haut
+         et sous la légende ; l'interface rejouée se laisse alors recouvrir */
+      + '#cam .app *, .tu-pastilles, .tu-pastilles *, .tu-perso, .tu-perso *';
     Array.prototype.forEach.call(document.querySelectorAll(sel), function (n) {
       n.setAttribute('data-layout-allow-overlap', '');
       n.setAttribute('data-layout-allow-occlusion', '');

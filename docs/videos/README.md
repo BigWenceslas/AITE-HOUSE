@@ -59,6 +59,10 @@ Les écarts relevés entre la recette, les règles du projet et le code, en
 | `ecouter.py` | Contrôle hors ligne de la prononciation des voix off |
 | `scenarios/presentation.py` | La trame : ouverture, la solution, le parcours, la connexion, les chapitres, à retenir |
 | `scenarios/cN_<poste>.py` | Un chapitre par poste, avec ses sources dans l'en-tête |
+| `scenarios/tNN_<fonction>.py` | Un tutoriel marketing par fonctionnalité |
+| `marketing.py` | Le moteur des tutoriels : accroche, révélation, tutoriel (zoom, bulles), résultats, appel à l'action |
+| `musique.py` | La musique de fond des tutoriels, synthétisée par le code |
+| `shared/aite-marketing.css` | Les styles des tutoriels et du thème MuK |
 | `shared/aite.css` | Les jetons de couleur et les composants, à l'échelle vidéo |
 | `shared/aite-motion.js` | Le moteur d'animation : lit le plan, construit la timeline GSAP |
 
@@ -86,6 +90,53 @@ Les écarts relevés entre la recette, les règles du projet et le code, en
 Chaque scène a une durée de base ; la voix off l'allonge si sa phrase est plus
 longue. Une étape dont l'image tourne plus de trois secondes sans voix est
 signalée au moment de produire.
+
+## Les tutoriels marketing
+
+Une vidéo par fonctionnalité (`scenarios/tNN_<fonction>.py`, liste dans
+`produire.TUTORIELS`), dans le registre des vidéos de lancement de
+logiciels : 1 min 30 à 2 min, moteur `marketing.py`, styles
+`shared/aite-marketing.css`.
+
+    accroche → révélation → tutoriel (étapes) → résultats → appel à l'action
+
+| Scène | Ce qu'on voit | Source du contenu |
+|---|---|---|
+| Accroche | la question qui fâche, et jusqu'à six cartes « problème » qui flottent, puis sont aspirées | les douleurs relevées dans les documents du dépôt (étude comparative, feuille de route, notes) |
+| Révélation | trois grands cercles aux couleurs du logo, la carte AITE, « AITE HOUSE », le numéro du tutoriel, la fonctionnalité et sa promesse | la promesse, vérifiable dans le code |
+| Tutoriel | le navigateur, Odoo 18 habillé par le **thème MuK** (barre ardoise, barre des applications, bleu acier), sur un fond violet ; en haut les temps forts en pastilles et le personnage ; en bas la légende de l'étape | les vues, modèles, gabarits ; les applications de la barre MuK sont celles du profil (`ecrans.APPS_PROFIL`) |
+| Résultats | trois cartes chiffrées | des chiffres vrais (barèmes, réglages par défaut, données de démonstration) |
+| Appel à l'action | AITE Consulting, ses coordonnées publiques, la chaîne YouTube, le tutoriel suivant | `README.md` du dépôt |
+
+`TUTORIEL` porte : `slug`, `profil`, `numero`, `titre`, `fonction`,
+`personnage`, `accroche` (`kicker`, `question` — un mot entre astérisques
+ressort en violet —, `douleurs` [(icône, texte)], `voix`), `revelation`
+(`promesse`, `voix`), `temps` (les pastilles), `app`, `ecran` (la fenêtre
+composée avec `ecrans.navigateur(ecrans.fenetre_muk(...))`),
+`vues_initiales`, `bulles` {id: texte}, `reactions` {id: texte}, `etapes`
+(`temps`, `titre`, `texte`, `voix`, `gestes`), `resultats` (`titre`,
+`cartes` [{valeur, compter, unite, icone, texte}], `voix`), `cta` (`appel`,
+`suivant`, `voix`), `vignette`, et au besoin `css` (styles propres au
+tutoriel, pour un écran composé à la main).
+
+Gestes propres aux tutoriels (`marketing.py`) :
+
+| Geste | Effet |
+|---|---|
+| `zoom(sel, s=1.5)` | la caméra s'approche de l'élément, sans laisser voir le bord du navigateur ; curseur, anneau et bulles suivent |
+| `dezoom()` | retour au plan large |
+| `bulle(id, sel, cote)` | une bulle « à retenir » s'ouvre à côté de l'élément (droite, gauche, haut, bas), puis se referme |
+| `reaction(id)` | le personnage réagit, dans le coin bas droit |
+
+La **musique de fond** (`musique.py`) est composée par le code : ré majeur,
+100 battements par minute, tapis, basse, arpège pincé, pulsation feutrée ;
+elle s'efface de 9 dB sous chaque phrase de la voix et se termine sur un
+accord tenu à l'appel à l'action. `--sans-musique` la retire. Claude ne
+l'entend pas : elle est à valider à l'oreille.
+
+Les captures de référence du thème MuK (modèle visuel, jamais incrustées)
+se prennent sur une base de démonstration où `muk_web_theme` est installé,
+hors du dépôt (`../aite-videos/ref_muk`).
 
 ## Écrire un chapitre
 

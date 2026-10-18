@@ -461,3 +461,210 @@ def site(identifiant, vues, nom_site, calques=''):
 
 def s_vue(identifiant, contenu, initiale=False):
     return _vue(identifiant, initiale, '<div class="s-cadre">%s</div>' % contenu, classe='vue s-vue')
+
+
+# ------------------------------------------------- thème MuK (tutoriels) --
+# Le client web d'Odoo 18 habillé par le thème MuK (muk_web_theme
+# 18.0.1.2.5 et ses dépendances) : barre du haut ardoise, barre des
+# applications sombre à gauche, accent bleu acier. Couleurs relevées dans
+# muk_web_colors/static/src/scss/colors_light.scss et
+# muk_web_appsbar/static/src/scss/variables.scss ; forme d'après les captures
+# de référence prises sur une base de démonstration où le thème est installé.
+
+ICONES.update({
+    'cahier': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 3h12a2 2 0 012 2v16H7a2 2 0 01-2-2z"/><path d="M5 17a2 2 0 012-2h12M9 7h6M9 10.5h6"/></svg>',
+    'calculatrice': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="5" y="2.5" width="14" height="19" rx="2"/><rect x="8" y="5.5" width="8" height="4" rx=".6"/><path d="M8.5 13h.01M12 13h.01M15.5 13h.01M8.5 16.5h.01M12 16.5h.01M15.5 16.5h.01" stroke-width="2.6" stroke-linecap="round"/></svg>',
+    'alerte': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18h.01"/></svg>',
+    'sablier': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6 2.5h12M6 21.5h12M7 2.5c0 5 10 5 10 9.5S7 16.5 7 21.5M17 2.5c0 5-10 5-10 9.5s10 4.5 10 9.5"/></svg>',
+    'piles': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M8 3h10v14H8z"/><path d="M5 6v15h10"/><path d="M11 7h4M11 10h4M11 13h3"/></svg>',
+    'pieces': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="9" cy="7" rx="6" ry="3"/><path d="M3 7v4c0 1.7 2.7 3 6 3s6-1.3 6-3V7"/><path d="M9 14v3c0 1.7 2.7 3 6 3s6-1.3 6-3v-4c0-1.7-2.7-3-6-3"/></svg>',
+    'graphe': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 6-7"/></svg>',
+    'interrogation': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M9.3 9.2a2.8 2.8 0 015.4 1c0 1.9-2.7 2.4-2.7 4"/><path d="M12 17.5h.01" stroke-width="3"/></svg>',
+    'message': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 4h16v12H10l-5 4v-4H4z"/><path d="M8 9h8M8 12h5"/></svg>',
+    'boite': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 7.5L12 3l9 4.5v9L12 21l-9-4.5z"/><path d="M3 7.5l9 4.5 9-4.5M12 12v9"/></svg>',
+    'cloche': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M6 16V11a6 6 0 0112 0v5l2 2H4z"/><path d="M10 20.5a2 2 0 004 0"/></svg>',
+    'carte': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M2.5 10h19M6 15h4"/></svg>',
+    'balai': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M19 3l-7.5 7.5"/><path d="M10 9l5 5-3 7-9-9z"/><path d="M6 14l2 2M8.5 11.5l3 3"/></svg>',
+    'globe': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9.5"/><path d="M2.5 12h19M12 2.5c3 3 3 16 0 19M12 2.5c-3 3-3 16 0 19"/></svg>',
+    'cible': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9.5"/><circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg>',
+    'eclair': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 2L4 13.5h6.5L9 22l11-12.5h-6.8z"/></svg>',
+    'bouclier': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M12 2.5l8 3v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10v-6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>',
+})
+
+# Les applications de la barre MuK : (nom affiché, icône livrée avec le
+# module, copiée dans le projet par produire.py sous assets/icones/).
+APPS_MUK = {
+    'Direction': 'direction', 'Discussion': 'discussion', 'Hôtel': 'hotel', 'Tableaux de bord': 'tableaux',
+    'POS Crédit': 'pos-credit', 'Point de Vente': 'point-de-vente', 'Facturation': 'facturation',
+    'Site Web': 'site-web', 'Achats': 'achats', 'Inventaire': 'inventaire', 'Maintenance': 'maintenance',
+    'Apps': 'apps', 'Paramètres': 'parametres',
+}
+# Les applications que voit chaque profil, relevées dans la barre MuK des
+# comptes de démonstration (demo.reception, demo.gouvernante, demo.caisse,
+# demo.magasin, demo.direction) sur la base où le thème est installé.
+APPS_PROFIL = {
+    'admin': ['Direction', 'Discussion', 'Hôtel', 'Tableaux de bord', 'POS Crédit', 'Point de Vente', 'Facturation',
+              'Site Web', 'Achats', 'Inventaire', 'Maintenance', 'Apps', 'Paramètres'],
+    'direction': ['Direction', 'Discussion', 'Hôtel', 'Tableaux de bord', 'POS Crédit', 'Point de Vente', 'Facturation',
+                  'Site Web', 'Achats', 'Inventaire', 'Maintenance', 'Apps'],
+    'reception': ['Discussion', 'Hôtel', 'Tableaux de bord', 'Site Web', 'Maintenance', 'Apps'],
+    'gouvernante': ['Discussion', 'Hôtel', 'Tableaux de bord', 'Site Web', 'Maintenance', 'Apps'],
+    'caisse': ['Discussion', 'Tableaux de bord', 'POS Crédit', 'Point de Vente', 'Site Web', 'Maintenance', 'Apps'],
+    'magasin': ['Discussion', 'Tableaux de bord', 'Site Web', 'Inventaire', 'Maintenance', 'Apps'],
+}
+
+
+def icone_app(app):
+    return '<img class="muk-ico" src="assets/icones/%s.png" alt="">' % APPS_MUK[app]
+
+
+def fenetre_muk(ident, app, menus, vues, actif=None, societe='', initiale='M', calques='', avatar='#7C5295',
+                apps=None, app_active=None):
+    """La fenêtre d'Odoo 18 avec le thème MuK : barre du haut (application et
+    menus), barre des applications à gauche, contenu. ``apps`` : les noms de
+    la barre (``APPS_PROFIL``), ``app_active`` : l'application en surbrillance."""
+    apps = apps or APPS_PROFIL['direction']
+    app_active = app_active or app
+    entrees = ''.join('<span class="menu%s">%s</span>' % (' actif' if m == actif else '', e(m)) for m in menus)
+    # un nom trop long se termine en « … », comme dans la barre MuK
+    barre = ''.join('<div class="muk-app%s" id="%s-app-%s">%s<span data-layout-allow-overflow>%s</span></div>'
+                    % (' actif' if a == app_active else '', ident, APPS_MUK[a], icone_app(a), e(a)) for a in apps)
+    return (
+        '<div class="app muk" id="%s">'
+        '<div class="o-haut"><span class="grille">%s</span><span class="nom-app">%s</span>%s'
+        '<span class="droite"><span class="pictos">%s</span><span class="societe">%s</span>'
+        '<span class="avatar" style="background:%s">%s</span></span></div>'
+        '<div class="muk-apps" id="%s-apps">%s</div>'
+        '<div class="o-contenu">%s</div>%s</div>'
+        % (ident, ICONES['grille'], e(app), entrees, ICONES['bulle'], e(societe), avatar, e(initiale),
+           ident, barre, ''.join(vues), calques))
+
+
+def menu_apps_muk(identifiant, apps, initiale=False):
+    """Le menu des applications du thème MuK : des tuiles blanches sur un fond
+    bleu-gris, qui couvre le contenu (une vue du groupe ``odoo``)."""
+    tuiles = ''.join('<div class="muk-tuile" id="%s-%s"><span class="t">%s</span><span class="n">%s</span></div>'
+                     % (identifiant, APPS_MUK[a], icone_app(a), e(a)) for a in apps)
+    return _vue(identifiant, initiale, '<div class="muk-menu">%s</div>' % tuiles, classe='vue muk-menu-vue')
+
+
+def navigateur(contenu, identifiant='navigateur'):
+    """Le cadre d'une fenêtre de navigateur, sans adresse : trois pastilles."""
+    return ('<div class="navigateur" id="%s"><div class="nav-barre"><i></i><i></i><i></i></div>%s</div>'
+            % (identifiant, contenu))
+
+
+# ------------------------------------------------- composants des tutoriels --
+
+def avec_chatter(vue_html, messages=(), identifiant=None):
+    """Ajoute à une fiche (``vue_fiche``) la discussion que le thème MuK place
+    à droite : « Envoyer message », « Note », « Activités », puis les messages
+    [(auteur, date, texte)]."""
+    msgs = ''.join('<div class="ch-msg"><span class="ch-av">%s</span><div><div class="ch-a"><b>%s</b> <small>%s</small></div>'
+                   '<div class="ch-t">%s</div></div></div>' % (e(a[0]), e(a), e(d), e(t)) for a, d, t in messages)
+    panneau = ('<div class="chatter"%s><div class="ch-bts"><span class="bt primaire">%sEnvoyer message</span>'
+               '<span class="bt gris">Note</span><span class="bt gris">%sActivités</span></div>%s</div>'
+               % (_id(identifiant), icone('message'), icone('horloge'), msgs))
+    debut = vue_html.index('>') + 1
+    tete = vue_html[:debut].replace('class="vue', 'class="vue avec-chatter', 1)
+    return tete + vue_html[debut:-len('</div>')] + panneau + '</div>'
+
+
+def vue_pivot(identifiant, titre, facette, entetes, lignes, total, initiale=False, sous_lignes=None):
+    """Une vue pivot d'Odoo : ``entetes`` = lignes d'en-tête déjà composées
+    (``<tr>…</tr>``), ``lignes`` = [(libellé, [valeurs])], ``total`` =
+    [valeurs]. Les lignes portent ``<id>-<n>``, le total ``<id>-tot``."""
+    corps = ''.join('<tr id="%s-%d"><td class="r n2">⊞ %s</td>%s</tr>'
+                    % (identifiant, i, e(lib), ''.join('<td>%s</td>' % v for v in vals))
+                    for i, (lib, vals) in enumerate(lignes))
+    tot = '<tr class="tot" id="%s-tot"><td class="r">⊟ Total</td>%s</tr>' % (
+        identifiant, ''.join('<td>%s</td>' % v for v in total))
+    barre = ('<div class="pv-barre"><span class="bt primaire">Mesures ▾</span><span class="bt gris">⇄</span>'
+             '<span class="bt gris">✥</span><span class="bt gris" id="%s-export">%s</span></div>'
+             % (identifiant, icone('document')))
+    tete = ('<div class="cp"><div class="fil"><span class="ref" style="font-size:24px">%s</span></div>%s'
+            '<span class="pager"></span></div>' % (e(titre), recherche([(None, facette)] if facette else [])))
+    return _vue(identifiant, initiale, '<div class="fond-gris">%s%s<table class="pv">%s%s%s</table></div>'
+                % (tete, barre, entetes, tot, corps))
+
+
+def vue_gantt(identifiant, titre, jours, lignes, echelle='Semaine', periode='', initiale=False, facettes=()):
+    """La vue Gantt d'Odoo 18 Enterprise : ``jours`` = libellés des colonnes,
+    ``lignes`` = [(ressource, [(identifiant, début, durée, libellé, couleur)])],
+    début et durée en colonnes (demi-colonnes permises)."""
+    n = len(jours)
+    tete = ''.join('<span>%s</span>' % e(j) for j in jours)
+    rangs = []
+    for nom, barres in lignes:
+        b = ''.join('<span class="gt-b" id="%s" style="left:calc(%s * 100%% / %d + 3px);width:calc(%s * 100%% / %d - 6px);'
+                    'background:%s"><span class="ell">%s</span></span>' % (i, d, n, l, n, c, e(t)) for i, d, l, t, c in barres)
+        rangs.append('<div class="gt-l"><span class="gt-n ell">%s</span><div class="gt-p" style="background-size:calc(100%% / %d) 100%%">%s</div></div>'
+                     % (e(nom), n, b))
+    barre = ('<div class="gt-barre"><span class="bt gris">←</span><span class="bt gris">Aujourd\'hui</span>'
+             '<span class="bt gris">→</span><span class="gt-periode">%s</span><span class="gt-echelles">%s</span></div>'
+             % (e(periode), ''.join('<span class="bt%s">%s</span>' % (' actif' if x == echelle else ' gris', x)
+                                     for x in ('Jour', 'Semaine', 'Mois'))))
+    cp = '<div class="cp"><span class="bt primaire">Nouveau</span><span class="titre">%s</span>%s</div>' % (
+        e(titre), recherche(list(facettes)))
+    grille = ('<div class="gt"><div class="gt-l gt-tete"><span class="gt-n"></span><div class="gt-jours" '
+              'style="grid-template-columns:repeat(%d,1fr)">%s</div></div>%s</div>' % (n, tete, ''.join(rangs)))
+    return _vue(identifiant, initiale, '<div class="fond-gris">%s%s%s</div>' % (cp, barre, grille))
+
+
+# -- le point de vente d'Odoo 18 (interface plein écran, sans la barre MuK) --
+
+def fenetre_pos(identifiant, vues, caissier, numero='801', calques=''):
+    """L'interface du point de vente : barre du haut (nouvelle commande,
+    numéro, recherche, caissier, menu), puis les vues empilées."""
+    return ('<div class="app pos" id="%s"><div class="pos-haut"><span class="pos-plus">%s</span><span class="pos-num">%s</span>'
+            '<span class="pos-cherche">%sRechercher des produits...</span><span class="pos-caissier"><span class="avatar" '
+            'style="background:#185FA5">%s</span>%s</span><span class="pos-menu">☰</span></div>'
+            '<div class="pos-corps">%s</div>%s</div>'
+            % (identifiant, ICONES['plus'], e(numero), icone('loupe'), e(caissier[0]), e(caissier), ''.join(vues), calques))
+
+
+def pos_produits(identifiant, categories, produits, lignes, total, taxes, initiale=False):
+    """L'écran de vente : le ticket à gauche (``lignes`` = [(id, article,
+    quantité, prix unitaire, montant)]), le pavé, les catégories et les
+    tuiles produits (``produits`` = [(id, nom, couleur)])."""
+    tick = ''.join('<div class="pv-ligne" id="%s"><div class="a"><b>%s</b><span>%s</span></div>'
+                   '<div class="q"><b>%s</b> x %s / Unités</div></div>' % (i, e(a), e(m), e(q), e(p))
+                   for i, a, q, p, m in lignes)
+    pave = ''.join('<span class="pk%s">%s</span>' % (c, e(t)) for t, c in (
+        ('1', ''), ('2', ''), ('3', ''), ('Qté', ' sel'), ('4', ''), ('5', ''), ('6', ''), ('%', ' gr'), ('7', ''),
+        ('8', ''), ('9', ''), ('Prix', ' gr'), ('+/-', ' jaune'), ('0', ''), (',', ' rose'), ('⌫', ' rouge')))
+    gauche = ('<div class="pos-g"><div class="pos-ticket" id="%s-ticket">%s</div><div class="pos-tot"><small>Taxes'
+              '<span id="%s-taxes">%s</span></small><b>Total<span id="%s-total">%s</span></b></div>'
+              '<div class="pos-acts"><span>Client</span><span>Note interne</span><span class="dr">Actions</span></div>'
+              '<div class="pos-pave">%s</div><div class="pos-payer" id="%s-payer">Paiement</div></div>'
+              % (identifiant, tick, identifiant, e(taxes), identifiant, e(total), pave, identifiant))
+    cats = ''.join('<span class="pos-cat" style="background:%s">%s</span>' % (c, e(n)) for n, c in categories)
+    tuiles = ''.join('<span class="pos-tuile" id="%s" style="background:%s">%s</span>' % (i, c, e(n))
+                     for i, n, c in produits)
+    droite = '<div class="pos-d"><div class="pos-cats">%s</div><div class="pos-tuiles">%s</div></div>' % (cats, tuiles)
+    return _vue(identifiant, initiale, '<div class="pos-vente">%s%s</div>' % (gauche, droite))
+
+
+def pos_paiement(identifiant, modes, total, ardoise=True, initiale=False):
+    """L'écran de paiement : les modes (``modes`` = [(id, libellé)]), Client /
+    Facture, « Mettre sur ardoise » (aite_pos_credit), le pavé, et à droite le
+    montant dû, « Restant » et les lignes de paiement (``<id>-lignes``)."""
+    m = ''.join('<div class="pos-mode" id="%s">%s<span>%s</span></div>' % (i, icone('carte'), e(l)) for i, l in modes)
+    pave = ''.join('<span class="pk%s">%s</span>' % (c, e(t)) for t, c in (
+        ('1', ''), ('2', ''), ('3', ''), ('+10', ' vert'), ('4', ''), ('5', ''), ('6', ''), ('+20', ' vert'), ('7', ''),
+        ('8', ''), ('9', ''), ('+50', ' vert'), ('+/-', ' jaune'), ('0', ''), (',', ' rose'), ('⌫', ' rouge')))
+    ard = '<div class="pos-ardoise" id="%s-ardoise">%sMettre sur ardoise</div>' % (identifiant, icone('cahier')) if ardoise else ''
+    gauche = ('<div class="pos-g"><div class="pos-modes">%s</div><div class="pos-cf"><span id="%s-client">%sClient</span>'
+              '<span>%sFacture<i></i></span></div>%s<div class="pos-pave">%s</div>'
+              '<div class="pos-rv"><span>Retour</span><span class="v" id="%s-valider">Valider</span></div></div>'
+              % (m, identifiant, icone('personne'), icone('document'), ard, pave, identifiant))
+    droite = ('<div class="pos-d pos-pd"><div class="pos-du" id="%s-du">%s</div><div class="pos-zone">'
+              '<div class="pos-restant" id="%s-restant"><span>Restant</span><span id="%s-reste">%s</span></div>'
+              '<div id="%s-lignes"></div></div></div>' % (identifiant, e(total), identifiant, identifiant, e(total), identifiant))
+    return _vue(identifiant, initiale, '<div class="pos-vente">%s%s</div>' % (gauche, droite))
+
+
+def pos_ligne_paiement(identifiant, mode, montant):
+    """Une ligne de paiement de l'écran de paiement, masquée au départ."""
+    return ('<div class="pos-pl masque" id="%s"><span>%s</span><span>%s</span><span class="x">×</span></div>'
+            % (identifiant, e(mode), e(montant)))
