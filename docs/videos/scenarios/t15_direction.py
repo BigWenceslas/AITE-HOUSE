@@ -789,7 +789,7 @@ TUTORIEL = {
          'voix': "Un clic sur une carte de l'hôtel ouvre le tableau de bord exécutif. Le pikeup : les nuitées prises ces "
                  "sept derniers jours pour les trente prochains. Le pace : les nuitées déjà réservées pour le mois, face "
                  "à l'an dernier à la même date.",
-         'gestes': [clic('#t15-x-revpar', d=0.6), vue('t15-exec'), defiler('#t15-exec-defil', -262, d=0.6, avec=True),
+         'gestes': [clic('#t15-x-revpar', d=0.8), vue('t15-exec'), defiler('#t15-exec-defil', -262, d=0.6, avec=True),
                     zoom('#t15-e-pace', s=1.5, fx=0.0, d=0.7), anneau('#t15-e-pick', d=1.6),
                     curseur('#t15-e-pace-aide', d=0.6), montrer('#t15-tip-pace', d=0.3, y=6), pause(2.8),
                     cacher('#t15-tip-pace', d=0.2), curseur('#t15-e-pace', fx=0.5, fy=1.6, d=0.5),

@@ -916,7 +916,9 @@ CSS = """
 .t10-ancre { height: 1px; width: 420px; margin-left: auto; }
 /* les réactions se posent là où elles ne cachent rien de ce que l'étape montre */
 #t10-r-regle { bottom: 386px; }
-#t10-r-relance { bottom: auto; top: 330px; right: auto; left: 560px; }
+#t10-r-relance { bottom: auto; top: 344px; right: auto; left: 624px; padding: 10px 18px 10px 12px; }
+#t10-r-relance span { font-size: 21px; }
+#t10-r-relance .av { width: 52px; height: 52px; font-size: 24px; }
 /* la fiche */
 .t10-stat { margin-left: 250px; display: flex; align-items: center; gap: 10px; height: 54px; padding: 0 16px; border: 1px solid var(--o-filet);
   background: #fff; }
@@ -1096,7 +1098,7 @@ TUTORIEL = {
                     montrer('#t10-trouves', d=0.25, y=0, avec=True), clic('#t10-c-ngassa', fx=0.2, d=0.5),
                     fermer('t10-dlg'), cacher('#t10-cli-0', d=0.15), montrer('#t10-cli-1', d=0.25, y=0, avec=True),
                     pause(0.3), clic('#t10-ard', d=0.5), vue('t10-recu', 'pos'), pause(0.4),
-                    zoom('#t10-tk-paie', s=2.0, d=0.7, fx=0.8), bulle('b-part', '#t10-tk-paie', cote='gauche', d=2.6),
+                    zoom('#t10-tk-paie', s=2.0, d=0.7, fx=0.8), bulle('b-part', '#t10-tk-paie', cote='haut', d=2.6),
                     anneau('#t10-tk-paie', d=1.6), pause(1.0), dezoom(d=0.5)]},
         {'temps': 1, 'titre': "L'ardoise est déjà là",
          'texte': 'ARD/0043, en tête de liste, avec sa caisse : 7 500 FCFA dus, pas un de plus.',
@@ -1176,5 +1178,5 @@ TUTORIEL = {
         'voix': "Aïte haousse, par Aïte Consulting. Demandez votre démonstration, et retrouvez tous nos tutoriels sur "
                 "notre chaîne.",
     },
-    'vignette': {'etape': 5, 'apres': 0.3},
+    'vignette': {'etape': 5, 'apres': 6.8},
 }

@@ -844,7 +844,7 @@ TUTORIEL = {
          'gestes': [curseur('#t09-d1-l5', fx=0.55, d=0.6), anneau('#t09-d1-kpis', d=1.4, avec=True),
                     defiler('#t09-in1', -330, d=1.0),
                     zoom('#t09-d1-pl', s=1.25, d=0.8), anneau('#t09-d1-t3', d=1.2),
-                    bulle('b-libres', '#t09-d1-x0', cote='gauche', d=3.0), anneau('#t09-d1-x0', d=1.2, avec=True),
+                    bulle('b-libres', '#t09-d1-x7', cote='gauche', d=3.0), anneau('#t09-d1-x7', d=1.2, avec=True),
                     pause(1.6), dezoom(d=0.6), anneau('#t09-d1-l7', d=1.0)]},
         {'temps': 1, 'titre': 'Réserver un soin',
          'texte': 'Cliente, cabine, prestation, début : la fin et le montant se calculent seuls.',
@@ -861,7 +861,7 @@ TUTORIEL = {
                     texte('#t09-spa-mnt-val', '27 000 FCFA', puis=0.05),
                     clic('#t09-spa-deb', fx=0.3, d=0.4, puis=0.05), saisir('t09-spa-deb', JOUR + ' 15:00:00', d=0.8),
                     texte('#t09-spa-fin-val', JOUR + ' 16:00:00'), texte('#t09-spa-dur-val', '01:00', avec=True),
-                    zoom('#t09-spa-droite', s=1.2, fx=0.75, d=0.7), curseur('#t09-spa-mnt', fx=0.6, d=0.5, avec=True),
+                    zoom('#t09-spa-droite', s=1.25, fx=0.9, d=0.7), curseur('#t09-spa-l-mnt', fx=0.75, fy=0.3, d=0.5, avec=True),
                     anneau('#t09-spa-l-mnt', d=1.4),
                     bulle('b-calcul', '#t09-spa-l-mnt', cote='droite', d=2.8, avec=True), pause(1.6), dezoom(d=0.5)]},
         {'temps': 2, 'titre': 'Confirmer : le créneau est bloqué',
@@ -931,9 +931,9 @@ TUTORIEL = {
          'texte': "Chiffre d'affaires, remplissage, retraits en attente ; un client absent passe seul en No-show.",
          'voix': "Le soir, le tableau de bord fait le bilan : chiffre d'affaires, remplissage, retraits en attente. Et "
                  "un client confirmé qui ne vient pas passe tout seul en rendez-vous manqué, six heures après la fin.",
-         'gestes': naviguer('tdb', [vue('t09-tdb2'), defiler('#t09-in2', -330, d=0.01)]) + [
+         'gestes': naviguer('tdb', [vue('t09-tdb2'), defiler('#t09-in2', -200, d=0.01)]) + [
              anneau('#t09-d2-ca', d=1.1), anneau('#t09-d2-remp', d=1.0), anneau('#t09-d2-pr', d=1.0),
-             anneau('#t09-d2-t3', d=1.0), curseur('#t09-d2-t3', fx=0.5, d=0.5, avec=True), bulle('b-absent', '#t09-d2-ns', cote='bas', d=3.4),
+             anneau('#t09-d2-t3', d=1.0), curseur('#t09-d2-t3', fx=0.5, d=0.5, avec=True), bulle('b-absent', '#t09-d2-ns', cote='haut', d=3.4),
              anneau('#t09-d2-ns', d=1.4, avec=True), pause(2.4)]},
     ],
     'resultats': {
