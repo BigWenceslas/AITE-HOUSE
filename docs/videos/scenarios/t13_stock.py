@@ -88,7 +88,7 @@ import textwrap
 import demo
 from ecrans import APPS_PROFIL, ICONES, e, fenetre_muk, graphe_anneau, navigateur, tdb_entete, vue_tdb
 from marketing import bulle, dezoom, reaction, zoom
-from moteur import anneau, cacher, clic, compter, defiler, pause, saisir, texte, vue
+from moteur import anneau, cacher, clic, compter, curseur, defiler, pause, saisir, texte, vue
 
 NOM, ROLE = demo.POSTES['magasin']
 ICI = os.path.dirname(os.path.abspath(__file__))
@@ -288,7 +288,8 @@ def _table(ident, colonnes, lignes, cache=''):
     groupées (``<id>-autres``) pour les faire disparaître d'un coup."""
     gab = ' '.join(c[1] for c in colonnes)
     tete = '<div class="t13-th" style="grid-template-columns:%s">%s</div>' % (
-        gab, ''.join('<span%s>%s</span>' % (' class="t13-d"' if len(c) > 2 else '', e(c[0])) for c in colonnes))
+        gab, ''.join('<span id="%s-h%d"%s>%s</span>' % (ident, k, ' class="t13-d"' if len(c) > 2 else '', e(c[0]))
+                     for k, c in enumerate(colonnes)))
 
     def rangs(lot):
         return ''.join('<div class="t13-tr" id="%s" style="grid-template-columns:%s">%s</div>' % (i, gab, ''.join(cs))
@@ -412,7 +413,8 @@ def _vue_tableau():
                      [('Entrées (réceptions)', '#3B6D11'), ('Sorties (ventes)', '#714B67')]))))
     contenu = (_tete('dash', 0) + _section("Vue d'ensemble", cartes1) + _section('Indicateurs', cartes2)
                + '<div class="tdb-sect">Valorisation &amp; flux</div>' + graphes)
-    return vue_tdb('t13-dash', '<div class="t13" id="t13-in-dash">%s</div>' % contenu, initiale=True)
+    return vue_tdb('t13-dash', '<div class="t13" data-layout-allow-overflow id="t13-in-dash">%s</div>' % contenu,
+                   initiale=True)
 
 
 # -- l'onglet Alertes & réappro
@@ -425,8 +427,9 @@ ALERTES = sorted(LIGNES, key=lambda r: (r['urgency'], r['couv']))
 
 def _ligne_alerte(n, r):
     ident = 't13-al-r%d' % n
-    return (ident, [_c(r['nom'], cls='t13-b'), _c(r['cat'], cls='t13-mu'), _c(qty(r['stock']), True),
-                    _c(qty(r['vday']), True), _c(days(r['couv']), True), _c(qty(r['seuil']), True),
+    return (ident, ['<span class="t13-b" id="%s-nom">%s</span>' % (ident, e(r['nom'])), _c(r['cat'], cls='t13-mu'),
+                    _c(qty(r['stock']), True), _c(qty(r['vday']), True), _c(days(r['couv']), True),
+                    _c(qty(r['seuil']), True),
                     '<span class="t13-d t13-b" id="%s-cmd">%s</span>' % (ident, e(qty(r['cmd']) if r['cmd'] else '—')),
                     _badge(r['status'], r['status_cls'], ident + '-st')])
 
@@ -443,7 +446,7 @@ def _vue_alertes():
                  'Quantité suggérée : <b>%d</b> jours de couverture après livraison — à arrondir au casier.' % (SEC, HOR))
     contenu = (_tete('al', 1) + _section('Alertes de réapprovisionnement', cartes)
                + _carte('Références à traiter (triées par urgence)', '<div class="t13-wrap">%s</div>' % table) + note)
-    return vue_tdb('t13-alertes', '<div class="t13" id="t13-in-al">%s</div>' % contenu)
+    return vue_tdb('t13-alertes', '<div class="t13" data-layout-allow-overflow id="t13-in-al">%s</div>' % contenu)
 
 
 # -- l'onglet Stock complet
@@ -461,7 +464,7 @@ def _ligne_stock(n, r):
                     '<span class="t13-d" id="%s-bar">%s</span>' % (ident, qty(r['bar'])),
                     '<span class="t13-d" id="%s-cave">%s</span>' % (ident, qty(r['cave'])),
                     _c(qty(r['stock']), True, 't13-b'), _c(money(r['cout']), True, 't13-mu'), _barre(r['value'], MAXI),
-                    _c(qty(r['vday']), True), _c(days(r['couv']), True), _badge(r['status'], r['status_cls'])])
+                    _c(qty(r['vday']), True), _c(days(r['couv']), True), _badge(r['status'], r['status_cls'], ident + '-st')])
 
 
 def _totaux(rows):
@@ -490,7 +493,7 @@ def _vue_stock():
     contenu = (_tete('st', 2) + _section('Inventaire complet — toutes les références', cartes)
                + _carte('Stock par référence', '<div class="t13-wrap">%s</div>' % _table('t13-st', COLS_ST, bieres, autres),
                         droite=recherche) + note)
-    return vue_tdb('t13-stock', '<div class="t13" id="t13-in-st">%s</div>' % contenu)
+    return vue_tdb('t13-stock', '<div class="t13" data-layout-allow-overflow id="t13-in-st">%s</div>' % contenu)
 
 
 # -- l'onglet Rotation & dormants
@@ -523,7 +526,7 @@ def _vue_rotation():
     contenu = (_tete('rot', 3) + _section('Rotation des stocks', cartes)
                + '<div class="tdb-grille c2 t13-gg">%s%s</div>' % (g_rot, g_dorm)
                + _carte('Rotation par référence', table))
-    return vue_tdb('t13-rotation', '<div class="t13" id="t13-in-rot">%s</div>' % contenu)
+    return vue_tdb('t13-rotation', '<div class="t13" data-layout-allow-overflow id="t13-in-rot">%s</div>' % contenu)
 
 
 # -- l'onglet Inventaires & écarts
@@ -555,16 +558,18 @@ def _vue_ecarts():
     for n, (date, typ, art, q, ref) in enumerate(ECARTS, 1):
         valeur = q * PAR_NOM[art]['cout']
         sens = 't13-neg' if q < 0 else 't13-pos'
-        lignes.append(('t13-j-r%d' % n, [_c(date, cls='t13-mu'), _badge(typ, 'red' if typ.startswith('Casse') else 'amber'),
-                                         _c(art, cls='t13-b'), _c(signe_qty(q), True, sens),
-                                         _c(signe_money(valeur), True, sens + ' t13-b'), _c(ref, cls='t13-mu')]))
+        ident = 't13-j-r%d' % n
+        lignes.append((ident, [_c(date, cls='t13-mu'), _badge(typ, 'red' if typ.startswith('Casse') else 'amber'),
+                               '<span><span class="t13-b" id="%s-nom">%s</span></span>' % (ident, e(art)),
+                               _c(signe_qty(q), True, sens), _c(signe_money(valeur), True, sens + ' t13-b'),
+                               '<span><span class="t13-mu" id="%s-ref">%s</span></span>' % (ident, e(ref))]))
     note = _note('t13-j-note', '<b>Bonne pratique :</b> chaque ajustement doit porter un <b>motif</b> (vol, casse, offert '
                  'non tracé, périmé, erreur de saisie) — jamais « ajuster pour que ça tombe juste ». Inventaire complet '
                  'mensuel, comptages tournants hebdomadaires sur les fortes rotations.')
     contenu = (_tete('ec', 4) + _section("Écarts d'inventaire & coulage (période)", cartes)
                + '<div class="tdb-grille c2 t13-gg">%s%s</div>' % (g_ecart, g_coul)
                + _carte('Journal des écarts & casses', _table('t13-j', COLS_EC, lignes)) + note)
-    return vue_tdb('t13-ecarts', '<div class="t13" id="t13-in-ec">%s</div>' % contenu)
+    return vue_tdb('t13-ecarts', '<div class="t13" data-layout-allow-overflow id="t13-in-ec">%s</div>' % contenu)
 
 
 ECRAN = navigateur(fenetre_muk('app-t13', 'Inventaire', ["Vue d'ensemble", 'Opérations', 'Tableau de bord AITE', 'Produits'],
@@ -578,11 +583,11 @@ CSS = """
 .t13 .tdb-filtres { padding: 6px 22px; }
 .t13 .tdb-rang { height: 48px; }
 .t13 .tdb-lib { width: 160px; flex: none; }
-.t13 .tdb-sect { margin: 14px 2px 8px; }
+.t13 .tdb-sect { margin: 14px 2px 8px; color: #57564F; }
 .t13 .kpi { min-height: 0; padding: 13px 18px 12px; }
 .t13 .kpi-l { font-size: 14px; }
 .t13 .kpi-v { margin-top: 6px; font-size: 32px; color: #212529; }
-.t13 .kpi-s { white-space: normal; overflow: visible; line-height: 1.3; }
+.t13 .kpi-s { white-space: normal; overflow: visible; line-height: 1.3; color: #5F666D; }
 .t13-pt { display: inline-block; width: 11px; height: 11px; border-radius: 50%; margin-right: 8px; }
 .t13-date { height: 38px; padding: 0 12px; border: 1px solid #DEE2E6; border-radius: 8px; display: inline-flex; align-items: center;
   gap: 14px; font-size: 17px; color: #212529; }
@@ -603,7 +608,7 @@ CSS = """
 .t13-tr { height: 44px; border-bottom: 1px solid #EEF0F2; font-size: 17px; color: #212529; white-space: nowrap; }
 .t13-d { text-align: right; font-variant-numeric: tabular-nums; }
 .t13-b { font-weight: 700; }
-.t13-mu { color: #6C757D; }
+.t13-mu { color: #5F666D; }
 .t13-neg { color: #C82333; }
 .t13-pos { color: #1E7B34; }
 .t13-badge { display: inline-flex; align-items: center; height: 26px; padding: 0 9px; border-radius: 6px; font-size: 14px; font-weight: 700; }
@@ -681,7 +686,7 @@ TUTORIEL = {
     'css': CSS,
     'bulles': {
         'b-marge': "Valorisé deux fois : au coût d'achat et au prix de vente.",
-        'b-urgence': "Trié par urgence : la rupture d'abord, l'OK en dernier.",
+        'b-urgence': "Trié par urgence : la rupture d'abord, puis le critique, puis le sous seuil.",
         'b-calcul': 'Calculé sur les ventes des 30 derniers jours : rien à saisir.',
         'b-dormant': 'Dormant : 60 jours de couverture ou plus.',
         'b-coulage': 'Pertes au-dessus du seuil de 2 % : la carte passe au rouge.',
@@ -698,7 +703,7 @@ TUTORIEL = {
                  "les ruptures et le coulage du mois.",
          'gestes': [compter('#t13-k-cout-v', 0, TOT_VAL, d=1.2, apres=' FCFA'),
                     anneau('#app-t13 .o-haut .menu.actif', d=1.1, avec=True),
-                    zoom('#t13-k-pv', s=1.6, d=0.8), bulle('b-marge', '#t13-k-pv', cote='bas', d=3.0), pause(2.6),
+                    zoom('#t13-k-pv', s=1.6, fx=0.0, d=0.8), bulle('b-marge', '#t13-k-pv', cote='bas', d=3.0), pause(2.6),
                     dezoom(d=0.6), anneau('#t13-k-rupt', d=1.3), anneau('#t13-k-coul', d=1.6)]},
         {'temps': 1, 'titre': "Les alertes, par ordre d'urgence",
          'texte': 'Rupture, critique, sous seuil, puis OK : la liste se trie seule.',
@@ -707,46 +712,53 @@ TUTORIEL = {
          'gestes': [clic('#t13-tab-dash-1'), vue('t13-alertes'), pause(0.3), anneau('#t13-a-rupt', d=0.9),
                     anneau('#t13-a-crit', d=0.9), defiler('#t13-in-al', -330, d=0.9),
                     anneau('#t13-al-r1-st', d=0.8), anneau('#t13-al-r3-st', d=0.8), anneau('#t13-al-r4-st', d=0.8),
-                    bulle('b-urgence', '#t13-al-r6-st', cote='bas', d=2.8), pause(2.6)]},
+                    bulle('b-urgence', '#t13-al-r8-nom', cote='droite', d=2.8), pause(2.6)]},
         {'temps': 1, 'titre': 'Combien commander',
          'texte': 'Point de commande et quantité suggérée, calculés sur les ventes réelles.',
          'voix': "Le point de commande et la quantité à commander se calculent sur les ventes des trente derniers jours "
-                 "et le délai de livraison. Pour la bière blonde en soixante-cinq centilitres : cent dix à commander.",
-         'gestes': [zoom('#t13-al-r3', s=1.5, fx=0.74, d=0.8), anneau('#t13-al-r3-cmd', d=1.4),
-                    bulle('b-calcul', '#t13-al-r3-cmd', cote='bas', d=3.0), pause(2.8), dezoom(d=0.6),
-                    defiler('#t13-in-al', -470, d=0.7), anneau('#t13-al-note', d=1.6),
-                    reaction('r-cmd', d=3.0), pause(2.4)]},
+                 "et le délai de livraison. Pour la bière blonde en soixante-cinq centilitres, en critique : cent dix "
+                 "à commander, sans rien calculer.",
+         'gestes': [zoom('#t13-al-r3', s=1.3, d=0.8), bulle('b-calcul', '#t13-al-h5', cote='haut', d=3.2), pause(3.4),
+                    anneau('#t13-al-r3-nom', d=1.0), anneau('#t13-al-r3-cmd', d=1.4), dezoom(d=0.6),
+                    reaction('r-cmd', d=3.0), pause(2.6), defiler('#t13-in-al', -399, d=0.7),
+                    anneau('#t13-al-note', d=1.6)]},
         {'temps': 2, 'titre': 'Chaque casier, dépôt par dépôt',
          'texte': 'Stock complet : la quantité au bar et en cave, la valeur, la couverture.',
-         'voix': "Dans Stock complet, Serge tape bière : il ne reste que les bières, avec la quantité au bar et en cave, "
-                 "la valeur au coût et la couverture en jours.",
+         'voix': "Dans Stock complet, Serge tape bière : il ne reste que les quatre bières, avec la quantité au bar et "
+                 "en cave, la valeur au coût, la couverture en jours et le statut. La bière blonde en petite bouteille ? "
+                 "Plus rien, ni au bar ni en cave.",
          'gestes': [defiler('#t13-in-al', 0, d=0.7), clic('#t13-tab-al-2'), vue('t13-stock'), pause(0.2),
                     defiler('#t13-in-st', -300, d=0.8), clic('#t13-rech'), saisir('t13-rech', 'Bière'),
                     cacher('#t13-st-autres', d=0.3),
                     texte('#t13-s-ref-v', FILTRE['ref']), texte('#t13-s-un-v', FILTRE['un'], avec=True),
                     texte('#t13-s-val-v', FILTRE['val'], avec=True), texte('#t13-s-pv-v', FILTRE['pv'], avec=True),
                     texte('#t13-s-pv-s', FILTRE['pv-s'], avec=True),
-                    zoom('#t13-st-r2', s=1.5, fx=0.42, d=0.8), anneau('#t13-st-r1-bar', d=1.0),
-                    anneau('#t13-st-r1-cave', d=1.0), pause(1.0), dezoom(d=0.6)]},
+                    zoom('#t13-st', s=1.3, fy=0.22, d=0.8), curseur('#t13-st-r4', fx=0.3, fy=1.6, d=0.6, avec=True),
+                    anneau('#t13-st-r1-bar', d=0.8),
+                    anneau('#t13-st-r1-cave', d=0.8), anneau('#t13-st-r4-bar', d=0.7), anneau('#t13-st-r4-cave', d=0.7),
+                    anneau('#t13-st-r4-st', d=1.1), dezoom(d=0.6)]},
         {'temps': 2, 'titre': "L'argent qui dort",
          'texte': 'Rotation par référence, et la valeur immobilisée des dormants.',
          'voix': "Rotation et dormants montre ce qui tourne et ce qui dort. Dès soixante jours de couverture, une "
-                 "référence est dormante : ici, cinq références immobilisent six cent cinquante et un mille francs.",
+                 "référence est dormante : ici, cinq références, du champagne au cognac, immobilisent six cent cinquante "
+                 "et un mille francs.",
          'gestes': [defiler('#t13-in-st', 0, d=0.7), clic('#t13-tab-st-3'), vue('t13-rotation'),
                     compter('#t13-r-dorm-v', 0, VAL_DORM, d=1.2, apres=' FCFA'), anneau('#t13-r-dorm', d=1.2),
                     defiler('#t13-in-rot', -330, d=0.8), anneau('#t13-g-rot', d=1.2),
-                    zoom('#t13-g-dorm', s=1.4, d=0.8), bulle('b-dormant', '#t13-g-dorm', cote='gauche', d=3.0),
+                    curseur('#t13-g-dorm', fx=0.62, fy=0.32, d=0.6), zoom('#t13-g-dorm', s=1.4, d=0.8), bulle('b-dormant', '#t13-g-dorm', cote='gauche', d=3.0),
                     pause(2.8), dezoom(d=0.6)]},
         {'temps': 2, 'titre': 'Le coulage, face au seuil',
          'texte': 'Chaque écart et chaque casse valorisés ; au-delà du seuil, la carte passe au rouge.',
-         'voix': "Enfin, Inventaires et écarts valorise chaque ajustement et chaque casse. Ce mois-ci, les pertes "
-                 "dépassent le seuil de deux pour cent du chiffre estimé : la carte passe au rouge, et le journal "
-                 "montre d'où elles viennent.",
-         'gestes': [defiler('#t13-in-rot', 0, d=0.7), clic('#t13-tab-rot-4'), vue('t13-ecarts'), pause(0.3),
-                    anneau('#t13-e-pertes', d=1.2), bulle('b-coulage', '#t13-e-pertes', cote='bas', d=2.8), pause(2.4),
-                    defiler('#t13-in-ec', -330, d=0.8), anneau('#t13-g-coul', d=1.3), defiler('#t13-in-ec', -560, d=0.8),
-                    zoom('#t13-j-r1', s=1.4, fx=0.4, d=0.8), anneau('#t13-j-r1', d=1.2), anneau('#t13-j-r2', d=1.0),
-                    dezoom(d=0.6), reaction('r-fin', d=3.0), pause(2.4)]},
+         'voix': "Enfin, Inventaires et écarts valorise chaque ajustement et chaque casse au coût. Ce mois-ci, les "
+                 "pertes dépassent le seuil de deux pour cent du chiffre estimé : la carte passe au rouge. Le journal "
+                 "montre d'où elles viennent : deux bouteilles de champagne cassées, un ouiski offert sans être noté.",
+         'gestes': [defiler('#t13-in-rot', 0, d=0.7), clic('#t13-tab-rot-4'), vue('t13-ecarts'), pause(0.2),
+                    anneau('#t13-e-pertes', d=1.2), curseur('#t13-e-pertes', fx=0.85, fy=0.7, d=0.6, avec=True),
+                    bulle('b-coulage', '#t13-e-pertes', cote='haut', d=2.8), pause(2.4),
+                    defiler('#t13-in-ec', -200, d=0.8), curseur('#t13-g-coul', fx=0.86, fy=0.38, d=0.6),
+                    anneau('#t13-g-coul', d=1.3, avec=True), reaction('r-fin', d=2.8),
+                    pause(2.0), defiler('#t13-in-ec', -562, d=0.8), zoom('#t13-j', s=1.3, d=0.8),
+                    anneau('#t13-j-r1-nom', d=1.2), anneau('#t13-j-r2-ref', d=1.2), dezoom(d=0.6)]},
     ],
     'resultats': {
         'titre': "Un stock piloté, au lieu d'être subi",
