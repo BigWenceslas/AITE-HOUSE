@@ -37,10 +37,14 @@ Sources des libellés (relevés mot pour mot) :
    validé ; avec un client, une ligne de la méthode ardoise égale au reste
    dû est ajoutée (add_paymentline, sans l'avertissement « soldes dûs » que
    seul addNewPaymentLine affiche, odoo18 payment_screen.js:112-125) puis la
-   commande est validée (:96-109). La méthode « Ardoise client »
-   (is_aite_credit) est celle que crée aite_demo_data
-   (models/demo_generator.py:288-303) ; elle est trouvée par
-   payment_screen_button.js:24-40.
+   commande est validée (:96-109) : il faut donc toucher deux fois le bouton
+   (la première fois, putOnCredit s'arrête après selectPartner, :64-73). Les
+   méthodes « Ardoise client » (is_aite_credit) et « Note de chambre »
+   (is_room_charge) sont celles que aite_demo_data crée et rattache à la
+   caisse (models/demo_generator.py:288-320) ; la caisse du bar montre donc
+   Espèces, Orange Money, MTN MoMo, Note de chambre, Ardoise client — les
+   quatre premiers comme t04_note_chambre.py:310-311. L'ardoise est trouvée
+   par payment_screen_button.js:24-40.
    La fenêtre des clients : screens/partner_list/partner_list.xml:5-56 et
    partner_line/partner_line.xml:46-86 ; fr.po « Créer » :2261-2262,
    « Recherche des clients... » :6921-6922, « Nom » :4363, « Adresse » :721,
@@ -50,8 +54,10 @@ Sources des libellés (relevés mot pour mot) :
    le reçu complet » :6052-6053, « Nouvelle commande » :4426-4427, champ
    courriel au texte indicatif non traduit « e.g. john.doe@mail.com » :27) ;
    le ticket : receipt/order_receipt.xml:4-75 et receipt_header/
-   receipt_header.xml:4-27 (société, « Tél. : » fr.po:7730-7731, caissier,
-   numéro de suivi), generic_components/orderline/orderline.xml:4-35
+   receipt_header.xml:4-27 (société, « Tél. : » fr.po:7730-7731, tirets puis
+   caissier :20-23 — « Servi par Hervé Tchakounté » : getReceiptHeaderData,
+   cashier: _t("Served by %s", …), store/pos_store.js:2289-2295, traduit
+   « Servi par %s » fr.po:7067-7068 —, numéro de suivi), generic_components/orderline/orderline.xml:4-35
    (article, prix, « 1,00 x 7 000 FCFA / Unité(s) » — uom/i18n/fr.po:378-379),
    « Montant hors taxes » (account/i18n/fr.po:17758-17759), groupe de taxe
    « T.V.A. 19.25% » (l10n_cm/data/template/account.tax.group-cm.csv:3),
@@ -120,8 +126,18 @@ Sources des affirmations :
   xml:10-20 ; sévérité selon l'âge : pos_credit.py:162-177 ; reste dû
   recalculé et « Réglée » : pos_credit.py:133-147 ;
 - « Hervé sait qui relancer en premier » : fiche produit p.3 (« le gérant
-  sait combien récupérer et qui relancer en priorité ») et top débiteurs
-  trié par encours (pos_credit_dashboard.py:382-429) ;
+  sait combien récupérer et qui relancer en priorité ») ; top débiteurs
+  trié par encours (pos_credit_dashboard.py:428), et non par urgence : la
+  voix ajoute « le statut dit qui est en retard » (statut = sévérité d'après
+  l'âge max, :382-429) et les anneaux portent sur Sylvie Mbarga (104 j,
+  Critique) et Joël Kamga (39 j, En retard, aucun paiement), pas sur la
+  première ligne (Brigitte Essomba, 22 j, Récente) ;
+- douleur « Remboursements MoMo et Orange Money notés nulle part » : fiche
+  produit p.3 (« Les remboursements partiels se notent mal ») et benchmark
+  :11 ; le module ne se branche pas aux opérateurs, il note le moyen et la
+  « Réf. transaction » tapée à la main (pos_credit_payment.py:49-62,
+  wizard/pos_credit_repay_wizard.py:37-45) — la vidéo ne promet aucune
+  liaison MoMo / Orange Money ;
 - bulles : part mise sur ardoise = dette, pos_order.py:9-27 ; seuils de
   sévérité, pos_credit.py:26-28 et :162-177 ; reste dû proposé et plafonné,
   pos_credit.py:222-239 et wizard/pos_credit_repay_wizard.py:53-84 ; part
@@ -149,7 +165,21 @@ référence Orange Money OM261014.1530.A55120 repris de scenarios/
 c3_caisse.py). Ajoutés ici, fictifs : Cédric Ngassa (client du bar, ARD/
 0043), Ruth Bekolo (ARD/0036), Francis Tsala (ARD/0028), Hélène Eyidi
 (ARD/0021) ; caisses « Bar de la terrasse », « Restaurant », « Boutique »
-et carte du bar reprises de scenarios/t04_note_chambre.py ; évolution des
+et carte du bar reprises de scenarios/t04_note_chambre.py ; fenêtre des
+clients alignée sur t04_note_chambre.py:328-332 et t11_fidelite.py:469-471
+(Boris Ndzana et Carine Owona, adresse et courriel de Brigitte Essomba,
+courriel de Patrick Nkoulou de t11_fidelite.py:610) ; téléphones
+neutralisés « +237 6 00 00 00 31 » à « … 41 » (série de t02_planning.py:199
+et t08_site_web.py:195-205 ; numéro de la société « +237 6 00 00 00 10 »
+comme TEL_HOTEL de t08) : aucun numéro au format d'un vrai mobile n'est
+associé à une dette ; t04 et t11 gardent pour Armand Mvogo, Boris Ndzana,
+Brigitte Essomba et Carine Owona des numéros de ce format — à neutraliser
+de leur côté. Numérotation : vente de Cédric à 13:47, avant le règlement
+Orange Money de 15:30, 4e commande de la session 33 (suivi 304,
+« 00033-001-0004 ») ; commande d'origine de ARD/0024 du 18/08 : « Bar de la
+terrasse/0017 », entre la /0016 du 14/08 et la /0027 du 12/09
+(t11_fidelite.py:283) — le renvoi de t11 à « /0011 le 31/07 » (t11:161,
+:279) est à corriger de son côté ; évolution des
 mois de mai et juin (ardoises déjà soldées, non montrées). La journée est le
 14/10/2026 : les âges des ardoises de demo.ARDOISES en découlent. Tous les
 montants affichés sont recalculés plus bas à partir de la liste ARDOISES et
@@ -163,8 +193,11 @@ Ce que la vidéo montre, et ce qu'elle évite :
 - Ni plafond de crédit, ni relance automatique, ni écriture 411 (case
   « Comptabiliser les remboursements » décochée par défaut,
   res_config_settings.py:61-64) ne sont montrés ou dits.
-- Après « Encaisser », la fiche se recharge : aucune remise à jour à la
-  main ; l'ardoise réglée n'a plus de bouton d'en-tête.
+- Après « Encaisser », la fiche se recharge dès la fermeture de l'assistant
+  (l'en-tête change dans le même geste) : aucune remise à jour à la main ;
+  l'ardoise réglée n'a plus de bouton d'en-tête.
+- La vignette est prise à l'étape 5 (« Réglée »), pas sur la carte
+  « ▲ 156 % vs N-1 » (écart 5).
 - « Regrouper par Sévérité » (erreur, champ non stocké) n'est pas montré.
 - Deux tons de texte foncés pour le contraste AA, comme aite.css :
   orange #8A6100 des lignes « En retard », vert #1A6E2E du « Restant » nul.
@@ -232,10 +265,13 @@ REMBOURSEMENTS = [
     (date(2026, 9, 28), 'ARD/0036', 'Ruth Bekolo', 'Espèces', '', 5000),
     (date(2026, 8, 12), 'ARD/0017', 'Sylvie Mbarga', 'Espèces', '', 5000),
 ]
-TELEPHONES = {'Armand Mvogo': '+237 699 12 40 77', 'Brigitte Essomba': '+237 677 08 51 23',
-              CLIENT: '+237 691 47 22 08', 'Francis Tsala': '+237 696 31 05 84', 'Joël Kamga': '+237 655 30 17 64',
-              'Patrick Nkoulou': '+237 670 88 14 52', 'Sylvie Mbarga': '+237 699 63 27 41',
-              'Hélène Eyidi': '+237 677 52 90 16', 'Ruth Bekolo': '+237 694 18 66 30'}
+# Numéros neutralisés (série « +237 6 00 00 00 xx » de t02_planning.py:199 et t08_site_web.py:195-205) :
+# aucun numéro au format d'un vrai mobile n'est associé à une dette.
+TELEPHONES = {'Armand Mvogo': '+237 6 00 00 00 31', 'Brigitte Essomba': '+237 6 00 00 00 32',
+              CLIENT: '+237 6 00 00 00 33', 'Francis Tsala': '+237 6 00 00 00 34', 'Joël Kamga': '+237 6 00 00 00 35',
+              'Patrick Nkoulou': '+237 6 00 00 00 36', 'Sylvie Mbarga': '+237 6 00 00 00 37',
+              'Hélène Eyidi': '+237 6 00 00 00 38', 'Ruth Bekolo': '+237 6 00 00 00 39',
+              'Boris Ndzana': '+237 6 00 00 00 40', 'Carine Owona': '+237 6 00 00 00 41'}
 # Les remboursements d'avant ce jour expliquent « Déjà remboursé ».
 for _ref, _cli, _c, _d, _mt, _deja in ARDOISES:
     assert _deja == sum(r[5] for r in REMBOURSEMENTS[1:] if r[1] == _ref), _ref
@@ -309,8 +345,8 @@ TICKET = [('t10-l1', 'Poisson braisé', '1,00', '7 000 FCFA', '7 000 FCFA'),
           ('t10-l4', 'Jus de bissap 50 cl', '1,00', '1 000 FCFA', '1 000 FCFA')]
 TOTAL, TAXES, HT = '12 500 FCFA', '2 017 FCFA', '10 483 FCFA'
 COMPTANT, A_CREDIT = '5 000 FCFA', '7 500 FCFA'
-NUMERO = '348'                                     # (session 33 % 10) × 100 + 48 : pos_order.py:58-60
-REF_TICKET, HEURE = '00033-001-0048', '14/10/2026 21:47:05'   # pos_store.js:1141-1159
+NUMERO = '304'                                     # (session 33 % 10) × 100 + 4 : pos_order.py:58-60
+REF_TICKET, HEURE = '00033-001-0004', '14/10/2026 13:47:05'   # pos_store.js:1141-1159
 VENTE = (pos_produits('t10-vente', CATEGORIES, [('t10-p%d' % i, n, c) for i, (n, c) in enumerate(CARTE_BAR)],
                       TICKET, TOTAL, TAXES, initiale=True)
          .replace('/ Unités', '/ Unité(s)')
@@ -324,7 +360,8 @@ PLUS_TARD = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-
              'height="12" rx="2"/><path d="M2 9h17"/><circle cx="18" cy="17" r="4.5" fill="#fff"/><path d="M18 15v2.2l1.4 '
              '1" stroke-linecap="round"/></svg>')
 MODES = [('t10-m-esp', 'Espèces', ESPECES), ('t10-m-om', 'Orange Money', ICONES['carte']),
-         ('t10-m-momo', 'MTN MoMo', ICONES['carte']), ('t10-m-ard', METHODE, PLUS_TARD)]
+         ('t10-m-momo', 'MTN MoMo', ICONES['carte']), ('t10-m-note', 'Note de chambre', PLUS_TARD),
+         ('t10-m-ard', METHODE, PLUS_TARD)]
 TOUCHES = [('1', ''), ('2', ''), ('3', ''), ('+10', ' vert'), ('4', ''), ('5', ''), ('6', ''), ('+20', ' vert'),
            ('7', ''), ('8', ''), ('9', ''), ('+50', ' vert'), ('+/-', ' jaune'), ('0', ''), (',', ' rose'),
            ('⌫', ' rouge')]
@@ -354,11 +391,13 @@ PAIEMENT = (
 ENVOI = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round">'
          '<path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>')
 CLIENTS = [('Armand Mvogo', 'Bastos Yaoundé Cameroun', 'armand.mvogo@exemple.cm'),
-           ('Brigitte Essomba', 'Akwa Douala Cameroun', 'b.essomba@exemple.cm'),
+           ('Boris Ndzana', 'Akwa Douala Cameroun', 'boris.ndzana@exemple.cm'),
+           ('Brigitte Essomba', 'Bonamoussadi Douala Cameroun', 'brigitte.essomba@exemple.cm'),
+           ('Carine Owona', 'Bali Douala Cameroun', 'carine.owona@exemple.cm'),
            (CLIENT, 'Deïdo Douala Cameroun', 'cedric.ngassa@exemple.cm'),
            ('Francis Tsala', 'Makepe Douala Cameroun', 'f.tsala@exemple.cm'),
            ('Joël Kamga', 'Bonamoussadi Douala Cameroun', 'joel.kamga@exemple.cm'),
-           ('Patrick Nkoulou', 'Bali Douala Cameroun', 'p.nkoulou@exemple.cm')]
+           ('Patrick Nkoulou', 'Bali Douala Cameroun', 'patrick.nkoulou@exemple.cm')]
 
 
 def ligne_client(nom, adresse, mail, ident=None):
@@ -377,7 +416,7 @@ DIALOGUE = (
     '<div class="t10-plus"><span class="bt primaire">Rechercher plus</span></div></div></div></div>'
     '<div class="t10-dlg-p"><span class="bt gris">Ignorer</span></div></div>'
     % (entree('t10-q', 'Recherche des clients...', classe='entree t10-q'), ''.join(ligne_client(*c) for c in CLIENTS),
-       ligne_client(*CLIENTS[2], ident='t10-c-ngassa')))
+       ligne_client(*CLIENTS[4], ident='t10-c-ngassa')))
 # La notification d'Odoo (type warning, sans titre), en haut à droite de la caisse.
 TOAST_CLI = ('<div class="toast masque alerte t10-toast" id="t10-toast-cli" data-layout-allow-overlap '
              'data-layout-allow-occlusion>Sélectionnez d\'abord un client pour une vente à crédit.</div>')
@@ -405,8 +444,8 @@ RECU = (
     '</div><hr><span class="t10-imprimer"><span class="ico">%s</span>Imprimer le reçu complet</span>'
     '<div class="t10-mail"><span class="t10-in">e.g. john.doe@mail.com</span><span class="t10-envoi">%s</span></div>'
     '<div class="t10-nouv">Nouvelle commande</div></div>'
-    '<div class="t10-recu-d"><div class="t10-ticket"><div class="t10-ent"><div>%s</div><div>Tél. : +237 6 99 00 00 00</div>'
-    '%s<div>%s</div><div class="t10-suivi">%s</div></div>%s%s'
+    '<div class="t10-recu-d"><div class="t10-ticket"><div class="t10-ent"><div>%s</div><div>Tél. : +237 6 00 00 00 10</div>'
+    '%s<div>Servi par %s</div><div class="t10-suivi">%s</div></div>%s%s'
     '<div class="t10-tx">%s%s</div>%s<div class="t10-tk-paie" id="t10-tk-paie">%s%s%s</div>'
     '<div class="t10-gen">Généré par Odoo<br>%s<br>%s</div></div></div></div></div>'
     % (CERCLE_OK, TOTAL, ICONES['imprimer'], ENVOI, e(demo.SOCIETE), TIRETS, e(NOM), NUMERO,
@@ -487,7 +526,7 @@ GAUCHE = ''.join([
     ch('Client', e(_A[1]), gras=True, saisie=True, lid='t10-l-cli', ident='t10-v-cli'),
     ch("Date d'ouverture", jj(_A[3]), gras=True, saisie=True, lid='t10-l-date', ident='t10-v-date'),
     ch('Origine', '<span class="puce gris t10-pg">Point de vente</span>', aide=True),
-    ch("Commande POS d'origine", e('%s/0011' % BAR), lien_=True),
+    ch("Commande POS d'origine", e('%s/0017' % BAR), lien_=True),
     ch("Caisse d'origine", e(BAR), lien_=True),
     ch('Total commande', fcfa(74500), aide=True),
     ch('Payé comptant à la vente', fcfa(10000), aide=True)])
@@ -807,7 +846,7 @@ CSS = """
 .t10-creer { height: 50px; font-size: 21px; padding: 0 22px; }
 .entree.t10-q { margin: 0 0 0 auto; width: 480px; height: 52px; font-size: 21px; }
 .t10-dlg-c { position: relative; height: 534px; padding: 0 24px; }
-.t10-cl { display: grid; grid-template-columns: 280px 330px 1fr 60px; align-items: center; gap: 16px; min-height: 76px;
+.t10-cl { display: grid; grid-template-columns: 280px 330px 1fr 60px; align-items: center; gap: 16px; min-height: 60px;
   padding: 0 12px; border-bottom: 1px solid #EEF0F2; font-size: 19px; color: var(--o-texte); }
 .t10-cl b { font-weight: 700; }
 .t10-cl-tete { min-height: 52px; font-weight: 600; border-bottom: 1px solid var(--o-filet); }
@@ -877,7 +916,7 @@ CSS = """
 .t10-ancre { height: 1px; width: 420px; margin-left: auto; }
 /* les réactions se posent là où elles ne cachent rien de ce que l'étape montre */
 #t10-r-regle { bottom: 386px; }
-#t10-r-relance { bottom: auto; top: 214px; }
+#t10-r-relance { bottom: auto; top: 330px; right: auto; left: 560px; }
 /* la fiche */
 .t10-stat { margin-left: 250px; display: flex; align-items: center; gap: 10px; height: 54px; padding: 0 16px; border: 1px solid var(--o-filet);
   background: #fff; }
@@ -1005,7 +1044,7 @@ TUTORIEL = {
                      ('interrogation', 'Des montants oubliés'),
                      ('calculatrice', 'Les remboursements partiels mal notés'),
                      ('sablier', 'Des dettes qui vieillissent sans relance'),
-                     ('telephone', 'MTN MoMo, Orange Money : hors du logiciel'),
+                     ('telephone', 'Remboursements MoMo et Orange Money notés nulle part'),
                      ('pieces', 'Combien récupérer ? Personne ne sait')],
         'voix': "Qui vous doit combien, et depuis quand ? Sur un cahier d'ardoise, les dettes vieillissent sans "
                 "relance, et la trésorerie part en fumée.",
@@ -1048,7 +1087,7 @@ TUTORIEL = {
                     clic('#t10-k0', d=0.15), texte('#t10-pl-esp-mt', COMPTANT), texte('#t10-st-du-v', A_CREDIT, avec=True),
                     anneau('#t10-st-du', d=1.4)]},
         {'temps': 0, 'titre': 'Mettre sur ardoise',
-         'texte': "Pas de client, pas d'ardoise : la caisse le demande, puis valide la vente.",
+         'texte': "Pas de client, pas d'ardoise : la caisse ouvre la liste des clients, un second appui valide la vente.",
          'voix': "Le reste part sur l'ardoise. Mais sans client, pas d'ardoise : la caisse le signale, et ouvre la "
                  "liste des clients. Hervé choisit Cédric, touche à nouveau Mettre sur ardoise, et la vente est validée. "
                  "Sur le ticket, les deux paiements : cinq mille en espèces, sept mille cinq cents sur l'ardoise.",
@@ -1057,7 +1096,7 @@ TUTORIEL = {
                     montrer('#t10-trouves', d=0.25, y=0, avec=True), clic('#t10-c-ngassa', fx=0.2, d=0.5),
                     fermer('t10-dlg'), cacher('#t10-cli-0', d=0.15), montrer('#t10-cli-1', d=0.25, y=0, avec=True),
                     pause(0.3), clic('#t10-ard', d=0.5), vue('t10-recu', 'pos'), pause(0.4),
-                    zoom('#t10-tk-paie', s=1.6, d=0.7), bulle('b-part', '#t10-tk-paie', cote='gauche', d=2.6),
+                    zoom('#t10-tk-paie', s=2.0, d=0.7, fx=0.8), bulle('b-part', '#t10-tk-paie', cote='gauche', d=2.6),
                     anneau('#t10-tk-paie', d=1.6), pause(1.0), dezoom(d=0.5)]},
         {'temps': 1, 'titre': "L'ardoise est déjà là",
          'texte': 'ARD/0043, en tête de liste, avec sa caisse : 7 500 FCFA dus, pas un de plus.',
@@ -1078,12 +1117,8 @@ TUTORIEL = {
                     bulle('b-pre', '#t10-as-mt', cote='haut', d=2.4), anneau('#t10-as-mt', d=1.2),
                     clic('#t10-as-moy', d=0.5), choisir('t10-as-moy', 'Orange Money'),
                     clic('#t10-as-ref', d=0.4), saisir('t10-as-ref', REF_OM, d=1.0), clic('#t10-as-ok', d=0.5),
-                    fermer('t10-as')]},
-        {'temps': 2, 'titre': 'Réglée, toute seule',
-         'texte': 'Reste dû à zéro, ardoise Réglée ; le remboursement est inscrit avec son moyen et son encaisseur.',
-         'voix': "Le reste dû tombe à zéro, et l'ardoise passe Réglée, toute seule. Le remboursement s'inscrit sur la "
-                 "fiche : le moyen, la référence, et qui l'a encaissé.",
-         'gestes': [texte('#t10-f-deja', fcfa(_A[4])), texte('#t10-f-reste', '0 FCFA', avec=True),
+                    # la fiche se recharge dès la fermeture de l'assistant
+                    fermer('t10-as'), texte('#t10-f-deja', fcfa(_A[4])), texte('#t10-f-reste', '0 FCFA', avec=True),
                     texte('#t10-f-sev', 'Réglée', avec=True), classe('#t10-sb-0', retirer=['actif'], avec=True),
                     classe('#t10-sb-1', ajouter=['actif'], avec=True), cacher('#t10-fiche-ga', d=0.2, avec=True),
                     texte('#t10-stat-v', '2', avec=True),
@@ -1091,7 +1126,12 @@ TUTORIEL = {
                     classe('#t10-v-cli', retirer=['t10-saisie'], avec=True),
                     classe('#t10-v-date', retirer=['t10-saisie'], avec=True),
                     cacher('#t10-ta', d=0.2, avec=True), montrer('#t10-tb', d=0.3, y=0, avec=True),
-                    pause(0.4), zoom('#t10-g-mt', s=1.5, d=0.7, fx=0.3), anneau('#t10-f-reste', d=1.2),
+                    pause(0.4)]},
+        {'temps': 2, 'titre': 'Réglée, toute seule',
+         'texte': 'Reste dû à zéro, ardoise Réglée ; le remboursement est inscrit avec son moyen et son encaisseur.',
+         'voix': "Le reste dû tombe à zéro, et l'ardoise passe Réglée, toute seule. Le remboursement s'inscrit sur la "
+                 "fiche : le moyen, la référence, et qui l'a encaissé.",
+         'gestes': [zoom('#t10-g-mt', s=1.5, d=0.7, fx=0.3), anneau('#t10-f-reste', d=1.2),
                     anneau('#t10-sb', d=1.0), dezoom(d=0.5), anneau('#t10-tb-0', d=1.6),
                     reaction('t10-r-regle', d=2.6), pause(1.6)]},
         {'temps': 3, 'titre': 'Le tableau de bord Recouvrement',
@@ -1104,17 +1144,17 @@ TUTORIEL = {
                     compter('#t10-k-rec-v', 0, RECOUVRE, d=1.0, apres=' FCFA', avec=True),
                     compter('#t10-k-new-v', 0, NOUVELLES, d=1.0, apres=' FCFA', avec=True),
                     anneau('#t10-k-taux', d=1.0), anneau('#t10-k-ret', d=1.2),
-                    bulle('b-retard', '#t10-k-ret', cote='bas', d=2.6),
+                    bulle('b-retard', '#t10-k-ret', cote='gauche', d=2.6),
                     defiler('#t10-defil', -200, d=0.9, decale=1.2),
                     animer('#t10-g-age', {'scaleY': 0, 'transformOrigin': '50% 100%'},
                            {'scaleY': 1, 'immediateRender': True}, d=0.8),
                     anneau('#t10-c-age', d=1.6)]},
         {'temps': 3, 'titre': 'Qui relancer en premier',
-         'texte': 'Les débiteurs par encours, avec l\'âge de leur dette et leur dernier paiement.',
+         'texte': 'Les débiteurs par encours, avec l\'âge de leur dette, leur dernier paiement et leur statut.',
          'voix': "Plus bas, les débiteurs, du plus gros encours au plus petit, avec l'âge de leur dette et leur "
-                 "dernier paiement. Hervé sait qui relancer en premier.",
-         'gestes': [defiler('#t10-defil', -1312, d=1.1), pause(0.3), anneau('#t10-d0', d=1.0),
-                    anneau('#t10-d1', d=1.2), anneau('#t10-d1 .puce', d=1.0),
+                 "dernier paiement ; le statut dit qui est en retard. Hervé sait qui relancer en premier.",
+         'gestes': [defiler('#t10-defil', -1312, d=1.1), pause(0.3), anneau('#t10-d1', d=1.2),
+                    anneau('#t10-d1 .puce', d=0.9), anneau('#t10-d2', d=1.1), anneau('#t10-d2 .puce', d=0.9),
                     bulle('b-top', '#t10-top', cote='haut', d=2.6), pause(1.0),
                     reaction('t10-r-relance', d=2.6), pause(1.4)]},
     ],
@@ -1136,5 +1176,5 @@ TUTORIEL = {
         'voix': "Aïte haousse, par Aïte Consulting. Demandez votre démonstration, et retrouvez tous nos tutoriels sur "
                 "notre chaîne.",
     },
-    'vignette': {'etape': 6, 'apres': 3.0},
+    'vignette': {'etape': 5, 'apres': 0.3},
 }

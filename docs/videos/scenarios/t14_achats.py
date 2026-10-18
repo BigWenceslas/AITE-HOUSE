@@ -115,30 +115,69 @@ Captures de référence (modèle visuel, jamais incrustées) :
 r4-direction-04-ouvrir-achats-fournisseurs.png. Chapitre déjà rejoué dans
 la présentation : scenarios/c6_direction.py (vue « Achats »).
 
-Écarts rejoués tels quels (voir le rapport) :
-1. « Créances fournisseurs (409) » et « Acomptes / soldes débiteurs (4091) »
-   additionnent les factures ouvertes : le domaine de get_claims retient
-   amount_residual < 0, c'est-à-dire les soldes CRÉDITEURS (purchase_
-   dashboard.py:388-399). Rejoué : acomptes = dette 401 − avoirs, d'où une
-   créance totale plus grosse que la dette. La voix et les bulles ne citent
-   jamais ces deux chiffres ; si le code est corrigé, refaire CREANCES.
+Écarts rejoués tels quels (à reporter dans docs/videos/ECARTS.md, mention
+« Rejoué tel quel (t14) » ; ce scénario ne modifie aucun fichier partagé) :
+1. BLOQUANT — « Créances totales (409) », « Créances fournisseurs (409) » et
+   « Acomptes / soldes débiteurs (4091) » additionnent le reste dû des
+   factures ouvertes : le domaine de get_claims retient amount_residual
+   < −0,005, c'est-à-dire les lignes CRÉDITRICES du 401 (purchase_
+   dashboard.py:386-399, :409, :705), alors que le commentaire :386-387
+   annonce les soldes débiteurs (paiements non lettrés, avoirs). D'où
+   1 772 700 FCFA d'« acomptes » sans paiement d'avance et une créance plus
+   grosse que la dette. Correction attendue dans le module (hors de ce
+   fichier) : test qui reproduit le défaut, domaine amount_residual > 0,005,
+   debit_total += line.amount_residual, version 18.0.1.0.3. _domaine_409()
+   lit le domaine dans le module : la vidéo passe d'elle-même aux chiffres
+   justes (409 = 319 200 puis 247 200 FCFA, 4091 = 0 FCFA) dès que le code
+   est corrigé, et produire.py affiche un avertissement tant qu'il ne l'est
+   pas. Version à ne pas publier avant la correction.
 2. Dates ISO dans toutes les colonnes de date du tableau de bord
-   (purchase_dashboard.py:251, 321-324, 356-357, 379-380), alors que le
-   registre natif affiche 08/10/2026.
+   (purchase_dashboard.py:251, 321-324, 356-357, 379-380) — « 2026-09-08 »
+   — alors que le registre natif affiche 08/10/2026 (CLAUDE.md règle 6).
 3. « Ce mois » démarre le 30/09/2026 à Douala : periodRange passe par
-   toISOString, en UTC (utils.js:78, :94).
+   toISOString, en UTC (utils.js:76-97, l. 78 et 94).
 4. Sigles anglais « DPO » et « OTIF » dans les titres de cartes
-   (dashboard.xml:100, :113).
+   (dashboard.xml:100, :113, :160, :403).
 5. « Hausses > 5 % » alors que le code compte Δ ≥ seuil (dashboard.xml:468,
-   purchase_dashboard.py:115, :658) ; « — » en vert pour un impact nul
-   (purchase_dashboard_view.js:276-278) ; « À payer sous 8–30 j » figé alors
-   que la fenêtre d'alerte se règle (dashboard.xml:231) — sans effet visible
+   purchase_dashboard.py:115, :658) ; de même « au-delà de » pour la
+   dépendance (dashboard.xml:210, :553) alors que _supplier_badge allume le
+   badge dès part ≥ seuil (purchase_dashboard.py:124) et « au-delà du
+   seuil » pour la hausse forte (:554). Les bulles et la voix disent « dès ».
+6. « — » en vert pour un impact nul : impactClass renvoie text-success dès
+   que l'impact vaut 0 ou moins (purchase_dashboard_view.js:265-278) ;
+   visible sur les lignes « Stable ».
+7. « À payer sous 8–30 j » figé alors que la fenêtre d'alerte se règle
+   (dashboard.xml:231 ; purchase_dashboard.py:635-637) — sans effet visible
    ici, l'alerte restant à 7 jours.
+8. Seul un profil Achats doté d'un droit Facturation ouvre le tableau de
+   bord : get_flux_months lit account.payment (purchase_dashboard.py:430,
+   :453-454 ; odoo18/addons/account/security/ir.model.access.csv:120-121) ;
+   d'où le profil demo.direction.
+9. Le menu « Consignes fournisseurs » est sous Achats → Configuration,
+   réservé aux responsables (purchase_dashboard_menus.xml:15-20 ;
+   odoo18/addons/purchase/views/purchase_views.xml:19), alors que le README
+   :9 le présente comme l'accès de l'utilisateur ; la vidéo passe par le
+   bouton « Gérer les consignes ».
+10. negMoney préfixe toujours « − » : « −0 FCFA » sur trois cartes quand il
+   n'y a rien (purchase_dashboard_view.js:207-209 ; dashboard.xml:108, :226,
+   :472) ; ECARTS.md n° 6 n'en relève qu'une. Non visible ici.
+
+Prix de la bière blonde : la fenêtre « 45 derniers jours » (16/10 − 45 j =
+01/09, purchase_dashboard.py:476-479) couvre septembre ; septembre est donc au
+prix d'octobre (650 FCFA) pour que le prix actuel affiché (650) soit la vraie
+moyenne pondérée des achats de la fenêtre ; de même pour les sept autres
+articles. Le prix ancien (fenêtre 120 à 210 jours : 20/03 → 18/06) est celui
+de mai-juin.
+
+Jeu indépendant de scenarios/t15_direction.py (tutoriel suivant, au 14/10) :
+les dettes fournisseurs qu'il affiche (1 280 000 FCFA) ne reprennent pas les
+factures de ce tutoriel.
 """
 
 import math
 import os
 import re
+import sys
 import textwrap
 from datetime import date, timedelta
 
@@ -278,7 +317,7 @@ AVOIRS = [
 # Les prix d'achat (get_price_moves) : (article, fournisseur, prix d'il y a 4 à 7 mois, prix des 45 derniers
 # jours, quantité achetée sur 45 jours) ; et les prix mensuels de mai à octobre (indice base 100).
 PRIX = [
-    ('Bière blonde 65 cl', WOURI, 600, 650, 1800, [600, 600, 615, 615, 640, 650]),
+    ('Bière blonde 65 cl', WOURI, 600, 650, 1800, [600, 600, 615, 630, 650, 650]),
     ('Bière brune 65 cl', WOURI, 680, 700, 1080, [680, 680, 680, 690, 700, 700]),
     ('Eau minérale 1,5 L', AKWA, 300, 300, 1200, [300] * 6),
     ('Cola 33 cl', AKWA, 320, 300, 1104, [320, 320, 310, 310, 300, 300]),
@@ -385,13 +424,40 @@ for _f in FAC:
     SEMAINES[0 if _f['days_late'] > 0 else min(5, _f['days_to_due'] // 7)] += _f['residual']
 
 
+def _domaine_409():
+    """Le signe du domaine de get_claims, lu dans le module : « < -0.005 » (la
+    version actuelle, défaut — écart 1) retient les lignes CRÉDITRICES du 401,
+    soit le reste dû des factures ouvertes ; « > 0.005 » (la correction
+    attendue) retient les lignes DÉBITRICES : avoirs et paiements non lettrés.
+    La vidéo suit d'elle-même le code le jour où il est corrigé."""
+    with open(MODULE, encoding='utf-8') as f:
+        src = f.read()
+    if re.search(r"\('amount_residual',\s*'<',\s*-0\.005\)", src):
+        sys.stderr.write("⚠ t14 : get_claims compte encore les factures ouvertes dans le 409 "
+                         "(purchase_dashboard.py, domaine amount_residual < -0.005) — cartes 409/4091 fausses à "
+                         "l'écran : ne pas publier cette version tant que le module n'est pas corrigé.\n")
+        return 'credit'
+    if re.search(r"\('amount_residual',\s*'>',\s*0\.005\)", src):
+        return 'debit'
+    raise RuntimeError('t14 : domaine de get_claims non reconnu, relire purchase_dashboard.py et refaire _creances()')
+
+
+DOMAINE_409 = _domaine_409()
+
+
 def _creances(consignes):
-    """get_claims : consignes + avoirs + « acomptes ». Rejoué tel que le code
-    le calcule (écart 1) : le domaine amount_residual < 0 prend les lignes
-    CRÉDITRICES du compte fournisseurs, soit le reste dû des factures ouvertes."""
+    """get_claims : consignes + avoirs + « acomptes » (= soldes débiteurs −
+    avoirs). Tant que le domaine est inversé (écart 1), les « soldes » sont le
+    reste dû des factures ouvertes ; une fois corrigé, ce sont les lignes
+    débitrices du 401 : ici les seuls avoirs (aucun paiement non lettré dans le
+    jeu, le paiement partiel de BILL/2026/09/0003 est lettré), d'où 0 FCFA
+    d'acomptes."""
     depots = sum(q * u for _, q, u, _, _ in consignes)
     avoirs = sum(a[4] for a in AVOIRS)
-    soldes = sum(f['residual'] for f in FAC)          # lignes créditrices (écart 1)
+    if DOMAINE_409 == 'credit':
+        soldes = sum(f['residual'] for f in FAC)      # lignes créditrices (écart 1)
+    else:
+        soldes = avoirs                               # lignes débitrices : les avoirs
     acomptes = max(0.0, soldes - avoirs)
     return dict(depots=depots, qty=sum(q for _, q, _, _, _ in consignes), avoirs=avoirs, acomptes=acomptes,
                 total=depots + avoirs + acomptes)
@@ -847,7 +913,7 @@ def _vue_fournisseurs():
 
 # -- l'onglet Prix & variations
 
-COLS_PX = [('Produit', '1.1fr'), ('Fournisseur', '1fr'), ('Prix N−6m', '84px', 'd'), ('Prix actuel', '84px', 'd'),
+COLS_PX = [('Produit', '1.1fr'), ('Fournisseur', '1fr'), ('Prix N−6m', '98px', 'd'), ('Prix actuel', '98px', 'd'),
            ('Δ', '58px', 'd'), ('Impact annuel', '106px', 'd'), ('Statut', '112px')]
 
 
@@ -1091,8 +1157,8 @@ TUTORIEL = {
     'bulles': {
         'b-urgence': "Triées par urgence : les retards d'abord, puis les échéances les plus proches.",
         'b-consigne': 'Valeur immobilisée = casiers × consigne : calculée toute seule.',
-        'b-otif': "À l'heure ET complète : il manque une condition, la commande sort de l'OTIF.",
-        'b-dep': "Au-delà de 40 % des achats chez un seul fournisseur : badge Dépendance.",
+        'b-otif': "À l'heure ET complète : qu'une condition manque, et la commande sort de l'OTIF.",
+        'b-dep': "Dès 40 % des achats chez un seul fournisseur : badge Dépendance.",
         'b-prix': 'Impact sur un an = écart de prix × volume mensuel × 12.',
     },
     'reactions': {
@@ -1138,12 +1204,13 @@ TUTORIEL = {
                     cacher('#t14-cs-new', d=0.15), montrer('#t14-cs-save', d=0.2, y=0, avec=True),
                     saisir('t14-cs-qty', str(CONSIGNES[0][1] - RENDUS)),
                     texte('#t14-cs-r1-val', money((CONSIGNES[0][1] - RENDUS) * CONSIGNES[0][2])),
+                    texte('#t14-cs-tot', money(CREANCES_APRES['depots'])),
                     clic('#t14-cs-r1-date', fx=0.3, d=0.4), saisir('t14-cs-date', fr(AUJ)),
                     bulle('b-consigne', '#t14-cs-r1-val', cote='bas', d=2.6), pause(1.8),
                     clic('#t14-cs-save-bt', d=0.6), classe('#t14-cs-r1', retirer=['t14-edit']),
                     cacher('#t14-cs-save', d=0.15),
                     animer('#t14-cs-new', {'autoAlpha': 0}, {'autoAlpha': 1}, d=0.2, avec=True),
-                    texte('#t14-cs-tot', money(CREANCES_APRES['depots'])), anneau('#t14-cs-tot', d=1.0),
+                    anneau('#t14-cs-tot', d=1.0),
                     dezoom(d=0.6)]},
         {'temps': 2, 'titre': 'Commandes & réceptions',
          'texte': "L'OTIF ne compte que les livraisons à l'heure ET complètes.",
@@ -1156,9 +1223,9 @@ TUTORIEL = {
                     zoom('#t14-od-r5', s=1.35, fx=0.62, d=0.8, avec=True), anneau('#t14-od-r5-full', d=1.0),
                     bulle('b-otif', '#t14-od-r5-full', cote='haut', d=2.8), pause(2.0), dezoom(d=0.6)]},
         {'temps': 2, 'titre': 'Fournisseurs',
-         'texte': 'Part des achats, encours, retards, OTIF ; au-delà de 40 %, le badge Dépendance.',
-         'voix': "Côté fournisseurs, Boissons du Wouri pèse plus de la moitié des achats du mois : au-delà de quarante "
-                 "pour cent, le badge Dépendance s'allume. Les quatre seuils se règlent ici, chacun avec sa phrase "
+         'texte': 'Part des achats, encours, retards, OTIF ; dès 40 %, le badge Dépendance.',
+         'voix': "Côté fournisseurs, Boissons du Wouri pèse plus de la moitié des achats du mois : dès quarante pour "
+                 "cent, le badge Dépendance s'allume. Les quatre seuils se règlent ici, chacun avec sa phrase "
                  "d'explication.",
          'gestes': [defiler('#t14-in-cmd', 0, d=0.5), clic('#t14-tab-cmd-1', d=0.6), vue('t14-four'),
                     anneau('#t14-f-top', d=1.2), defiler('#t14-in-four', -150, d=0.7), anneau('#t14-fr-r1-part', d=0.9),
@@ -1186,7 +1253,7 @@ TUTORIEL = {
             {'valeur': '4', 'compter': 4, 'unite': 'seuils', 'icone': 'cloche',
              'texte': 'réglables sans code : échéance, retard de livraison, dépendance, hausse de prix'},
         ],
-        'voix': "Six semaines d'échéancier, cinq tranches de retard, quatre seuils réglables : la relation fournisseurs "
+        'voix': "Six semaines d'échéancier, cinq tranches de balance âgée, quatre seuils réglables : la relation fournisseurs "
                 "se pilote dans les deux sens.",
     },
     'cta': {

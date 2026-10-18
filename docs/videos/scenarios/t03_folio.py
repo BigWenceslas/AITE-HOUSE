@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 """Tutoriel 3 — Un séjour, une note, une facture (le folio du séjour).
 
-La réceptionniste confirme une réservation : le folio s'ouvre seul, nuitées
-et taxe de séjour comprises ; elle encaisse un acompte en Mobile Money, lit
-la note, ajoute un extra, fait le check-out (une seule facture, tirée des
-lignes du folio), retrouve le solde dans la liste des folios et l'encaisse :
-le folio passe à Soldé, chaque règlement reste tracé.
+La réservation d'Estelle Ngono, saisie et confirmée d'office par la
+Réservation rapide (t01_reception.py ; « Confirmer immédiatement » coché par
+défaut, wizard/hotel_booking_wizard.py:46-47, :120-121), a ouvert son folio,
+nuitées et taxe de séjour comprises ; la réceptionniste encaisse un acompte
+en Mobile Money, lit la note, ajoute un extra, fait le check-out (une seule
+facture, tirée des lignes du folio, l'acompte lettré), retrouve le solde
+dans la liste des folios et l'encaisse avant que la cliente ne reparte : le
+folio passe à Soldé, chaque règlement reste tracé.
 
 Sources — libellés et règles (addons/) :
 
@@ -74,14 +77,26 @@ Sources — libellés et règles (addons/) :
   « Partiellement réglé » puis « Payé » — lettrage best-effort, non couvert
   par un test).
 
-Sources — Odoo 18 (../odoo18) : addons/account/i18n/fr.po (« Facture
+Sources — Odoo 18 (../odoo18) : addons/account/i18n/fr.po (« Partiel »
+:12018-12019, « Payé le » :11987-11988, « Montant dû » :2852-2853, « Facture
 client », « Envoyer », « Imprimer », « Payer », « Aperçu », « Avoir »,
 « Remettre en brouillon », « Brouillon », « Comptabilisé », « Date de
 facturation », « Date d'échéance », « Lignes de facture », « Autres
 informations », « Produit », « Quantité », « Prix », « Taxes », « Montant »,
 « Montant hors taxes », « Total », « Conditions générales », « Partiellement
 réglé », « Payé »), addons/account/views/account_move_views.xml:1042-1053
-(« Date d'échéance » sans conditions de paiement) ; addons/web/i18n/fr.po
+(« Date d'échéance » sans conditions de paiement), :716-748 (« Envoyer »,
+« Imprimer » et « Payer » en boutons principaux sur une facture
+comptabilisée, partiellement réglée, sans créance en attente), :903-904
+(ruban « Partiel » si payment_state = partial), :1284-1285 (widget des
+paiements, puis « Montant dû » dès que la facture n'est plus en brouillon) ;
+addons/account/static/src/components/account_payment_field/
+account_payment.xml:38-55 (icône d'info, « Payé le <date> », montant) ;
+addons/account/models/account_move.py:1237-1275 (règlements lettrés par
+écriture, sans paiement ni relevé : « partial » puis « paid », jamais « En
+paiement ») ; aite_hotel_management/models/hotel_folio.py:12-20 et :700-751
+(l'acompte passe une écriture datée du règlement, 14/10, lettrée avec la
+facture, d'où « Payé le 14/10/2026 ») ; addons/web/i18n/fr.po
 (« Filtres », « Regrouper par », « Favoris », « Ajouter un filtre
 personnalisé », « Ajouter un groupe personnalisé », « Enregistrer la recherche
 actuelle », « Ajouter une ligne », « Nouveau »).
@@ -92,11 +107,15 @@ service) ; au check-out, les nuitées et la taxe sont re-datées du jour du
 départ, si bien que le folio relu les trie après le petit-déjeuner.
 
 Sources — accroche, résultats : docs/guides/AITE_Guide_Note_de_chambre.pdf §1
-(« Un client en séjour ne doit pas sortir sa monnaie à chaque repas »), §4
-(« une note en attente au moment du check-out du client, c'est un
-encaissement à courir après ») ; docs/etude_comparative/benchmark_pms.md:170
-(report POS → folio, standard du marché), :200 et :308 (Mobile Money :
-aucun natif vérifié chez les 10 PMS) ; docs/etude_comparative/
+(« Un client en séjour ne doit pas sortir sa monnaie à chaque repas » : ici
+les petits-déjeuners vont sur la note), §4 (« une note en attente au moment
+du check-out du client, c'est un encaissement à courir après » : ici le
+solde est encaissé avant que la cliente ne reparte) ;
+docs/etude_comparative/benchmark_pms.md:200 (Mobile Money : aucun natif
+vérifié chez les 10 PMS ; AITE HOUSE n'intègre pas non plus MTN / Orange :
+il les propose comme moyens de paiement, la référence se saisit à la main,
+wizard/hotel_payment_wizard.py:42-51, :79-98) ; recette/cas_de_test.py:71-76
+(A07 : acompte déduit à la facturation, solde exact) ; docs/etude_comparative/
 benchmark_afrique_odoo.md:11 (taxe de séjour : « partout il faut ajouter une
 ligne/taxe configurable ») ; hotel_folio.py:568-578 (cinq moyens de
 paiement), :300-302 (« Le folio est déjà facturé » : une facture par folio) ;
@@ -111,11 +130,32 @@ réception), 029-…-folios.png et 029-…-folios-fiche.png, 030-…-reglements.
 INV/2026/00004) pour la mise en page de la facture.
 
 Données : demo.py (Estelle Ngono, RES/2026/0214, FOL/2026/0214, chambre
-204 [CFT] Confort à 45 000 FCFA, réceptionniste Mireille Ateba) ; les autres
-clients de la liste des folios sont ceux, fictifs, de demo.py (ARRIVEES,
-ARDOISES). Sans TVA sur l'article de nuitée, comme au chapitre 1 de la vidéo
-de présentation (folio de 102 000 FCFA) : aucun taux n'est livré par les
-modules.
+204 [CFT] Confort à 45 000 FCFA, réceptionniste Mireille Ateba). Le séjour
+suit t01_reception.py, qui en fixe le point de départ : réservation
+confirmée le 14/10 par la Réservation rapide (canal par défaut « Direct /
+comptoir », téléphone neutralisé), acompte MTN de 45 000 FCFA le 14/10 avec
+la référence de t01 (8742156309), check-in réel 14/10/2026 14:06:12 (t01,
+t06), quatre « Petit-déjeuner buffet » à 2 700 FCFA le 15/10 (service de
+aite_demo_data/models/demo_generator.py:87, repris par t01), départ réel
+16/10/2026 11:42:18 (t01) ; d'où 102 000 FCFA à la confirmation, 57 000
+après l'acompte, 112 800 TTC et 67 800 dus au départ. Sans TVA sur l'article
+de nuitée, comme au chapitre 1 de la vidéo de présentation : aucun taux
+n'est livré par les modules. Fiches clients 2/2 et registre à jour au
+départ : t06_registre.py complète les deux fiches le 14/10.
+
+La liste des folios (16/10, vers 11 h 45) reprend les réservations de
+t02_planning.py (CONFIRMEES, SEJOURS) et t08_site_web.py (TOUTES), mêmes
+numéros, mêmes clients, mêmes chambres : un folio Ouvert, sans encaissement,
+par réservation confirmée à venir (le folio naît à la confirmation,
+hotel_reservation.py:319-331) ; RES/2026/0222 à 0224 sont des brouillons,
+sans folio. Martin Ebode (FOL/2026/0209 : 105 000 FCFA d'hébergement,
+demo.ARRIVEES, 35 000 dus) ; Brigitte Essomba (202, 13-16/10, t02 SEJOURS ;
+198 000 / 100 000 / 98 000 FCFA, montants de t04_note_chambre.py:46-49) sous
+le numéro libre FOL/2026/0210 ; trois séjours passés de t02 SEJOURS, Soldé
+(Nadine Ekambi 0208, Sylvie Mbarga 0207 comme t04, Pauline Ekotto 0206).
+Numéros des séjours passés et total de 211 folios : fictifs. Filtre « Avec
+solde dû » : 14 folios, 1 847 800 FCFA TTC, 224 000 encaissés, 1 623 800
+dus (sommes calculées dans le script).
 
 Écart de profil assumé : la facture du check-out est créée sans sudo
 (hotel_folio.py:306-307) et account.move n'est accessible qu'au groupe
@@ -139,6 +179,21 @@ réception pour valider un départ avec facture (signalé au rapport).
    (hotel_reservation_views.xml:298) ; l'assistant renvoie au bouton
    « Encaisser » du folio (hotel_checkout_wizard_views.xml:35-38), comme le
    montre l'étape 7.
+5. Le ruban « Partiel », la ligne « Payé le 14/10/2026 » et « Montant dû »
+   67 800 FCFA de la facture, comme « Partiellement réglé » puis « Payé »
+   sur le folio, supposent le lettrage de l'acompte avec la facture, fait au
+   mieux (hotel_folio.py:730-751, échec silencieux, aucun test) ; sans lui,
+   la facture resterait « Non payé » avec 112 800 FCFA dus.
+6. Le libellé ISO de la nuitée (écart 1) passe en gros plan au zoom de
+   l'étape 5 : le tutoriel ne le corrige pas, il le rejoue.
+
+Écarts de la série, signalés (non corrigés ici) : t02_planning.py prolonge
+ce séjour jusqu'au 17/10 en suite 402 ; t05_taxe_sejour.py compte la nuitée
+avec TVA 19,25 % ; t04_note_chambre.py reprend l'ancienne liste de ce
+tutoriel (FOLIO_B = FOL/2026/0218 pour Brigitte Essomba, devenu
+FOL/2026/0210 ici car RES/2026/0218 est Aristide Bella ; OUVERTS avec
+FOL/2026/0226 et 0221) ; t04 crée FOL/2026/0226-0227 le 16/10 alors que
+t05 confirme RES/2026/0225 le 20/10.
 """
 
 import demo
@@ -146,15 +201,25 @@ from ecrans import (APPS_PROFIL, ICONES, assistant, bouton, cell_puce, champ, cp
                     fenetre_muk, groupe, icone, m_champ, navigateur, puce, statusbar, titre_fiche, vue_fiche,
                     vue_liste)
 from marketing import bulle, dezoom, reaction, zoom
-from moteur import (anneau, cacher, choisir, clic, classe, compter, defiler, fermer, montrer, ouvrir, pause, saisir,
-                    survol, texte, vue)
+from moteur import (anneau, cacher, choisir, clic, classe, compter, curseur, defiler, fermer, montrer, ouvrir, pause,
+                    saisir, survol, texte, vue)
 
 NOM, ROLE = demo.POSTES['reception']
 RESA, FOLIO, CLIENT = demo.RESA, demo.FOLIO, demo.CLIENT
 FACTURE = 'FAC/2026/00187'
-REF_MOMO = '7461029385'
-SERVICE = 'Petit-déjeuner'
-J_CONF, J_EXTRA, J_DEPART = '09/10/2026', '15/10/2026', '16/10/2026'
+# Le séjour tel que t01_reception.py le fixe : réservation confirmée et
+# acompte MTN le 14/10 (REF_MOMO de t01), check-in réel 14:06:12, quatre
+# petits-déjeuners buffet à 2 700 FCFA le 15/10, départ réel 16/10 11:42:18.
+REF_MOMO = '8742156309'
+TEL = '+237 600 00 00 00'           # numéro neutralisé, comme t01
+SERVICE = 'Petit-déjeuner buffet'   # aite_demo_data/models/demo_generator.py:87, 2 700 FCFA
+J_CONF, J_EXTRA, J_DEPART = '14/10/2026', '15/10/2026', '16/10/2026'
+CHECKIN_REEL, DEPART_REEL = '14/10/2026 14:06:12', '16/10/2026 11:42:18'
+# Montants : 2 nuits × 45 000 + taxe 3 ★ 2 adultes × 2 nuits × 3 000 = 102 000 ;
+# acompte 45 000 ; 4 × 2 700 = 10 800 ; 112 800 TTC (sans TVA), 67 800 dus.
+TOTAL_1, SOLDE_1 = '102 000 FCFA', '57 000 FCFA'
+SERVICES, TOTAL_2, SOLDE_2 = '10 800 FCFA', '112 800 FCFA', '67 800 FCFA'
+ACOMPTE = '45 000 FCFA'
 LIB_NUIT = 'Nuitée 204 (Confort) — 2026-10-14 → 2026-10-16'
 LIB_TAXE = 'Taxe de séjour — 4 nuitée(s) × personne (3 ★, Cameroun)'
 
@@ -169,6 +234,10 @@ ICO_GROUPE = ('<svg viewBox="0 0 24 24" fill="none" stroke="#1E7B34" stroke-widt
               '<path d="M12 3l9 4.5-9 4.5-9-4.5z"/><path d="M3 12l9 4.5 9-4.5M3 16.5l9 4.5 9-4.5"/></svg>')
 ICO_FAVORI = ('<svg viewBox="0 0 24 24" fill="#C98A00"><path d="M12 2.5l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17.4l-6.1 '
               '3.5 1.5-6.8L2.2 9.5l6.9-.7z"/></svg>')
+
+# l'icône fa-info-circle du widget des paiements de la facture, redessinée
+ICO_INFO = ('<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#4A7892"/><rect x="10.8" y="10" width="2.4" '
+            'height="7.5" rx="1" fill="#fff"/><circle cx="12" cy="7.2" r="1.5" fill="#fff"/></svg>')
 
 
 def remplacer(html, avant, apres):
@@ -214,7 +283,6 @@ def ligne(lid, libelle, valeur, id_val):
 
 
 # ------------------------------------------------------------ la réservation --
-B_BROUILLON = [bouton('t03-b-confirmer', 'Confirmer', 'primaire'), bouton('t03-b-ann0', 'Annuler')]
 B_CONFIRMEE = [bouton('t03-b-checkin', 'Check-in', 'primaire'), bouton('t03-b-acompte', 'Encaisser un acompte'),
                bouton('t03-b-conf', 'Envoyer la confirmation'),
                bouton('t03-b-fiches', "Fiches d'enregistrement", ico='imprimer'), bouton('t03-b-noshow', 'No-show'),
@@ -223,9 +291,9 @@ B_ARRIVE = [bouton('t03-b-checkout', 'Check-out', 'primaire'), bouton('t03-b-aco
             bouton('t03-b-conf2', 'Envoyer la confirmation'),
             bouton('t03-b-fiches2', "Fiches d'enregistrement", ico='imprimer'), bouton('t03-b-ann2', 'Annuler')]
 # Six boutons et la barre d'état ne tiennent pas sur une ligne : Odoo replie
-# alors la barre sur l'état courant (captures 025 et 027 du thème MuK).
-ETAT_RESA = (statusbar('t03-sb', ['Brouillon', 'Confirmée', 'Arrivé', 'Parti'], 0)
-             + '<div class="t03-sbc masque" id="t03-sbc"><span id="t03-sbc-t">Confirmée</span></div>')
+# alors la barre sur l'état courant (captures 025 et 027 du thème MuK). La
+# réservation arrive confirmée de la Réservation rapide (t01_reception.py).
+ETAT_RESA = '<div class="t03-sbc" id="t03-sbc"><span id="t03-sbc-t">Confirmée</span></div>'
 CHAMBRES = tableau('t03-ch', [('Type', '1fr'), ('Chambre', '170px'), ('Adultes', '110px', 'd'),
                               ('Enfants', '110px', 'd'), ('Occupants', '200px'), ('Nuits', '80px', 'd'),
                               ('Prix / nuit', '170px', 'd'), ('Sous-total (HT)', '190px', 'd')],
@@ -234,28 +302,25 @@ CHAMBRES = tableau('t03-ch', [('Type', '1fr'), ('Chambre', '170px'), ('Adultes',
 FEUILLE_RESA = (
     titre_fiche(RESA)
     + deux_colonnes(
-        groupe('Client', [champ('Client', CLIENT, lien_=True, gras=True), champ('Téléphone', demo.CLIENT_TEL),
+        groupe('Client', [champ('Client', CLIENT, lien_=True, gras=True), champ('Téléphone', TEL),
                           champ('E-mail', demo.CLIENT_MAIL), champ('Hôtel', demo.HOTEL, lien_=True)])
-        + groupe('Canal & commission', [champ('Canal', 'Téléphone / WhatsApp', gras=True)]),
+        + groupe('Canal & commission', [champ('Canal', 'Direct / comptoir')]),
         groupe('Séjour', [champ('Arrivée', demo.ARRIVEE, gras=True), champ('Départ', demo.DEPART, gras=True),
                           champ('Nuits', '2'), champ('Total hébergement (HT)', demo.TOTAL_HEB),
                           '<div class="t03-cache" id="t03-cireel">%s</div>'
-                          % champ('Check-in réel', '14/10/2026 14:12:05')], identifiant='t03-grp-sejour')
+                          % champ('Check-in réel', CHECKIN_REEL)], identifiant='t03-grp-sejour')
         + groupe('Occupation', [champ('Nb chambres', '1'), champ('Adultes', '2'), champ('Enfants', '0')]))
     + '<div class="onglets"><span class="onglet actif">Chambres</span><span class="onglet">Demandes particulières'
       '</span></div>' + CHAMBRES)
 BANDEAU_REGISTRE = ('<div class="bandeau t03-ok t03-cache" id="t03-bandeau">%s<b>Registre des clients à jour.</b>'
                     '<span class="act">Imprimer les fiches</span></div>' % icone('coche'))
-V_RESA = vue_fiche('t03-resa', cp_fiche('Réservations', RESA, '1 / 80', stats=[
-    ('t03-st-folio', 'document', 'Folio', '102 000 FCFA'), ('t03-st-fiches', 'fiche', 'Fiches clients', '0/2')]),
-    B_BROUILLON, ETAT_RESA, FEUILLE_RESA, initiale=True, bandeau=BANDEAU_REGISTRE,
-    boutons_apres=[B_CONFIRMEE, B_ARRIVE])
-# en brouillon, ni « Folio » ni « Fiches clients » : ils paraissent à la confirmation
-V_RESA = remplacer(V_RESA, '<span class="stat" id="t03-st-folio">', '<span class="stat masque" id="t03-st-folio">')
-V_RESA = remplacer(V_RESA, '<span class="stat" id="t03-st-fiches">', '<span class="stat masque" id="t03-st-fiches">')
+V_RESA = vue_fiche('t03-resa', cp_fiche('Front Desk', RESA, '', stats=[
+    ('t03-st-folio', 'document', 'Folio', TOTAL_1), ('t03-st-fiches', 'fiche', 'Fiches clients', '0/2')]),
+    B_CONFIRMEE, ETAT_RESA, FEUILLE_RESA, initiale=True, bandeau=BANDEAU_REGISTRE,
+    boutons_apres=[B_ARRIVE])
 
 # ----------------------------------------------------- le folio (pendant le séjour) --
-COLS_LIGNES = [('Date', '118px'), ('Type', '150px'), ('Service', '140px'), ('Libellé', '1fr'), ('Qté', '60px', 'd'),
+COLS_LIGNES = [('Date', '118px'), ('Type', '150px'), ('Service', '205px'), ('Libellé', '1fr'), ('Qté', '60px', 'd'),
                ('Prix unitaire', '135px', 'd'), ('Taxes', '70px'), ('Sous-total (HT)', '150px', 'd'),
                ('Total (TTC)', '135px', 'd')]
 NUIT = ('<span>%s</span>' % puce('Nuitée', 'info'),)
@@ -274,7 +339,7 @@ LIGNES = tableau('t03-lignes', COLS_LIGNES, [
     ('t03-fl3', [J_EXTRA, SERV, (entree('t03-svc', '', '', classe='t03-cell'),), _cell('t03-fl3-lib', ''),
                  (entree('t03-qte', '', '1,00', classe='t03-cell d'),), _cell('t03-fl3-pu', '0 FCFA', True), '',
                  _cell('t03-fl3-st', '0 FCFA', True), _cell('t03-fl3-tt', '0 FCFA', True)], 't03-edit t03-cache'),
-], total=[('', '')] * 7 + [('102 000 FCFA', 't03-lt-ht'), ('102 000 FCFA', 't03-lt-ttc')],
+], total=[('', '')] * 7 + [(TOTAL_1, 't03-lt-ht'), (TOTAL_1, 't03-lt-ttc')],
     ajouter='Ajouter une ligne', classe_='t03-lignes')
 FEUILLE_FOLIO = (
     titre_fiche(FOLIO)
@@ -283,22 +348,22 @@ FEUILLE_FOLIO = (
                           champ('Séjour', 'Confirmée', 't03-f-sejour'), champ('Arrivée', demo.ARRIVEE),
                           champ('Départ', demo.DEPART)]),
         groupe('Montants', [champ('Hébergement (HT)', demo.TOTAL_HEB), champ('Services (HT)', '0 FCFA', 't03-f-serv'),
-                            champ('Taxe de séjour', '12 000 FCFA'), champ('Total HT', '102 000 FCFA', 't03-f-ht'),
-                            champ('Taxes', '0 FCFA'), champ('Total TTC', '102 000 FCFA', 't03-f-ttc'),
-                            ligne('t03-r-paye', 'Encaissé', '45 000 FCFA', 't03-f-paye'),
-                            ligne('t03-r-solde', 'Solde dû', '57 000 FCFA', 't03-f-solde')],
+                            champ('Taxe de séjour', '12 000 FCFA'), champ('Total HT', TOTAL_1, 't03-f-ht'),
+                            champ('Taxes', '0 FCFA'), champ('Total TTC', TOTAL_1, 't03-f-ttc'),
+                            ligne('t03-r-paye', 'Encaissé', ACOMPTE, 't03-f-paye'),
+                            ligne('t03-r-solde', 'Solde dû', SOLDE_1, 't03-f-solde')],
                identifiant='t03-grp-montants'))
     + '<div class="onglets"><span class="onglet actif">Lignes du folio</span><span class="onglet">Règlements</span>'
       '<span class="onglet">Note</span></div>' + LIGNES
     + '<div class="note-pied">Les lignes « nuitée » sont synchronisées depuis la réservation ; ajoutez librement des '
       'lignes de service (restaurant, blanchisserie, minibar…).</div>')
-V_FOLIO = vue_fiche('t03-folio', cp_fiche('Réservations / ' + RESA, FOLIO, '', stats=[
+V_FOLIO = vue_fiche('t03-folio', cp_fiche('Front Desk / ' + RESA, FOLIO, '', stats=[
     ('t03-st-regl', 'billet', 'Règlements', '1')]),
     [bouton('t03-f-enc', 'Encaisser', 'primaire'), bouton('t03-f-fact', 'Générer la facture')],
     statusbar('t03-fsb', ['Ouvert', 'Facturé', 'Soldé'], 0), FEUILLE_FOLIO)
 # le fil d'Ariane : un clic sur « RES/2026/0214 » ramène à la réservation
-V_FOLIO = remplacer(V_FOLIO, '<span class="parent">Réservations / %s</span>' % RESA,
-                    '<span class="parent">Réservations / <span id="t03-fil-res">%s</span></span>' % RESA)
+V_FOLIO = remplacer(V_FOLIO, '<span class="parent">Front Desk / %s</span>' % RESA,
+                    '<span class="parent">Front Desk / <span id="t03-fil-res">%s</span></span>' % RESA)
 
 # ------------------------------------------------------------- la facture --
 COLS_FACT = [('Produit', '1fr'), ('Quantité', '130px', 'd'), ('Prix', '160px', 'd'), ('Taxes', '140px'),
@@ -313,10 +378,13 @@ def _produit(article, libelle=None):
 LIGNES_FACT = tableau('t03-inv-lignes', COLS_FACT, [
     ('t03-il1', [_produit('Nuitée — Confort', LIB_NUIT), '2,00', '45 000,00', '', demo.TOTAL_HEB], ''),
     ('t03-il2', [_produit('Taxe de séjour — ' + demo.HOTEL, LIB_TAXE), '4,00', '3 000,00', '', '12 000 FCFA'], ''),
-    ('t03-il3', [_produit(SERVICE), '4,00', '5 000,00', '', '20 000 FCFA'], ''),
+    ('t03-il3', [_produit(SERVICE), '4,00', '2 700,00', '', SERVICES], ''),
 ], classe_='t03-inv-tab')
+# Le ruban « Partiel » (web_ribbon, account_move_views.xml:903 ; texte en
+# capitales par la CSS du ruban, odoo18 web/.../ribbon/ribbon.scss).
+RUBAN = '<div class="t03-ruban" id="t03-ruban"><span>Partiel</span></div>'
 FEUILLE_FACT = (
-    '<div class="t03-inv-k">Facture client</div>' + titre_fiche(FACTURE)
+    RUBAN + '<div class="t03-inv-k">Facture client</div>' + titre_fiche(FACTURE)
     + deux_colonnes(
         '<div class="ch t03-cli"><span class="l">Client</span><span class="v"><span class="t03-lien">%s</span><br>'
         'Douala<br>Cameroun</span></div>' % e(CLIENT),
@@ -324,41 +392,80 @@ FEUILLE_FACT = (
     + '<div class="onglets"><span class="onglet actif">Lignes de facture</span><span class="onglet" id="t03-inv-autres">'
       'Autres informations</span></div>' + LIGNES_FACT
     + '<div class="t03-tot"><span class="cg">Conditions générales</span><div class="bloc" id="t03-inv-tot">'
-      '<div class="r"><span>Montant hors taxes:</span><b>122 000 FCFA</b></div>'
-      '<div class="r t"><span>Total:</span><b>122 000 FCFA</b></div></div></div>')
-V_FACT = vue_fiche('t03-facture', cp_fiche('Réservations / ' + RESA, FACTURE, ''),
+      '<div class="r"><span>Montant hors taxes:</span><b>%s</b></div>'
+      '<div class="r t"><span>Total:</span><b>%s</b></div>'
+      # widget « payment » (account_payment.xml) : icône d'info, « Payé le <date> », montant
+      '<div class="r p" id="t03-inv-paye"><span class="t03-i">%s</span><i>Payé le %s</i><span class="m">%s</span></div>'
+      '<div class="r du" id="t03-inv-du"><span>Montant dû:</span><b>%s</b></div></div></div>'
+      % (TOTAL_2, TOTAL_2, ICO_INFO, J_CONF, ACOMPTE, SOLDE_2))
+V_FACT = vue_fiche('t03-facture', cp_fiche('Front Desk / ' + RESA, FACTURE, ''),
                    [bouton('t03-i-env', 'Envoyer', 'primaire'), bouton('t03-i-imp', 'Imprimer', 'primaire'),
-                    bouton('t03-i-pay', 'Payer'), bouton('t03-i-ape', 'Aperçu'), bouton('t03-i-avoir', 'Avoir'),
+                    bouton('t03-i-pay', 'Payer', 'primaire'), bouton('t03-i-ape', 'Aperçu'), bouton('t03-i-avoir', 'Avoir'),
                     bouton('t03-i-brou', 'Remettre en brouillon')],
                    statusbar('t03-isb', ['Brouillon', 'Comptabilisé'], 1), FEUILLE_FACT)
 
 # ---------------------------------------------------- la liste des folios --
-COLS_LISTE = [('Référence', '220px'), ('Client', '1fr'), ('Réservation', '220px'), ('Total TTC', '190px', 'd'),
+COLS_LISTE = [('Référence', '200px'), ('Client', '1fr'), ('Réservation', '200px'), ('Total TTC', '190px', 'd'),
               ('Encaissé', '170px', 'd'), ('Solde dû', '170px', 'd'), ('État', '150px')]
 ETATS = {'Ouvert': 'info', 'Facturé': 'orange', 'Soldé': 'vert'}
-# l'ordre de la liste : le plus récent d'abord ; les deux folios soldés,
-# que le filtre retire, viennent après celui d'Estelle Ngono
+
+
+def fcfa(n):
+    return '{:,}'.format(n).replace(',', ' ') + ' FCFA'
+
+
+def folio_resa(type_, nuits, adultes=2):
+    """Le folio d'une réservation confirmée : nuitées sans TVA (convention de
+    la série) + taxe de séjour 3 ★, 3 000 F par adulte et par nuit
+    (t08_site_web.py solde_folio, t02_planning.py)."""
+    return {'STD': 35000, 'CFT': 45000, 'SJR': 75000, 'VIP': 120000}[type_] * nuits + 3000 * adultes * nuits
+
+
+# La liste le 16/10 vers 11 h 45, après le départ d'Estelle Ngono ; ordre
+# « create_date desc » (hotel_folio.py:25), numéros FOL = numéros RES (convention
+# de la série). Réservations, clients, chambres et dates de t02_planning.py
+# (CONFIRMEES, SEJOURS) et t08_site_web.py (TOUTES) : un folio par réservation
+# confirmée ; RES/2026/0222 à 0224 sont des brouillons, donc sans folio
+# (hotel_reservation.py:319-331). Les folios des réservations à venir n'ont
+# aucun encaissement (t08 : « Solde folio » = folio entier). Martin Ebode :
+# 105 000 FCFA d'hébergement (demo.ARRIVEES), 1 adulte, 35 000 FCFA dus.
+# Brigitte Essomba (202 [CFT], 13-16/10, t02 SEJOURS ; montants de
+# t04_note_chambre.py:46-49, bar compris) : départ pas encore validé. Les
+# séjours passés (t02 SEJOURS) sont facturés et réglés : Soldé.
 FOLIOS = [
-    ('0226', 'Armand Mvogo', '202 000 FCFA', '150 000 FCFA', '52 000 FCFA', 'Ouvert'),
-    ('0221', 'Patrick Nkoulou', '76 000 FCFA', '0 FCFA', '76 000 FCFA', 'Ouvert'),
-    ('0218', 'Brigitte Essomba', '198 000 FCFA', '100 000 FCFA', '98 000 FCFA', 'Ouvert'),
-    ('0214', CLIENT, '122 000 FCFA', '45 000 FCFA', '77 000 FCFA', 'Facturé'),
-    ('0209', 'Martin Ebode', '114 000 FCFA', '79 000 FCFA', '35 000 FCFA', 'Ouvert'),
-    ('0207', 'Sylvie Mbarga', '83 000 FCFA', '83 000 FCFA', '0 FCFA', 'Soldé'),
-    ('0203', 'Joël Kamga', '46 500 FCFA', '0 FCFA', '46 500 FCFA', 'Facturé'),
-    ('0201', 'Claire Durand', '123 000 FCFA', '123 000 FCFA', '0 FCFA', 'Soldé'),
+    ('0221', 'Rodrigue Tamba', folio_resa('CFT', 2), 0, 'Ouvert'),        # 203, 19-21/10
+    ('0220', 'Viviane Eyoum', folio_resa('SJR', 2), 0, 'Ouvert'),         # 303, 04-06/11
+    ('0219', 'Mathieu Nkodo', folio_resa('STD', 2), 0, 'Ouvert'),         # 104, 30/10-01/11
+    ('0218', 'Aristide Bella', folio_resa('VIP', 2), 0, 'Ouvert'),        # 401, 24-26/10
+    ('0217', 'Olivier Ndzana', folio_resa('STD', 2), 0, 'Ouvert'),        # 106, 23-25/10
+    ('0216', 'Christelle Ndongo', folio_resa('STD', 2), 0, 'Ouvert'),     # 102, 21-23/10
+    ('0215', 'Blaise Atangana', folio_resa('CFT', 3), 0, 'Ouvert'),       # 205, 28-31/10
+    ('0214', CLIENT, 112800, 45000, 'Facturé'),                           # 204, 14-16/10
+    ('0213', 'Gaston Mbida', folio_resa('STD', 2), 0, 'Ouvert'),          # 103, 15-17/10
+    ('0212', 'Carine Manga', folio_resa('SJR', 2), 0, 'Ouvert'),          # 302, 22-24/10
+    ('0211', 'Joël Kamga', folio_resa('CFT', 2), 0, 'Ouvert'),            # 204, 18-20/10
+    ('0210', 'Brigitte Essomba', 198000, 100000, 'Ouvert'),               # 202, 13-16/10
+    ('0209', 'Martin Ebode', 105000 + 9000, 79000, 'Ouvert'),             # 104, 14-17/10
+    ('0208', 'Nadine Ekambi', folio_resa('CFT', 2), folio_resa('CFT', 2), 'Soldé'),       # 202, 07-09/10
+    ('0207', 'Sylvie Mbarga', folio_resa('SJR', 2), folio_resa('SJR', 2), 'Soldé'),       # 302, 05-07/10
+    ('0206', 'Pauline Ekotto', folio_resa('CFT', 3), folio_resa('CFT', 3), 'Soldé'),      # 205, 06-09/10
+    ('0205', 'Paul Abessolo', folio_resa('SJR', 2), 0, 'Ouvert'),         # 301, 16-18/10
 ]
+DUS = [f for f in FOLIOS if f[2] > f[3]]                 # filtre « Avec solde dû »
+SOMMES = [fcfa(sum(f[k] for f in DUS)) for k in (2, 3)] + [fcfa(sum(f[2] - f[3] for f in DUS))]
+PAGER, PAGER_DU = '1-80 / 211', '1-%d / %d' % (len(DUS), len(DUS))
+assert SOMMES == ['1 847 800 FCFA', '224 000 FCFA', '1 623 800 FCFA'], SOMMES
 V_LISTE = vue_liste('t03-liste', 'Folios', COLS_LISTE, [
-    {'id': 't03-l%d' % i, 'cellules': ['FOL/2026/' + n, cli, 'RES/2026/' + n, ttc, paye, solde,
+    {'id': 't03-l-' + n, 'cellules': ['FOL/2026/' + n, cli, 'RES/2026/' + n, fcfa(ttc), fcfa(paye), fcfa(ttc - paye),
                                       cell_puce(etat_, ETATS[etat_])],
      'classe': 'retard' if etat_ == 'Ouvert' else ('t03-muet' if etat_ == 'Soldé' else '')}
-    for i, (n, cli, ttc, paye, solde, etat_) in enumerate(FOLIOS)],
-    facettes=[('t03-fac', 'Avec solde dû')], pager='1-8 / 8',
-    total=['', '', '', '964 500 FCFA', '580 000 FCFA', '384 500 FCFA', ''])
+    for n, cli, ttc, paye, etat_ in FOLIOS],
+    facettes=[('t03-fac', 'Avec solde dû')], pager=PAGER,
+    total=['', '', ''] + SOMMES + [''])
 V_LISTE = remplacer(V_LISTE, '<span class="facette" id="t03-fac">', '<span class="facette t03-cache" id="t03-fac">')
-V_LISTE = remplacer(V_LISTE, '<span class="pager">1-8 / 8</span>', '<span class="pager" id="t03-pager">1-8 / 8</span>')
-V_LISTE = remplacer(V_LISTE, '<span class="d">964 500 FCFA</span>', '<span class="d" id="t03-lt-a">964 500 FCFA</span>')
-V_LISTE = remplacer(V_LISTE, '<span class="d">580 000 FCFA</span>', '<span class="d" id="t03-lt-b">580 000 FCFA</span>')
+V_LISTE = remplacer(V_LISTE, '<span class="pager">%s</span>' % PAGER, '<span class="pager" id="t03-pager">%s</span>' % PAGER)
+# la somme en pied de liste n'est visible qu'une fois la liste filtrée (80 lignes sinon)
+V_LISTE = remplacer(V_LISTE, '<div class="total" ', '<div class="total t03-cache" id="t03-lt" ')
 PANNEAU = (
     '<div class="t03-panneau masque" id="t03-panneau">'
     '<div class="t03-pc"><div class="t03-ph">%sFiltres</div><div class="t03-pi">Ouverts</div>'
@@ -373,34 +480,35 @@ V_LISTE = remplacer(V_LISTE, '<span class="deroule">▾</span></div>', '<span cl
 
 # ------------------------------------------- le folio après le check-out --
 LIGNES2 = tableau('t03-f2-lignes', COLS_LIGNES, [
-    ('t03-gl1', [J_EXTRA, SERV, SERVICE, SERVICE, '4,00', '5 000 FCFA', '', '20 000 FCFA', '20 000 FCFA'], ''),
+    ('t03-gl1', [J_EXTRA, SERV, SERVICE, SERVICE, '4,00', '2 700 FCFA', '', SERVICES, SERVICES], ''),
     ('t03-gl2', [J_DEPART, NUIT, '', LIB_NUIT, '2,00', demo.PRIX_NUIT, '', demo.TOTAL_HEB, demo.TOTAL_HEB], 't03-nuit'),
     ('t03-gl3', [J_DEPART, TAXE, '', LIB_TAXE, '4,00', '3 000 FCFA', '', '12 000 FCFA', '12 000 FCFA'], 'taxe'),
-], total=[('', '')] * 7 + [('122 000 FCFA', 't03-g-ht'), ('122 000 FCFA', 't03-g-ttc')], classe_='t03-lignes')
+], total=[('', '')] * 7 + [(TOTAL_2, 't03-g-ht'), (TOTAL_2, 't03-g-ttc')], classe_='t03-lignes')
 VALIDE = ('<span>%s</span>' % puce('Validé', 'vert'),)
 ANNULER = ('<span class="t03-x" title="Annuler">%s</span>' % ICONES['x'],)
 REGLEMENTS = tableau('t03-f2-regl', [('Date', '130px'), ('Acompte', '110px'), ('Moyen de paiement', '240px'),
                                      ('Réf. transaction', '1fr'), ('Montant', '160px', 'd'), ('Encaissé par', '220px'),
                                      ('État', '110px'), ('', '40px')], [
-    ('t03-p1', [J_DEPART, (case(False),), 'Espèces', '', '77 000 FCFA', NOM, VALIDE, ANNULER], ''),
-    ('t03-p2', [J_CONF, (case(True),), 'MTN Mobile Money', REF_MOMO, '45 000 FCFA', NOM, VALIDE, ANNULER], ''),
-], total=[('', '')] * 4 + [('122 000 FCFA', 't03-p-tot')] + [('', '')] * 3, ajouter='Ajouter une ligne',
+    ('t03-p1', [J_DEPART, (case(False),), 'Espèces', '', SOLDE_2, NOM, VALIDE, ANNULER], ''),
+    ('t03-p2', [J_CONF, (case(True),), 'MTN Mobile Money', REF_MOMO, ACOMPTE, NOM, VALIDE, ANNULER], ''),
+], total=[('', '')] * 4 + [(TOTAL_2, 't03-p-tot')] + [('', '')] * 3, ajouter='Ajouter une ligne',
     classe_='t03-regl masque')
 FEUILLE_FOLIO2 = (
     titre_fiche(FOLIO)
     + deux_colonnes(
         groupe('Séjour', [champ('Client', CLIENT, lien_=True), champ('Réservation', RESA, lien_=True),
                           champ('Séjour', 'Parti'), champ('Arrivée', demo.ARRIVEE), champ('Départ', demo.DEPART)]),
-        groupe('Montants', [champ('Hébergement (HT)', demo.TOTAL_HEB), champ('Services (HT)', '20 000 FCFA'),
-                            champ('Taxe de séjour', '12 000 FCFA'), champ('Total HT', '122 000 FCFA'),
-                            champ('Taxes', '0 FCFA'), champ('Total TTC', '122 000 FCFA', 't03-f2-ttc'),
-                            champ('Encaissé', '45 000 FCFA', 't03-f2-paye'),
-                            champ('Solde dû', '77 000 FCFA', 't03-f2-solde'),
+        groupe('Montants', [champ('Hébergement (HT)', demo.TOTAL_HEB), champ('Services (HT)', SERVICES),
+                            champ('Taxe de séjour', '12 000 FCFA'), champ('Total HT', TOTAL_2),
+                            champ('Taxes', '0 FCFA'), champ('Total TTC', TOTAL_2, 't03-f2-ttc'),
+                            champ('Encaissé', ACOMPTE, 't03-f2-paye'),
+                            champ('Solde dû', SOLDE_2, 't03-f2-solde'),
                             champ('État facture', 'Partiellement réglé', 't03-f2-etat')]))
     + '<div class="onglets"><span class="onglet actif" id="t03-o-lignes">Lignes du folio</span>'
       '<span class="onglet" id="t03-o-regl">Règlements</span><span class="onglet">Note</span></div>'
     + '<div class="t03-pile">%s%s</div>' % (LIGNES2, REGLEMENTS))
-V_FOLIO2 = vue_fiche('t03-folio2', cp_fiche('Folios', FOLIO, '4 / 6', stats=[
+RANG = '%d / %d' % ([f[0] for f in DUS].index('0214') + 1, len(DUS))
+V_FOLIO2 = vue_fiche('t03-folio2', cp_fiche('Folios', FOLIO, RANG, stats=[
     ('t03-st-regl2', 'billet', 'Règlements', '1'), ('t03-st-fact', 'document', 'Facture', '')]),
     [bouton('t03-f2-enc', 'Encaisser', 'primaire')], statusbar('t03-f2sb', ['Ouvert', 'Facturé', 'Soldé'], 1),
     FEUILLE_FOLIO2)
@@ -423,26 +531,26 @@ def _encaisser(ident, solde, montant, acompte, date):
                                                               (ident + '-non', 'Annuler', 'gris', None)], haut=110)
 
 
-AS_ACOMPTE = _encaisser('t03-ac', '102 000 FCFA', '102 000 FCFA', True, J_CONF)
-AS_SOLDE = _encaisser('t03-so', '77 000 FCFA', '77 000 FCFA', False, J_DEPART)
+AS_ACOMPTE = _encaisser('t03-ac', TOTAL_1, TOTAL_1, True, J_CONF)
+AS_SOLDE = _encaisser('t03-so', SOLDE_2, SOLDE_2, False, J_DEPART)
 AS_DEPART = assistant('t03-co', 'Check-out — ' + RESA, (
     '<div class="m-grille"><div><div class="grp-t">Séjour</div>%s%s%s%s</div>'
     '<div><div class="grp-t">Folio</div>%s%s%s%s%s</div></div>'
     '<div class="t03-info">Un solde reste dû : vous pourrez l\'encaisser depuis le folio après la facturation '
     '(bouton « Encaisser »).</div>'
     % (m_champ('Réservation', lien(RESA)), m_champ('Client', lien(CLIENT)),
-       m_champ('Départ prévu', e(demo.DEPART)), m_champ('Départ réel', entree('t03-co-dep', '', '16/10/2026 11:24:37')),
-       m_champ('Folio', lien(FOLIO)), m_champ('Total TTC', e('122 000 FCFA')),
-       m_champ('Déjà encaissé', e('45 000 FCFA')), m_champ('Solde dû', '<b>77 000 FCFA</b>', 't03-co-solde'),
+       m_champ('Départ prévu', e(demo.DEPART)), m_champ('Départ réel', entree('t03-co-dep', '', DEPART_REEL)),
+       m_champ('Folio', lien(FOLIO)), m_champ('Total TTC', e(TOTAL_2)),
+       m_champ('Déjà encaissé', e(ACOMPTE)), m_champ('Solde dû', '<b>%s</b>' % e(SOLDE_2), 't03-co-solde'),
        m_champ('Générer la facture', case(True)))),
     [('t03-co-ok', 'Valider le départ', 'primaire', None), ('t03-co-non', 'Annuler', 'gris', None)], haut=110)
 
 # --------------------------------------------------------------- la fenêtre --
 ECRAN = navigateur(fenetre_muk('app-t03', 'Hôtel', MENUS, [V_RESA, V_FOLIO, V_FACT, V_LISTE, V_FOLIO2],
-                               actif='Réservations', societe=demo.SOCIETE, initiale=NOM[0], avatar='#185FA5',
+                               actif='Front Desk', societe=demo.SOCIETE, initiale=NOM[0], avatar='#185FA5',
                                apps=APPS, app_active='Hôtel', calques=AS_ACOMPTE + AS_DEPART + AS_SOLDE))
-ECRAN = remplacer(ECRAN, '<span class="menu actif">Réservations</span>',
-                  '<span class="menu actif" id="t03-m-resa">Réservations</span>')
+ECRAN = remplacer(ECRAN, '<span class="menu actif">Front Desk</span>',
+                  '<span class="menu actif" id="t03-m-fd">Front Desk</span>')
 ECRAN = remplacer(ECRAN, '<span class="menu">Facturation</span>', (
     '<span class="menu t03-m" id="t03-m-fact">Facturation<span class="t03-dd masque" id="t03-dd">'
     '<span id="t03-dd-folios">Folios</span><span>Règlements</span><span>Registre de police (impression)</span>'
@@ -473,7 +581,7 @@ CSS = '''
 .t03-lignes .t-ligne.t03-nuit { color: #0B6375; }
 .t03-lignes .t-ligne .puce { height: 28px; font-size: 15px; padding: 0 11px; }
 .t03-lignes .t-ligne.t03-edit { background: #F1F5F8; }
-.t03-cell { position: relative; height: 36px; border-bottom: 1px solid var(--o-prim); }
+.t03-cell { position: relative; height: 36px; border-bottom: 1px solid var(--o-prim); overflow: hidden; }
 .t03-cell.focus { border-bottom: 2px solid var(--o-prim); }
 .t03-cell .ph, .t03-cell .val { position: absolute; left: 2px; top: 50%; transform: translateY(-50%); white-space: nowrap; }
 .t03-cell .ph { color: #6C757D; }
@@ -510,6 +618,23 @@ CSS = '''
 .t03-pi { position: relative; padding: 9px 0 9px 28px; font-size: 18px; white-space: nowrap; }
 .t03-coche { position: absolute; left: 4px; color: var(--o-prim); font-weight: 700; }
 .t03-sep { height: 1px; margin: 8px 0; background: var(--o-filet); }
+#t03-liste .liste .tete { height: 46px; font-size: 18px; }
+#t03-liste .liste .ligne { height: 38px; font-size: 17px; }
+#t03-liste .liste .ligne .puce { height: 26px; font-size: 15px; padding: 0 10px; }
+#t03-liste .liste .total { height: 44px; font-size: 18px; }
+#t03-facture .feuille { position: relative; overflow: hidden; }
+.t03-ruban { position: absolute; top: 0; right: 0; width: 170px; height: 170px; overflow: hidden; z-index: 2; }
+.t03-ruban span { position: absolute; left: 14px; top: -42px; width: 240px; height: 42px; transform: rotate(45deg);
+  transform-origin: left bottom; background: #1E7B34; color: #fff; font-size: 19px; font-weight: 700; line-height: 42px;
+  text-align: center; text-transform: uppercase; box-shadow: 0 4px 8px rgba(0,0,0,.12); }
+.t03-tot .r.p { font-size: 18px; height: 38px; }
+.t03-tot .r.p i { font-style: italic; color: var(--o-texte-2); }
+.t03-tot .r.p .m { min-width: 190px; text-align: right; }
+.t03-i { width: 18px; height: 18px; display: inline-flex; margin-right: -12px; }
+.t03-i svg { width: 100%; height: 100%; }
+.t03-tot .r.p { justify-content: flex-end; }
+.t03-tot .r.du { border-top: 1px solid var(--o-filet); height: 52px; }
+.t03-tot .r.du b { font-size: 25px; }
 '''
 
 TUTORIEL = {
@@ -523,12 +648,12 @@ TUTORIEL = {
         'kicker': 'La note du séjour',
         'question': 'Que doit *vraiment* le client qui part ?',
         'douleurs': [('pieces', 'Le client sort sa monnaie à chaque repas'),
-                     ('telephone', 'Le Mobile Money encaissé hors du logiciel'),
+                     ('telephone', 'Le Mobile Money absent des moyens de paiement du logiciel'),
                      ('calculatrice', 'La taxe de séjour ajoutée à la main'),
-                     ('echange', 'Le bar et la réception, deux notes à part'),
+                     ('cahier', "L'acompte à déduire de tête au départ"),
                      ('sablier', 'Une note oubliée au départ : un encaissement à courir après')],
-        'voix': "Que doit vraiment le client qui part ? Le bar, l'acompte en Mobile Moni, la taxe de séjour : chacun "
-                "tient un bout de la note.",
+        'voix': "Que doit vraiment le client qui part ? Les nuitées, l'acompte en Mobile Moni, les petits-déjeuners, "
+                "la taxe de séjour : chacun tient un bout de la note.",
     },
     'revelation': {
         'promesse': "Nuitées, taxe de séjour, extras et acomptes sur un seul folio, et une seule facture au départ.",
@@ -539,24 +664,23 @@ TUTORIEL = {
     'ecran': ECRAN,
     'vues_initiales': {'odoo': 't03-resa'},
     'bulles': {
-        'b-folio': "Le folio s'ouvre tout seul à la confirmation : une seule note pour tout le séjour.",
+        'b-folio': "Le folio s'est ouvert tout seul à la confirmation : une seule note pour tout le séjour.",
         'b-acompte': "Cochée toute seule : la cliente n'est pas encore arrivée.",
         'b-taxe': "La taxe de séjour se calcule seule, selon les étoiles, sur sa propre ligne, sans TVA.",
         'b-facture': "Les lignes de la facture sont celles du folio, une par une.",
+        'b-du': "L'acompte du 14/10 est déjà déduit.",
         'b-solde': "Solde à zéro : le folio passe à Soldé, sans un clic de plus.",
     },
     'reactions': {
         'r-fin': "Une note, une facture, deux règlements : tout est tracé.",
     },
     'etapes': [
-        {'temps': 0, 'titre': "Confirmer, et le folio s'ouvre",
-         'texte': 'La réservation confirmée ouvre son folio : nuitées et taxe de séjour déjà comptées.',
-         'voix': "Mireille confirme la réservation d'Estelle Ngono : deux nuits en chambre Confort. Le folio du séjour "
-                 "s'ouvre aussitôt, nuitées et taxe de séjour déjà comptées.",
-         'gestes': [pause(0.3), anneau('#t03-grp-sejour', d=1.3), clic('#t03-b-confirmer'),
-                    cacher('#t03-resa-ga', d=0.15), montrer('#t03-resa-gb', d=0.3, y=0, avec=True),
-                    cacher('#t03-sb', d=0.15, avec=True), montrer('#t03-sbc', d=0.3, y=0, avec=True),
-                    montrer('#t03-st-folio', d=0.4, y=-8), montrer('#t03-st-fiches', d=0.4, y=-8, avec=True),
+        {'temps': 0, 'titre': 'Confirmée : le folio est ouvert',
+         'texte': 'La réservation confirmée a ouvert son folio : nuitées et taxe de séjour déjà comptées.',
+         'voix': "Le matin, Mireille vient d'enregistrer la réservation d'Estelle Ngono : deux nuits en chambre "
+                 "Confort, confirmée d'office. Le folio du séjour s'est ouvert aussitôt, nuitées et taxe de séjour "
+                 "déjà comptées : cent deux mille francs.",
+         'gestes': [pause(0.3), anneau('#t03-sbc', d=1.0), anneau('#t03-grp-sejour', d=1.3),
                     zoom('#t03-st-folio', s=1.45, d=0.8), bulle('b-folio', '#t03-st-folio', cote='bas', d=2.8),
                     pause(2.5), dezoom(d=0.6)]},
         {'temps': 1, 'titre': "L'acompte en Mobile Money",
@@ -567,7 +691,7 @@ TUTORIEL = {
                     bulle('b-acompte', '#t03-ac-case', cote='bas', d=2.4), pause(2.1),
                     saisir('t03-ac-montant', '45 000 FCFA'), choisir('t03-ac-moyen', 'MTN Mobile Money'),
                     classe('#t03-ac-ch-ref', ajouter=['t03-req']), saisir('t03-ac-ref', REF_MOMO), pause(0.4),
-                    clic('#t03-ac-ok'), fermer('t03-ac'), texte('#t03-st-folio-v', '57 000 FCFA'),
+                    clic('#t03-ac-ok'), fermer('t03-ac'), texte('#t03-st-folio-v', SOLDE_1),
                     anneau('#t03-st-folio', d=1.4)]},
         {'temps': 2, 'titre': 'Le folio : toute la note',
          'texte': 'Acompte, solde dû calculé en direct, nuitées et taxe de séjour sur leurs lignes.',
@@ -579,62 +703,63 @@ TUTORIEL = {
                     bulle('b-taxe', '#t03-fl2', cote='bas', d=2.6), pause(2.2)]},
         {'temps': 2, 'titre': 'Un extra pendant le séjour',
          'texte': 'Ajouter une ligne, choisir le service : libellé, prix et solde dû suivent.',
-         'voix': "Pendant le séjour, quatre petits-déjeuners. Mireille ajoute une ligne et choisit le service : libellé "
-                 "et prix se remplissent, et le solde dû suit aussitôt.",
-         'gestes': [texte('#t03-f-sejour', 'Arrivé'), clic('#t03-lignes-ajout'),
-                    classe('#t03-fl3', retirer=['t03-cache']), zoom('#t03-lignes-ajout', s=1.35, d=0.8),
+         'voix': "Le lendemain, quatre petits-déjeuners buffet. Mireille ajoute une ligne et choisit le service : "
+                 "libellé et prix se remplissent, et le solde dû suit aussitôt.",
+         'gestes': [texte('#t03-f-sejour', 'Arrivé'), clic('#t03-lignes-ajout', fx=0.1),
+                    classe('#t03-fl3', retirer=['t03-cache']), zoom('#t03-fl3', s=1.1, d=0.8),
                     choisir('t03-svc', SERVICE), texte('#t03-fl3-lib', SERVICE, avec=True),
-                    texte('#t03-fl3-pu', '5 000 FCFA', avec=True), texte('#t03-fl3-st', '5 000 FCFA', avec=True),
-                    texte('#t03-fl3-tt', '5 000 FCFA', avec=True), pause(0.6), saisir('t03-qte', '4,00'),
-                    texte('#t03-fl3-st', '20 000 FCFA'), texte('#t03-fl3-tt', '20 000 FCFA', avec=True),
-                    texte('#t03-lt-ht', '122 000 FCFA', avec=True), texte('#t03-lt-ttc', '122 000 FCFA', avec=True),
+                    texte('#t03-fl3-pu', '2 700 FCFA', avec=True), texte('#t03-fl3-st', '2 700 FCFA', avec=True),
+                    texte('#t03-fl3-tt', '2 700 FCFA', avec=True), pause(0.6), saisir('t03-qte', '4,00'),
+                    texte('#t03-fl3-st', SERVICES), texte('#t03-fl3-tt', SERVICES, avec=True),
+                    texte('#t03-lt-ht', TOTAL_2, avec=True), texte('#t03-lt-ttc', TOTAL_2, avec=True),
                     pause(0.6), classe('#t03-fl3', retirer=['t03-edit']), dezoom(d=0.6),
-                    texte('#t03-f-serv', '20 000 FCFA'), texte('#t03-f-ht', '122 000 FCFA', avec=True),
-                    compter('#t03-f-ttc', 102000, 122000, d=0.8, apres=' FCFA'),
-                    compter('#t03-f-solde', 57000, 77000, d=0.8, apres=' FCFA', avec=True),
+                    texte('#t03-f-serv', SERVICES), texte('#t03-f-ht', TOTAL_2, avec=True),
+                    compter('#t03-f-ttc', 102000, 112800, d=0.8, apres=' FCFA'),
+                    compter('#t03-f-solde', 57000, 67800, d=0.8, apres=' FCFA', avec=True),
                     anneau('#t03-r-solde', d=1.5)]},
         {'temps': 3, 'titre': 'Check-out : une seule facture',
-         'texte': 'Valider le départ : la facture reprend le folio, ligne par ligne.',
-         'voix': "Le jour du départ, Mireille revient sur la réservation : Check-out. L'assistant récapitule le total, "
-                 "l'acompte et le solde ; Valider le départ, et la facture est générée et comptabilisée, avec les "
-                 "lignes exactes du folio.",
+         'texte': 'Valider le départ (avec le droit Facturation) : la facture reprend le folio, ligne par ligne.',
+         'voix': "Le jour du départ, Estelle est au comptoir. Mireille, qui a le droit Facturation, lance le "
+                 "check-out : l'assistant récapitule le total, l'acompte et le solde. Valider le départ : la facture "
+                 "est comptabilisée, avec les lignes exactes du folio ; il reste soixante-sept mille huit cents francs.",
          'gestes': [clic('#t03-fil-res'),
-                    # la réservation, encore cachée, a vécu le séjour : arrivée, fiches remplies
-                    cacher('#t03-resa-gb', d=0.05, avec=True), montrer('#t03-resa-gc', d=0.05, y=0, avec=True),
+                    # la réservation, encore cachée, a vécu le séjour : arrivée, fiches remplies (t06)
+                    cacher('#t03-resa-ga', d=0.05, avec=True), montrer('#t03-resa-gb', d=0.05, y=0, avec=True),
                     texte('#t03-sbc-t', 'Arrivé', avec=True), classe('#t03-cireel', retirer=['t03-cache'], avec=True),
                     classe('#t03-bandeau', retirer=['t03-cache'], avec=True),
                     defiler('#t03-resa-defil', 52, d=0.05, avec=True),
-                    texte('#t03-st-fiches-v', '2/2', avec=True), texte('#t03-st-folio-v', '77 000 FCFA', avec=True),
+                    texte('#t03-st-fiches-v', '2/2', avec=True), texte('#t03-st-folio-v', SOLDE_2, avec=True),
                     vue('t03-resa'), clic('#t03-b-checkout', d=0.6), ouvrir('t03-co'),
                     anneau('#t03-co-solde', d=1.0), clic('#t03-co-ok', d=0.6), fermer('t03-co'), vue('t03-facture'),
-                    defiler('#t03-facture-defil', -100, d=0.6), zoom('#t03-inv-lignes', s=1.25, d=0.8),
-                    bulle('b-facture', '#t03-inv-autres', cote='droite', d=2.4), pause(1.8), dezoom(d=0.6),
-                    anneau('#t03-inv-tot', d=1.2)]},
+                    pause(0.9), defiler('#t03-facture-defil', -100, d=0.6),
+                    zoom('#t03-inv-lignes', s=1.2, d=0.8),
+                    bulle('b-facture', '#t03-inv-autres', cote='droite', d=2.4), pause(1.6), dezoom(d=0.6),
+                    defiler('#t03-facture-defil', -230, d=0.6), anneau('#t03-inv-du', d=1.0),
+                    bulle('b-du', '#t03-inv-paye', cote='gauche', d=2.2), pause(1.0)]},
         {'temps': 3, 'titre': "Les soldes dus d'un coup d'œil",
          'texte': 'Facturation, Folios, filtre Avec solde dû : les notes qui restent à encaisser.',
-         'voix': "Pour encaisser le solde, la liste des folios. Le filtre Avec solde dû ne garde que les notes à régler : "
-                 "celle d'Estelle attend soixante-dix-sept mille francs.",
-         'gestes': [clic('#t03-m-fact'), classe('#t03-m-resa', retirer=['actif'], avec=True),
+         'voix': "Avant qu'Estelle ne reparte, Mireille ouvre la liste des folios. Le filtre Avec solde dû ne garde que "
+                 "les notes à régler : celle d'Estelle attend soixante-sept mille huit cents francs.",
+         'gestes': [clic('#t03-m-fact'), classe('#t03-m-fd', retirer=['actif'], avec=True),
                     classe('#t03-m-fact', ajouter=['actif'], avec=True), montrer('#t03-dd', d=0.25, y=-6),
                     clic('#t03-dd-folios', d=0.5), cacher('#t03-dd', d=0.15), vue('t03-liste'), pause(0.4),
                     clic('#t03-liste-rech .deroule', d=0.6), montrer('#t03-panneau', d=0.25, y=-6),
                     clic('#t03-pf-solde', d=0.5), classe('#t03-pf-coche', retirer=['t03-cache']),
-                    classe('#t03-fac', retirer=['t03-cache'], avec=True),
-                    classe('#t03-l5', ajouter=['t03-cache'], avec=True),
-                    classe('#t03-l7', ajouter=['t03-cache'], avec=True),
-                    texte('#t03-pager', '1-6 / 6', avec=True), texte('#t03-lt-a', '758 500 FCFA', avec=True),
-                    texte('#t03-lt-b', '374 000 FCFA', avec=True), pause(0.5), cacher('#t03-panneau', d=0.2),
-                    survol('#t03-l3'), anneau('#t03-l3', d=1.6)]},
+                    classe('#t03-fac', retirer=['t03-cache'], avec=True)]
+                   + [classe('#t03-l-' + f[0], ajouter=['t03-cache'], avec=True) for f in FOLIOS if f not in DUS]
+                   + [texte('#t03-pager', PAGER_DU, avec=True), classe('#t03-lt', retirer=['t03-cache'], avec=True),
+                      pause(0.5), cacher('#t03-panneau', d=0.2), curseur('#t03-l-0214', fx=0.3, d=0.5),
+                      survol('#t03-l-0214'), anneau('#t03-l-0214', d=1.6)]},
         {'temps': 3, 'titre': 'Soldé, et tout est tracé',
          'texte': 'Encaisser le solde : le folio passe à Soldé ; chaque règlement reste dans son onglet.',
          'voix': "Mireille ouvre le folio : Encaisser, en espèces. Le solde tombe à zéro, et le folio passe à Soldé, "
                  "tout seul. Dans l'onglet Règlements, l'acompte Mobile Moni et le solde restent tracés, avec la "
                  "personne qui les a encaissés.",
-         'gestes': [clic('#t03-l3', d=0.6), vue('t03-folio2'), clic('#t03-f2-enc', d=0.6), ouvrir('t03-so'), pause(0.3),
+         'gestes': [clic('#t03-l-0214', fx=0.3, d=0.6), vue('t03-folio2'), clic('#t03-f2-enc', d=0.6), ouvrir('t03-so'), pause(0.3),
                     clic('#t03-so-ok', d=0.6), fermer('t03-so'), cacher('#t03-folio2-ga', d=0.2),
                     classe('#t03-f2sb-1', retirer=['actif'], avec=True),
                     classe('#t03-f2sb-2', ajouter=['actif'], avec=True),
-                    texte('#t03-f2-paye', '122 000 FCFA', avec=True), texte('#t03-f2-solde', '0 FCFA', avec=True),
+                    texte('#t03-f2-paye', TOTAL_2, avec=True), texte('#t03-f2-solde', '0 FCFA', avec=True),
                     texte('#t03-f2-etat', 'Payé', avec=True), texte('#t03-st-regl2-v', '2', avec=True),
                     anneau('#t03-f2sb', d=1.4), bulle('b-solde', '#t03-f2sb', cote='bas', d=2.4, avec=True),
                     pause(0.5), defiler('#t03-folio2-defil', -380, d=0.7), clic('#t03-o-regl', d=0.5),

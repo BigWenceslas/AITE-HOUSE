@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Tutoriel 6 — Fiche de police, registre et statistiques MINTOUL : tout part du check-in.
+"""Tutoriel 6 — Fiche de police, registre et statistiques d'hébergement : tout part du check-in.
 
 Personnage : la réceptionniste (demo.POSTES['reception'], Mireille Ateba),
 profil Réception (aite_hotel_management.group_hotel_user) : c'est elle qui
@@ -13,13 +13,22 @@ Facturation, Fidélité, Gouvernante). Les statistiques sont réservées au
 profil Responsable (views/menus.xml:15-20) : la dernière étape change
 d'écran pour la directrice (demo.POSTES['direction'], Danielle Eyenga),
 barre ecrans.APPS_PROFIL['direction'] et menus du compte demo.direction
-(relevés pour scenarios/t05_taxe_sejour.py:8-12).
+(relevés pour scenarios/t05_taxe_sejour.py:8-12) ; la pastille du
+personnage passe alors à « Danielle Eyenga · Directrice », initiale D sur
+la couleur de son avatar (#854F0B), selon le mécanisme de
+scenarios/t04_note_chambre.py:456-475.
 
 Titre : la formule « la conformité se remplit toute seule » proposée pour
 ce tutoriel n'est pas prouvée (la date de naissance se saisit toujours,
 les accompagnants se saisissent en entier, le format officiel DGSN/MINTOUL
 reste à confirmer : ROADMAP.md:62 et :78, vérification de l'analyse) ; le
 titre retenu, « tout part du check-in », l'est (hotel_reservation.py:96-110).
+Il dit « statistiques d'hébergement », le nom de l'écran (guest_stats_views
+.xml:67-86), et pas « statistiques MINTOUL » : F14 n'est que partiel (TO,
+durée moyenne de séjour, état mensuel officiel et export restent à faire,
+ROADMAP.md:78 ; le rapport MINTOUL attendu contient TO et DMS,
+benchmark_afrique_odoo.md:69). Le MINTOUL ne paraît que dans la douleur
+(exigence sourcée), jamais comme un résultat.
 
 Écrans et libellés (relevés mot pour mot, vérifiés par grep -rF dans addons/) :
 
@@ -62,7 +71,11 @@ titre retenu, « tout part du check-in », l'est (hotel_reservation.py:96-110).
    informations et la phrase « Il manque »), :218-241 (la fiche passe
    « Complète » toute seule à l'enregistrement), :255-280 (pré-remplissage
    depuis le contact : nom coupé au premier espace, nationalité, pièce,
-   adresse, téléphone ; jamais la date de naissance). Boutons « Enregistrer »
+   adresse, téléphone ; jamais la date de naissance). Le contact
+   « Estelle Ngono » (demo.CLIENT) donne donc Nom « Estelle » et Prénom(s)
+   « Ngono » (:259-261, voir écart 8 ; captures/11_fiches_du_sejour.png :
+   « Ngo Bikaï Solange » → Nom « Ngo ») : la vidéo le montre, et Mireille
+   remet l'ordre avant de saisir la date de naissance. Boutons « Enregistrer »
    / « Ignorer » d'une ligne en saisie et fil d'Ariane à deux niveaux :
    odoo18/addons/web/static/src/views/list/list_controller.xml:7-13 et
    :105-114, search/breadcrumbs/breadcrumbs.xml:4-46 ; traductions
@@ -77,15 +90,34 @@ titre retenu, « tout part du check-in », l'est (hotel_reservation.py:96-110).
    par fiche (web.external_layout appelé pour chaque fiche, :17-18) ;
    numérotation FICHE/2026/00412 : data/sequence_data.xml:4-9. Le lien
    « Imprimer les fiches » imprime toutes les fiches du séjour :
-   models/hotel_reservation.py:150-157.
+   models/hotel_reservation.py:150-157. Rapport qweb-pdf : Odoo le
+   télécharge, sous le nom du rapport, « Fiche d'enregistrement.pdf »,
+   puisqu'il y a plusieurs fiches (report_name de registration_card_report
+   .xml:5 ; odoo18/addons/web/controllers/report.py:130-137, le
+   print_report_name « Fiche - … » ne sert qu'à une fiche seule). La vidéo
+   montre le fichier téléchargé puis la visionneuse du navigateur, avec sa
+   barre et le nom du fichier ; elle ne dit jamais qu'Odoo l'affiche.
+   Adresse imprimée = street + city du contact (guest_registration.py
+   :274-275) : « Bonapriso Douala » pour Estelle (son contact :
+   t04_note_chambre.py:334), vide pour Arnaud, saisi dans une ligne sans
+   colonne Adresse et sans contact lié (rapport :65). Pays de résidence et
+   nationalité « Cameroun » (default_country_id / default_nationality_id,
+   hotel_reservation.py:143-144) ; motif « Loisirs / tourisme »
+   (guest_registration.py:102-110, valeur par défaut).
 5. Registre des clients — views/guest_registration_views.xml:36-61
    (colonnes, lignes orange « À compléter »), :155-188 (filtres « À
    compléter », « Non signées », regroupement « Date d'arrivée » par jour),
    :190-211 (action « Registre des clients », regroupée par jour par défaut,
    aide « l'état chronologique à présenter en cas de contrôle ») ; ordre
-   « arrival_date desc, id desc » : models/guest_registration.py:20.
-   Facette « Date d'arrivée: Jour » et groupes « 11 oct. 2026 (3) » :
-   captures/nouvelles/13_registre_liste.png ; ref_muk/026.
+   « arrival_date desc, id desc » : models/guest_registration.py:20 (date
+   sans heure : le 14/10, la fiche créée la dernière vient en tête, d'où
+   Claire, Martin, Arnaud, Estelle). Facette « Date d'arrivée: Jour » et
+   groupes « 11 oct. 2026 (3) » : captures/nouvelles/13_registre_liste.png ;
+   ref_muk/026 ; jour sur deux chiffres (« 08 oct. 2026 », format
+   « dd MMM yyyy » : odoo18/odoo/models.py:390). Le pager d'une liste groupée compte les groupes : un jour
+   d'arrivées du 01/08 au 14/10, soit 75 groupes (« 1-75 / 75 »), cohérent
+   avec les 399 arrivées des statistiques depuis août ; du 08 au 14/10, les
+   groupes font 54 fiches, comme scenarios/c7_conformite.py:129 et :141.
 6. Statistiques d'hébergement — views/guest_stats_views.xml:3-14 (pivot :
    mois en lignes, Résident / Non-résident en colonnes, mesures Arrivées et
    Nuitées), :43-66 (filtres Résidents / Non-résidents, regroupements Mois,
@@ -104,29 +136,43 @@ Accroche (douleurs), toutes sourcées :
 - docs/etude_comparative/benchmark_afrique_odoo.md:13 et :66 — loi
   n° 2016/006, art. 28 : « la violation des obligations de police en
   matière d'enregistrement des clients » est sanctionnée (carte bouclier) ;
-  :66 — la fiche à relever : nom, prénoms, date de naissance, nationalité,
-  pièce, dates (carte fiche) ; :13 et :66 — « aucun modèle officiel de
+  :66 — les champs usuels à relever, colonne « ce qu'il faut prévoir »
+  d'AITE : nom, prénoms, date de naissance, nationalité, pièce, dates (carte
+  fiche, dite « champs usuels », pas « obligatoires ») ; :13 et :66 — « aucun modèle officiel de
   fiche/registre trouvé en ligne » (carte interrogation, formulée « trouvé
   en ligne », pas « publié ») ;
 - :69 — statistiques exigées par le MINTOUL (art. 16), amende de 50 000 à
-  500 000 FCFA (art. 45) (carte graphe et voix) ;
+  500 000 FCFA (art. 45) (carte graphe et voix). L'amende n'est sourcée que
+  pour les statistiques : pour l'enregistrement, la source parle
+  d'« infraction » (art. 28) sans sanction chiffrée, et la voix dit
+  seulement « obligation de police » ;
 - :80 — Côte d'Ivoire : la fiche d'hébergement numérisée (HORA, Police
   nationale, 2023), « ex-fiche papier » (carte globe).
 
 Résultats : « 1 clic » — le check-in crée et pré-remplit la fiche du client
-principal (hotel_reservation.py:96-110) ; « 6 informations » obligatoires
-suivies par « Il manque » (guest_registration.py:182-206, 234-241) ;
+principal (hotel_reservation.py:96-110) ; « 6 informations » requises par
+la fiche pour passer « Complète », suivies par « Il manque »
+(guest_registration.py:182-206, 234-241 : c'est la liste du module, pas une
+liste légale ; la source n'en fixe aucune, benchmark_afrique_odoo.md:66,
+« aucun modèle officiel ») ;
 « 4 regroupements » des statistiques : Mois, Nationalité, Motif, Hôtel
 (guest_stats_views.xml:54-63).
 
 Données (fictives, demo.py) : Complexe Hôtelier — Démo, Démo Hôtellerie
 SARL ; Estelle Ngono, RES/2026/0214, chambre 204 [CFT], 2 adultes, du 14 au
-16/10/2026 ; Martin Ebode (RES/2026/0209, Kribi, chambre 201 [CFT] comme
-dans t07) et Claire Durand (RES/2026/0201, Lyon, France, chambre 401
-[VIP] comme dans t02) ; leurs montants comme dans t01. Ajoutés ici, fictifs :
-Arnaud Ngono (l'accompagnant d'Estelle, repris de scenarios/c7_conformite.py),
-dates de naissance et numéros de pièce, adresse « Bastos Yaoundé ». Le
-contact d'Estelle porte déjà sa nationalité et sa pièce (cliente connue).
+16/10/2026, contact « Bonapriso Douala Cameroun » (t04_note_chambre.py:334 ;
+t11 : elle habite Douala) ; Martin Ebode (RES/2026/0209, Kribi, chambre
+104 [STD] : 105 000 FCFA pour 3 nuits = 35 000 FCFA, tarif Standard, comme
+dans t07_gouvernante.py:59-63 et t02_planning.py:196 et :258) et Claire Durand
+(RES/2026/0201, Lyon, France, chambre 401 [VIP] comme dans t02) ; leurs
+montants comme dans t01. Ajoutés ici, fictifs : Arnaud Ngono
+(l'accompagnant d'Estelle, repris de scenarios/c7_conformite.py), dates de
+naissance et numéros de pièce. Le contact d'Estelle porte déjà sa
+nationalité et sa pièce (cliente connue). Les fiches de Claire et de Martin,
+créées à leur check-in et pas encore reprises, gardent le nom coupé au
+premier espace (Nom « Claire », Prénom(s) « Durand » ; Nom « Martin »,
+Prénom(s) « Ebode ») : rejoué tel quel (écart 8). Groupes du registre du
+08 au 14/10 : 9, 8, 9, 7, 10, 7 et 4 fiches = 54 (c7).
 Les statistiques d'août à octobre 2026 sont celles de c7 (sommes
 vérifiées), octobre détaillé par nationalité (sommes égales aux totaux).
 
@@ -160,6 +206,12 @@ vérifiées), octobre détaillé par nationalité (sommes égales aux totaux).
 7. « Mémoriser sur la fiche client » écrit sur le contact sans sudo
    (guest_registration.py:282-298) : refusé au seul profil Réception. Non
    montré.
+8. Le pré-remplissage coupe le nom du contact au premier espace : le
+   premier mot devient le Nom, la suite le Prénom(s)
+   (guest_registration.py:259-261). Un contact saisi « Prénom Nom »
+   (« Estelle Ngono ») donne donc Nom « Estelle », Prénom(s) « Ngono », et le
+   PDF imprimerait « ESTELLE ». Rejoué tel quel : Mireille remet l'ordre à
+   l'étape 2, les fiches de Claire et de Martin le gardent au registre.
 
 Captures de référence (modèle visuel, jamais incrustées) : ref_muk/023,
 026, 027, 032, 033, 306 ; captures/10, 11, 12, nouvelles/13, nouvelles/14.
@@ -349,7 +401,8 @@ def cel(ident, valeur=''):
 
 IMPRIMANTE = ('<span class="t06-print">%s</span>' % ICONES['imprimer'],)
 FICHE_ESTELLE = ligne6('t06-f0', COLS_F, [
-    '204 [CFT]', 'Ngono', 'Estelle', cel('t06-f0-dn'), 'Cameroun', CNI, '114208815', case(True), case(False),
+    '204 [CFT]', cel('t06-f0-nom', 'Estelle'), cel('t06-f0-pre', 'Ngono'), cel('t06-f0-dn'), 'Cameroun', CNI,
+    '114208815', case(True), case(False),
     ('<span class="ell" id="t06-f0-im">la date de naissance</span>',), badge('À compléter', 'orange', 't06-f0-et'),
     IMPRIMANTE], 'avert')
 FICHE_ARNAUD = ligne6('t06-f1', COLS_F, [
@@ -369,7 +422,7 @@ FICHES = vue_libre('t06-fiches', CP_FICHES + '<div class="liste t06-lf">%s%s%s</
     tete(COLS_F, '<span class="t06-opt">%s</span>' % REGLAGES), FICHE_ESTELLE, FICHE_ARNAUD))
 
 # ======================================= 4. La fiche d'enregistrement (PDF) --
-def pdf_page(ident, num, nom, prenom, ne, tel, piece):
+def pdf_page(ident, num, nom, prenom, ne, tel, piece, adresse):
     """Une page du PDF « Fiche d'enregistrement » (registration_card_report.xml), telle que l'imprime Odoo."""
     def lig(a, va, b, vb):
         return '<tr><td><b>%s</b></td><td>%s</td><td><b>%s</b></td><td>%s</td></tr>' % (e(a), va, e(b), vb)
@@ -381,7 +434,7 @@ def pdf_page(ident, num, nom, prenom, ne, tel, piece):
         + '<tr><th colspan="4">PIÈCE D\'IDENTITÉ</th></tr>'
         + lig('Type', e(CNI), 'Numéro', e(piece)) + lig('Délivrée le', '', 'Par', '')
         + '<tr><th colspan="4">DOMICILE &amp; DÉPLACEMENT</th></tr>'
-        + '<tr><td><b>Adresse</b></td><td colspan="3">Bastos Yaoundé</td></tr>'
+        + '<tr><td><b>Adresse</b></td><td colspan="3">%s</td></tr>' % e(adresse)
         + lig('Pays de résidence', 'Cameroun', 'Motif du séjour', 'Loisirs / tourisme')
         + lig('Provenance', '', 'Destination', '')
         + '<tr><th colspan="4">SÉJOUR</th></tr>'
@@ -401,9 +454,19 @@ def pdf_page(ident, num, nom, prenom, ne, tel, piece):
         % (ident, e(demo.SOCIETE), e(demo.HOTEL), e(num), e(demo.RESA), ident, corps, ident))
 
 
-PDF = ('<div class="t06-pdf masque" id="t06-pdf" data-layout-allow-overlap data-layout-allow-occlusion>%s%s</div>'
-       % (pdf_page('t06-p1', 'FICHE/2026/00412', 'Ngono', 'Estelle', '12/03/1991', demo.CLIENT_TEL, '114208815'),
-          pdf_page('t06-p2', 'FICHE/2026/00413', 'Ngono', 'Arnaud', '27/08/1989', '', '116502371')))
+# Odoo télécharge le rapport (qweb-pdf) sous le nom « Fiche d'enregistrement.pdf » (report.py:130-137) ;
+# on l'ouvre ensuite dans la visionneuse du navigateur, avec sa barre et le nom du fichier.
+FICHIER_PDF = "Fiche d'enregistrement.pdf"
+TELECHARGE = ('<div class="t06-dlc masque" id="t06-dlc" data-layout-allow-overlap data-layout-allow-occlusion>'
+              '<span class="t06-dlc-i">%s</span><span class="t06-dlc-n">%s</span></div>'
+              % (ico(TELECHARGER), e(FICHIER_PDF)))
+PDF = ('<div class="t06-pdf masque" id="t06-pdf" data-layout-allow-overlap data-layout-allow-occlusion>'
+       '<div class="t06-pdfb"><span class="t06-pdfb-n">%s</span><span class="t06-pdfb-p">1 / 2</span></div>'
+       '<div class="t06-pages">%s%s</div></div>'
+       % (e(FICHIER_PDF),
+          pdf_page('t06-p1', 'FICHE/2026/00412', 'Ngono', 'Estelle', '12/03/1991', demo.CLIENT_TEL, '114208815',
+                   'Bonapriso Douala'),
+          pdf_page('t06-p2', 'FICHE/2026/00413', 'Ngono', 'Arnaud', '27/08/1989', '', '116502371', '')))
 
 # ============================================== 5. Le registre des clients --
 DEROULANT = ('<div class="t06-dd masque" id="t06-dd" data-layout-allow-overlap data-layout-allow-occlusion>%s</div>'
@@ -413,7 +476,9 @@ DEROULANT = ('<div class="t06-dd masque" id="t06-dd" data-layout-allow-overlap d
 COLS_R = [('Arrivée', '112px'), ('Départ', '112px'), ('Chambre', '104px'), ('Nom', '100px'), ('Prénom(s)', '100px'),
           ('Date de naissance', '136px'), ('Nationalité', '110px'), ('Type de pièce', '222px'), ('N° de pièce', '112px'),
           ('Fiche', '124px'), ('Signée par le client', '1fr')]
-GROUPES = [('14 oct. 2026', 4), ('13 oct. 2026', 3), ('12 oct. 2026', 5), ('11 oct. 2026', 2), ('10 oct. 2026', 4)]
+GROUPES = [('14 oct. 2026', 4), ('13 oct. 2026', 7), ('12 oct. 2026', 10), ('11 oct. 2026', 7), ('10 oct. 2026', 9),
+           ('09 oct. 2026', 8), ('08 oct. 2026', 9)]
+assert sum(n for _, n in GROUPES) == 54      # du 08 au 14/10, comme c7
 
 
 def groupe_r(ident, lib, n, ouvert=False):
@@ -432,19 +497,21 @@ REG_A = ('<div class="liste t06-lr" id="t06-rg-a">%s%s</div>'
          % (TETE_R, ''.join(groupe_r('t06-rg-g%d' % i, lib, n) for i, (lib, n) in enumerate(GROUPES))))
 REG_B = ('<div class="liste t06-lr masque" id="t06-rg-b">%s%s%s%s</div>' % (
     TETE_R, groupe_r('t06-rg-b-g0', GROUPES[0][0], GROUPES[0][1], ouvert=True),
-    personne('t06-rg-claire', '15/10/2026', '401 [VIP]', 'Durand', 'Claire', '', 'France', '', '', False)
+    # ordre « arrival_date desc, id desc » : la dernière fiche créée en tête ; Claire et Martin gardent le nom
+    # coupé au premier espace (écart 8)
+    personne('t06-rg-claire', '15/10/2026', '401 [VIP]', 'Claire', 'Durand', '', 'France', '', '', False)
+    + personne('t06-rg-martin', '17/10/2026', '104 [STD]', 'Martin', 'Ebode', '', 'Cameroun', CNI, '112640339', False)
     + personne('t06-rg-arnaud', '16/10/2026', '204 [CFT]', 'Ngono', 'Arnaud', '27/08/1989', 'Cameroun', CNI,
                '116502371', True)
     + personne('t06-rg-estelle', '16/10/2026', '204 [CFT]', 'Ngono', 'Estelle', '12/03/1991', 'Cameroun', CNI,
-               '114208815', True)
-    + personne('t06-rg-martin', '17/10/2026', '201 [CFT]', 'Ebode', 'Martin', '', 'Cameroun', CNI, '112640339', False),
+               '114208815', True),
     ''.join(groupe_r('t06-rg-b-g%d' % i, lib, n) for i, (lib, n) in enumerate(GROUPES) if i)))
 REGISTRE = vue_libre('t06-registre', cp_liste6('Registre des clients', facette_groupe("Date d'arrivée: Jour"),
-                                               '1-5 / 5') + REG_A + REG_B)
+                                               '1-75 / 75') + REG_A + REG_B)
 
 ECRAN_RECEPTION = fenetre_muk(APP, 'Hôtel', MENUS, [ARRIVEES, RESA, FICHES, REGISTRE], actif='Front Desk',
                               societe=demo.SOCIETE, initiale=NOM[0], avatar='#185FA5', apps=APPS_PROFIL['reception'],
-                              app_active='Hôtel', calques=DEROULANT + PDF)
+                              app_active='Hôtel', calques=DEROULANT + TELECHARGE + PDF)
 
 # ================================== 6. Les statistiques (écran direction) --
 # (libellé, [arrivées NR, nuitées NR, arrivées R, nuitées R, arrivées, nuitées])
@@ -468,9 +535,8 @@ def pv_tr(ident, lib, vals, niveau, ouvert=False, classe_=''):
                '', '⊟' if ouvert else '⊞', e(lib), ''.join('<td>%s</td>' % n_(v) for v in vals)))
 
 
-ENTETES = ('<tr><td class="vide"></td><th colspan="6">⊟ Total</th></tr>'
-           '<tr><td class="vide"></td><th colspan="2">⊞ Non-résident</th><th colspan="2">⊞ Résident</th>'
-           '<th colspan="2" class="t06-pv-vt"></th></tr>'
+ENTETES = ('<tr><td class="vide"></td><th colspan="4">⊟ Total</th><td class="vide" colspan="2" rowspan="2"></td></tr>'
+           '<tr><td class="vide"></td><th colspan="2">⊞ Non-résident</th><th colspan="2">⊞ Résident</th></tr>'
            '<tr><td class="vide"></td>%s</tr>' % ('<th class="m">Arrivées</th><th class="m">Nuitées</th>' * 3))
 
 
@@ -499,7 +565,7 @@ MENU_PV = ('<div class="t06-pvm masque" id="t06-pvm" data-layout-allow-overlap d
            '<div class="t06-pvm-i t06-sel">Mois</div><div class="t06-pvm-i" id="t06-pvm-nat">Nationalité</div>'
            '<div class="t06-pvm-i">Motif</div><div class="t06-pvm-i">Hôtel</div><div class="t06-pvm-sep"></div>'
            '<div class="t06-pvm-i t06-pvm-c">Ajouter un groupe personnalisé<span>▾</span></div></div>')
-ECRAN_DIRECTION = fenetre_muk('app-t6d', 'Hôtel', MENUS_DIR, [STATS], actif='Facturation', societe='',
+ECRAN_DIRECTION = fenetre_muk('app-t6d', 'Hôtel', MENUS_DIR, [STATS], actif='Facturation', societe=demo.SOCIETE,
                               initiale=DIRECTRICE[0], avatar='#854F0B', apps=APPS_PROFIL['direction'],
                               app_active='Hôtel', calques=MENU_PV)
 
@@ -508,10 +574,19 @@ ECRAN_DIRECTION = fenetre_muk('app-t6d', 'Hôtel', MENUS_DIR, [STATS], actif='Fa
 ECRAN = (navigateur(ECRAN_RECEPTION)
          + navigateur(ECRAN_DIRECTION, 't06-nav-dir').replace('class="navigateur"', 'class="navigateur masque"', 1))
 
-CSS = """
+# La pastille du personnage passe à la directrice à l'étape 6 (mécanisme de t04_note_chambre.py:456-475).
+PASTILLE_DIR = (
+    '#tu-perso.t06-pd > span:last-child { font-size: 0; }\n'
+    '#tu-perso.t06-pd > span:last-child::before { content: "%s"; font-size: 21px; font-weight: 700; }\n'
+    '#tu-perso.t06-pd > span:last-child::after { content: " · %s"; font-size: 21px; white-space: pre; }\n'
+    '#tu-perso.t06-pd .av { background: #854F0B; color: #fff; }\n' % demo.POSTES['direction'])
+
+CSS = PASTILLE_DIR + """
 /* t06 — registre des clients : listes resserrées, réservation, fiche PDF, pivot */
 #app-t6 .o-haut, #app-t6d .o-haut { gap: 22px; font-size: 19px; }
-#app-t6d .o-haut { gap: 18px; font-size: 18px; }
+#app-t6d .o-haut { gap: 15px; font-size: 16px; }
+#app-t6d .o-haut .nom-app { font-size: 21px; }
+#app-t6d .o-haut .menu.actif { font-weight: 600; }
 #app-t6 .cp .titre, #app-t6d .cp .titre { display: inline-flex; align-items: center; gap: 10px; }
 .t06-gear { width: 16px; height: 16px; display: inline-flex; color: #343A40; }
 .t06-gear svg { width: 16px; height: 16px; }
@@ -575,8 +650,19 @@ CSS = """
 .t06-car { width: 14px; color: #495057; }
 #app-t6 .t06-lr .ligne { height: 52px; }
 /* la fiche imprimée : le PDF, page par page */
-.t06-pdf { position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 27; background: #525659;
-  display: flex; justify-content: center; gap: 30px; padding-top: 20px; }
+.t06-pdf { position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 27; background: #525659; overflow: hidden; }
+.t06-pdfb { height: 52px; background: #323639; color: #F1F3F4; display: flex; align-items: center; padding: 0 24px;
+  font-size: 18px; box-shadow: 0 2px 6px rgba(0,0,0,.35); position: relative; }
+.t06-pdfb-p { position: absolute; left: 50%; transform: translateX(-50%); background: #191B1C; padding: 4px 12px; }
+.t06-pages { display: flex; justify-content: center; gap: 30px; padding-top: 18px; }
+/* le fichier téléchargé (navigateur) */
+.t06-dlc { position: absolute; right: 22px; top: 70px; z-index: 28; background: #fff; border: 1px solid #DEE2E6;
+  border-radius: 10px; box-shadow: 0 12px 28px rgba(0,0,0,.22); display: flex; align-items: center; gap: 14px;
+  padding: 12px 20px 12px 14px; font-size: 18px; color: #212529; }
+.t06-dlc-i { width: 40px; height: 40px; border-radius: 50%; background: #E7F1F7; color: #185FA5; display: inline-flex;
+  align-items: center; justify-content: center; }
+.t06-dlc-i svg { width: 22px; height: 22px; }
+.t06-dlc-n { font-weight: 600; }
 .t06-page { width: 720px; height: 1000px; flex: none; background: #fff; box-shadow: 0 10px 34px rgba(0,0,0,.45);
   padding: 22px 32px; color: #212529; font-size: 13px; }
 .t06-soc { font-size: 14px; font-weight: 700; color: #495057; padding-bottom: 8px; border-bottom: 2px solid #495057; margin-bottom: 14px; }
@@ -608,7 +694,6 @@ CSS = """
 .t06-pv td { min-width: 96px; }
 .t06-pvh { text-align: left; background: #F8F9FA !important; font-weight: 400 !important; min-width: 220px; }
 .t06-pv tr.tot td, .t06-pv tr.tot th { font-weight: 600 !important; background: #F1F3F5 !important; }
-.t06-pv .t06-pv-vt { border-top: 0; }
 /* le menu de regroupement d'un en-tête du pivot */
 .t06-pvm { position: absolute; left: 210px; top: 486px; width: 330px; z-index: 26; background: #fff; padding: 6px 0;
   border: 1px solid #DEE2E6; border-radius: 6px; box-shadow: 0 12px 28px rgba(0,0,0,.22); }
@@ -623,19 +708,19 @@ TUTORIEL = {
     'slug': 't06-registre',
     'profil': 't06_registre',
     'numero': 6,
-    'titre': 'Fiche de police, registre et statistiques MINTOUL : tout part du check-in',
+    'titre': "Fiche de police, registre et statistiques d'hébergement : tout part du check-in",
     'fonction': 'Fiche de police et statistiques',
     'personnage': (NOM, ROLE),
     'accroche': {
         'kicker': 'Fiche de police et statistiques',
         'question': 'Un contrôle ce soir : votre registre est-il *à* *jour* ?',
         'douleurs': [('bouclier', 'Enregistrer chaque client : une obligation de police'),
-                     ('fiche', 'Nom, naissance, nationalité, pièce : à relever pour chacun'),
+                     ('fiche', 'Nom, naissance, nationalité, pièce : les champs usuels à relever'),
                      ('graphe', 'Statistiques MINTOUL exigées, sous peine d\'amende'),
                      ('interrogation', 'Le format de la fiche ? Aucun modèle trouvé en ligne'),
                      ('globe', 'En Côte d\'Ivoire, la fiche papier est déjà numérique')],
-        'voix': "Un contrôle de police ce soir : votre registre est-il à jour ? Une fiche pour chaque client, des "
-                "statistiques pour le MINTOUL : la loi l'exige, sous peine d'amende.",
+        'voix': "Un contrôle de police ce soir : votre registre est-il à jour ? Une fiche pour chaque client, c'est "
+                "une obligation de police ; des statistiques pour le MINTOUL, sous peine d'amende.",
     },
     'revelation': {
         'promesse': "Au check-in, la fiche de police se crée et se pré-remplit. La réservation dit ce qui manque. "
@@ -649,9 +734,9 @@ TUTORIEL = {
     'vues_initiales': {'odoo': 't06-arr'},
     'bulles': {
         'b-fiche': 'La fiche du client principal est déjà créée, pré-remplie depuis son contact.',
-        'b-complete': 'Six informations obligatoires : la fiche passe Complète toute seule.',
+        'b-complete': 'Six informations requises par la fiche : elle passe Complète toute seule.',
         'b-pdf': 'Une page par occupant : identité, pièce, domicile, séjour, deux signatures.',
-        'b-orange': 'En orange, les fiches à compléter. Les filtres À compléter et Non signées isolent ce qui reste à faire.',
+        'b-orange': 'En orange, les fiches encore à compléter.',
         'b-stats': 'Une fiche, une arrivée ; ses nuits, les nuitées. Résident ou non : selon le pays de résidence.',
     },
     'reactions': {
@@ -665,20 +750,26 @@ TUTORIEL = {
          'gestes': [pause(0.3), classe('#t06-a1', ajouter=['survol']), clic('#t06-a1', fx=0.09, d=0.7), vue('t06-resa'),
                     anneau('#t06-st-fiches', d=1.0), clic('#t06-b-checkin', d=0.6),
                     classe('#t06-sb-1', retirer=['actif']), classe('#t06-sb-2', ajouter=['actif']),
+                    curseur('#t06-sb-2', d=0.5),
                     cacher('#t06-resa-ga', d=0.2), montrer('#t06-resa-gb', d=0.3, y=0),
                     montrer('#t06-cireel', d=0.3, y=0), montrer('#t06-bandeau', d=0.4, y=-10),
                     defiler('#t06-resa-defil', 52, d=0.4, avec=True),
                     zoom('#t06-bandeau', s=1.6, d=0.8, fx=0.3), bulle('b-fiche', '#t06-bandeau', cote='bas', d=3.0),
                     pause(2.8), dezoom(d=0.6)]},
         {'temps': 1, 'titre': 'Il ne manque que la date de naissance',
-         'texte': 'La fiche reprend le contact ; « Il manque » dit le reste. Enregistrée, elle passe « Complète ».',
-         'voix': "Le lien ouvre les fiches du séjour. Nom, prénom, nationalité et pièce viennent du contact ; il ne "
-                 "manque que la date de naissance. Mireille la saisit, enregistre : la fiche passe Complète, toute seule.",
+         'texte': "La fiche reprend le contact : on vérifie l'ordre nom / prénom, « Il manque » dit le reste.",
+         'voix': "Le lien ouvre les fiches du séjour. Tout vient du contact, mais son nom est coupé au premier espace : "
+                 "Mireille vérifie l'ordre, remet Ngono en nom et Estelle en prénom. Il ne manque que la date de "
+                 "naissance : elle la saisit, enregistre, et la fiche passe Complète, toute seule.",
          'gestes': [clic('#t06-completer', d=0.6), vue('t06-fiches'), pause(0.3),
-                    zoom('#t06-f0', s=1.25, d=0.8, fx=0.6), anneau('#t06-f0-im', d=1.4),
-                    clic('#t06-f0-dn', fx=0.3, d=0.6), classe('#t06-f0', ajouter=['t06-edit']),
+                    zoom('#t06-f0', s=1.25, d=0.8, fx=0.4), anneau('#t06-f0-nom', d=1.0),
+                    anneau('#t06-f0-pre', d=1.0),
+                    clic('#t06-f0-nom', fx=0.4, d=0.6), classe('#t06-f0', ajouter=['t06-edit']),
                     classe('#t06-f-nouveau', ajouter=['masque']), classe('#t06-f-sbts', retirer=['masque'], avec=True),
                     animer('#t06-f-fil', {'x': 0}, {'x': 140}, d=0.2, avec=True),
+                    saisir('t06-f0-nom', 'Ngono', d=0.5), curseur('#t06-f0-pre', d=0.3, avec=True),
+                    saisir('t06-f0-pre', 'Estelle', d=0.5), anneau('#t06-f0-im', d=1.0),
+                    curseur('#t06-f0-dn', fx=0.3, d=0.4),
                     saisir('t06-f0-dn', '12/03/1991', d=0.8), texte('#t06-f0-im', ''),
                     clic('#t06-f-save', d=0.7), classe('#t06-f0', retirer=['avert', 't06-edit'], ajouter=['t06-vert']),
                     etat('#t06-f0-et', 'Complète', 'vert'),
@@ -713,10 +804,13 @@ TUTORIEL = {
                     vue('t06-resa', avec=True), anneau('#t06-bandeau-ok', d=1.2, decale=0.3),
                     anneau('#t06-st-fiches', d=1.0), reaction('r-ajour', d=2.8), pause(1.4)]},
         {'temps': 1, 'titre': "La fiche d'enregistrement, prête à signer",
-         'texte': 'Un seul PDF, une page par occupant, avec les deux cadres de signature.',
-         'voix': "Imprimer les fiches : une page par occupant, avec l'identité, la pièce, le domicile et le séjour, "
-                 "puis deux cadres de signature, pour le client et pour l'établissement.",
-         'gestes': [clic('#t06-imprimer', d=0.6), montrer('#t06-pdf', d=0.5, y=30), pause(0.6),
+         'texte': 'Un seul PDF téléchargé, une page par occupant, avec les deux cadres de signature.',
+         'voix': "Imprimer les fiches télécharge un seul PDF, que Mireille ouvre d'un clic : une page par occupant, "
+                 "avec l'identité, la pièce d'identité, le domicile et le séjour, puis deux cadres de signature, l'un "
+                 "pour le client, l'autre pour le cachet de l'établissement.",
+         'gestes': [clic('#t06-imprimer', d=0.6), montrer('#t06-dlc', d=0.3, y=-10), anneau('#t06-dlc', d=0.9),
+                    clic('#t06-dlc', fx=0.3, d=0.5), montrer('#t06-pdf', d=0.5, y=30), cacher('#t06-dlc', d=0.2, avec=True),
+                    pause(0.5),
                     zoom('#t06-p1-id', s=1.45, d=0.8, fx=0.9, fy=0.25), bulle('b-pdf', '#t06-p1-id', cote='droite', d=2.8),
                     pause(2.6), zoom('#t06-p1-sig', s=1.5, d=0.7, fx=0.5), anneau('#t06-p1-sig', d=1.4),
                     pause(0.6), dezoom(d=0.6), anneau('#t06-p2', d=1.0)]},
@@ -736,7 +830,10 @@ TUTORIEL = {
          'voix': "En fin de mois, Danielle, la directrice, ouvre les statistiques d'hébergement : arrivées et nuitées, "
                  "résidents et non-résidents, tirées des mêmes fiches. Un clic sur le mois, puis Nationalité : le "
                  "détail par pays.",
-         'gestes': [montrer('#t06-nav-dir', d=0.5, y=0), pause(0.6), anneau('#t06-pv-a tr.tot', d=1.2),
+         'gestes': [montrer('#t06-nav-dir', d=0.5, y=0), classe('#tu-perso', ajouter=['t06-pd'], avec=True),
+                    texte('#tu-perso .av', DIRECTRICE[0], avec=True),
+                    animer('#tu-perso', {'scale': 0.88}, {'scale': 1}, d=0.35, avec=True),
+                    pause(0.6), anneau('#t06-pv-a tr.tot', d=1.2),
                     clic('#t06-pv-a-oct th', fx=0.3, d=0.6), montrer('#t06-pvm', d=0.25, y=-6),
                     classe('#t06-pvm-nat', ajouter=['survol']), clic('#t06-pvm-nat', d=0.5), cacher('#t06-pvm', d=0.15),
                     cacher('#t06-pv-a', d=0.15), montrer('#t06-pv-b', d=0.3, y=0, avec=True),
@@ -749,7 +846,7 @@ TUTORIEL = {
             {'valeur': '1', 'compter': 1, 'unite': 'clic', 'icone': 'fiche',
              'texte': 'au check-in : la fiche du client principal est créée et pré-remplie depuis son contact'},
             {'valeur': '6', 'compter': 6, 'unite': 'informations', 'icone': 'coche',
-             'texte': 'obligatoires suivies par « Il manque » : la fiche passe Complète toute seule'},
+             'texte': 'requises par la fiche, suivies par « Il manque » : elle passe Complète toute seule'},
             {'valeur': '4', 'compter': 4, 'unite': 'regroupements', 'icone': 'graphe',
              'texte': 'des statistiques : mois, nationalité, motif, hôtel, tirés des mêmes fiches'},
         ],

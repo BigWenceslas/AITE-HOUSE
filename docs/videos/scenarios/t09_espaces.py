@@ -4,11 +4,11 @@
 La réceptionniste (Mireille Ateba, demo.POSTES) ouvre le tableau de bord
 Espaces & Prestations : salons VIP / VVIP, cabines SPA, fauteuils de coiffure
 et comptoir pressing sur un seul planning. Elle réserve un massage pour une
-cliente en séjour (la fin et le montant se calculent seuls), le confirme (le
-créneau est bloqué, l'e-mail part), voit refuser un salon déjà réservé, passe
-le soin en « Réalisée » (report automatique au folio du séjour), rend un dépôt
-pressing (« Marquer retiré ») et retrouve le bilan du soir sur le tableau de
-bord.
+cliente en séjour (le montant vient de la prestation, la fin de la prestation
+et du début), le confirme (le créneau est bloqué, l'e-mail est mis en file
+d'envoi), voit refuser un salon déjà réservé, passe le soin en « Réalisée »
+(report automatique au folio du séjour), rend un dépôt pressing (« Marquer
+retiré ») et retrouve le bilan du soir sur le tableau de bord.
 
 Profil rejoué : Réception (aite_hotel_management.group_hotel_user), comme le
 compte demo.reception de la base MuK. Menus de la barre : ceux de la
@@ -61,13 +61,18 @@ mot) :
   (libellés, aides « ? », « Nouveau », origine « Comptoir »), :62-67 (seules
   les prestations de la famille de la ressource sont proposées), :125-138
   (prix : manuel > prestation × quantité > heures × tarif horaire),
-  :205-209 (la prestation et le début remplissent la fin), :260-282 (conflit :
+  :205-209 (la fin ne se calcule que si une prestation est choisie : un
+  salon loué à l'heure se saisit à la main, étape 4), :260-282 (conflit :
   « Conflit : « … » est complète sur ce créneau (capacité 1). », contrôlé au
-  passage en Confirmée), :300-307 (Confirmer envoie l'e-mail si le réglage
-  est actif), :333-345 (Réalisée reporte au folio ouvert unique du client,
-  réglage actif par défaut), :370-373 (Marquer retiré), :379-426 (ligne de
-  folio « <prestation> — <référence> », une seule fois), :432-450 (no-show
-  automatique après le délai de grâce) ; data/slot_sequence_data.xml:6-7
+  passage en Confirmée), :300-331 (Confirmer prépare l'e-mail si le réglage
+  est actif, send_mail(force_send=False) : mis en file, envoyé par la tâche
+  « Mail: Email Queue Manager », toutes les heures, odoo18/addons/mail/data/
+  ir_cron_data.xml:4-12 ; la voix dit donc « part tout seul », pas
+  « aussitôt »), :333-345 (Réalisée reporte au folio ouvert unique du
+  client, réglage actif par défaut ; sans folio ouvert, rien n'est reporté et
+  « Reporter au folio » reste affiché, vue :44-46), :370-373 (Marquer
+  retiré), :379-426 (ligne de folio « <prestation> — <référence> », une
+  seule fois), :432-450 (no-show automatique après le délai de grâce) ; data/slot_sequence_data.xml:6-7
   (RES/26/0158) ; data/mail_template_data.xml:3-33 (objet « <société> —
   Confirmation <réf.> », « Bonjour …, », « Votre réservation est confirmée : »,
   Référence, Ressource, Prestation, Début dd/MM/yyyy HH:mm, Fin HH:mm, Montant,
@@ -75,7 +80,9 @@ mot) :
   models/res_config_settings.py:20-35 (6 heures, report au folio et e-mail
   actifs par défaut) ; views/booking_booking_views.xml:3-30 et :111-153
   (liste « Réservations de créneaux » : colonnes, couleurs, badge d'état,
-  somme du Montant, filtre « Aujourd'hui » par défaut).
+  somme du Montant, filtre « Aujourd'hui » par défaut ; seule la ligne d'une
+  annulée est grisée, :10 ; un brouillon garde un texte normal et un badge
+  gris, :21-25).
 - Odoo 18 (../odoo18) : addons/web/static/src/core/errors/error_dialogs.xml:4-12
   et i18n/fr.po (« Erreur de validation », « Fermer », « Rechercher… ») ;
   addons/mail/i18n/fr.po (« %s créé », « Envoyer message », « Note », « Suivre »,
@@ -106,9 +113,22 @@ l'installation (res_config_settings.py:20-35) ; 69 tests Odoo du module
 docs/GUIDE_TESTS.md:30).
 
 Données : demo.py (Complexe Hôtelier — Démo, Démo Hôtellerie SARL, Estelle
-Ngono chambre 204, FOL/2026/0214, +237 677 41 28 90, estelle.ngono@exemple.cm ;
-Martin Ebode en séjour, FOL/2026/0209 comme au tutoriel 3 ; Patrick Nkoulou,
-Brigitte Essomba ; réceptionniste Mireille Ateba). Les autres noms (Paul
+Ngono, +237 677 41 28 90 ; Patrick Nkoulou, Brigitte Essomba ; réceptionniste
+Mireille Ateba). Les folios de la série sont chiffrés au tutoriel 3 (liste du
+16/10 vers 11 h 45, t03_folio.py:424-452) : ceux d'Estelle Ngono
+(FOL/2026/0214, 112 800 FCFA sans prestation), de Martin Ebode (FOL/2026/0209,
+114 000 = séjour + taxe) et de Gaston Mbida (FOL/2026/0213, nuits + taxe)
+n'ont pas de place pour une prestation du 15/10. Seul celui de Brigitte
+Essomba (202 [CFT], 13-16/10, t02_planning.py:257) en a : 157 500 FCFA le
+14/10 au soir (t04_note_chambre.py:368-390), 198 000 le 16/10 (t03:447),
+soit 40 500 FCFA de services entre les deux. Le massage (27 000 FCFA) est
+donc le sien, reporté sur FOL/2026/0210, numéro du tutoriel 3 (t04 le nomme
+FOL/2026/0218, qui est au t02 la réservation d'Aristide Bella : écart de la
+série, signalé) ; son téléphone est celui du t04 (:328). Estelle Ngono tient
+la demande de salon refusée (étape 4, un brouillon : rien sur son folio). Le
+dépôt pressing est celui d'un client de passage, Samuel Etoga (fictif, sans
+séjour, donc sans folio ; téléphone de la plage fictive de la série +237 6 00
+00 00 xx, t02_planning.py:197-199). Les autres noms (Paul
 Essomba, Famille Ndjock, Linda Ewané, Rachel Bilong, Yves Tchana, Boris Kamga,
 Carine Mbappé) sont ceux, fictifs, du chapitre 6 (scenarios/c6_direction.py).
 Ressources, catalogue et tarifs sont fictifs (salons Wouri, Sanaga, Bonabéri
@@ -125,6 +145,15 @@ comme au chapitre 6). La journée rejouée est le jeudi 15/10/2026.
    créé » : accord masculin de la traduction standard (mail/i18n/fr.po).
 5. Les réservations de créneau (RES/26/0158) et d'hôtel (RES/2026/0214)
    partagent le préfixe « RES/ » (slot_sequence_data.xml:6).
+6. L'e-mail de confirmation est mis en file (send_mail(force_send=False),
+   booking_booking.py:331) et part avec la tâche horaire d'Odoo
+   (mail/data/ir_cron_data.xml:4-12) : jusqu'à une heure d'attente, alors que
+   le guide (AITE_Guide_Espaces_Prestations.pdf §2.3) dit « dès le clic sur
+   Confirmer ». La vidéo ne dit pas « aussitôt ».
+7. Série : le folio de Brigitte Essomba est FOL/2026/0210 au tutoriel 3
+   (t03_folio.py:447) mais FOL/2026/0218 au tutoriel 4
+   (t04_note_chambre.py:47, :217), numéro de la réservation d'Aristide Bella
+   au tutoriel 2 (t02_planning.py:281). Ce tutoriel suit le tutoriel 3.
 """
 
 import demo
@@ -136,6 +165,12 @@ NOM, ROLE = demo.POSTES['reception']
 JOUR = '15/10/2026'
 JOUR_ISO = '2026-10-15'
 CLIENT, TEL = demo.CLIENT, demo.CLIENT_TEL
+# La cliente du massage : Brigitte Essomba, chambre 202 [CFT] du 13 au 16/10 (t02_planning.py:257), son
+# téléphone de t04_note_chambre.py:328 ; son folio FOL/2026/0210 (t03_folio.py:447) passe de 157 500 FCFA
+# le 14/10 au soir (t04_note_chambre.py:368-390) à 198 000 FCFA le 16/10 (t03) : le massage y a sa place.
+SPA_CLI, SPA_TEL, SPA_FOLIO = 'Brigitte Essomba', '+237 675 88 12 40', 'FOL/2026/0210'
+# Le dépôt pressing : un client de passage, sans séjour donc sans folio (numéro de la plage fictive de la série).
+DEPOT, DEPOT_TEL = 'Samuel Etoga', '+237 6 00 00 00 31'
 MENUS = ['Front Desk', 'Réservations', 'Espaces & Prestations', 'Notes de chambre en attente', 'Facturation',
          'Fidélité', 'Gouvernante']
 PARENT_TDB = 'Espaces & Prestations — Tableau de bord'
@@ -205,20 +240,20 @@ RES = dict((r[0], r) for r in RESSOURCES)
 # début, fin, montant, état à 11 h, à 16 h, le soir). « done » réalisée,
 # « confirmed » confirmée, « draft » brouillon, None : pas encore créée.
 RESAS = [
-    ('0141', 'Martin Ebode', 'pressing', 'Chemise', 8.5, 9.0, 4800, 'done', 'done', 'done'),
+    ('0141', DEPOT, 'pressing', 'Chemise', 8.5, 9.0, 4800, 'done', 'done', 'done'),
     ('0138', 'Yves Tchana', 'fh1', 'Coupe homme', 9.0, 9.5, 6200, 'done', 'done', 'done'),
     ('0145', 'Linda Ewané', 'spa1', 'Massage relaxant 60 min', 10.0, 11.0, 27000, 'done', 'done', 'done'),
     ('0142', 'Carine Mbappé', 'ff1', 'Tresses (forfait 2 h)', 10.0, 12.0, 19000, 'confirmed', 'done', 'done'),
     ('0133', 'Paul Essomba', 'sanaga', '', 11.0, 14.0, 45000, 'confirmed', 'done', 'done'),
     ('0150', 'Rachel Bilong', 'spa2', 'Soin du visage éclat', 14.0, 15.0, 23000, 'confirmed', 'done', 'done'),
-    ('0158', CLIENT, 'spa1', 'Massage relaxant 60 min', 15.0, 16.0, 27000, None, 'confirmed', 'done'),
+    ('0158', SPA_CLI, 'spa1', 'Massage relaxant 60 min', 15.0, 16.0, 27000, None, 'confirmed', 'done'),
     ('0153', 'Boris Kamga', 'fh1', 'Coupe homme', 17.0, 17.5, 6200, 'confirmed', 'confirmed', 'confirmed'),
     ('0127', 'Patrick Nkoulou', 'wouri', '', 19.0, 22.0, 45000, 'confirmed', 'confirmed', 'confirmed'),
     ('0119', 'Famille Ndjock', 'bonaberi', '', 19.0, 23.0, 100000, 'confirmed', 'confirmed', 'confirmed'),
-    ('0159', 'Brigitte Essomba', 'wouri', '', 20.0, 23.0, 45000, None, 'draft', 'draft'),
+    ('0159', CLIENT, 'wouri', '', 20.0, 23.0, 45000, None, 'draft', 'draft'),
 ]
 MATIN, APREM, SOIR = 7, 8, 9
-RETRAITS = {MATIN: 3, SOIR: 2}      # dépôts pressing non retirés, toutes périodes (celui de Martin compris le matin)
+RETRAITS = {MATIN: 3, SOIR: 2}      # dépôts pressing non retirés, toutes périodes (celui de Samuel Etoga compris le matin)
 
 
 def hhmm(h):
@@ -484,12 +519,13 @@ SALON = fiche(
     ['', separateur("Aujourd'hui") + message(NOM, "Aujourd'hui à 11:09", CREE)],
     sale=True)
 
-# Le dépôt pressing de Martin Ebode, réalisé ce matin, reporté sur son folio.
+# Le dépôt pressing de Samuel Etoga, client de passage, réalisé ce matin : sans folio ouvert, rien n'est
+# reporté (booking_booking.py:333-345, :379-405), d'où « Reporter au folio » encore visible (vue :44-46).
 PRESSING = fiche(
     't09-pres', PARENT_LISTE, 'RES/26/0141', '11 / 11',
-    [[bt('t09-pres-b-ret', 'Marquer retiré')], []],
+    [[bt(None, 'Reporter au folio'), bt('t09-pres-b-ret', 'Marquer retiré')], [bt(None, 'Reporter au folio')]],
     (SB, 2),
-    ch('Client', champ('t09-pres-cli', 'Martin Ebode')) + ch('Téléphone', '+237 655 18 72 40', saisie=False)
+    ch('Client', champ('t09-pres-cli', DEPOT)) + ch('Téléphone', DEPOT_TEL, saisie=False)
     + ch('Ressource', champ('t09-pres-res', 'Comptoir pressing'))
     + ch('Prestation', champ('t09-pres-pre', 'Chemise'), aide=True)
     + ch('Quantité', champ('t09-pres-qte', '4'), aide=True, ident='t09-pres-l-qte')
@@ -501,14 +537,14 @@ PRESSING = fiche(
     '<div class="t09-grp" id="t09-pres-pg-g"><div class="t09-grp-t">Pressing</div>%s%s</div>'
     % (ch('Retrait prévu', champ('t09-pres-rp', JOUR + ' 18:00:00')),
        ch('Retiré', case('t09-pres-retire'), ident='t09-pres-l-ret'))
-    + groupe_sejour('t09-pres', 'FOL/2026/0209', 'Chemise — RES/26/0141'),
+    + groupe_sejour('t09-pres'),
     [separateur("Aujourd'hui") + message(NOM, "Aujourd'hui à 08:36", suivi('Confirmée', 'Réalisée'))
      + message(NOM, "Aujourd'hui à 08:34", suivi('Brouillon', 'Confirmée')) + message(NOM, '', CREE, suite=True)],
     abonne=True)
 
 # --------------------------------------------------- la liste du jour --
 ETAT_LISTE = {'done': ('Réalisée', 't09-ok', 'ok'), 'confirmed': ('Confirmée', 't09-info', 'info'),
-              'draft': ('Brouillon', 't09-muet', 'gris')}
+              'draft': ('Brouillon', '', 'gris')}
 COLS = [('Référence', '138px'), ('Début', '200px'), ('Client', '1fr'), ('Ressource', '192px'), ('Famille', '168px'),
         ('Prestation', '1.45fr'), ('Montant', '142px', 'd'), ('État', '120px')]
 GAB = '40px ' + ' '.join(c[1] for c in COLS)
@@ -554,7 +590,7 @@ TELEPHONE = ('<div class="voile masque" id="t09-tel-voile" data-layout-allow-ove
              '<div class="t09-mail-o" id="t09-mail-o">%s — Confirmation RES/26/0158</div>'
              '<div class="t09-mail-c"><p>Bonjour %s,</p><p>Votre réservation est <b>confirmée</b> :</p>'
              '<div class="t09-mail-t">%s</div><p>À très bientôt,<br>%s</p></div></div></div>'
-             % (e(demo.SOCIETE), e(CLIENT),
+             % (e(demo.SOCIETE), e(SPA_CLI),
                 ''.join('<div><b>%s</b><span>%s</span></div>' % (e(a), e(b)) for a, b in LIGNES_MAIL), e(demo.SOCIETE)))
 
 ERREUR = ('<div class="voile masque" id="t09-err-voile" data-layout-allow-overlap data-layout-allow-occlusion></div>'
@@ -779,8 +815,8 @@ TUTORIEL = {
                 "bloque la cabine : la réception perd le fil.",
     },
     'revelation': {
-        'promesse': "Salons VIP, SPA, coiffure et pressing sur un seul planning. La fin et le prix se calculent seuls, "
-                    "un créneau complet est refusé, la prestation passe sur la note de chambre.",
+        'promesse': "Salons VIP, SPA, coiffure et pressing sur un seul planning. Avec une prestation, la fin et le prix "
+                    "se calculent seuls ; un créneau complet est refusé, la prestation passe sur la note de chambre.",
         'voix': "Avec Aïte haousse, salons, spa, coiffure et pressinng partagent un seul planninng.",
     },
     'temps': ['Voir', 'Réserver', 'Verrouiller', 'Clôturer'],
@@ -808,30 +844,30 @@ TUTORIEL = {
          'gestes': [curseur('#t09-d1-l5', fx=0.55, d=0.6), anneau('#t09-d1-kpis', d=1.4, avec=True),
                     defiler('#t09-in1', -330, d=1.0),
                     zoom('#t09-d1-pl', s=1.25, d=0.8), anneau('#t09-d1-t3', d=1.2),
-                    bulle('b-libres', '#t09-d1-x0', cote='haut', d=3.0), anneau('#t09-d1-x0', d=1.2, avec=True),
+                    bulle('b-libres', '#t09-d1-x0', cote='gauche', d=3.0), anneau('#t09-d1-x0', d=1.2, avec=True),
                     pause(1.6), dezoom(d=0.6), anneau('#t09-d1-l7', d=1.0)]},
         {'temps': 1, 'titre': 'Réserver un soin',
          'texte': 'Cliente, cabine, prestation, début : la fin et le montant se calculent seuls.',
-         'voix': "Estelle Ngono, en chambre deux cent quatre, veut un massage à quinze heures. Mireille choisit la "
-                 "cliente, la cabine, puis le soin : seules les prestations de spa sont proposées. Elle saisit le "
-                 "début : la fin et le montant se remplissent seuls.",
+         'voix': "Brigitte Essomba, en chambre deux cent deux, veut un massage à quinze heures. Mireille choisit la "
+                 "cliente, la cabine, puis le soin : seules les prestations de spa sont proposées, et le montant "
+                 "s'affiche. Elle saisit le début : la fin se remplit seule.",
          'gestes': [defiler('#t09-in1', 0, d=0.5, puis=0.05), clic('#t09-d1-nouv', d=0.5), vue('t09-spa'),
-                    clic('#t09-spa-cli', fx=0.3, d=0.4, puis=0.05), choisir('t09-spa-cli', CLIENT, puis=0.1),
+                    clic('#t09-spa-cli', fx=0.3, d=0.4, puis=0.05), choisir('t09-spa-cli', SPA_CLI, puis=0.1),
                     montrer('#t09-spa-save', d=0.2, y=0, avec=True),
-                    texte('#t09-spa-tel-val', TEL, puis=0.05), clic('#t09-spa-res', fx=0.3, d=0.4, puis=0.05),
+                    texte('#t09-spa-tel-val', SPA_TEL, puis=0.05), clic('#t09-spa-res', fx=0.3, d=0.4, puis=0.05),
                     choisir('t09-spa-res', 'Cabine SPA 1', puis=0.1), clic('#t09-spa-pre', fx=0.3, d=0.4, puis=0.05),
                     montrer('#t09-spa-dd', d=0.2, y=-6), pause(0.7), clic('#t09-spa-dd0', d=0.35, puis=0.05),
                     cacher('#t09-spa-dd', d=0.15), choisir('t09-spa-pre', 'Massage relaxant 60 min', puis=0.1),
                     texte('#t09-spa-mnt-val', '27 000 FCFA', puis=0.05),
                     clic('#t09-spa-deb', fx=0.3, d=0.4, puis=0.05), saisir('t09-spa-deb', JOUR + ' 15:00:00', d=0.8),
                     texte('#t09-spa-fin-val', JOUR + ' 16:00:00'), texte('#t09-spa-dur-val', '01:00', avec=True),
-                    zoom('#t09-spa-droite', s=1.3, fx=0.62, d=0.7), curseur('#t09-spa-l-mnt', fx=0.1, d=0.5, avec=True),
+                    zoom('#t09-spa-droite', s=1.2, fx=0.75, d=0.7), curseur('#t09-spa-mnt', fx=0.6, d=0.5, avec=True),
                     anneau('#t09-spa-l-mnt', d=1.4),
                     bulle('b-calcul', '#t09-spa-l-mnt', cote='droite', d=2.8, avec=True), pause(1.6), dezoom(d=0.5)]},
         {'temps': 2, 'titre': 'Confirmer : le créneau est bloqué',
          'texte': "La réservation passe en Confirmée ; l'e-mail de confirmation part tout seul.",
-         'voix': "Un clic sur Confirmer : le créneau est bloqué, et la cliente reçoit aussitôt son imèle de "
-                 "confirmation, avec l'heure, la cabine et le montant.",
+         'voix': "Un clic sur Confirmer : le créneau est bloqué, et l'imèle de confirmation part tout seul, avec "
+                 "l'heure, la cabine et le montant.",
          'gestes': [clic('#t09-spa-b-conf', d=0.5), cacher('#t09-spa-save', d=0.1),
                     texte('#t09-spa-titre', 'RES/26/0158', avec=True), texte('#t09-spa-ref', 'RES/26/0158', avec=True),
                     cacher('#t09-spa-g0', d=0.1, avec=True), montrer('#t09-spa-g1', d=0.25, y=0, avec=True),
@@ -844,13 +880,13 @@ TUTORIEL = {
                     pause(1.8), fermer('t09-tel')]},
         {'temps': 2, 'titre': 'Un salon déjà pris ? Refusé.',
          'texte': "À l'heure, au tarif horaire du salon ; un créneau complet est refusé à la confirmation.",
-         'voix': "Brigitte Essomba veut le salon VIP Wouri ce soir, de vingt à vingt-trois heures. Sans prestation, "
+         'voix': "Estelle Ngono veut le salon VIP Wouri ce soir, de vingt à vingt-trois heures. Sans prestation, "
                  "le tarif horaire fait le prix : quarante-cinq mille francs. Mais le salon est déjà réservé : la "
                  "confirmation est refusée, avec la raison.",
          'gestes': [clic('#t09-spa-nv', d=0.45), vue('t09-salon'),
-                    clic('#t09-salon-cli', fx=0.3, d=0.4, puis=0.05), choisir('t09-salon-cli', 'Brigitte Essomba', puis=0.1),
+                    clic('#t09-salon-cli', fx=0.3, d=0.4, puis=0.05), choisir('t09-salon-cli', CLIENT, puis=0.1),
                     montrer('#t09-salon-save', d=0.2, y=0, avec=True),
-                    texte('#t09-salon-tel-val', '+237 690 27 51 84', puis=0.05),
+                    texte('#t09-salon-tel-val', TEL, puis=0.05),
                     clic('#t09-salon-res', fx=0.3, d=0.4, puis=0.05), choisir('t09-salon-res', 'Salon VIP Wouri', puis=0.1),
                     clic('#t09-salon-deb', fx=0.3, d=0.4, puis=0.05), saisir('t09-salon-deb', JOUR + ' 20:00:00', d=0.6),
                     clic('#t09-salon-fin', fx=0.3, d=0.35, puis=0.05), saisir('t09-salon-fin', JOUR + ' 23:00:00', d=0.6),
@@ -865,31 +901,31 @@ TUTORIEL = {
         {'temps': 3, 'titre': 'Réalisée : sur la note de chambre',
          'texte': 'La prestation est reportée seule sur le folio du séjour, une seule fois.',
          'voix': "Seize heures, le massage est fait. Un clic sur Réalisée : la prestation est reportée toute seule "
-                 "sur le folio de la chambre deux cent quatre, une seule fois. Elle sera réglée au départ, avec le "
+                 "sur le folio de la chambre deux cent deux, une seule fois. Elle sera réglée au départ, avec le "
                  "séjour.",
          'gestes': naviguer('resa', [vue('t09-liste'), pause(0.2)]) + [
              texte('#t09-spa-par', PARENT_LISTE, avec=True), texte('#t09-spa-pg', '5 / 11', avec=True),
              classe('#t09-l-0158', ajouter=['survol'], avec=True), clic('#t09-l-0158', fx=0.3, d=0.45),
              vue('t09-spa'), clic('#t09-spa-b-done', d=0.45), cacher('#t09-spa-g1', d=0.1),
              classe('#t09-spa-sb1', retirer=['actif'], avec=True), classe('#t09-spa-sb2', ajouter=['actif'], avec=True),
-             texte('#t09-spa-folio-val', 'FOL/2026/0214', avec=True),
+             texte('#t09-spa-folio-val', SPA_FOLIO, avec=True),
              texte('#t09-spa-ligne', 'Massage relaxant 60 min — RES/26/0158', avec=True),
              cacher('#t09-spa-ch1', d=0.1, avec=True), montrer('#t09-spa-ch2', d=0.3, y=8, avec=True),
              zoom('#t09-spa-sejour', s=1.5, fx=0.35, d=0.7), anneau('#t09-spa-sejour', d=1.4),
              bulle('b-folio', '#t09-spa-sejour', cote='bas', d=3.0, avec=True), pause(1.8), dezoom(d=0.5)]},
         {'temps': 3, 'titre': 'Pressing : la quantité fait le prix',
-         'texte': '4 chemises × 1 200 FCFA, déjà sur la note ; au retrait, Marquer retiré.',
-         'voix': "Ce matin, Martin Ebode a déposé quatre chemises : le montant a suivi la quantité, et sa note de "
-                 "chambre est déjà à jour. Ce soir, il les récupère : Marquer retiré, et le dépôt sort des retraits "
-                 "en attente.",
+         'texte': '4 chemises × 1 200 FCFA : 4 800 FCFA ; au retrait, Marquer retiré.',
+         'voix': "Ce matin, Samuel Etoga, client de passage, a déposé quatre chemises : le montant a suivi la "
+                 "quantité. Ce soir, il les récupère : Marquer retiré, et le dépôt sort des retraits en attente.",
          'gestes': [classe('#t09-l-0158', retirer=['survol', 't09-info'], ajouter=['t09-ok']),
                     classe('#t09-l-0158-e', retirer=['info'], ajouter=['ok'], avec=True),
                     texte('#t09-l-0158-e', 'Réalisée', avec=True),
                     clic('#t09-spa-par', d=0.45), vue('t09-liste'), pause(0.2),
                     classe('#t09-l-0141', ajouter=['survol'], avec=True), clic('#t09-l-0141', fx=0.3, d=0.45),
                     vue('t09-pres'), anneau('#t09-pres-l-qte', d=0.9), anneau('#t09-pres-l-mnt', d=0.9),
-                    reaction('r-pressing', d=3.0, avec=True), anneau('#t09-pres-sejour', d=1.2),
+                    reaction('r-pressing', d=3.0),
                     clic('#t09-pres-b-ret', d=0.45), cacher('#t09-pres-g0', d=0.1),
+                    montrer('#t09-pres-g1', d=0.2, y=0, avec=True),
                     classe('#t09-pres-retire', ajouter=['coche'], avec=True), anneau('#t09-pres-l-ret', d=1.2)]},
         {'temps': 3, 'titre': 'Le bilan du soir',
          'texte': "Chiffre d'affaires, remplissage, retraits en attente ; un client absent passe seul en No-show.",
@@ -897,7 +933,7 @@ TUTORIEL = {
                  "un client confirmé qui ne vient pas passe tout seul en rendez-vous manqué, six heures après la fin.",
          'gestes': naviguer('tdb', [vue('t09-tdb2'), defiler('#t09-in2', -330, d=0.01)]) + [
              anneau('#t09-d2-ca', d=1.1), anneau('#t09-d2-remp', d=1.0), anneau('#t09-d2-pr', d=1.0),
-             anneau('#t09-d2-t3', d=1.0), curseur('#t09-d2-t3', fx=0.5, d=0.5, avec=True), bulle('b-absent', '#t09-d2-ns', cote='gauche', d=3.4),
+             anneau('#t09-d2-t3', d=1.0), curseur('#t09-d2-t3', fx=0.5, d=0.5, avec=True), bulle('b-absent', '#t09-d2-ns', cote='bas', d=3.4),
              anneau('#t09-d2-ns', d=1.4, avec=True), pause(2.4)]},
     ],
     'resultats': {

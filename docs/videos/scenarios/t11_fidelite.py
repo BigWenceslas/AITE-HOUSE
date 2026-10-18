@@ -140,38 +140,42 @@ res_config_settings.py:24-25). « Une fois par jour » et non « chaque nuit » 
 la tâche planifiée n'a pas d'heure fixe.
 
 Données : demo.py (Complexe Hôtelier — Démo, Démo Hôtellerie SARL, Estelle
-Ngono, caissier Hervé Tchakounté, directrice Danielle Eyenga, Claire Durand).
-FOL/2026/0214 vaut 122 000 FCFA au départ, comme au tutoriel 3 : deux nuits
-Confort (90 000), quatre petits-déjeuners (20 000) et 12 000 FCFA de taxe de
-séjour, passé « Facturé » (t03_folio.py:345, :375-377, :395, :593) ; il
-rapporte donc 122 points, et « Facturé » sur la fiche cumule ses trois folios
-(96 000 + 144 000 + 122 000). Le journal du 15/10 reprend les prestations
-réalisées du tutoriel 9 (t09_espaces.py:207-219 : Martin Ebode, Yves Tchana,
-Linda Ewané, Carine Mbappé, Paul Essomba, Rachel Bilong, et le massage
-d'Estelle RES/26/0158 à 27 000 FCFA, réalisé pendant son séjour :
-t09:214, :865-877) et le départ de Claire Durand (FOL/2026/0201, 123 000 FCFA
-soldé : t03_folio.py:349 ; départ le 15/10 : demo.ARRIVEES). Le t09 reporte ce
-massage sur FOL/2026/0214, alors que le t03 montre le folio facturé à
-122 000 FCFA sans cette ligne : la série ne tranche pas ; ce tutoriel suit le
-t03 pour le folio et le t09 pour la prestation (27 points), sans rejouer de
-double compte. Séquences recalées sur la série : tickets « Bar de la
-terrasse » /0011 le 31/07 (t10_ardoises.py:223, :490), /0042 le 14/10 et /0047
-le 16/10 à 22:41 (t04_note_chambre.py:214, :405) — la caisse ouvre début
-juillet 2026, Estelle n'y a donc aucun ticket avant, et le sien du 16/10 est
-le /0045 ; prestations « RES/%(y)s/ » (sans remise à zéro) vers RES/26/0140
-au matin du 15/10 (t09:207-219), environ 0,4 par jour depuis novembre 2025,
-sans réutiliser un numéro du t09 ; folios FOL/2026/0084 le 22/02 et 0189 le
+Ngono, caissier Hervé Tchakounté, directrice Danielle Eyenga, Claire
+Durand). FOL/2026/0214 vaut 112 800 FCFA au départ, comme au tutoriel 3 :
+deux nuits Confort (90 000), 12 000 FCFA de taxe de séjour et quatre «
+Petit-déjeuner buffet » à 2 700 FCFA (10 800), passé « Facturé » le 16/10 à
+11:42 (t03_folio.py:137-141, :200-206, :428, :702) ; il rapporte donc 112
+points, et « Facturé » sur la fiche cumule ses trois folios (96 000 + 144
+000 + 112 800). Le script relit ce total dans t03_folio.py et s'arrête s'il
+diverge. Le journal du 15/10 reprend les prestations réalisées du tutoriel 9
+(t09_espaces.py:207-219 : Martin Ebode, Yves Tchana, Linda Ewané, Carine
+Mbappé, Paul Essomba, Rachel Bilong, et le massage d'Estelle RES/26/0158 à
+27 000 FCFA, réalisé pendant son séjour : t09:214, :865-877) et le départ de
+Claire Durand (RES/2026/0201, chambre 401, du 14 au 15/10 :
+t02_planning.py:259, :288 ; folio FOL/2026/0201 de 123 000 FCFA, soit une
+nuit VIP à 120 000 et 3 000 de taxe pour un adulte, selon folio_resa de
+t03_folio.py:402-406). Le t09 reporte ce massage sur FOL/2026/0214, alors
+que le t03 montre le folio facturé à 112 800 FCFA sans cette ligne : la
+série ne tranche pas ; ce tutoriel suit le t03 pour le folio et le t09 pour
+la prestation (27 points), sans rejouer de double compte. Séquences recalées
+sur la série : tickets « Bar de la terrasse » /0011 le 31/07
+(t10_ardoises.py:223, :490), /0042 le 14/10 et /0047 le 16/10 à 22:41
+(t04_note_chambre.py:214, :405) — la caisse ouvre début juillet 2026,
+Estelle n'y a donc aucun ticket avant, et le sien du 16/10 est le /0045 ;
+prestations « RES/%(y)s/ » (sans remise à zéro) vers RES/26/0140 au matin du
+15/10 (t09:207-219), environ 0,4 par jour depuis novembre 2025, sans
+réutiliser un numéro du t09 ; folios FOL/2026/0084 le 22/02 et 0189 le
 02/09. Les volumes du regroupement par origine (348 mouvements, 22 968
 points depuis novembre 2025) restent sous ces séquences ; ils ne peuvent pas
 suivre la tuile « Points fidélité émis » du t15 (12 480 points du 30/09 au
 14/10, t15_direction.py:517), qui demanderait une centaine de folios sur la
-période quand les numéros du t03 et du t04 n'en laissent qu'une trentaine.
-Autres clients fictifs ajoutés : Boris Ndzana (ticket Bar de la terrasse/0043
-le 14/10), Carine Owona, Gaëlle Nkeng, Hugues Mbida, Nadège Abena, Pauline
-Ekotto (t02_planning.py:254), Sandrine Mvondo, Thierry Etoundi ; Patrick
-Nkoulou, Brigitte Essomba, Martin Ebode et Paul Essomba viennent des
-tutoriels 3, 4 et 9. Les tickets du bar d'Estelle sont réglés en espèces
-(voir écart 2).
+période quand le t03 n'en compte que 211 depuis l'ouverture (t03:441).
+Autres clients fictifs ajoutés : Boris Ndzana (ticket Bar de la
+terrasse/0043 le 14/10), Carine Owona, Gaëlle Nkeng, Hugues Mbida, Nadège
+Abena, Pauline Ekotto (t02_planning.py:254), Sandrine Mvondo, Thierry
+Etoundi ; Patrick Nkoulou, Brigitte Essomba, Martin Ebode et Paul Essomba
+viennent des tutoriels 3, 4 et 9. Les tickets du bar d'Estelle sont réglés
+en espèces (voir écart 2).
 
 Captures de référence (modèle visuel, jamais incrustées) : ref_muk/053,
 054, 055, 056, 602, 613 ; captures de lecture prises pour ce tutoriel sur la
@@ -307,7 +311,18 @@ def ref_presta(d, n=None):
 # au bar après ses réunions depuis l'ouverture de la caisse, et trois séjours
 # (folio = nuits + taxe de séjour ; le dernier avec ses quatre petits-déjeuners).
 D = date
-AUJOURDHUI_FOLIO = 122000                          # t03_folio.py:345, :375-377, :395
+AUJOURDHUI_FOLIO = 112800                          # t03_folio.py:204-206, :428
+
+
+def _folio_du_t03():
+    """Le total TTC de FOL/2026/0214 au tutoriel 3, lu dans son scénario : si le
+    t03 change, ce tutoriel le signale au lieu de diverger en silence."""
+    with open(os.path.join(ICI, 't03_folio.py'), encoding='utf-8') as f:
+        m = re.search(r"\('0214', CLIENT, (\d+),", f.read())
+    return int(m.group(1)) if m else None
+
+
+assert _folio_du_t03() in (None, AUJOURDHUI_FOLIO), 't11 : FOL/2026/0214 vaut %s au t03' % _folio_du_t03()
 FOLIOS = {D(2026, 2, 22): ('FOL/2026/0084', 96000), D(2026, 9, 2): ('FOL/2026/0189', 144000),
           AUJOURDHUI: (demo.FOLIO, AUJOURDHUI_FOLIO)}
 MASSAGE = (D(2026, 10, 15), 'slot_spa', 27000)     # RES/26/0158, t09_espaces.py:214, :865-877
@@ -414,7 +429,9 @@ ROBOT = ('<svg viewBox="0 0 40 40"><rect width="40" height="40" rx="6" fill="#3B
 LIVRE = ('<svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 3h12a2 2 0 012 2v14H7a2 2 0 01-2-2z" '
          'opacity=".95"/><path d="M7 19h12v2H7a2 2 0 010-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>')
 # le bouton des colonnes optionnelles au bout de l'en-tête (la colonne Note est
-# optional="hide" : loyalty_move_views.xml:14), dessiné comme au t06
+# optional="hide" : loyalty_move_views.xml:14 ; icône oi-settings-adjust :
+# odoo18/addons/web/static/src/views/list/list_renderer.xml:48-51), dessiné
+# comme au t06
 REGLAGES = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">'
             '<path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>')
 AVION = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.4 11.1L21.6 3.2l-5.4 17.6-4.7-6.3z"/></svg>'
@@ -500,7 +517,7 @@ CAISSE = fenetre_pos('t11-pos', [PAIEMENT], CAISSIER, numero='718', calques=DIAL
 COLS = '40px 142px 214px 290px 1fr 206px 104px 26px'
 TETE = ('<div class="tete" style="grid-template-columns:%s"><span class="cb"></span><span>Date</span><span>Client</span>'
         '<span>Origine</span><span>Référence</span><span class="d">Montant de base</span><span class="d">Points</span>'
-        '<span class="t11-opt" title="Colonnes optionnelles">%s</span></div>' % (COLS, REGLAGES))
+        '<span class="t11-opt">%s</span></div>' % (COLS, REGLAGES))
 
 
 def ligne_mvt(ident, d, client, origine, ref, montant, pts, rouge=False):
@@ -517,8 +534,8 @@ JOURNAL = [  # (date, client, origine, référence, montant) — du plus récent
     (AUJOURDHUI, 'Patrick Nkoulou', 'pos', ref_bar(44), 7500),
     (AUJOURDHUI, CLIENTE, 'hotel', demo.FOLIO, FOLIOS[AUJOURDHUI][1]),
     # le jeudi 15/10 : les prestations réalisées de t09_espaces.py:207-219, de la
-    # dernière à la première, et le départ de Claire Durand (FOL/2026/0201, soldé
-    # à 123 000 FCFA : t03_folio.py:349 ; départ le 15/10 : demo.ARRIVEES)
+    # dernière à la première, et le départ de Claire Durand (RES/2026/0201, 401,
+    # 14-15/10 : t02_planning.py:259, :288 ; 120 000 + 3 000 de taxe : t03:402-406)
     (D15, CLIENTE, 'slot_spa', ref_presta(D15, 158), 27000),
     (D15, 'Rachel Bilong', 'slot_spa', ref_presta(D15, 150), 23000),
     (D15, 'Paul Essomba', 'slot_space', ref_presta(D15, 133), 45000),
@@ -532,8 +549,8 @@ assert JOURNAL[0][3] == MVTS[-1][2] and JOURNAL[2][3] == MVTS[-2][2] and JOURNAL
 # (origine, nombre de mouvements, somme des montants, somme des points) depuis
 # les premiers mouvements (novembre 2025), dans l'ordre d'affichage d'Odoo 18
 # (clé de la sélection). Les volumes restent sous les séquences visibles dans la
-# série au 16/10/2026 : folios jusqu'à FOL/2026/0227 (t04_note_chambre.py:54),
-# environ 0,55 folio par jour depuis FOL/2026/0084 le 22/02 ; tickets jusqu'à
+# série au 16/10/2026 : 211 folios en tout (t03_folio.py:441), environ 0,55
+# par jour depuis FOL/2026/0084 le 22/02 ; tickets jusqu'à
 # Bar de la terrasse/0047, Restaurant/0031 et Boutique/0018 (t04:405-407) ;
 # prestations jusqu'à RES/26/0159 (t09_espaces.py:218). Les points d'un groupe
 # ne dépassent jamais montant ÷ 1 000 (partie entière ligne par ligne).
@@ -941,9 +958,9 @@ TUTORIEL = {
         {'temps': 0, 'titre': 'Les points tombent seuls',
          'texte': 'Mouvements de points : la cliente, l\'origine, le ticket, et 12 points.',
          'voix': "Dans le grand livre des points, la vente est déjà là : la cliente, le bar, le ticket, et douze "
-                 "points, un par tranche de mille francs. Son séjour facturé ce matin en a rapporté cent vingt-deux.",
+                 "points, un par tranche de mille francs. Son séjour facturé ce matin en a rapporté cent douze.",
          'gestes': [*personnage(None, NOM[0], retirer=['t11-pc']), cacher('#t11-pos', d=0.5), pause(0.3), classe('#t11-l0', ajouter=['survol']),
-                    zoom('#t11-l0', s=1.25, fx=0.6, d=0.8), bulle('b-pts', '#t11-l0-pts', cote='haut', d=3.0),
+                    zoom('#t11-l0', s=1.25, fx=0.6, d=0.8), bulle('b-pts', '#t11-l5', cote='bas', d=3.0),
                     pause(2.8), dezoom(d=0.6), anneau('#t11-l2', d=1.6), pause(0.6)]},
         {'temps': 0, 'titre': 'Regroupé par origine',
          'texte': 'Séjours, bar, coiffure, pressing, spa, espaces VIP : un seul capital.',
@@ -980,13 +997,13 @@ TUTORIEL = {
                     cacher('#t11-dd', d=0.15), ouvrir('t11-as'), clic('#t11-as-cli', d=0.4),
                     choisir('t11-as-cli', CLIENTE), saisir('t11-as-pts', '-1000'),
                     saisir('t11-as-mot', 'Utilisation : nuit offerte'),
-                    bulle('b-motif', '#t11-as-mot', cote='bas', d=2.4), pause(2.8), clic('#t11-appl', d=0.5),
-                    fermer('t11-as')]},
+                    bulle('b-motif', '#t11-as-mot', cote='bas', d=2.4), pause(1.9), clic('#t11-appl', d=0.5),
+                    fermer('t11-as'), clic('#t11-st-pts', fx=0.4, d=0.4), vue('t11-hist')]},
         {'temps': 2, 'titre': "Tout l'historique, un seul solde",
          'texte': 'Points : chaque mouvement de la cliente, le retrait en rouge, le solde en pied de liste.',
          'voix': "Un clic sur Points : tout l'historique d'Estelle, séjours, bar, spa, coiffure, espaces VIP. Le "
                  "retrait s'affiche en rouge, et le solde descend d'autant.",
-         'gestes': [clic('#t11-st-pts', d=0.45), vue('t11-hist'), curseur('#t11-h0', fx=0.45, d=0.5),
+         'gestes': [curseur('#t11-h0', fx=0.45, d=0.5),
                     classe('#t11-h0', ajouter=['survol'], avec=True), zoom('#t11-h0', s=1.25, fx=0.6, d=0.7),
                     pause(1.8), dezoom(d=0.6), defiler('#t11-hist-defil', -(HAUT_LISTE - VISIBLE), d=1.6),
                     anneau('#t11-h-tot', d=2.0), pause(1.2)]},

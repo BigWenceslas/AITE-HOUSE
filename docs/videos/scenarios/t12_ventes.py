@@ -4,20 +4,22 @@
 La directrice (Danielle Eyenga, demo.POSTES['direction']) ouvre, dans le Point
 de Vente, le menu « Analyse AITE » → « Tableau de bord » du module
 aite_pos_analytics : chiffre d'affaires, marge brute, coût des marchandises
-(CMV) et transactions ; un clic sur « Ce mois » recalcule tout et fait
-apparaître la bande de comparaison à la période précédente ; plus bas, la
-carte heure × jour et ses deux repères (pic de deux heures, jour fort) ;
-l'onglet « Par caisse » compare le bar et le restaurant ; l'onglet
-« Articles » cherche les bières et ouvre le détail d'un article ; l'onglet
-« Écarts de caisse » classe les sessions de la plus grave à la moins grave.
+(CMV) et transactions ; elle saisit une période (du 01/10 au 13/10/2026) et
+clique « Analyser » : tout se recalcule et la bande de comparaison à la
+période précédente apparaît ; plus bas, la carte heure × jour et ses deux
+repères (pic de deux heures, jour fort) ; l'onglet « Par caisse » compare le
+bar et le restaurant ; l'onglet « Articles » cherche les bières et ouvre le
+détail d'un article ; l'onglet « Écarts de caisse » classe les sessions de la
+plus grave à la moins grave.
 
-Profil rejoué : compte demo.direction de la base MuK (Point de Vente :
-Administrateur ; le groupe Manager — Analyses POS est impliqué par
-point_of_sale.group_pos_manager côté Direction, voir addons/
-aite_pos_analytics/security/pos_analytics_security.xml:16-39) ; le menu
-« Analyse AITE » est réservé au groupe Utilisateur — Analyses POS
-(views/pos_analytics_menus.xml:10-14). Applications de la barre MuK :
-ecrans.APPS_PROFIL['direction'] (relevées sur ref_muk/330-direction-
+Profil rejoué : compte demo.direction de la base MuK. Le menu « Analyse AITE »
+est réservé au groupe Utilisateur — Analyses POS (views/
+pos_analytics_menus.xml:10-14) ; la Direction l'a parce que le groupe Manager
+— Analyses POS, qui l'implique, lui est donné explicitement
+(aite_demo_data/models/demo_generator.py:74-80 ; security/
+pos_analytics_security.xml:16-30), ou parce que base.group_system implique ce
+groupe Manager (pos_analytics_security.xml:33-39). Applications de la barre
+MuK : ecrans.APPS_PROFIL['direction'] (relevées sur ref_muk/330-direction-
 accueil.png). Menus du Point de Vente : ref_muk/015 et 600 (Tableau de bord,
 Commandes, Produits, Analyse AITE, Analyse, Configuration ; libellés natifs :
 odoo18/addons/point_of_sale/i18n/fr.po:2049-2050, 2483-2484, 5067-5068,
@@ -26,10 +28,12 @@ odoo18/addons/point_of_sale/i18n/fr.po:2049-2050, 2483-2484, 5067-5068,
 Sources des libellés (relevés mot pour mot) :
 
 - Écran d'accueil du Point de Vente (kanban des caisses) : odoo18/addons/
-  point_of_sale/views/pos_config_view.xml:125-127 et i18n/fr.po:298, 303,
-  4787 (« Fermeture », « Solde », « Ouvrir la caisse ») ; forme d'après
-  ref_muk/600-pos-tableau-de-bord.png. Montant au format monétaire d'Odoo,
-  devise XAF de symbole « FCFA » (odoo18/odoo/addons/base/data/
+  point_of_sale/views/point_of_sale_dashboard.xml:101-131 (nom, bouton
+  « Open Register », « Closing » et date, « Balance » et montant) et
+  i18n/fr.po:298, 303, 4787 (« Fermeture », « Solde », « Ouvrir la
+  caisse ») ; forme d'après ref_muk/600-pos-tableau-de-bord.png (deux
+  colonnes, une carte par caisse). Montant au format monétaire d'Odoo, devise
+  XAF de symbole « FCFA » (odoo18/odoo/addons/base/data/
   res_currency_data.xml:476-483).
 - Menu « Analyse AITE » et ses six entrées : views/pos_analytics_menus.xml
   :10-50 (Tableau de bord, Par caisse, Sessions POS, Par catégorie, Écarts de
@@ -40,15 +44,18 @@ Sources des libellés (relevés mot pour mot) :
   dashboard_shell.xml:103-114 ; onglet actif violet #714B67 :
   static/src/scss/pos_dashboard.scss:53-68.
 - Barre de filtres : dashboard_shell.xml:119-217 (Période, six raccourcis,
-  Du, au, Analyser ; Caisse, « Toutes les caisses » et une pastille par
-  caisse, ligne affichée à partir de deux caisses :143 ; Heure, cinq plages,
-  18 « h → » 23 « h » OK ; Jour, « Tous », Lun … Dim, « Semaine (lun–ven) »,
-  « Week-ends ») ; libellés des raccourcis : utils.js:131-187 ; « Toute la
-  période » au premier chargement, bornes = première et dernière ouverture
-  de session : static/src/js/dashboard.js:59-125 ; « Ce mois » :
-  utils.js:143-156 et components/filter_bar.js:79-88 ; couleurs des
-  pastilles : models/pos_dashboard.py:651-654, 905-912 ; styles :
-  pos_dashboard.scss:70-125, 451-511.
+  Du, au — deux <input type="date"> bornés par la première et la dernière
+  ouverture de session :132-139 —, Analyser ; Caisse, « Toutes les caisses »
+  et une pastille par caisse, ligne affichée à partir de deux caisses :143 ;
+  Heure, cinq plages, 18 « h → » 23 « h » OK ; Jour, « Tous », Lun … Dim,
+  « Semaine (lun–ven) », « Week-ends ») ; libellés des raccourcis :
+  utils.js:131-187 ; « Toute la période » au premier chargement, bornes =
+  première et dernière ouverture de session : static/src/js/dashboard.js
+  :59-125 ; saisie libre : « Analyser » envoie la clé « custom », aucun
+  raccourci ne reste allumé : components/filter_bar.js:79-96 ; couleurs des
+  pastilles dans l'ordre des pos.config : models/pos_dashboard.py:651-654,
+  905-912 (Bar violet, Restaurant bleu, Boutique vert, comme
+  t10_ardoises.py, PALETTE) ; styles : pos_dashboard.scss:70-125, 451-511.
 - Tableau de bord : static/src/xml/views.xml:5-420 — quatre grandes cartes
   (« Chiffre d'affaires » « <montant> / jour · <n>j », « Marge brute »
   « Taux: <x>% · <montant>/tx », « CMV (coût marchandises) » « <x>% du CA ·
@@ -56,34 +63,37 @@ Sources des libellés (relevés mot pour mot) :
   bande « CA vs N-1 · Marge vs N-1 · CMV vs N-1 · Commandes vs N-1 »,
   masquée quand la période précédente n'a pas de vente :29-60 ; cartes
   secondaires (« Ratio CMV/CA » « Bonne maîtrise ✓ » sous 65 %, « Taux de
-  marge » « Objectif atteint ✓ » dès 35 %, « Articles actifs » « / n »
-  « références vendues », « Meilleur article » tronqué à 18 caractères,
-  « <montant> CA ») :62-102 ; « Ventes & évolution », « CA · Marge · CMV »,
-  « Top 8 articles — CA vs Marge », « Évolution mensuelle (CA · CMV ·
-  Marge) » et sa légende :104-146 ; « Marge & CMV par catégorie »,
-  « répartition de la rentabilité », « Catégories — marge & CMV », « tx »,
-  « · CMV », « CMV vs Marge » :148-200 ; « Performance par caisse », « CA ·
-  marge totale & par point de vente », « Contribution au CA », « Synthèse
-  par caisse », « du CA », « TOTAL », « marge » :202-248 ; « Répartition des
-  ventes — heure × jour », « intensité = chiffre d'affaires · pour caler
-  plannings & happy hours », « Pic <h>h-<h>h (<x>%) », « Jour fort :
-  <jour> », « Jour \\ h » :250-306 ; « Classements produits », « Bières ·
-  Marges · Moins vendus », « 🍺 Top bières (qté) », « ⭐ Meilleures marges »,
-  « 📉 Moins vendus » :308-357. Formats : utils.js:58-107 (fmt « 1 234 567 »,
+  marge » « Objectif atteint ✓ » dès 35 %, « Articles actifs » « <n> / <n> »
+  — lignes de quantité positive sur lignes de la période,
+  dashboard_view.js:272-279 —, « références vendues », « Meilleur article »
+  tronqué à 18 caractères, « <montant> CA ») :62-102 ; « Ventes &
+  évolution », « CA · Marge · CMV », « Top 8 articles — CA vs Marge »,
+  « Évolution mensuelle (CA · CMV · Marge) » et sa légende :104-146 ;
+  « Marge & CMV par catégorie », « répartition de la rentabilité »,
+  « Catégories — marge & CMV », « tx », « · CMV », « CMV vs Marge »
+  :148-200 ; « Performance par caisse », « CA · marge totale & par point de
+  vente », « Contribution au CA », « Synthèse par caisse », « du CA »,
+  « TOTAL », « marge » :202-248 ; « Répartition des ventes — heure × jour »,
+  « intensité = chiffre d'affaires · pour caler plannings & happy hours »,
+  « Pic <h>h-<h>h (<x>%) », « Jour fort : <jour> », « Jour \\ h » :250-306 ;
+  « Classements produits », « Bières · Marges · Moins vendus », « 🍺 Top
+  bières (qté) », « ⭐ Meilleures marges », « 📉 Moins vendus » :308-357
+  (marges et moins vendus sur les seules lignes positives :
+  pos_dashboard.py:450-485). Formats : utils.js:58-107 (fmt « 1 234 567 »,
   fmtMoney « … F », fmtPct « 56.0% », fmtDelta « ▲ +9.4% », fmtSigned
   « −322 500 F ») ; couleurs : utils.js:11-18 ; graphiques :
   static/src/js/views/dashboard_view.js:125-237 (étiquettes tronquées à neuf
   caractères suivis de « … », graduations « k ») ; carte de chaleur :
   dashboard_view.js:253-268 et models/pos_dashboard.py:772-902 (7 × 24,
   jours Lun … Dim, créneau de deux heures glissant, « Samedi ») ; mois de
-  l'évolution au format d'Odoo (« septembre 2026 ») :
+  l'évolution au format d'Odoo (« octobre 2026 ») :
   models/pos_dashboard.py:396-412.
 - Calculs : marge = CA HT − CMV, CMV = quantité × coût unitaire, coût
   unitaire repris du prix de revient de l'article à la création de la ligne
-  de ticket : models/pos_order_line.py:20-69 ; KPI, jours de la période,
-  période précédente de même durée et variations : models/pos_dashboard.py
-  :98-224 ; seules les commandes payées, clôturées ou facturées :
-  models/pos_analytics_report.py:133.
+  de ticket : models/pos_order_line.py:20-69 ; KPI, jours de la période
+  (fin incluse), période précédente de même durée et variations :
+  models/pos_dashboard.py:30-50, 98-224 ; seules les commandes payées,
+  clôturées ou facturées : models/pos_analytics_report.py:133.
 - Par caisse : views.xml:422-572 (« Caisse n°1 (CA) », « Caisse la +
   rentable » « taux », « Meilleur panier moyen », « Écart de caisse total »
   « sur la période », « Comparatif des caisses », « marge totale & par caisse
@@ -91,13 +101,16 @@ Sources des libellés (relevés mot pour mot) :
   CMDES · PANIER MOY. · QTÉ · ÉCART CAISSE, « TOTAL », « 100% », « Part du CA
   par caisse », « Taux de marge par caisse ») ; badges vert dès 50 %, ambre
   dès 40 % : static/src/js/views/caisse_view.js:158-162 ; badge du TOTAL
-  toujours ambre :533 ; écart = somme des écarts des sessions de la période :
-  models/pos_dashboard.py:651-770.
+  toujours ambre :533 ; une ligne par caisse qui a vendu (read_group par
+  caisse) : la Boutique, sans vente sur la période, n'y figure pas ; écart =
+  somme des écarts des sessions de la période : models/pos_dashboard.py
+  :651-770.
 - Articles : views.xml:635-718 (« Toutes catégories », pastilles triées par
   nom, « Rechercher un article ou une catégorie… », « <n> / <total>
   articles », colonnes, tri « CA ▼ » par défaut) ; recherche sur le nom et la
-  catégorie : static/src/js/views/products_view.js:55-121 ; couleurs des
-  catégories : utils.js:20-52.
+  catégorie : static/src/js/views/products_view.js:55-121 ; badge du taux
+  vert dès 50 %, ambre dès 30 % :113-117 ; couleurs des catégories :
+  utils.js:20-52.
 - Panneau d'un article : dashboard_shell.xml:248-331 (« × », catégorie, CA,
   Marge, CMV, « Quantité vendue » « <n> unités », « Taux de marge », « Prix
   de vente moyen », « Coût moyen unitaire (CMV) », « Marge unitaire »,
@@ -120,35 +133,51 @@ AITE_POS_Analytics_fiche_produit.pdf p. 2 (« Vendre sans savoir ce qu'on
 gagne » : « quelle marge réelle dégage chaque article ? Quelle caisse tire le
 chiffre ? À quelle heure le bar est-il rentable ? Et où partent les écarts de
 caisse ? » ; « CA visible mais marge inconnue […] écarts de caisse noyés. On
-pilote au ressenti, et la rentabilité se découvre trop tard. ») ; slogan
-« Décider sur des chiffres, pas au ressenti » — même fiche p. 1 ; besoin du
-client « sur une période donnée, déterminer la marge totale ET par caisse » —
+pilote au ressenti, et la rentabilité se découvre trop tard. ») ; la
+question de l'heure devient « Le bar tourne à quelle heure ? », car la carte
+heure × jour montre le chiffre d'affaires (price_subtotal,
+pos_dashboard.py:795-800, 843-845), pas la marge ; slogan « Décider sur des
+chiffres, pas au ressenti » — même fiche p. 1 ; besoin du client « sur une
+période donnée, déterminer la marge totale ET par caisse » —
 models/pos_dashboard.py:666-667 et README.md:79. Promesse et voix : marge et
-CMV calculés seuls à la ligne (pos_order_line.py:49-69), comparaison à la
-période précédente de même durée (pos_dashboard.py:130-153), classement des
-écarts (pos_session.py:120-155). Le « coût figé à la vente » de la fiche
-produit n'est pas repris : la vérification l'a jugé non prouvé dans le flux
-réel de caisse. Résultats : 8 onglets (utils.js:188-197), 7 × 24 = 168 cases
-et créneau de deux heures (pos_dashboard.py:800-873), 4 niveaux de gravité
-pour un écart non nul — Excédent, Modéré, Élevé, Critique
-(pos_session.py:78-84).
+CMV calculés seuls à la ligne (pos_order_line.py:49-69) — « chaque vente dit
+ce qu'elle rapporte », sans montrer de ticket ni promettre que marge + CMV =
+CA dans le flux réel de caisse (voir le rapport) ; comparaison à la période
+précédente de même durée (pos_dashboard.py:130-153) ; classement des écarts
+(pos_session.py:120-155). Le « coût figé à la vente » de la fiche produit
+n'est pas repris : la vérification l'a jugé non prouvé dans le flux réel de
+caisse. La voix ne donne pas l'heure du pic : la carte l'affiche en UTC
+(écart 11). Résultats : 8 onglets (utils.js:188-197), 7 × 24 = 168 cases et
+créneau de deux heures (pos_dashboard.py:800-873), 4 niveaux de gravité pour
+un écart non nul — Excédent, Modéré, Élevé, Critique (pos_session.py:78-84).
 
 Données : demo.py (Démo Hôtellerie SARL, Danielle Eyenga directrice, Hervé
-Tchakounté caissier du bar) ; caisses « Bar de la terrasse » et
-« Restaurant » et chiffres du mois (CA 3 120 000, marge 1 747 200 soit
-56,0 %, 128 tickets, panier 24 375, CA en hausse de 9,4 % sur la période
-précédente) repris de scenarios/c6_direction.py et t15_direction.py ;
-Paulin Essama et Larissa Mbida (caissiers), articles, catégories, sessions et
-montants sont fictifs. Le jour rejoué est le mercredi 14/10/2026 au matin,
-navigateur en français à Douala : « Ce mois » couvre donc du 30/09/2026 au
-14/10/2026 (écart 1), quinze jours ; « Toute la période » va de la première
-ouverture de session (02/06/2026) à la dernière (13/10/2026), 134 jours. La
-période précédente de « Ce mois » (15/09 → 29/09) donne CA 2 852 000, marge
-1 560 000, CMV 1 292 000 et 119 commandes, d'où ▲ +9.4 %, +12.0 %, +6.3 % et
-+7.6 %. Les sessions en écart sont toutes clôturées (le matin du 14/10, aucune
-caisse n'est encore ouverte). Les chiffres se tiennent : ils sont
-calculés ci-dessous à partir des articles (sommes contrôlées par assert),
-le CA d'une session est TTC (TVA 19,25 %, écart 4).
+Tchakounté caissier du bar) ; trois caisses « Bar de la terrasse »,
+« Restaurant » et « Boutique », comme t04_note_chambre.py:200 et
+t10_ardoises.py (BAR, RESTO, BOUT) (la Boutique n'a rien vendu sur la période) ;
+chiffres de la période repris de la présentation, scenarios/
+c6_direction.py:100-108 (CA 3 120 000, marge 1 747 200 soit 56,0 %, CMV
+1 372 800 soit 2 681 F/u, 128 tickets, panier 24 375, 512 unités, 42 articles
+actifs sur 48, meilleur article « Bière blonde 65 cl » à 486 000 F) et de
+t15_direction.py (CA en hausse de 9,4 %) ; articles, prix et coûts du bar et
+de la cave repris de t13_stock.py:116-141 (Bière blonde 65 cl : 1 500 F pour
+650 F, soit 850 F de marge, comme t04:285, au TICKET de t10_ardoises.py et
+au PRIX de t14_achats.py), plats de la
+carte de t04:274-281 ; articles sans taxe, comme au ticket de t04 (t04:37-44,
+282) : le CA des sessions (TTC) égale donc le CA HT. Paulin Essama et Larissa
+Mbida (caissiers), les autres prix, quantités, sessions et montants sont
+fictifs. Le jour rejoué est le mercredi 14/10/2026 au matin, navigateur en
+français à Douala ; la période saisie va du 01/10 au 13/10/2026 (treize
+jours ; « au » garde la dernière ouverture de session, 13/10) ; rien n'a été
+vendu le 30/09 (inventaire de fin de mois, fictif), si bien que le « Ce mois »
+de la présentation (30/09 → 14/10) donne les mêmes totaux. « Toute la
+période » va de la première ouverture de session (04/05/2026 : les ardoises de
+mai, en-tête de t10_ardoises.py) à la dernière (13/10/2026), 163 jours. La
+période précédente (18/09 → 30/09) donne CA 2 852 000, marge 1 560 000, CMV
+1 292 000 et 119 commandes, d'où ▲ +9.4 %, +12.0 %, +6.3 % et +7.6 %. Les
+sessions en écart sont toutes clôturées (le matin du 14/10, aucune caisse
+n'est encore ouverte). Les chiffres se tiennent : ils sont calculés
+ci-dessous à partir des articles (sommes contrôlées par assert).
 
 Captures de référence (modèle visuel, jamais incrustées) : ref_muk/015 à
 020, 330-direction-accueil.png, 600-pos-tableau-de-bord.png ; chapitre déjà
@@ -159,8 +188,10 @@ Ce que la vidéo montre, et ce qu'elle évite :
   filtres comprise (dashboard_shell.xml:12-29, scss:32-37) ; avant de changer
   d'onglet, on remonte en haut de page. Un changement de filtre, d'onglet ou de
   recherche remplace le contenu d'un coup, comme un nouveau rendu OWL.
-- Quatre zooms (carte Marge brute, soir de la carte de chaleur, détail de
-  l'article, première ligne des écarts) ; pas de zoom sur le comparatif des
+- La période est saisie dans « Du » plutôt que par le raccourci « Ce mois »,
+  qui afficherait « Du 30/09/2026 » (écart 1).
+- Quatre zooms (carte Marge brute, carte heure × jour avec ses jours, détail
+  de l'article, première ligne des écarts) ; pas de zoom sur le comparatif des
   caisses, plus large que l'écran zoomé.
 - On ne clique ni « Semaine (lun–ven) » ni « Week-ends » (leurs jours
   actifs deviennent invisibles, écart 2).
@@ -171,9 +202,10 @@ Ce que la vidéo montre, et ce qu'elle évite :
   à l'écran ; aucune case n'a une intensité comprise entre 0,55 et 0,70, où
   ni le texte blanc ni le texte foncé ne passent le contrôle.
 
-Écarts relevés, rejoués tels quels (voir le rapport) :
+Écarts relevés, rejoués tels quels ou évités (voir le rapport) :
 1. « Ce mois » démarre la veille du 1er à Douala (UTC+1) : « Du 30/09/2026 »
-   (utils.js:132, 143-156, toISOString d'un minuit local).
+   (utils.js:132, 143-156, toISOString d'un minuit local). Évité : la
+   période est saisie.
 2. Le bouton « Tous » de la ligne Jour est invisible (classe active sur
    var(--aite-teal), jamais définie : blanc sur blanc), d'où le vide entre
    « JOUR » et « Lun » (pos_dashboard.scss:12-23, 486-494).
@@ -183,7 +215,8 @@ Ce que la vidéo montre, et ce qu'elle évite :
    scss:537-538).
 4. Le « CA » des sessions (onglet Écarts de caisse) est TTC (amount_total)
    alors que celui du tableau de bord et de « Par caisse » est HT
-   (pos_session.py:106 ; pos_dashboard.py:107-114).
+   (pos_session.py:106 ; pos_dashboard.py:107-114) ; invisible ici, les
+   articles étant sans taxe.
 5. Pourcentages à point décimal sans espace (« 56.0% », « Taux: 56.0% »),
    abréviations « /tx », « /u », « Cmdes », symbole « F » forcé, anglais
    résiduel « Pivot & Graph » et « happy hours » (utils.js:67-75 ;
@@ -199,6 +232,14 @@ Ce que la vidéo montre, et ce qu'elle évite :
 10. Contraste du gris du module (#888780 sur blanc : 3,6:1, sous le seuil
    AA de 4,5:1) ; texte gris (#5f5e5a) et blanc des cases moyennes de la
    carte de chaleur sous le seuil (dashboard_view.js:253-262).
+11. La carte heure × jour et le repère « Pic » sont en UTC, une heure plus tôt
+   qu'à Douala : la vue SQL convertit l'heure dans le fuseau de
+   self.env.user.tz au moment de init() (pos_analytics_report.py:93,
+   118-121), qui tourne en superutilisateur (odoo/modules/registry.py:588) ;
+   OdooBot n'a pas de fuseau (base/data/res_partner_data.xml:15-20 ;
+   odoo/service/db.py:87-89 ne règle que les utilisateurs actifs), d'où le
+   repli UTC. Les ventes de 20 h à 22 h à Douala s'affichent « Pic
+   19h-21h » ; une vente de samedi 0 h 30 tombe sur « Ven », 23 h.
 """
 
 import math
@@ -259,34 +300,84 @@ def pct(a, b):
 
 
 # ------------------------------------------------------------- données --
-# Les articles vendus du 30/09 au 14/10/2026 (« Ce mois ») : (nom, catégorie,
-# caisse, quantité, prix unitaire HT, coût unitaire). Catégories racines,
-# pour que « Bières », « Softs » et « Vins » prennent leur couleur (utils.js:20-33).
-BAR, RESTO = 'Bar de la terrasse', 'Restaurant'
+# Les articles vendus du 01/10 au 13/10/2026 : (nom, catégorie, prix de vente,
+# coût unitaire, quantité au bar, quantité au restaurant, remboursé). Noms,
+# prix et coûts du bar et de la cave : scenarios/t13_stock.py:116-141 (Bière
+# blonde 65 cl à 1 500 F pour 650 F, comme t04:285, le TICKET de t10_ardoises.py
+# et les PRIX de t14_achats.py) ;
+# plats et accompagnements : la carte de t04_note_chambre.py:274-281 (Poisson
+# braisé et Plantain frit à 7 000 et 1 500 F, t04:283-284), prix fictifs pour
+# les autres. Catégories d'article (product.category, celles que lit le
+# module) : celles de t13 pour le bar et la cave, celles de la carte de t04
+# (Grillades, Plats, Accompagnements) pour la cuisine ; catégories racines,
+# pour que « Bières » prenne sa couleur (utils.js:20-33). Articles sans taxe,
+# comme au ticket de t04 (t04:37-44, 282) : HT = TTC. « remboursé » : vendu
+# puis remboursé dans la période, d'où une ligne à zéro (42 articles actifs
+# sur 48 lignes, comme c6_direction.py:107).
+BAR, RESTO, BOUT = 'Bar de la terrasse', 'Restaurant', 'Boutique'
 ARTICLES = [
-    ('Vin rouge 75 cl', 'Vins', BAR, 26, 22000, 10000),
-    ('Poisson braisé', 'Grillades', RESTO, 40, 11000, 5495),
-    ('Champagne brut 75 cl', 'Vins', BAR, 8, 54000, 26000),
-    ('Poulet DG', 'Plats', RESTO, 30, 10000, 4720),
-    ('Whisky 12 ans (verre)', 'Spiritueux', BAR, 47, 6000, 2000),
-    ('Ndolé crevettes', 'Plats', RESTO, 22, 11000, 5720),
-    ('Cocktail maison', 'Spiritueux', BAR, 38, 5000, 1400),
-    ('Bière blonde 65 cl', 'Bières', BAR, 142, 1300, 520),
-    ('Brochettes de bœuf', 'Grillades', RESTO, 26, 7000, 3300),
-    ('Salade de fruits', 'Desserts', RESTO, 21, 4000, 1400),
-    ("Jus d'ananas frais", 'Softs', BAR, 32, 2000, 600),
-    ('Bière brune 65 cl', 'Bières', BAR, 34, 1300, 540),
-    ('Malt 33 cl', 'Softs', BAR, 36, 900, 380),
-    ('Eau minérale 1,5 L', 'Softs', BAR, 30, 1000, 450),
-    ('Bière blonde 33 cl', 'Bières', BAR, 26, 800, 330),
-    ('Soda 33 cl', 'Softs', BAR, 25, 800, 320),
+    ('Bière blonde 65 cl', 'Bières', 1500, 650, 290, 34, False),
+    ('Bière brune 65 cl', 'Bières', 1500, 700, 7, 0, False),
+    ('Bière blonde 33 cl', 'Bières', 1000, 400, 5, 0, False),
+    ('Bière sans alcool 33 cl', 'Bières', 1000, 450, 2, 0, False),
+    ('Eau minérale 1,5 L', 'Eaux', 1000, 300, 0, 4, False),
+    ('Eau minérale 50 cl', 'Eaux', 500, 150, 1, 0, False),
+    ('Eau gazeuse 1 L', 'Eaux', 1500, 500, 0, 1, False),
+    ("Jus d'ananas 1 L", 'Jus & softs', 2000, 900, 0, 2, False),
+    ('Soda orange 33 cl', 'Jus & softs', 1000, 300, 2, 0, False),
+    ('Cola 33 cl', 'Jus & softs', 1000, 300, 2, 1, False),
+    ('Tonic 33 cl', 'Jus & softs', 1000, 350, 2, 0, False),
+    ('Jus de bissap 50 cl', 'Jus & softs', 1000, 400, 0, 1, False),
+    ('Jus de gingembre 50 cl', 'Jus & softs', 1000, 350, 0, 1, False),
+    ('Citronnade 50 cl', 'Jus & softs', 1000, 300, 0, 0, RESTO),
+    ('Arachides grillées', 'Snacks & confiseries', 700, 250, 1, 0, False),
+    ('Chips de plantain', 'Snacks & confiseries', 800, 300, 1, 0, False),
+    ('Biscuits apéritifs', 'Snacks & confiseries', 1000, 400, 0, 0, BAR),
+    ('Chocolat noir 100 g', 'Snacks & confiseries', 2000, 900, 0, 0, BAR),
+    ('Vin rouge 75 cl', 'Vins & spiritueux', 12000, 4500, 10, 16, False),
+    ('Vin blanc 75 cl', 'Vins & spiritueux', 11000, 4000, 4, 8, False),
+    ('Vin rosé 75 cl', 'Vins & spiritueux', 11000, 4000, 0, 0, RESTO),
+    ('Champagne brut 75 cl', 'Vins & spiritueux', 45000, 22000, 10, 0, False),
+    ('Whisky 12 ans 70 cl', 'Vins & spiritueux', 40000, 18000, 11, 0, False),
+    ('Cognac VSOP 70 cl', 'Vins & spiritueux', 60000, 28000, 7, 0, False),
+    ('Rhum ambré 70 cl', 'Vins & spiritueux', 20000, 9000, 11, 0, False),
+    ('Gin 70 cl', 'Vins & spiritueux', 22000, 10000, 13, 0, False),
+    ('Liqueur de café 70 cl', 'Vins & spiritueux', 18000, 8000, 0, 0, BAR),
+    ('Whisky 12 ans (verre)', 'Vins & spiritueux', 5000, 1600, 11, 0, False),
+    ('Cocktail maison', 'Vins & spiritueux', 4000, 1200, 5, 0, False),
+    ('Poisson braisé', 'Grillades', 7000, 3200, 3, 8, False),
+    ('Poulet braisé', 'Grillades', 6000, 2700, 0, 1, False),
+    ('Brochettes de bœuf', 'Grillades', 3000, 1300, 1, 0, False),
+    ('Soya', 'Grillades', 2000, 900, 2, 0, False),
+    ('Porc braisé', 'Grillades', 5000, 2300, 0, 2, False),
+    ('Maquereau braisé', 'Grillades', 5000, 2200, 0, 1, False),
+    ('Ndolè', 'Plats', 6000, 2600, 0, 4, False),
+    ('Poulet DG', 'Plats', 8000, 3600, 0, 10, False),
+    ('Eru', 'Plats', 5000, 2100, 0, 3, False),
+    ('Mbongo tchobi', 'Plats', 6000, 2700, 0, 2, False),
+    ('Koki', 'Plats', 3000, 1200, 0, 1, False),
+    ('Okok', 'Plats', 4000, 1700, 0, 1, False),
+    ('Kondrè', 'Plats', 6000, 2700, 0, 1, False),
+    ('Plantain frit', 'Accompagnements', 1500, 500, 1, 2, False),
+    ('Bâton de manioc', 'Accompagnements', 500, 200, 0, 1, False),
+    ('Miondo', 'Accompagnements', 500, 200, 0, 0, RESTO),
+    ('Frites de plantain', 'Accompagnements', 1500, 500, 1, 2, False),
+    ('Riz blanc', 'Accompagnements', 1000, 350, 0, 1, False),
+    ('Frites de pomme', 'Accompagnements', 1500, 600, 0, 1, False),
 ]
-PRODUITS = sorted(({'nom': n, 'cat': c, 'caisse': k, 'qty': q, 'ca': q * p, 'cmv': q * u, 'marge': q * (p - u)}
-                   for n, c, k, q, p, u in ARTICLES), key=lambda x: -x['ca'])
-for _p in PRODUITS:
-    _p['taux'] = pct(_p['marge'], _p['ca'])
 
-TICKETS = {BAR: 80, RESTO: 48}
+
+def _produit(nom, cat, prix, cout, q_bar, q_resto, rembourse):
+    q = q_bar + q_resto
+    p = {'nom': nom, 'cat': cat, 'prix': prix, 'cout': cout, 'qty': q, 'ca': q * prix, 'cmv': q * cout,
+         'marge': q * (prix - cout), 'par': {BAR: q_bar, RESTO: q_resto}, 'rembourse': rembourse}
+    p['taux'] = pct(p['marge'], p['ca'])
+    return p
+
+
+# Trié comme get_products_full (pos_dashboard.py:494-521) : CA décroissant.
+PRODUITS = sorted((_produit(*a) for a in ARTICLES), key=lambda x: -x['ca'])
+TICKETS = {BAR: 108, RESTO: 20}
 
 
 def _somme(liste, cle):
@@ -295,22 +386,28 @@ def _somme(liste, cle):
 
 CA, CMV, MARGE, QTE = (_somme(PRODUITS, k) for k in ('ca', 'cmv', 'marge', 'qty'))
 CMDES = sum(TICKETS.values())
-assert (CA, CMV, MARGE, CMDES) == (3120000, 1372800, 1747200, 128)     # c6_direction / t15_direction
-JOURS_PERIODE = 15                                                     # 30/09 → 14/10 inclus
-# La période précédente (15/09 → 29/09) : CA, marge, CMV, commandes.
+ACTIFS = len([p for p in PRODUITS if p['qty'] > 0])
+# Les chiffres de la présentation (c6_direction.py:100-108) : CA, CMV, tickets,
+# unités, 42 articles actifs sur 48, meilleur article.
+assert (CA, CMV, MARGE, CMDES, QTE) == (3120000, 1372800, 1747200, 128, 512)
+assert (ACTIFS, len(PRODUITS)) == (42, 48)
+assert (PRODUITS[0]['nom'], PRODUITS[0]['ca']) == ('Bière blonde 65 cl', 486000)
+JOURS_PERIODE = 13                                                     # 01/10 → 13/10 inclus
+# La période précédente (18/09 → 30/09, même durée) : CA, marge, CMV, commandes.
 PREC = {'ca': 2852000, 'marge': 1560000, 'cmv': 1292000, 'cmdes': 119}
+assert PREC['ca'] == PREC['marge'] + PREC['cmv']
 DELTAS = [('CA vs N-1', pct(CA - PREC['ca'], PREC['ca'])), ('Marge vs N-1', pct(MARGE - PREC['marge'], PREC['marge'])),
           ('CMV vs N-1', pct(CMV - PREC['cmv'], PREC['cmv'])),
           ('Commandes vs N-1', pct(CMDES - PREC['cmdes'], PREC['cmdes']))]
 
 # Les sessions de la période qui portent un écart (compté − théorique) :
-# (nom, date, caissier, caisse, CA TTC, écart).
+# (nom, date, caissier, caisse, CA de la session, écart).
 SESSIONS = [
-    ('Bar de la terrasse/00131', '10/10/2026', 'Paulin Essama', BAR, 251300, -212500),
-    ('Bar de la terrasse/00124', '03/10/2026', 'Paulin Essama', BAR, 238400, -104500),
-    ('Restaurant/00128', '07/10/2026', 'Larissa Mbida', RESTO, 101800, -8500),
-    ('Bar de la terrasse/00127', '06/10/2026', CAISSIER, BAR, 96200, -2000),
-    ('Restaurant/00122', '01/10/2026', 'Larissa Mbida', RESTO, 88900, 5000),
+    ('Bar de la terrasse/00131', '10/10/2026', 'Paulin Essama', BAR, 312400, -212500),
+    ('Bar de la terrasse/00124', '03/10/2026', 'Paulin Essama', BAR, 298600, -104500),
+    ('Restaurant/00128', '07/10/2026', 'Larissa Mbida', RESTO, 61500, -8500),
+    ('Bar de la terrasse/00127', '06/10/2026', CAISSIER, BAR, 141200, -2000),
+    ('Restaurant/00122', '01/10/2026', 'Larissa Mbida', RESTO, 38000, 5000),
 ]
 
 
@@ -330,14 +427,15 @@ assert [s[0] for s in SESSIONS] == [s[0] for s in sorted(SESSIONS, key=lambda s:
 
 
 def par_caisse():
-    """get_caisse_breakdown (pos_dashboard.py:651-770) : une ligne par caisse, triée par CA."""
+    """get_caisse_breakdown (pos_dashboard.py:651-770) : une ligne par caisse qui a vendu, triée par CA ;
+    la Boutique, sans vente sur la période, n'y figure pas."""
     lignes = []
-    for i, k in enumerate(sorted({p['caisse'] for p in PRODUITS}, key=lambda k: -_somme(
-            [p for p in PRODUITS if p['caisse'] == k], 'ca'))):
-        lot = [p for p in PRODUITS if p['caisse'] == k]
-        ca, marge = _somme(lot, 'ca'), _somme(lot, 'marge')
-        lignes.append({'nom': k, 'couleur': [PRIMARY, INFO][i], 'ca': ca, 'marge': marge, 'cmv': _somme(lot, 'cmv'),
-                       'qty': _somme(lot, 'qty'), 'taux': pct(marge, ca), 'cmdes': TICKETS[k],
+    for i, k in enumerate(sorted((BAR, RESTO), key=lambda k: -sum(p['par'][k] * p['prix'] for p in PRODUITS))):
+        ca = sum(p['par'][k] * p['prix'] for p in PRODUITS)
+        cmv = sum(p['par'][k] * p['cout'] for p in PRODUITS)
+        qty = sum(p['par'][k] for p in PRODUITS)
+        lignes.append({'nom': k, 'couleur': [PRIMARY, INFO][i], 'ca': ca, 'marge': ca - cmv, 'cmv': cmv,
+                       'qty': qty, 'taux': pct(ca - cmv, ca), 'cmdes': TICKETS[k],
                        'panier': ca / float(TICKETS[k]), 'part': pct(ca, CA),
                        'ecart': sum(s[5] for s in SESSIONS if s[3] == k)})
     return lignes
@@ -345,6 +443,7 @@ def par_caisse():
 
 CAISSES = par_caisse()
 ECART_TOTAL = sum(c['ecart'] for c in CAISSES)
+assert sum(c['ca'] for c in CAISSES) == CA and sum(c['qty'] for c in CAISSES) == QTE
 
 
 def par_categorie():
@@ -359,10 +458,10 @@ def par_categorie():
 
 CATEGORIES = par_categorie()
 
-# Couleurs des catégories (utils.js:20-52) : par nom pour bière(s), soft(s),
-# vin(s), malt(s), eau ; sinon la palette circulaire, au rang de la ligne.
+# Couleurs des catégories (utils.js:20-52) : par nom exact pour « Bières » ;
+# sinon la palette circulaire, au rang de la ligne.
 PALETTE_NOM = {'bières': ('#714B67', '#EEEDFE', '#3C3489'), 'softs': ('#1D9E75', '#E1F5EE', '#0F6E56'),
-               'vins': ('#185FA5', '#E6F1FB', '#0C447C')}
+               'vins': ('#185FA5', '#E6F1FB', '#0C447C'), 'eau': ('#888780', '#F1EFE8', '#5F5E5A')}
 REPLI = ['#714B67', '#1D9E75', '#BA7517', '#185FA5', '#888780', '#A32D2D', '#0F6E56', '#854F0B']
 
 
@@ -370,8 +469,13 @@ def couleurs_cat(nom, rang):
     return PALETTE_NOM.get(nom.lower(), (REPLI[rang % len(REPLI)], '#F1EFE8', '#5F5E5A'))
 
 
-# La carte de chaleur : CA HT par jour de semaine et par heure, sur les quatorze
-# jours de vente (deux de chaque jour). Poids relatifs, ramenés au CA du mois.
+# La carte de chaleur. Les ventes sont posées à l'heure de Douala (UTC+1) :
+# déjeuner au restaurant, soirée au bar, après minuit les nuits du vendredi et
+# du samedi. La vue SQL convertit l'heure dans le fuseau de l'utilisateur qui
+# a installé le module, OdooBot, qui n'en a pas : la carte et les repères
+# sont donc en UTC, une heure plus tôt (écart 11). Treize jours de vente :
+# deux de chaque jour, un seul mercredi (le 07/10).
+NB_JOURS = [2, 2, 1, 2, 2, 2, 2]                    # Lun … Dim, du 01/10 au 13/10
 POIDS_JOUR = [0.75, 0.8, 0.85, 0.9, 1.35, 1.6, 1.0]
 POIDS_HEURE = {10: 0.2, 11: 0.6, 12: 1.6, 13: 1.9, 14: 1.0, 15: 0.5, 16: 0.5, 17: 0.8, 18: 1.4, 19: 2.0, 20: 2.6,
                21: 2.5, 22: 1.6, 23: 0.8}
@@ -379,12 +483,21 @@ JOURS_SEMAINE = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
 
 
 def carte_chaleur():
-    brut = [[0.0] * 24 for _ in range(7)]
+    local = [[0.0] * 24 for _ in range(7)]
     for d, pj in enumerate(POIDS_JOUR):
         for h, ph in POIDS_HEURE.items():
-            brut[d][h] = pj * ph
-        if d in (4, 5):                     # le bar ferme après minuit le vendredi et le samedi
-            brut[d][0] = 0.3 * pj
+            local[d][h] = NB_JOURS[d] * pj * ph
+    # après minuit : la nuit du vendredi au samedi (Sam 0 h) et du samedi au dimanche (Dim 0 h)
+    local[5][0] = NB_JOURS[4] * 0.3 * POIDS_JOUR[4]
+    local[6][0] = NB_JOURS[5] * 0.3 * POIDS_JOUR[5]
+    # heure de Douala → UTC (pos_analytics_report.py:93, 118-121) : une heure plus tôt
+    brut = [[0.0] * 24 for _ in range(7)]
+    for d in range(7):
+        for h in range(24):
+            if h:
+                brut[d][h - 1] += local[d][h]
+            else:
+                brut[(d - 1) % 7][23] += local[d][h]
     total = sum(map(sum, brut))
     mat = [[int(round(v * CA / total, -2)) for v in ligne] for ligne in brut]
     # Pas de case d'intensité entre 0,55 et 0,70 (voir l'en-tête) : on la pousse
@@ -416,32 +529,39 @@ for _l in CHALEUR:
 
 
 def insights():
-    """get_time_insights (pos_dashboard.py:772-902)."""
+    """get_time_insights (pos_dashboard.py:821-902)."""
     par_heure = [sum(CHALEUR[d][h] for d in range(7)) for h in range(24)]
     best = max(range(24), key=lambda h: (par_heure[h] + par_heure[(h + 1) % 24], -h))
     pic = 'Pic %dh-%dh (%s)' % (best, (best + 2) % 24, fmt_pct(pct(par_heure[best] + par_heure[(best + 1) % 24], CA)))
     noms = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
     fort = max(range(7), key=lambda d: sum(CHALEUR[d]))
-    return pic, 'Jour fort : %s' % noms[fort], best
+    return pic, 'Jour fort : %s' % noms[fort], best, fort
 
 
-PIC, JOUR_FORT, H_PIC = insights()
+PIC, JOUR_FORT, H_PIC, J_FORT = insights()
+assert (H_PIC, J_FORT) == (19, 5)          # 20 h – 22 h à Douala, affiché « 19h-21h » ; samedi
 
-# « Toute la période » : du 02/06/2026 (première session) au 13/10/2026
-# (dernière ouverture), 134 jours ; mois au format d'Odoo (date:month).
-TOUT = {'ca': 27544000, 'cmv': 12284600, 'cmdes': 1128, 'qty': 5090, 'jours': 134, 'articles': 19,
-        'meilleur': ('Vin rouge 75 cl', 4862000)}
+# « Toute la période » : du 04/05/2026 (première ouverture de session : les
+# ardoises de mai, en-tête de t10_ardoises.py) au 13/10/2026 (dernière
+# ouverture), 163 jours ; rien de vendu le 30/09, jour d'inventaire (fictif),
+# si bien que octobre = la période analysée ; mois au format d'Odoo (date:month).
+EVO_TOUT = [('mai 2026', 5480000, 2466000), ('juin 2026', 6120000, 2692800), ('juillet 2026', 6950000, 3058000),
+            ('août 2026', 7310000, 3216400), ('septembre 2026', 6104000, 2685800), ('octobre 2026', CA, CMV)]
+TOUT = {'ca': sum(x[1] for x in EVO_TOUT), 'cmv': sum(x[2] for x in EVO_TOUT), 'cmdes': 1440, 'qty': 5760,
+        'jours': 163, 'articles': 48, 'actifs': 48}
 TOUT['marge'] = TOUT['ca'] - TOUT['cmv']
-EVO_TOUT = [('juin 2026', 5650000, 2540000), ('juillet 2026', 6420000, 2860000), ('août 2026', 6980000, 3120000),
-            ('septembre 2026', 5570000, 2487800), ('octobre 2026', 2924000, 1276800)]
-assert sum(x[1] for x in EVO_TOUT) == TOUT['ca'] and sum(x[2] for x in EVO_TOUT) == TOUT['cmv']
-EVO_MOIS = [('septembre 2026', 196000, 96000), ('octobre 2026', 2924000, 1276800)]
-assert sum(x[1] for x in EVO_MOIS) == CA and sum(x[2] for x in EVO_MOIS) == CMV
-TOP8_TOUT = [('Vin rouge 75 cl', 4862000, 2650000), ('Poisson braisé', 3790000, 1895000),
-             ('Champagne brut 75 cl', 3456000, 1790000), ('Poulet DG', 2610000, 1378000),
-             ('Whisky 12 ans (verre)', 2448000, 1632000), ('Ndolé crevettes', 2090000, 1003000),
-             ('Cocktail maison', 1650000, 1188000), ('Bière blonde 65 cl', 1612000, 967000)]
+EVO_MOIS = [('octobre 2026', CA, CMV)]
+# Top 8 de toute la période : (nom, quantité, prix, coût moyen) ; la bière
+# blonde au coût d'achat de chaque mois (PRIX de t14_achats.py : 600 → 650 F).
+TOP8_TOUT = [('Bière blonde 65 cl', 3960, 1500, 621), ('Whisky 12 ans 70 cl', 124, 40000, 18000),
+             ('Champagne brut 75 cl', 107, 45000, 22000), ('Vin rouge 75 cl', 342, 12000, 4500),
+             ('Cognac VSOP 70 cl', 65, 60000, 28000), ('Gin 70 cl', 139, 22000, 10000),
+             ('Rhum ambré 70 cl', 130, 20000, 9000), ('Poulet DG', 198, 8000, 3600)]
+TOP8_TOUT = [(n, q * p, q * (p - c)) for n, q, p, c in TOP8_TOUT]
+assert TOP8_TOUT == sorted(TOP8_TOUT, key=lambda x: -x[1])
+TOUT['meilleur'] = TOP8_TOUT[0][:2]
 TOP8_MOIS = [(p['nom'], p['ca'], p['marge']) for p in PRODUITS[:8]]
+
 
 # ------------------------------------------------------------- icônes --
 # Dessinées ici (fa-tachometer, fa-th-large, fa-pie-chart, fa-trophy,
@@ -475,12 +595,15 @@ def carte_pos(nom, fermeture, solde):
             % (e(nom), e(fermeture), e(solde)))
 
 
-CP_POS = ('<div class="cp"><span class="titre">Point de Vente</span>%s<span class="pager">1-2 / 2</span>'
+CP_POS = ('<div class="cp"><span class="titre">Point de Vente</span>%s<span class="pager">1-3 / 3</span>'
           '<span class="t12-vues"><i class="on">%s</i><i>%s</i></span></div>'
           % (recherche(), KANBAN, ICONES['liste']))
-POS = vue_libre('t12-pos', CP_POS + '<div class="t12-pk">%s%s</div>' % (
+# Trois caisses, comme t04_note_chambre.py:200 et t10_ardoises.py (BOUT) ;
+# la Boutique a clôturé sa dernière session le 26/09 (fictif).
+POS = vue_libre('t12-pos', CP_POS + '<div class="t12-pk">%s%s%s</div>' % (
     carte_pos(BAR, '13/10/2026', '25' + NB + '000' + NB + 'FCFA'),
-    carte_pos(RESTO, '13/10/2026', '20' + NB + '000' + NB + 'FCFA')), initiale=True)
+    carte_pos(RESTO, '13/10/2026', '20' + NB + '000' + NB + 'FCFA'),
+    carte_pos(BOUT, '26/09/2026', '10' + NB + '000' + NB + 'FCFA')), initiale=True)
 
 # Le menu déroulant « Analyse AITE » (pos_analytics_menus.xml:16-50).
 ENTREES = [('tdb', 'Tableau de bord'), ('caisse', 'Par caisse'), ('sess', 'Sessions POS'), ('cat', 'Par catégorie'),
@@ -507,17 +630,21 @@ def fb(libelle, ident=None, on=False, alt=False, jour=False, point=None):
 
 
 def date_(ident, valeur):
-    return '<span class="t12-date"><span id="%s">%s</span><span class="t12-cal">%s</span></span>' % (ident, e(valeur), CAL)
+    """Un champ <input type="date"> (dashboard_shell.xml:133-138) ; ``ident-val`` reçoit la saisie."""
+    return ('<span class="t12-date" id="%s"><span class="ph" id="%s-ph"></span><span id="%s-val">%s</span>'
+            '<span class="t12-cal">%s</span></span>' % (ident, ident, ident, e(valeur), CAL))
 
 
 FILTRES = '<div class="t12-fbar" id="t12-fbar">%s</div>' % ''.join([
     '<div class="t12-frow"><span class="t12-flab">Période</span>%s<span class="t12-esp"></span>'
-    '<span class="t12-du">Du</span>%s<span class="t12-du">au</span>%s<span class="t12-ok">Analyser</span></div>'
+    '<span class="t12-du">Du</span>%s<span class="t12-du">au</span>%s<span class="t12-ok" id="t12-ok-p">Analyser</span></div>'
     % (''.join([fb('Toute la période', 't12-pe-all', True), fb("Aujourd'hui"), fb('Cette semaine'),
-                fb('Ce mois', 't12-pe-mois'), fb('Ce trimestre'), fb('Cette année')]),
-       date_('t12-du-v', '02/06/2026'), date_('t12-au-v', '13/10/2026')),
+                fb('Ce mois'), fb('Ce trimestre'), fb('Cette année')]),
+       date_('t12-du', '04/05/2026'), date_('t12-au', '13/10/2026')),
+    # couleurs dans l'ordre des pos.config (pos_dashboard.py:651-654, 905-912 ; PALETTE de t10_ardoises.py)
     '<div class="t12-frow"><span class="t12-flab">Caisse</span>%s</div>'
-    % ''.join([fb('Toutes les caisses', on=True), fb(BAR, point=PRIMARY), fb(RESTO, point=INFO)]),
+    % ''.join([fb('Toutes les caisses', on=True), fb(BAR, point=PRIMARY), fb(RESTO, point=INFO),
+               fb(BOUT, point=SUCCESS)]),
     '<div class="t12-frow"><span class="t12-flab">Heure</span>%s<span class="t12-esp"></span>'
     '<span class="t12-heure">18</span><span class="t12-du">h →</span><span class="t12-heure">23</span>'
     '<span class="t12-du">h</span><span class="t12-ok">OK</span></div>'
@@ -715,13 +842,15 @@ def chaleur():
             fond = 'rgba(113, 75, 103, %.3f)' % (0.06 + a * 0.85)
             coul = '#ffffff' if a > 0.55 else '#3d3c39'
             cases.append('<td style="background:%s;color:%s">%s</td>' % (fond, coul, k(v) if v else ''))
-        corps.append('<tr><td class="t12-hd">%s</td>%s</tr>' % (jour, ''.join(cases)))
+        corps.append('<tr id="t12-hm-d%d"><td class="t12-hd">%s</td>%s</tr>' % (d, jour, ''.join(cases)))
     droite = ('<div class="t12-ins" id="t12-ins"><span class="t12-chip">%s</span><span class="t12-chip">%s</span></div>'
               % (e(PIC), e(JOUR_FORT)))
-    # la zone du soir (19 h – 22 h), cible du zoom et de la bulle
-    soir = ('<div class="t12-soir" id="t12-hm-soir" style="left:calc(86px + 19 * (100% - 83px) / 24);'
-            'width:calc(4 * (100% - 83px) / 24 - 3px)"></div>')
-    corps_html = ('<div class="t12-hmw"><table class="t12-hm">%s%s</table>%s</div>' % (tete, ''.join(corps), soir))
+    # le créneau du pic (deux colonnes, heures UTC : écart 11), cible de l'anneau et de la bulle ;
+    # rentré de 7 px de chaque côté, pour que l'anneau (10 px de marge) tombe sur les bords des deux colonnes
+    soir = ('<div class="t12-soir" id="t12-hm-soir" style="left:calc(86px + %d * (100%% - 83px) / 24 + 7px);'
+            'width:calc(2 * (100%% - 83px) / 24 - 17px)"></div>' % H_PIC)
+    corps_html = ('<div class="t12-hmw" id="t12-hm-tab"><table class="t12-hm">%s%s</table>%s</div>'
+                  % (tete, ''.join(corps), soir))
     return module('t12-hm', 'Répartition des ventes — heure × jour',
                   "intensité = chiffre d'affaires · pour caler plannings & happy hours", PRIMARY, ICONES['grille'],
                   corps_html, droite=droite, classe_='t12-m4')
@@ -732,8 +861,11 @@ def module_classements():
         return ('<div class="t12-rk"><span class="n">%d</span><span class="nm">%s</span><span class="bg"><i style="width:%.1f%%;'
                 'background:%s"></i></span><span class="vl">%s</span></div>' % (i, e(nom), min(pctg, 100), coul, e(val)))
     bieres = sorted([p for p in PRODUITS if p['cat'] == 'Bières'], key=lambda p: -p['qty'])
-    marges = sorted(PRODUITS, key=lambda p: -p['taux'])[:8]
-    moins = sorted(PRODUITS, key=lambda p: p['qty'])[:8]
+    # « Meilleures marges » et « Moins vendus » ne lisent que les lignes positives
+    # (pos_dashboard.py:450-485) : un article vendu puis remboursé y compte sa vente.
+    positifs = [dict(p, qty=1, taux=pct(p['prix'] - p['cout'], p['prix'])) if p['rembourse'] else p for p in PRODUITS]
+    marges = sorted(positifs, key=lambda p: -p['taux'])[:8]
+    moins = sorted(positifs, key=lambda p: p['qty'])[:8]
     qmax_b, qmax_m = max(p['qty'] for p in bieres), max(p['qty'] for p in moins)
     corps = ('<div class="t12-g3"><div><div class="t12-st">🍺 Top bières (qté)</div>%s</div>'
              '<div><div class="t12-st">⭐ Meilleures marges</div>%s</div><div><div class="t12-st">📉 Moins vendus</div>'
@@ -770,7 +902,7 @@ def contenu_tableau(cle, d, top, evo, articles, meilleur, delta=False):
             SUCCESS if ratio < 65 else DANGER, haut=False, petite=True),
         kpi(i + '-taux', 'Taux de marge', fmt_pct(taux), 'Objectif atteint ✓' if taux >= 35 else 'Sous objectif',
             SUCCESS if taux >= 35 else WARNING, haut=False, petite=True),
-        kpi(i + '-art', 'Articles actifs', '%d <span class="t12-sur">/ %d</span>' % (articles, articles),
+        kpi(i + '-art', 'Articles actifs', '%d <span class="t12-sur">/ %d</span>' % articles,
             'références vendues', haut=False, petite=True),
         kpi(i + '-best', 'Meilleur article', e(meilleur[0][:18]), '%s CA' % fmt_money(meilleur[1]), PRIMARY, haut=False,
             petite=True)]))
@@ -782,8 +914,8 @@ def contenu_tableau(cle, d, top, evo, articles, meilleur, delta=False):
 
 
 MOIS = {'ca': CA, 'cmv': CMV, 'marge': MARGE, 'cmdes': CMDES, 'qty': QTE, 'jours': JOURS_PERIODE}
-C_ALL = contenu_tableau('all', TOUT, TOP8_TOUT, EVO_TOUT, TOUT['articles'], TOUT['meilleur'])
-C_MOIS = contenu_tableau('m', MOIS, TOP8_MOIS, EVO_MOIS, len(PRODUITS), (PRODUITS[0]['nom'], PRODUITS[0]['ca']),
+C_ALL = contenu_tableau('all', TOUT, TOP8_TOUT, EVO_TOUT, (TOUT['actifs'], TOUT['articles']), TOUT['meilleur'])
+C_MOIS = contenu_tableau('m', MOIS, TOP8_MOIS, EVO_MOIS, (ACTIFS, len(PRODUITS)), (PRODUITS[0]['nom'], PRODUITS[0]['ca']),
                          delta=True)
 
 
@@ -913,7 +1045,7 @@ PANNEAU = ('<div class="t12-panel masque" id="t12-panel" data-layout-allow-overl
            '%s / unité</div></div>'
            '<div class="t12-f"><div class="t12-fl">Marge unitaire</div><div class="t12-fv" style="color:%s">%s / unité</div>'
            '</div></div><div class="t12-sep"></div><div class="t12-fl">Période analysée</div>'
-           '<div class="t12-fv">30/09/2026 → 14/10/2026</div></div></div>'
+           '<div class="t12-fv">01/10/2026 → 13/10/2026</div></div></div>'
            % (e(B65['nom']), _bg, _tx, e(B65['cat']),
               ''.join('<div class="t12-kpi"><div class="l">%s</div><div class="v" style="color:%s">%s</div></div>'
                       % (lib, coul, fmt_money(v)) for lib, coul, v in (('CA', INFO, B65['ca']),
@@ -953,7 +1085,18 @@ ECRAN = navigateur(fenetre_muk('t12-app', 'Point de Vente', MENUS, [POS, ANALYSE
                                calques=MENU + VOILE + PANNEAU))
 
 # Le défilement jusqu'à la carte de chaleur (mesuré sur la composition).
-DEFIL_CHALEUR = -1490
+DEFIL_CHALEUR = -1610
+# Le zoom sur la carte de chaleur : cadré sur la gauche du tableau, pour garder
+# les jours (Lun … Dim) et les colonnes du pic dans l'image.
+ZOOM_HM_FX = 0.45
+
+# Ce que dit l'onglet Par caisse, vérifié sur les chiffres.
+assert TOP_CA['nom'] == BAR and CAISSES[0]['part'] > 80
+assert TOP_TAUX['nom'] == RESTO and TOP_PANIER['nom'] == RESTO
+VOIX_CAISSES = ("L'onglet Par caisse compare le bar de la terrasse et le restaurant. Le bar fait plus de quatre-vingts "
+                "pour cent du chiffre, le restaurant a le meilleur taux de marge et le meilleur panier. Dans le "
+                "tableau : chiffre d'affaires, marge, taux, panier moyen et écart de caisse ; la ligne total donne la "
+                "marge de toute la période choisie.")
 
 
 def onglet(depuis, vers, contenu_depuis, contenu_vers):
@@ -1009,6 +1152,8 @@ CSS = """
 .t12-du { font-size: 15px; color: #6c757d; white-space: nowrap; }
 .t12-date { height: 36px; padding: 0 10px 0 12px; border: 1px solid rgba(0,0,0,.12); border-radius: 8px; font-size: 15.5px; color: #212529;
   display: inline-flex; align-items: center; gap: 22px; white-space: nowrap; }
+.t12-date.focus { border-color: #714B67; box-shadow: 0 0 0 3px rgba(113,75,103,.18); }
+.t12-date .ph { display: none; }
 .t12-cal { width: 16px; height: 16px; display: inline-flex; color: #212529; }
 .t12-cal svg { width: 16px; height: 16px; }
 .t12-ok { height: 34px; padding: 0 18px; border-radius: 17px; background: #714B67; color: #fff; font-size: 15.5px; display: inline-flex; align-items: center; }
@@ -1136,6 +1281,9 @@ CSS = """
 .t12-ft b { font-size: 27px; }
 .t12-pbl { flex: 1; }
 .t12-sep { height: 1px; background: rgba(0,0,0,.08); margin: 14px 0; }
+/* les réactions de Danielle, loin de ce qu'elles commentent */
+#t12-r-biere { left: 140px; right: auto; top: 150px; bottom: auto; }
+#t12-r-ecart { top: 488px; bottom: auto; }
 """
 
 TUTORIEL = {
@@ -1150,17 +1298,17 @@ TUTORIEL = {
         'question': 'Votre bar encaisse. Mais que *gagne-t-il* vraiment ?',
         'douleurs': [('interrogation', 'Quelle marge sur chaque article ?'),
                      ('pieces', 'Quelle caisse tire le chiffre ?'),
-                     ('horloge', 'Le bar, rentable à quelle heure ?'),
+                     ('horloge', 'Le bar tourne à quelle heure ?'),
                      ('alerte', 'Des écarts de caisse noyés'),
                      ('graphe', 'Le CA visible, la marge inconnue'),
                      ('sablier', 'La rentabilité découverte trop tard')],
-        'voix': "Votre bar encaisse tous les soirs. Mais que gagne-t-il vraiment ? Quel article, quelle caisse, quelle "
-                "heure rapportent ?",
+        'voix': "Votre bar encaisse tous les soirs. Mais que gagne-t-il vraiment ? Quel article rapporte, quelle caisse "
+                "tire le chiffre, à quelle heure le bar tourne-t-il ?",
     },
     'revelation': {
-        'promesse': "Marge et coût des marchandises calculés seuls, ligne de ticket par ligne de ticket. Par caisse, "
-                    "par article, par heure, et les écarts de caisse classés par gravité.",
-        'voix': "Avec Aïte haousse, chaque ticket dit ce qu'il rapporte, et chaque caisse ce qu'il lui manque.",
+        'promesse': "Marge et coût des marchandises calculés seuls, sur chaque ligne vendue. Par caisse, par article, "
+                    "par heure, et les écarts de caisse classés par gravité.",
+        'voix': "Avec Aïte haousse, chaque vente dit ce qu'elle rapporte, et chaque caisse ce qu'il lui manque.",
     },
     'temps': ['Mesurer', 'Comprendre', 'Contrôler'],
     'app': 't12-app',
@@ -1168,15 +1316,15 @@ TUTORIEL = {
     'css': CSS,
     'vues_initiales': {'odoo': 't12-pos'},
     'bulles': {
-        'b-marge': "Marge = CA HT − coût d'achat, calculée sur chaque ligne de ticket.",
-        'b-n1': 'Comparé à la période précédente, de même durée.',
-        'b-heat': "Plus la case est foncée, plus le chiffre d'affaires est fort.",
-        'b-caisse': 'Marge totale et par caisse.',
-        'b-grav': '200 000 F manquants ou plus : Critique, en tête de liste.',
+        't12-b-marge': "Marge = CA HT − coût d'achat, calculée sur chaque ligne de ticket.",
+        't12-b-n1': 'Comparé à la période précédente, de même durée.',
+        't12-b-heat': "Plus la case est foncée, plus le chiffre d'affaires est fort.",
+        't12-b-caisse': 'Marge totale et par caisse.',
+        't12-b-grav': '200 000 F manquants ou plus : Critique, en tête de liste.',
     },
     'reactions': {
-        'r-biere': '780 F de marge sur chaque bouteille.',
-        'r-ecart': 'Je sais quelle clôture vérifier en premier.',
+        't12-r-biere': '850 F de marge sur chaque bouteille.',
+        't12-r-ecart': 'Je sais quelle clôture vérifier en premier.',
     },
     'etapes': [
         {'temps': 0, 'titre': 'Le tableau de bord des ventes',
@@ -1188,45 +1336,44 @@ TUTORIEL = {
                     clic('#t12-menu-tdb', d=0.45, puis=0.1), cacher('#t12-menu', d=0.15), vue('t12-ana'), pause(0.4),
                     anneau('#t12-all-r1', d=1.6), curseur('#t12-all-marge', fx=0.7, fy=0.6, d=0.6, avec=True),
                     zoom('#t12-all-marge', s=1.6, d=0.8),
-                    bulle('b-marge', '#t12-all-marge', cote='bas', d=3.0), pause(2.8), dezoom(d=0.6),
+                    bulle('t12-b-marge', '#t12-all-marge', cote='bas', d=3.0), pause(2.8), dezoom(d=0.6),
                     anneau('#t12-all-ratio', d=1.1), anneau('#t12-all-taux', d=1.1)]},
-        {'temps': 0, 'titre': 'Ce mois, face à la période précédente',
-         'texte': 'Un clic sur « Ce mois » : tout se recalcule, et une bande compare à la période précédente.',
-         'voix': "Un clic sur Ce mois, et tout se recalcule. Une bande compare aussitôt le chiffre d'affaires, la "
-                 "marge, le coût et les commandes à la période précédente, de même durée. Ici, la marge gagne douze "
-                 "pour cent.",
-         'gestes': [clic('#t12-pe-mois', d=0.7), classe('#t12-pe-all', retirer=['on']),
-                    classe('#t12-pe-mois', ajouter=['on'], avec=True), texte('#t12-du-v', '30/09/2026', avec=True),
-                    texte('#t12-au-v', '14/10/2026', avec=True), cacher('#t12-all', d=0.12),
+        {'temps': 0, 'titre': 'Une période, face à la précédente',
+         'texte': 'Du 01/10 au 13/10, puis « Analyser » : tout se recalcule, et une bande compare à la période '
+                  'précédente.',
+         'voix': "Danielle choisit ses dates, du premier au treize octobre, puis clique sur Analyser : tout se "
+                 "recalcule. Une bande compare aussitôt le chiffre d'affaires, la marge, le coût et les commandes à la "
+                 "période précédente, de même durée. Ici, la marge gagne douze pour cent.",
+         'gestes': [clic('#t12-du', fx=0.2, d=0.7), saisir('t12-du', '01/10/2026', d=0.8), pause(0.2),
+                    clic('#t12-ok-p', d=0.6), classe('#t12-pe-all', retirer=['on']), cacher('#t12-all', d=0.12),
                     montrer('#t12-m', d=0.25, y=0),
                     compter('#t12-m-ca-v', 0, CA, d=1.0, apres=' F', avec=True), pause(0.6),
-                    anneau('#t12-strip', d=1.4), bulle('b-n1', '#t12-strip', cote='bas', d=3.0),
+                    anneau('#t12-strip', d=1.4), bulle('t12-b-n1', '#t12-strip', cote='bas', d=3.0),
                     anneau('#t12-strip-1', d=1.6), pause(0.8), anneau('#t12-m-r1', d=1.4)]},
         {'temps': 1, 'titre': 'Les heures de pointe',
          'texte': "La carte heure × jour : le pic de deux heures et le jour fort, calculés seuls.",
-         'voix': "Plus bas, la carte des heures et des jours : plus la case est foncée, plus la vente est forte. Le "
-                 "pic tombe entre vingt et vingt-deux heures, et le samedi est le jour fort. De quoi organiser le "
-                 "service du soir.",
+         'voix': "Plus bas, la carte des heures et des jours : plus la case est foncée, plus la vente est forte. Les "
+                 "deux repères se calculent seuls : le meilleur créneau de deux heures tombe en soirée, et le samedi "
+                 "est le jour fort. De quoi organiser le service du soir, et renforcer l'équipe le samedi.",
          'gestes': [defiler('#t12-defil', DEFIL_CHALEUR, d=1.6), pause(0.4),
                     curseur('#t12-ins', fx=0.25, fy=0.85, d=0.6), anneau('#t12-ins', d=1.6),
-                    zoom('#t12-hm-soir', s=1.45, fy=0.0, d=0.8),
+                    zoom('#t12-hm-tab', s=1.3, fx=ZOOM_HM_FX, fy=0.5, d=0.8),
                     anneau('#t12-hm-soir', d=1.6),
-                    bulle('b-heat', '#t12-hm-soir', cote='gauche', d=3.0), pause(2.8), dezoom(d=0.6)]},
+                    bulle('t12-b-heat', '#t12-hm-soir', cote='gauche', d=3.0), pause(2.8),
+                    anneau('#t12-hm-d%d' % J_FORT, d=1.8), pause(0.4), dezoom(d=0.6)]},
         {'temps': 1, 'titre': 'Marge totale et par caisse',
          'texte': 'Bar de la terrasse et restaurant côte à côte : CA, marge, taux, panier, écart de caisse.',
-         'voix': "L'onglet Par caisse compare le bar de la terrasse et le restaurant. Le bar est le plus rentable, "
-                 "le restaurant a le meilleur panier. Dans le tableau : chiffre d'affaires, marge, taux, panier moyen "
-                 "et écart de caisse ; la ligne total donne la marge de toute la période.",
+         'voix': VOIX_CAISSES,
          'gestes': [defiler('#t12-defil', 0, d=0.9)] + onglet('dash', 'caisse', 't12-m', 't12-c-caisse')
                    + [pause(0.3), anneau('#t12-ck-1', d=1.1), anneau('#t12-ck-2', d=1.1), anneau('#t12-ck-3', d=1.0),
                       curseur('#t12-ctot', fx=0.1, d=0.6), anneau('#t12-ctab', d=1.6),
-                      bulle('b-caisse', '#t12-cmod-t', cote='droite', d=3.2), anneau('#t12-ctot', d=1.6), pause(1.6),
-                      anneau('#t12-ck-4', d=1.2)]},
+                      bulle('t12-b-caisse', '#t12-cmod-t', cote='droite', d=3.2), anneau('#t12-ctot', d=1.6),
+                      pause(1.6), anneau('#t12-ck-4', d=1.2)]},
         {'temps': 1, 'titre': 'Les articles qui rapportent',
          'texte': "Recherche, puis le détail d'un article : prix, coût et marge ramenés à l'unité.",
          'voix': "Dans l'onglet Articles, Danielle tape bière : seules les bières restent. Un clic sur la bière "
                  "blonde ouvre son détail : quantité vendue, taux de marge, et surtout le prix, le coût et la marge "
-                 "ramenés à l'unité. Ici, chaque bouteille laisse sept cent quatre-vingts francs de marge.",
+                 "ramenés à l'unité. Ici, chaque bouteille laisse huit cent cinquante francs de marge.",
          'gestes': onglet('caisse', 'art', 't12-c-caisse', 't12-c-art')
                    + [clic('#t12-q', fx=0.2, d=0.6), saisir('t12-q', 'bière', d=0.6),
                       cacher('#t12-art-tous', d=0.05), montrer('#t12-art-bieres', d=0.05, y=0, avec=True),
@@ -1234,18 +1381,19 @@ TUTORIEL = {
                       clic('#t12-ab-0', fx=0.12, d=0.6), montrer('#t12-voile', d=0.25, y=0),
                       montrer('#t12-panel', d=0.45, y=0, avec=True), pause(0.3), anneau('#t12-pn-taux', d=1.1),
                       zoom('#t12-pn-unit', s=1.45, fx=0.3, fy=0.1, d=0.7), anneau('#t12-pn-unit', d=1.6),
-                      reaction('r-biere', d=2.6), pause(2.2), dezoom(d=0.5),
+                      reaction('t12-r-biere', d=2.6), pause(2.2), dezoom(d=0.5),
                       clic('#t12-pn-x', d=0.5), cacher('#t12-panel', d=0.25), cacher('#t12-voile', d=0.2, avec=True)]},
         {'temps': 2, 'titre': 'Les écarts de caisse, classés par gravité',
          'texte': "Critique, élevé, modéré, excédent : la session à vérifier d'abord est en tête.",
          'voix': "Restent les écarts de caisse. À chaque clôture, l'argent compté est comparé à l'attendu, et "
                  "chaque session se classe toute seule, de la plus grave à la moins grave. En tête : à partir de deux "
-                 "cent mille francs manquants, elle est critique.",
+                 "cent mille francs manquants, elle est critique. Un excédent ferme la liste.",
          'gestes': onglet('art', 'ecarts', 't12-c-art', 't12-c-ecarts')
                    + [pause(0.3), anneau('#t12-ek-1', d=1.0), anneau('#t12-ek-4', d=1.0),
-                      curseur('#t12-e-r0-sev', fx=1.25, fy=1.1, d=0.6), zoom('#t12-e-r0', s=1.3, fx=0.47, d=0.8),
-                      anneau('#t12-e-r0', d=1.6), bulle('b-grav', '#t12-e-r0-qui', cote='bas', d=3.0), pause(2.8),
-                      dezoom(d=0.6), reaction('r-ecart', d=2.6), pause(1.6)]},
+                      curseur('#t12-e-r0-sev', fx=0.9, fy=1.1, d=0.6), zoom('#t12-e-r0', s=1.3, fx=0.5, d=0.8),
+                      anneau('#t12-e-r0', d=1.6), bulle('t12-b-grav', '#t12-e-r0-qui', cote='bas', d=3.0), pause(2.8),
+                      dezoom(d=0.6), curseur('#t12-e-r4-sev', fx=0.9, fy=1.1, d=0.5), anneau('#t12-e-r4', d=1.6),
+                      reaction('t12-r-ecart', d=2.6), pause(1.6)]},
     ],
     'resultats': {
         'titre': 'Ce que vous gagnez, enfin visible',

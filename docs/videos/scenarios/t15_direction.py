@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-"""Tutoriel 15 — Cockpit Direction : votre hôtel lu en 30 secondes.
+"""Tutoriel 15 — Cockpit Direction : l'affaire lue d'un coup d'œil.
 
 La directrice (Danielle Eyenga, demo.POSTES['direction']) ouvre l'application
 Direction : la santé de l'affaire, l'essentiel par pôle, les filtres (le soir
 du week-end), un clic sur une carte de pôle qui ouvre son onglet (Crédit
 clients), la liste « À traiter », la rangée Hébergement comparée à l'an
 dernier, puis un clic sur une carte de l'hôtel qui ouvre le tableau de bord
-exécutif (pickup, pace, trois pôles).
+exécutif (pickup, pace).
 
 Profil rejoué : comptes demo.direction de la base MuK (Point de Vente :
 Administrateur, Gestion hôtelière : Responsable…). Le menu racine
@@ -100,11 +100,15 @@ direction_dashboard.xml:104 (« du cash qui s'évapore avec l'âge »),
 tests/vague1/scenario_kpi.py:6-8 (le gérant « ne connaît pas le vocabulaire
 hôtelier »), docs/etude_comparative/build_etude.py:167-168 et
 benchmark_pms.md:161 (RevPAR / pace / pickup, standard chez 10 leaders sur
-10, « à ajouter » avant F06) ; question et titre — docs/guides/
-AITE_Guide_Tableau_de_bord_Direction.pdf p. 1 (« répondre en trente
-secondes à « comment va l'affaire ? » — et savoir où creuser ensuite ») ;
+10, « à ajouter » avant F06) ; question — docs/guides/
+AITE_Guide_Tableau_de_bord_Direction.pdf p. 1 (« comment va l'affaire ? »
+— guide du tableau exécutif, Hôtel → Direction, montré à l'étape 6 ; sa
+promesse des « trente secondes » n'est pas reprise : le titre dit « d'un
+coup d'œil », une seule page, direction_dashboard.js:39-46) ;
 kicker — plaquette p. 16 (« Le pilotage du gérant ») ; « qui relancer en
-premier » — plaquette p. 10 ; bénéfices et résultats — direction_dashboard.js
+premier » — plaquette p. 10 et tri par encours décroissant
+(pos_credit_dashboard.py:427) ; pickup et pace dits par la voix —
+exec_dashboard.py:31-34 ; bénéfices et résultats — direction_dashboard.js
 :39-46 (six onglets), direction_dashboard.py:5-11 (quatre moteurs relus) et
 addons/aite_direction_dashboard/tests/test_dashboard_api.py:84-124 (mêmes
 chiffres que les tableaux spécialisés), exec_dashboard.py:20-38 (six
@@ -121,7 +125,26 @@ CA des nuitées = 192 nuitées × 45 000 = 8 640 000 ; 20 chambres × 15 jours
 = 300 nuitées disponibles, d'où 64,0 % et RevPAR 28 800 = 45 000 × 64 % ;
 cash à risque = 101 500 + 41 500 ; position nette = 150 000 − 1 280 000 ;
 restauration TTC = 3 120 000 HT × 1,1925 (écart 2) ; mix trié et arrondi
-comme _mix_rows.
+comme _mix_rows. Top débiteurs : à encours égal (30 000), Brigitte
+Essomba (ARD/0039, plus récente) sort avant Sylvie Mbarga (ARD/0017) — tri
+stable sur des ardoises lues en create_date desc (pos_credit.py:23).
+
+Cadrages choisis pour ne pas filmer les défauts du produit (non corrigés :
+les modules ne sont pas modifiés par les vidéos) :
+- étape 3 : défilement dès l'arrivée sur l'onglet Crédit clients, la
+  rangée Recouvré / Nouveaux / Flux net (phrase inversée, écart 5) ne
+  reste pas lisible ; la voix ne commente que la balance âgée, la courbe
+  et le Top débiteurs ;
+- étape 5 : défilement court (-60) qui pose la rangée Hébergement au bas
+  du cadre : TENDANCES (barres du CA à zéro, miroir fournisseurs à 0,
+  écart 3) n'est jamais à l'écran ; pas de zoom (en zoom, la légende de
+  l'étape recouvrirait la rangée) ;
+- étape 6 : le tableau exécutif défile aussitôt ouvert (les quatre cartes
+  de pôle et « Période 2026-09-30 → … » sortent du cadre), puis zoom sur
+  pickup / pace : ni le total ni « Hébergement » / « Restauration &
+  boutique » (écart 2) ne restent lisibles, la voix ne les cite pas ;
+- zooms des étapes 1 et 3 assez serrés (1,85 et 1,8) pour que le champ
+  « Du 30/09/2026 » (écart 1) ne soit jamais en gros plan.
 
 Captures de référence (modèle visuel, jamais incrustées) : ref_muk/060-
 direction(-pleine).png, 053-h-tel-direction(-pleine).png, 330-direction-
@@ -163,6 +186,11 @@ pas « vs N-1 » et toLocaleString écrit un trait d'union).
    l'exécutif ; même titre « Direction — Vue consolidée » pour les deux
    écrans ; phrase « vos clients vous financent » inversée quand le solde est
    positif (js:293-297, non rejouée ici : le solde est négatif).
+7. Anglais résiduel (règle 6 du CLAUDE.md) : « RevPAR », « Pickup 7 j →
+   30 j », « Pace du mois », infobulles « RevPAR : … » et « Pace : … »
+   (exec_dashboard.py:28-34, dashboard.xml:95-104) ; rejoué tel quel. La
+   douleur « RevPAR, pickup, pace : du jargon » reste vraie : la phrase
+   explique le sigle, mais le sigle reste en tête.
 """
 
 import demo
@@ -384,8 +412,10 @@ AGING = (hbar('0–30 j', 67.8, '#3B6D11', '48 500', '2 cl.') + hbar('30–60 j'
 SPARK = ('<svg viewBox="0 0 520 120" class="t15-spark"><polyline points="%s" fill="none" stroke="#854F0B" '
          'stroke-width="2.5"/></svg>'
          % ' '.join('%.1f,%.1f' % (15 + i * 490 / 6.0 + 490 / 12.0, 105 - v / 186500.0 * 90) for i, v in enumerate(ENCOURS)))
-TOP_DEB = mini([(None, 'Armand Mvogo', '44 500 FCFA', pill('57 j')), (None, 'Sylvie Mbarga', '30 000 FCFA', pill('104 j', True)),
-                (None, 'Brigitte Essomba', '30 000 FCFA', pill('22 j')), (None, 'Joël Kamga', '27 000 FCFA', pill('39 j')),
+# tri stable par encours sur des ardoises lues en create_date desc : à encours égal, ARD/0039 (Essomba, plus
+# récente) sort avant ARD/0017 (Mbarga) — pos_credit.py:23, pos_credit_dashboard.py:388-427
+TOP_DEB = mini([(None, 'Armand Mvogo', '44 500 FCFA', pill('57 j')), (None, 'Brigitte Essomba', '30 000 FCFA', pill('22 j')),
+                (None, 'Sylvie Mbarga', '30 000 FCFA', pill('104 j', True)), (None, 'Joël Kamga', '27 000 FCFA', pill('39 j')),
                 (None, 'Patrick Nkoulou', '18 500 FCFA', pill('5 j'))], 't15-c-top-t')
 REMB = mini([(None, 'Christian Atangana', '15 000 FCFA', 'Orange Money · 2026-10-12'),
              (None, 'Armand Mvogo', '20 000 FCFA', 'MTN Mobile Money · 2026-10-08'),
@@ -600,7 +630,7 @@ CSS = """
 .t15-ht i { display: block; height: 16px; }
 .t15-hv { min-width: 120px; text-align: right; font-size: 14px; color: #5c5861; white-space: nowrap; }
 .t15-hint { color: var(--t15-muet); margin-left: 5px; }
-.t15-spark { width: 100%; height: 96px; display: block; background: #fbfaf9; border-radius: 6px; }
+.t15-spark { width: 100%; height: auto; max-height: 150px; display: block; background: #fbfaf9; border-radius: 6px; }
 .t15-mini .t15-tr { display: flex; align-items: center; gap: 10px; min-height: 36px; border-bottom: 1px solid #efedea; font-size: 15px; }
 .t15-mini .t15-tr:last-child { border-bottom: 0; }
 .t15-td { flex: 1; min-width: 0; color: #43404a; line-height: 1.3; padding: 4px 0; }
@@ -613,8 +643,9 @@ CSS = """
 .t15-wrap .t15-panel { flex: 1 1 330px; }
 .t15-pad { margin: 0 6px; }
 .t15-tip { width: 470px; font-size: 18px; }
-#t15-tip-revpar { left: 1000px; top: 412px; }
-/* le tableau exécutif (exec_dashboard.scss, à l'échelle de la vidéo) */
+#t15-tip-revpar { left: 1010px; top: 212px; }
+/* le tableau exécutif (exec_dashboard.scss, à l'échelle de la vidéo) ; le contenu défile sous la barre */
+#t15-exec .fond-tdb { overflow: hidden; }
 .t15-x { position: absolute; left: 14px; right: 14px; top: 12px; }
 .t15-xtop { background: #fff; border: 1px solid rgba(0,0,0,.08); border-radius: 12px; padding: 10px 16px; }
 .t15-xtitre { font-size: 23px; font-weight: 700; color: #714B67; line-height: 1.2; }
@@ -667,7 +698,7 @@ TUTORIEL = {
     'slug': 't15-direction',
     'profil': 't15_direction',
     'numero': 15,
-    'titre': 'Cockpit Direction : votre hôtel lu en 30 secondes',
+    'titre': "Cockpit Direction : l'affaire lue d'un coup d'œil",
     'fonction': 'Cockpit Direction',
     'personnage': (NOM, ROLE),
     'accroche': {
@@ -709,8 +740,8 @@ TUTORIEL = {
                  "fournisseurs.",
          'gestes': [clic('#t15-app-app-direction', d=0.6), compter('#t15-k-ca-v', 0, 3120000, d=1.2, apres=' FCFA'),
                     curseur('#t15-sante', fx=0.62, fy=-0.22, d=0.6, avec=True), anneau('#t15-k-ca', d=1.2),
-                    anneau('#t15-k-marge', d=1.0), zoom('#t15-k-risque', s=1.6, d=0.8),
-                    bulle('b-risque', '#t15-k-risque', cote='bas', d=3.0), pause(2.8), dezoom(d=0.6),
+                    anneau('#t15-k-marge', d=1.0), zoom('#t15-k-risque', s=1.85, d=0.8),
+                    bulle('b-risque', '#t15-k-risque', cote='haut', d=3.0), pause(2.8), dezoom(d=0.6),
                     anneau('#t15-k-net', d=1.6)]},
         {'temps': 0, 'titre': 'Le soir du week-end',
          'texte': 'Heure et jours recalculent les ventes ; ardoises, stock et dettes ne bougent pas.',
@@ -729,42 +760,43 @@ TUTORIEL = {
         {'temps': 1, 'titre': 'Un clic sur un pôle',
          'texte': "La carte « Encours ardoises » ouvre l'onglet Crédit clients.",
          'voix': "Pour creuser, un clic sur une carte de pôle. L'encours des ardoises ouvre l'onglet Crédit clients : "
-                 "ce qui est au-delà de trente jours, la plus ancienne ardoise, la balance âgée, et les plus gros débiteurs.",
+                 "la balance âgée, l'encours sur six mois, et les débiteurs, du plus gros encours au plus petit.",
          'gestes': [clic('#t15-p-ard', d=0.7), classe('#t15-tab-vue', retirer=['on']),
-                    classe('#t15-tab-credit', ajouter=['on'], avec=True), vue('t15-b-credit', 'corps'), pause(0.3),
-                    anneau('#t15-c-late', d=1.1), anneau('#t15-c-old', d=1.1),
-                    defiler('#t15-credit-defil', -316, d=0.8), zoom('#t15-c-top-t', s=1.45, d=0.7),
-                    reaction('r-relance', d=2.8), pause(2.6), dezoom(d=0.5), anneau('#t15-c-aging', d=1.0)]},
+                    classe('#t15-tab-credit', ajouter=['on'], avec=True), vue('t15-b-credit', 'corps'),
+                    defiler('#t15-credit-defil', -316, d=0.7, avec=True), pause(0.2), anneau('#t15-c-aging', d=1.4),
+                    zoom('#t15-c-top-t', s=1.8, d=0.7),
+                    reaction('r-relance', d=2.8), pause(2.6), dezoom(d=0.5), anneau('#t15-c-top', d=1.0)]},
         {'temps': 2, 'titre': 'À traiter : la liste du gérant',
          'texte': 'Relancer, régulariser, commander, renégocier : la liste se construit seule.',
          'voix': "Reste à agir. L'onglet À traiter dresse la liste du gérant : relancer les ardoises de plus de trente "
                  "jours, régulariser la facture échue, commander la bière en rupture, renégocier une hausse de prix.",
          'gestes': [clic('#t15-tab-todo', d=0.7), classe('#t15-tab-credit', retirer=['on']),
-                    classe('#t15-tab-todo', ajouter=['on', 'vu'], avec=True), vue('t15-b-todo', 'corps'), pause(0.3), zoom('#t15-s-four', s=1.3, d=0.7),
-                    bulle('b-todo', '#t15-s-credit', cote='haut', d=2.8), pause(2.6), dezoom(d=0.5),
-                    anneau('#t15-s-four', d=1.0), anneau('#t15-s-stock', d=1.1), anneau('#t15-s-prix', d=1.1)]},
+                    classe('#t15-tab-todo', ajouter=['on', 'vu'], avec=True), vue('t15-b-todo', 'corps'), pause(0.3),
+                    anneau('#t15-s-credit', d=1.2), bulle('b-todo', '#t15-s-four', cote='bas', d=3.0), pause(2.4),
+                    anneau('#t15-s-four', d=1.1), anneau('#t15-s-stock', d=1.2), anneau('#t15-s-prix', d=1.2)]},
         {'temps': 3, 'titre': "L'hôtel face à l'an dernier",
          'texte': "Occupation, prix moyen, RevPAR : l'écart N-1 en couleur, et un « ? » qui explique.",
          'voix': "Retour à la vue d'ensemble, côté hôtel. Occupation, prix moyen par nuit, revpar : chaque carte se "
                  "compare à la même période l'an dernier, et son point d'interrogation l'explique en une phrase.",
          'gestes': [clic('#t15-tab-vue', d=0.7), classe('#t15-tab-todo', retirer=['on']),
                     classe('#t15-tab-vue', ajouter=['on'], avec=True), vue('t15-b-vue', 'corps'),
-                    defiler('#t15-vue-defil', -312, d=0.9), zoom('#t15-x-adr', s=1.4, d=0.7),
-                    bulle('b-n1', '#t15-x-occ', cote='bas', d=2.6), pause(2.2),
+                    defiler('#t15-vue-defil', -60, d=0.6), anneau('#t15-x-occ', d=1.2), anneau('#t15-x-adr', d=1.2),
+                    bulle('b-n1', '#t15-x-revpar', cote='haut', d=2.8), pause(2.4),
                     curseur('#t15-x-revpar-aide', d=0.6), montrer('#t15-tip-revpar', d=0.3, y=6), pause(2.6),
-                    cacher('#t15-tip-revpar', d=0.2), dezoom(d=0.5)]},
+                    cacher('#t15-tip-revpar', d=0.2), curseur('#t15-x-revpar', fx=0.6, fy=-0.25, d=0.5)]},
         {'temps': 3, 'titre': 'Pickup et pace : le tableau exécutif',
-         'texte': 'Une carte Hébergement ouvre le tableau de bord exécutif : trois pôles, pickup, pace.',
-         'voix': "Un clic sur une carte de l'hôtel ouvre le tableau de bord exécutif : les trois pôles consolidés, le "
-                 "pikeup de la semaine, et les nuitées déjà réservées pour le mois, face à l'an dernier à la même date.",
-         'gestes': [clic('#t15-x-revpar', d=0.6), vue('t15-exec'), pause(0.2),
-                    compter('#t15-e-tot-v', 0, 12873000, d=1.1, apres=' FCFA'), anneau('#t15-e-heb', d=0.8),
-                    anneau('#t15-e-pos', d=0.8), anneau('#t15-e-pre', d=0.8), anneau('#t15-e-pick', d=1.4),
-                    curseur('#t15-e-pace-aide', d=0.6), montrer('#t15-tip-pace', d=0.3, y=6), pause(2.6),
-                    cacher('#t15-tip-pace', d=0.2), reaction('r-fin', d=2.6), pause(1.6)]},
+         'texte': 'Une carte Hébergement ouvre le tableau de bord exécutif : le pickup et le pace du mois.',
+         'voix': "Un clic sur une carte de l'hôtel ouvre le tableau de bord exécutif. Le pikeup : les nuitées prises ces "
+                 "sept derniers jours pour les trente prochains. Le pace : les nuitées déjà réservées pour le mois, face "
+                 "à l'an dernier à la même date.",
+         'gestes': [clic('#t15-x-revpar', d=0.6), vue('t15-exec'), defiler('#t15-exec-defil', -262, d=0.6, avec=True),
+                    zoom('#t15-e-pace', s=1.5, fx=0.0, d=0.7), anneau('#t15-e-pick', d=1.6),
+                    curseur('#t15-e-pace-aide', d=0.6), montrer('#t15-tip-pace', d=0.3, y=6), pause(2.8),
+                    cacher('#t15-tip-pace', d=0.2), curseur('#t15-e-pace', fx=0.5, fy=1.6, d=0.5),
+                    reaction('r-fin', d=2.6), pause(1.8)]},
     ],
     'resultats': {
-        'titre': "Toute l'affaire sur une seule page",
+        'titre': 'Lire, creuser, agir, comparer',
         'cartes': [
             {'valeur': '6', 'compter': 6, 'unite': 'onglets', 'icone': 'liste',
              'texte': "vue d'ensemble, ventes, crédit, stock, achats, à traiter : une seule page"},
