@@ -133,19 +133,23 @@ Données : demo.py (Estelle Ngono, RES/2026/0214, FOL/2026/0214, chambre
 204 [CFT] Confort à 45 000 FCFA, réceptionniste Mireille Ateba). Le séjour
 suit t01_reception.py, qui en fixe le point de départ : réservation
 confirmée le 14/10 par la Réservation rapide (canal par défaut « Direct /
-comptoir », téléphone neutralisé), acompte MTN de 45 000 FCFA le 14/10 avec
+comptoir », téléphone demo.CLIENT_TEL, plage de fiction de la série),
+acompte MTN de 45 000 FCFA le 14/10 avec
 la référence de t01 (8742156309), check-in réel 14/10/2026 14:06:12 (t01,
 t06), quatre « Petit-déjeuner buffet » à 2 700 FCFA le 15/10 (service de
 aite_demo_data/models/demo_generator.py:87, repris par t01), départ réel
 16/10/2026 11:42:18 (t01) ; d'où 102 000 FCFA à la confirmation, 57 000
-après l'acompte, 112 800 TTC et 67 800 dus au départ. Sans TVA sur l'article
-de nuitée, comme au chapitre 1 de la vidéo de présentation : aucun taux
+après l'acompte, 112 800 TTC et 67 800 dus au départ. Sans TVA sur aucun
+article, comme dans toute la série (fiche d'harmonisation) : aucun taux
 n'est livré par les modules. Fiches clients 2/2 et registre à jour au
 départ : t06_registre.py complète les deux fiches le 14/10.
 
 La liste des folios (16/10, vers 11 h 45) reprend les réservations de
 t02_planning.py (CONFIRMEES, SEJOURS) et t08_site_web.py (TOUTES), mêmes
-numéros, mêmes clients, mêmes chambres : un folio Ouvert, sans encaissement,
+numéros, mêmes clients, mêmes chambres — Rodrigue Tamba (FOL/2026/0221) en
+203 du 19 au 21/10, tel que t02 le laisse après la prolongation et le
+changement de chambre ; Aristide Bella (0218) en 401 du 24 au 26/10 ;
+Brigitte Essomba (0210) — : un folio Ouvert, sans encaissement,
 par réservation confirmée à venir (le folio naît à la confirmation,
 hotel_reservation.py:319-331) ; RES/2026/0222 à 0224 sont des brouillons,
 sans folio. Martin Ebode (FOL/2026/0209 : 105 000 FCFA d'hébergement,
@@ -187,13 +191,12 @@ réception pour valider un départ avec facture (signalé au rapport).
 6. Le libellé ISO de la nuitée (écart 1) passe en gros plan au zoom de
    l'étape 5 : le tutoriel ne le corrige pas, il le rejoue.
 
-Écarts de la série, signalés (non corrigés ici) : t02_planning.py prolonge
-ce séjour jusqu'au 17/10 en suite 402 ; t05_taxe_sejour.py compte la nuitée
-avec TVA 19,25 % ; t04_note_chambre.py reprend l'ancienne liste de ce
-tutoriel (FOLIO_B = FOL/2026/0218 pour Brigitte Essomba, devenu
-FOL/2026/0210 ici car RES/2026/0218 est Aristide Bella ; OUVERTS avec
-FOL/2026/0226 et 0221) ; t04 crée FOL/2026/0226-0227 le 16/10 alors que
-t05 confirme RES/2026/0225 le 20/10.
+Cohérence de la série (fiche d'harmonisation) : Estelle Ngono reste en 204
+du 14 au 16/10 dans tous les tutoriels (t02 prolonge et déplace Rodrigue
+Tamba, pas elle) ; t04_note_chambre.py reprend cette liste (Brigitte
+Essomba en FOL/2026/0210, mêmes folios ouverts) et y ajoute FOL/2026/0226
+et 0227, créés le 16/10 ; t05_taxe_sejour.py suit Pélagie Ondobo
+(RES/FOL 2026/0228), sans TVA, comme ici.
 """
 
 import demo
@@ -211,7 +214,7 @@ FACTURE = 'FAC/2026/00187'
 # acompte MTN le 14/10 (REF_MOMO de t01), check-in réel 14:06:12, quatre
 # petits-déjeuners buffet à 2 700 FCFA le 15/10, départ réel 16/10 11:42:18.
 REF_MOMO = '8742156309'
-TEL = '+237 600 00 00 00'           # numéro neutralisé, comme t01
+TEL = demo.CLIENT_TEL                # plage de fiction de la série, comme t01
 SERVICE = 'Petit-déjeuner buffet'   # aite_demo_data/models/demo_generator.py:87, 2 700 FCFA
 J_CONF, J_EXTRA, J_DEPART = '14/10/2026', '15/10/2026', '16/10/2026'
 CHECKIN_REEL, DEPART_REEL = '14/10/2026 14:06:12', '16/10/2026 11:42:18'

@@ -133,9 +133,9 @@ ces dates est refusée à la confirmation.
    chambre », « Conserver le prix actuel », « Prix actuel / nuit »,
    « Nouveau prix / nuit », « ? » après « Prix actuel / nuit » (champ lié à
    price_night, dont il hérite l'aide : hotel_reservation.py:562-566,
-   odoo18/odoo/fields.py:767), bandeau « Surclassement gracieux : la nouvelle
-   chambre sera facturée au tarif actuel du séjour. », « Changer la
-   chambre », « Annuler ») ; wizard/hotel_room_change_wizard.py:20-95
+   odoo18/odoo/fields.py:767), « Changer la chambre », « Annuler » ; le
+   bandeau « Surclassement gracieux : … » n'apparaît que case cochée,
+   invisible="not keep_price") ; wizard/hotel_room_change_wizard.py:20-95
    (aides, prix ; le message « Surclassement gracieux : le tarif de
    %(price)s / nuit est conservé. » n'est posté que si la case est cochée et
    que le prix change : ici, de la 201 à la 203, deux Confort à 45 000, la
@@ -614,9 +614,6 @@ def separateur(texte_):
     return '<div class="t02-sep"><span>%s</span></div>' % e(texte_)
 
 
-CREE = message(NOM, '10 oct., 16:05', 'Réservation hôtelière créé')
-
-
 def discussion(etats, ident):
     """La discussion à droite (thème MuK) ; ``etats`` : ses contenus successifs, superposés."""
     piles = ''.join('<div class="t02-ch-etat%s" id="%s-%d">%s</div>' % ('' if i == 0 else ' masque', ident, i, h)
@@ -661,17 +658,27 @@ ENTETE_CONFIRMEE = ('<div class="t02-bts">%s%s%s%s%s<span class="t02-etat">Confi
                        bt(None, 'Envoyer la confirmation'), bt(None, "Fiches d'enregistrement", ico=IMPRIMER_I),
                        bt(None, 'No-show'), bt(None, 'Annuler')))
 
-# Rodrigue Tamba : réservé par la Réservation rapide, confirmé d'emblée (folio ouvert).
+# Rodrigue Tamba : réservé par la Réservation rapide (une nuit en 201), confirmé d'emblée,
+# folio ouvert ; il rappelle : une nuit de plus (10:12), puis la 203 (10:14).
+SUIVI = ('<div class="t02-suivi"><b class="anc">20/10/2026 12:00:00</b><span class="sep">→</span>'
+         '<b class="nouv">21/10/2026 12:00:00</b> <i>(Départ)</i></div>')
+CREE_R = message(NOM, "Aujourd'hui à 10:06", 'Réservation hôtelière créé')
+FIL_R0 = separateur("Aujourd'hui") + CREE_R
+FIL_R1 = separateur("Aujourd'hui") + message(NOM, "Aujourd'hui à 10:12", SUIVI, 't02-r-m1') + CREE_R
+FIL_R2 = (separateur("Aujourd'hui")
+          + message(NOM, "Aujourd'hui à 10:14", 'Changement de chambre : 201 [CFT] → 203 [CFT].', 't02-r-m2')
+          + message(NOM, "Aujourd'hui à 10:12", SUIVI) + CREE_R)
+DEPART_R = ('<span class="t02-champ" id="t02-r-dep"><span class="ph" id="t02-r-dep-ph"></span>'
+            '<span class="val" id="t02-r-dep-val">20/10/2026 12:00:00</span></span>')
 RODRIGUE_FICHE = fiche(
     't02-rodrigue', 'Planning des chambres', 'RES/2026/0221', ENTETE_CONFIRMEE,
-    stat('t02-r-folio', 'document', 'Folio', FOLIO_RODRIGUE) + stat(None, 'fiche', 'Fiches clients', '0/2'),
+    stat('t02-r-folio', 'document', 'Folio', FOLIO_AVANT) + stat(None, 'fiche', 'Fiches clients', '0/2'),
     client_grp('Rodrigue Tamba', '+237 6 00 00 00 21', 'rodrigue.tamba@exemple.cm'),
-    grp('Séjour', [ch('Arrivée', '19/10/2026 14:00:00', saisie=True), ch('Départ', '21/10/2026 12:00:00', saisie=True),
-                   ch('Nuits', '2', aide=True), ch('Total hébergement (HT)', '90 000 FCFA')]),
+    grp('Séjour', [ch('Arrivée', '19/10/2026 14:00:00', saisie=True), ch('Départ', DEPART_R, saisie=True, html=True),
+                   ch('Nuits', '1', 't02-r-nuits', aide=True), ch('Total hébergement (HT)', TOTAL_AVANT, 't02-r-tot')]),
     canal_grp('Direct / comptoir'), occupation_grp(),
-    ligne_chambre('t02-r-l', 'Confort', '203 [CFT]', '2', demo.PRIX_NUIT, '90 000 FCFA'),
-    discussion([separateur("Aujourd'hui") + message(NOM, "Aujourd'hui à 10:06", 'Réservation hôtelière créé')],
-               't02-r-fil'))
+    ligne_chambre('t02-r-l', 'Confort', '201 [CFT]', '1', demo.PRIX_NUIT, TOTAL_AVANT),
+    discussion([FIL_R0, FIL_R1, FIL_R2], 't02-r-fil'), enregistrer=True)
 
 # Jacques Owona : saisi à la main sur la 204, aux dates du séjour d'Estelle — refusé à la confirmation.
 JACQUES = fiche(
@@ -688,29 +695,6 @@ JACQUES = fiche(
     ligne_chambre('t02-j-l', 'Confort', demo.CHAMBRE, '2', demo.PRIX_NUIT, '90 000 FCFA', echange=False),
     discussion([separateur("Aujourd'hui") + message(NOM, "Aujourd'hui à 10:09", 'Réservation hôtelière créé')],
                't02-j-fil'))
-
-SUIVI = ('<div class="t02-suivi"><b class="anc">16/10/2026 12:00:00</b><span class="sep">→</span>'
-         '<b class="nouv">17/10/2026 12:00:00</b> <i>(Départ)</i></div>')
-FIL_E0 = separateur('10 oct. 2026') + CREE
-FIL_E1 = separateur("Aujourd'hui") + message(NOM, "Aujourd'hui à 10:12", SUIVI, 't02-e-m1') + FIL_E0
-FIL_E2 = (separateur("Aujourd'hui")
-          + message(NOM, "Aujourd'hui à 10:14", 'Surclassement gracieux : le tarif de 45000.0 / nuit est conservé.',
-                    't02-e-m3')
-          + message(NOM, "Aujourd'hui à 10:14", 'Changement de chambre : 204 [CFT] → 402 [VIP].', 't02-e-m2')
-          + message(NOM, "Aujourd'hui à 10:12", SUIVI) + FIL_E0)
-
-DEPART_E = ('<span class="t02-champ" id="t02-e-dep"><span class="ph" id="t02-e-dep-ph"></span>'
-            '<span class="val" id="t02-e-dep-val">%s</span></span>' % e(demo.DEPART))
-ESTELLE = fiche(
-    't02-estelle', 'Planning des chambres', demo.RESA, ENTETE_CONFIRMEE,
-    stat('t02-e-folio', 'document', 'Folio', FOLIO_AVANT) + stat(None, 'fiche', 'Fiches clients', '0/2'),
-    client_grp(demo.CLIENT, demo.CLIENT_TEL, demo.CLIENT_MAIL),
-    grp('Séjour', [ch('Arrivée', demo.ARRIVEE, saisie=True), ch('Départ', DEPART_E, saisie=True, html=True),
-                   ch('Nuits', '2', 't02-e-nuits', aide=True),
-                   ch('Total hébergement (HT)', demo.TOTAL_HEB, 't02-e-tot')]),
-    canal_grp('Téléphone / WhatsApp'), occupation_grp(),
-    ligne_chambre('t02-e-l', demo.TYPE, demo.CHAMBRE, '2', demo.PRIX_NUIT, demo.TOTAL_HEB),
-    discussion([FIL_E0, FIL_E1, FIL_E2], 't02-e-fil'), enregistrer=True)
 
 
 # ------------------------------------------------------------ les calques --
@@ -755,7 +739,8 @@ def case(ident, coche=True):
 
 
 GAB_RR = '96px 130px 110px 130px 125px 60px 140px 170px'
-LIBRES = [('201', '1er étage'), ('202', '1er étage'), ('203', '1er étage'), ('205', '2e étage')]
+# Les Confort libres du 19 au 20/10 pour deux adultes : la 204 est à Joël Kamga du 18 au 20/10.
+LIBRES = [('201', '1er étage'), ('202', '1er étage'), ('203', '1er étage'), ('205', '1er étage'), ('206', '1er étage')]
 RESULTATS = (
     '<div class="masque" id="t02-rr-res"><div class="t02-rr-table"><div class="t02-rr-tete" style="grid-template-columns:%s">'
     '<span>Réserver</span><span>Chambre</span><span>Type</span><span>Étage</span><span class="d">Cap. adultes</span>'
@@ -763,7 +748,7 @@ RESULTATS = (
     '<div class="m-grille t02-rr-client"><div>%s</div><div>%s</div></div></div>'
     % (GAB_RR, ''.join('<div class="t02-rr-ligne" id="t02-rr-%s" style="grid-template-columns:%s"><span>%s</span>'
                        '<span>%s [CFT]</span><span>Confort</span><span>%s</span><span class="d">2</span>'
-                       '<span class="d">2</span><span class="d">45 000 FCFA</span><span class="d">90 000 FCFA</span></div>'
+                       '<span class="d">1</span><span class="d">45 000 FCFA</span><span class="d">45 000 FCFA</span></div>'
                        % (n, GAB_RR, toggle('t02-rr-t' + n), n, et) for n, et in LIBRES),
        mch('Client', m2o('t02-rr-client')), mch('Confirmer immédiatement', case(None), aide=True)))
 RAPIDE = modale('t02-rr', 'Réservation rapide', (
@@ -783,20 +768,20 @@ ERREUR = modale('t02-err', 'Opération invalide', (
     '2026-10-17 11:00:00 (déjà réservée ou hors service).</p>'),
     '<span class="bt primaire" id="t02-err-ok">Fermer</span>', 260, 1120, agrandir=False)
 
+# De la 201 à la 203, deux Confort au même tarif : la case « Conserver le prix actuel » reste
+# décochée, le bandeau du surclassement gracieux (invisible="not keep_price") ne s'affiche pas.
 CHANGER = modale('t02-cc', 'Changer de chambre', (
     '<div class="m-grille"><div><div class="t02-grp-t">Séjour</div>%s%s%s%s</div>'
-    '<div><div class="t02-grp-t">Nouvelle chambre</div>%s%s%s%s</div></div>'
-    '<div class="alerte-info t02-surcl masque" id="t02-cc-alerte">Surclassement gracieux : la nouvelle chambre sera '
-    'facturée au tarif actuel du séjour.<span class="t02-ancre" id="t02-cc-ancre"></span></div>'
-    % (mch('Client', '<span class="t02-lien">%s</span>' % e(demo.CLIENT)),
-       mch('Chambre actuelle', '<span class="t02-lien">%s</span>' % e(demo.CHAMBRE)), mch('Arrivée', e(demo.ARRIVEE)),
-       mch('Départ', '17/10/2026 12:00:00'), mch('Nouvelle chambre', m2o('t02-cc-nc')),
-       mch('Conserver le prix actuel', case('t02-cc-garder', coche=False), aide=True),
+    '<div id="t02-cc-nouv"><div class="t02-grp-t">Nouvelle chambre</div>%s%s%s%s</div></div>'
+    % (mch('Client', '<span class="t02-lien">Rodrigue Tamba</span>'),
+       mch('Chambre actuelle', '<span class="t02-lien">201 [CFT]</span>'), mch('Arrivée', '19/10/2026 14:00:00'),
+       mch('Départ', '21/10/2026 12:00:00'), mch('Nouvelle chambre', m2o('t02-cc-nc')),
+       mch('Conserver le prix actuel', case('t02-cc-garder', coche=False), aide=True, ident='t02-cc-garder-l'),
        mch('Prix actuel / nuit', e(demo.PRIX_NUIT), aide=True),
        mch('Nouveau prix / nuit', '<span id="t02-cc-prix">%s</span>' % e(demo.PRIX_NUIT), aide=True))),
     '<span class="bt primaire" id="t02-cc-ok">Changer la chambre</span><span class="bt gris">Annuler</span>', 120, 1180)
 
-ECRAN = navigateur(fenetre_muk(APP, 'Hôtel', MENUS, [LISTE, PLANNING, RODRIGUE_FICHE, JACQUES, ESTELLE],
+ECRAN = navigateur(fenetre_muk(APP, 'Hôtel', MENUS, [LISTE, PLANNING, RODRIGUE_FICHE, JACQUES],
                                societe=demo.SOCIETE, initiale=NOM[0], avatar='#185FA5',
                                apps=APPS_PROFIL['reception'], app_active='Hôtel',
                                calques=DD_FRONT + DD_RESA + RAPIDE + ERREUR + CHANGER))
@@ -853,10 +838,10 @@ CSS = """
 .t02-mini-g span { height: 22px; line-height: 22px; }
 .t02-mini-g span:nth-child(-n+7) { font-weight: 600; color: #212529; }
 .t02-mini-g .auj { border-radius: 50%; box-shadow: inset 0 0 0 2px #4A7892; font-weight: 600; }
-.t02-filtres { margin-top: 14px; }
-.t02-filtre { display: flex; align-items: center; gap: 10px; height: 23px; font-size: 16px; color: #343A40; }
+.t02-filtres { margin-top: 10px; }
+.t02-filtre { display: flex; align-items: center; gap: 10px; height: 20px; font-size: 15px; color: #343A40; }
 .t02-filtre i { width: 15px; height: 15px; border-radius: 3px; border: 1px solid; flex: none; }
-.t02-filtre.tete { height: 30px; font-size: 17px; }
+.t02-filtre.tete { height: 28px; font-size: 17px; }
 .t02-filtre.tete i { background: #4A7892; border-color: #4A7892; }
 .t02-pop { position: absolute; left: 916px; top: 284px; width: 436px; background: #fff; border-radius: 6px; z-index: 6;
   box-shadow: 0 10px 34px rgba(0,0,0,.28); border: 1px solid #DEE2E6; overflow: hidden; }
@@ -978,7 +963,6 @@ CSS = """
 .t02-rr-bt { position: relative; margin-top: 10px; }
 .t02-ancre { position: absolute; pointer-events: none; }
 #t02-rr-ancre { left: 0; top: 3px; width: 440px; height: 42px; }
-#t02-cc-ancre { left: 52%; right: 0; top: 0; bottom: 0; }
 .t02-rr-bt .bt { height: 42px; font-size: 18px; }
 .t02-rr-table { margin-top: 18px; border-top: 1px solid #DEE2E6; }
 .t02-rr-tete, .t02-rr-ligne { display: grid; align-items: center; column-gap: 10px; padding: 0 10px; white-space: nowrap; }
@@ -989,7 +973,6 @@ CSS = """
 .t02-rr-reserver { position: absolute; left: 28px; }
 .t02-rr-fermer.decale { margin-left: 118px; }
 .t02-err-p { font-size: 20px; line-height: 1.5; color: #212529; margin: 6px 0 10px; }
-.t02-surcl { position: relative; margin: 12px 0 2px; }
 .t02-lien { color: #3F6A83; }
 .t02-modale .case { display: inline-flex; }
 """
@@ -1027,11 +1010,11 @@ TUTORIEL = {
         'b-libres': 'Seules les chambres libres, avec le prix par nuit et le total.',
         'b-refus': 'La chambre en conflit est nommée : la réservation reste en brouillon.',
         'b-suit': 'Nuits, total et folio recalculés dès l\'enregistrement.',
-        'b-gracieux': 'Surclassement gracieux : la suite, au tarif de la chambre d\'origine.',
+        'b-prix': 'Cochée, la nouvelle chambre garde le tarif de l\'ancienne : un surclassement gracieux.',
     },
     'reactions': {
         'r-refus': 'La 204 reste à Estelle : la réservation en double est bloquée.',
-        'r-suit': 'Une nuit de plus, un surclassement offert : le planning a suivi.',
+        'r-suit': 'Une nuit de plus, une autre chambre : le planning a suivi.',
     },
     'etapes': [
         {'temps': 0, 'titre': 'Le planning des chambres',
@@ -1047,25 +1030,25 @@ TUTORIEL = {
                     dezoom(d=0.6)]},
         {'temps': 1, 'titre': 'Les chambres libres, avec leur prix',
          'texte': 'Front Desk › Réservation rapide : dates, type, adultes, et seules les chambres libres s\'affichent.',
-         'voix': "Au téléphone, un client cherche une chambre Confort pour deux nuits, à partir de lundi. Mireille "
+         'voix': "Au téléphone, un client cherche une chambre Confort pour une nuit, lundi. Mireille "
                  "ouvre la réservation rapide : seules les chambres libres sur ces dates s'affichent, avec le prix par "
                  "nuit et le total du séjour.",
          'gestes': [clic(menu('Front Desk'), d=0.6), montrer('#t02-dd-front', d=0.25, y=-6),
                     clic('#t02-dd-rapide', d=0.5), cacher('#t02-dd-front', d=0.15), ouvrir('t02-rr'),
                     saisir('t02-rr-arr', '19/10/2026 14:00:00', d=0.7), curseur('#t02-rr-arr', fx=0.92, d=0.4, avec=True),
-                    saisir('t02-rr-dep', '21/10/2026 12:00:00', d=0.7), curseur('#t02-rr-dep', fx=0.92, d=0.4, avec=True),
+                    saisir('t02-rr-dep', '20/10/2026 12:00:00', d=0.7), curseur('#t02-rr-dep', fx=0.92, d=0.4, avec=True),
                     choisir('t02-rr-type', 'Confort'), curseur('#t02-rr-type', fx=0.6, d=0.4, avec=True),
                     saisir('t02-rr-ad', '2', d=0.2), curseur('#t02-rr-ad', fx=0.4, d=0.3, avec=True),
                     clic('#t02-rr-chercher', d=0.6), texte('#t02-rr-titre', 'Odoo'),
                     montrer('#t02-rr-res', d=0.35, y=10), montrer('#t02-rr-reserver', d=0.2, y=0, avec=True),
                     classe('#t02-rr-fermer', ajouter=['decale'], avec=True),
-                    zoom('#t02-rr-res .t02-rr-table', s=1.35, d=0.7),
+                    zoom('#t02-rr-res .t02-rr-table', s=1.3, fy=0.4, d=0.7),
                     bulle('b-libres', '#t02-rr-ancre', cote='droite', d=2.6), pause(2.4)]},
         {'temps': 1, 'titre': 'Réservé, et déjà au planning',
          'texte': 'Une chambre cochée, le client, Réserver : la réservation est confirmée, son folio ouvert.',
-         'voix': "Mireille coche la deux cent trois, choisit le client, et réserve. La réservation est aussitôt "
+         'voix': "Mireille coche la deux cent un, choisit le client, et réserve. La réservation est aussitôt "
                  "confirmée, son folio ouvert, et le séjour apparaît déjà au planinng, sur sa chambre.",
-         'gestes': [clic('#t02-rr-t203', d=0.6), classe('#t02-rr-t203', ajouter=['on']), dezoom(d=0.5, avec=True),
+         'gestes': [clic('#t02-rr-t201', d=0.6), classe('#t02-rr-t201', ajouter=['on']), dezoom(d=0.5, avec=True),
                     saisir('t02-rr-client', 'Rodrigue Tamba', d=0.6), clic('#t02-rr-reserver', d=0.6),
                     fermer('t02-rr'), vue('t02-rodrigue'), pause(0.5), anneau('#t02-rodrigue .t02-etat', d=1.0),
                     anneau('#t02-r-folio', d=1.0), clic('#t02-rodrigue .t02-parent', d=0.6), vue('t02-planning'),
@@ -1081,37 +1064,35 @@ TUTORIEL = {
                     pause(1.0), dezoom(d=0.5), clic('#t02-err-ok', d=0.5), fermer('t02-err')]},
         {'temps': 3, 'titre': 'Une nuit de plus : tout suit',
          'texte': 'La date de départ repoussée : nuits, total et folio recalculés, la modification tracée.',
-         'voix': "Estelle Ngono reste une nuit de plus. Mireille repousse la date de départ : les nuits, le total et le "
-                 "folio se recalculent, et la modification est tracée sur la réservation.",
-         'gestes': [vue('t02-estelle'), pause(0.3), clic('#t02-e-dep', fx=0.3, d=0.6),
-                    saisir('t02-e-dep', '17/10/2026 12:00:00', d=0.8), montrer('#t02-estelle-save', d=0.2, y=0),
-                    texte('#t02-e-nuits', '3', decale=0.2), texte('#t02-e-tot', TOTAL_APRES),
-                    texte('#t02-e-l-n', '3'), texte('#t02-e-l-st', TOTAL_APRES), anneau('#t02-e-tot', d=1.0),
-                    clic('#t02-estelle-save-ok', d=0.6), cacher('#t02-estelle-save', d=0.2),
-                    texte('#t02-e-folio-v', FOLIO_APRES), cacher('#t02-e-fil-0', d=0.2),
-                    montrer('#t02-e-fil-1', d=0.35, y=-10), bulle('b-suit', '#t02-e-folio', cote='bas', d=2.6),
-                    anneau('#t02-e-folio', d=1.2), anneau('#t02-e-m1', d=1.4)]},
+         'voix': "Quelques minutes plus tard, Rodrigue rappelle : il reste une nuit de plus. Mireille repousse la date "
+                 "de départ : les nuits, le total et le folio se recalculent, et la modification est tracée sur la "
+                 "réservation.",
+         'gestes': [vue('t02-rodrigue'), pause(0.3), clic('#t02-r-dep', fx=0.3, d=0.6),
+                    saisir('t02-r-dep', '21/10/2026 12:00:00', d=0.8), montrer('#t02-rodrigue-save', d=0.2, y=0),
+                    texte('#t02-r-nuits', '2', decale=0.2), texte('#t02-r-tot', TOTAL_APRES),
+                    texte('#t02-r-l-n', '2'), texte('#t02-r-l-st', TOTAL_APRES), anneau('#t02-r-tot', d=1.0),
+                    clic('#t02-rodrigue-save-ok', d=0.6), cacher('#t02-rodrigue-save', d=0.2),
+                    texte('#t02-r-folio-v', FOLIO_RODRIGUE), cacher('#t02-r-fil-0', d=0.2),
+                    montrer('#t02-r-fil-1', d=0.35, y=-10), bulle('b-suit', '#t02-r-folio', cote='bas', d=2.6),
+                    anneau('#t02-r-folio', d=1.2), anneau('#t02-r-m1', d=1.4)]},
         {'temps': 3, 'titre': 'Changer de chambre, sans rien perdre',
          'texte': "L'assistant contrôle la nouvelle chambre et peut garder le tarif ; le changement est noté, le folio suit.",
-         'voix': "Pour la surclasser, Mireille ouvre l'assistant Changer de chambre. Il vérifie que la suite est libre, "
-                 "et peut garder le tarif d'origine. Le changement s'inscrit aussitôt sur la réservation, et le folio "
-                 "suit la cliente.",
-         'gestes': [clic('#t02-e-l-ech', d=0.6), ouvrir('t02-cc'), choisir('t02-cc-nc', '402 [VIP]'),
-                    texte('#t02-cc-prix', '120 000 FCFA'), clic('#t02-cc-garder', d=0.5),
-                    classe('#t02-cc-garder', ajouter=['coche']), texte('#t02-cc-prix', demo.PRIX_NUIT),
-                    montrer('#t02-cc-alerte', d=0.3, y=0), curseur('#t02-cc-ok', d=0.5),
-                    zoom('#t02-cc-alerte', s=1.3, fy=0.1, d=0.6),
-                    bulle('b-gracieux', '#t02-cc-ancre', cote='bas', d=2.4), pause(1.8), dezoom(d=0.5),
-                    clic('#t02-cc-ok', d=0.4), fermer('t02-cc'), texte('#t02-e-l-type', 'Suite VIP'),
-                    texte('#t02-e-l-ch', '402 [VIP]'), cacher('#t02-e-fil-1', d=0.2),
-                    montrer('#t02-e-fil-2', d=0.35, y=-10), anneau('#t02-e-m2', d=1.4)]},
+         'voix': "Il préfère aussi la deux cent trois. Mireille ouvre l'assistant Changer de chambre : il vérifie que "
+                 "la chambre est libre, et pourrait même garder l'ancien tarif. Le changement s'inscrit aussitôt sur "
+                 "la réservation, et le folio suit le client.",
+         'gestes': [clic('#t02-r-l-ech', d=0.6), ouvrir('t02-cc'), choisir('t02-cc-nc', '203 [CFT]'),
+                    curseur('#t02-cc-garder', d=0.5), zoom('#t02-cc-nouv', s=1.3, fy=0.4, d=0.6),
+                    anneau('#t02-cc-prix', d=1.0), bulle('b-prix', '#t02-cc-garder', cote='droite', d=2.6), pause(1.8),
+                    dezoom(d=0.5), clic('#t02-cc-ok', d=0.4), fermer('t02-cc'), texte('#t02-r-l-ch', '203 [CFT]'),
+                    cacher('#t02-r-fil-1', d=0.2), montrer('#t02-r-fil-2', d=0.35, y=-10), anneau('#t02-r-l-ch', d=1.0),
+                    anneau('#t02-r-m2', d=1.4)]},
         {'temps': 3, 'titre': 'Le planning a suivi',
-         'texte': 'Retour au planning : la barre est passée sur la suite 402, une nuit de plus.',
-         'voix': "Retour au planinng : la barre a suivi. Estelle occupe désormais la suite quatre cent deux, "
-                 "jusqu'à samedi.",
-         'gestes': [clic('#t02-estelle .t02-parent', d=0.6), vue('t02-planning'), pause(0.3),
-                    cacher('#t02-b-estelle', d=0.3), montrer('#t02-b-estelle2', d=0.4, y=0),
-                    anneau('#t02-b-estelle2', d=1.4), reaction('r-suit', d=2.8), pause(2.2)]},
+         'texte': 'Retour au planning : la barre est passée sur la 203, une nuit de plus.',
+         'voix': "Retour au planinng : la barre a suivi. Rodrigue occupera la deux cent trois, du lundi au "
+                 "mercredi.",
+         'gestes': [clic('#t02-rodrigue .t02-parent', d=0.6), vue('t02-planning'), pause(0.3),
+                    cacher('#t02-b-rodrigue', d=0.3), montrer('#t02-b-rodrigue2', d=0.4, y=0),
+                    anneau('#t02-b-rodrigue2', d=1.4), reaction('r-suit', d=2.8), pause(2.2)]},
     ],
     'resultats': {
         'titre': "Le planning qui tient l'hôtel à jour",
@@ -1128,9 +1109,9 @@ TUTORIEL = {
     },
     'cta': {
         'appel': 'Demandez votre démonstration',
-        'suivant': 'Le folio et la facture',
-        'voix': "Aïte haousse, par Aïte Consulting. Demandez votre démonstration. Prochain tutoriel : le folio et la "
-                "facture.",
+        'suivant': 'Un séjour, une note, une facture',
+        'voix': "Aïte haousse, par Aïte Consulting. Demandez votre démonstration. Prochain tutoriel : un séjour, une "
+                "note, une facture.",
     },
     'vignette': {'etape': 1, 'apres': 5.9},
     'css': CSS,
