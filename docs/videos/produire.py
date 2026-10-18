@@ -156,7 +156,7 @@ def duree_media(chemin):
 
 # Les mots que Kokoro lit « à l'anglaise » : réécrits pour la voix seulement,
 # juste avant la synthèse (les scénarios gardent l'orthographe de l'écran).
-PRONONCIATION = {'Odoo': 'Odou'}
+PRONONCIATION = {'Odoo': 'Odou', 'VVIP': 'double VIP', 'pressing': 'pressinng'}
 
 
 def prononcer(texte):
@@ -569,9 +569,10 @@ def produire(profil, args, gsap):
         resultat['check'] = 'ok' if code == 0 else 'échec'
         for ligne in resume:
             journal('   ', ligne.strip())
+        # le journal est écrit à chaque passe : un échec ancien ne survit pas à un check réussi
+        with open(os.path.join(projet, 'check.log'), 'w') as f:
+            f.write(sortie)
         if code != 0:
-            with open(os.path.join(projet, 'check.log'), 'w') as f:
-                f.write(sortie)
             journal('  check en échec — détail dans', os.path.join(projet, 'check.log'))
     if args.planche:
         chemin, sortie = planche(projet)

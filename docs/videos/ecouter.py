@@ -44,7 +44,7 @@ for texte in json.loads(sys.argv[1]):
 '''
 
 # Sigles que la voix lit bien (vérifiés au phonétiseur), et ceux à réécrire.
-BONS = {'MTN', 'TVA', 'SARL', 'PDF', 'CNI', 'VIP', 'VVIP', 'OTIF', 'DGI', 'MINTOUL', 'CFA'}
+BONS = {'MTN', 'TVA', 'SARL', 'PDF', 'CNI', 'VIP', 'OTIF', 'DGI', 'MINTOUL', 'CFA'}
 A_REECRIRE = {'AITE': 'Aïte', 'HOUSE': 'haousse', 'FCFA': 'francs', 'XAF': 'francs', 'ADR': 'prix moyen',
               'SPA': 'spa', 'POS': 'point de vente', 'UAT': 'recette', 'OTP': 'code', 'KPI': 'indicateur'}
 
@@ -58,7 +58,7 @@ for chemin in json.loads(sys.argv[2]):
 '''
 
 # Mots anglais que l'application emploie tels quels et que la voix peut garder.
-ADMIS = {'Desk', 'FrontDesk', 'SWIFT', 'swift', 'Swift'}
+ADMIS = {'Desk', 'FrontDesk', 'SWIFT', 'swift', 'Swift', 'Consulting'}
 
 
 def normaliser(texte):
