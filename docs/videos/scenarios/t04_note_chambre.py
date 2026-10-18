@@ -704,15 +704,15 @@ TUTORIEL = {
                     pause(1.8), anneau('#t4-file-1-motif', d=1.2)]},
         {'temps': 3, 'titre': 'Choisir le bon folio',
          'texte': 'Folio choisi : la liste des folios ouverts, par référence.',
-         'voix': "Martin Ebode a deux folios ouverts : son séjour en cours, et une réservation déjà confirmée pour "
+         'voix': "Martin Ebode a deux folios ouverts : son séjour en cours, et une réservation confirmée pour "
                  "novembre. Mireille ouvre la ligne, déroule Folio choisi, tape le numéro du séjour en cours, et le "
                  "prend.",
          'gestes': [clic('#t4-file-0', fx=0.3), vue('t4-note', 'hotel'), pause(0.3), anneau('#t4-motif', d=1.0),
                     clic('#t4-fc', fx=0.3), classe('#t4-fc', ajouter=['focus']), montrer('#t4-dd', d=0.3, y=-6),
                     zoom('#t4-note .feuille', s=1.3, d=0.6, fy=0.9), bulle('b-folio', '#t4-dd', cote='gauche', d=2.4),
-                    pause(0.6), saisir('t4-fc', CHERCHE, d=0.6),
+                    pause(0.2), saisir('t4-fc', CHERCHE, d=0.5),
                     cacher('#t4-dd', d=0.15), montrer('#t4-dd2', d=0.25, y=0, avec=True),
-                    curseur('#t4-dd-0209', fx=0.3, d=0.5), survol('#t4-dd-0209'), pause(0.7),
+                    curseur('#t4-dd-0209', fx=0.3, d=0.4), survol('#t4-dd-0209'), pause(0.4),
                     clic('#t4-dd-0209', fx=0.3), cacher('#t4-dd2', d=0.2), texte('#t4-fc-val', 'FOL/2026/0209'),
                     classe('#t4-fc', retirer=['focus']), dezoom(d=0.5), anneau('#t4-fc', d=1.0)]},
         {'temps': 3, 'titre': '« Rattacher au folio »',

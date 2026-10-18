@@ -1004,8 +1004,8 @@ TUTORIEL = {
         {'temps': 2, 'titre': 'Une nuit offerte, avec son motif',
          'texte': 'Ajuster des points : la cliente, −1 000 points, et le motif obligatoire.',
          'voix': "Pour remercier Estelle, la directrice lui offre une nuit et la décompte de ses points : depuis le "
-                 "menu Fidélité, Ajuster des points, la cliente, moins mille points, et le motif, sans lequel rien ne "
-                 "passe.",
+                 "menu Fidélité, Ajuster des points, la cliente, moins mille points, et le motif de l'ajustement, sans "
+                 "lequel rien ne passe.",
          'gestes': [clic('#t11-m-fid', d=0.6), montrer('#t11-dd', d=0.2, y=-6), clic('#t11-dd-adj', d=0.45),
                     cacher('#t11-dd', d=0.15), ouvrir('t11-as'), clic('#t11-as-cli', d=0.4),
                     choisir('t11-as-cli', CLIENTE), saisir('t11-as-pts', '-1000'),
