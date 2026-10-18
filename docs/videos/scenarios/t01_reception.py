@@ -5,11 +5,24 @@ Le parcours d'un séjour à la réception, dans l'ordre réel d'usage : le Front
 Desk, la réservation rapide (chambres libres seulement), l'acompte Mobile
 Money tracé sur le folio, le check-in, le folio du séjour (nuitées, taxe de
 séjour, prestations), le check-out et la facture. Personnage : la
-réceptionniste (demo.POSTES['reception']), barre MuK du profil Réception
-(ecrans.APPS_PROFIL['reception']). Données fictives : demo.py (Estelle Ngono,
+réceptionniste (demo.POSTES['reception']) avec, en plus du profil Réception,
+le droit Facturation d'Odoo (account.group_account_invoice) : sans lui, la
+facture du check-out échoue (voir écarts). Barre MuK : celle du profil
+Réception (ecrans.APPS_PROFIL['reception']) plus l'application Facturation,
+que ce droit fait apparaître (odoo18/addons/account/views/account_menuitem.xml
+:5-6) ; la pastille du personnage l'affiche (« Réceptionniste (droit
+Facturation) ») et la bulle de l'étape 6 le redit. Données fictives : demo.py (Estelle Ngono,
 RES/2026/0214, FOL/2026/0214, chambre 204 [CFT], 45 000 FCFA la nuit) ;
 types, étages et prix des autres chambres composés pour la démonstration
 (Standard 35 000, Confort 45 000, Suite Junior 75 000, Suite VIP 120 000).
+Téléphone de la cliente neutralisé (« +237 600 00 00 00 ») au lieu de
+demo.CLIENT_TEL, qui ressemble à un vrai numéro MTN ; référence MoMo
+numérique, comme les identifiants de transaction MTN. La société de
+démonstration est paramétrée sans TVA (articles de nuitée et de service sans
+taxe de vente) : « Taxes 0 FCFA » et Total TTC = Total HT. Une société
+assujettie verrait la TVA de 19,25 % (benchmark_afrique_odoo.md:14) sur les
+nuitées et le petit-déjeuner ; la taxe de séjour, elle, n'en porte jamais
+(aite_city_tax/models/hotel_folio.py:101-140).
 
 Sources des libellés (addons/, vérifiés mot pour mot par grep -rF) :
 
@@ -20,8 +33,13 @@ Sources des libellés (addons/, vérifiés mot pour mot par grep -rF) :
   ref_muk/306-reception-reservations.png.
 - Front Desk : aite_hotel_management/static/src/xml/hotel_dashboard.xml:28-125
   (« Front Desk — Réception », sous-titre, « Nouvelle réservation », Période et
-  ses quatre puces, Photo du jour, Performance de la période, les huit cartes
-  et leurs sous-titres, les deux graphiques) ; format des montants et des
+  ses quatre puces, les deux dates « → » et « Appliquer » (:45-60 ; période
+  « Ce mois » = du 1er du mois à aujourd'hui, js/services/hotel_utils.js
+  :70-95), Photo du jour, Performance de la période, les huit cartes et leurs
+  sous-titres, les deux graphiques). Chiffres cohérents entre eux : 15 / 24
+  chambres ce soir ; 183 nuitées sur 14 jours × 24 chambres = 54,5 %, moyenne
+  des 14 points de la courbe (chambres occupées par jour / 24) ; ADR × 183 =
+  8 564 400 ; RevPAR = 8 564 400 / 336. Format des montants et des
   pourcentages : captures ref_muk/021-h-tel.png et aite_dev (« 38 125 FCFA »,
   « 8,9 % »). Le bouton ouvre la réservation rapide (même assistant que le menu).
 - Réservation rapide : wizard/hotel_booking_wizard_views.xml:8-72 (champs,
@@ -62,6 +80,14 @@ Sources des libellés (addons/, vérifiés mot pour mot par grep -rF) :
   Lignes du folio, Ajouter une ligne, Règlements, Note) ;
   models/hotel_folio.py:43-111 (libellés des montants, État facture) et
   :250-267 (libellé « Nuitée 204 (Confort) — 2026-10-14 → 2026-10-16 ») ;
+  liste éditable des lignes (views/hotel_folio_views.xml:92-117 : ligne
+  entière en bleu pour une nuitée, decoration-info ; nouvelle ligne : type
+  « Service », date du jour et quantité 1 par défaut, models/hotel_folio.py
+  :399-421 ; le service choisi remplit libellé et prix, :439-446) ; ligne
+  entière en ambre pour la taxe (aite_city_tax/views/hotel_folio_views.xml
+  :27-29, decoration-warning, teinte foncée pour le contraste) ; champ
+  « Séjour » (reservation_state, related, :47-48) qui passe à « Parti » au
+  check-out (wizard/hotel_checkout_wizard.py:94-98) ;
   aite_city_tax/models/hotel_folio.py:46-61 et :101-140 (ligne « Taxe de
   séjour — 4 nuitée(s) × personne (3 ★, Cameroun) », sans TVA, hors Services),
   views/hotel_folio_views.xml:10-24 (montant « Taxe de séjour » ; « Recalculer
@@ -84,7 +110,8 @@ Douleurs de l'accroche : recette/cas_de_test.py:48 (A03, double réservation,
 critique), :71 (A07, acompte déduit, solde exact), :83 (A09, chambre hors
 service proposée), :89 (A10, arrivées, départs, présents du jour) ;
 docs/etude_comparative/benchmark_afrique_odoo.md:10 (aucun PMS international
-ne gère nativement la taxe de séjour d'Afrique francophone) et :13 (loi
+ne gère nativement la taxe de séjour d'Afrique francophone : « partout il faut
+ajouter une ligne/taxe configurable », d'où « à paramétrer à la main ») et :13 (loi
 n° 2016/006, art. 28 : obligations de police en matière d'enregistrement).
 Résultats : deux verrous (hotel_reservation.py:288-305 et :641-664), cinq
 moyens d'encaissement (hotel_payment_wizard.py:42-51), 207 tests automatisés
@@ -94,7 +121,8 @@ dans addons/aite_hotel_management/tests (décompte des « def test_ »).
 - Après « Rechercher les chambres disponibles », l'assistant est rouvert par
   une action sans nom (hotel_booking_wizard.py:89-95) : la fenêtre s'intitule
   « Odoo » (titre par défaut, odoo18 web/static/src/core/dialog/dialog.js:67 ;
-  action_service.js:1014-1016), vérifié sur aite_dev.
+  action_service.js:1014-1016), vérifié sur aite_dev. Rejoué tel quel ; la
+  vignette est prise à l'étape 5 (taxe de séjour), sans ce titre.
 - Le bandeau du registre s'affiche sans espace après les deux-points
   (« Registre des clients :1 fiche(s)… »), vérifié sur aite_dev.
 - Le libellé des nuitées porte des dates ISO (hotel_folio.py:256-260).
@@ -103,12 +131,17 @@ dans addons/aite_hotel_management/tests (décompte des « def test_ »).
   odoo18/addons/account/security/ir.model.access.csv:40-42), un compte au
   seul profil Réception obtient une erreur d'accès au check-out ; le compte
   demo.reception n'a pas ce droit (aite_demo_data/models/demo_generator.py
-  :55-59). La bulle et la voix de l'étape 6 le disent ; la barre MuK reste
-  celle du profil Réception de démonstration.
+  :55-59). La réceptionniste du tutoriel a donc ce droit (pastille, barre
+  MuK avec Facturation, bulle de l'étape 6).
+- Le registre reste « à compléter » au départ (1 fiche à compléter, 1
+  occupant sans fiche, 0/2) : la date de naissance, exigée pour une fiche
+  complète (aite_guest_registry/models/guest_registration.py:182-199), n'est
+  jamais pré-remplie (:256-280) et le check-out
+  n'en dépend pas ; le tutoriel ne prétend pas le contraire.
 - Après « Valider le départ », l'application ouvre la facture comptable
   (écran standard d'Odoo, non rejoué) : le montage passe au folio facturé.
-- « ADR », « RevPAR », « Front Desk », « room board », « check-out » : anglais
-  résiduel à l'écran ; « vs N-1 » compare à la période précédente de même
+- « ADR », « RevPAR », « Front Desk », « room board », « check-out attendus
+  aujourd'hui », « No-show » : anglais résiduel à l'écran (règle 6) ; « vs N-1 » compare à la période précédente de même
   durée (hotel_dashboard.py:321-348).
 - La réservation rapide ne demande pas le canal : la réservation créée porte
   le canal par défaut « Direct / comptoir » (hotel_booking_wizard.py:105-118,
@@ -119,7 +152,8 @@ dans addons/aite_hotel_management/tests (décompte des « def test_ »).
   facture resterait « Non payé ».
 
 Mise en scène : le menu déroulant « Front Desk » est composé ici (sous-menus
-dans l'ordre des séquences) ; l'écran de la réservation et du folio est
+dans l'ordre des séquences) ; l'enregistrement de la ligne de service (clic
+hors de la ligne) n'est pas montré ; l'écran de la réservation et du folio est
 resserré (champs à 34-37 px) pour tenir dans la fenêtre ; la voix écrit
 « check-inne » et paraphrase le titre du tutoriel suivant (« planning » est
 lu à l'anglaise par Kokoro) ; « Consulting » reste lu à l'anglaise, comme
@@ -136,7 +170,15 @@ from moteur import (animer, anneau, cacher, choisir, clic, classe, compter, curs
                     pause, saisir, survol, texte, vue)
 
 NOM, ROLE = demo.POSTES['reception']
-MENUS = ['Front Desk', 'Réservations', 'Espaces & Prestations', 'Notes de chambre en attente', 'Facturation',
+# La facture du check-out n'est pas créée en sudo (hotel_folio.py:294-315) :
+# la réceptionniste du tutoriel a donc, en plus du profil Réception, le droit
+# Facturation d'Odoo (account.group_account_invoice), qui fait apparaître
+# l'application Facturation dans sa barre (account_menuitem.xml:5-6).
+ROLE = ROLE + ' (droit Facturation)'
+APPS = APPS_PROFIL['reception'][:3] + ['Facturation'] + APPS_PROFIL['reception'][3:]
+# Numéro neutralisé (série 600 00 00 00), manifestement fictif.
+TEL = '+237 600 00 00 00'
+MENUS =['Front Desk', 'Réservations', 'Espaces & Prestations', 'Notes de chambre en attente', 'Facturation',
          'Fidélité', 'Gouvernante']
 
 # Le séjour qui traverse le tutoriel (demo.py) et ses montants, tels que le
@@ -147,7 +189,7 @@ ACOMPTE = '45 000 FCFA'
 SOLDE_1 = '57 000 FCFA'              # après l'acompte
 SOLDE_2 = '67 800 FCFA'              # après les petits-déjeuners
 TOTAL_2 = '112 800 FCFA'
-REF_MOMO = 'MP261014.0915.C18842'
+REF_MOMO = '8742156309'          # identifiant numérique, comme ceux de MTN MoMo
 
 
 def badge(texte_, genre):
@@ -158,7 +200,9 @@ def badge(texte_, genre):
 FRONT = vue_tdb('t1-front', (
     tdb_entete('Front Desk — Réception', 'Occupation, arrivées & départs, room board · ' + demo.SOCIETE,
                'Nouvelle réservation')
-    + tdb_filtres([('Période', ["Aujourd'hui", '7 derniers jours', 'Ce mois', 'Mois dernier'], 2)])
+    + tdb_filtres([('Période', ["Aujourd'hui", '7 derniers jours', 'Ce mois', 'Mois dernier'], 2)]).replace(
+        '</div></div>', '<span class="t1-esp"></span><span class="t1-date">01/10/2026</span><span class="t1-fl">→</span>'
+        '<span class="t1-date">14/10/2026</span><span class="chip t1-appl">Appliquer</span></div></div>')
     + tdb_section('Photo du jour', [
         kpi('t1-k-occ', 'Occupation ce soir', '62,5 %', '15 / 24 chambres occupées', 'violet'),
         kpi('t1-k-arr', 'Arrivées attendues', '2', 'réservations confirmées du jour', 'bleu'),
@@ -173,7 +217,7 @@ FRONT = vue_tdb('t1-front', (
             None, ('9,2 % vs N-1', 'haut'))])
     + '<div class="t1-graphes">%s</div>' % graphes(
         graphe_courbe('t1-g-occ', "Taux d'occupation par jour",
-                      [44, 51, 49, 56, 63, 71, 68, 52, 47, 50, 55, 61, 66, 62],
+                      [41.7, 50, 50, 54.2, 62.5, 70.8, 66.7, 50, 45.8, 50, 54.2, 58.3, 45.8, 62.5],
                       etiquettes=['01/10', '03/10', '05/10', '07/10', '09/10', '11/10', '14/10']),
         graphe_anneau('t1-g-type', 'CA hébergement par type de chambre',
                       [('Suite VIP', 31, '#714B67'), ('Confort', 30, '#3B6D11'), ('Suite Junior', 22, '#185FA5'),
@@ -253,7 +297,7 @@ LIGNE_CH = (
 FEUILLE_RESA = (
     titre_fiche(demo.RESA)
     + deux_colonnes(
-        groupe('Client', [champ('Client', demo.CLIENT, lien_=True), champ('Téléphone', demo.CLIENT_TEL),
+        groupe('Client', [champ('Client', demo.CLIENT, lien_=True), champ('Téléphone', TEL),
                           champ('E-mail', demo.CLIENT_MAIL), champ('Hôtel', demo.HOTEL, lien_=True)])
         + groupe('Canal & commission', [champ('Canal', 'Direct / comptoir')]),
         groupe('Séjour', [champ('Arrivée', demo.ARRIVEE, gras=True), champ('Départ', demo.DEPART, gras=True),
@@ -263,9 +307,7 @@ FEUILLE_RESA = (
     + onglets(['Chambres', 'Demandes particulières']) + LIGNE_CH)
 BANDEAUX = (
     '<div class="bandeau masque" id="t1-bandeau">%s<span><b>Registre des clients :</b>1 fiche(s) à compléter · '
-    '1 occupant(s) sans fiche — <span class="act">compléter maintenant</span></span></div>'
-    '<div class="bandeau t1-ok masque" id="t1-bandeau-ok">%s<b>Registre des clients à jour.</b>'
-    '<span class="act">Imprimer les fiches</span></div>' % (icone('fiche'), icone('coche')))
+    '1 occupant(s) sans fiche — <span class="act">compléter maintenant</span></span></div>' % icone('fiche'))
 B_CONF = [bouton('t1-b-checkin', 'Check-in', 'primaire'), bouton('t1-b-acompte', 'Encaisser un acompte'),
           bouton(None, 'Envoyer la confirmation'), bouton(None, "Fiches d'enregistrement", ico='imprimer'),
           bouton(None, 'No-show'), bouton(None, 'Annuler')]
@@ -318,12 +360,24 @@ ARRIVEES = vue_liste('t1-arrivees', 'Arrivées du jour', COLS, [
 GAB_FL = '112px 150px 170px 1fr 56px 128px 62px 146px 124px'
 
 
-def ligne_folio(ident, date, type_, genre, service, libelle, qte, pu, montant, masque=False):
-    return ('<div class="t-ligne%s" id="%s" style="grid-template-columns:%s"><span>%s</span><span>%s</span>'
+def ligne_folio(ident, date, type_, genre, service, libelle, qte, pu, montant, classe_=''):
+    return ('<div class="t-ligne %s" id="%s" style="grid-template-columns:%s"><span>%s</span><span>%s</span>'
             '<span class="ell">%s</span><span class="ell t1-lib">%s</span><span class="d">%s</span><span class="d">%s</span>'
             '<span></span><span class="d">%s</span><span class="d">%s</span></div>'
-            % (' masque' if masque else '', ident, GAB_FL, e(date), badge(type_, genre), e(service), e(libelle),
+            % (classe_, ident, GAB_FL, e(date), badge(type_, genre), e(service), e(libelle),
                e(qte), e(pu), e(montant), e(montant)))
+
+
+# La nouvelle ligne de service, en saisie dans la liste éditable : type
+# « Service » par défaut, date du jour, quantité 1 (hotel_folio.py:399-421) ;
+# le choix du service remplit le libellé et le prix (_onchange_service_id).
+LIGNE_SAISIE = (
+    '<div class="t-ligne masque t1-saisie" id="t1-fl3" style="grid-template-columns:%s"><span>15/10/2026</span>'
+    '<span>%s</span><span>%s</span><span class="ell t1-lib" id="t1-fl3-lib"></span><span class="d">%s</span>'
+    '<span class="d" id="t1-fl3-pu">0 FCFA</span><span></span><span class="d" id="t1-fl3-st">0 FCFA</span>'
+    '<span class="d" id="t1-fl3-tt">0 FCFA</span></div>'
+    % (GAB_FL, badge('Service', 'violet'), entree('t1-fl3-srv', '', '', 'entree t1-ent'),
+       entree('t1-fl3-q', '', '1,00', 'entree t1-ent d')))
 
 
 LIGNES_FOLIO = (
@@ -337,17 +391,17 @@ LIGNES_FOLIO = (
             ('Date', 0), ('Type', 0), ('Service', 0), ('Libellé', 0), ('Qté', 1), ('Prix unitaire', 1), ('Taxes', 0),
             ('Sous-total (HT)', 1), ('Total (TTC)', 1))),
         ligne_folio('t1-fl1', '14/10/2026', 'Nuitée', 'info', '',
-                    'Nuitée 204 (Confort) — 2026-10-14 → 2026-10-16', '2,00', '45 000 FCFA', '90 000 FCFA'),
+                    'Nuitée 204 (Confort) — 2026-10-14 → 2026-10-16', '2,00', '45 000 FCFA', '90 000 FCFA', 't1-dinfo'),
         ligne_folio('t1-fl2', '14/10/2026', 'Taxe de séjour', 'orange', '',
-                    'Taxe de séjour — 4 nuitée(s) × personne (3 ★, Cameroun)', '4,00', '3 000 FCFA', '12 000 FCFA'),
-        ligne_folio('t1-fl3', '15/10/2026', 'Service', 'violet', 'Petit-déjeuner buffet', 'Petit-déjeuner buffet',
-                    '4,00', '2 700 FCFA', '10 800 FCFA', masque=True),
+                    'Taxe de séjour — 4 nuitée(s) × personne (3 ★, Cameroun)', '4,00', '3 000 FCFA', '12 000 FCFA',
+                    'taxe'),
+        LIGNE_SAISIE,
         GAB_FL, TOTAL_RESA, TOTAL_RESA))
 FEUILLE_FOLIO = (
     titre_fiche(demo.FOLIO)
     + deux_colonnes(
         groupe('Séjour', [champ('Client', demo.CLIENT, lien_=True), champ('Réservation', demo.RESA, lien_=True),
-                          champ('Séjour', 'Arrivé'), champ('Arrivée', demo.ARRIVEE), champ('Départ', demo.DEPART)]),
+                          champ('Séjour', 'Arrivé', 't1-f-sej'), champ('Arrivée', demo.ARRIVEE), champ('Départ', demo.DEPART)]),
         groupe('Montants', [champ('Hébergement (HT)', '90 000 FCFA'), champ('Services (HT)', '0 FCFA', 't1-f-serv'),
                             champ('Taxe de séjour', '12 000 FCFA'), champ('Total HT', TOTAL_RESA, 't1-f-ht'),
                             champ('Taxes', '0 FCFA'), champ('Total TTC', TOTAL_RESA, 't1-f-ttc'),
@@ -380,7 +434,7 @@ CHECKOUT = assistant('t1-as-co', 'Check-out — %s' % demo.RESA, (
 
 ECRAN = navigateur(fenetre_muk('app-t1', 'Hôtel', MENUS, [FRONT, ARRIVEES, RESA, FOLIO], actif='Front Desk',
                                societe=demo.SOCIETE, initiale=NOM[0], avatar='#185FA5',
-                               apps=APPS_PROFIL['reception'], app_active='Hôtel',
+                               apps=APPS, app_active='Hôtel',
                                calques=DEROULANT + RAPIDE + RAPIDE_2 + ACOMPTE_AS + CHECKOUT))
 
 MENU_FD = '#app-t1 .o-haut .menu.actif'
@@ -391,7 +445,20 @@ CSS = """
   border: 1px solid #DEE2E6; border-radius: 0 0 6px 6px; box-shadow: 0 12px 28px rgba(0,0,0,.20); }
 #app-t1 .t1-dd-i { height: 46px; display: flex; align-items: center; padding: 0 22px; font-size: 19px; color: #212529; }
 #app-t1 .t1-dd-i.survol { background: #E9ECEF; }
-#t1-front .t1-graphes { margin-top: 14px; }
+#t1-front .t1-graphes { margin-top: 10px; }
+#t1-front .kpi { padding: 12px 18px; min-height: 0; }
+#t1-front .tdb-sect { margin: 12px 2px 8px; }
+#t1-front .g-carte { height: 186px; padding: 12px 20px; }
+#t1-front .g-zone { top: 46px; bottom: 34px; }
+#t1-front .g-lab { bottom: 8px; }
+#t1-front .g-anneau { margin-top: 6px; gap: 26px; }
+#t1-front .g-anneau svg { width: 132px; height: 132px; }
+#t1-front .g-legs { gap: 6px; }
+#t1-front .t1-esp { flex: 1; }
+#t1-front .t1-date { height: 38px; padding: 0 12px; border: 1px solid #DEE2E6; border-radius: 8px; display: inline-flex;
+  align-items: center; font-size: 17px; color: #212529; }
+#t1-front .t1-fl { font-size: 17px; color: #5C636A; }
+#t1-front .t1-appl { background: #714B67; border-color: #714B67; color: #fff; }
 #t1-rap2-voile { background: transparent; }
 #t1-rap .m-tete, #t1-rap2 .m-tete, #t1-as-co .m-tete, #t1-as-acompte .m-tete { height: 64px; }
 #t1-rap .m-ch, #t1-rap2 .m-ch { min-height: 46px; }
@@ -404,7 +471,15 @@ CSS = """
 #t1-res .t1-res-t { height: 44px; font-size: 18px; font-weight: 600; border-bottom: 1px solid #DEE2E6; }
 #t1-res .t1-res-l { height: 46px; font-size: 18px; border-bottom: 1px solid #EEF0F2; }
 #t1-res .t1-res-l.survol { background: #EEF3F6; }
-#t1-rap2 .t1-client { margin-top: 10px; }
+#t1-rap2 .t1-client { margin-top: 6px; }
+#t1-rap2 .m-tete { height: 56px; }
+#t1-rap2 .m-ch { min-height: 40px; }
+#t1-rap2 .m-ch .v .entree { height: 40px; }
+#t1-rap2 .m-corps { padding: 10px 28px 6px; }
+#t1-rap2 .t1-chercher { margin: 4px 0 6px; }
+#t1-rap2 #t1-res .t1-res-t { height: 40px; }
+#t1-rap2 #t1-res .t1-res-l { height: 40px; }
+#app-t1 #t1-rap2 .m-pied { padding: 10px 28px 12px; }
 #t1-rap2 .m-pied, #t1-rap .m-pied { padding: 14px 28px 16px; }
 #app-t1 .liste .tete, #app-t1 .liste .ligne, #app-t1 .liste .total { font-size: 17px; column-gap: 12px; }
 #app-t1 .liste .ligne.t1-info { color: #0B6178; }
@@ -430,12 +505,16 @@ CSS = """
 #app-t1 .t1-tab .t-ajout, #app-t1 .t1-tab .t-total { height: 46px; font-size: 17px; }
 #app-t1 .t1-tab .puce { font-size: 15px; height: 28px; }
 #app-t1 .t1-tab .t1-lib { color: #3F6A83; }
+#app-t1 .t1-tab .t-ligne.t1-dinfo, #app-t1 .t1-tab .t-ligne.t1-dinfo .t1-lib { color: #0B6178; }
+#app-t1 .t1-tab .t-ligne.taxe .t1-lib { color: inherit; }
+#app-t1 .t1-tab .t-ligne.t1-saisie { background: #F4F1F8; }
+#app-t1 .t1-ent { font-size: 17px; height: 36px; border-width: 0 0 1px 0; border-radius: 0; padding: 0 4px; margin: 0; background: transparent; }
+#app-t1 .t1-ent .ph, #app-t1 .t1-ent .val { left: 4px; right: 4px; overflow: hidden; text-overflow: ellipsis; }
+#app-t1 .t1-ent.d .val { text-align: right; }
 #app-t1 .t1-pile { height: 48px; }
 #app-t1 .t1-pile > .t-ajout { height: 48px; }
 #app-t1 .t1-ech { color: #3F6A83; display: inline-flex; width: 22px; height: 22px; }
 #app-t1 .t1-ech svg { width: 22px; height: 22px; }
-#app-t1 .bandeau.t1-ok { background: #D1E7DD; border-color: #A3CFBB; color: #0A3622; }
-#app-t1 .bandeau.t1-ok .act { color: #0A3622; margin-left: 10px; }
 #t1-as-acompte .m-ch, #t1-as-co .m-ch { min-height: 50px; }
 #t1-as-acompte .lien, #t1-as-co .lien { color: #3F6A83; }
 #t1-as-acompte .t1-note { margin-top: 10px; }
@@ -460,7 +539,7 @@ TUTORIEL = {
         'question': 'Cette chambre est-elle *vraiment* libre ce soir ?',
         'douleurs': [('alerte', 'La même chambre vendue deux fois'),
                      ('pieces', "L'acompte à déduire au franc près au départ"),
-                     ('calculatrice', 'La taxe de séjour, absente des logiciels étrangers'),
+                     ('calculatrice', 'La taxe de séjour, à paramétrer à la main dans les logiciels étrangers'),
                      ('fiche', "La fiche de police, une obligation légale"),
                      ('interrogation', 'Qui arrive, qui part, qui reste ce soir ?'),
                      ('cle', 'La chambre en panne proposée au client')],
@@ -481,7 +560,8 @@ TUTORIEL = {
         't1-b-libres': 'Chambres réservées ou hors service : écartées de la recherche.',
         't1-b-momo': 'Référence de transaction exigée pour MTN Mobile Money et Orange Money.',
         't1-b-taxe': 'Taxe de séjour ajoutée toute seule, sans TVA : 4 nuitées × personne à 3 000 F (3 ★).',
-        't1-b-facture': "Cochée d'office : la facture reprend les lignes du folio (droit Facturation d'Odoo).",
+        't1-b-facture': "Cochée d'office : la facture reprend les lignes du folio (réceptionniste avec le droit "
+                         "Facturation).",
     },
     'reactions': {
         't1-r-fiche': 'La fiche de police du client principal est déjà créée, pré-remplie.',
@@ -500,12 +580,12 @@ TUTORIEL = {
                     clic('#t1-front .tdb-bt', d=0.7)]},
         {'temps': 0, 'titre': 'La réservation rapide', 'texte': 'Les dates, deux adultes : seules les chambres libres, '
                                                                 'avec le prix du séjour.',
-         'voix': "La réservation rapide ne demande que les dates et le nombre d'adultes. La recherche ne montre que "
+         'voix': "Pour chercher, la réservation rapide ne demande que les dates et le nombre d'adultes. La recherche ne montre que "
                  "les chambres libres, avec le prix par nuit et le total du séjour. On active la deux cent quatre, "
                  "on choisit la cliente, et on réserve.",
          'gestes': [ouvrir('t1-rap'), pause(0.3), choisir('t1-r-dep', '16/10/2026 12:00:00'),
                     choisir('t1-r-ad', '2'), clic('#t1-r-chercher'), cacher('#t1-rap', d=0.2),
-                    ouvrir('t1-rap2', avec=True), pause(0.3), zoom('#t1-res', s=1.32, d=0.7),
+                    ouvrir('t1-rap2', avec=True), pause(0.3), zoom('#t1-res', s=1.25, d=0.7, fy=0.8),
                     curseur('#t1-rr-204-tg', d=0.5), bulle('t1-b-libres', '#t1-q-chercher', cote='droite', d=2.6), pause(2.0),
                     clic('#t1-rr-204-tg'),
                     classe('#t1-rr-204-tg', ajouter=['on']), classe('#t1-rr-204', ajouter=['survol'], avec=True),
@@ -516,7 +596,7 @@ TUTORIEL = {
          'voix': "La réservation arrive confirmée, avec son folio déjà ouvert. Estelle verse un acompte par MTN MoMo : "
                  "le montant, le moyen de paiement, la référence de la transaction. Le solde du folio baisse aussitôt.",
          'gestes': [anneau('#t1-sb-1', d=0.8), anneau('#t1-st-folio', d=0.8), clic('#t1-b-acompte'),
-                    ouvrir('t1-as-acompte'), zoom('#t1-p-droite', s=1.4, d=0.7, fx=0.3), saisir('t1-p-mt', ACOMPTE), curseur('#t1-p-mt', fx=0.3, d=0.4, avec=True),
+                    ouvrir('t1-as-acompte'), zoom('#t1-as-acompte', s=1.2, d=0.7), saisir('t1-p-mt', ACOMPTE), curseur('#t1-p-mt', fx=0.3, d=0.4, avec=True),
                     choisir('t1-p-moyen', 'MTN Mobile Money'), saisir('t1-p-ref', REF_MOMO), curseur('#t1-p-ref', fx=0.55, d=0.4, avec=True),
                     bulle('t1-b-momo', '#t1-p-date-l', cote='gauche', d=2.2), pause(1.4), dezoom(d=0.6),
                     clic('#t1-p-ok'), fermer('t1-as-acompte'), texte('#t1-st-folio-v', SOLDE_1),
@@ -536,31 +616,37 @@ TUTORIEL = {
                     anneau('#t1-bandeau', d=1.1, decale=0.2), reaction('t1-r-fiche', d=2.8), pause(1.2)]},
         {'temps': 3, 'titre': 'Le folio du séjour', 'texte': 'Nuitées, taxe de séjour calculée seule, prestations, '
                                                              'acompte déduit.',
-         'voix': "Le folio rassemble tout le séjour : les nuitées, la taxe de séjour, ajoutée toute seule selon le "
-                 "classement de l'hôtel, puis chaque prestation, comme le petit-déjeuner, en une ligne. L'acompte "
-                 "est déjà déduit du solde.",
+         'voix': "Le folio rassemble tout le séjour : les nuitées, puis la taxe de séjour, ajoutée toute seule selon "
+                 "le classement de l'hôtel. Pour une prestation, comme le petit-déjeuner, Mireille ajoute une ligne : "
+                 "le service choisi donne le libellé et le prix, il reste la quantité. L'acompte est déjà déduit du "
+                 "solde.",
          'gestes': [clic('#t1-st-folio'), vue('t1-folio'), pause(0.3), anneau('#t1-f-solde', d=1.0),
                     defiler('#t1-folio-defil', -318, d=0.8), curseur('#t1-fl2', fx=0.06, d=0.5), anneau('#t1-fl1', d=0.9, avec=True),
-                    zoom('#t1-fl2', s=1.45, d=0.7, fx=0.45), bulle('t1-b-taxe', '#t1-fl2', cote='bas', d=2.5),
+                    zoom('#t1-fl', s=1.25, d=0.7, fy=0.3), bulle('t1-b-taxe', '#t1-fl2', cote='bas', d=2.5),
                     pause(2.0), dezoom(d=0.5), clic('#t1-aj1', fx=0.1), cacher('#t1-aj1', d=0.15),
-                    montrer('#t1-fl3', d=0.35, y=0), montrer('#t1-aj2', d=0.3, y=0),
+                    montrer('#t1-fl3', d=0.3, y=0), clic('#t1-fl3-srv', d=0.45), choisir('t1-fl3-srv', 'Petit-déjeuner buffet'),
+                    texte('#t1-fl3-lib', 'Petit-déjeuner buffet', avec=True), texte('#t1-fl3-pu', '2 700 FCFA', avec=True),
+                    texte('#t1-fl3-st', '2 700 FCFA', avec=True), texte('#t1-fl3-tt', '2 700 FCFA', avec=True),
+                    clic('#t1-fl3-q', d=0.45), choisir('t1-fl3-q', '4,00'), texte('#t1-fl3-st', '10 800 FCFA'),
+                    texte('#t1-fl3-tt', '10 800 FCFA', avec=True), classe('#t1-fl3', retirer=['t1-saisie'], avec=True),
+                    montrer('#t1-aj2', d=0.3, y=0),
                     texte('#t1-ft-ht', TOTAL_2), texte('#t1-ft-ttc', TOTAL_2, avec=True),
                     texte('#t1-f-serv', '10 800 FCFA', avec=True), texte('#t1-f-ht', TOTAL_2, avec=True),
                     texte('#t1-f-ttc', TOTAL_2, avec=True), texte('#t1-f-solde', SOLDE_2, avec=True),
                     texte('#t1-st-folio-v', SOLDE_2, avec=True), anneau('#t1-fl3', d=1.0), anneau('#t1-ft-ttc', d=1.0)]},
         {'temps': 3, 'titre': 'Le départ et la facture', 'texte': 'Le check-out récapitule le folio ; la facture en '
                                                                   'reprend les lignes.',
-         'voix': "Le jour du départ, Mireille revient à la réservation. Le check-out récapitule le total, l'acompte "
-                 "déjà encaissé et le solde dû. Avec le droit Facturation, la facture reprend le folio, et la "
-                 "chambre part au ménage.",
-         'gestes': [texte('#t1-st-fiches-v', '2/2'), cacher('#t1-bandeau', d=0.05, avec=True),
-                    montrer('#t1-bandeau-ok', d=0.05, y=0, avec=True), clic('#t1-folio .fil .parent', d=0.6),
-                    vue('t1-resa'), clic('#t1-b-checkout'), ouvrir('t1-as-co'), zoom('#t1-co-folio', s=1.35, d=0.7),
-                    bulle('t1-b-facture', '#t1-co-fact', cote='droite', d=2.3), pause(1.6), dezoom(d=0.5),
+         'voix': "Le jour du départ, Mireille revient à la réservation et lance le check-out. L'assistant récapitule "
+                 "le total, l'acompte déjà encaissé et le solde dû ; la facture est cochée d'office. La chambre part "
+                 "aussitôt au ménage, et la facture reprend le folio.",
+         'gestes': [clic('#t1-folio .fil .parent', d=0.6),
+                    vue('t1-resa'), clic('#t1-b-checkout'), ouvrir('t1-as-co'), zoom('#t1-as-co', s=1.2, d=0.7),
+                    bulle('t1-b-facture', '#t1-co-fact', cote='bas', d=2.3), pause(1.6), dezoom(d=0.5),
                     clic('#t1-co-ok'), fermer('t1-as-co'), defiler('#t1-folio-defil', 0, d=0.05),
                     classe('#t1-fsb-0', retirer=['actif'], avec=True), classe('#t1-fsb-1', ajouter=['actif'], avec=True),
                     cacher('#t1-f-fact', d=0.05, avec=True), montrer('#t1-st-fact', d=0.05, y=0, avec=True),
-                    montrer('#t1-f-etat', d=0.05, y=0, avec=True), vue('t1-folio'), anneau('#t1-fsb-1', d=1.1),
+                    montrer('#t1-f-etat', d=0.05, y=0, avec=True), texte('#t1-f-sej', 'Parti', avec=True),
+                    vue('t1-folio'), anneau('#t1-fsb-1', d=1.1),
                     anneau('#t1-st-fact', d=0.9), reaction('t1-r-fin', d=2.4), pause(1.0)]},
     ],
     'resultats': {
@@ -582,5 +668,5 @@ TUTORIEL = {
         'voix': "Aïte haousse, par Aïte Consulting. Demandez votre démonstration ; prochain tutoriel : chaque "
                 "séjour sur sa chambre, d'un coup d'œil.",
     },
-    'vignette': {'etape': 2, 'apres': 11.0},
+    'vignette': {'etape': 5, 'apres': 8.4},
 }

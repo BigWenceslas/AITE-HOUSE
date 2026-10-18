@@ -35,7 +35,9 @@ Accroche (douleurs) — docs/etude_comparative/benchmark_afrique_odoo.md :
    « Chaque séjour portera une ligne « Taxe de séjour » de 3 000 XAF par
    personne et par nuit, hors TVA. ») ; models/city_tax_rate.py:18-20,
    :71-80 (libellé du barème, stocké : « Cameroon — 3 ★ : 3 000 XAF »,
-   voir ÉCARTS).
+   voir ÉCARTS). Ces deux défauts restent à l'écran, mais aucun geste ne
+   les met en valeur : l'anneau porte sur « Montant par nuitée », la phrase
+   est entourée sans zoom et la bulle se pose dessous.
 2. Barèmes — aite_city_tax/views/city_tax_rate_views.xml:4-56 (liste
    éditable, colonnes, regroupement par pays par défaut) ;
    models/city_tax_rate.py:21-58 (Pays, Catégorie, Montant par nuitée,
@@ -51,8 +53,11 @@ Accroche (douleurs) — docs/etude_comparative/benchmark_afrique_odoo.md :
    particulières) ; models/hotel_reservation.py:48-145 (libellés, états,
    « Téléphone / WhatsApp ») ; aite_guest_registry/views/
    hotel_reservation_views.xml:11-47 (« Fiches clients », « Fiches
-   d'enregistrement »). Confirmer crée le folio puis la taxe :
-   hotel_reservation.py:319-333 ; aite_city_tax/models/hotel_folio.py:76-80.
+   d'enregistrement »). Confirmer crée le folio (sans l'ouvrir : la méthode
+   renvoie True) puis la taxe : hotel_reservation.py:319-333 ;
+   aite_city_tax/models/hotel_folio.py:76-80. Le bouton « Folio » affiche
+   le solde (folio_amount_residual), resynchronisé à l'enregistrement
+   (hotel_reservation.py:264-273) : il ne change qu'au clic, qui enregistre.
 4. Folio — aite_hotel_management/views/hotel_folio_views.xml:31-128
    (Encaisser, Générer la facture, Annuler, Ouvert / Facturé / Soldé,
    Règlements, Séjour, Montants, Lignes du folio, colonnes, note grise) ;
@@ -61,12 +66,13 @@ Accroche (douleurs) — docs/etude_comparative/benchmark_afrique_odoo.md :
    (« Taxe de séjour » dans Montants, « Recalculer la taxe de séjour »,
    ligne orange) ; models/hotel_folio.py:9-12, :37-41, :100-144 (une seule
    ligne, quantité, prix, aucune TVA, libellé « Taxe de séjour — 4
-   nuitée(s) × personne (3 ★, Cameroun) »). TVA de la nuitée : taxe de
-   vente « 19.25% » du plan comptable camerounais d'Odoo
-   (odoo18/addons/l10n_cm/data/template/account.tax-cm.csv:2), posée sur
-   l'article du type de chambre — un réglage de l'établissement, pas du
-   module ; le module garantit seulement que la ligne de taxe n'a aucune
-   TVA. Aspect : captures/03_folio.png, ref_muk/029. Discussion sous la
+   nuitée(s) × personne (3 ★, Cameroun) », 'tax_ids': [(6, 0, [])]).
+   Nuitée sans TVA, convention de la série (t01_reception.py, TOTAL_RESA ;
+   t02_planning.py, commentaire « Convention de la série » ; t03_folio.py,
+   docstring « Sans TVA sur l'article de nuitée » : aucun taux n'est livré
+   par les modules, la TVA de la nuitée vient de l'article du type de
+   chambre, hotel_folio.py:263-264) : Taxes 0 FCFA, TTC = HT.
+   Aspect : captures/03_folio.png, ref_muk/029. Discussion sous la
    feuille (le folio hérite de mail.thread, hotel_folio.py:24 ; Odoo 18 la
    place sous la fiche à cette largeur d'écran) : « Envoyer message »,
    « Note », « Activités », « Suivre », message de création « %s créé »
@@ -81,6 +87,11 @@ Accroche (douleurs) — docs/etude_comparative/benchmark_afrique_odoo.md :
    « Départs du mois », « Départs du mois dernier », « Séjours terminés (à
    déclarer) », « Séjours en cours (prévision) », regroupements « Mois » /
    « Hôtel », aide « … le montant à déclarer et à reverser avant le 15 ») ;
+   les deux filtres sont dans deux groupes séparés (<separator/>, :64) :
+   cochés ensemble, ils se cumulent (deux facettes) ; « Séjours terminés »
+   ne garde que les folios facturés ou soldés (domaine folio_state in
+   ('invoiced', 'paid'), :65-66), alors que la vue SQL garde aussi les
+   folios ouverts (city_tax_report.py:84, état 'open') ;
    models/city_tax_report.py:6-87 (mois du départ « AAAA-MM ») ; menu
    menus.xml:5-10. Cadre web d'Odoo 18 (odoo18/addons/web/i18n/fr.po) :
    « Filtres », « Regrouper par », « Favoris », « Ajouter un filtre
@@ -91,8 +102,9 @@ Accroche (douleurs) — docs/etude_comparative/benchmark_afrique_odoo.md :
 Chiffres des résultats : 24 barèmes (city_tax_data.xml ; ROADMAP.md:63) ;
 aucune saisie de la réception (aite_city_tax/__manifest__.py:23
 « Aucune action de la réception » ; CLAUDE.md, règle d'intuitivité 3 ;
-scenario_city_tax.py:80) ; une ligne par folio, hors TVA, recalculée,
-figée à la facture (hotel_folio.py:100-144).
+scenario_city_tax.py:80 ; formulée « 0 saisie de taxe à la confirmation »,
+voir LIMITES) ; une ligne par folio, hors TVA, recalculée, figée à la
+facture (hotel_folio.py:100-144).
 
 Captures de référence (modèle visuel, jamais incrustées) : ref_muk/040,
 046, 029, 031, 027 ; captures/02, 02b, 03, 04, 05 ; captures prises en
@@ -108,11 +120,29 @@ le menu réel est « Configuration → Barèmes de taxe de séjour ») ; sommes
 absurdes sur les lignes de regroupement des barèmes ; dates ISO dans le
 libellé de la nuitée (hotel_folio.py:256-260) ; mois au format « 2026-10 »
 et montants à décimales dans l'état mensuel (city_tax_report.py:32-33, :78) ;
-taxe « 19.25% » à point décimal (l10n_cm d'Odoo).
+aide de l'état mensuel qui ne conseille que « Départs du mois dernier »
+(city_tax_report_views.xml:89-94), filtre qui garde les folios ouverts : la
+vidéo coche en plus « Séjours terminés (à déclarer) ».
 
-Données : demo.py (Complexe Hôtelier — Démo, Démo Hôtellerie SARL, Estelle
-Ngono, RES/2026/0214, FOL/2026/0214, chambre 204 [CFT] Confort à 45 000
-FCFA la nuit). Chiffres de l'état mensuel fictifs, cohérents avec un 3 ★ à
+LIMITES du module, non montrées (à corriger dans addons/ avant diffusion,
+la vidéo montre un hôtel déjà en service) : un hôtel créé avant
+l'installation d'aite_city_tax garde un « Barème appliqué » vide (champ
+stocké calculé avant le chargement des barèmes, pas de post_init_hook,
+hotel_hotel.py:42-50) ; l'article « Taxe de séjour — <hôtel> » est créé
+sans sudo() au premier séjour (hotel_hotel.py:97-108), ce que ni la
+Réception (lecture seule sur aite.hotel.hotel, aite_hotel_management/
+security/ir.model.access.csv:2-3) ni le Responsable (pas de création de
+product.product, hotel_room.py:122-126) ne peuvent faire. D'où une
+révélation sans « une fois » et la carte « 0 saisie de taxe à la
+confirmation » au lieu de « 0 saisie pour la réception ».
+
+Données : demo.py (Complexe Hôtelier — Démo, Démo Hôtellerie SARL, postes,
+Confort à 45 000 FCFA la nuit). Le séjour des étapes 3 à 5 est propre à ce
+tutoriel (RESA_R…), pour laisser intact celui d'Estelle Ngono que suivent
+les autres : Pélagie Ondobo (fictive), RES/2026/0225, FOL/2026/0225,
+chambre 201 [CFT] (libre fin octobre au planning de t02_planning.py,
+liste SEJOURS), 2 adultes, du 26 au 28/10/2026 puis au 29/10/2026 ; confirmée
+le 20/10/2026 par la directrice, qui tient l'écran. Chiffres de l'état mensuel fictifs, cohérents avec un 3 ★ à
 3 000 F l'unité ; août et septembre repris du chapitre 7 de la
 présentation (scenarios/c7_conformite.py).
 """
@@ -127,17 +157,24 @@ NOM, ROLE = demo.POSTES['conformite']
 MENUS = ['Direction', 'Front Desk', 'Réservations', 'Espaces & Prestations', 'Notes de chambre en attente',
          'Facturation', 'Fidélité', 'Gouvernante', 'Configuration']
 
-# Les montants du séjour d'Estelle Ngono : deux nuits, puis trois (une nuit de plus).
-# Nuitée à 45 000 FCFA (demo.PRIX_NUIT), TVA « 19.25% » sur la nuitée seule,
+# Le séjour de ce tutoriel : une réservation fictive propre à t05, pour laisser intact celui
+# d'Estelle Ngono (demo.py) que suivent t01, t02, t03, t06, t07 et t11. Confirmée par la
+# directrice le 20/10/2026, prolongée d'une nuit le 22/10/2026 ; départ en octobre, donc
+# compté dans l'état d'octobre de l'étape 6.
+RESA_R, FOLIO_R = 'RES/2026/0225', 'FOL/2026/0225'
+CLIENT_R, TEL_R, MAIL_R = 'Pélagie Ondobo', '+237 699 52 17 36', 'pelagie.ondobo@exemple.cm'
+ARRIVEE_R, DEPART_R, CHAMBRE_R = '26/10/2026 14:00:00', '28/10/2026 12:00:00', '201 [CFT]'
+# Deux nuits, puis trois. Nuitée Confort à 45 000 FCFA (demo.PRIX_NUIT) sans TVA, convention de
+# la série (t01_reception.py TOTAL_RESA, t02_planning.py, t03_folio.py, chapitre 1 de la présentation) ;
 # taxe de séjour 3 ★ Cameroun : 3 000 F par personne et par nuit, 2 adultes.
-AVANT = {'nuits': '2', 'dep': demo.DEPART, 'heb': '90 000 FCFA', 'qte_n': '2,00', 'ttc_n': '107 325 FCFA',
-         'taxe': '12 000 FCFA', 'qte_t': '4,00', 'ht': '102 000 FCFA', 'tva': '17 325 FCFA', 'ttc': '119 325 FCFA',
-         'lib_n': 'Nuitée 204 (Confort) — 2026-10-14 → 2026-10-16',
-         'lib_t': 'Taxe de séjour — 4 nuitée(s) × personne (3 ★, Cameroun)', 'date': '12/10/2026'}
-APRES = {'nuits': '3', 'dep': '17/10/2026 12:00:00', 'heb': '135 000 FCFA', 'qte_n': '3,00', 'ttc_n': '160 988 FCFA',
-         'taxe': '18 000 FCFA', 'qte_t': '6,00', 'ht': '153 000 FCFA', 'tva': '25 988 FCFA', 'ttc': '178 988 FCFA',
-         'lib_n': 'Nuitée 204 (Confort) — 2026-10-14 → 2026-10-17',
-         'lib_t': 'Taxe de séjour — 6 nuitée(s) × personne (3 ★, Cameroun)', 'date': '13/10/2026'}
+AVANT = {'nuits': '2', 'dep': DEPART_R, 'heb': '90 000 FCFA', 'qte_n': '2,00', 'ttc_n': '90 000 FCFA',
+         'taxe': '12 000 FCFA', 'qte_t': '4,00', 'ht': '102 000 FCFA', 'tva': '0 FCFA', 'ttc': '102 000 FCFA',
+         'lib_n': 'Nuitée 201 (Confort) — 2026-10-26 → 2026-10-28',
+         'lib_t': 'Taxe de séjour — 4 nuitée(s) × personne (3 ★, Cameroun)', 'date': '20/10/2026'}
+APRES = {'nuits': '3', 'dep': '29/10/2026 12:00:00', 'heb': '135 000 FCFA', 'qte_n': '3,00', 'ttc_n': '135 000 FCFA',
+         'taxe': '18 000 FCFA', 'qte_t': '6,00', 'ht': '153 000 FCFA', 'tva': '0 FCFA', 'ttc': '153 000 FCFA',
+         'lib_n': 'Nuitée 201 (Confort) — 2026-10-26 → 2026-10-29',
+         'lib_t': 'Taxe de séjour — 6 nuitée(s) × personne (3 ★, Cameroun)', 'date': '22/10/2026'}
 
 # Icônes du cadre web : regroupement (couches), engrenage, téléchargement, vues.
 COUCHES = ('<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round">'
@@ -250,10 +287,11 @@ H_TAXE = (
                                        ch('Catégorie (fiche hôtel)', demo.ETOILES)]),
                     groupe("Ce qui s'applique", [ch('Barème appliqué', 'Cameroon — 3 ★ : 3 000 XAF', 't05-h-bareme',
                                                     aide_=True),
-                                                 ch('Montant par nuitée', '3 000', aide_=True),
+                                                 ch('Montant par nuitée', '3 000', 't05-h-mt', aide_=True),
                                                  ch('Base', 'Par personne et par nuit', aide_=True)]))
     + '<div class="alerte-info t05-alerte" id="t05-h-phrase"><b class="t05-i">i</b>Chaque séjour portera une ligne '
-      '« Taxe de séjour » de 3 000 XAF par personne et par nuit, hors TVA.</div>'
+      '« Taxe de séjour » de 3 000 XAF par personne et par nuit, hors TVA.<span class="t05-ancre" id="t05-h-ancre">'
+      '</span></div>'
       '<div class="note-pied t05-gris" id="t05-h-aide">La taxe est ajoutée automatiquement à chaque folio et recalculée si '
       'les dates, les chambres ou le nombre de personnes changent. Elle n\'entre pas dans la base de la TVA. Pour modifier '
       'un montant (nouvelle loi de finances) : <b>Hôtel → Configuration → Taxe de séjour → Barèmes</b>.</div></div>')
@@ -313,18 +351,18 @@ BAREMES = vue_libre('t05-baremes', CP_BAREMES + '<div class="liste t05-liste">%s
                     % (TETE_B, FERME, OUVERT))
 
 # ------------------------------------------------------------ réservation --
-# Réservations → RES/2026/0214 : en brouillon, puis confirmée d'un clic.
+# Réservations → RES/2026/0225 : en brouillon, puis confirmée d'un clic.
 R_STATS = (stat('t05-r-st-folio', 'document', 'Folio', AVANT['ttc'])
            + stat('t05-r-st-fiches', 'fiche', 'Fiches clients', '0/2'))
 DEPART = ('<span class="t05-champ" id="t05-r-dep"><span class="ph" id="t05-r-dep-ph"></span>'
-          '<span class="val" id="t05-r-dep-val">%s</span></span>' % e(demo.DEPART))
+          '<span class="val" id="t05-r-dep-val">%s</span></span>' % e(DEPART_R))
 FEUILLE_RESA = (
-    titre_fiche(demo.RESA)
+    titre_fiche(RESA_R)
     + deux_colonnes(
-        groupe('Client', [ch('Client', demo.CLIENT, gras=True, saisie=True), ch('Téléphone', demo.CLIENT_TEL),
-                          ch('E-mail', demo.CLIENT_MAIL), ch('Hôtel', demo.HOTEL, gras=True, saisie=True)])
+        groupe('Client', [ch('Client', CLIENT_R, gras=True, saisie=True), ch('Téléphone', TEL_R),
+                          ch('E-mail', MAIL_R), ch('Hôtel', demo.HOTEL, gras=True, saisie=True)])
         + groupe('Canal & commission', [ch('Canal', 'Téléphone / WhatsApp', gras=True, saisie=True)]),
-        groupe('Séjour', [ch('Arrivée', demo.ARRIVEE, gras=True, saisie=True),
+        groupe('Séjour', [ch('Arrivée', ARRIVEE_R, gras=True, saisie=True),
                           ch('Départ', DEPART, gras=True, html=True),
                           ch('Nuits', AVANT['nuits'], 't05-r-nuits', aide_=True),
                           ch('Total hébergement (HT)', AVANT['heb'], 't05-r-total')])
@@ -337,25 +375,25 @@ FEUILLE_RESA = (
       '<span class="d">0</span><span></span><span class="d" id="t05-r-l-nuits">2</span><span class="d">%s</span>'
       '<span class="d" id="t05-r-l-st">%s</span><span class="t05-ech">⇄</span></div>'
       '<div class="t-ajout">Ajouter une ligne</div></div>'
-      % (('1fr 170px 110px 110px 170px 90px 170px 200px 40px',) * 2 + (demo.TYPE, demo.CHAMBRE, demo.PRIX_NUIT,
+      % (('1fr 170px 110px 110px 170px 90px 170px 200px 40px',) * 2 + (demo.TYPE, CHAMBRE_R, demo.PRIX_NUIT,
                                                                        AVANT['heb'])))
 B_BROUILLON = [bouton('t05-r-confirmer', 'Confirmer', 'primaire'), bouton(None, 'Annuler')]
 B_CONFIRMEE = [bouton(None, 'Check-in', 'primaire'), bouton(None, 'Encaisser un acompte'),
                bouton(None, 'Envoyer la confirmation'), bouton(None, "Fiches d'enregistrement", ico='imprimer'),
                bouton(None, 'No-show'), bouton(None, 'Annuler')]
-RESA = vue_fiche('t05-resa', cp_fiche('Réservations', demo.RESA, R_STATS, '4 / 18', 't05-r-stats', stats_masque=True),
+RESA = vue_fiche('t05-resa', cp_fiche('Réservations', RESA_R, R_STATS, '4 / 18', 't05-r-stats', stats_masque=True),
                  B_BROUILLON, statusbar('t05-r-sb', ['Brouillon', 'Confirmée', 'Arrivé', 'Parti'], 0), FEUILLE_RESA,
                  boutons_apres=[B_CONFIRMEE])
 
 # ------------------------------------------------------------ folio --
-# Bouton « Folio » de la réservation → FOL/2026/0214 ; la ligne de taxe est en orange.
+# Bouton « Folio » de la réservation → FOL/2026/0225 ; la ligne de taxe est en orange.
 GAB_F = '110px 150px 74px 1fr 52px 120px 84px 134px 126px 22px'
 
 
 def ligne_f(ident, valeurs, nuitee):
     badge = ('<span class="puce info">Nuitée</span>' if nuitee
              else '<span class="puce orange">Taxe de séjour</span>')
-    taxe = '<span class="t05-tag">19.25%</span>' if nuitee else ''
+    taxe = ''                     # aucune TVA, ni sur la nuitée (convention de la série) ni sur la taxe
     k = 'n' if nuitee else 't'
     return ('<div class="t-ligne %s" id="%s" style="grid-template-columns:%s"><span id="%s-date">%s</span>'
             '<span>%s</span><span></span><span class="ell" id="%s-lib">%s</span><span class="d" id="%s-qte">%s</span>'
@@ -377,10 +415,10 @@ LIGNES_F = ('<div class="table t05-table t05-lignes"><div class="t-tete" style="
             '</div>' % (GAB_F, ligne_f('t05-f-l1', AVANT, True), ligne_f('t05-f-l2', AVANT, False), GAB_F, AVANT['ht'],
                         AVANT['ttc']))
 FEUILLE_FOLIO = (
-    titre_fiche(demo.FOLIO)
+    titre_fiche(FOLIO_R)
     + deux_colonnes(
-        groupe('Séjour', [ch('Client', demo.CLIENT, lien=True), ch('Réservation', demo.RESA, lien=True),
-                          ch('Séjour', 'Confirmée'), ch('Arrivée', demo.ARRIVEE),
+        groupe('Séjour', [ch('Client', CLIENT_R, lien=True), ch('Réservation', RESA_R, lien=True),
+                          ch('Séjour', 'Confirmée'), ch('Arrivée', ARRIVEE_R),
                           ch('Départ', AVANT['dep'], 't05-f-dep')]),
         groupe('Montants', [ch('Hébergement (HT)', AVANT['heb'], 't05-f-heb'), ch('Services (HT)', '0 FCFA'),
                             ch('Taxe de séjour', AVANT['taxe'], 't05-f-taxe', aide_=True),
@@ -394,12 +432,12 @@ FEUILLE_FOLIO = (
       'lignes de service (restaurant, blanchisserie, minibar…).</div>')
 # Message de création d'Odoo (« %s créé », mail/i18n/fr.po) avec la description du modèle
 # (« Folio client (note de séjour) », hotel_folio.py:23), signé par qui a confirmé.
-FOLIO = fiche('t05-folio', cp_fiche('Réservations / <span id="t05-f-fil">%s</span>' % e(demo.RESA), demo.FOLIO,
+FOLIO = fiche('t05-folio', cp_fiche('Réservations / <span id="t05-f-fil">%s</span>' % e(RESA_R), FOLIO_R,
                                     stat('t05-f-st', 'billet', 'Règlements', '0'), '1 / 1'),
               [bouton(None, 'Encaisser', 'primaire'), bouton(None, 'Générer la facture'),
                bouton(None, 'Recalculer la taxe de séjour', 'lien'), bouton(None, 'Annuler')],
               statusbar('t05-f-sb', ['Ouvert', 'Facturé', 'Soldé'], 0), FEUILLE_FOLIO,
-              discussion(NOM, '12 oct., 10:05', '12 oct. 2026', 'Folio client (note de séjour) créé'))
+              discussion(NOM, '20 oct., 10:05', '20 oct. 2026', 'Folio client (note de séjour) créé'))
 
 # ------------------------------------------------------------ état mensuel --
 # Hôtel → Facturation → Taxe de séjour : pivot mois × hôtel, regroupé par mois.
@@ -421,7 +459,7 @@ MOIS = [('2026-08', '347', '1 041 000,00'), ('2026-09', '408', '1 224 000,00'), 
 MENU_RECHERCHE = (
     '<div class="t05-rmenu masque" id="t05-e-menu" data-layout-allow-overlap data-layout-allow-occlusion>'
     '<div class="t05-rcol"><div class="t05-rtitre">%sFiltres</div><div>Départs du mois</div>'
-    '<div id="t05-e-f-dernier">Départs du mois dernier</div><hr><div>Séjours terminés (à déclarer)</div>'
+    '<div id="t05-e-f-dernier">Départs du mois dernier</div><hr><div id="t05-e-f-termines">Séjours terminés (à déclarer)</div>'
     '<div>Séjours en cours (prévision)</div><hr><div>Ajouter un filtre personnalisé</div></div>'
     '<div class="t05-rcol"><div class="t05-rtitre">%sRegrouper par</div><div class="t05-coche">Mois</div>'
     '<div>Hôtel</div><hr><div>Ajouter un groupe personnalisé ▾</div></div>'
@@ -430,10 +468,13 @@ MENU_RECHERCHE = (
                 icone('etoile', 't05-ri')))
 CP_ETAT = (
     '<div class="cp"><span class="titre t05-titre-pv">Taxe de séjour — état mensuel</span>'
-    '<div class="pile t05-rpile"><div id="t05-e-rech-a">%s</div><div class="masque" id="t05-e-rech-b">%s</div></div>'
+    '<div class="pile t05-rpile"><div id="t05-e-rech-a">%s</div><div class="masque" id="t05-e-rech-b">%s</div>'
+    '<div class="masque" id="t05-e-rech-c">%s</div></div>'
     '<span class="t05-vues"><span class="actif">%s</span><span>%s</span><span>%s</span></span></div>'
     % (recherche([facette('Mois', COUCHES)], toggler='t05-e-toggler'),
        recherche([facette('Mois', COUCHES), facette('Départs du mois dernier', ICONES['filtre'])]),
+       recherche([facette('Mois', COUCHES), facette('Départs du mois dernier', ICONES['filtre']),
+                  facette('Séjours terminés (à déclarer)', ICONES['filtre'])]),
        V_PIVOT, V_LISTE, V_GRAPHE))
 ETAT = vue_libre('t05-etat', CP_ETAT
                  + '<div class="pv-barre"><span class="bt primaire">Mesures ▾</span><span class="bt gris">⇄</span>'
@@ -522,6 +563,9 @@ CSS = """
 .t05-onglet-corps { padding-top: 22px; }
 .t05-ph { color: #ADB5BD; font-size: 19px; }
 .t05-alerte { display: flex; gap: 12px; align-items: center; }
+/* point d'ancrage de la bulle de l'étape 1 : sous la phrase, sur le texte gris (rien n'y est désigné) */
+#t05-h-phrase { position: relative; }
+.t05-ancre { position: absolute; left: 40%; bottom: 0; width: 2px; height: 2px; }
 .t05-i { flex: none; width: 22px; height: 22px; border-radius: 50%; background: #055160; color: #CFF4FC; font-size: 15px;
   display: inline-flex; align-items: center; justify-content: center; font-family: Georgia, serif; }
 .t05-gris { line-height: 1.5; }
@@ -563,9 +607,12 @@ CSS = """
   background: #E9ECEF; color: #343A40; font-size: 15px; }
 /* état mensuel */
 .t05-titre-pv { font-size: 24px; }
-.t05-rpile { margin-left: 120px; }
-.t05-rpile .recherche { margin-left: 0; width: 700px; }
-.t05-vues { margin-left: auto; display: flex; }
+/* une barre de recherche assez large pour trois facettes entières ; le menu s'aligne sur son bord droit */
+.t05-rpile { margin-left: 30px; flex: none; }
+.t05-rpile .recherche { margin-left: 0; width: 930px; }
+.t05-rpile .facette { flex: none; max-width: none; }
+.t05-rpile .ph { overflow: hidden; white-space: nowrap; }
+.t05-vues { margin-left: auto; display: flex; flex: none; }
 .t05-vues span { width: 52px; height: 44px; display: flex; align-items: center; justify-content: center; background: #E9ECEF;
   color: #343A40; border: 1px solid #DEE2E6; }
 .t05-vues span.actif { background: #DCE6EC; border-color: var(--muk-prim); }
@@ -575,7 +622,7 @@ CSS = """
 .t05-pvpile { margin: 4px 0 0; }
 .t05-pv { font-size: 20px; }
 .t05-pv td, .t05-pv th { height: 50px; padding: 0 18px; }
-.t05-rmenu { position: absolute; top: 74px; left: 222px; width: 1000px; z-index: 30; background: #fff;
+.t05-rmenu { position: absolute; top: 74px; left: 362px; width: 1000px; z-index: 30; background: #fff;
   border: 1px solid rgba(0,0,0,.15); border-radius: 4px; box-shadow: 0 10px 28px rgba(0,0,0,.18); padding: 18px 0;
   display: grid; grid-template-columns: 1fr 1fr 1fr; color: var(--o-texte); font-size: 19px; }
 .t05-rcol { padding: 0 22px; border-right: 1px solid #DEE2E6; }
@@ -617,9 +664,9 @@ TUTORIEL = {
                 "tout se recompte à la main.",
     },
     'revelation': {
-        'promesse': "Réglée une fois sur la fiche de l'hôtel, la taxe s'ajoute seule à chaque folio, hors TVA, et "
-                    "l'état du mois est prêt à déclarer.",
-        'voix': "Avec Aïte haousse, la taxe de séjour se règle une fois, puis se calcule toute seule.",
+        'promesse': "Le pays et les étoiles de l'hôtel choisissent le barème : la taxe s'ajoute seule à chaque "
+                    "folio, hors TVA, et l'état du mois est prêt à déclarer.",
+        'voix': "Avec Aïte haousse, la taxe de séjour se règle sur la fiche de l'hôtel, puis se calcule toute seule.",
     },
     'temps': ['Régler', 'Calculer', 'Déclarer'],
     'app': 'app-t05',
@@ -643,19 +690,19 @@ TUTORIEL = {
          'gestes': [pause(0.4), anneau('#t05-h-cat', d=1.0), anneau('#t05-h-pays', d=1.0), clic('#t05-h-ong-taxe'),
                     classe('#t05-h-ong-pol', retirer=['actif']), classe('#t05-h-ong-taxe', ajouter=['actif'], avec=True),
                     cacher('#t05-h-pol', d=0.15), montrer('#t05-h-taxe', d=0.35, y=10),
-                    defiler('#t05-hotel-defil', -385, d=0.9), anneau('#t05-h-bareme', d=1.3),
-                    zoom('#t05-h-phrase', s=1.6, fx=0.42, d=0.8), bulle('b-phrase', '#t05-h-phrase', cote='haut', d=2.6),
-                    pause(2.4), dezoom(d=0.6)]},
-        {'temps': 0, 'titre': 'Les barèmes, déjà là', 'texte': 'Quatre pays, six catégories, la référence légale.',
-         'voix': "Les barèmes sont déjà là : Cameroun, Côte d'Ivoire, Sénégal et Guinée, avec leur référence légale. "
+                    defiler('#t05-hotel-defil', -385, d=0.9), anneau('#t05-h-mt', d=1.3),
+                    curseur('#t05-h-phrase', fx=0.96, fy=0.6, d=0.5), anneau('#t05-h-phrase', d=1.2),
+                    bulle('b-phrase', '#t05-h-ancre', cote='bas', d=3.4), pause(3.4)]},
+        {'temps': 0, 'titre': 'Les barèmes, déjà là', 'texte': 'Quatre pays, six catégories, une référence par barème.',
+         'voix': "Les barèmes sont déjà là : Cameroun, Côte d'Ivoire, Sénégal et Guinée, chacun avec sa référence. "
                  "Une loi de finances change un montant ? On le corrige dans la liste, sans programmeur.",
          'gestes': aller('Configuration', 'Configuration', 't05-dd-conf', '#t05-dd-conf-bar')
          + [vue('t05-baremes'), pause(0.4), clic('#t05-g-cm', fx=0.15), cacher('#t05-bar-ferme', d=0.15),
             montrer('#t05-bar-ouvert', d=0.3, y=0), anneau('#t05-b3', d=1.3),
             bulle('b-loi', '#t05-b3-mt', cote='bas', d=2.6), pause(1.6), anneau('#t05-b3-ref', d=1.2)]},
-        {'temps': 1, 'titre': 'Un clic sur Confirmer', 'texte': 'Rien à saisir pour la taxe : le folio s\'ouvre, taxe comprise.',
-         'voix': "Côté réception, rien à saisir pour la taxe. La réservation d'Estelle Ngono, deux nuits pour deux "
-                 "adultes, se confirme d'un clic, et le folio s'ouvre aussitôt, taxe comprise.",
+        {'temps': 1, 'titre': 'Un clic sur Confirmer', 'texte': 'Rien à saisir pour la taxe : le folio est créé aussitôt, taxe comprise.',
+         'voix': "Pour l'équipe, rien à saisir pour la taxe. La réservation de Pélagie Ondobo, deux nuits pour deux "
+                 "adultes, se confirme d'un clic, et le folio est créé aussitôt, taxe comprise.",
          'gestes': aller('Configuration', 'Réservations', 't05-dd-resa', '#t05-dd-resa-res')
          + [vue('t05-resa'), pause(0.4), anneau('#t05-r-occ', d=1.2),
             bulle('b-zero', '#t05-resa-ga', cote='droite', d=2.4), pause(1.0), clic('#t05-r-confirmer'),
@@ -664,49 +711,58 @@ TUTORIEL = {
             anneau('#t05-r-st-folio', d=1.4)]},
         {'temps': 1, 'titre': 'La ligne Taxe de séjour', 'texte': 'Ajoutée seule au folio : 4 nuitées × 3 000 F, sans TVA.',
          'voix': "Dans le folio, la ligne Taxe de séjour est apparue toute seule : quatre nuitées à trois mille francs, "
-                 "douze mille francs. Elle n'a aucune TVA : seule la nuitée est taxée.",
+                 "douze mille francs. Elle ne porte aucune TVA : la taxe reste hors de la base.",
          'gestes': [clic('#t05-r-st-folio'), vue('t05-folio'), pause(0.4), anneau('#t05-f-taxe', d=1.1),
-                    defiler('#t05-folio-defil', -470, d=0.8), zoom('#t05-f-l2', s=1.5, fx=0.42, d=0.8),
+                    defiler('#t05-folio-defil', -470, d=0.8), curseur('#t05-f-l2-taxes', fx=0.3, d=0.5),
+                    zoom('#t05-f-l2', s=1.4, fx=0.56, d=0.8),
                     bulle('b-tva', '#t05-f-l2', cote='bas', d=2.6), pause(2.2), dezoom(d=0.6),
-                    anneau('#t05-f-l1-taxes', d=1.0)]},
+                    anneau('#t05-f-l2-ttc', d=1.0)]},
         {'temps': 1, 'titre': 'Le séjour change, la taxe suit', 'texte': 'Une nuit de plus : 6 nuitées, 18 000 F.',
-         'voix': "Estelle appelle : elle restera une nuit de plus. On repousse simplement sa date de départ : dans le "
+         'voix': "Pélagie appelle : elle restera une nuit de plus. On repousse simplement sa date de départ : dans le "
                  "folio, la ligne passe à six nuitées, dix-huit mille francs, sans rien retoucher. Une fois le folio "
                  "facturé, elle ne bougera plus.",
          'gestes': [clic('#t05-f-fil', d=0.6), vue('t05-resa'), pause(0.3), clic('#t05-r-dep', fx=0.3, d=0.5),
                     saisir('t05-r-dep', APRES['dep'], d=1.0), texte('#t05-r-nuits', APRES['nuits']),
                     texte('#t05-r-total', APRES['heb'], avec=True), texte('#t05-r-l-nuits', APRES['nuits'], avec=True),
                     texte('#t05-r-l-st', APRES['heb'], avec=True), anneau('#t05-r-nuits', d=0.9),
-                    *maj_folio(APRES), texte('#t05-r-st-folio-v', APRES['ttc'], avec=True),
-                    defiler('#t05-folio-defil', 0, d=0.05, avec=True),
-                    clic('#t05-r-st-folio'), vue('t05-folio'), pause(0.3), defiler('#t05-folio-defil', -470, d=0.7),
-                    zoom('#t05-f-l2', s=1.5, fx=0.42, d=0.8), bulle('b-fige', '#t05-f-l2', cote='bas', d=2.6),
+                    *maj_folio(APRES), defiler('#t05-folio-defil', 0, d=0.05, avec=True),
+                    # « Folio » enregistre la réservation puis ouvre le folio : le bouton garde l'ancien
+                    # solde jusque-là (folio_amount_residual, resynchronisé à l'enregistrement).
+                    clic('#t05-r-st-folio'), texte('#t05-r-st-folio-v', APRES['ttc'], avec=True), vue('t05-folio'),
+                    pause(0.3), defiler('#t05-folio-defil', -470, d=0.7), curseur('#t05-f-l2-taxes', fx=0.3, d=0.5),
+                    zoom('#t05-f-l2', s=1.4, fx=0.56, d=0.8), bulle('b-fige', '#t05-f-l2', cote='bas', d=2.6),
                     pause(1.8), dezoom(d=0.6)]},
         {'temps': 2, 'titre': "L'état du mois, prêt à déclarer", 'texte': 'Nuitées taxées et taxe collectée, mois par mois.',
          'voix': "Le mois suivant, l'état de la taxe de séjour est prêt : nuitées taxées et taxe collectée, mois par "
-                 "mois. Avec le filtre Départs du mois dernier, il ne reste qu'octobre : son total est le montant à "
-                 "déclarer et à reverser avant le quinze, et il s'exporte en Excel.",
+                 "mois. On coche Départs du mois dernier, puis Séjours terminés, pour ne garder que les folios "
+                 "facturés : il ne reste qu'octobre. Son total est le montant à déclarer et à reverser avant le "
+                 "quinze, et il s'exporte en Excel.",
          'gestes': aller('Réservations', 'Facturation', 't05-dd-fact', '#t05-dd-fact-taxe')
-         + [vue('t05-etat'), pause(0.4), anneau('#t05-e-a-2', d=1.0), clic('#t05-e-toggler', d=0.55),
-            montrer('#t05-e-menu', d=0.2, y=-6), pause(0.3), clic('#t05-e-f-dernier', d=0.5),
+         + [pause(0.8), vue('t05-etat'), pause(0.4), anneau('#t05-e-a-2', d=1.0), clic('#t05-e-toggler', d=0.55),
+            montrer('#t05-e-menu', d=0.2, y=-6), pause(0.3),
+            # Odoo garde le menu ouvert : chaque filtre coché s'ajoute aussitôt en facette.
+            clic('#t05-e-f-dernier', d=0.5), classe('#t05-e-f-dernier', ajouter=['t05-coche'], avec=True),
+            cacher('#t05-e-rech-a', d=0.1, avec=True), montrer('#t05-e-rech-b', d=0.2, y=0, avec=True),
+            cacher('#t05-e-tab-a', d=0.2, avec=True), montrer('#t05-e-tab-b', d=0.3, y=0, avec=True), pause(0.3),
+            clic('#t05-e-f-termines', d=0.5), classe('#t05-e-f-termines', ajouter=['t05-coche'], avec=True),
+            cacher('#t05-e-rech-b', d=0.1, avec=True), montrer('#t05-e-rech-c', d=0.2, y=0, avec=True), pause(0.3),
             cacher('#t05-e-menu', d=0.15), curseur('#t05-e-tab-b', fx=1.6, fy=0.7, d=0.5, avec=True),
-            cacher('#t05-e-rech-a', d=0.1, avec=True),
-            montrer('#t05-e-rech-b', d=0.2, y=0, avec=True), cacher('#t05-e-tab-a', d=0.2, avec=True),
-            montrer('#t05-e-tab-b', d=0.3, y=0, avec=True), zoom('#t05-e-b', s=1.6, d=0.8),
+            zoom('#t05-e-b', s=1.6, d=0.8),
             reaction('r-fin', d=3.0), anneau('#t05-e-b-tot', d=1.4), pause(1.2), dezoom(d=0.6),
             anneau('#t05-e-export', d=1.0)]},
     ],
     'resultats': {
-        'titre': 'Réglée une fois, calculée à chaque séjour',
+        'titre': 'Réglée sur la fiche, calculée à chaque séjour',
         'cartes': [
             {'valeur': '24', 'compter': 24, 'unite': 'barèmes', 'icone': 'globe',
              'texte': "livrés pour 4 pays et 6 catégories, modifiables sans code"},
             {'valeur': '0', 'unite': 'saisie', 'icone': 'personne',
-             'texte': "pour la réception : la ligne s'ajoute à la confirmation"},
+             'texte': "de taxe à la confirmation : la ligne s'ajoute seule au folio"},
             {'valeur': '1', 'compter': 1, 'unite': 'ligne', 'icone': 'document',
              'texte': "par folio, hors TVA, recalculée si le séjour change, figée à la facture"},
         ],
-        'voix': "Vingt-quatre barèmes livrés, aucune saisie pour la réception, une seule ligne par folio, hors TVA : "
+        'voix': "Vingt-quatre barèmes livrés, aucune saisie de taxe à la confirmation, une seule ligne par folio, "
+                "hors TVA : "
                 "la taxe de séjour se calcule toute seule.",
     },
     'cta': {

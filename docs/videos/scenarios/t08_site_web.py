@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Tutoriel 8 — Réservation en ligne : vos clients réservent seuls, sur les créneaux vraiment libres.
+"""Tutoriel 8 — Réservation en ligne : vos clients réservent seuls, sur les créneaux encore libres.
 
 Format marketing du pilote ``t07_gouvernante.py`` : accroche, révélation,
 sept étapes (le site public, puis la réception), résultats, appel.
@@ -9,7 +9,7 @@ Sources des écrans (libellés vérifiés mot pour mot par ``grep -rF`` dans
 
 - Site public — ``aite_website_booking/views/website_templates.xml`` :
   accueil « Réserver en ligne » et ses trois cartes (l. 5-41) ; liste
-  « Espaces VIP & VVIP », « Ouvert de HH:MM à HH:MM », prix « 11 500 FCFA /
+  « Espaces VIP & VVIP », « Ouvert de HH:MM à HH:MM », prix « 15 000 FCFA /
   heure » (format ``'{:,.0f}'`` + espace + symbole de la devise, l. 44-71) ;
   grille « ← Tous les espaces », « Date », « Voir ce jour », « Créneaux
   disponibles », « Vos coordonnées », « Réserver ce créneau », mention de
@@ -30,7 +30,8 @@ Sources des écrans (libellés vérifiés mot pour mot par ``grep -rF`` dans
   ``source='online'`` puis ``action_confirm`` sous point de sauvegarde, refus
   → retour sur la grille avec ``error=slot`` (l. 157-222) ; demande de séjour
   en brouillon, canal ``website``, arrivée 14:00 et départ 11:00 (l. 236-278) ;
-  téléphone normalisé (``models/website_booking.py`` l. 21-31, ``+33639982147``).
+  client retrouvé par téléphone normalisé puis par e-mail, sinon créé
+  (``models/website_booking.py`` l. 21-31, 74-91).
 - Moteur de créneaux — ``aite_slot_booking/models/booking_resource.py``
   (``get_day_grid``, « source de vérité unique » du site et du tableau de
   bord, l. 27-30, 157-223 : seules les réservations confirmées ou réalisées
@@ -39,11 +40,13 @@ Sources des écrans (libellés vérifiés mot pour mot par ``grep -rF`` dans
   l. 87-101, montant = heures × tarif horaire ``_slot_price`` l. 126-138,
   conflit refusé au-delà de la capacité ``_check_no_conflict`` l. 260-282) ;
   ``data/slot_sequence_data.xml`` (référence ``RES/%(y)s/`` sur 4 chiffres
-  → RES/26/0418).
+  → RES/26/0131).
 - Réception — tableau de bord ``aite_slot_booking/static/src/xml/dashboard.xml``
   (titre, filtres Jour / Période stats / Famille / Ressource, quatre
   indicateurs, « Chargement… » pendant le rechargement l. 71-73, « Planning
-  du <t t-esc="state.day"/> », couloirs, « x/y créneaux libres », l. 18-128),
+  du <t t-esc="state.day"/> », couloirs, « x/y créneaux libres », l. 18-128 ;
+  section « Répartition & remplissage » et ses deux cartes, l. 131-140 ;
+  rangées de puces à la ligne, ``slot_dashboard.scss`` l. 58-69),
   ``static/src/js/views/slot_dashboard_view.js`` (un changement de jour
   recharge tout l'écran, l. 72-112 ; repères toutes les deux heures
   l. 204-215, texte des créneaux libres l. 221-231, clic sur un bloc → fiche
@@ -105,13 +108,21 @@ SiteMinder, c'est-à-dire PMS et channel manager) ;
 ``docs/etude_comparative/benchmark_afrique_odoo.md`` l. 153 (Community :
 « moteur de réservation à développer »).
 
-Promesse : bornée à ce que le code garantit. Un salon ou une prestation se
-réserve en ligne et se confirme aussitôt (``_confirm_slot``) ; un séjour
-n'est qu'une demande en brouillon (``rooms_submit``). Le refus d'un créneau
-déjà confirmé est prouvé pour des validations successives
+Promesse : bornée à ce que la vidéo montre et que le code garantit. Un
+salon se réserve en ligne et se confirme aussitôt (``_confirm_slot``) ; un
+séjour n'est qu'une demande en brouillon (``rooms_submit``). Les prestations
+(spa, coiffure) ne sont pas promises : une prestation dont la durée n'est pas
+un multiple du pas de la ressource échoue à chaque fois (voir les écarts). Le
+refus d'un créneau déjà confirmé est prouvé pour des validations successives
 (``test_double_booking_is_refused``) : le contrôle ne pose ni verrou ni
 contrainte SQL (voir les écarts), d'où l'absence de toute promesse absolue
-(« sans double vente », « jamais »).
+(« sans double vente », « jamais »). Titre et accroche disent « encore
+libres » et « déjà vendu », pas « vraiment libre » : la grille ne cache que
+les heures déjà réservées (confirmées ou réalisées) ; une heure déjà passée
+du jour reste proposée et acceptée (pas d'attribut ``min`` sur le champ Date,
+``website_templates.xml`` l. 90 ; ``_safe_day`` l. 52-57 ; ``get_day_grid``
+l. 92-94 ; aucun contrôle début ≥ maintenant dans ``_confirm_slot`` ni dans
+``_check_slot_valid``). La vidéo réserve un samedi à venir.
 
 Résultats : trois parcours publics (``website_templates.xml`` l. 10-38) ;
 une seule grille pour le site et la réception (``booking_resource.py``
@@ -121,32 +132,54 @@ l. 27-30, ``slot_dashboard.py`` l. 107-117, ``controllers/main.py`` l. 93) ;
 l. 155-173 : 22 tests, ``test_helpers.py`` : 23 tests).
 
 Données : fictives (``demo.py``). Claire Durand (cliente), Mireille Ateba
-(réception). Les salons « Wouri », « Sanaga » et « Bonabéri » et leurs tarifs
-(11 500 / 23 000 FCFA l'heure) sont ceux du chapitre 4 de la présentation
-(``scenarios/c4_site_web.py`` l. 44-46 : Claire y réserve le salon Wouri,
-RES/26/0418) ; « Cabine SPA 1 » et « Fauteuil femme 1 » comme au
-tutoriel 9. Les réservations confirmées de la liste de l'hôtel, celle de
-Rodrigue Tamba et le brouillon de Jacques Owona sont ceux du tutoriel 2
-(``scenarios/t02_planning.py`` l. 196-204, 241-252, 563-590 ; tarifs
-Standard 35 000, Confort 45 000, Suite Junior 75 000, Suite VIP 120 000) ;
-le solde d'une réservation confirmée non réglée égale son total, comme dans
-``demo.ARRIVEES``. Les demandes du site (RES/2026/0223, RES/2026/0224), le
-visiteur Arnaud Fotsing et les clients des couloirs sont inventés. Numéros
-de fiction : plage ARCEP réservée à la fiction (+33 6 39 98 …) et numéros
-camerounais en 6 00 00 00 …; adresses ``exemple.cm`` comme dans ``demo.py``.
-« Aujourd'hui » vaut le mercredi 14/10/2026 (``demo.ARRIVEES``). Claire
-réserve le salon à 07:52, avant l'ouverture : la grille du jour commence
-donc à 09:00 sans heure déjà passée ; Mireille ouvre le tableau de bord en
-fin de matinée (prestations de 9 h à 11 h réalisées). Le salon est réservé
-pour le samedi 17/10/2026.
+(réception). Les huit ressources (salons « Wouri », « Sanaga »,
+« Bonabéri », cabines SPA 1 et 2, fauteuils homme 1 et femme 1, comptoir
+pressing), leurs horaires, pas, capacités, tarifs horaires des salons
+(15 000 / 25 000 FCFA) et le catalogue (massage relaxant 60 min 27 000,
+coupe homme 6 200, tresses 19 000, chemise 4 800) sont ceux du tutoriel 9
+(``scenarios/t09_espaces.py`` l. 192-219), qui suit celui-ci. Indicateurs du
+14/10 recalculés sur ces huit ressources : 109 h ouvrées comme au tutoriel 9,
+et deux dépôts de pressing non retirés, que le tutoriel 9 compte encore le
+15/10 au matin avec celui de Martin Ebode (``RETRAITS``, 3 puis 2). La
+référence du créneau, RES/26/0131, précède celles que le tutoriel 9 crée le
+15/10 (RES/26/0158 à 11:09). Claire reprend l'adresse de la série
+(claire.durand@exemple.fr, ``t04_note_chambre.py`` l. 333) : le site
+retrouve sa fiche, la réservation affiche le téléphone déjà enregistré
+(voir ``TEL_FICHE``). Les réservations confirmées de la liste de l'hôtel,
+celle de Rodrigue Tamba et le brouillon de Jacques Owona sont ceux du
+tutoriel 2 (``scenarios/t02_planning.py`` l. 231-260, 277-289, 648-680 ;
+tarifs Standard 35 000, Confort 45 000, Suite Junior 75 000, Suite VIP
+120 000) ; le solde d'une réservation confirmée non réglée est son folio :
+nuitées (sans TVA, convention de la série) plus la taxe de séjour, deux
+adultes (``solde_folio``, comme au tutoriel 2 : 102 000 FCFA pour Rodrigue,
+``FOLIO_RODRIGUE``, t02_planning.py l. 302-308). Les demandes du site
+(RES/2026/0223, RES/2026/0224), le visiteur Arnaud Fotsing et les clients des
+couloirs sont inventés. Numéros de fiction : plage ARCEP réservée à la
+fiction (+33 6 39 98 …) et numéros camerounais en 6 00 00 00 … ; adresses
+``exemple.cm``. Le pied de page du site est celui d'Odoo 18, personnalisé
+par l'établissement (liens et texte « À propos de nous » fictifs, à la place
+du texte d'exemple du gabarit).
+
+Chronologie : « aujourd'hui » vaut le mercredi 14/10/2026 (``demo.ARRIVEES``).
+Claire réserve le salon à 07:52, avant l'ouverture : la grille du jour
+commence donc à 09:00 sans heure déjà passée. Le salon est réservé pour le
+samedi 17/10/2026. Elle envoie sa demande de séjour plus tard dans la
+matinée, vers 10:40 : après les réservations RES/2026/0221 et 0222 que le
+tutoriel 2 crée à 10:06 et 10:09, et après celle de Yannick Mbassi
+(RES/2026/0223) ; d'où RES/2026/0224. Mireille ouvre le tableau de bord vers
+11:30 (prestations de 8 h à 11 h réalisées).
 
 Écarts rejoués tels quels (voir le rapport) : « Planning du 2026-10-17 »
 (date ISO, ``dashboard.xml`` l. 99) ; menu « Front Desk » en anglais
-(``hotel_menus.xml`` l. 18) ; deux numérotations « RES » (RES/26/0418 pour
+(``hotel_menus.xml`` l. 18) ; deux numérotations « RES » (RES/26/0131 pour
 le créneau, RES/2026/0224 pour le séjour) ; départ de la demande de séjour
 à 11:00, fixé en dur (``controllers/main.py`` l. 264-267) ; discussion signée
 « Public user » (nom anglais du contact public) et « … créé » au masculin ;
-sommes de groupe sans devise et à deux décimales (« 90 000,00 »).
+sommes de groupe sans devise et à deux décimales (« 90 000,00 »). La liste
+non filtrée des réservations charge 80 lignes (« 1-80 / 224 ») : sa ligne de
+total, après la 80e, n'est pas à l'écran (le pied de liste d'Odoo 18 n'est
+pas collant, ``web/static/src/views/list/list_renderer.scss`` l. 14-24,
+194-199 ; somme sur les lignes chargées, ``list_renderer.js`` l. 561-570).
 """
 
 import demo
@@ -160,15 +193,23 @@ RECEPTION, ROLE_RECEPTION = demo.POSTES['reception']   # Mireille Ateba, récept
 VISITEUR, ROLE_VISITEUR = 'Arnaud Fotsing', 'Autre visiteur'
 SITE = 'Complexe Hôtelier'
 TEL_HOTEL = '+237 6 00 00 00 10'
-TEL_CLAIRE = '+33 6 39 98 21 47'                  # plage ARCEP réservée à la fiction
-TEL_CLAIRE_N = '+33639982147'                     # _norm_phone : chiffres et « + » de tête
-MAIL_CLAIRE = 'claire.durand@exemple.cm'
+TEL_CLAIRE = '+33 6 39 98 21 47'                  # saisi sur le site (plage ARCEP réservée à la fiction)
+MAIL_CLAIRE = 'claire.durand@exemple.fr'          # l'adresse de Claire dans la série (t04_note_chambre.py l. 333)
+# find_or_create_partner cherche d'abord le téléphone normalisé (égalité stricte,
+# website_booking.py l. 80-82 : pas de fiche à « +33639982147 »), puis l'e-mail
+# (l. 83-85) : la fiche existante de Claire est retrouvée, sans doublon. La
+# réservation affiche donc le téléphone déjà enregistré sur ce contact
+# (partner_phone = related partner_id.phone, booking_booking.py l. 53-54), celui
+# du tutoriel 4.
+TEL_FICHE = '+33 6 12 48 90 31'
 TEL_VISITEUR = '+237 6 00 00 00 27'
 SALON = 'Salon VIP Wouri'
-REF_CRENEAU = 'RES/26/0418'                       # séquence RES/%(y)s/ (créneaux)
+REF_CRENEAU = 'RES/26/0131'                       # séquence RES/%(y)s/ (créneaux), avant celles du 15/10 (t09)
 REF_SEJOUR = 'RES/2026/0224'                      # séquence RES/%(year)s/ (séjours)
 REF_YANNICK = 'RES/2026/0223'
 HEURE_RESA = '07:52'                              # l'heure où Claire a réservé le salon
+# Tarif horaire des salons, comme au tutoriel 9 (t09_espaces.py l. 192-201).
+TARIF_SALON, TARIF_VVIP = 15000, 25000
 
 # Une icône de calendrier (champ date du navigateur), l'icône « regrouper
 # par » des facettes d'Odoo 18 et celles du cadre web, redessinées en SVG.
@@ -208,6 +249,10 @@ SPIN = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width
         '<path d="M12 3a9 9 0 109 9" /></svg>')
 
 
+def fcfa(n):
+    return '{:,.0f}'.format(n).replace(',', ' ') + ' FCFA'
+
+
 def svg(code, classe_='t08-svg'):
     return '<span class="%s">%s</span>' % (classe_, code)
 
@@ -228,25 +273,23 @@ NAV = ('<div class="s-nav t08-nav"><span class="s-logo t08-logo">%s</span><span 
        '<span class="t08-connexion">Se connecter</span><span class="bt primaire s-bt t08-contact">Contactez-nous</span>'
        '</div>' % (e(SITE), icone('loupe'), icone('telephone'), e(TEL_HOTEL)))
 
-A_PROPOS = ("Nous sommes une équipe de passionnés dont le but est d'améliorer la vie de chacun grâce à des produits "
-            "disruptifs. Nous fabriquons d'excellents produits pour résoudre vos problèmes commerciaux.")
-A_PROPOS_2 = ("Nos produits sont conçus pour les petites et moyennes entreprises désireuses d'optimiser leurs "
-              "performances.")
+# Le texte « À propos de nous » et les liens du pied de page sont du contenu
+# que l'hôtel saisit dans l'éditeur du site (le gabarit d'Odoo y met un texte
+# d'exemple) : ici, un texte neutre d'établissement, fictif.
+A_PROPOS = ("Chambres et suites, salons privés, spa, coiffure et pressing : réservez vos créneaux en ligne, notre "
+            "réception confirme vos séjours.")
 
 
 def pied(haut):
-    """Le pied de page par défaut d'Odoo 18, en français, qui suit le contenu
-    et file sous le bord de la fenêtre : « Liens utiles », « À propos de
-    nous » (texte d'origine, non personnalisé), « Rejoignez-nous » (les
-    coordonnées, fictives, de l'établissement)."""
-    liens = ''.join('<div class="t08-pl">%s</div>' % x for x in (
-        'Accueil', 'À propos de nous', 'Produits', 'Services', 'Juridique', 'Contactez-nous'))
+    """Le pied de page d'Odoo 18 (« Liens utiles », « À propos de nous »,
+    « Rejoignez-nous »), personnalisé par l'établissement, qui suit le
+    contenu et file sous le bord de la fenêtre."""
+    liens = ''.join('<div class="t08-pl">%s</div>' % x for x in ('Accueil', 'Réservation', 'Contactez-nous'))
     return ('<div class="t08-pied" style="top:%dpx"><div class="t08-pc"><div class="t08-ph">Liens utiles</div>%s</div>'
-            '<div class="t08-pc t08-pc-m"><div class="t08-ph">À propos de nous</div><div class="t08-pt">%s</div>'
-            '<div class="t08-pt">%s</div></div>'
+            '<div class="t08-pc t08-pc-m"><div class="t08-ph">À propos de nous</div><div class="t08-pt">%s</div></div>'
             '<div class="t08-pc t08-pc-d"><div class="t08-ph">Rejoignez-nous</div><div class="t08-pl">Contactez-nous</div>'
             '<div class="t08-pl">reservation@exemple.cm</div><div class="t08-pl">%s</div></div></div>'
-            % (haut, liens, e(A_PROPOS), e(A_PROPOS_2), e(TEL_HOTEL)))
+            % (haut, liens, e(A_PROPOS), e(TEL_HOTEL)))
 
 
 def vue_site(ident, contenu, haut_pied=None, initiale=False):
@@ -273,10 +316,11 @@ ACCUEIL = vue_site('t08-accueil', (
 
 ESPACES = vue_site('t08-espaces', (
     '<div class="s-h1">Espaces VIP & VVIP</div><div class="s-cartes t08-salons" id="t08-salons">%s%s%s</div>'
-    % (s_carte('t08-e1', SALON, 'Ouvert de 09:00 à 23:00', 'Voir les créneaux', True, '11 500 FCFA / heure'),
-       s_carte('t08-e2', 'Salon VIP Sanaga', 'Ouvert de 09:00 à 23:00', 'Voir les créneaux', True, '11 500 FCFA / heure'),
+    % (s_carte('t08-e1', SALON, 'Ouvert de 09:00 à 23:00', 'Voir les créneaux', True, fcfa(TARIF_SALON) + ' / heure'),
+       s_carte('t08-e2', 'Salon VIP Sanaga', 'Ouvert de 09:00 à 23:00', 'Voir les créneaux', True,
+               fcfa(TARIF_SALON) + ' / heure'),
        s_carte('t08-e3', 'Salon VVIP Bonabéri', 'Ouvert de 10:00 à 23:00', 'Voir les créneaux', True,
-               '23 000 FCFA / heure'))), haut_pied=440)
+               fcfa(TARIF_VVIP) + ' / heure'))), haut_pied=440)
 
 # Les créneaux libres du salon (pas d'une heure, 09:00 → 23:00), cohérents
 # avec le planning de la réception : le mercredi 14/10 à 07:52 (12:00-14:00
@@ -299,14 +343,14 @@ def grille(ident, date, heures, coche=None, nom='', tel='', alerte=False, saisie
                % ident) if alerte else ''
     return s_vue(ident, (
         '<div class="s-form t08-form"><div class="t08-retour">← Tous les espaces</div>'
-        '<div class="s-h1 t08-h1">%s</div><div class="s-p t08-prix">11 500 FCFA / heure</div>%s'
+        '<div class="s-h1 t08-h1">%s</div><div class="s-p t08-prix">%s / heure</div>%s'
         '<div class="s-lab">Date</div><div class="t08-ligne-date"><div class="t08-date">%s<span class="t08-cal">%s'
         '</span></div><span class="t08-voir" id="%s-voir">Voir ce jour</span></div>'
         '<div class="t08-h5">Créneaux disponibles</div><div class="creneaux t08-creneaux" id="%s-creneaux">%s</div>'
         '<div class="t08-h5">Vos coordonnées</div><div class="s-ligne3 t08-coord">%s%s%s</div>'
         '<div class="s-gros-bt t08-gros" id="%s-reserver">Réserver ce créneau</div>'
         '<div class="s-note">Acompte à régler au comptoir — Orange Money, MTN MoMo ou espèces.</div></div>'
-        % (e(SALON), bandeau, champ_date, CAL, ident, ident, creneaux,
+        % (e(SALON), fcfa(TARIF_SALON), bandeau, champ_date, CAL, ident, ident, creneaux,
            entree(ident + '-nom', '' if nom else 'Nom complet', nom),
            entree(ident + '-tel', '' if tel else 'Téléphone', tel),
            entree(ident + '-mail', 'E-mail (confirmation)'), ident)))
@@ -386,43 +430,66 @@ def couloir(ident, nom, couleur, ouverture, fermeture, pas, blocs):
             '</div>' % (ident, couleur, e(nom), reperes, html, total - pris, total))
 
 
-def bloc(client, de, a, etat='confirmed', ident=None):
-    return {'client': client, 'de': de, 'a': a, 'etat': etat, 'id': ident}
+def bloc(client, de, a, etat='confirmed', ident=None, montant=0):
+    return {'client': client, 'de': de, 'a': a, 'etat': etat, 'id': ident, 'montant': montant}
 
 
 # Couleurs des familles (slot_dashboard.py l. 22-25), reprises comme couleur de chaque ressource.
 VIOLET, VERT, BLEU, BRUN = '#714B67', '#0F6E56', '#185FA5', '#854F0B'
-# Les cinq ressources de l'établissement de démonstration : (nom, couleur,
-# ouverture, fermeture, pas en minutes).
-RESSOURCES = [(SALON, VIOLET, 9, 23, 60), ('Salon VIP Sanaga', VIOLET, 9, 23, 60),
-              ('Salon VVIP Bonabéri', VIOLET, 10, 23, 60), ('Cabine SPA 1', VERT, 9, 21, 30),
-              ('Fauteuil femme 1', BLEU, 9, 20, 30)]
-# Le mercredi 14/10 (aujourd'hui, en fin de matinée) : deux prestations du
-# matin réalisées, cinq réservations confirmées à venir.
+# Les huit ressources de l'établissement, celles du tutoriel 9
+# (t09_espaces.py l. 192-201, même ordre) : (nom, couleur, ouverture,
+# fermeture, pas en minutes, capacité). Les tarifs horaires des salons sont
+# TARIF_SALON et TARIF_VVIP.
+RESSOURCES = [(SALON, VIOLET, 9, 23, 60, 1), ('Salon VIP Sanaga', VIOLET, 9, 23, 60, 1),
+              ('Salon VVIP Bonabéri', VIOLET, 10, 23, 60, 1), ('Cabine SPA 1', VERT, 9, 21, 30, 1),
+              ('Cabine SPA 2', VERT, 9, 21, 30, 1), ('Fauteuil homme 1', BLEU, 9, 20, 30, 1),
+              ('Fauteuil femme 1', BLEU, 9, 20, 30, 1), ('Comptoir pressing', BRUN, 8, 19, 30, 2)]
+# Le mercredi 14/10 (aujourd'hui, en fin de matinée) : cinq prestations du
+# matin réalisées, au catalogue et aux prix du tutoriel 9 (massage relaxant
+# 60 min 27 000, coupe homme 6 200, tresses forfait 2 h 19 000, deux dépôts
+# de chemise au pressing à 4 800), et six réservations confirmées à venir.
 JOUR_14 = [[bloc('Cécile Ondoa', 12, 14), bloc('Bertrand Mvondo', 16, 20)],
            [bloc('Thierry Ngando', 18, 22)],
            [bloc('Rachel Ebongue', 14, 17)],
-           [bloc('Nadine Ebalé', 10, 11, 'done'), bloc('Nadia Belinga', 16, 17.5)],
-           [bloc('Odile Ekwalla', 9, 11, 'done')]]
+           [bloc('Nadine Ebalé', 10, 11, 'done', montant=27000), bloc('Nadia Belinga', 16, 17.5)],
+           [bloc('Hélène Mouelle', 15, 16)],
+           [bloc('Didier Abanda', 9.5, 10, 'done', montant=6200)],
+           [bloc('Odile Ekwalla', 9, 11, 'done', montant=19000)],
+           [bloc('Fabrice Nkolo', 8, 8.5, 'done', montant=4800), bloc('Esther Mvogo', 9, 9.5, 'done', montant=4800)]]
 # Le samedi 17/10 : la réservation en ligne de Claire est déjà dans le couloir du salon.
 JOUR_17 = [[bloc('Aline Nkengue', 12, 14), bloc(NOM, 16, 17, ident='t08-bk-claire'), bloc('Gilbert Tchoua', 19, 21)],
            [bloc('Josué Mbida', 10, 12), bloc('Joseph Ekani', 18, 20)],
            [bloc('Grâce Nguene', 15, 19)],
            [bloc('Nadège Owona', 11, 12), bloc('Sandrine Kemajou', 15, 16.5)],
-           [bloc('Gisèle Kouam', 9.5, 11.5), bloc('Odile Ekwalla', 14, 15)]]
-COULOIRS_14 = ''.join(couloir('t08-c14-%d' % i, *r, blocs=j) for i, (r, j) in enumerate(zip(RESSOURCES, JOUR_14), 1))
-COULOIRS_17 = ''.join(couloir('t08-c17-%d' % i, *r, blocs=j) for i, (r, j) in enumerate(zip(RESSOURCES, JOUR_17), 1))
+           [bloc('Pauline Etame', 10, 11)],
+           [bloc('Armel Tsala', 9, 9.5), bloc('Hugo Biyong', 14, 14.5)],
+           [bloc('Gisèle Kouam', 9.5, 11.5), bloc('Odile Ekwalla', 14, 15)],
+           []]
+COULOIRS_14 = ''.join(couloir('t08-c14-%d' % i, *r[:5], blocs=j)
+                      for i, (r, j) in enumerate(zip(RESSOURCES, JOUR_14), 1))
+COULOIRS_17 = ''.join(couloir('t08-c17-%d' % i, *r[:5], blocs=j)
+                      for i, (r, j) in enumerate(zip(RESSOURCES, JOUR_17), 1))
 
-# Les indicateurs de la période « Aujourd'hui » (slot_dashboard.get_kpis),
-# cohérents avec le planning du 14/10 : CA des deux prestations réalisées
-# (20 000 + 15 000), heures réservées (confirmées + réalisées) sur les heures
-# ouvrées des cinq ressources (64 h), aucune ressource de pressing. Ils ne
-# dépendent pas du jour affiché : ils restent les mêmes au 17/10.
+
+def virgule(x):
+    """Une décimale, virgule française, sans « ,0 » (fmtPct / fmtHours, utils.js l. 30-40)."""
+    return ('%g' % (int(x * 10 + 0.5) / 10.0)).replace('.', ',')
+
+
+# Les indicateurs de la période « Aujourd'hui » (slot_dashboard.get_kpis
+# l. 123-176), cohérents avec le planning du 14/10 : CA des prestations
+# réalisées, heures réservées (confirmées + réalisées) sur les heures ouvrées
+# (amplitude × capacité, l. 147-150 : 109 h, comme au tutoriel 9), retraits
+# pressing en attente (dépôts confirmés ou réalisés non retirés, toutes
+# périodes, l. 155-160 : les deux chemises du matin, encore là le 15/10 au
+# tutoriel 9). Ils ne dépendent pas du jour affiché : ils restent les mêmes au 17/10.
+FAITES = [b for jour in JOUR_14 for b in jour if b['etat'] == 'done']
+CA_FAIT = sum(b['montant'] for b in FAITES)
 HEURES = sum(b['a'] - b['de'] for jour in JOUR_14 for b in jour)
-OUVERTES = sum(r[3] - r[2] for r in RESSOURCES)
+OUVERTES = sum((r[3] - r[2]) * r[5] for r in RESSOURCES)
 A_VENIR = sum(1 for jour in JOUR_14 for b in jour if b['etat'] == 'confirmed')
-REMPLISSAGE = ('%.1f %%' % (HEURES / OUVERTES * 100)).replace('.', ',')
-HEURES_TXT = ('%g h' % HEURES).replace('.', ',')
+REMPLISSAGE = virgule(HEURES / OUVERTES * 100) + ' %'
+RETRAITS = len(JOUR_14[7])
 
 TDB = vue_libre('t08-tdb', (
     '<div class="t08-d"><div class="t08-d-top"><div><div class="t08-d-titre">Espaces & Prestations</div>'
@@ -437,17 +504,21 @@ TDB = vue_libre('t08-tdb', (
     '<div class="t08-d-sect">Activité de la période</div><div class="t08-d-kpis">%s%s%s%s</div>'
     '<div class="t08-d-sect" id="t08-plan-t">Planning du 2026-10-14</div>'
     '<div class="t08-d-carte"><div class="t08-lanes" id="t08-l14">%s</div>'
-    '<div class="t08-lanes t08-dessus masque" id="t08-l17">%s</div></div></div>'
+    '<div class="t08-lanes t08-dessus masque" id="t08-l17">%s</div></div>'
+    '<div class="t08-d-sect">Répartition & remplissage</div><div class="t08-d-deux">'
+    '<div class="t08-d-carte t08-d-graphe"><div class="t08-d-h3">CA réalisé par famille (période)</div></div>'
+    '<div class="t08-d-carte t08-d-graphe"><div class="t08-d-h3">Remplissage par ressource</div></div></div></div>'
     '<div class="t08-charge masque" id="t08-charge">%sChargement…</div></div>'
     % (chip('‹', ident='t08-prec'), CAL, chip('›', ident='t08-suiv'), chip("Aujourd'hui"),
        chip("Aujourd'hui", True), chip('Cette semaine'), chip('Ce mois'),
        chip('Toutes', True), chip('Espace VIP / VVIP', point=VIOLET), chip('SPA', point=VERT),
        chip('Coiffure', point=BLEU), chip('Pressing', point=BRUN), chip('Autre', point='#888780'),
        chip('Toutes', True), ''.join(chip(r[0], point=r[1]) for r in RESSOURCES),
-       kpi_t08('CA prestations réalisées', '35 000 FCFA', '2 réalisée(s)', 'a-violet'),
-       kpi_t08('Taux de remplissage', REMPLISSAGE, '%s réservées / %d h ouvrées' % (HEURES_TXT, OUVERTES), 'a-bleu'),
+       kpi_t08('CA prestations réalisées', fcfa(CA_FAIT), '%d réalisée(s)' % len(FAITES), 'a-violet'),
+       kpi_t08('Taux de remplissage', REMPLISSAGE,
+               '%s h réservées / %s h ouvrées' % (virgule(HEURES), virgule(OUVERTES)), 'a-bleu'),
        kpi_t08('No-show', '0 %', '0 rendez-vous manqué(s)', 'a-rouge'),
-       kpi_t08('Retraits pressing en attente', '0', '%d réservation(s) à venir' % A_VENIR, 'a-ambre'),
+       kpi_t08('Retraits pressing en attente', str(RETRAITS), '%d réservation(s) à venir' % A_VENIR, 'a-ambre'),
        COULOIRS_14, COULOIRS_17, svg(SPIN, 't08-spin'))), initiale=True, fond='tdb')
 
 
@@ -487,24 +558,20 @@ FICHE = avec_discussion(vue_fiche(
      bouton(None, 'No-show', 'gris'), bouton(None, 'Annuler', 'gris')],
     statusbar('t08-sb', ['Brouillon', 'Confirmée', 'Réalisée'], 1),
     titre_fiche(REF_CRENEAU)
-    + deux_colonnes(champ('Client', NOM) + champ('Téléphone', TEL_CLAIRE_N) + champ('Ressource', SALON)
+    + deux_colonnes(champ('Client', NOM) + champ('Téléphone', TEL_FICHE) + champ('Ressource', SALON)
                     + champ('Prestation', '') + champ('Origine', 'En ligne', 't08-f-origine'),
                     champ('Début', '17/10/2026 16:00:00') + champ('Fin', '17/10/2026 17:00:00')
-                    + champ('Durée (h)', '01:00') + champ('Montant', '11 500 FCFA', 't08-f-montant')
+                    + champ('Durée (h)', '01:00') + champ('Montant', fcfa(TARIF_SALON), 't08-f-montant')
                     + champ('Prix manuel', '0 FCFA'))
     + groupe('Séjour (note de chambre)', [champ('Folio du séjour', ''), champ('Ligne de folio', '')])
     + '<div class="t08-note">Note interne…</div>'), DISCUSSION)
 
 
 # ------------------------------------------------- les réservations hôtel --
-# Tarifs des types de chambre et chambres du tutoriel 2 (t02_planning.py l. 196-204).
+# Tarifs des types de chambre et chambres du tutoriel 2 (t02_planning.py l. 231-260).
 PRIX = {'STD': 35000, 'CFT': 45000, 'SJR': 75000, 'VIP': 120000}
 TYPE = {'101': 'STD', '102': 'STD', '103': 'STD', '104': 'STD', '106': 'STD', '201': 'CFT', '202': 'CFT', '203': 'CFT',
         '204': 'CFT', '205': 'CFT', '301': 'SJR', '302': 'SJR', '303': 'SJR', '401': 'VIP', '402': 'VIP'}
-
-
-def fcfa(n):
-    return '{:,.0f}'.format(n).replace(',', ' ') + ' FCFA'
 
 
 # (référence, client, arrivée, départ, nuits, chambre — None : pas encore de
@@ -527,6 +594,9 @@ TOUTES = [
 # Le brouillon de Jacques Owona, saisi au comptoir (canal « Direct / comptoir ») au tutoriel 2.
 JACQUES = ('RES/2026/0222', 'Jacques Owona', '15/10/2026 14:00:00', '17/10/2026 12:00:00', 2, '204', 'draft')
 BROUILLONS = [r for r in TOUTES if r[6] == 'draft'] + [JACQUES]
+# La liste non filtrée charge 80 lignes : sous les douze premières, la suite
+# (Jacques Owona, puis Gaston Mbida, t02_planning.py l. 287) file sous le bord.
+SUITE = [JACQUES, ('RES/2026/0213', 'Gaston Mbida', '15/10/2026 14:00:00', '17/10/2026 12:00:00', 2, '103', 'confirmed')]
 
 COLS = '142px 168px 180px 180px 50px 94px 1fr 118px 126px 108px 28px'
 TETE = ['Référence', 'Client', 'Arrivée', 'Départ', 'Nuits', 'Nb chambres', 'Total hébergement (HT)', 'Solde folio',
@@ -538,13 +608,24 @@ def total_resa(r):
     return r[4] * PRIX[TYPE[r[5]]] if r[5] else 0
 
 
+def solde_folio(r, adultes=2):
+    """Le folio ouvert à la confirmation, rien n'étant réglé : nuitées (sans
+    TVA, convention de la série) + taxe de séjour 3 ★ (3 000 F par adulte et
+    par nuit), comme ``solde_folio`` du tutoriel 2 (t02_planning.py
+    l. 302-308 : 102 000 FCFA pour Rodrigue Tamba, deux nuits à 45 000, deux
+    adultes) et le folio du tutoriel 5 (t05_taxe_sejour.py l. 166-172) ;
+    deux adultes par séjour."""
+    return total_resa(r) + 3000 * adultes * r[4]
+
+
 def ligne_resa(ident, r, masque=False):
     """Une ligne de la liste : texte bleu (decoration-info, foncé pour le
-    contraste) si confirmée ; solde = total tant que rien n'est réglé ; pas de
-    folio (solde 0) pour un brouillon."""
+    contraste) si confirmée ; solde = le folio, taxe de séjour comprise,
+    tant que rien n'est réglé ; pas de folio (solde 0) pour un brouillon."""
     total = total_resa(r)
     confirmee = r[6] == 'confirmed'
-    valeurs = [r[0], r[1], r[2], r[3], str(r[4]), '1' if r[5] else '0', fcfa(total), fcfa(total if confirmee else 0)]
+    valeurs = [r[0], r[1], r[2], r[3], str(r[4]), '1' if r[5] else '0', fcfa(total),
+               fcfa(solde_folio(r) if confirmee else 0)]
     cs = ['<span class="ell%s">%s</span>' % (' d' if k in DROITE else '', e(v)) for k, v in enumerate(valeurs)]
     cs.append('<span><span class="puce rouge t08-badge">Aucune fiche</span></span>')
     cs.append('<span><span class="puce %s t08-badge"%s>%s</span></span>'
@@ -594,7 +675,7 @@ def recherche_t08(ident, facettes, masque=False):
 
 FILTRE = ICONES['filtre']
 LISTE_A = ('<div class="liste t08-liste" id="t08-la">%s%s</div>'
-           % (tete_liste(), ''.join(ligne_resa(rid(r) + 'a', r) for r in TOUTES)))
+           % (tete_liste(), ''.join(ligne_resa(rid(r) + 'a', r) for r in TOUTES + SUITE)))
 LISTE_B = ('<div class="liste t08-liste masque" id="t08-lb">%s%s%s</div>'
            % (tete_liste(), ''.join(ligne_resa(rid(r) + 'b', r) for r in BROUILLONS),
               total_liste(fcfa(sum(total_resa(r) for r in BROUILLONS)))))
@@ -747,12 +828,12 @@ CSS = perso_css('t08-pa', VISITEUR, ROLE_VISITEUR) + perso_css('t08-pm', RECEPTI
 .t08-d-nouv { height: 42px; padding: 0 16px; border-radius: 6px; background: var(--muk-prim); color: #fff; font-size: 18px;
   display: inline-flex; align-items: center; }
 .t08-d-filtres { margin-top: 8px; background: #fff; border: 1px solid rgba(0,0,0,.08); border-radius: 12px; padding: 6px 16px; }
-.t08-d-rang { display: flex; align-items: center; gap: 8px; height: 42px; }
-.t08-d-rang + .t08-d-rang { margin-top: 6px; padding-top: 6px; height: 48px; border-top: 1px dashed rgba(0,0,0,.12); }
-.t08-d-lab { min-width: 108px; font-size: 14px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+.t08-d-rang { display: flex; align-items: center; gap: 6px; height: 40px; }
+.t08-d-rang + .t08-d-rang { margin-top: 4px; padding-top: 4px; height: 44px; border-top: 1px dashed rgba(0,0,0,.12); }
+.t08-d-lab { min-width: 100px; font-size: 14px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
   color: #6E6D68; }
-.t08-chip { height: 38px; padding: 0 14px; border: 1px solid rgba(0,0,0,.12); border-radius: 8px; display: inline-flex;
-  align-items: center; gap: 7px; font-size: 16px; color: #4F4E4A; background: #fff; white-space: nowrap; }
+.t08-chip { height: 36px; padding: 0 9px; border: 1px solid rgba(0,0,0,.12); border-radius: 8px; display: inline-flex;
+  align-items: center; gap: 7px; font-size: 15px; color: #4F4E4A; background: #fff; white-space: nowrap; }
 .t08-chip.actif { background: #714B67; border-color: #714B67; color: #fff; }
 #t08-prec, #t08-suiv { width: 40px; justify-content: center; padding: 0; font-size: 20px; background: #F5F5F4; }
 .t08-point { width: 11px; height: 11px; border-radius: 50%; display: inline-block; flex: none; }
@@ -772,17 +853,22 @@ CSS = perso_css('t08-pa', VISITEUR, ROLE_VISITEUR) + perso_css('t08-pm', RECEPTI
   white-space: nowrap; }
 .t08-kpi .v { margin-top: 2px; font-size: 26px; font-weight: 700; color: #2B2A28; white-space: nowrap; }
 .t08-kpi .s { margin-top: 2px; font-size: 14px; color: #6E6D68; white-space: nowrap; }
-.t08-d-carte { position: relative; background: #fff; border: 1px solid rgba(0,0,0,.08); border-radius: 12px; padding: 10px 16px; }
-.t08-lanes { display: flex; flex-direction: column; gap: 7px; }
+.t08-d-carte { position: relative; background: #fff; border: 1px solid rgba(0,0,0,.08); border-radius: 12px; padding: 8px 16px; }
+.t08-dessus { top: 8px; }
+.t08-d-deux { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.t08-d-graphe { height: 220px; }
+.t08-d-h3 { font-size: 17px; font-weight: 600; color: #2B2A28; }
+#r-merci { bottom: 236px; }
+.t08-lanes { display: flex; flex-direction: column; gap: 4px; }
 .t08-dessus { position: absolute; left: 16px; right: 16px; top: 10px; background: #fff; }
 .t08-lane { display: flex; align-items: center; gap: 12px; }
 .t08-lane-nom { width: 190px; flex: none; display: flex; align-items: center; gap: 9px; font-size: 16px; font-weight: 600;
   color: #46414E; white-space: nowrap; }
-.t08-piste { position: relative; flex: 1; height: 38px; background: #F6F4F3; border: 1px solid #E7E2DF; border-radius: 6px;
+.t08-piste { position: relative; flex: 1; height: 31px; background: #F6F4F3; border: 1px solid #E7E2DF; border-radius: 6px;
   overflow: hidden; }
 .t08-rep { position: absolute; top: 0; bottom: 0; border-left: 1px dashed #E1DBD7; }
 .t08-bk { position: absolute; top: 4px; bottom: 4px; border-radius: 4px; background: #185FA5; color: #fff; font-size: 13px;
-  line-height: 30px; padding: 0 6px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  line-height: 23px; padding: 0 6px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .t08-bk.fait { background: #0F6E56; }
 .t08-libre { width: 175px; flex: none; text-align: right; font-size: 15px; color: #0F6E56; white-space: nowrap; }
 .t08-charge { position: absolute; left: 18px; right: 18px; top: 236px; padding: 40px; text-align: center; font-size: 18px;
@@ -846,7 +932,7 @@ CSS = perso_css('t08-pa', VISITEUR, ROLE_VISITEUR) + perso_css('t08-pm', RECEPTI
 .t08-liste { position: absolute; left: 0; right: 0; top: 0; }
 .t08-liste .ligne, .t08-liste .tete, .t08-liste .total { column-gap: 10px; padding-right: 14px; }
 .t08-liste .tete { font-size: 16px; height: 50px; }
-.liste .ligne.t08-ligne { height: 50px; font-size: 16px; color: #495057; }
+.liste .ligne.t08-ligne { height: 47px; font-size: 16px; color: #495057; }
 .liste .ligne.t08-ligne.t08-conf { color: #0E7490; }
 .t08-optcol { display: inline-flex; width: 20px; height: 20px; color: #495057; }
 .t08-optcol svg { width: 100%; height: 100%; }
@@ -877,25 +963,24 @@ TUTORIEL = {
     'slug': 't08-site-web',
     'profil': 't08_site_web',
     'numero': 8,
-    'titre': 'Réservation en ligne : vos clients réservent seuls, sur les créneaux vraiment libres',
+    'titre': 'Réservation en ligne : vos clients réservent seuls, sur les créneaux encore libres',
     'fonction': 'Réservation en ligne',
     'personnage': (NOM, ROLE),
     'accroche': {
         'kicker': 'La réservation en ligne',
-        'question': 'Votre site sait-il ce qui est *vraiment* libre ?',
+        'question': 'Votre site sait-il ce qui est *déjà* *vendu* ?',
         'douleurs': [('echange', 'Le même salon vendu deux fois'),
                      ('cahier', 'Chaque réservation ressaisie à la main'),
                      ('globe', 'Les 10 PMS leaders\u00a0: réservation directe'),
-                     ('pieces', 'PMS étrangers\u00a0: 280\u00a0à\u00a0480\u00a0KFCFA par\u00a0mois'),
+                     ('pieces', 'SaaS étrangers\u00a0: 280\u00a0à\u00a0480\u00a0KFCFA par\u00a0mois'),
                      ('cadenas', 'Odoo Community\u00a0: réservation «\u00a0à\u00a0développer\u00a0»')],
-        'voix': "Votre site sait-il ce qui est vraiment libre ? Un salon vendu deux fois, des réservations ressaisies "
+        'voix': "Votre site sait-il ce qui est déjà vendu ? Un salon vendu deux fois, des réservations ressaisies "
                 "à la main, des abonnements étrangers coûteux.",
     },
     'revelation': {
-        'promesse': "Salons et prestations réservés en ligne, confirmés et déjà au planning ; les séjours arrivent en "
-                    "demande.",
-        'voix': "Avec Aïte haousse, vos clients réservent seuls salons et prestations, confirmés tout de suite. Les "
-                "séjours, eux, arrivent en demande à la réception.",
+        'promesse': "Salons réservés en ligne, confirmés et déjà au planning ; les séjours arrivent en demande.",
+        'voix': "Avec Aïte haousse, vos clients réservent seuls leurs salons, confirmés tout de suite. Les séjours, "
+                "eux, arrivent en demande à la réception.",
     },
     'temps': ['Choisir', 'Réserver', 'Retrouver'],
     'app': 't08-site',
@@ -933,12 +1018,15 @@ TUTORIEL = {
          'texte': "Nom, téléphone, e-mail : la référence s'affiche, l'acompte se règle au comptoir.",
          'voix': "Nom, téléphone, courriel, puis Réserver ce créneau : c'est confirmé sur-le-champ, et la référence "
                  "s'affiche aussitôt. L'acompte se règle au comptoir : Orange Moni, MTN MoMo ou espèces.",
-         'gestes': [clic('#t08-g17-nom', fx=0.2, d=0.35, puis=0.05), saisir('t08-g17-nom', NOM, d=0.6),
-                    clic('#t08-g17-tel', fx=0.2, d=0.35, puis=0.05), saisir('t08-g17-tel', TEL_CLAIRE, d=0.75),
-                    clic('#t08-g17-mail', fx=0.2, d=0.35, puis=0.05), saisir('t08-g17-mail', MAIL_CLAIRE, d=0.95),
-                    clic('#t08-g17-reserver'), vue('t08-merci', 'site'), zoom('#t08-merci-bloc', s=1.4, d=0.6),
-                    anneau('#t08-merci-ref', d=1.3), reaction('r-merci', d=3.0), pause(0.3),
-                    anneau('#t08-acompte', d=1.5), pause(0.3), dezoom(d=0.5)]},
+         'gestes': [clic('#t08-g17-nom', fx=0.2, d=0.35, puis=0.05), saisir('t08-g17-nom', NOM, d=0.5, puis=0.1),
+                    clic('#t08-g17-tel', fx=0.2, d=0.3, puis=0.05), saisir('t08-g17-tel', TEL_CLAIRE, d=0.6, puis=0.1),
+                    clic('#t08-g17-mail', fx=0.2, d=0.3, puis=0.05), saisir('t08-g17-mail', MAIL_CLAIRE, d=0.75,
+                                                                           puis=0.1),
+                    clic('#t08-g17-reserver', d=0.5, puis=0.1), vue('t08-merci', 'site', puis=0.1),
+                    curseur('#t08-acompte', fx=0.9, fy=-0.3, d=0.35, avec=True),
+                    zoom('#t08-merci-bloc', s=1.4, d=0.6), anneau('#t08-merci-ref', d=1.2),
+                    reaction('r-merci', d=2.2), curseur('#t08-acompte', fx=0.97, fy=0.85, d=0.3),
+                    anneau('#t08-acompte', d=1.4), dezoom(d=0.5)]},
         {'temps': 1, 'titre': 'Une validation tardive est refusée',
          'texte': "Un second visiteur valide le même créneau : refusé, le site lui demande d'en choisir un autre.",
          'voix': "Un autre visiteur, resté sur la page, valide seize heures à son tour : trop tard. Le site refuse la "
@@ -952,56 +1040,60 @@ TUTORIEL = {
          'texte': 'Dates, adultes, coordonnées : la demande arrive en brouillon dans les réservations, avec sa '
                   'référence.',
          'voix': "Pour une chambre, Claire envoie une demande de séjour : ses dates, le nombre d'adultes, ses "
-                 "coordonnées. Sa référence s'affiche aussitôt. La réception vérifiera la disponibilité, puis lui "
-                 "confirmera la chambre et le tarif.",
+                 "coordonnées. Sa référence s'affiche aussitôt, et la réception la rappellera.",
          'gestes': acteur() + [
-             vue('t08-accueil', 'site', avec=True), pause(0.2), clic('#t08-ch-bt', d=0.5), vue('t08-sejour', 'site'),
-             clic('#t08-s-arr', fx=0.2, d=0.4, puis=0.05), saisir('t08-s-arr', '20/10/2026', d=0.45),
-             clic('#t08-s-dep', fx=0.2, d=0.35, puis=0.05), saisir('t08-s-dep', '23/10/2026', d=0.45),
-             clic('#t08-s-nom', fx=0.2, d=0.35, puis=0.05), saisir('t08-s-nom', NOM, d=0.6),
-             clic('#t08-s-tel', fx=0.2, d=0.35, puis=0.05), saisir('t08-s-tel', TEL_CLAIRE, d=0.7),
-             clic('#t08-s-mail', fx=0.2, d=0.35, puis=0.05), saisir('t08-s-mail', MAIL_CLAIRE, d=0.9),
-             clic('#t08-envoyer', d=0.5), vue('t08-merci2', 'site'), pause(0.2), anneau('#t08-merci2-ref', d=1.4)]},
+             vue('t08-accueil', 'site', avec=True), clic('#t08-ch-bt', d=0.45, puis=0.1),
+             vue('t08-sejour', 'site', puis=0.1),
+             clic('#t08-s-arr', fx=0.2, d=0.4, puis=0.05), saisir('t08-s-arr', '20/10/2026', d=0.4, puis=0.05),
+             clic('#t08-s-dep', fx=0.2, d=0.3, puis=0.05), saisir('t08-s-dep', '23/10/2026', d=0.4, puis=0.05),
+             clic('#t08-s-nom', fx=0.2, d=0.35, puis=0.05), saisir('t08-s-nom', NOM, d=0.5, puis=0.05),
+             # le téléphone et l'e-mail se remplissent au clavier (touche Tab) : le curseur ne bouge pas
+             saisir('t08-s-tel', TEL_CLAIRE, d=0.55, puis=0.05), saisir('t08-s-mail', MAIL_CLAIRE, d=0.6, puis=0.05),
+             clic('#t08-envoyer', d=0.45, puis=0.1), vue('t08-merci2', 'site', puis=0.1),
+             curseur('#t08-merci2 .t08-retour-bt .s-bouton', fx=1.25, fy=0.5, d=0.35, avec=True), anneau('#t08-merci2-ref', d=1.3)]},
         {'temps': 2, 'titre': 'Déjà au planning de la réception',
          'texte': 'Confirmée, origine « En ligne », montant calculé : rien à ressaisir.',
          'voix': "À la réception, Mireille ouvre le tableau de bord Espaces et Prestations, puis passe à samedi : la "
-                 "réservation de Claire occupe déjà le salon. Confirmée, origine en ligne, onze mille cinq cents "
-                 "francs calculés tout seuls : rien à ressaisir.",
+                 "réservation de Claire occupe déjà le salon. Confirmée, origine en ligne, quinze mille francs "
+                 "calculés tout seuls : rien à ressaisir.",
          'gestes': acteur('t08-pm') + [
              montrer('#t08-nav-bo', d=0.45, y=0, avec=True), pause(0.4),
-             clic('#t08-jour', fx=0.12, d=0.6), classe('#t08-d-date', ajouter=['focus']), pause(0.15),
+             clic('#t08-jour', fx=0.12, d=0.6, avec=True), classe('#t08-d-date', ajouter=['focus']), pause(0.15),
              texte('#t08-jour', '17/10/2026'), pause(0.1),
              cacher('#t08-corps', d=0.1), montrer('#t08-charge', d=0.1, y=0, avec=True), pause(0.4),
              texte('#t08-plan-t', 'Planning du 2026-10-17'), montrer('#t08-l17', d=0.05, y=0),
              cacher('#t08-charge', d=0.1), animer('#t08-corps', {'autoAlpha': 0}, {'autoAlpha': 1}, d=0.25, avec=True),
              classe('#t08-d-date', retirer=['focus']), pause(0.3),
-             anneau('#t08-c17-1', d=1.4), anneau('#t08-bk-claire', d=1.2), clic('#t08-bk-claire'),
+             anneau('#t08-c17-1', d=1.4), curseur('#t08-bk-claire', fx=1.35, d=0.6, avec=True),
+             anneau('#t08-bk-claire', d=1.2), clic('#t08-bk-claire'),
              vue('t08-fiche', 'odoo'), curseur('#t08-sb-1', fx=0.5, fy=0.75, d=0.5), pause(0.1),
              anneau('#t08-f-origine', d=1.1), bulle('b-origine', '#t08-ch-cree', cote='bas', d=2.4), pause(1.4),
              anneau('#t08-f-montant', d=1.5), pause(0.3)]},
         {'temps': 2, 'titre': 'La demande de séjour, en brouillon',
          'texte': "Brouillons regroupés par canal : la chambre ne sera bloquée qu'à la confirmation.",
          'voix': "Côté chambres, Mireille ouvre la liste des réservations, puis filtre les brouillons et les regroupe "
-                 "par canal : la demande de Claire attend là, venue du site, encore sans chambre. Il suffira d'y en "
-                 "ajouter une et de confirmer : la disponibilité est vérifiée, la chambre bloquée, le folio ouvert.",
-         'gestes': [clic('#t08-m-res', d=0.45), montrer('#t08-dd-res', d=0.15, y=0), clic('#t08-dd-res-1', d=0.3),
-                    cacher('#t08-dd-res', d=0.15), classe('#t08-m-ep', retirer=['actif']),
-                    classe('#t08-m-res', ajouter=['actif'], avec=True), vue('t08-resas', 'odoo'),
-                    clic('#t08-rech-a .deroule', d=0.45), montrer('#t08-menu', d=0.2, y=-6),
-                    clic('#t08-mf-brouillons', d=0.4), classe('#t08-mf-brouillons', ajouter=['coche']),
-                    cacher('#t08-rech-a', d=0.1), montrer('#t08-rech-b', d=0.15, y=0, avec=True),
+                 "par canal : la demande de Claire attend là, venue du site, encore sans chambre.",
+         'gestes': [clic('#t08-m-res', d=0.4, puis=0.05), montrer('#t08-dd-res', d=0.15, y=0, puis=0.05),
+                    clic('#t08-dd-res-1', d=0.3, puis=0.05), cacher('#t08-dd-res', d=0.15),
+                    classe('#t08-m-ep', retirer=['actif'], avec=True), classe('#t08-m-res', ajouter=['actif'], avec=True),
+                    vue('t08-resas', 'odoo', avec=True),
+                    clic('#t08-rech-a .deroule', d=0.4, puis=0.05), montrer('#t08-menu', d=0.2, y=-6, puis=0.05),
+                    clic('#t08-mf-brouillons', d=0.35, puis=0.05),
+                    classe('#t08-mf-brouillons', ajouter=['coche'], puis=0.05),
+                    cacher('#t08-rech-a', d=0.1, avec=True), montrer('#t08-rech-b', d=0.15, y=0, avec=True),
                     cacher('#t08-la', d=0.15, avec=True), montrer('#t08-lb', d=0.2, y=0, avec=True),
-                    texte('#t08-pager', '1-3 / 3', avec=True), pause(0.2),
-                    clic('#t08-mg-canal', d=0.4), classe('#t08-mg-canal', ajouter=['coche']),
-                    cacher('#t08-rech-b', d=0.1), montrer('#t08-rech-c', d=0.15, y=0, avec=True),
+                    texte('#t08-pager', '1-3 / 3', avec=True), pause(0.25),
+                    clic('#t08-mg-canal', fx=0.85, d=0.35, puis=0.05), classe('#t08-mg-canal', ajouter=['coche'], puis=0.05),
+                    cacher('#t08-rech-b', d=0.1, avec=True), montrer('#t08-rech-c', d=0.15, y=0, avec=True),
                     cacher('#t08-lb', d=0.15, avec=True), montrer('#t08-lc', d=0.2, y=0, avec=True),
-                    texte('#t08-pager', '1-2 / 2', avec=True), pause(0.2),
-                    clic('#t08-rech-c .deroule', d=0.35), cacher('#t08-menu', d=0.15),
-                    clic('#t08-g-web', fx=0.12, d=0.45), texte('#t08-g-web-fl', '▾'), cacher('#t08-tot-c1', d=0.1),
+                    texte('#t08-pager', '1-2 / 2', avec=True), pause(0.25),
+                    # un clic hors du menu (sur le groupe) le referme
+                    clic('#t08-g-web', fx=0.12, d=0.45, puis=0.05), cacher('#t08-menu', d=0.15, avec=True),
+                    texte('#t08-g-web-fl', '▾', avec=True), cacher('#t08-tot-c1', d=0.1, avec=True),
                     montrer('#t08-r-0223', d=0.25, y=0, avec=True), montrer('#t08-r-0224', d=0.25, y=0, avec=True),
-                    montrer('#t08-tot-c2', d=0.25, y=0, avec=True),
-                    zoom('#t08-r-0224', s=1.12, d=0.6), anneau('#t08-r-0224-etat', d=1.2),
-                    bulle('b-brouillon', '#t08-r-0224', cote='bas', d=2.6), pause(2.0), dezoom(d=0.6)]},
+                    montrer('#t08-tot-c2', d=0.25, y=0, avec=True), curseur('#t08-r-0224-etat', fx=1.35, d=0.35),
+                    zoom('#t08-r-0224', s=1.12, d=0.6), anneau('#t08-r-0224-etat', d=1.1),
+                    bulle('b-brouillon', '#t08-r-0224', cote='bas', d=2.3), pause(1.2)]},
     ],
     'resultats': {
         'titre': 'Réservé en ligne, retrouvé à la réception',
@@ -1022,5 +1114,5 @@ TUTORIEL = {
         'voix': "Aïte haousse, par Aïte Consulting. Demandez votre démonstration, et retrouvez tous nos tutoriels sur "
                 "notre chaîne.",
     },
-    'vignette': {'etape': 2, 'apres': 7.0},
+    'vignette': {'etape': 6, 'apres': 6.4},
 }

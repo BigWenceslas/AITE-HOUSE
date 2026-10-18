@@ -46,7 +46,13 @@ Sources des libellés et des règles (relevés mot pour mot) :
   11/10/2026, recalcul rejoué jour par jour) sont calculés par ces deux
   fonctions, extraites du module à l'import (comme tests/socle/
   test_loyalty_logic.py), avec ces valeurs par défaut ; les totaux du
-  regroupement par origine sont fixés à la main, cohérents avec le barème.
+  regroupement par origine sont fixés à la main, cohérents avec le barème et
+  bornés par les séquences visibles dans la série (voir « Données »).
+- Ce que montre le grand livre : les ventes rattachées à un client identifié,
+  au-dessus du minimum (hooks.py:38-41, loyalty_move.py:162-163) ; ce n'est
+  pas le chiffre d'affaires d'un service (pas de ticket sans nom, taxe de
+  séjour comprise, doubles comptes de l'écart 2). La voix dit donc « d'où
+  viennent les points » et la directrice « où mes clients fidèles dépensent ».
 - Attribution : models/hooks.py:21 et :32-48 (ticket payé avec un client,
   sinon rien), :78-99 (folio facturé), :110-125 (prestation réalisée) ;
   « Un ticket sans client identifié ne donne rien — le réflexe caisse « à
@@ -85,7 +91,10 @@ Sources des libellés et des règles (relevés mot pour mot) :
   wizard/loyalty_adjust_wizard.py:15-38 (« Points (±) » et son aide, motif
   obligatoire, nombre nul refusé, solde négatif refusé, origine « Ajustement
   manuel », référence « Ajustement ») ; motif « Utilisation : … » pour
-  tracer un avantage offert : AITE_Guide_Fidelite.pdf p. 3. La fenêtre
+  tracer un avantage offert : AITE_Guide_Fidelite.pdf p. 3. Le module n'a ni
+  catalogue de récompenses ni conversion points → nuit : la directrice choisit
+  le nombre de points retirés (la voix dit qu'elle « décompte » la nuit, pas
+  qu'une règle l'échange). La fenêtre
   ouverte depuis le menu se ferme sans recharger l'écran du dessous
   (odoo18/addons/web/static/src/webclient/actions/action_service.js
   :1382-1393) : la cliente rouvre « Points » pour voir le retrait.
@@ -131,14 +140,38 @@ res_config_settings.py:24-25). « Une fois par jour » et non « chaque nuit » 
 la tâche planifiée n'a pas d'heure fixe.
 
 Données : demo.py (Complexe Hôtelier — Démo, Démo Hôtellerie SARL, Estelle
-Ngono, FOL/2026/0214 de 102 000 FCFA comme au chapitre 1 de la
-présentation : deux nuits Confort et 12 000 FCFA de taxe de séjour ; Martin
-Ebode, Patrick Nkoulou, Brigitte Essomba, caissier Hervé Tchakounté,
-directrice Danielle Eyenga). Autres clients fictifs ajoutés : Boris Ndzana,
-Carine Owona, Gaëlle Nkeng, Hugues Mbida, Nadège Abena, Pauline Ekotto,
-Sandrine Mvondo, Thierry Etoundi. Estelle Ngono habite Douala : ses
-prestations et ses tickets du bar ne tombent jamais pendant un séjour
-ouvert, ses tickets sont réglés en espèces (voir écart 2).
+Ngono, caissier Hervé Tchakounté, directrice Danielle Eyenga, Claire Durand).
+FOL/2026/0214 vaut 122 000 FCFA au départ, comme au tutoriel 3 : deux nuits
+Confort (90 000), quatre petits-déjeuners (20 000) et 12 000 FCFA de taxe de
+séjour, passé « Facturé » (t03_folio.py:345, :375-377, :395, :593) ; il
+rapporte donc 122 points, et « Facturé » sur la fiche cumule ses trois folios
+(96 000 + 144 000 + 122 000). Le journal du 15/10 reprend les prestations
+réalisées du tutoriel 9 (t09_espaces.py:207-219 : Martin Ebode, Yves Tchana,
+Linda Ewané, Carine Mbappé, Paul Essomba, Rachel Bilong, et le massage
+d'Estelle RES/26/0158 à 27 000 FCFA, réalisé pendant son séjour :
+t09:214, :865-877) et le départ de Claire Durand (FOL/2026/0201, 123 000 FCFA
+soldé : t03_folio.py:349 ; départ le 15/10 : demo.ARRIVEES). Le t09 reporte ce
+massage sur FOL/2026/0214, alors que le t03 montre le folio facturé à
+122 000 FCFA sans cette ligne : la série ne tranche pas ; ce tutoriel suit le
+t03 pour le folio et le t09 pour la prestation (27 points), sans rejouer de
+double compte. Séquences recalées sur la série : tickets « Bar de la
+terrasse » /0011 le 31/07 (t10_ardoises.py:223, :490), /0042 le 14/10 et /0047
+le 16/10 à 22:41 (t04_note_chambre.py:214, :405) — la caisse ouvre début
+juillet 2026, Estelle n'y a donc aucun ticket avant, et le sien du 16/10 est
+le /0045 ; prestations « RES/%(y)s/ » (sans remise à zéro) vers RES/26/0140
+au matin du 15/10 (t09:207-219), environ 0,4 par jour depuis novembre 2025,
+sans réutiliser un numéro du t09 ; folios FOL/2026/0084 le 22/02 et 0189 le
+02/09. Les volumes du regroupement par origine (348 mouvements, 22 968
+points depuis novembre 2025) restent sous ces séquences ; ils ne peuvent pas
+suivre la tuile « Points fidélité émis » du t15 (12 480 points du 30/09 au
+14/10, t15_direction.py:517), qui demanderait une centaine de folios sur la
+période quand les numéros du t03 et du t04 n'en laissent qu'une trentaine.
+Autres clients fictifs ajoutés : Boris Ndzana (ticket Bar de la terrasse/0043
+le 14/10), Carine Owona, Gaëlle Nkeng, Hugues Mbida, Nadège Abena, Pauline
+Ekotto (t02_planning.py:254), Sandrine Mvondo, Thierry Etoundi ; Patrick
+Nkoulou, Brigitte Essomba, Martin Ebode et Paul Essomba viennent des
+tutoriels 3, 4 et 9. Les tickets du bar d'Estelle sont réglés en espèces
+(voir écart 2).
 
 Captures de référence (modèle visuel, jamais incrustées) : ref_muk/053,
 054, 055, 056, 602, 613 ; captures de lecture prises pour ce tutoriel sur la
@@ -148,9 +181,11 @@ client VIP, « Points de … ».
 
 Écarts relevés, rejoués tels quels (voir le rapport) :
 1. « Clients VIP / VVIP » s'ouvre avec la facette « Factures clients »
-   (search_default_customer, loyalty_move_views.xml:52) : les VIP qui n'ont
-   jamais été facturés (bar, spa, coiffure) n'apparaissent qu'une fois la
-   facette retirée.
+   (search_default_customer, loyalty_move_views.xml:52 ; customer_rank > 0,
+   account/views/partner_view.xml:341) : les VIP qui n'ont ni facture ni
+   ticket de caisse dans une session clôturée (prestations seules :
+   pos_session.py:1013-1015) n'apparaissent qu'une fois la facette retirée
+   (10 cartes, puis 12).
 2. La taxe de séjour rapporte des points (le folio est crédité sur son total,
    hooks.py:88) ; un ticket réglé en « Note de chambre » ou une prestation
    reportée au folio sont crédités deux fois (hooks.py:42-45, 87-90 ;
@@ -237,40 +272,60 @@ def jma(d):
     return d.strftime('%d/%m/%Y')
 
 
-def ref_bar(d, decalage=3):
-    """« Bar de la terrasse/4418 » : la caisse numérote ses tickets, une douzaine par jour."""
-    n = 4418 - 12 * (AUJOURDHUI - d).days - (decalage if d != AUJOURDHUI else 0)
+# Les tickets de la caisse du bar, recalés sur la série : Bar de la terrasse/0011
+# le 31/07/2026 (t10_ardoises.py:223, :490), /0042 le 14/10 et /0047 le 16/10 à
+# 22:41 (t04_note_chambre.py:214, :405) ; la caisse a donc ouvert début juillet
+# 2026, et Estelle Ngono n'y a pas de ticket avant.
+TICKETS_BAR = {date(2026, 7, 10): 2, date(2026, 8, 14): 16, date(2026, 9, 12): 27, date(2026, 9, 19): 30,
+               date(2026, 10, 3): 36, date(2026, 10, 16): 45}
+
+
+def ref_bar(n):
+    """« Bar de la terrasse/0045 » : nom de la caisse, n° sur 4 chiffres (pos_config.py:476-486)."""
     return '%s/%04d' % (BAR, n)
 
 
-def ref_presta(d):
-    """« RES/26/0177 » : la séquence des réservations d'espaces et de prestations."""
-    n = 177 - round(0.47 * (date(2026, 10, 10) - d).days)
+# La séquence des prestations « RES/%(y)s/ » (sans remise à zéro annuelle :
+# slot_sequence_data.xml:3-8), recalée sur t09_espaces.py:207-219 : le 15/10/2026,
+# les réservations réalisées vont de RES/26/0133 à 0158, et la séquence en est
+# vers 0140 au matin. Environ 0,4 réservation par jour depuis novembre 2025 ;
+# un numéro déjà pris au t09 n'est jamais réutilisé.
+NUMEROS_T09 = {119, 127, 133, 138, 141, 142, 145, 150, 153, 158, 159}
+
+
+def ref_presta(d, n=None):
+    """« RES/26/0137 » : la référence d'une prestation réalisée le jour ``d``."""
+    if n is None:
+        n = 140 - round(0.405 * (date(2026, 10, 15) - d).days)
+        while n in NUMEROS_T09:
+            n -= 1
     return 'RES/%02d/%04d' % (d.year % 100, n)
 
 
 # --------------------------------------------- l'année d'Estelle Ngono --
-# Elle habite Douala : réunions au salon VIP, spa, coiffure, un verre au bar
-# après ses réunions, et trois séjours (folio = nuits + taxe de séjour).
+# Elle habite Douala : réunions au salon VIP, spa, coiffure, pressing, un verre
+# au bar après ses réunions depuis l'ouverture de la caisse, et trois séjours
+# (folio = nuits + taxe de séjour ; le dernier avec ses quatre petits-déjeuners).
 D = date
+AUJOURDHUI_FOLIO = 122000                          # t03_folio.py:345, :375-377, :395
 FOLIOS = {D(2026, 2, 22): ('FOL/2026/0084', 96000), D(2026, 9, 2): ('FOL/2026/0189', 144000),
-          AUJOURDHUI: (demo.FOLIO, 102000)}
+          AUJOURDHUI: (demo.FOLIO, AUJOURDHUI_FOLIO)}
+MASSAGE = (D(2026, 10, 15), 'slot_spa', 27000)     # RES/26/0158, t09_espaces.py:214, :865-877
 ANNEE = [
-    (D(2025, 11, 14), 'slot_space', 90000), (D(2025, 11, 14), 'pos', 15500), (D(2025, 11, 28), 'slot_hair', 12000),
-    (D(2025, 12, 12), 'slot_space', 90000), (D(2025, 12, 12), 'pos', 18000), (D(2025, 12, 20), 'slot_spa', 25000),
-    (D(2025, 12, 23), 'pos', 21500), (D(2026, 1, 16), 'slot_space', 90000), (D(2026, 1, 16), 'pos', 12500),
-    (D(2026, 1, 24), 'slot_hair', 12000), (D(2026, 2, 13), 'slot_space', 120000), (D(2026, 2, 13), 'pos', 14000),
-    (D(2026, 2, 22), 'hotel', None), (D(2026, 2, 28), 'slot_spa', 25000), (D(2026, 3, 13), 'slot_space', 90000),
-    (D(2026, 3, 13), 'pos', 16500), (D(2026, 3, 27), 'pos', 7500), (D(2026, 3, 28), 'slot_hair', 12000),
-    (D(2026, 4, 10), 'slot_space', 90000), (D(2026, 4, 10), 'pos', 13000), (D(2026, 4, 25), 'slot_spa', 25000),
-    (D(2026, 5, 15), 'slot_space', 120000), (D(2026, 5, 15), 'pos', 19500), (D(2026, 5, 30), 'slot_hair', 12000),
-    (D(2026, 6, 12), 'slot_space', 150000), (D(2026, 6, 12), 'pos', 11000), (D(2026, 6, 27), 'slot_spa', 25000),
+    (D(2025, 11, 14), 'slot_space', 90000), (D(2025, 11, 28), 'slot_hair', 12000),
+    (D(2025, 12, 12), 'slot_space', 120000), (D(2025, 12, 20), 'slot_spa', 25000),
+    (D(2026, 1, 16), 'slot_space', 120000), (D(2026, 1, 24), 'slot_hair', 12000),
+    (D(2026, 2, 6), 'slot_pressing', 6000), (D(2026, 2, 13), 'slot_space', 120000),
+    (D(2026, 2, 22), 'hotel', None), (D(2026, 2, 28), 'slot_spa', 25000), (D(2026, 3, 13), 'slot_space', 120000),
+    (D(2026, 3, 28), 'slot_hair', 12000), (D(2026, 4, 10), 'slot_space', 120000), (D(2026, 4, 25), 'slot_spa', 25000),
+    (D(2026, 5, 15), 'slot_space', 150000), (D(2026, 5, 22), 'slot_pressing', 7200),
+    (D(2026, 5, 30), 'slot_hair', 12000), (D(2026, 6, 12), 'slot_space', 150000), (D(2026, 6, 27), 'slot_spa', 25000),
     (D(2026, 7, 10), 'slot_space', 90000), (D(2026, 7, 10), 'pos', 15000), (D(2026, 7, 25), 'slot_hair', 12000),
     (D(2026, 8, 14), 'slot_space', 120000), (D(2026, 8, 14), 'pos', 17500), (D(2026, 8, 29), 'slot_spa', 25000),
     (D(2026, 9, 2), 'hotel', None), (D(2026, 9, 12), 'slot_space', 150000), (D(2026, 9, 12), 'pos', 13500),
     (D(2026, 9, 19), 'pos', 15500), (D(2026, 9, 26), 'slot_hair', 12000), (D(2026, 10, 3), 'slot_spa', 25000),
     (D(2026, 10, 3), 'pos', 8500), (D(2026, 10, 10), 'slot_space', 150000),
-    (AUJOURDHUI, 'hotel', None), (AUJOURDHUI, 'pos', 12500),
+    MASSAGE, (AUJOURDHUI, 'hotel', None), (AUJOURDHUI, 'pos', 12500),
 ]
 
 
@@ -281,7 +336,9 @@ def _mouvements():
         if origine == 'hotel':
             ref, montant = FOLIOS[d]
         elif origine == 'pos':
-            ref = ref_bar(d)
+            ref = ref_bar(TICKETS_BAR[d])
+        elif (d, origine, montant) == MASSAGE:
+            ref = ref_presta(d, 158)
         else:
             ref = ref_presta(d)
         mvts.append((d, origine, ref, montant, points(montant)))
@@ -289,6 +346,7 @@ def _mouvements():
 
 
 MVTS = _mouvements()
+assert len({m[2] for m in MVTS}) == len(MVTS), 'deux mouvements sur la même référence'
 RETRAIT = -1000                                   # « Utilisation : nuit offerte »
 SOLDE = sum(m[4] for m in MVTS)                   # le solde avant la nuit offerte
 SOLDE_APRES = SOLDE + RETRAIT
@@ -315,7 +373,7 @@ def _historique_statut():
 
 
 CHANGEMENTS = _historique_statut()
-assert [c[2] for c in CHANGEMENTS] == ['vip', 'vvip'], CHANGEMENTS
+assert [(c[0], c[2]) for c in CHANGEMENTS] == [(D(2026, 3, 1), 'vip'), (D(2026, 10, 11), 'vvip')], CHANGEMENTS
 DEPUIS = CHANGEMENTS[-1][0]                       # « Statut depuis »
 DEPENSES_12M = sum(m[3] for m in MVTS)
 assert DEPENSES_12M >= CFG['vvip_spend'] and SOLDE_APRES > 0
@@ -355,7 +413,18 @@ ROBOT = ('<svg viewBox="0 0 40 40"><rect width="40" height="40" rx="6" fill="#3B
          'r="2.4" fill="#3B4A5A"/><path d="M20 7v5" stroke="#fff" stroke-width="2"/></svg>')
 LIVRE = ('<svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 3h12a2 2 0 012 2v14H7a2 2 0 01-2-2z" '
          'opacity=".95"/><path d="M7 19h12v2H7a2 2 0 010-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>')
+# le bouton des colonnes optionnelles au bout de l'en-tête (la colonne Note est
+# optional="hide" : loyalty_move_views.xml:14), dessiné comme au t06
+REGLAGES = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">'
+            '<path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>')
 AVION = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.4 11.1L21.6 3.2l-5.4 17.6-4.7-6.3z"/></svg>'
+
+
+def personnage(classe_, initiale, retirer=()):
+    """La pastille du personnage passe à celui qui agit (comme au t04) : une
+    classe sur #tu-perso, le nom et le rôle rendus par ::before / ::after."""
+    return [classe('#tu-perso', ajouter=[classe_] if classe_ else [], retirer=list(retirer)),
+            texte('#tu-perso .av', initiale, avec=True)]
 
 
 def ico(svg, classe_='ico'):
@@ -428,10 +497,10 @@ CAISSE = fenetre_pos('t11-pos', [PAIEMENT], CAISSIER, numero='718', calques=DIAL
 
 
 # -------------------------------------------------- Mouvements de points --
-COLS = '40px 142px 214px 290px 1fr 206px 104px'
+COLS = '40px 142px 214px 290px 1fr 206px 104px 26px'
 TETE = ('<div class="tete" style="grid-template-columns:%s"><span class="cb"></span><span>Date</span><span>Client</span>'
-        '<span>Origine</span><span>Référence</span><span class="d">Montant de base</span><span class="d">Points</span></div>'
-        % COLS)
+        '<span>Origine</span><span>Référence</span><span class="d">Montant de base</span><span class="d">Points</span>'
+        '<span class="t11-opt" title="Colonnes optionnelles">%s</span></div>' % (COLS, REGLAGES))
 
 
 def ligne_mvt(ident, d, client, origine, ref, montant, pts, rouge=False):
@@ -442,22 +511,39 @@ def ligne_mvt(ident, d, client, origine, ref, montant, pts, rouge=False):
                fcfa(montant), ident, entier(pts)))
 
 
-D15, D14 = date(2026, 10, 15), date(2026, 10, 14)
-JOURNAL = [  # (date, client, origine, référence, montant) — du plus récent au plus ancien
-    (AUJOURDHUI, CLIENTE, 'pos', ref_bar(AUJOURDHUI), TICKET),
-    (AUJOURDHUI, 'Carine Owona', 'slot_spa', 'RES/26/0191', 25000),
+D15 = date(2026, 10, 15)
+JOURNAL = [  # (date, client, origine, référence, montant) — du plus récent au plus ancien (date desc, id desc)
+    (AUJOURDHUI, CLIENTE, 'pos', ref_bar(TICKETS_BAR[AUJOURDHUI]), TICKET),
+    (AUJOURDHUI, 'Patrick Nkoulou', 'pos', ref_bar(44), 7500),
     (AUJOURDHUI, CLIENTE, 'hotel', demo.FOLIO, FOLIOS[AUJOURDHUI][1]),
-    (AUJOURDHUI, 'Patrick Nkoulou', 'pos', '%s/4409' % BAR, 7500),
-    (D15, 'Hugues Mbida', 'slot_space', 'RES/26/0188', 150000),
-    (D15, 'Brigitte Essomba', 'slot_hair', 'RES/26/0186', 15000),
-    (D15, 'Martin Ebode', 'pos', '%s/4396' % BAR, 9500),
-    (D15, 'Nadège Abena', 'slot_pressing', 'RES/26/0184', 4500),
-    (D14, 'Thierry Etoundi', 'hotel', 'FOL/2026/0212', 114000),
-    (D14, 'Gaëlle Nkeng', 'slot_spa', 'RES/26/0181', 30000),
-    (D14, 'Boris Ndzana', 'pos', '%s/4371' % BAR, 21000),
+    # le jeudi 15/10 : les prestations réalisées de t09_espaces.py:207-219, de la
+    # dernière à la première, et le départ de Claire Durand (FOL/2026/0201, soldé
+    # à 123 000 FCFA : t03_folio.py:349 ; départ le 15/10 : demo.ARRIVEES)
+    (D15, CLIENTE, 'slot_spa', ref_presta(D15, 158), 27000),
+    (D15, 'Rachel Bilong', 'slot_spa', ref_presta(D15, 150), 23000),
+    (D15, 'Paul Essomba', 'slot_space', ref_presta(D15, 133), 45000),
+    (D15, 'Carine Mbappé', 'slot_hair', ref_presta(D15, 142), 19000),
+    (D15, 'Claire Durand', 'hotel', 'FOL/2026/0201', 123000),
+    (D15, 'Linda Ewané', 'slot_spa', ref_presta(D15, 145), 27000),
+    (D15, 'Yves Tchana', 'slot_hair', ref_presta(D15, 138), 6200),
+    (D15, 'Martin Ebode', 'slot_pressing', ref_presta(D15, 141), 4800),
 ]
-assert JOURNAL[0][3] == MVTS[-1][2] and JOURNAL[2][3] == MVTS[-2][2]
-NB_MVTS = 2220
+assert JOURNAL[0][3] == MVTS[-1][2] and JOURNAL[2][3] == MVTS[-2][2] and JOURNAL[3][3] == MVTS[-3][2]
+# (origine, nombre de mouvements, somme des montants, somme des points) depuis
+# les premiers mouvements (novembre 2025), dans l'ordre d'affichage d'Odoo 18
+# (clé de la sélection). Les volumes restent sous les séquences visibles dans la
+# série au 16/10/2026 : folios jusqu'à FOL/2026/0227 (t04_note_chambre.py:54),
+# environ 0,55 folio par jour depuis FOL/2026/0084 le 22/02 ; tickets jusqu'à
+# Bar de la terrasse/0047, Restaurant/0031 et Boutique/0018 (t04:405-407) ;
+# prestations jusqu'à RES/26/0159 (t09_espaces.py:218). Les points d'un groupe
+# ne dépassent jamais montant ÷ 1 000 (partie entière ligne par ligne).
+GROUPES = [('hotel', 168, 19824000, 19790), ('manual', 5, None, -1650), ('pos', 54, 745200, 718),
+           ('slot_hair', 30, 345000, 330), ('slot_pressing', 26, 140400, 128), ('slot_spa', 34, 870400, 862),
+           ('slot_space', 31, 2790000, 2790)]
+NB_MVTS = sum(g[1] for g in GROUPES)
+for _o, _n, _m, _p in GROUPES:
+    _connus = [m[3] for m in MVTS if m[1] == _o] + [j[4] for j in JOURNAL if j[2] == _o and j[1] != CLIENTE]
+    assert _n >= len(_connus) and (_m is None or (_m >= sum(_connus) and _p <= _m // 1000)), _o
 LIGNES_J = ''.join(ligne_mvt('t11-l%d' % i, d, c, o, r, m, points(m)) for i, (d, c, o, r, m) in enumerate(JOURNAL))
 
 PANNEAU = ('<div class="t11-panneau masque" id="t11-panneau" data-layout-allow-overlap data-layout-allow-occlusion>'
@@ -467,23 +553,18 @@ PANNEAU = ('<div class="t11-panneau masque" id="t11-panneau" data-layout-allow-o
            '<div class="t11-car">Mois<b>▾</b></div><hr><div class="t11-car">Ajouter un groupe personnalisé<b>▾</b></div></div>'
            '<div><div class="t11-pt t11-fav">%sFavoris</div><div class="t11-car ell">Enregistrer la recherche actuelle'
            '<b>▾</b></div></div></div>' % (ico(ICONES['filtre']), ico(CALQUES), ico(ETOILE)))
-CP_LIVRE = ('<div class="cp"><span class="titre">Mouvements de points</span>%s%s</div>'
-            % (recherche((), 't11-livre-rech'), pager('1-80 / %d' % NB_MVTS)))
+CP_LIVRE = ('<div class="cp"><span class="titre">Mouvements de points</span>%s%s%s</div>'
+            % (ico(ENGRENAGE, 't11-gear'), recherche((), 't11-livre-rech'), pager('1-80 / %d' % NB_MVTS)))
 LIVRE_V = vue_libre('t11-livre', CP_LIVRE + '<div class="liste">%s%s</div>%s' % (TETE, LIGNES_J, PANNEAU),
                     initiale=True)
 
 # --------------------------------------------- regroupé par « Origine » --
-# (origine, nombre de mouvements, somme des montants, somme des points) depuis
-# l'ouverture, dans l'ordre d'affichage d'Odoo 18 (clé de la sélection).
-GROUPES = [('hotel', 318, 41670000, 41670), ('manual', 12, None, -2350), ('pos', 1236, 17304000, 16702),
-           ('slot_hair', 142, 1846000, 1846), ('slot_pressing', 187, 1196800, 1103), ('slot_spa', 264, 6864000, 6864),
-           ('slot_space', 61, 4880000, 4880)]
-assert sum(g[1] for g in GROUPES) == NB_MVTS
 TOTAL_PTS = sum(g[3] for g in GROUPES)
 FACETTE_ORIG = ('<div class="recherche" id="t11-orig-rech">%s<span class="facette t11-fg"><span class="fic">%s</span>'
                 '<span class="ell">Origine</span><span class="fx">×</span></span><span class="ph">Rechercher…</span>'
                 '<span class="deroule">▾</span></div>' % (icone('loupe', 'loupe'), CALQUES))
-CP_ORIG = '<div class="cp"><span class="titre">Mouvements de points</span>%s%s</div>' % (FACETTE_ORIG, pager('1-7 / 7'))
+CP_ORIG = ('<div class="cp"><span class="titre">Mouvements de points</span>%s%s%s</div>'
+           % (ico(ENGRENAGE, 't11-gear'), FACETTE_ORIG, pager('1-7 / 7')))
 LIGNES_G = ''.join(
     '<div class="t11-grp" id="t11-o-%s" style="grid-template-columns:%s"><span class="cb"></span>'
     '<span class="t11-gl">▸ %s (%d)</span><span class="d">%s</span><span class="d">%s</span></div>'
@@ -496,13 +577,20 @@ ORIGINE_V = vue_libre('t11-origine', CP_ORIG + (
 
 # ----------------------------------------------- Clients VIP & VVIP --
 # Les clients VIP et VVIP de l'établissement, dans l'ordre alphabétique de la
-# vue ; ``facture`` : ils ont une facture validée (séjour facturé), donc
-# visibles sous la facette « Factures clients ».
-VIP = [('Boris Ndzana', 'boris.ndzana@exemple.cm', False), ('Brigitte Essomba', 'brigitte.essomba@exemple.cm', False),
+# vue ; ``facture`` : leur customer_rank est positif, donc ils restent visibles
+# sous la facette « Factures clients » (customer_rank > 0, account/views/
+# partner_view.xml:341). Une facture validée l'augmente (séjour facturé), et la
+# clôture d'une session de caisse aussi, pour le client de chaque ticket non
+# facturé (point_of_sale/models/pos_session.py:1013-1015) : les clients du bar
+# y sont donc (Boris Ndzana, Patrick Nkoulou, Brigitte Essomba : ticket Bar de la
+# terrasse/0042 au t04, ardoise ARD/0039), comme Pauline Ekotto, en 205 du 06 au
+# 09/10 (t02_planning.py:254). Seules Carine Owona et Nadège Abena, servies
+# uniquement en prestations et en espaces, n'y sont pas.
+VIP = [('Boris Ndzana', 'boris.ndzana@exemple.cm', True), ('Brigitte Essomba', 'brigitte.essomba@exemple.cm', True),
        ('Carine Owona', 'carine.owona@exemple.cm', False), (CLIENTE, demo.CLIENT_MAIL, True),
        ('Gaëlle Nkeng', 'gaelle.nkeng@exemple.cm', True), ('Hugues Mbida', 'hugues.mbida@exemple.cm', True),
        ('Martin Ebode', 'martin.ebode@exemple.cm', True), ('Nadège Abena', 'nadege.abena@exemple.cm', False),
-       ('Patrick Nkoulou', 'patrick.nkoulou@exemple.cm', False), ('Pauline Ekotto', 'pauline.ekotto@exemple.cm', False),
+       ('Patrick Nkoulou', 'patrick.nkoulou@exemple.cm', True), ('Pauline Ekotto', 'pauline.ekotto@exemple.cm', True),
        ('Sandrine Mvondo', 'sandrine.mvondo@exemple.cm', True), ('Thierry Etoundi', 'thierry.etoundi@exemple.cm', True)]
 
 
@@ -616,8 +704,8 @@ LIGNES_H = ''.join(ligne_mvt('t11-h%d' % i, d, CLIENTE, o, r, m, p, rouge=p < 0)
 HAUT_LISTE = 56 * len(HISTO) + 54
 VISIBLE = 738 - 80 - 54
 CP_HIST = ('<div class="cp"><div class="fil"><span class="parent">Clients VIP &amp; VVIP<i>/</i>%s</span>'
-           '<span class="ref">Points de %s</span></div>%s%s</div>'
-           % (e(CLIENTE), e(CLIENTE), recherche(), pager('1-%d / %d' % (len(HISTO), len(HISTO)))))
+           '<span class="ref">Points de %s %s</span></div>%s%s</div>'
+           % (e(CLIENTE), e(CLIENTE), ico(ENGRENAGE, 't11-gear'), recherche(), pager('1-%d / %d' % (len(HISTO), len(HISTO)))))
 HIST_V = vue_libre('t11-hist', CP_HIST + (
     '<div class="liste t11-lh">%s</div><div class="t11-cadre"><div class="liste" id="t11-hist-defil">%s'
     '<div class="total" id="t11-h-tot" style="grid-template-columns:%s"><span></span><span></span><span></span><span>'
@@ -637,6 +725,10 @@ MUK = MUK.replace(_FID, '<span class="menu actif t11-menu" id="t11-m-fid">Fidél
 ECRAN = navigateur(MUK + CAISSE)
 
 CSS = """
+/* la pastille du personnage : le caissier du bar, le temps de l'étape 1 */
+#tu-perso.t11-pc > span:last-child { font-size: 0; }
+#tu-perso.t11-pc > span:last-child::before { content: "@NOM@"; font-size: 21px; font-weight: 700; }
+#tu-perso.t11-pc > span:last-child::after { content: " · @ROLE@"; font-size: 21px; white-space: pre; }
 /* la barre de l'application Hôtel : neuf menus pour le Responsable */
 #t11-app .o-haut { font-size: 16px; gap: 18px; z-index: 6; }
 #t11-app .o-haut .nom-app { font-size: 21px; }
@@ -658,6 +750,9 @@ CSS = """
 .t11-vues svg { width: 20px; height: 20px; }
 .t11-gear { width: 18px; height: 18px; display: inline-flex; color: #343A40; margin-left: -6px; }
 .t11-gear svg { width: 18px; height: 18px; }
+#t11-app .cp .titre + .t11-gear { margin-left: 0; margin-right: 6px; }
+.t11-opt { width: 20px; height: 20px; display: inline-flex; color: #495057; justify-self: end; }
+.t11-opt svg { width: 20px; height: 20px; }
 /* listes */
 #t11-app .liste .tete span, #t11-app .liste .ligne span { white-space: nowrap; }
 .liste .ligne.t11-rouge { color: #B02A37; }
@@ -786,7 +881,7 @@ CSS = """
 .t11-pdlg-p { position: absolute; left: 0; right: 0; bottom: 0; height: 84px; display: flex; align-items: center; padding: 0 24px;
   border-top: 1px solid var(--o-filet); background: #fff; }
 .t11-pdlg-p .bt { height: 50px; font-size: 20px; }
-"""
+""".replace('@NOM@', CAISSIER).replace('@ROLE@', demo.POSTES['caisse'][1])
 
 TUTORIEL = {
     'slug': 't11-fidelite',
@@ -828,32 +923,32 @@ TUTORIEL = {
     },
     'reactions': {
         'r-liste': 'Ma liste pour les invitations et les attentions est prête.',
-        'r-pole': 'Je vois enfin ce que chaque service rapporte.',
+        'r-pole': 'Je vois enfin où mes clients fidèles dépensent.',
     },
     'etapes': [
         {'temps': 0, 'titre': 'Au bar : « à quel nom ? »',
          'texte': 'Le caissier choisit la cliente sur le ticket, encaisse et valide. Rien de plus.',
          'voix': "Au bar, Hervé pose la question qui compte : à quel nom ? Il tape Ngono, choisit Estelle sur le "
                  "ticket, encaisse en espèces et valide. Pour les points, il n'a rien d'autre à faire.",
-         'gestes': [pause(0.2), clic('#t11-cli-bt', d=0.6), ouvrir('t11-pdlg'), saisir('t11-pq', 'Ngono'),
+         'gestes': [*personnage('t11-pc', CAISSIER[0]), clic('#t11-cli-bt', d=0.6), ouvrir('t11-pdlg'), saisir('t11-pq', 'Ngono'),
                     cacher('#t11-pr-all', d=0.2), montrer('#t11-pr-f', d=0.3, y=6, avec=True),
                     clic('#t11-pr-est', fx=0.2, d=0.5), fermer('t11-pdlg'), texte('#t11-cli-n', CLIENTE),
-                    classe('#t11-cli-bt', ajouter=['t11-choisi']), zoom('#t11-cli-bt', s=1.5, d=0.6),
-                    bulle('b-nom', '#t11-cli-bt', cote='haut', d=2.2), pause(1.5), dezoom(d=0.5),
+                    classe('#t11-cli-bt', ajouter=['t11-choisi']), zoom('#t11-cli-bt', s=1.35, fx=2.3, d=0.6),
+                    bulle('b-nom', '#t11-cli-bt', cote='droite', d=2.2), pause(1.1), dezoom(d=0.5),
                     clic('#t11-esp', d=0.55), cacher('#t11-pmsg', d=0.15), montrer('#t11-pstat', d=0.3, y=8),
                     montrer('#t11-pl', d=0.3, y=8, avec=True), classe('#t11-valider', retirer=['t11-off']),
                     clic('#t11-valider', d=0.55)]},
         {'temps': 0, 'titre': 'Les points tombent seuls',
          'texte': 'Mouvements de points : la cliente, l\'origine, le ticket, et 12 points.',
          'voix': "Dans le grand livre des points, la vente est déjà là : la cliente, le bar, le ticket, et douze "
-                 "points, un par tranche de mille francs. Son séjour facturé ce matin en a rapporté cent deux.",
-         'gestes': [cacher('#t11-pos', d=0.5), pause(0.3), classe('#t11-l0', ajouter=['survol']),
-                    zoom('#t11-l0', s=1.25, fx=0.6, d=0.8), bulle('b-pts', '#t11-l0', cote='haut', d=3.0),
+                 "points, un par tranche de mille francs. Son séjour facturé ce matin en a rapporté cent vingt-deux.",
+         'gestes': [*personnage(None, NOM[0], retirer=['t11-pc']), cacher('#t11-pos', d=0.5), pause(0.3), classe('#t11-l0', ajouter=['survol']),
+                    zoom('#t11-l0', s=1.25, fx=0.6, d=0.8), bulle('b-pts', '#t11-l0-pts', cote='haut', d=3.0),
                     pause(2.8), dezoom(d=0.6), anneau('#t11-l2', d=1.6), pause(0.6)]},
         {'temps': 0, 'titre': 'Regroupé par origine',
          'texte': 'Séjours, bar, coiffure, pressing, spa, espaces VIP : un seul capital.',
-         'voix': "Regroupé par origine, le grand livre montre ce que rapporte chaque service : séjours, bar, "
-                 "coiffure, pressinng, spa, espaces VIP. Un seul capital, pour tous.",
+         'voix': "Regroupé par origine, le grand livre montre d'où viennent les points : séjours, bar, coiffure, "
+                 "pressinng, spa, espaces VIP. Un seul capital, pour tous.",
          'gestes': [clic('#t11-livre-rech .deroule', d=0.6), montrer('#t11-panneau', d=0.25, y=-6),
                     clic('#t11-g-origine', d=0.5), cacher('#t11-panneau', d=0.15), vue('t11-origine'),
                     anneau('#t11-o-grps', d=2.2), pause(0.3), anneau('#t11-o-tot', d=1.4),
@@ -861,7 +956,7 @@ TUTORIEL = {
         {'temps': 1, 'titre': 'Les VIP se révèlent seuls',
          'texte': 'Le statut se recalcule une fois par jour, sur 12 mois glissants.',
          'voix': "Une fois par jour, le statut de chaque client se recalcule sur douze mois : dépenses, visites, "
-                 "familles de services. Les VIP et les vi VIP rejoignent seuls leur liste.",
+                 "familles de services. Les VIP et les double VIP rejoignent seuls leur liste.",
          'gestes': [clic('#t11-m-fid', d=0.6), montrer('#t11-dd', d=0.2, y=-6), clic('#t11-dd-vip', d=0.45),
                     cacher('#t11-dd', d=0.15), vue('t11-vip-f'), pause(0.5), clic('#t11-vipf-fx', d=0.5),
                     vue('t11-vip'), anneau('#t11-k-estelle', d=1.4),
@@ -869,28 +964,29 @@ TUTORIEL = {
                     reaction('r-liste', d=2.8), pause(1.6)]},
         {'temps': 1, 'titre': "La fiche d'Estelle",
          'texte': 'Badge VVIP, date du statut, solde de points, et l\'historique des changements.',
-         'voix': "Sur la fiche d'Estelle, le badge vi VIP, la date du statut et son solde de points. L'historique note "
+         'voix': "Sur la fiche d'Estelle, le badge double VIP, la date du statut et son solde de points. L'historique note "
                  "chaque changement de statut, sans que personne n'ait rien saisi.",
          'gestes': [clic('#t11-k-estelle', d=0.6), vue('t11-fiche'), pause(0.3),
-                    zoom('#t11-badge', s=1.7, d=0.8), pause(1.8), dezoom(d=0.6), anneau('#t11-st-pts', d=1.3),
-                    anneau('#t11-ch-m1', d=2.4), bulle('b-trace', '#t11-ch-m1', cote='bas', d=2.6, avec=True),
-                    pause(0.5)]},
+                    zoom('#t11-badge', s=1.7, d=0.8), pause(1.8), dezoom(d=0.6), curseur('#t11-st-pts', fx=0.3, d=0.5),
+                    anneau('#t11-st-pts', d=1.3), curseur('.t11-chatter .ch-bts', fx=0.9, d=0.4),
+                    anneau('#t11-ch-m1', d=1.3), anneau('#t11-ch-m2', d=1.3),
+                    bulle('b-trace', '#t11-ch-m2', cote='bas', d=2.6, avec=True), pause(0.5)]},
         {'temps': 2, 'titre': 'Une nuit offerte, avec son motif',
          'texte': 'Ajuster des points : la cliente, −1 000 points, et le motif obligatoire.',
-         'voix': "L'hôtel offre à Estelle une nuit contre ses points. Depuis le menu Fidélité, la directrice ouvre "
-                 "Ajuster des points, choisit la cliente, retire mille points et écrit le motif : sans motif, rien ne "
+         'voix': "Pour remercier Estelle, la directrice lui offre une nuit et la décompte de ses points : depuis le "
+                 "menu Fidélité, Ajuster des points, la cliente, moins mille points, et le motif, sans lequel rien ne "
                  "passe.",
          'gestes': [clic('#t11-m-fid', d=0.6), montrer('#t11-dd', d=0.2, y=-6), clic('#t11-dd-adj', d=0.45),
                     cacher('#t11-dd', d=0.15), ouvrir('t11-as'), clic('#t11-as-cli', d=0.4),
                     choisir('t11-as-cli', CLIENTE), saisir('t11-as-pts', '-1000'),
                     saisir('t11-as-mot', 'Utilisation : nuit offerte'),
-                    bulle('b-motif', '#t11-as-mot', cote='bas', d=2.4), pause(1.8), clic('#t11-appl', d=0.5),
+                    bulle('b-motif', '#t11-as-mot', cote='bas', d=2.4), pause(2.8), clic('#t11-appl', d=0.5),
                     fermer('t11-as')]},
         {'temps': 2, 'titre': "Tout l'historique, un seul solde",
          'texte': 'Points : chaque mouvement de la cliente, le retrait en rouge, le solde en pied de liste.',
          'voix': "Un clic sur Points : tout l'historique d'Estelle, séjours, bar, spa, coiffure, espaces VIP. Le "
                  "retrait s'affiche en rouge, et le solde descend d'autant.",
-         'gestes': [clic('#t11-st-pts', d=0.6), vue('t11-hist'), curseur('#t11-h0', fx=0.45, d=0.5),
+         'gestes': [clic('#t11-st-pts', d=0.45), vue('t11-hist'), curseur('#t11-h0', fx=0.45, d=0.5),
                     classe('#t11-h0', ajouter=['survol'], avec=True), zoom('#t11-h0', s=1.25, fx=0.6, d=0.7),
                     pause(1.8), dezoom(d=0.6), defiler('#t11-hist-defil', -(HAUT_LISTE - VISIBLE), d=1.6),
                     anneau('#t11-h-tot', d=2.0), pause(1.2)]},
@@ -899,7 +995,7 @@ TUTORIEL = {
         'titre': 'Vos meilleurs clients, enfin reconnus',
         'cartes': [
             {'valeur': '1', 'compter': 1, 'unite': 'point', 'icone': 'pieces',
-             'texte': 'par tranche de 1 000 FCFA, calculé tout seul — barème réglable sans code'},
+             'texte': 'par tranche de 1 000 FCFA, calculé tout seul — barème réglable sans code dans les Paramètres'},
             {'valeur': '6', 'compter': 6, 'unite': 'services', 'icone': 'echange',
              'texte': 'bar et boutique, séjours, spa, coiffure, pressing, espaces VIP : un seul capital'},
             {'valeur': '3', 'compter': 3, 'unite': 'statuts', 'icone': 'etoile',

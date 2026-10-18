@@ -122,6 +122,20 @@ Sources des affirmations :
 - « Hervé sait qui relancer en premier » : fiche produit p.3 (« le gérant
   sait combien récupérer et qui relancer en priorité ») et top débiteurs
   trié par encours (pos_credit_dashboard.py:382-429) ;
+- bulles : part mise sur ardoise = dette, pos_order.py:9-27 ; seuils de
+  sévérité, pos_credit.py:26-28 et :162-177 ; reste dû proposé et plafonné,
+  pos_credit.py:222-239 et wizard/pos_credit_repay_wizard.py:53-84 ; part
+  en retard, pos_credit_dashboard.py:120-244 et dashboard.xml:116-118 ;
+  clic sur un débiteur = ses ardoises ouvertes (« Ardoises du client »,
+  domaine state = open), dashboard_view.js:433-442 ;
+- « Valider » s'allume dès que le reste à payer est nul et s'éteint sinon :
+  odoo18 payment_screen.xml:67-77 (canBeValidated) ; les boutons des modes
+  de paiement n'ont pas d'état sélectionné (payment_screen.xml:141-149) ;
+  « Restant 0 FCFA » en vert : pos_order.js:886-891 (hasRemainingAmount
+  vrai à zéro) et payment_status.xml:8-14 ;
+- le remboursement « s'inscrit » sur la fiche (onglet Remboursements) : la
+  vidéo ne dit pas « tracé » — les lignes restent modifiables après coup,
+  sans historique (pos_credit_views.xml:155-170, pos_credit_payment.py:19-23) ;
 - résultats : 1 bouton (payment_screen_button.xml:12-18) ; 5 moyens de
   remboursement (pos_credit_payment.py:49-58) ; 8 indicateurs
   (dashboard.xml:85-122) et balance âgée en 4 tranches
@@ -169,6 +183,13 @@ Ce que la vidéo montre, et ce qu'elle évite :
 5. La flèche « ▲ 156 % vs N-1 » compare à la période précédente de même
    durée (17/09–30/09), pas à l'année précédente
    (pos_credit_dashboard.py:197-220).
+6. La méthode « ardoise » n'est jamais créée à l'installation : le
+   post_init_hook cherche account.account.company_id, absent d'Odoo 18
+   (hooks.py:46-55, erreur avalée) ; il faut la créer à la main, et sa case
+   « Vente à crédit (ardoise) » s'affiche sans libellé dans le titre de la
+   fiche (views/res_config_settings_views.xml:4-14).
+7. L'icône fa-book du bouton « Mettre sur ardoise » n'a pas d'attribut
+   title (payment_screen_button.xml:16), contre la règle de CLAUDE.md.
 """
 
 from datetime import date
@@ -317,7 +338,7 @@ PAIEMENT = (
     '<span><em class="t10-ico">%s</em>Facture<i></i></span></div>'
     '<div class="pos-ardoise" id="t10-ard"><span class="ico">%s</span>Mettre sur ardoise</div>'
     '<div class="pos-pave">%s</div>'
-    '<div class="pos-rv"><span>Retour</span><span class="v t10-off">Valider</span></div></div>'
+    '<div class="pos-rv"><span>Retour</span><span class="v t10-off" id="t10-valider">Valider</span></div></div>'
     '<div class="pos-d pos-pd"><div class="pos-du">%s</div>'
     '<div class="t10-choix" id="t10-msg">Veuillez sélectionner un mode de paiement</div>'
     '<div class="t10-zone"><div class="pile"><div class="pos-restant masque t10-ok" id="t10-st-ok"><span>Restant</span>'
@@ -440,7 +461,8 @@ CP_LISTE = ('<div class="cp t10-cp"><span class="bt primaire">Nouveau</span><spa
             '<span class="t10-engr">%s</span>%s<span class="pager">1-%d / %d</span>%s</div>'
             % (ENGRENAGE, recherche([('t10-fac', 'Ouvertes')], placeholder='Rechercher...'), len(ARDOISES),
                len(ARDOISES), FLECHES))
-LISTE = ('<div class="vue initiale" id="t10-liste">%s<div class="liste t10-liste">%s%s%s</div></div>'
+LISTE = ('<div class="vue initiale" id="t10-liste">%s<div class="liste t10-liste">%s%s%s'
+         '<div class="t10-ancre" id="t10-ancre-sev"></div></div></div>'
          % (CP_LISTE, TETE, ''.join(LIGNES), SOMME))
 
 # -- la fiche ARD/0024
@@ -847,11 +869,15 @@ CSS = """
 .t10-fl i { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; background: #E9ECEF;
   color: #343A40; font-style: normal; font-size: 24px; border-radius: 4px; }
 .t10-liste .tete { height: 50px; font-size: 17px; column-gap: 12px; padding: 0 18px 0 6px; }
-.t10-liste .ligne { height: 52px; font-size: 17px; column-gap: 12px; padding: 0 18px 0 6px; }
+.t10-liste .ligne { height: 47px; font-size: 17px; column-gap: 12px; padding: 0 18px 0 6px; }
 .t10-liste .total { height: 50px; font-size: 17px; column-gap: 12px; padding: 0 18px 0 6px; }
 .t10-liste .cb { margin-left: 8px; }
 .t10-liste .puce { height: 27px; font-size: 15px; padding: 0 10px; }
 .t10-liste .ligne.survol { background: #E3ECF2; }
+.t10-ancre { height: 1px; width: 420px; margin-left: auto; }
+/* les réactions se posent là où elles ne cachent rien de ce que l'étape montre */
+#t10-r-regle { bottom: 386px; }
+#t10-r-relance { bottom: auto; top: 214px; }
 /* la fiche */
 .t10-stat { margin-left: 250px; display: flex; align-items: center; gap: 10px; height: 54px; padding: 0 16px; border: 1px solid var(--o-filet);
   background: #fff; }
@@ -996,14 +1022,14 @@ TUTORIEL = {
     'vues_initiales': {'pos': 't10-vente', 'odoo': 't10-liste'},
     'bulles': {
         'b-part': 'Seule la part mise sur ardoise devient une dette.',
-        'b-sev': 'Récente, En retard dès 30 jours, Critique dès 60 : recalculé chaque jour.',
+        'b-sev': 'Récente, En retard dès 30 jours, Critique dès 60 jours.',
         'b-pre': 'Le reste dû est proposé ; un montant trop élevé est plafonné.',
         'b-retard': 'Les ardoises de 30 jours et plus, et leur part dans l\'encours.',
         'b-top': 'Un clic sur un débiteur ouvre ses ardoises ouvertes.',
     },
     'reactions': {
-        'r-regle': 'Le reste dû se calcule tout seul.',
-        'r-relance': 'Je sais qui relancer en premier.',
+        't10-r-regle': 'Le reste dû se calcule tout seul.',
+        't10-r-relance': 'Je sais qui relancer en premier.',
     },
     'etapes': [
         {'temps': 0, 'titre': 'Au bar : une partie comptant',
@@ -1013,8 +1039,9 @@ TUTORIEL = {
          'gestes': [pause(0.3), anneau('#t10-vente-ticket', d=1.1), clic('#t10-vente-payer', d=0.6),
                     vue('t10-paie', 'pos'), pause(0.3), clic('#t10-m-esp', d=0.6), cacher('#t10-msg', d=0.15),
                     montrer('#t10-st-ok', d=0.25, y=0, avec=True), montrer('#t10-pl-esp', d=0.25, y=0, avec=True),
-                    classe('#t10-m-esp', ajouter=['actif'], avec=True), pause(0.3),
+                    classe('#t10-valider', retirer=['t10-off'], avec=True), pause(0.3),
                     clic('#t10-k5', d=0.5), texte('#t10-pl-esp-mt', '5 FCFA'),
+                    classe('#t10-valider', ajouter=['t10-off'], avec=True),
                     cacher('#t10-st-ok', d=0.1, avec=True), montrer('#t10-st-du', d=0.15, y=0, avec=True),
                     clic('#t10-k0', d=0.25), texte('#t10-pl-esp-mt', '50 FCFA'), texte('#t10-st-du-v', '12 450 FCFA', avec=True),
                     clic('#t10-k0', d=0.15), texte('#t10-pl-esp-mt', '500 FCFA'), texte('#t10-st-du-v', '12 000 FCFA', avec=True),
@@ -1034,16 +1061,16 @@ TUTORIEL = {
                     anneau('#t10-tk-paie', d=1.6), pause(1.0), dezoom(d=0.5)]},
         {'temps': 1, 'titre': "L'ardoise est déjà là",
          'texte': 'ARD/0043, en tête de liste, avec sa caisse : 7 500 FCFA dus, pas un de plus.',
-         'voix': "Côté bureau, dans POS Crédit, l'ardoise est déjà là, en tête de liste, avec sa caisse d'origine : "
+         'voix': "Côté bureau, dans le suivi des ardoises, elle est déjà là, en tête de liste, avec sa caisse d'origine : "
                  "sept mille cinq cents francs dus, pas un de plus. Les couleurs suivent l'âge de la dette.",
          'gestes': [montrer('#nav-bo', d=0.45, y=0), curseur('#t10-r0', fx=0.06, d=0.6, avec=True), pause(0.2),
                     zoom('#t10-r0', s=1.45, d=0.7, fx=0.42),
                     anneau('#t10-r0', d=1.6), pause(0.9), dezoom(d=0.5), anneau('#t10-r4-sev', d=0.9),
-                    anneau('#t10-r7-sev', d=0.9), bulle('b-sev', '#t10-h-sev', cote='gauche', d=2.8), pause(1.4),
+                    anneau('#t10-r7-sev', d=0.9), bulle('b-sev', '#t10-ancre-sev', cote='bas', d=2.8), pause(1.4),
                     anneau('#t10-tot', d=1.2)]},
         {'temps': 2, 'titre': 'Encaisser un remboursement',
          'texte': 'Reste dû proposé, moyen de paiement, référence de la transaction : Encaisser.',
-         'voix': "Armand Mvogo passe régler son ardoise, en retard de cinquante-sept jours. Enregistrer un "
+         'voix': "Armand Mvogo passe régler son ardoise, ouverte il y a cinquante-sept jours. Enregistrer un "
                  "remboursement : le reste dû est déjà proposé. Il paie en Orange Moni : Hervé choisit le moyen, saisit "
                  "la référence, et encaisse.",
          'gestes': [classe('#t10-r6', ajouter=['survol']), clic('#t10-r6', fx=0.25, d=0.6), vue('t10-fiche'),
@@ -1053,9 +1080,9 @@ TUTORIEL = {
                     clic('#t10-as-ref', d=0.4), saisir('t10-as-ref', REF_OM, d=1.0), clic('#t10-as-ok', d=0.5),
                     fermer('t10-as')]},
         {'temps': 2, 'titre': 'Réglée, toute seule',
-         'texte': 'Reste dû à zéro, ardoise Réglée, remboursement tracé avec son moyen et son encaisseur.',
-         'voix': "Le reste dû tombe à zéro, et l'ardoise passe Réglée, toute seule. Le remboursement est tracé : le "
-                 "moyen, la référence, et qui l'a encaissé.",
+         'texte': 'Reste dû à zéro, ardoise Réglée ; le remboursement est inscrit avec son moyen et son encaisseur.',
+         'voix': "Le reste dû tombe à zéro, et l'ardoise passe Réglée, toute seule. Le remboursement s'inscrit sur la "
+                 "fiche : le moyen, la référence, et qui l'a encaissé.",
          'gestes': [texte('#t10-f-deja', fcfa(_A[4])), texte('#t10-f-reste', '0 FCFA', avec=True),
                     texte('#t10-f-sev', 'Réglée', avec=True), classe('#t10-sb-0', retirer=['actif'], avec=True),
                     classe('#t10-sb-1', ajouter=['actif'], avec=True), cacher('#t10-fiche-ga', d=0.2, avec=True),
@@ -1066,7 +1093,7 @@ TUTORIEL = {
                     cacher('#t10-ta', d=0.2, avec=True), montrer('#t10-tb', d=0.3, y=0, avec=True),
                     pause(0.4), zoom('#t10-g-mt', s=1.5, d=0.7, fx=0.3), anneau('#t10-f-reste', d=1.2),
                     anneau('#t10-sb', d=1.0), dezoom(d=0.5), anneau('#t10-tb-0', d=1.6),
-                    reaction('r-regle', d=2.6), pause(1.6)]},
+                    reaction('t10-r-regle', d=2.6), pause(1.6)]},
         {'temps': 3, 'titre': 'Le tableau de bord Recouvrement',
          'texte': "L'encours, le recouvré du mois, le taux, la part en retard, et la balance âgée.",
          'voix': "Le tableau de bord Recouvrement fait les comptes : l'encours, ce qui est rentré ce mois, le taux de "
@@ -1088,8 +1115,8 @@ TUTORIEL = {
                  "dernier paiement. Hervé sait qui relancer en premier.",
          'gestes': [defiler('#t10-defil', -1312, d=1.1), pause(0.3), anneau('#t10-d0', d=1.0),
                     anneau('#t10-d1', d=1.2), anneau('#t10-d1 .puce', d=1.0),
-                    bulle('b-top', '#t10-d1-det', cote='haut', d=2.6), pause(1.0),
-                    reaction('r-relance', d=2.6), pause(1.4)]},
+                    bulle('b-top', '#t10-top', cote='haut', d=2.6), pause(1.0),
+                    reaction('t10-r-relance', d=2.6), pause(1.4)]},
     ],
     'resultats': {
         'titre': 'Le crédit client, enfin sous contrôle',
@@ -1097,7 +1124,7 @@ TUTORIEL = {
             {'valeur': '1', 'compter': 1, 'unite': 'bouton', 'icone': 'cahier',
              'texte': "à la caisse : « Mettre sur ardoise », client exigé, vente validée"},
             {'valeur': '5', 'compter': 5, 'unite': 'moyens de remboursement', 'icone': 'pieces',
-             'texte': 'MTN Mobile Money, Orange Money, espèces, carte bancaire, virement'},
+             'texte': 'MTN Mobile Money, Orange Money, espèces, carte bancaire, virement ou autre'},
             {'valeur': '8', 'compter': 8, 'unite': 'indicateurs', 'icone': 'graphe',
              'texte': 'sur le tableau de bord Recouvrement, avec la balance âgée en 4 tranches'},
         ],

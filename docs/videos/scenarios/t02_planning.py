@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Tutoriel 2 — Planning des chambres : tout l'hôtel d'un coup d'œil, la double réservation refusée.
+"""Tutoriel 2 — Planning des chambres : tout l'hôtel d'un coup d'œil, une chambre prise refusée à la confirmation.
 
 Personnage : la réceptionniste (demo.POSTES['reception']), profil Réception
 (aite_hotel_management.group_hotel_user) : c'est elle qui consulte le
@@ -38,9 +38,10 @@ la Réservation rapide (wizard/hotel_booking_wizard.py:62-128) ; le refus à
 la confirmation (models/hotel_reservation.py:288-305, :319-334) et la
 contrainte de chevauchement (hotel_reservation.py:641-664). On ne dit ni
 « zéro » ni « jamais » : un séjour « Arrivé » dont le départ est dépassé ne
-bloque plus sa chambre (voir ÉCARTS) ; la promesse se limite donc à ce que
-le code garantit : une chambre déjà réservée sur ces dates est refusée à la
-confirmation.
+bloque plus sa chambre (voir ÉCARTS), et rien ne verrouille deux
+confirmations simultanées ; la promesse, la voix de la révélation et le titre
+se limitent donc à ce que le code garantit : une chambre déjà réservée sur
+ces dates est refusée à la confirmation.
 
 Écrans et libellés (relevés mot pour mot) :
 1. Réservations (vue de départ) — views/hotel_reservation_views.xml:5-32
@@ -60,7 +61,14 @@ confirmation.
    hotel_room.py:373-380) ; domaine confirmed / checked_in / checked_out
    (:390). Cadre du calendrier d'Odoo 18 (odoo18/addons/web/i18n/fr.po :
    « Aujourd'hui », « Mois », « Rechercher… », « Modifier », « Supprimer »,
-   « en plus ») ; barres passées voilées (calendar_common_renderer.js:266-268,
+   « en plus ») ; empilement des barres : eventLimit = 5
+   (calendar_arch_parser.js:26) passé en dayMaxEventRows
+   (calendar_common_renderer.js:87) : jusqu'à cinq rangées par case, au-delà
+   quatre et « +N en plus » (lib/fullcalendar/daygrid/index.global.js:284-292,
+   core/index.global.js:4851-4855) ; ici aucune case ne dépasse cinq rangées
+   (contrôlé par disposer), donc toutes les barres sont visibles, plus basses
+   que dans ref_muk/028 pour tenir dans la hauteur de la vidéo ; tri « début,
+   durée décroissante, libellé » ; barres passées voilées (calendar_common_renderer.js:266-268,
    calendar_renderer.scss:58-64) ; numéros de semaine (weekNumbers: true,
    calendar_common_renderer.js:119). Forme, couleurs des chambres, fenêtre
    de détail (« octobre 14-16, 2026 », boutons Modifier / Supprimer) :
@@ -102,19 +110,29 @@ confirmation.
    « Opération invalide » et bouton « Fermer » (odoo18/addons/web/static/src/
    core/errors/error_dialogs.js:36, error_dialogs.xml:4-13, fr.po:3267-3269
    et :1500-1502) ; la réservation reste « Brouillon » (le contrôle précède
-   le changement d'état, :319-334).
+   le changement d'état, :319-334). Le zoom cadre « La chambre 204 [CFT]
+   n'est pas disponible » et la bulle ne vante que la chambre nommée : les
+   dates du message sont en ISO et en UTC (écart).
 6. Prolonger — hotel_reservation.py:264-273 (dates modifiées sur une
    réservation confirmée : disponibilité revérifiée, folio resynchronisé),
    :188-196 (nuits), :198-205 (totaux) ; suivi du champ « Départ »
    (tracking=True, :61) ; test_reservation.py:370-376
-   (test_extending_stay_updates_folio). Montants du folio repris du
-   tutoriel 5 (scenarios/t05_taxe_sejour.py:127-136 : 119 325 FCFA, puis
-   178 988 FCFA, nuitée TTC + taxe de séjour), même séjour.
+   (test_extending_stay_updates_folio). Le bouton « Folio » affiche le solde
+   (folio_amount_residual, views/hotel_reservation_views.xml:70-80 ;
+   hotel_reservation.py:121-124). Convention de la série, nuitée sans TVA
+   (t01_reception.py:143-147, t03_folio.py:116-118 : « aucun taux n'est livré
+   par les modules ») et taxe de séjour 3 ★ de 3 000 FCFA par personne et par
+   nuit : Estelle Ngono 102 000 FCFA moins l'acompte de 45 000 FCFA versé à
+   09:15 (t01, REF_MOMO MP261014.0915), soit 57 000 FCFA à 10:12, puis
+   153 000 - 45 000 = 108 000 FCFA ; Rodrigue Tamba, sans acompte :
+   90 000 + 12 000 = 102 000 FCFA.
 7. Changer de chambre — wizard/hotel_room_change_wizard_views.xml:4-52
    (« Changer de chambre », groupes « Séjour » / « Nouvelle chambre »,
    « Client », « Chambre actuelle », « Arrivée », « Départ », « Nouvelle
    chambre », « Conserver le prix actuel », « Prix actuel / nuit »,
-   « Nouveau prix / nuit », bandeau « Surclassement gracieux : la nouvelle
+   « Nouveau prix / nuit », « ? » après « Prix actuel / nuit » (champ lié à
+   price_night, dont il hérite l'aide : hotel_reservation.py:562-566,
+   odoo18/odoo/fields.py:767), bandeau « Surclassement gracieux : la nouvelle
    chambre sera facturée au tarif actuel du séjour. », « Changer la
    chambre », « Annuler ») ; wizard/hotel_room_change_wizard.py:20-95
    (aides, prix, message « Surclassement gracieux : le tarif de %(price)s /
@@ -128,12 +146,16 @@ tests/test_room_pricing.py:209-249 (7 tests de disponibilité),
 test_reservation.py:133, 148, 241, 305, 315, 326, 370, 379, 389, 405 (10),
 test_wizards.py:27-114 et 241-250 (14) ; 1 clic — bouton « Rechercher les
 chambres disponibles » (hotel_booking_wizard_views.xml:22-26) ; 2 éditions
-— Community en calendrier, Enterprise en Gantt dans le même menu
-(docs/INSTALLATION.md:58-66 ; aite_hotel_gantt/views/
-hotel_reservation_gantt_views.xml:8-35 : view_mode « gantt,calendar,list,
-form »). Le Gantt n'est pas rejoué : web_gantt (Enterprise) n'est ni dans le
-dépôt ni sur la base de démonstration, sa barre d'outils ne peut pas être
-relevée.
+— le même menu « Planning des chambres », sur Community comme sur
+Enterprise : le socle ne dépend d'aucun module Enterprise et porte la vue
+calendrier (docs/RAPPORT_TESTS.md:44-68, A1 ; views/hotel_reservation_views.xml:
+314-396 ; vérifié par installation sur Community) ; sur Enterprise, le module
+passerelle aite_hotel_gantt garde la vue calendrier dans l'action (view_mode
+« gantt,calendar,list,form », aite_hotel_gantt/views/
+hotel_reservation_gantt_views.xml:8-35). Ni le Gantt ni une installation
+automatique ne sont annoncés : web_gantt n'est ni dans le dépôt ni sur une
+base de démonstration, et sur une base Enterprise où le socle est déjà
+installé, aite_hotel_gantt ne s'installe pas seul à la mise à niveau.
 
 ÉCARTS rejoués tels quels (signalés, jamais corrigés) : dates ISO en heure
 UTC dans le refus de disponibilité (« du 2026-10-15 13:00:00 au 2026-10-17
@@ -148,6 +170,16 @@ créé » (accord du message de création d'Odoo). Non rejoué mais relevé : un
 séjour « Arrivé » dont le départ est dépassé ne bloque plus sa chambre
 (room.is_available ne compare que les dates).
 
+Écarts de la série (non corrigés ici, signalés) : le tutoriel 5 compte la
+nuitée avec TVA 19,25 % (t05_taxe_sejour.py:127-136 : 119 325 puis
+178 988 FCFA) quand t01, t03, t06 et ce tutoriel la comptent sans TVA ;
+Martin Ebode est placé en 104 [STD] comme dans t07 (gouvernante, :386-387)
+et comme le veut son tarif (105 000 FCFA pour 3 nuits, demo.ARRIVEES),
+alors que c1 le loge en 206 et c2 / t06 en 201 [CFT] ; ce tutoriel prolonge
+Estelle Ngono jusqu'au 17/10 en suite 402, quand t03, t06 et t07 la gardent
+en 204 jusqu'au 16/10 ; le téléphone d'Estelle (demo.CLIENT_TEL, format d'un
+vrai mobile) vient de demo.py, partagé.
+
 Voix : « planning » s'écrit « planinng » dans les phrases de la voix
 seulement (Kokoro lit « planning » à l'anglaise ; « planinng » donne la
 prononciation française [planiŋ]), jamais à l'écran.
@@ -161,7 +193,10 @@ rez-de-chaussée, 105 hors service donc sans séjour, 106 et 201-204 au 1er
 étage, 205, 301-303, 401-402 au 2e étage ; types STD, CFT, SJR, VIP) ;
 tarifs : Standard 35 000, Suite Junior 75 000, Suite VIP 120 000 FCFA
 (10_hotel_structure.xml:41-66), Confort 45 000 FCFA (demo.PRIX_NUIT). Les
-autres clients sont fictifs ; « aujourd'hui » est le mercredi 14/10/2026,
+autres clients sont fictifs (Martin Ebode, RES/2026/0209, 104 [STD], du
+14/10/2026 14:00:00 au 17/10/2026 12:00:00 : demo.ARRIVEES ; téléphones de
+Rodrigue Tamba et Jacques Owona dans une plage manifestement fictive,
++237 6 00 00 00 xx) ; « aujourd'hui » est le mercredi 14/10/2026,
 comme dans la vidéo de présentation.
 """
 
@@ -220,7 +255,8 @@ SEJOURS = [
     ('202', 'Nadine Ekambi', D(10, 7), D(10, 9)), ('103', 'Esther Mengue', D(10, 8), D(10, 10)),
     ('401', 'Laurent Abega', D(10, 9), D(10, 12)), ('101', 'Cyrille Owono', D(10, 10), D(10, 13)),
     ('302', 'Gisèle Abanda', D(10, 12), D(10, 14)), ('202', 'Brigitte Essomba', D(10, 13), D(10, 16)),
-    ('204', demo.CLIENT, D(10, 14), D(10, 16)), ('401', 'Claire Durand', D(10, 14), D(10, 15)),
+    ('204', demo.CLIENT, D(10, 14), D(10, 16)), ('104', 'Martin Ebode', D(10, 14), D(10, 17)),
+    ('401', 'Claire Durand', D(10, 14), D(10, 15)),
     ('103', 'Gaston Mbida', D(10, 15), D(10, 17)), ('301', 'Paul Abessolo', D(10, 16), D(10, 18)),
     ('204', 'Joël Kamga', D(10, 18), D(10, 20)), ('102', 'Christelle Ndongo', D(10, 21), D(10, 23)),
     ('302', 'Carine Manga', D(10, 22), D(10, 24)), ('106', 'Olivier Ndzana', D(10, 23), D(10, 25)),
@@ -251,10 +287,25 @@ CONFIRMEES = [
     ('RES/2026/0213', 'Gaston Mbida', '15/10/2026 14:00:00', '17/10/2026 12:00:00', 2, '103'),
     ('RES/2026/0201', 'Claire Durand', '14/10/2026 18:00:00', '15/10/2026 12:00:00', 1, '401'),
     (demo.RESA, demo.CLIENT, demo.ARRIVEE, demo.DEPART, 2, '204'),
+    ('RES/2026/0209', 'Martin Ebode', '14/10/2026 14:00:00', '17/10/2026 12:00:00', 3, '104'),
 ]
 
-# Le séjour d'Estelle Ngono : deux nuits, puis trois (montants du folio : tutoriel 5).
-FOLIO_AVANT, FOLIO_APRES = '119 325 FCFA', '178 988 FCFA'
+# Le bouton « Folio » affiche le solde du folio (folio_amount_residual). Convention de la série
+# (t01_reception.py:143-147, t03_folio.py:116-118) : nuitée sans TVA, taxe de séjour 3 ★ de
+# 3 000 FCFA par personne et par nuit. Estelle Ngono : 2 nuits × 45 000 + 2 × 2 × 3 000 = 102 000,
+# moins l'acompte de 45 000 versé à 09:15 (t01) = 57 000 ; prolongée d'une nuit : 3 × 45 000
+# + 3 × 2 × 3 000 = 153 000, moins 45 000 = 108 000. Rodrigue Tamba, sans acompte : 102 000.
+TAXE_NUIT_PERS = 3000
+ACOMPTE_ESTELLE = 45000
+
+
+def solde_folio(nuits, acompte=0, prix=45000, personnes=2):
+    return fcfa(nuits * prix + nuits * personnes * TAXE_NUIT_PERS - acompte)
+
+
+FOLIO_AVANT, FOLIO_APRES = solde_folio(2, ACOMPTE_ESTELLE), solde_folio(3, ACOMPTE_ESTELLE)
+FOLIO_RODRIGUE = solde_folio(2)
+assert (FOLIO_AVANT, FOLIO_APRES, FOLIO_RODRIGUE) == ('57 000 FCFA', '108 000 FCFA', '102 000 FCFA')
 TOTAL_APRES = fcfa(3 * 45000)
 
 
@@ -266,10 +317,21 @@ def _teinte(couleur, part):
     return '#%02X%02X%02X' % tuple(int(round(part * x + (1 - part) * 255)) for x in (r, v, b))
 
 
+# Le calendrier d'Odoo 18 : eventLimit = 5 (calendar_arch_parser.js:26) passé à FullCalendar
+# en dayMaxEventRows (calendar_common_renderer.js:87). Une case montre jusqu'à cinq rangées ;
+# au-delà, quatre rangées et « +N en plus » (fullcalendar/daygrid/index.global.js:284-292,
+# core/index.global.js:4851-4855 : insertion valide tant que la pile compte moins de 5).
+MAX_RANGEES = 5
+HAUT_GRILLE = 584          # 796 (fenêtre MuK) - 58 (barre du haut) - 126 (titre, barre) - 28 (jours)
+TETE_CASE, PAS, H_BARRE = 24, 18, 17
+
+
 def disposer(sejours):
-    """Les barres du mois, rangée par rangée, comme le calendrier les range :
-    par date d'arrivée, le plus long d'abord, deux lignes visibles par jour ;
-    au-delà, « +N en plus »."""
+    """Les barres du mois, semaine par semaine, comme FullCalendar les empile :
+    triées par arrivée, la plus longue d'abord, puis par libellé (« start,
+    -duration, title »), chacune sur la première rangée libre. Aucune case
+    de ces données ne dépasse cinq rangées : toutes les barres sont visibles,
+    sans « +N en plus » (contrôlé)."""
     segs = []
     for ch, cli, a, d in sejours:
         for r in range(6):
@@ -280,7 +342,7 @@ def disposer(sejours):
             s0, s1 = max(a, r0), min(d, r1)
             segs.append({'ch': ch, 'cli': cli, 'a': a, 'd': d, 'r': r, 'c': (s0 - r0).days, 'n': (s1 - s0).days + 1,
                          'debut': a >= r0, 'fin': d <= r1})
-    visibles, plus = [], {}
+    niveaux = [0] * 6
     for r in range(6):
         rang = sorted((s for s in segs if s['r'] == r), key=lambda s: (s['a'], -(s['d'] - s['a']).days, s['ch']))
         occupe = set()
@@ -289,34 +351,47 @@ def disposer(sejours):
             while any((ligne, c) in occupe for c in range(s['c'], s['c'] + s['n'])):
                 ligne += 1
             occupe.update((ligne, c) for c in range(s['c'], s['c'] + s['n']))
-            if ligne < 2:
-                s['l'] = ligne
-                visibles.append(s)
-            else:
-                for c in range(s['c'], s['c'] + s['n']):
-                    plus[(r, c)] = plus.get((r, c), 0) + 1
-    return visibles, plus
+            s['l'] = ligne
+            niveaux[r] = max(niveaux[r], ligne + 1)
+    assert max(niveaux) <= MAX_RANGEES, 'une case dépasse %d rangées : il faudrait « +N en plus »' % MAX_RANGEES
+    return segs, niveaux
+
+
+def hauteurs(niveaux):
+    """La hauteur de chaque semaine : la grille remplit l'écran (height: 100 %), une
+    semaine dont les barres ne tiennent pas dans sa part s'allonge, les autres se
+    partagent le reste."""
+    besoin = [TETE_CASE + PAS * n + 3 for n in niveaux]
+    h, libres, reste = [0.0] * 6, list(range(6)), float(HAUT_GRILLE)
+    while True:
+        part = reste / len(libres)
+        gros = [r for r in libres if besoin[r] > part]
+        if not gros:
+            break
+        for r in gros:
+            h[r] = float(besoin[r])
+            reste -= besoin[r]
+            libres.remove(r)
+    for r in libres:
+        h[r] = part
+    return h
 
 
 def _cle(s):
     return (s['ch'], s['cli'], s['r'], s['c'], s['n'], s['l'])
 
 
-def _barre(s, ident=None, cache=False):
+def _barre(s, hauts, ident=None, cache=False):
     couleur = CHAMBRES[s['ch']][2]
     passe = s['d'] < AUJ          # départ à 12 h, avant maintenant : la barre est voilée
-    style = ('left:calc(%d * 100%% / 7 + %dpx);width:calc(%d * 100%% / 7 - %dpx);top:calc(%d * 100%% / 6 + %dpx);'
+    top = sum(hauts[:s['r']]) + TETE_CASE + PAS * s['l']
+    style = ('left:calc(%d * 100%% / 7 + %dpx);width:calc(%d * 100%% / 7 - %dpx);top:%.1fpx;'
              'background:%s;border-color:%s'
-             % (s['c'], 3 if s['debut'] else 0, s['n'], (3 if s['debut'] else 0) + (3 if s['fin'] else 0), s['r'],
-                29 + 24 * s['l'], _teinte(couleur, .42), _teinte(couleur, .7)))
+             % (s['c'], 3 if s['debut'] else 0, s['n'], (3 if s['debut'] else 0) + (3 if s['fin'] else 0), top,
+                _teinte(couleur, .42), _teinte(couleur, .7)))
     classes = 't02-ev' + (' passe' if passe else '') + ('' if s['debut'] else ' suite') + ('' if s['fin'] else ' coupe')
     return ('<div class="%s%s"%s style="%s"><span class="ell">%s · %s</span></div>'
             % (classes, ' masque' if cache else '', _id(ident), style, e(s['ch']), e(s['cli'])))
-
-
-def _plus(plus):
-    return ''.join('<div class="t02-plus" style="left:calc(%d * 100%% / 7);top:calc(%d * 100%% / 6 + 76px)">+%d en plus'
-                   '</div>' % (c, r, n) for (r, c), n in sorted(plus.items()))
 
 
 def _ident(s):
@@ -329,19 +404,26 @@ def _ident(s):
 
 def couches():
     """Les barres de l'état initial, puis celles qui apparaissent ou
-    disparaissent à chaque étape : les autres ne bougent pas."""
+    disparaissent à chaque étape : les autres ne bougent pas (contrôlé)."""
     etats = {k: disposer(v) for k, v in ETATS.items()}
-    base, plus0 = etats['initial']
+    base, niv0 = etats['initial']
+    hauts = hauteurs(niv0)
     for k in ('reserve', 'final'):
-        assert etats[k][1] == plus0, 'les « +N en plus » changent : %s' % k
-    html = ''.join(_barre(s, _ident(s)) for s in base)
+        assert etats[k][1] == niv0, 'la hauteur des semaines change : %s' % k
+        cles = {_cle(s) for s in etats[k][0]}
+        for s in base:
+            assert _cle(s) in cles or s['cli'] == demo.CLIENT, 'une barre change de rangée : %s %s' % (k, s['cli'])
+    html = ''.join(_barre(s, hauts, _ident(s)) for s in base)
     deja = {_cle(s) for s in base}
     for k in ('reserve', 'final'):
         for s in etats[k][0]:
             if _cle(s) not in deja:
                 deja.add(_cle(s))
-                html += _barre(s, _ident(s), cache=True)
-    return html + _plus(plus0)
+                html += _barre(s, hauts, _ident(s), cache=True)
+    return html, hauts
+
+
+BARRES, HAUTS = couches()
 
 
 JOURS = ['LUN.', 'MAR.', 'MER.', 'JEU.', 'VEN.', 'SAM.', 'DIM.']
@@ -422,10 +504,11 @@ PLANNING = vue_libre('t02-planning', (
     '<span class="bt gris">Aujourd\'hui</span><span class="t02-mois">octobre 2026</span>'
     '<span class="t02-panneau-i">%s</span></div>'
     '<div class="t02-cal"><div class="t02-jours">%s</div>'
-    '<div class="t02-grille" id="t02-grille">%s<div class="t02-evs" id="t02-evs">%s</div></div></div>'
+    '<div class="t02-grille" id="t02-grille" style="grid-template-rows:%s">%s<div class="t02-evs" id="t02-evs">%s'
+    '</div></div></div>'
     '<div class="t02-panneau">%s%s</div>%s</div>'
-    % (_recherche(), VUE_CAL, VUE_LISTE, PANNEAU_I, ''.join('<span>%s</span>' % j for j in JOURS), _cellules(),
-       couches(), _mini(), _filtres(), POPOVER)))
+    % (_recherche(), VUE_CAL, VUE_LISTE, PANNEAU_I, ''.join('<span>%s</span>' % j for j in JOURS),
+       ' '.join('%.1fpx' % h for h in HAUTS), _cellules(), BARRES, _mini(), _filtres(), POPOVER)))
 
 
 # ------------------------------------------------- la liste de départ --
@@ -452,7 +535,7 @@ def _liste():
               '</span>' % ICONES['filtre'])
     cp = ('<div class="t02-cp"><span class="bt primaire">Nouveau</span><span class="t02-titre">Réservations'
           '<span class="t02-rouage">%s</span></span><div class="recherche t02-rech">%s%s<span class="ph"></span>'
-          '<span class="deroule">▾</span></div><span class="t02-pager">1-12 / 12</span>'
+          '<span class="deroule">▾</span></div><span class="t02-pager">1-13 / 13</span>'
           '<span class="t02-vues"><span class="actif">%s</span><span>▦</span><span>%s</span></span></div>'
           % (ROUAGE, icone('loupe', 'loupe'), filtre, VUE_LISTE, VUE_CAL))
     return vue_libre('t02-liste', '<div class="t02-pl">%s<div class="t02-l">%s%s%s</div></div>'
@@ -565,8 +648,8 @@ ENTETE_CONFIRMEE = ('<div class="t02-bts">%s%s%s%s%s<span class="t02-etat">Confi
 # Rodrigue Tamba : réservé par la Réservation rapide, confirmé d'emblée (folio ouvert).
 RODRIGUE_FICHE = fiche(
     't02-rodrigue', 'Planning des chambres', 'RES/2026/0221', ENTETE_CONFIRMEE,
-    stat('t02-r-folio', 'document', 'Folio', FOLIO_AVANT) + stat(None, 'fiche', 'Fiches clients', '0/2'),
-    client_grp('Rodrigue Tamba', '+237 699 52 14 07', 'rodrigue.tamba@exemple.cm'),
+    stat('t02-r-folio', 'document', 'Folio', FOLIO_RODRIGUE) + stat(None, 'fiche', 'Fiches clients', '0/2'),
+    client_grp('Rodrigue Tamba', '+237 6 00 00 00 21', 'rodrigue.tamba@exemple.cm'),
     grp('Séjour', [ch('Arrivée', '19/10/2026 14:00:00', saisie=True), ch('Départ', '21/10/2026 12:00:00', saisie=True),
                    ch('Nuits', '2', aide=True), ch('Total hébergement (HT)', '90 000 FCFA')]),
     canal_grp('Direct / comptoir'), occupation_grp(),
@@ -581,7 +664,7 @@ JACQUES = fiche(
     % (bt('t02-j-confirmer', 'Confirmer', 'primaire'), bt(None, 'Annuler'),
        ''.join('<span class="t02-sb-e%s">%s</span>' % (' actif' if i == 0 else '', x) for i, x in enumerate(ETATS_RESA))),
     '',
-    client_grp('Jacques Owona', '+237 675 30 88 12', 'jacques.owona@exemple.cm'),
+    client_grp('Jacques Owona', '+237 6 00 00 00 22', 'jacques.owona@exemple.cm'),
     grp('Séjour', [ch('Arrivée', '15/10/2026 14:00:00', 't02-j-arr', saisie=True),
                    ch('Départ', '17/10/2026 12:00:00', 't02-j-dep', saisie=True),
                    ch('Nuits', '2', aide=True), ch('Total hébergement (HT)', '90 000 FCFA')]),
@@ -669,7 +752,8 @@ RESULTATS = (
        mch('Client', m2o('t02-rr-client')), mch('Confirmer immédiatement', case(None), aide=True)))
 RAPIDE = modale('t02-rr', 'Réservation rapide', (
     '<div class="m-grille"><div>%s%s%s</div><div>%s%s%s</div></div>'
-    '<div class="t02-rr-bt"><span class="bt gris" id="t02-rr-chercher">%sRechercher les chambres disponibles</span></div>%s'
+    '<div class="t02-rr-bt"><span class="bt gris" id="t02-rr-chercher">%sRechercher les chambres disponibles</span>'
+    '<span class="t02-ancre" id="t02-rr-ancre"></span></div>%s'
     % (mch('Hôtel', m2o('t02-rr-hotel', '', demo.HOTEL)), mch('Arrivée', entree('t02-rr-arr', '', '14/10/2026 14:00:00')),
        mch('Départ', entree('t02-rr-dep', '', '15/10/2026 12:00:00')),
        mch('Type de chambre', m2o('t02-rr-type'), aide=True), mch('Adultes', entree('t02-rr-ad', '', '1')),
@@ -678,7 +762,8 @@ RAPIDE = modale('t02-rr', 'Réservation rapide', (
     '<span class="bt gris t02-rr-fermer" id="t02-rr-fermer">Fermer</span>', 44, 1180, 't02-rr-titre')
 
 ERREUR = modale('t02-err', 'Opération invalide', (
-    '<p class="t02-err-p" id="t02-err-p">La chambre 204 [CFT] n\'est pas disponible du 2026-10-15 13:00:00 au '
+    '<p class="t02-err-p" id="t02-err-p"><span id="t02-err-ch">La chambre 204 [CFT] n\'est pas disponible</span> du '
+    '2026-10-15 13:00:00 au '
     '2026-10-17 11:00:00 (déjà réservée ou hors service).</p>'),
     '<span class="bt primaire" id="t02-err-ok">Fermer</span>', 260, 1120, agrandir=False)
 
@@ -686,12 +771,12 @@ CHANGER = modale('t02-cc', 'Changer de chambre', (
     '<div class="m-grille"><div><div class="t02-grp-t">Séjour</div>%s%s%s%s</div>'
     '<div><div class="t02-grp-t">Nouvelle chambre</div>%s%s%s%s</div></div>'
     '<div class="alerte-info t02-surcl masque" id="t02-cc-alerte">Surclassement gracieux : la nouvelle chambre sera '
-    'facturée au tarif actuel du séjour.</div>'
+    'facturée au tarif actuel du séjour.<span class="t02-ancre" id="t02-cc-ancre"></span></div>'
     % (mch('Client', '<span class="t02-lien">%s</span>' % e(demo.CLIENT)),
        mch('Chambre actuelle', '<span class="t02-lien">%s</span>' % e(demo.CHAMBRE)), mch('Arrivée', e(demo.ARRIVEE)),
        mch('Départ', '17/10/2026 12:00:00'), mch('Nouvelle chambre', m2o('t02-cc-nc')),
        mch('Conserver le prix actuel', case('t02-cc-garder', coche=False), aide=True),
-       mch('Prix actuel / nuit', e(demo.PRIX_NUIT)),
+       mch('Prix actuel / nuit', e(demo.PRIX_NUIT), aide=True),
        mch('Nouveau prix / nuit', '<span id="t02-cc-prix">%s</span>' % e(demo.PRIX_NUIT), aide=True))),
     '<span class="bt primaire" id="t02-cc-ok">Changer la chambre</span><span class="bt gris">Annuler</span>', 120, 1180)
 
@@ -714,37 +799,37 @@ CSS = """
   background: #E9ECEF; color: #343A40; font-size: 20px; }
 .t02-vues span.actif { background: #CFDCE5; box-shadow: inset 0 0 0 1px #4A7892; }
 .t02-vues svg { width: 22px; height: 22px; }
-.t02-barre { position: absolute; left: 0; right: 0; top: 72px; height: 60px; display: flex; align-items: center; gap: 8px;
+.t02-barre { position: absolute; left: 0; right: 0; top: 72px; height: 54px; display: flex; align-items: center; gap: 8px;
   padding: 0 20px; border-bottom: 1px solid #DEE2E6; }
-.t02-barre .bt { height: 42px; font-size: 18px; }
+.t02-barre .bt { height: 40px; font-size: 18px; }
 .t02-fl { display: inline-flex; }
 .t02-fl span { width: 44px; height: 42px; display: inline-flex; align-items: center; justify-content: center; background: #DEE2E6;
   font-size: 20px; color: #212529; }
+.t02-barre .t02-fl span { height: 40px; }
 .t02-fl span + span { border-left: 1px solid #fff; }
 .t02-mois { margin-left: 10px; font-size: 21px; font-weight: 500; }
 .t02-panneau-i { margin-left: auto; width: 26px; height: 26px; color: #343A40; display: inline-flex; }
-.t02-cal { position: absolute; left: 0; top: 132px; width: 1268px; bottom: 0; border-right: 1px solid #DEE2E6; }
-.t02-jours { height: 32px; display: grid; grid-template-columns: repeat(7, 1fr); align-items: center; text-align: center;
+.t02-cal { position: absolute; left: 0; top: 126px; width: 1268px; bottom: 0; border-right: 1px solid #DEE2E6; }
+.t02-jours { height: 28px; display: grid; grid-template-columns: repeat(7, 1fr); align-items: center; text-align: center;
   font-size: 15px; color: #495057; border-bottom: 1px solid #DEE2E6; }
-.t02-grille { position: absolute; left: 0; right: 0; top: 32px; bottom: 0; display: grid;
-  grid-template-columns: repeat(7, 1fr); grid-template-rows: repeat(6, 1fr); }
+.t02-grille { position: absolute; left: 0; right: 0; top: 28px; bottom: 0; display: grid;
+  grid-template-columns: repeat(7, 1fr); }
 .t02-case { position: relative; border-right: 1px solid #E9ECEF; border-bottom: 1px solid #E9ECEF; text-align: center;
-  padding-top: 3px; }
-.t02-num { font-size: 18px; color: #343A40; line-height: 26px; }
+  padding-top: 1px; }
+.t02-num { font-size: 16px; color: #343A40; line-height: 22px; }
 .t02-case.hors .t02-num { color: #ADB5BD; }
-.t02-auj { display: inline-flex; width: 28px; height: 28px; border-radius: 50%; background: #DC3545; color: #fff;
-  align-items: center; justify-content: center; font-weight: 600; font-size: 16px; }
-.t02-sem { position: absolute; left: 4px; top: 4px; padding: 1px 5px; border-radius: 3px; background: #E9ECEF; font-size: 13px;
+.t02-auj { display: inline-flex; width: 22px; height: 22px; border-radius: 50%; background: #DC3545; color: #fff;
+  align-items: center; justify-content: center; font-weight: 600; font-size: 14px; vertical-align: top; }
+.t02-sem { position: absolute; left: 4px; top: 3px; padding: 0 5px; border-radius: 3px; background: #E9ECEF; font-size: 12px;
   color: #6C757D; }
 .t02-evs { position: absolute; inset: 0; }
-.t02-ev { position: absolute; height: 23px; border: 1px solid; border-radius: 3px; padding: 0 7px; font-size: 15px;
-  line-height: 21px; color: #212529; overflow: hidden; }
+.t02-ev { position: absolute; height: 17px; border: 1px solid; border-radius: 3px; padding: 0 6px; font-size: 13.5px;
+  line-height: 15px; color: #212529; overflow: hidden; }
 .t02-ev.suite { border-left-width: 0; border-top-left-radius: 0; border-bottom-left-radius: 0; }
 .t02-ev.coupe { border-right-width: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; }
 .t02-ev.passe::after { content: ''; position: absolute; inset: 0; background: rgba(255,255,255,.5); }
 .t02-ev > span { display: block; }
-.t02-plus { position: absolute; width: calc(100% / 7); text-align: center; font-size: 14px; color: #3F6A83; }
-.t02-panneau { position: absolute; right: 0; top: 132px; width: 276px; bottom: 0; padding: 12px 16px; overflow: hidden; }
+.t02-panneau { position: absolute; right: 0; top: 126px; width: 276px; bottom: 0; padding: 12px 16px; overflow: hidden; }
 .t02-mini-t { display: flex; justify-content: space-between; align-items: center; font-size: 18px; color: #343A40; height: 30px; }
 .t02-mini-t b { font-weight: 500; }
 .t02-mini-g { margin-top: 6px; display: grid; grid-template-columns: repeat(7, 1fr); row-gap: 2px; text-align: center;
@@ -757,7 +842,7 @@ CSS = """
 .t02-filtre i { width: 15px; height: 15px; border-radius: 3px; border: 1px solid; flex: none; }
 .t02-filtre.tete { height: 30px; font-size: 17px; }
 .t02-filtre.tete i { background: #4A7892; border-color: #4A7892; }
-.t02-pop { position: absolute; left: 916px; top: 238px; width: 436px; background: #fff; border-radius: 6px; z-index: 6;
+.t02-pop { position: absolute; left: 916px; top: 284px; width: 436px; background: #fff; border-radius: 6px; z-index: 6;
   box-shadow: 0 10px 34px rgba(0,0,0,.28); border: 1px solid #DEE2E6; overflow: hidden; }
 .t02-pop-t { height: 54px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px 0 18px;
   font-size: 19px; font-weight: 500; color: #212529; }
@@ -772,9 +857,9 @@ CSS = """
 .t02-pop-p .bt { height: 40px; font-size: 17px; }
 .t02-l { position: absolute; left: 0; right: 0; top: 72px; bottom: 0; }
 .t02-l-tete, .t02-l-ligne, .t02-l-total { display: grid; align-items: center; column-gap: 12px; padding: 0 14px 0 6px; }
-.t02-l-tete { height: 46px; font-size: 17px; font-weight: 600; border-bottom: 1px solid #DEE2E6; white-space: nowrap; }
-.t02-l-ligne { height: 46px; font-size: 17px; border-bottom: 1px solid #EEF0F2; color: #0E7490; white-space: nowrap; }
-.t02-l-total { height: 46px; font-size: 17px; font-weight: 700; }
+.t02-l-tete { height: 44px; font-size: 17px; font-weight: 600; border-bottom: 1px solid #DEE2E6; white-space: nowrap; }
+.t02-l-ligne { height: 44px; font-size: 17px; border-bottom: 1px solid #EEF0F2; color: #0E7490; white-space: nowrap; }
+.t02-l-total { height: 44px; font-size: 17px; font-weight: 700; }
 .t02-l .cb { width: 17px; height: 17px; border: 1px solid #ADB5BD; border-radius: 3px; margin-left: 10px; }
 .t02-l .puce { height: 26px; font-size: 15px; }
 .t02-opt { color: #495057; font-size: 18px; text-align: right; }
@@ -874,7 +959,10 @@ CSS = """
 .t02-modale .m-ch .v .entree { height: 40px; }
 .t02-m2o { position: relative; display: block; }
 .t02-car { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 14px; color: #495057; }
-.t02-rr-bt { margin-top: 10px; }
+.t02-rr-bt { position: relative; margin-top: 10px; }
+.t02-ancre { position: absolute; pointer-events: none; }
+#t02-rr-ancre { left: 0; top: 3px; width: 440px; height: 42px; }
+#t02-cc-ancre { left: 52%; right: 0; top: 0; bottom: 0; }
 .t02-rr-bt .bt { height: 42px; font-size: 18px; }
 .t02-rr-table { margin-top: 18px; border-top: 1px solid #DEE2E6; }
 .t02-rr-tete, .t02-rr-ligne { display: grid; align-items: center; column-gap: 10px; padding: 0 10px; white-space: nowrap; }
@@ -885,7 +973,7 @@ CSS = """
 .t02-rr-reserver { position: absolute; left: 28px; }
 .t02-rr-fermer.decale { margin-left: 118px; }
 .t02-err-p { font-size: 20px; line-height: 1.5; color: #212529; margin: 6px 0 10px; }
-.t02-surcl { margin: 12px 0 2px; }
+.t02-surcl { position: relative; margin: 12px 0 2px; }
 .t02-lien { color: #3F6A83; }
 .t02-modale .case { display: inline-flex; }
 """
@@ -894,7 +982,7 @@ TUTORIEL = {
     'slug': 't02-planning',
     'profil': 't02_planning',
     'numero': 2,
-    'titre': "Planning des chambres : tout l'hôtel d'un coup d'œil, la double réservation refusée",
+    'titre': "Planning des chambres : tout l'hôtel d'un coup d'œil, une chambre prise refusée à la confirmation",
     'fonction': 'Planning des chambres',
     'personnage': (NOM, ROLE),
     'accroche': {
@@ -911,7 +999,8 @@ TUTORIEL = {
     'revelation': {
         'promesse': "Tout l'hôtel sur un planning, les chambres libres en un clic, la double réservation refusée à la "
                     "confirmation.",
-        'voix': "Avec Aïte haousse, tout l'hôtel tient sur un planinng, et la double réservation est refusée.",
+        'voix': "Avec Aïte haousse, tout l'hôtel tient sur un planinng, et une chambre déjà réservée sur ces dates est "
+                "refusée à la confirmation.",
     },
     'temps': ['Voir', 'Réserver', 'Protéger', 'Ajuster'],
     'app': APP,
@@ -919,14 +1008,14 @@ TUTORIEL = {
     'vues_initiales': {'odoo': 't02-liste'},
     'bulles': {
         'b-barre': 'Une barre par séjour : la chambre et le client, de l\'arrivée au départ.',
-        'b-libres': 'Seules les chambres libres sur ces dates, avec le prix par nuit et le total.',
-        'b-refus': 'La chambre et les dates sont nommées : la réservation reste en brouillon.',
+        'b-libres': 'Seules les chambres libres, avec le prix par nuit et le total.',
+        'b-refus': 'La chambre en conflit est nommée : la réservation reste en brouillon.',
         'b-suit': 'Nuits, total et folio recalculés dès l\'enregistrement.',
         'b-gracieux': 'Surclassement gracieux : la suite, au tarif de la chambre d\'origine.',
     },
     'reactions': {
         'r-refus': 'La 204 reste à Estelle : la réservation en double est bloquée.',
-        'r-suit': 'Une nuit de plus, une suite offerte : le planning a suivi.',
+        'r-suit': 'Une nuit de plus, un surclassement offert : le planning a suivi.',
     },
     'etapes': [
         {'temps': 0, 'titre': 'Le planning des chambres',
@@ -955,7 +1044,7 @@ TUTORIEL = {
                     montrer('#t02-rr-res', d=0.35, y=10), montrer('#t02-rr-reserver', d=0.2, y=0, avec=True),
                     classe('#t02-rr-fermer', ajouter=['decale'], avec=True),
                     zoom('#t02-rr-res .t02-rr-table', s=1.35, d=0.7),
-                    bulle('b-libres', '#t02-rr-res .t02-rr-table', cote='bas', d=2.6), pause(2.4)]},
+                    bulle('b-libres', '#t02-rr-ancre', cote='droite', d=2.6), pause(2.4)]},
         {'temps': 1, 'titre': 'Réservé, et déjà au planning',
          'texte': 'Une chambre cochée, le client, Réserver : la réservation est confirmée, son folio ouvert.',
          'voix': "Mireille coche la deux cent trois, choisit le client, et réserve. La réservation est aussitôt "
@@ -968,10 +1057,10 @@ TUTORIEL = {
         {'temps': 2, 'titre': 'La double réservation refusée',
          'texte': 'La 204 saisie à la main sur des dates déjà prises : la confirmation est refusée.',
          'voix': "Et si on saisit à la main la deux cent quatre, déjà prise ces jours-là ? À la confirmation, "
-                 "Aïte haousse refuse net, en nommant la chambre et les dates : la réservation reste simplement en "
+                 "Aïte haousse refuse net, en nommant la chambre en conflit : la réservation reste simplement en "
                  "brouillon.",
          'gestes': [vue('t02-jacques'), pause(0.4), anneau('#t02-j-l-ch', d=0.9), anneau('#t02-j-arr', d=0.8),
-                    clic('#t02-j-confirmer', d=0.6), ouvrir('t02-err'), zoom('#t02-err-p', s=1.4, fy=0.8, d=0.7),
+                    clic('#t02-j-confirmer', d=0.6), ouvrir('t02-err'), zoom('#t02-err-ch', s=1.4, d=0.7),
                     bulle('b-refus', '#t02-err-p', cote='bas', d=2.6), pause(1.6), reaction('r-refus', d=2.6),
                     pause(1.0), dezoom(d=0.5), clic('#t02-err-ok', d=0.5), fermer('t02-err')]},
         {'temps': 3, 'titre': 'Une nuit de plus : tout suit',
@@ -984,7 +1073,7 @@ TUTORIEL = {
                     texte('#t02-e-l-n', '3'), texte('#t02-e-l-st', TOTAL_APRES), anneau('#t02-e-tot', d=1.0),
                     clic('#t02-estelle-save-ok', d=0.6), cacher('#t02-estelle-save', d=0.2),
                     texte('#t02-e-folio-v', FOLIO_APRES), cacher('#t02-e-fil-0', d=0.2),
-                    montrer('#t02-e-fil-1', d=0.35, y=-10), bulle('b-suit', '#t02-e-folio', cote='droite', d=2.6),
+                    montrer('#t02-e-fil-1', d=0.35, y=-10), bulle('b-suit', '#t02-e-folio', cote='bas', d=2.6),
                     anneau('#t02-e-folio', d=1.2), anneau('#t02-e-m1', d=1.4)]},
         {'temps': 3, 'titre': 'Changer de chambre, sans rien perdre',
          'texte': "L'assistant contrôle la nouvelle chambre et peut garder le tarif ; le changement est noté, le folio suit.",
@@ -996,7 +1085,7 @@ TUTORIEL = {
                     classe('#t02-cc-garder', ajouter=['coche']), texte('#t02-cc-prix', demo.PRIX_NUIT),
                     montrer('#t02-cc-alerte', d=0.3, y=0), curseur('#t02-cc-ok', d=0.5),
                     zoom('#t02-cc-alerte', s=1.3, fy=0.1, d=0.6),
-                    bulle('b-gracieux', '#t02-cc-alerte', cote='bas', d=2.4), pause(1.8), dezoom(d=0.5),
+                    bulle('b-gracieux', '#t02-cc-ancre', cote='bas', d=2.4), pause(1.8), dezoom(d=0.5),
                     clic('#t02-cc-ok', d=0.4), fermer('t02-cc'), texte('#t02-e-l-type', 'Suite VIP'),
                     texte('#t02-e-l-ch', '402 [VIP]'), cacher('#t02-e-fil-1', d=0.2),
                     montrer('#t02-e-fil-2', d=0.35, y=-10), anneau('#t02-e-m2', d=1.4)]},
@@ -1016,7 +1105,7 @@ TUTORIEL = {
             {'valeur': '1', 'compter': 1, 'unite': 'clic', 'icone': 'eclair',
              'texte': 'pour lister les chambres libres, avec le prix par nuit et le total du séjour'},
             {'valeur': '2', 'compter': 2, 'unite': 'éditions', 'icone': 'coche',
-             'texte': "d'Odoo : calendrier sur Community, Gantt sur Enterprise, dans le même menu"},
+             'texte': "d'Odoo : le même menu Planning des chambres, sur Community comme sur Enterprise"},
         ],
         'voix': "Trente et un tests automatisés, un clic pour trouver une chambre libre, et un planinng qui s'ouvre sur "
                 "les deux éditions d'Odoo.",
