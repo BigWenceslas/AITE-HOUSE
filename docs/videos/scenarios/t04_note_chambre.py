@@ -35,7 +35,7 @@ Conditions du monde rejoué (voir le rapport, « défauts restants ») :
   (__manifest__.py : 'depends': ['point_of_sale', 'aite_hotel_management']),
   aite_pos_analytics (« Analyse AITE ») non plus ;
 - pas de TVA, comme aux tutoriels 1 et 3 et au chapitre 1 de la
-  présentation (t03_folio.py:116-118 : « aucun taux n'est livré par les
+  présentation (t03_folio.py:141-143 : « aucun taux n'est livré par les
   modules ») : la nuitée prend les taxes de l'article du type de chambre
   (aite_hotel_management/models/hotel_folio.py:249-266), l'article est créé
   sans taxe explicite (hotel_room.py:126) ; les articles du bar non plus,
@@ -44,17 +44,33 @@ Conditions du monde rejoué (voir le rapport, « défauts restants ») :
   seulement s'il y a des groupes de taxes).
 
 Le séjour : Brigitte Essomba, chambre 202 [CFT] Confort du 13 au 16/10/2026
-(t02_planning.py:201, :222), folio FOL/2026/0218 / RES/2026/0218 resté
+(t02_planning.py:201, :222), folio FOL/2026/0210 / RES/2026/0210 resté
 « Ouvert » le 16/10 avec 198 000 FCFA TTC, 100 000 encaissés, 98 000 dus
-(t03_folio.py:344) — les 13 500 FCFA du bar du 14/10 y sont donc compris.
+(t03_folio.py:447) — les 13 500 FCFA du bar du 14/10 y sont donc compris,
+comme le massage du 15/10 (RES/26/0158, 27 000 FCFA, t09_espaces.py:249) ;
+le 14/10 au soir, ici, le folio vaut 157 500 FCFA.
 Le folio d'Estelle Ngono (FOL/2026/0214) n'est pas utilisé : au tutoriel 3
 son folio de départ n'a aucune ligne du bar. Les notes en attente datent du
 16/10 au soir, après la liste des folios du tutoriel 3 : Martin Ebode
 (FOL/2026/0209, séjour du 14 au 17/10, demo.ARRIVEES) a confirmé l'après-midi
 une réservation de novembre (folio FOL/2026/0227, ouvert dès la confirmation,
-hotel_reservation.py:320-331) ; Sylvie Mbarga (FOL/2026/0207 « Soldé »,
-t03_folio.py:347) et Boris Ndzana (client du bar, t11_fidelite.py:383) n'ont
-aucun folio ouvert.
+hotel_reservation.py:320-331), juste après une autre réservation confirmée
+dans l'après-midi (FOL/2026/0226) ; Sylvie Mbarga (FOL/2026/0207 « Soldé »,
+t03_folio.py:450) et Boris Ndzana (client du bar, t11_fidelite.py) n'ont
+aucun folio ouvert. Les folios ouverts ce soir-là sont ceux que le tutoriel 3
+montre « Ouvert » (t03_folio.py:436-452), plus 0226 et 0227 : la liste
+déroulante de « Folio choisi » n'en propose que les huit plus récents
+(name_search limité à 8, relational_utils.js:209, :318), où 0209 n'est pas ;
+Mireille tape donc « 0209 ».
+
+Tickets : la caisse du bar a ouvert le 04/05/2026 et compte environ 1 350
+tickets au 13/10 (environ 8,3 par jour : 108 du 01 au 13/10, t12_ventes.py:380 ;
+1 440 tickets toutes caisses depuis le 04/05, t12_ventes.py:550) ; le dîner
+de Brigitte, le 14/10 au soir, est donc « Bar de la terrasse/1360 », 8e
+ticket de la session du jour (00135 : suivi 508, pos_order.py:58-60), et la
+note de Martin Ebode du 16/10 à 22:41 la /1377. Restaurant (environ 80
+tickets) et Boutique (une vingtaine) vendent peu : Restaurant/0083 et
+Boutique/0018 le 16/10.
 
 Sources des libellés (relevés mot pour mot) :
 
@@ -89,8 +105,12 @@ Sources des libellés (relevés mot pour mot) :
    « Ignorer » : point_of_sale/i18n/fr.po:2261-2262, :6921-6922, :4363-4364,
    :721-722, :2170-2171, :6939-6940, :2768-2769) ; numéro de commande
    « <caisse>/<4 chiffres> » : models/pos_config.py:476-480 ; numéro de
-   suivi à trois chiffres : models/pos_order.py:58-60. Adresses et téléphones
-   des clients : ceux du tutoriel 11 (t11_fidelite.py:383-386).
+   suivi à trois chiffres : models/pos_order.py:58-60. Adresses des clients :
+   celles du tutoriel 11 (t11_fidelite.py, PROCHES) ; téléphones dans la
+   plage de fiction « +237 6 00 00 00 xx », ceux de t10_ardoises.py
+   (TELEPHONES) pour Armand Mvogo, Boris Ndzana, Brigitte Essomba et Carine
+   Owona, demo.CLIENT_TEL pour Estelle Ngono, +33 6 39 98 21 47 pour Claire
+   Durand (série).
 3. Le paiement — screens/payment_screen/payment_screen.xml:27-140 (modes,
    « Client » qui prend le nom du client :100-107, « Facture », « Retour »,
    « Valider ») ; icône de chaque mode selon son type, espèces, banque ou
@@ -114,8 +134,9 @@ Sources des libellés (relevés mot pour mot) :
    ligne « Taxe de séjour — 3 nuitée(s) × personne (3 ★, Cameroun) », sans
    TVA, et montant « Taxe de séjour » models/hotel_folio.py:9-12, :37-41,
    :100-140 ; menu Facturation → Folios hotel_menus.xml:66-75 ; ordre des
-   folios « create_date desc » (hotel_folio.py:25) : FOL/2026/0218 est le
-   3e des 8 folios du tutoriel 3 (t03_folio.py:339-349). La ligne reportée :
+   folios « create_date desc » (hotel_folio.py:25) : FOL/2026/0210 est le
+   12e des 14 folios « Avec solde dû » du tutoriel 3 (t03_folio.py:436-457),
+   d'où « 12 / 14 ». La ligne reportée :
    aite_hotel_pos_link/models/pos_order.py:69-81 (type service, quantité 1,
    prix = montant) et :146-156 (libellé « POS <commande> », date du jour).
    Aspect : ref_muk/029.
@@ -135,7 +156,10 @@ Sources des libellés (relevés mot pour mot) :
    313-382 (name_search dans l'ordre du modèle, les plus récents d'abord ;
    « Recherche avancée... » dès qu'il y a un résultat, « Commencer à
    écrire... » quand le champ est vide) et web/i18n/fr.po:5713-5714,
-   :6141-6142 ; fil d'Ariane technique « aite.roomcharge.pending,<id> » :
+   :6141-6142 ; une fois « 0209 » tapé : « Créer "%s" », « Créer et
+   modifier... » (relational_utils.js:339-382, web/i18n/fr.po:1834-1835,
+   :1852-1853 ; la réception peut créer un folio, aite_hotel_management/
+   security/ir.model.access.csv:21) ; fil d'Ariane technique « aite.roomcharge.pending,<id> » :
    ref_muk/048-…-fiche.png.
 
 Sources des affirmations :
@@ -211,10 +235,10 @@ from moteur import (anneau, cacher, clic, classe, curseur, defiler, fermer, mont
 DIRECTION, ROLE_DIR = demo.POSTES['direction']     # Danielle Eyenga, Directrice
 CAISSIER, ROLE_CAISSE = demo.POSTES['caisse']       # Hervé Tchakounté, Caissier du bar
 RECEPTION, ROLE_REC = demo.POSTES['reception']      # Mireille Ateba, Réceptionniste
-COMMANDE = 'Bar de la terrasse/0042'               # le ticket de Brigitte Essomba
+COMMANDE = 'Bar de la terrasse/1360'               # le ticket de Brigitte Essomba, le 14/10 au soir
 TICKET = '13 500 FCFA'
 CLIENTE = 'Brigitte Essomba'                        # chambre 202 [CFT], du 13 au 16/10 (tutoriels 2 et 3)
-FOLIO_B, RESA_B = 'FOL/2026/0218', 'RES/2026/0218'
+FOLIO_B, RESA_B = 'FOL/2026/0210', 'RES/2026/0210'   # t03_folio.py:447
 
 
 def masque(nav):
@@ -325,14 +349,16 @@ PAIEMENT = remplacer(PAIEMENT, '<div id="t4-paie-lignes"></div>', '<div id="t4-p
 
 # La fenêtre des clients (bouton « Client »), dans l'ordre des noms.
 AVION = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>'
-BRIGITTE = (CLIENTE, 'Bonamoussadi Douala Cameroun', '+237 675 88 12 40', 'brigitte.essomba@exemple.cm')
-CLIENTS = [('Armand Mvogo', 'Bastos Yaoundé Cameroun', '+237 699 12 40 77', 'armand.mvogo@exemple.cm'),
-           ('Boris Ndzana', 'Akwa Douala Cameroun', '+237 699 23 51 07', 'boris.ndzana@exemple.cm'),
+# Téléphones de la plage de fiction de la série : ceux de t10_ardoises.py (TELEPHONES) pour Armand, Boris,
+# Brigitte et Carine ; demo.CLIENT_TEL pour Estelle ; celui de Claire Durand partout dans la série.
+BRIGITTE = (CLIENTE, 'Bonamoussadi Douala Cameroun', '+237 6 00 00 00 32', 'brigitte.essomba@exemple.cm')
+CLIENTS = [('Armand Mvogo', 'Bastos Yaoundé Cameroun', '+237 6 00 00 00 31', 'armand.mvogo@exemple.cm'),
+           ('Boris Ndzana', 'Akwa Douala Cameroun', '+237 6 00 00 00 40', 'boris.ndzana@exemple.cm'),
            BRIGITTE,
-           ('Carine Owona', 'Bali Douala Cameroun', '+237 690 14 77 32', 'carine.owona@exemple.cm'),
-           ('Claire Durand', 'Lyon France', '+33 6 12 48 90 31', 'claire.durand@exemple.fr'),
+           ('Carine Owona', 'Bali Douala Cameroun', '+237 6 00 00 00 41', 'carine.owona@exemple.cm'),
+           ('Claire Durand', 'Lyon France', '+33 6 39 98 21 47', 'claire.durand@exemple.fr'),
            (demo.CLIENT, 'Bonapriso Douala Cameroun', demo.CLIENT_TEL, demo.CLIENT_MAIL)]
-TROUVES = [BRIGITTE, ('Thérèse Essomba', 'Mfandena Yaoundé Cameroun', '+237 677 63 20 48',
+TROUVES = [BRIGITTE, ('Thérèse Essomba', 'Mfandena Yaoundé Cameroun', '+237 6 00 00 00 63',
                       'therese.essomba@exemple.cm')]
 
 
@@ -356,7 +382,7 @@ DIALOGUE = (
        ligne_client('t4-c-brigitte', *TROUVES[0]) + ligne_client(None, *TROUVES[1])))
 AVERT = toast('t4-avert', 'Avertissement', "Pour assurer le suivi des soldes dûs, générez une facture ou téléchargez "
                                            "l'application comptabilité.", genre='alerte')
-POS = fenetre_pos('app-t4p', [VENTE, PAIEMENT], CAISSIER, numero='342', calques=DIALOGUE + AVERT)
+POS = fenetre_pos('app-t4p', [VENTE, PAIEMENT], CAISSIER, numero='508', calques=DIALOGUE + AVERT)
 POS = remplacer(POS, 'Rechercher des produits...', 'Rechercher des produits…')
 POS = remplacer(POS, '<span class="pos-caissier">', '<span class="pos-caissier" id="t4-caissier">')
 NAV_POS = masque(navigateur(POS, 'nav-pos'))
@@ -395,15 +421,16 @@ FEUILLE_FOLIO = (
     + onglets(['Lignes du folio', 'Règlements', 'Note']) + LIGNES_F
     + '<div class="note-pied">Les lignes « nuitée » sont synchronisées depuis la réservation ; ajoutez librement des '
       'lignes de service (restaurant, blanchisserie, minibar…).</div>')
-FOLIO = vue_fiche('t4-folio', cp_fiche('Folios', FOLIO_B, '3 / 8', stats=[('t4-st-regl', 'billet', 'Règlements', '1')]),
+FOLIO = vue_fiche('t4-folio', cp_fiche('Folios', FOLIO_B, '12 / 14', stats=[('t4-st-regl', 'billet', 'Règlements', '1')]),
                   [bouton('t4-f-enc', 'Encaisser', 'primaire'), bouton('t4-f-fact', 'Générer la facture')],
                   statusbar('t4-fsb', ['Ouvert', 'Facturé', 'Soldé'], 0), FEUILLE_FOLIO, initiale=True)
 
 # -- la file « Notes de chambre en attente » (filtre À rattacher), le 16/10 au soir
 COLS_N = [('Created on', '212px'), ('Commande POS', '262px'), ('Client', '196px'), ('Montant', '150px', 'd'),
           ('Motif', '1fr'), ('Folio choisi', '170px'), ('État', '140px')]
-ATTENTE = [('16/10/2026 22:41:17', 'Bar de la terrasse/0047', 'Martin Ebode', '9 500 FCFA', '2 folios ouverts'),
-           ('16/10/2026 20:18:03', 'Restaurant/0031', 'Boris Ndzana', '21 000 FCFA', 'Aucun folio ouvert'),
+NOTE_MARTIN = 'Bar de la terrasse/1377'            # le 16/10 à 22:41 (voir l'en-tête)
+ATTENTE = [('16/10/2026 22:41:17', NOTE_MARTIN, 'Martin Ebode', '9 500 FCFA', '2 folios ouverts'),
+           ('16/10/2026 20:18:03', 'Restaurant/0083', 'Boris Ndzana', '21 000 FCFA', 'Aucun folio ouvert'),
            ('16/10/2026 16:52:40', 'Boutique/0018', 'Sylvie Mbarga', '6 000 FCFA', 'Aucun folio ouvert')]
 
 
@@ -424,15 +451,28 @@ FILE_APRES = file_attente('t4-file2', ATTENTE[1:], '27 000 FCFA')
 
 # -- la note en attente de Martin Ebode : deux folios ouverts (séjour en cours et réservation de novembre).
 # Les folios ouverts ce soir-là, les plus récents d'abord (create_date desc) : la réservation de novembre
-# de Martin Ebode, puis ceux que le tutoriel 3 montre « Ouvert » (Brigitte Essomba est partie le 16/10).
-OUVERTS = ['FOL/2026/0227', 'FOL/2026/0226', 'FOL/2026/0221', 'FOL/2026/0209']
+# de Martin Ebode (0227), celle confirmée l'après-midi (0226), puis ceux que le tutoriel 3 montre « Ouvert »
+# (t03_folio.py:436-452). La liste déroulante n'en propose que huit (name_search limité à 8 :
+# relational_utils.js:209, :318) : le folio du séjour en cours de Martin (0209) n'y est pas, Mireille tape
+# « 0209 » et la liste se réduit à lui.
+OUVERTS = ['FOL/2026/%s' % n for n in ('0227', '0226', '0221', '0220', '0219', '0218', '0217', '0216', '0215',
+                                        '0213', '0212', '0211', '0210', '0209', '0205')]
+assert len(OUVERTS[:8]) == 8 and 'FOL/2026/0209' not in OUVERTS[:8]
+CHERCHE = '0209'
 DEROULANT = ('<div class="t04-dd masque" id="t4-dd" data-layout-allow-overlap data-layout-allow-occlusion>%s'
              '<div class="t04-dd-o lien">Recherche avancée...</div><div class="t04-dd-o ital">Commencer à écrire...</div>'
-             '</div>' % ''.join('<div class="t04-dd-o" id="t4-dd-%s">%s</div>' % (f[-4:], f) for f in OUVERTS))
-FOLIO_CHOISI = ('<div class="t04-m2o" id="t4-fc"><span class="t04-m2o-v" id="t4-fc-v"></span><span class="t04-car">▾</span>'
-                '%s</div>' % DEROULANT)
+             '</div>' % ''.join('<div class="t04-dd-o">%s</div>' % f for f in OUVERTS[:8]))
+DEROULANT_2 = ('<div class="t04-dd masque" id="t4-dd2" data-layout-allow-overlap data-layout-allow-occlusion>%s'
+               '<div class="t04-dd-o lien">Créer "%s"</div><div class="t04-dd-o lien">Recherche avancée...</div>'
+               '<div class="t04-dd-o lien">Créer et modifier...</div></div>'
+               % (''.join('<div class="t04-dd-o" id="t4-dd-%s">%s</div>' % (f[-4:], f) for f in OUVERTS
+                          if CHERCHE in f), CHERCHE))
+# le champ se tape comme une entrée (geste « saisir » : #t4-fc, #t4-fc-ph, #t4-fc-val)
+FOLIO_CHOISI = ('<div class="t04-m2o" id="t4-fc"><span class="ph" id="t4-fc-ph"></span>'
+                '<span class="t04-m2o-v" id="t4-fc-val"></span><span class="t04-car">▾</span>'
+                '%s%s</div>' % (DEROULANT, DEROULANT_2))
 FEUILLE_NOTE = deux_colonnes(
-    '<div class="grp">%s</div>' % ''.join([champ('Commande POS', 'Bar de la terrasse/0047', lien_=True),
+    '<div class="grp">%s</div>' % ''.join([champ('Commande POS', NOTE_MARTIN, lien_=True),
                                          champ('Client', 'Martin Ebode', lien_=True), champ('Montant', '9 500 FCFA'),
                                          champ('Motif', '2 folios ouverts', 't4-motif')]),
     '<div class="grp">%s</div>' % champ('Folio choisi', FOLIO_CHOISI, html=True, gras=True))
@@ -645,7 +685,7 @@ TUTORIEL = {
                     zoom('#t4-paie-restant', s=1.3, d=0.7), bulle('b-mixte', '#t4-paie-restant', cote='haut', d=2.6),
                     pause(2.2), dezoom(d=0.6), reaction('r-caisse', d=3.0), clic('#t4-paie-valider'), pause(1.0)]},
         {'temps': 2, 'titre': 'Sur le folio, sans ressaisie',
-         'texte': 'Une ligne de service « POS Bar de la terrasse/0042 », et le solde dû à jour.',
+         'texte': 'Une ligne de service « POS Bar de la terrasse/1360 », et le solde dû à jour.',
          'voix': "À la réception, Mireille ouvre le folio de Brigitte : le dîner y est déjà, en ligne de service, avec "
                  "la référence du ticket. Le solde dû est à jour, sans rien ressaisir.",
          'gestes': personnage('t04-pr', RECEPTION[0], retirer=['t04-pc']) + [
@@ -665,12 +705,15 @@ TUTORIEL = {
         {'temps': 3, 'titre': 'Choisir le bon folio',
          'texte': 'Folio choisi : la liste des folios ouverts, par référence.',
          'voix': "Martin Ebode a deux folios ouverts : son séjour en cours, et une réservation déjà confirmée pour "
-                 "novembre. Mireille ouvre la ligne, déroule Folio choisi, et prend le folio du séjour en cours.",
+                 "novembre. Mireille ouvre la ligne, déroule Folio choisi, tape le numéro du séjour en cours, et le "
+                 "prend.",
          'gestes': [clic('#t4-file-0', fx=0.3), vue('t4-note', 'hotel'), pause(0.3), anneau('#t4-motif', d=1.0),
                     clic('#t4-fc', fx=0.3), classe('#t4-fc', ajouter=['focus']), montrer('#t4-dd', d=0.3, y=-6),
                     zoom('#t4-note .feuille', s=1.3, d=0.6, fy=0.9), bulle('b-folio', '#t4-dd', cote='gauche', d=2.4),
-                    pause(0.8), curseur('#t4-dd-0209', fx=0.3, d=0.5), survol('#t4-dd-0209'), pause(0.9),
-                    clic('#t4-dd-0209', fx=0.3), cacher('#t4-dd', d=0.2), texte('#t4-fc-v', 'FOL/2026/0209'),
+                    pause(0.6), saisir('t4-fc', CHERCHE, d=0.6),
+                    cacher('#t4-dd', d=0.15), montrer('#t4-dd2', d=0.25, y=0, avec=True),
+                    curseur('#t4-dd-0209', fx=0.3, d=0.5), survol('#t4-dd-0209'), pause(0.7),
+                    clic('#t4-dd-0209', fx=0.3), cacher('#t4-dd2', d=0.2), texte('#t4-fc-val', 'FOL/2026/0209'),
                     classe('#t4-fc', retirer=['focus']), dezoom(d=0.5), anneau('#t4-fc', d=1.0)]},
         {'temps': 3, 'titre': '« Rattacher au folio »',
          'texte': 'La note passe « Rattachée » et quitte la file d\'attente.',

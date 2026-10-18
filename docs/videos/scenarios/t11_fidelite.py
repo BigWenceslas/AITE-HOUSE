@@ -148,33 +148,36 @@ Petit-déjeuner buffet » à 2 700 FCFA (10 800), passé « Facturé » le 16/10
 points, et « Facturé » sur la fiche cumule ses trois folios (96 000 + 144
 000 + 112 800). Le script relit ce total dans t03_folio.py et s'arrête s'il
 diverge. Le journal du 15/10 reprend les prestations réalisées du tutoriel 9
-(t09_espaces.py:207-219 : Martin Ebode, Yves Tchana, Linda Ewané, Carine
-Mbappé, Paul Essomba, Rachel Bilong, et le massage d'Estelle RES/26/0158 à
-27 000 FCFA, réalisé pendant son séjour : t09:214, :865-877) et le départ de
-Claire Durand (RES/2026/0201, chambre 401, du 14 au 15/10 :
-t02_planning.py:259, :288 ; folio FOL/2026/0201 de 123 000 FCFA, soit une
-nuit VIP à 120 000 et 3 000 de taxe pour un adulte, selon folio_resa de
-t03_folio.py:402-406). Le t09 reporte ce massage sur FOL/2026/0214, alors
-que le t03 montre le folio facturé à 112 800 FCFA sans cette ligne : la
-série ne tranche pas ; ce tutoriel suit le t03 pour le folio et le t09 pour
-la prestation (27 points), sans rejouer de double compte. Séquences recalées
-sur la série : tickets « Bar de la terrasse » /0011 le 31/07
-(t10_ardoises.py:223, :490), /0042 le 14/10 et /0047 le 16/10 à 22:41
-(t04_note_chambre.py:214, :405) — la caisse ouvre début juillet 2026,
-Estelle n'y a donc aucun ticket avant, et le sien du 16/10 est le /0045 ;
-prestations « RES/%(y)s/ » (sans remise à zéro) vers RES/26/0140 au matin du
-15/10 (t09:207-219), environ 0,4 par jour depuis novembre 2025, sans
-réutiliser un numéro du t09 ; folios FOL/2026/0084 le 22/02 et 0189 le
-02/09. Les volumes du regroupement par origine (348 mouvements, 22 968
-points depuis novembre 2025) restent sous ces séquences ; ils ne peuvent pas
-suivre la tuile « Points fidélité émis » du t15 (12 480 points du 30/09 au
-14/10, t15_direction.py:517), qui demanderait une centaine de folios sur la
-période quand le t03 n'en compte que 211 depuis l'ouverture (t03:441).
-Autres clients fictifs ajoutés : Boris Ndzana (ticket Bar de la
-terrasse/0043 le 14/10), Carine Owona, Gaëlle Nkeng, Hugues Mbida, Nadège
-Abena, Pauline Ekotto (t02_planning.py:254), Sandrine Mvondo, Thierry
-Etoundi ; Patrick Nkoulou, Brigitte Essomba, Martin Ebode et Paul Essomba
-viennent des tutoriels 3, 4 et 9. Les tickets du bar d'Estelle sont réglés
+(t09_espaces.py:242-254 : Samuel Etoga au pressing, Yves Tchana, Linda
+Ewané, Carine Ndongo, Paul Essomba, Rachel Bilong, et le massage de Brigitte
+Essomba RES/26/0158 à 27 000 FCFA, reporté sur son folio FOL/2026/0210 :
+t09:168-171, :249) et le départ de Claire Durand (RES/2026/0201, chambre
+401, du 14 au 15/10 : t02_planning.py:259, :288 ; folio FOL/2026/0201 de
+123 000 FCFA, soit une nuit VIP à 120 000 et 3 000 de taxe pour un adulte,
+selon folio_resa de t03_folio.py:416-420). Estelle n'a donc aucune
+prestation le 15/10 : son folio facturé (112 800 FCFA, t03) n'en porte
+aucune. Séquences recalées sur la série : la caisse « Bar de la terrasse »
+a ouvert le 04/05/2026 (t12_ventes.py:544) ; environ 8,3 tickets par jour
+(108 du 01 au 13/10, t12_ventes.py:380), soit environ 1 350 au soir du 13/10 sur
+les 1 440 tickets de toutes les caisses (t12_ventes.py:550) ; d'où les
+tickets d'Estelle /0560 le 10/07 (son premier verre au bar), /0851 le
+14/08, /1091 le 12/09, /1149 le 19/09, /1266 le 03/10 et /1375 le 16/10,
+entre le /1360 du 14/10 au soir (Brigitte Essomba, t04_note_chambre.py) et
+le /1377 du 16/10 à 22:41 (Martin Ebode, t04) ; prestations « RES/%(y)s/ »
+(sans remise à zéro) vers RES/26/0140 au matin du 15/10 (t09:242-254),
+environ 0,4 par jour depuis novembre 2025, sans réutiliser un numéro du
+t09 ; folios FOL/2026/0084 le 22/02 et 0189 le 02/09. Les volumes du
+regroupement par origine (348 mouvements, 22 968 points depuis novembre
+2025) restent sous ces séquences ; ils ne peuvent pas suivre la tuile
+« Points fidélité émis » du t15 (12 480 points du 30/09 au 14/10,
+t15_direction.py:547), qui demanderait une centaine de folios sur la
+période quand le t03 n'en compte que 211 depuis l'ouverture
+(t03_folio.py:456). Autres clients fictifs ajoutés : Boris Ndzana (client
+du bar), Carine Owona, Gaëlle Nkeng, Hugues Mbida, Nadège Abena, Pauline
+Ekotto (t02_planning.py:254), Sandrine Mvondo, Thierry Etoundi ; Patrick
+Nkoulou, Brigitte Essomba, Martin Ebode, Samuel Etoga et Paul Essomba
+viennent des tutoriels 3, 4 et 9 ; téléphones de la plage de fiction de la
+série (t10_ardoises.py, TELEPHONES ; demo.CLIENT_TEL). Les tickets du bar d'Estelle sont réglés
 en espèces (voir écart 2).
 
 Captures de référence (modèle visuel, jamais incrustées) : ref_muk/053,
@@ -276,16 +279,23 @@ def jma(d):
     return d.strftime('%d/%m/%Y')
 
 
-# Les tickets de la caisse du bar, recalés sur la série : Bar de la terrasse/0011
-# le 31/07/2026 (t10_ardoises.py:223, :490), /0042 le 14/10 et /0047 le 16/10 à
-# 22:41 (t04_note_chambre.py:214, :405) ; la caisse a donc ouvert début juillet
-# 2026, et Estelle Ngono n'y a pas de ticket avant.
-TICKETS_BAR = {date(2026, 7, 10): 2, date(2026, 8, 14): 16, date(2026, 9, 12): 27, date(2026, 9, 19): 30,
-               date(2026, 10, 3): 36, date(2026, 10, 16): 45}
+# Les tickets de la caisse du bar, recalés sur la série : la caisse a ouvert le
+# 04/05/2026 (t12_ventes.py:544) et vend environ 8,3 tickets par jour (108 du 01
+# au 13/10, t12_ventes.py:380 ; environ 1 350 au soir du 13/10, sur les 1 440 de toutes
+# les caisses, t12_ventes.py:550) : le n° d'un ticket du jour d tombe entre
+# 8,3 × (d − 04/05) et 8,3 × (d − 04/05 + 1). Brigitte Essomba a le /1360 le
+# 14/10 au soir, Martin Ebode le /1377 le 16/10 à 22:41 (t04_note_chambre.py).
+# Estelle Ngono prend son premier verre au bar le 10/07.
+OUVERTURE_BAR, PAR_JOUR = date(2026, 5, 4), 8.3
+TICKETS_BAR = {date(2026, 7, 10): 560, date(2026, 8, 14): 851, date(2026, 9, 12): 1091, date(2026, 9, 19): 1149,
+               date(2026, 10, 3): 1266, date(2026, 10, 16): 1375}
+for _d, _n in TICKETS_BAR.items():
+    _j = (_d - OUVERTURE_BAR).days
+    assert PAR_JOUR * _j <= _n <= PAR_JOUR * (_j + 1), (_d, _n)
 
 
 def ref_bar(n):
-    """« Bar de la terrasse/0045 » : nom de la caisse, n° sur 4 chiffres (pos_config.py:476-486)."""
+    """« Bar de la terrasse/1375 » : nom de la caisse, n° sur 4 chiffres (pos_config.py:476-486)."""
     return '%s/%04d' % (BAR, n)
 
 
@@ -308,7 +318,7 @@ def ref_presta(d, n=None):
 
 # --------------------------------------------- l'année d'Estelle Ngono --
 # Elle habite Douala : réunions au salon VIP, spa, coiffure, pressing, un verre
-# au bar après ses réunions depuis l'ouverture de la caisse, et trois séjours
+# au bar après ses réunions depuis juillet, et trois séjours
 # (folio = nuits + taxe de séjour ; le dernier avec ses quatre petits-déjeuners).
 D = date
 AUJOURDHUI_FOLIO = 112800                          # t03_folio.py:204-206, :428
@@ -325,7 +335,6 @@ def _folio_du_t03():
 assert _folio_du_t03() in (None, AUJOURDHUI_FOLIO), 't11 : FOL/2026/0214 vaut %s au t03' % _folio_du_t03()
 FOLIOS = {D(2026, 2, 22): ('FOL/2026/0084', 96000), D(2026, 9, 2): ('FOL/2026/0189', 144000),
           AUJOURDHUI: (demo.FOLIO, AUJOURDHUI_FOLIO)}
-MASSAGE = (D(2026, 10, 15), 'slot_spa', 27000)     # RES/26/0158, t09_espaces.py:214, :865-877
 ANNEE = [
     (D(2025, 11, 14), 'slot_space', 90000), (D(2025, 11, 28), 'slot_hair', 12000),
     (D(2025, 12, 12), 'slot_space', 120000), (D(2025, 12, 20), 'slot_spa', 25000),
@@ -340,7 +349,7 @@ ANNEE = [
     (D(2026, 9, 2), 'hotel', None), (D(2026, 9, 12), 'slot_space', 150000), (D(2026, 9, 12), 'pos', 13500),
     (D(2026, 9, 19), 'pos', 15500), (D(2026, 9, 26), 'slot_hair', 12000), (D(2026, 10, 3), 'slot_spa', 25000),
     (D(2026, 10, 3), 'pos', 8500), (D(2026, 10, 10), 'slot_space', 150000),
-    MASSAGE, (AUJOURDHUI, 'hotel', None), (AUJOURDHUI, 'pos', 12500),
+    (AUJOURDHUI, 'hotel', None), (AUJOURDHUI, 'pos', 12500),
 ]
 
 
@@ -352,8 +361,6 @@ def _mouvements():
             ref, montant = FOLIOS[d]
         elif origine == 'pos':
             ref = ref_bar(TICKETS_BAR[d])
-        elif (d, origine, montant) == MASSAGE:
-            ref = ref_presta(d, 158)
         else:
             ref = ref_presta(d)
         mvts.append((d, origine, ref, montant, points(montant)))
@@ -466,9 +473,10 @@ def vues_bt(actif=0):
 
 # ----------------------------------------------------- la caisse du bar --
 TICKET = 12500                                     # le total du ticket d'Estelle
-PROCHES = [('Boris Ndzana', 'Akwa Douala Cameroun', '+237 699 23 51 07', 'boris.ndzana@exemple.cm'),
-           ('Brigitte Essomba', 'Bonamoussadi Douala Cameroun', '+237 675 88 12 40', 'brigitte.essomba@exemple.cm'),
-           ('Carine Owona', 'Bali Douala Cameroun', '+237 690 14 77 32', 'carine.owona@exemple.cm'),
+# téléphones de la plage de fiction, ceux de t10_ardoises.py (TELEPHONES) et de t04_note_chambre.py
+PROCHES = [('Boris Ndzana', 'Akwa Douala Cameroun', '+237 6 00 00 00 40', 'boris.ndzana@exemple.cm'),
+           ('Brigitte Essomba', 'Bonamoussadi Douala Cameroun', '+237 6 00 00 00 32', 'brigitte.essomba@exemple.cm'),
+           ('Carine Owona', 'Bali Douala Cameroun', '+237 6 00 00 00 41', 'carine.owona@exemple.cm'),
            (CLIENTE, 'Bonapriso Douala Cameroun', demo.CLIENT_TEL, demo.CLIENT_MAIL)]
 
 
@@ -510,7 +518,8 @@ PAIEMENT = (
     '<div class="pos-pl t11-pl masque" id="t11-pl"><span>Espèces</span><span>%s</span><span class="x">×</span></div>'
     '</div></div></div></div>'
     % (MODES, icone('personne'), icone('document'), ico(LIVRE), PAVE, fcfa(TICKET), fcfa(0), fcfa(TICKET)))
-CAISSE = fenetre_pos('t11-pos', [PAIEMENT], CAISSIER, numero='718', calques=DIALOGUE)
+# n° de suivi : session du 16/10 (00137) % 10 × 100 + 6e ticket du jour (/1370 à /1375) : pos_order.py:58-60
+CAISSE = fenetre_pos('t11-pos', [PAIEMENT], CAISSIER, numero='706', calques=DIALOGUE)
 
 
 # -------------------------------------------------- Mouvements de points --
@@ -531,28 +540,32 @@ def ligne_mvt(ident, d, client, origine, ref, montant, pts, rouge=False):
 D15 = date(2026, 10, 15)
 JOURNAL = [  # (date, client, origine, référence, montant) — du plus récent au plus ancien (date desc, id desc)
     (AUJOURDHUI, CLIENTE, 'pos', ref_bar(TICKETS_BAR[AUJOURDHUI]), TICKET),
-    (AUJOURDHUI, 'Patrick Nkoulou', 'pos', ref_bar(44), 7500),
+    (AUJOURDHUI, 'Patrick Nkoulou', 'pos', ref_bar(TICKETS_BAR[AUJOURDHUI] - 1), 7500),
     (AUJOURDHUI, CLIENTE, 'hotel', demo.FOLIO, FOLIOS[AUJOURDHUI][1]),
-    # le jeudi 15/10 : les prestations réalisées de t09_espaces.py:207-219, de la
-    # dernière à la première, et le départ de Claire Durand (RES/2026/0201, 401,
-    # 14-15/10 : t02_planning.py:259, :288 ; 120 000 + 3 000 de taxe : t03:402-406)
-    (D15, CLIENTE, 'slot_spa', ref_presta(D15, 158), 27000),
+    # le jeudi 15/10 : les prestations réalisées de t09_espaces.py:242-254, de la
+    # dernière à la première (le massage de Brigitte Essomba, reporté sur
+    # FOL/2026/0210 ; le pressing de Samuel Etoga), et le départ de Claire Durand
+    # (RES/2026/0201, 401, 14-15/10 : t02_planning.py:259, :288 ; 120 000 + 3 000
+    # de taxe : t03_folio.py:416-420)
+    (D15, 'Brigitte Essomba', 'slot_spa', ref_presta(D15, 158), 27000),
     (D15, 'Rachel Bilong', 'slot_spa', ref_presta(D15, 150), 23000),
     (D15, 'Paul Essomba', 'slot_space', ref_presta(D15, 133), 45000),
-    (D15, 'Carine Mbappé', 'slot_hair', ref_presta(D15, 142), 19000),
+    (D15, 'Carine Ndongo', 'slot_hair', ref_presta(D15, 142), 19000),
     (D15, 'Claire Durand', 'hotel', 'FOL/2026/0201', 123000),
     (D15, 'Linda Ewané', 'slot_spa', ref_presta(D15, 145), 27000),
     (D15, 'Yves Tchana', 'slot_hair', ref_presta(D15, 138), 6200),
-    (D15, 'Martin Ebode', 'slot_pressing', ref_presta(D15, 141), 4800),
+    (D15, 'Samuel Etoga', 'slot_pressing', ref_presta(D15, 141), 4800),
 ]
-assert JOURNAL[0][3] == MVTS[-1][2] and JOURNAL[2][3] == MVTS[-2][2] and JOURNAL[3][3] == MVTS[-3][2]
+assert JOURNAL[0][3] == MVTS[-1][2] and JOURNAL[2][3] == MVTS[-2][2]
+assert not [m for m in MVTS if m[0] == D15], 'Estelle n\'a aucune prestation le 15/10 (massage : Brigitte, t09)'
 # (origine, nombre de mouvements, somme des montants, somme des points) depuis
 # les premiers mouvements (novembre 2025), dans l'ordre d'affichage d'Odoo 18
 # (clé de la sélection). Les volumes restent sous les séquences visibles dans la
-# série au 16/10/2026 : 211 folios en tout (t03_folio.py:441), environ 0,55
-# par jour depuis FOL/2026/0084 le 22/02 ; tickets jusqu'à
-# Bar de la terrasse/0047, Restaurant/0031 et Boutique/0018 (t04:405-407) ;
-# prestations jusqu'à RES/26/0159 (t09_espaces.py:218). Les points d'un groupe
+# série au 16/10/2026 : 211 folios en tout (t03_folio.py:456), environ 0,55
+# par jour depuis FOL/2026/0084 le 22/02 ; environ 1 440 tickets depuis le
+# 04/05 (t12_ventes.py:550), jusqu'à Bar de la terrasse/1377, Restaurant/0083
+# et Boutique/0018 (t04_note_chambre.py, ATTENTE) ; prestations jusqu'à
+# RES/26/0159 (t09_espaces.py:253). Les points d'un groupe
 # ne dépassent jamais montant ÷ 1 000 (partie entière ligne par ligne).
 GROUPES = [('hotel', 168, 19824000, 19790), ('manual', 5, None, -1650), ('pos', 54, 745200, 718),
            ('slot_hair', 30, 345000, 330), ('slot_pressing', 26, 140400, 128), ('slot_spa', 34, 870400, 862),
@@ -600,7 +613,7 @@ ORIGINE_V = vue_libre('t11-origine', CP_ORIG + (
 # clôture d'une session de caisse aussi, pour le client de chaque ticket non
 # facturé (point_of_sale/models/pos_session.py:1013-1015) : les clients du bar
 # y sont donc (Boris Ndzana, Patrick Nkoulou, Brigitte Essomba : ticket Bar de la
-# terrasse/0042 au t04, ardoise ARD/0039), comme Pauline Ekotto, en 205 du 06 au
+# terrasse/1360 au t04, ardoise ARD/0039), comme Pauline Ekotto, en 205 du 06 au
 # 09/10 (t02_planning.py:254). Seules Carine Owona et Nadège Abena, servies
 # uniquement en prestations et en espaces, n'y sont pas.
 VIP = [('Boris Ndzana', 'boris.ndzana@exemple.cm', True), ('Brigitte Essomba', 'brigitte.essomba@exemple.cm', True),

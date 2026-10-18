@@ -139,7 +139,9 @@ confirmation » au lieu de « 0 saisie pour la réception ».
 Données : demo.py (Complexe Hôtelier — Démo, Démo Hôtellerie SARL, postes,
 Confort à 45 000 FCFA la nuit). Le séjour des étapes 3 à 5 est propre à ce
 tutoriel (RESA_R…), pour laisser intact celui d'Estelle Ngono que suivent
-les autres : Pélagie Ondobo (fictive), RES/2026/0225, FOL/2026/0225,
+les autres : Pélagie Ondobo (fictive, téléphone de la plage de fiction de
+la série), RES/2026/0228, FOL/2026/0228 (numéro suivant FOL/2026/0226-0227,
+créés le 16/10 au t04_note_chambre.py),
 chambre 201 [CFT] (libre fin octobre au planning de t02_planning.py,
 liste SEJOURS), 2 adultes, du 26 au 28/10/2026 puis au 29/10/2026 ; confirmée
 le 20/10/2026 par la directrice, qui tient l'écran. Chiffres de l'état mensuel fictifs, cohérents avec un 3 ★ à
@@ -161,8 +163,8 @@ MENUS = ['Direction', 'Front Desk', 'Réservations', 'Espaces & Prestations', 'N
 # d'Estelle Ngono (demo.py) que suivent t01, t02, t03, t06, t07 et t11. Confirmée par la
 # directrice le 20/10/2026, prolongée d'une nuit le 22/10/2026 ; départ en octobre, donc
 # compté dans l'état d'octobre de l'étape 6.
-RESA_R, FOLIO_R = 'RES/2026/0225', 'FOL/2026/0225'
-CLIENT_R, TEL_R, MAIL_R = 'Pélagie Ondobo', '+237 699 52 17 36', 'pelagie.ondobo@exemple.cm'
+RESA_R, FOLIO_R = 'RES/2026/0228', 'FOL/2026/0228'
+CLIENT_R, TEL_R, MAIL_R = 'Pélagie Ondobo', '+237 6 00 00 00 64', 'pelagie.ondobo@exemple.cm'
 ARRIVEE_R, DEPART_R, CHAMBRE_R = '26/10/2026 14:00:00', '28/10/2026 12:00:00', '201 [CFT]'
 # Deux nuits, puis trois. Nuitée Confort à 45 000 FCFA (demo.PRIX_NUIT) sans TVA, convention de
 # la série (t01_reception.py TOTAL_RESA, t02_planning.py, t03_folio.py, chapitre 1 de la présentation) ;
@@ -269,7 +271,7 @@ H_GAUCHE = (
                         ch('Catégorie', demo.ETOILES, 't05-h-cat', gras=True, saisie=True)])
     + groupe('Coordonnées', [ch('Rue', 'Akwa', gras=True, saisie=True), ch('Ville', demo.VILLE, gras=True, saisie=True),
                              ch('Pays', 'Cameroun', 't05-h-pays', gras=True, saisie=True),
-                             ch('Téléphone', '+237 6 99 00 00 00', gras=True, saisie=True),
+                             ch('Téléphone', '+237 6 00 00 00 10', gras=True, saisie=True),
                              ch('E-mail', '', gras=True, saisie=True), ch('Site web', '', gras=True, saisie=True)]))
 ETAGES = ''.join('<div class="t05-etage"><span class="t05-poignee">⠿</span><span>%s</span>%s</div>'
                  % (n, icone('corbeille', 't05-corb')) for n in ('Rez-de-chaussée', '1er étage', '2e étage'))
@@ -351,7 +353,7 @@ BAREMES = vue_libre('t05-baremes', CP_BAREMES + '<div class="liste t05-liste">%s
                     % (TETE_B, FERME, OUVERT))
 
 # ------------------------------------------------------------ réservation --
-# Réservations → RES/2026/0225 : en brouillon, puis confirmée d'un clic.
+# Réservations → RES/2026/0228 : en brouillon, puis confirmée d'un clic.
 R_STATS = (stat('t05-r-st-folio', 'document', 'Folio', AVANT['ttc'])
            + stat('t05-r-st-fiches', 'fiche', 'Fiches clients', '0/2'))
 DEPART = ('<span class="t05-champ" id="t05-r-dep"><span class="ph" id="t05-r-dep-ph"></span>'
@@ -386,7 +388,7 @@ RESA = vue_fiche('t05-resa', cp_fiche('Réservations', RESA_R, R_STATS, '4 / 18'
                  boutons_apres=[B_CONFIRMEE])
 
 # ------------------------------------------------------------ folio --
-# Bouton « Folio » de la réservation → FOL/2026/0225 ; la ligne de taxe est en orange.
+# Bouton « Folio » de la réservation → FOL/2026/0228 ; la ligne de taxe est en orange.
 GAB_F = '110px 150px 74px 1fr 52px 120px 84px 134px 126px 22px'
 
 
@@ -767,7 +769,7 @@ TUTORIEL = {
     },
     'cta': {
         'appel': 'Demandez votre démonstration',
-        'suivant': 'Registre et fiche de police',
+        'suivant': 'Fiche de police et statistiques',
         'voix': "Aïte haousse, par Aïte Consulting. Demandez votre démonstration, et retrouvez tous nos tutoriels sur "
                 "notre chaîne.",
     },
