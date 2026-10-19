@@ -49,7 +49,7 @@ Compatible Odoo 18. Dépend d'Achats (purchase) et Comptabilité (account).
     'author': "AITE CONSULTING",
     'website': "https://aiteconsulting.com",
     'category': 'Inventory/Purchase',
-    'version': '18.0.1.0.2',
+    'version': '18.0.1.0.3',
     'license': 'LGPL-3',
 
     'depends': [

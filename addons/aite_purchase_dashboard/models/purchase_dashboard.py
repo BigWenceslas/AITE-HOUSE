@@ -385,17 +385,19 @@ class AitePurchaseDashboard(models.AbstractModel):
 
         # Soldes débiteurs du compte fournisseurs (paiements non lettrés,
         # avoirs) — l'approximation « acomptes » = débiteur − avoirs.
+        # Le reste dû d'une ligne débitrice est positif ; celui d'une facture
+        # ouverte (ligne créditrice) est négatif : c'est la dette, pas une créance.
         aml_domain = [
             ('account_id.account_type', '=', 'liability_payable'),
             ('parent_state', '=', 'posted'),
             ('company_id', '=', self.env.company.id),
-            ('amount_residual', '<', -0.005),
+            ('amount_residual', '>', 0.005),
         ]
         if supplier_id:
             aml_domain.append(('partner_id', '=', int(supplier_id)))
         debit_total = 0.0
         for line in self.env['account.move.line'].search(aml_domain):
-            debit_total += -(line.amount_residual or 0.0)
+            debit_total += line.amount_residual or 0.0
         acomptes_est = max(0.0, debit_total - avoirs_total)
 
         return {
