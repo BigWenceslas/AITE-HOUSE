@@ -5,13 +5,11 @@ Le parcours d'un séjour à la réception, dans l'ordre réel d'usage : le Front
 Desk, la réservation rapide (chambres libres seulement), l'acompte Mobile
 Money tracé sur le folio, le check-in, le folio du séjour (nuitées, taxe de
 séjour, prestations), le check-out et la facture. Personnage : la
-réceptionniste (demo.POSTES['reception']) avec, en plus du profil Réception,
-le droit Facturation d'Odoo (account.group_account_invoice) : sans lui, la
-facture du check-out échoue (voir écarts). Barre MuK : celle du profil
-Réception (ecrans.APPS_PROFIL['reception']) plus l'application Facturation,
-que ce droit fait apparaître (odoo18/addons/account/views/account_menuitem.xml
-:5-6) ; la pastille du personnage l'affiche (« Réceptionniste (droit
-Facturation) ») et la bulle de l'étape 6 le redit. Données fictives : demo.py (Estelle Ngono,
+réceptionniste (demo.POSTES['reception']), au seul profil Réception, sans le
+droit Facturation d'Odoo : depuis aite_hotel_management 18.0.1.0.4, la
+facture du départ est créée, validée et lettrée en sudo() (voir écarts).
+Barre MuK : celle du profil Réception (ecrans.APPS_PROFIL['reception']), sans
+l'application Facturation. Données fictives : demo.py (Estelle Ngono,
 RES/2026/0214, FOL/2026/0214, chambre 204 [CFT], 45 000 FCFA la nuit) ;
 types, étages et prix des autres chambres composés pour la démonstration
 (Standard 35 000, Confort 45 000, Suite Junior 75 000, Suite VIP 120 000).
@@ -114,9 +112,12 @@ Sources des libellés (addons/, vérifiés mot pour mot par grep -rF) :
   Folio, Départ prévu, Départ réel, Total TTC, Déjà encaissé, Solde dû,
   « Générer la facture » coché par défaut, bandeau « Un solde reste dû … »,
   Valider le départ, Annuler) ; wizard/hotel_checkout_wizard.py:73-108 ;
-  models/hotel_folio.py:294-315 (facture tirée des lignes du folio, folio
-  « Facturé ») ; models/hotel_housekeeping.py:40, 58, 137-148 (« Recouche
-  (départ) », priorité « Urgente », chambre à nettoyer).
+  models/hotel_folio.py:294-328 (facture tirée des lignes du folio, créée,
+  validée et lettrée en sudo(), folio « Facturé » ; sans accès aux factures,
+  l'action renvoyée reste sur le folio, :319-328) ; vue du folio facturé
+  (views/hotel_folio_views.xml:36-62, :86-87 : « Générer la facture » masqué,
+  bouton « Facture », « État facture ») ; models/hotel_housekeeping.py:40, 58,
+  137-148 (« Recouche (départ) », priorité « Urgente », chambre à nettoyer).
 - État facture « Partiellement réglé » : traduction Odoo 18 de « Partially
   Paid » (odoo18/addons/account/i18n/fr.po), l'acompte comptabilisé
   (res_config_settings.py:39-42, activé par défaut) étant lettré sur la facture.
@@ -129,8 +130,9 @@ ne gère nativement la taxe de séjour d'Afrique francophone : « partout il fau
 ajouter une ligne/taxe configurable », d'où « à paramétrer à la main ») et :13 (loi
 n° 2016/006, art. 28 : obligations de police en matière d'enregistrement).
 Résultats : deux verrous (hotel_reservation.py:288-305 et :641-664), cinq
-moyens d'encaissement (hotel_payment_wizard.py:42-51), 207 tests automatisés
-dans addons/aite_hotel_management/tests (décompte des « def test_ »).
+moyens d'encaissement (hotel_payment_wizard.py:42-51), 208 tests automatisés
+dans addons/aite_hotel_management/tests (décompte des « def test_ », dont
+test_receptionist_alone_checks_out_and_invoices, ajouté avec 18.0.1.0.4).
 
 Écarts relevés (rejoués tels quels) :
 - Après « Rechercher les chambres disponibles », l'assistant est rouvert par
@@ -141,15 +143,15 @@ dans addons/aite_hotel_management/tests (décompte des « def test_ »).
 - Le bandeau du registre s'affiche sans espace après les deux-points
   (« Registre des clients :1 fiche(s)… »), vérifié sur aite_dev.
 - Le libellé des nuitées porte des dates ISO (hotel_folio.py:256-260).
-- La création de la facture n'est pas en sudo (hotel_folio.py:294-315) :
-  sans le droit Facturation d'Odoo (account.group_account_invoice,
-  odoo18/addons/account/security/ir.model.access.csv:40-42), un compte au
-  seul profil Réception obtient une erreur d'accès au check-out ; le compte
-  demo.reception n'a pas ce droit (aite_demo_data/models/demo_generator.py
-  :55-59). La réceptionniste du tutoriel a donc ce droit (pastille, barre
-  MuK avec Facturation, bulle de l'étape 6).
-- Après « Valider le départ », l'application ouvre la facture comptable
-  (écran standard d'Odoo, non rejoué) : le montage passe au folio facturé.
+- Corrigé dans 18.0.1.0.4 : la création de la facture n'était pas en sudo ;
+  sans le droit Facturation d'Odoo (account.group_account_invoice), un compte
+  au seul profil Réception obtenait une erreur d'accès au check-out, et le
+  tutoriel donnait ce droit à la réceptionniste. Désormais la facture est une
+  écriture technique (hotel_folio.py:306-315) et, sans accès aux factures,
+  « Valider le départ » laisse la réceptionniste sur le folio, passé à
+  « Facturé », la facture liée (hotel_folio.py:319-328) : c'est ce que montre
+  l'étape 6, sans montage : lignes figées, nuitée et taxe re-datées du
+  départ et rangées après le petit-déjeuner (hotel_folio.py:265, :397).
 - « ADR », « RevPAR », « Front Desk », « room board », « check-out attendus
   aujourd'hui », « No-show » : anglais résiduel à l'écran (règle 6) ; « vs N-1 » compare à la période précédente de même
   durée (hotel_dashboard.py:321-348).
@@ -180,12 +182,9 @@ from moteur import (animer, anneau, cacher, choisir, clic, classe, compter, curs
                     pause, saisir, survol, texte, vue)
 
 NOM, ROLE = demo.POSTES['reception']
-# La facture du check-out n'est pas créée en sudo (hotel_folio.py:294-315) :
-# la réceptionniste du tutoriel a donc, en plus du profil Réception, le droit
-# Facturation d'Odoo (account.group_account_invoice), qui fait apparaître
-# l'application Facturation dans sa barre (account_menuitem.xml:5-6).
-ROLE = ROLE + ' (droit Facturation)'
-APPS = APPS_PROFIL['reception'][:3] + ['Facturation'] + APPS_PROFIL['reception'][3:]
+# Le seul profil Réception : la facture du départ est une écriture technique
+# (sudo, aite_hotel_management 18.0.1.0.4), le droit Facturation n'est plus utile.
+APPS = APPS_PROFIL['reception']
 # Numéro de la plage de fiction de la série (demo.py).
 TEL = demo.CLIENT_TEL
 MENUS =['Front Desk', 'Réservations', 'Espaces & Prestations', 'Notes de chambre en attente', 'Facturation',
@@ -441,6 +440,28 @@ LIGNES_FOLIO = (
                     'taxe'),
         LIGNE_SAISIE,
         GAB_FL, TOTAL_RESA, TOTAL_RESA))
+# Le folio relu après « Valider le départ » : lignes figées (liste en lecture
+# seule, plus de « Ajouter une ligne », hotel_folio_views.xml:92), nuitée et
+# taxe re-datées du jour du départ (hotel_folio.py:265, checkout :94), donc
+# rangées après le petit-déjeuner (_order 'date, id', hotel_folio.py:397) ;
+# le texte sous les lignes disparaît (invisible="bool(move_id)").
+TETE_FL = '<div class="t-tete" style="grid-template-columns:%s">%s</div>' % (
+    GAB_FL, ''.join('<span class="ell%s">%s</span>' % (' d' if d else '', e(x)) for x, d in (
+        ('Date', 0), ('Type', 0), ('Service', 0), ('Libellé', 0), ('Qté', 1), ('Prix unitaire', 1), ('Taxes', 0),
+        ('Sous-total (HT)', 1), ('Total (TTC)', 1))))
+LIGNES_APRES = (
+    '<div class="table t1-tab t1-cache" id="t1-fl-apres">%s%s%s%s'
+    '<div class="t-total" style="grid-template-columns:%s"><span></span><span></span><span></span><span></span>'
+    '<span></span><span></span><span></span><span class="d">%s</span><span class="d">%s</span></div></div>' % (
+        TETE_FL,
+        ligne_folio('t1-fa1', '15/10/2026', 'Service', 'violet', 'Petit-déjeuner buffet', 'Petit-déjeuner buffet',
+                    '4,00', '2 700 FCFA', '10 800 FCFA'),
+        ligne_folio('t1-fa2', '16/10/2026', 'Nuitée', 'info', '',
+                    'Nuitée 204 (Confort) — 2026-10-14 → 2026-10-16', '2,00', '45 000 FCFA', '90 000 FCFA', 't1-dinfo'),
+        ligne_folio('t1-fa3', '16/10/2026', 'Taxe de séjour', 'orange', '',
+                    'Taxe de séjour — 4 nuitée(s) × personne (3 ★, Cameroun)', '4,00', '3 000 FCFA', '12 000 FCFA',
+                    'taxe'),
+        GAB_FL, TOTAL_2, TOTAL_2))
 FEUILLE_FOLIO = (
     titre_fiche(demo.FOLIO)
     + deux_colonnes(
@@ -451,8 +472,8 @@ FEUILLE_FOLIO = (
                             champ('Taxes', '0 FCFA'), champ('Total TTC', TOTAL_RESA, 't1-f-ttc'),
                             champ('Encaissé', ACOMPTE), champ('Solde dû', SOLDE_1, 't1-f-solde')], 't1-f-montants')
         + '<div class="masque" id="t1-f-etat">%s</div>' % champ('État facture', 'Partiellement réglé'))
-    + onglets(['Lignes du folio', 'Règlements', 'Note']) + LIGNES_FOLIO
-    + '<div class="note-pied">Les lignes « nuitée » sont synchronisées depuis la réservation ; ajoutez librement des '
+    + onglets(['Lignes du folio', 'Règlements', 'Note']) + LIGNES_FOLIO + LIGNES_APRES
+    + '<div class="note-pied" id="t1-f-note">Les lignes « nuitée » sont synchronisées depuis la réservation ; ajoutez librement des '
       'lignes de service (restaurant, blanchisserie, minibar…).</div>')
 FOLIO = vue_fiche('t1-folio', cp_fiche(demo.RESA, demo.FOLIO, '', stats=[
     ('t1-st-regl', 'billet', 'Règlements', '1'), ('t1-st-fact', 'document', 'Facture', '')]).replace(
@@ -607,8 +628,7 @@ TUTORIEL = {
         't1-b-libres': 'Chambres réservées ou hors service : écartées de la recherche.',
         't1-b-momo': 'Référence de transaction exigée pour MTN Mobile Money et Orange Money.',
         't1-b-taxe': 'Taxe de séjour ajoutée toute seule, sans TVA : 4 nuitées × personne à 3 000 F (3 ★).',
-        't1-b-facture': "Cochée d'office : la facture reprend les lignes du folio (réceptionniste avec le droit "
-                         "Facturation).",
+        't1-b-facture': "Cochée d'office : la facture se crée et se valide toute seule, avec les lignes du folio.",
     },
     'reactions': {
         't1-r-fiche': 'La fiche de police du client principal est déjà créée, pré-remplie.',
@@ -681,11 +701,12 @@ TUTORIEL = {
                     texte('#t1-f-serv', '10 800 FCFA', avec=True), texte('#t1-f-ht', TOTAL_2, avec=True),
                     texte('#t1-f-ttc', TOTAL_2, avec=True), texte('#t1-f-solde', SOLDE_2, avec=True),
                     texte('#t1-st-folio-v', SOLDE_2, avec=True), anneau('#t1-fl3', d=1.0), anneau('#t1-ft-ttc', d=1.0)]},
-        {'temps': 3, 'titre': 'Le départ et la facture', 'texte': 'Le check-out récapitule le folio ; la facture en '
-                                                                  'reprend les lignes.',
+        {'temps': 3, 'titre': 'Le départ et la facture', 'texte': 'Valider le départ : la facture se crée seule, le '
+                                                                  'folio passe à Facturé.',
          'voix': "Le jour du départ, le registre est à jour ; Mireille lance le check-out. L'assistant récapitule "
-                 "le total, l'acompte déjà encaissé et le solde dû ; la facture est cochée d'office. La chambre part "
-                 "aussitôt au ménage, et la facture reprend le folio.",
+                 "le total, l'acompte déjà encaissé et le solde dû ; la facture est cochée d'office. Valider le "
+                 "départ : la facture est créée et validée toute seule, le folio passe à Facturé, et la chambre "
+                 "part au ménage.",
          'gestes': [clic('#t1-folio .fil .parent', d=0.6),
                     # entre-temps, les deux fiches ont été complétées (t06) : registre à jour, 2/2
                     classe('#t1-bandeau', ajouter=['t1-cache'], avec=True),
@@ -697,6 +718,9 @@ TUTORIEL = {
                     classe('#t1-fsb-0', retirer=['actif'], avec=True), classe('#t1-fsb-1', ajouter=['actif'], avec=True),
                     cacher('#t1-f-fact', d=0.05, avec=True), montrer('#t1-st-fact', d=0.05, y=0, avec=True),
                     montrer('#t1-f-etat', d=0.05, y=0, avec=True), texte('#t1-f-sej', 'Parti', avec=True),
+                    classe('#t1-fl', ajouter=['t1-cache'], avec=True),
+                    classe('#t1-fl-apres', retirer=['t1-cache'], avec=True),
+                    classe('#t1-f-note', ajouter=['t1-cache'], avec=True),
                     vue('t1-folio'), anneau('#t1-fsb-1', d=1.1),
                     anneau('#t1-st-fact', d=0.9), reaction('t1-r-fin', d=2.4), pause(1.0)]},
     ],
@@ -707,10 +731,10 @@ TUTORIEL = {
              'texte': 'contre la double réservation : à la confirmation, puis sur chaque séjour actif'},
             {'valeur': '5', 'compter': 5, 'unite': 'moyens', 'icone': 'pieces',
              'texte': "d'encaissement tracés sur le folio, dont MTN Mobile Money et Orange Money"},
-            {'valeur': '207', 'compter': 207, 'unite': 'tests', 'icone': 'coche',
+            {'valeur': '208', 'compter': 208, 'unite': 'tests', 'icone': 'coche',
              'texte': 'automatisés sur le socle de la réception : réservations, folios, assistants, droits'},
         ],
-        'voix': "Deux verrous contre la double réservation, cinq moyens d'encaissement tracés, et deux cent sept "
+        'voix': "Deux verrous contre la double réservation, cinq moyens d'encaissement tracés, et deux cent huit "
                 "tests automatisés sur le socle de la réception.",
     },
     'cta': {

@@ -31,12 +31,13 @@ Sources — libellés et règles (addons/) :
   jour. » / « Imprimer les fiches »), :44-47 (« Fiches d'enregistrement ») ;
 - aite_hotel_management/views/hotel_folio_views.xml:9-24 (liste « Folios » :
   colonnes, décorations — ouvert avec solde en orange, soldé grisé — badges
-  d'état, sommes), :36-49 (« Encaisser », « Générer la facture » ; « Annuler »
-  réservé au Responsable, donc absent pour la réception ; barre d'état
-  « Ouvert / Facturé / Soldé »), :51-62 (« Règlements », « Facture »),
-  :66-89 (groupes « Séjour » et « Montants », « État facture » une fois
-  facturé), :91-128 (onglet « Lignes du folio », colonnes, badges, texte
-  sous les lignes, lignes figées après facture), :130-156 (onglet
+  d'état, sommes), :36-49 (« Encaisser », « Générer la facture » masqué une
+  fois facturé ; « Annuler » réservé au Responsable, donc absent pour la
+  réception ; barre d'état « Ouvert / Facturé / Soldé »), :51-62
+  (« Règlements », « Facture »), :66-89 (groupes « Séjour » et « Montants »,
+  « État facture » une fois facturé), :91-128 (onglet « Lignes du folio »,
+  colonnes, badges, texte sous les lignes, lignes figées après facture,
+  « Ajouter une ligne » et texte masqués), :130-156 (onglet
   « Règlements » : colonnes, badge « Validé », bouton « Annuler » en icône),
   :175-186 (filtres « Ouverts », « Avec solde dû », « Regrouper par » État,
   Client, Hôtel), :192-206 (action « Folios ») ;
@@ -49,8 +50,11 @@ Sources — libellés et règles (addons/) :
   les lignes du folio, est comptabilisée, une seule par folio), :399-437
   (Type « Nuitée / Service », Service, Libellé, Qté, Prix unitaire, Taxes,
   Sous-total (HT), Total (TTC)), :439-446 (choisir le service remplit libellé
-  et prix), :556-599 (Date, Montant, Acompte, Moyen de paiement — cinq
-  moyens —, Réf. transaction, Encaissé par, État « Validé ») ;
+  et prix), :294-328 (facture créée, validée et lettrée en sudo() depuis
+  18.0.1.0.4 ; sans accès aux factures, « Valider le départ » laisse la
+  réceptionniste sur le folio, passé à « Facturé »), :556-599 (Date,
+  Montant, Acompte, Moyen de paiement — cinq moyens —, Réf. transaction,
+  Encaissé par, État « Validé ») ;
 - aite_hotel_management/wizard/hotel_payment_wizard.py:18-62 et
   hotel_payment_wizard_views.xml:8-34 (« Encaisser un règlement » : Folio,
   Client, Solde dû actuel, Montant à encaisser pré-rempli avec le solde,
@@ -77,26 +81,12 @@ Sources — libellés et règles (addons/) :
   « Partiellement réglé » puis « Payé » — lettrage best-effort, non couvert
   par un test).
 
-Sources — Odoo 18 (../odoo18) : addons/account/i18n/fr.po (« Partiel »
-:12018-12019, « Payé le » :11987-11988, « Montant dû » :2852-2853, « Facture
-client », « Envoyer », « Imprimer », « Payer », « Aperçu », « Avoir »,
-« Remettre en brouillon », « Brouillon », « Comptabilisé », « Date de
-facturation », « Date d'échéance », « Lignes de facture », « Autres
-informations », « Produit », « Quantité », « Prix », « Taxes », « Montant »,
-« Montant hors taxes », « Total », « Conditions générales », « Partiellement
-réglé », « Payé »), addons/account/views/account_move_views.xml:1042-1053
-(« Date d'échéance » sans conditions de paiement), :716-748 (« Envoyer »,
-« Imprimer » et « Payer » en boutons principaux sur une facture
-comptabilisée, partiellement réglée, sans créance en attente), :903-904
-(ruban « Partiel » si payment_state = partial), :1284-1285 (widget des
-paiements, puis « Montant dû » dès que la facture n'est plus en brouillon) ;
-addons/account/static/src/components/account_payment_field/
-account_payment.xml:38-55 (icône d'info, « Payé le <date> », montant) ;
-addons/account/models/account_move.py:1237-1275 (règlements lettrés par
-écriture, sans paiement ni relevé : « partial » puis « paid », jamais « En
-paiement ») ; aite_hotel_management/models/hotel_folio.py:12-20 et :700-751
-(l'acompte passe une écriture datée du règlement, 14/10, lettrée avec la
-facture, d'où « Payé le 14/10/2026 ») ; addons/web/i18n/fr.po
+Sources — Odoo 18 (../odoo18) : addons/account/i18n/fr.po (« Partiellement
+réglé », « Payé »), addons/account/models/account_move.py:1237-1275
+(règlements lettrés par écriture, sans paiement ni relevé : « partial » puis
+« paid », jamais « En paiement ») ; aite_hotel_management/models/
+hotel_folio.py:12-20 et :700-766 (chaque règlement passe une écriture 411,
+lettrée avec la facture du folio) ; addons/web/i18n/fr.po
 (« Filtres », « Regrouper par », « Favoris », « Ajouter un filtre
 personnalisé », « Ajouter un groupe personnalisé », « Enregistrer la recherche
 actuelle », « Ajouter une ligne », « Nouveau »).
@@ -104,7 +94,10 @@ actuelle », « Ajouter une ligne », « Nouveau »).
 Vérifié dans une transaction annulée (odoo-bin shell, base aite_dev) : la
 facture du check-out reprend les lignes dans l'ordre du folio (nuitée, taxe,
 service) ; au check-out, les nuitées et la taxe sont re-datées du jour du
-départ, si bien que le folio relu les trie après le petit-déjeuner.
+départ, si bien que le folio relu les trie après le petit-déjeuner. Sous le
+seul profil Réception (18.0.1.0.4, 19/10/2026) : « Valider le départ » crée
+et valide la facture, l'action renvoyée est le folio, « Facturé », « État
+facture » lisible (« Partiellement réglé ») ; l'acompte est lettré.
 
 Sources — accroche, résultats : docs/guides/AITE_Guide_Note_de_chambre.pdf §1
 (« Un client en séjour ne doit pas sortir sa monnaie à chaque repas » : ici
@@ -126,8 +119,7 @@ Captures de référence (modèle visuel, jamais incrustées) :
 aite-videos/ref_muk/027-…-reservations-fiche.png, 025-…-clients-presents-
 fiche.png, 306-reception-reservations.png (menus et applications de la
 réception), 029-…-folios.png et 029-…-folios-fiche.png, 030-…-reglements.png,
-024-…-departs-du-jour.png ; une facture client du thème MuK (base aite_muk,
-INV/2026/00004) pour la mise en page de la facture.
+024-…-departs-du-jour.png.
 
 Données : demo.py (Estelle Ngono, RES/2026/0214, FOL/2026/0214, chambre
 204 [CFT] Confort à 45 000 FCFA, réceptionniste Mireille Ateba). Le séjour
@@ -161,21 +153,23 @@ Numéros des séjours passés et total de 211 folios : fictifs. Filtre « Avec
 solde dû » : 14 folios, 1 847 800 FCFA TTC, 224 000 encaissés, 1 623 800
 dus (sommes calculées dans le script).
 
-Écart de profil assumé : la facture du check-out est créée sans sudo
-(hotel_folio.py:306-307) et account.move n'est accessible qu'au groupe
-Facturation (odoo18/addons/account/security/ir.model.access.csv:42) ; le
-profil démo demo.reception ne l'a pas. La barre des applications ajoute donc
-« Facturation » à APPS_PROFIL['reception'] : c'est le droit qu'il faut à la
-réception pour valider un départ avec facture (signalé au rapport).
+Profil : le seul profil Réception (barre MuK = APPS_PROFIL['reception'],
+sans l'application Facturation). L'écart qui obligeait à lui donner le droit
+Facturation d'Odoo (facture du départ créée sans sudo) est corrigé dans
+18.0.1.0.4 ; « Valider le départ » laisse alors la réceptionniste sur le
+folio (étape 5), plus sur la facture comptable.
 
 Écarts relevés, rejoués tels quels (voir le rapport) :
 1. Le libellé de nuitée porte des dates ISO (« — 2026-10-14 → 2026-10-16 »),
    repris tel quel sur la facture (hotel_folio.py:256-260), contre la règle
    des dates %d/%m/%Y.
-2. La réception sans le droit Facturation ne peut pas valider un départ avec
-   facture (création de account.move sans sudo, hotel_folio.py:306-307), ni
-   encaisser un solde après facture (lecture des lignes d'écriture,
-   hotel_folio.py:739-744) ; le profil demo.reception n'a pas ce droit.
+2. Départ avec facture et encaissement du solde sous le seul profil
+   Réception : corrigés dans aite_hotel_management 18.0.1.0.4 (facture en
+   sudo, hotel_folio.py:306-315) et 18.0.1.0.5 (lettrage du règlement avec la
+   facture en sudo, _post_accounting_entry). Tests :
+   test_receptionist_alone_checks_out_and_invoices,
+   test_receptionist_collects_the_balance_after_invoicing. L'étape 7 (folio
+   Soldé, État facture « Payé ») est donc vraie pour ce profil.
 3. Au check-out, les nuitées et la taxe sont re-datées du jour du départ
    (hotel_folio.py:265, hotel_checkout_wizard.py:94) : le folio relu les
    range après les extras du séjour.
@@ -183,13 +177,12 @@ réception pour valider un départ avec facture (signalé au rapport).
    (hotel_reservation_views.xml:298) ; l'assistant renvoie au bouton
    « Encaisser » du folio (hotel_checkout_wizard_views.xml:35-38), comme le
    montre l'étape 7.
-5. Le ruban « Partiel », la ligne « Payé le 14/10/2026 » et « Montant dû »
-   67 800 FCFA de la facture, comme « Partiellement réglé » puis « Payé »
-   sur le folio, supposent le lettrage de l'acompte avec la facture, fait au
-   mieux (hotel_folio.py:730-751, échec silencieux, aucun test) ; sans lui,
-   la facture resterait « Non payé » avec 112 800 FCFA dus.
-6. Le libellé ISO de la nuitée (écart 1) passe en gros plan au zoom de
-   l'étape 5 : le tutoriel ne le corrige pas, il le rejoue.
+5. « Partiellement réglé » puis « Payé » (État facture du folio) supposent
+   le lettrage des règlements avec la facture, fait au mieux
+   (hotel_folio.py:743-766, échec silencieux) ; sans lui, la facture
+   resterait « Non payé ».
+6. Le libellé ISO de la nuitée (écart 1) reste lisible sur le folio facturé
+   de l'étape 5 : le tutoriel ne le corrige pas, il le rejoue.
 
 Cohérence de la série (fiche d'harmonisation) : Estelle Ngono reste en 204
 du 14 au 16/10 dans tous les tutoriels (t02 prolonge et déplace Rodrigue
@@ -209,7 +202,6 @@ from moteur import (anneau, cacher, choisir, clic, classe, compter, curseur, def
 
 NOM, ROLE = demo.POSTES['reception']
 RESA, FOLIO, CLIENT = demo.RESA, demo.FOLIO, demo.CLIENT
-FACTURE = 'FAC/2026/00187'
 # Le séjour tel que t01_reception.py le fixe : réservation confirmée et
 # acompte MTN le 14/10 (REF_MOMO de t01), check-in réel 14:06:12, quatre
 # petits-déjeuners buffet à 2 700 FCFA le 15/10, départ réel 16/10 11:42:18.
@@ -228,8 +220,9 @@ LIB_TAXE = 'Taxe de séjour — 4 nuitée(s) × personne (3 ★, Cameroun)'
 
 MENUS = ['Front Desk', 'Réservations', 'Espaces & Prestations', 'Notes de chambre en attente', 'Facturation',
          'Fidélité', 'Gouvernante']
+# Le seul profil Réception : la facture du départ est une écriture technique
+# (sudo, aite_hotel_management 18.0.1.0.4), le droit Facturation n'est plus utile.
 APPS = list(APPS_PROFIL['reception'])
-APPS.insert(APPS.index('Tableaux de bord') + 1, 'Facturation')
 
 # icônes du panneau de recherche (filtre, regroupement, favori), redessinées
 ICO_FILTRE = ('<svg viewBox="0 0 24 24" fill="#4A7892"><path d="M3 4h18l-7 8.5V19l-4 2v-8.5z"/></svg>')
@@ -237,10 +230,6 @@ ICO_GROUPE = ('<svg viewBox="0 0 24 24" fill="none" stroke="#1E7B34" stroke-widt
               '<path d="M12 3l9 4.5-9 4.5-9-4.5z"/><path d="M3 12l9 4.5 9-4.5M3 16.5l9 4.5 9-4.5"/></svg>')
 ICO_FAVORI = ('<svg viewBox="0 0 24 24" fill="#C98A00"><path d="M12 2.5l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17.4l-6.1 '
               '3.5 1.5-6.8L2.2 9.5l6.9-.7z"/></svg>')
-
-# l'icône fa-info-circle du widget des paiements de la facture, redessinée
-ICO_INFO = ('<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#4A7892"/><rect x="10.8" y="10" width="2.4" '
-            'height="7.5" rx="1" fill="#fff"/><circle cx="12" cy="7.2" r="1.5" fill="#fff"/></svg>')
 
 
 def remplacer(html, avant, apres):
@@ -368,45 +357,6 @@ V_FOLIO = vue_fiche('t03-folio', cp_fiche('Front Desk / ' + RESA, FOLIO, '', sta
 V_FOLIO = remplacer(V_FOLIO, '<span class="parent">Front Desk / %s</span>' % RESA,
                     '<span class="parent">Front Desk / <span id="t03-fil-res">%s</span></span>' % RESA)
 
-# ------------------------------------------------------------- la facture --
-COLS_FACT = [('Produit', '1fr'), ('Quantité', '130px', 'd'), ('Prix', '160px', 'd'), ('Taxes', '140px'),
-             ('Montant', '190px', 'd')]
-
-
-def _produit(article, libelle=None):
-    sous = '<i>%s</i>' % e(libelle) if libelle else ''
-    return ('<span class="t03-prod"><span class="t03-lien ell">%s</span>%s</span>' % (e(article), sous),)
-
-
-LIGNES_FACT = tableau('t03-inv-lignes', COLS_FACT, [
-    ('t03-il1', [_produit('Nuitée — Confort', LIB_NUIT), '2,00', '45 000,00', '', demo.TOTAL_HEB], ''),
-    ('t03-il2', [_produit('Taxe de séjour — ' + demo.HOTEL, LIB_TAXE), '4,00', '3 000,00', '', '12 000 FCFA'], ''),
-    ('t03-il3', [_produit(SERVICE), '4,00', '2 700,00', '', SERVICES], ''),
-], classe_='t03-inv-tab')
-# Le ruban « Partiel » (web_ribbon, account_move_views.xml:903 ; texte en
-# capitales par la CSS du ruban, odoo18 web/.../ribbon/ribbon.scss).
-RUBAN = '<div class="t03-ruban" id="t03-ruban"><span>Partiel</span></div>'
-FEUILLE_FACT = (
-    RUBAN + '<div class="t03-inv-k">Facture client</div>' + titre_fiche(FACTURE)
-    + deux_colonnes(
-        '<div class="ch t03-cli"><span class="l">Client</span><span class="v"><span class="t03-lien">%s</span><br>'
-        'Douala<br>Cameroun</span></div>' % e(CLIENT),
-        champ('Date de facturation', J_DEPART) + champ("Date d'échéance", J_DEPART))
-    + '<div class="onglets"><span class="onglet actif">Lignes de facture</span><span class="onglet" id="t03-inv-autres">'
-      'Autres informations</span></div>' + LIGNES_FACT
-    + '<div class="t03-tot"><span class="cg">Conditions générales</span><div class="bloc" id="t03-inv-tot">'
-      '<div class="r"><span>Montant hors taxes:</span><b>%s</b></div>'
-      '<div class="r t"><span>Total:</span><b>%s</b></div>'
-      # widget « payment » (account_payment.xml) : icône d'info, « Payé le <date> », montant
-      '<div class="r p" id="t03-inv-paye"><span class="t03-i">%s</span><i>Payé le %s</i><span class="m">%s</span></div>'
-      '<div class="r du" id="t03-inv-du"><span>Montant dû:</span><b>%s</b></div></div></div>'
-      % (TOTAL_2, TOTAL_2, ICO_INFO, J_CONF, ACOMPTE, SOLDE_2))
-V_FACT = vue_fiche('t03-facture', cp_fiche('Front Desk / ' + RESA, FACTURE, ''),
-                   [bouton('t03-i-env', 'Envoyer', 'primaire'), bouton('t03-i-imp', 'Imprimer', 'primaire'),
-                    bouton('t03-i-pay', 'Payer', 'primaire'), bouton('t03-i-ape', 'Aperçu'), bouton('t03-i-avoir', 'Avoir'),
-                    bouton('t03-i-brou', 'Remettre en brouillon')],
-                   statusbar('t03-isb', ['Brouillon', 'Comptabilisé'], 1), FEUILLE_FACT)
-
 # ---------------------------------------------------- la liste des folios --
 COLS_LISTE = [('Référence', '200px'), ('Client', '1fr'), ('Réservation', '200px'), ('Total TTC', '190px', 'd'),
               ('Encaissé', '170px', 'd'), ('Solde dû', '170px', 'd'), ('État', '150px')]
@@ -516,6 +466,34 @@ V_FOLIO2 = vue_fiche('t03-folio2', cp_fiche('Folios', FOLIO, RANG, stats=[
     [bouton('t03-f2-enc', 'Encaisser', 'primaire')], statusbar('t03-f2sb', ['Ouvert', 'Facturé', 'Soldé'], 1),
     FEUILLE_FOLIO2)
 
+# Le folio juste après « Valider le départ » : sans accès aux factures,
+# l'action renvoyée est le folio lui-même (hotel_folio.py:319-328), empilé
+# sur la réservation. Facturé, « Générer la facture » masqué, bouton
+# « Facture », « État facture » ; lignes figées et re-datées (comme V_FOLIO2).
+LIGNES3 = tableau('t03-f3-lignes', COLS_LIGNES, [
+    ('t03-hl1', [J_EXTRA, SERV, SERVICE, SERVICE, '4,00', '2 700 FCFA', '', SERVICES, SERVICES], ''),
+    ('t03-hl2', [J_DEPART, NUIT, '', LIB_NUIT, '2,00', demo.PRIX_NUIT, '', demo.TOTAL_HEB, demo.TOTAL_HEB], 't03-nuit'),
+    ('t03-hl3', [J_DEPART, TAXE, '', LIB_TAXE, '4,00', '3 000 FCFA', '', '12 000 FCFA', '12 000 FCFA'], 'taxe'),
+], total=[('', '')] * 7 + [(TOTAL_2, 't03-h-ht'), (TOTAL_2, 't03-h-ttc')], classe_='t03-lignes')
+FEUILLE_FOLIO3 = (
+    titre_fiche(FOLIO)
+    + deux_colonnes(
+        groupe('Séjour', [champ('Client', CLIENT, lien_=True), champ('Réservation', RESA, lien_=True),
+                          champ('Séjour', 'Parti'), champ('Arrivée', demo.ARRIVEE), champ('Départ', demo.DEPART)]),
+        groupe('Montants', [champ('Hébergement (HT)', demo.TOTAL_HEB), champ('Services (HT)', SERVICES),
+                            champ('Taxe de séjour', '12 000 FCFA'), champ('Total HT', TOTAL_2),
+                            champ('Taxes', '0 FCFA'), champ('Total TTC', TOTAL_2, 't03-f3-ttc'),
+                            champ('Encaissé', ACOMPTE),
+                            ligne('t03-r3-solde', 'Solde dû', SOLDE_2, 't03-f3-solde'),
+                            ligne('t03-r3-etat', 'État facture', 'Partiellement réglé', 't03-f3-etat')],
+               identifiant='t03-grp-montants3'))
+    + '<div class="onglets"><span class="onglet actif">Lignes du folio</span><span class="onglet">Règlements</span>'
+      '<span class="onglet">Note</span></div>' + LIGNES3)
+V_FOLIO3 = vue_fiche('t03-folio3', cp_fiche('Front Desk / ' + RESA, FOLIO, '', stats=[
+    ('t03-st-regl3', 'billet', 'Règlements', '1'), ('t03-st-fact3', 'document', 'Facture', '')]),
+    [bouton('t03-f3-enc', 'Encaisser', 'primaire')], statusbar('t03-f3sb', ['Ouvert', 'Facturé', 'Soldé'], 1),
+    FEUILLE_FOLIO3)
+
 # ---------------------------------------------------------------- les assistants --
 
 
@@ -549,7 +527,7 @@ AS_DEPART = assistant('t03-co', 'Check-out — ' + RESA, (
     [('t03-co-ok', 'Valider le départ', 'primaire', None), ('t03-co-non', 'Annuler', 'gris', None)], haut=110)
 
 # --------------------------------------------------------------- la fenêtre --
-ECRAN = navigateur(fenetre_muk('app-t03', 'Hôtel', MENUS, [V_RESA, V_FOLIO, V_FACT, V_LISTE, V_FOLIO2],
+ECRAN = navigateur(fenetre_muk('app-t03', 'Hôtel', MENUS, [V_RESA, V_FOLIO, V_FOLIO3, V_LISTE, V_FOLIO2],
                                actif='Front Desk', societe=demo.SOCIETE, initiale=NOM[0], avatar='#185FA5',
                                apps=APPS, app_active='Hôtel', calques=AS_ACOMPTE + AS_DEPART + AS_SOLDE))
 ECRAN = remplacer(ECRAN, '<span class="menu actif">Front Desk</span>',
@@ -596,20 +574,8 @@ CSS = '''
 .t03-regl .case i { width: 20px; height: 20px; }
 .t03-x { width: 22px; height: 22px; display: inline-flex; color: #6C757D; }
 .t03-x svg { width: 100%; height: 100%; }
-#t03-f-ttc, #t03-f-solde, #t03-f2-ttc, #t03-f2-solde { font-weight: 700; }
+#t03-f-ttc, #t03-f-solde, #t03-f2-ttc, #t03-f2-solde, #t03-f3-ttc, #t03-f3-solde { font-weight: 700; }
 #b-facture { max-width: 760px; }
-.t03-inv-k { font-size: 19px; color: var(--o-texte); margin-bottom: 2px; }
-.t03-cli { align-items: start; }
-.t03-cli .v { line-height: 1.5; }
-.t03-inv-tab .t-ligne { height: 74px; }
-.t03-prod { display: flex; flex-direction: column; justify-content: center; line-height: 1.35; min-width: 0; }
-.t03-prod i { font-style: italic; color: var(--o-texte-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.t03-tot { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 16px; }
-.t03-tot .cg { color: #6C757D; font-size: 18px; padding-top: 12px; }
-.t03-tot .bloc { width: 560px; border-top: 1px solid var(--o-filet); padding-top: 8px; }
-.t03-tot .r { display: flex; justify-content: flex-end; align-items: baseline; gap: 24px; height: 42px; font-size: 19px; }
-.t03-tot .r b { min-width: 190px; text-align: right; }
-.t03-tot .r.t b { font-size: 25px; }
 .liste .ligne.t03-muet { color: #6C757D; }
 .t03-panneau { position: absolute; right: -1px; top: 58px; width: 1010px; display: grid; grid-template-columns: repeat(3, 1fr);
   padding: 14px 4px 10px; background: #fff; border: 1px solid var(--o-filet); border-radius: 6px; z-index: 8;
@@ -625,19 +591,6 @@ CSS = '''
 #t03-liste .liste .ligne { height: 38px; font-size: 17px; }
 #t03-liste .liste .ligne .puce { height: 26px; font-size: 15px; padding: 0 10px; }
 #t03-liste .liste .total { height: 44px; font-size: 18px; }
-#t03-facture .feuille { position: relative; overflow: hidden; }
-.t03-ruban { position: absolute; top: 0; right: 0; width: 170px; height: 170px; overflow: hidden; z-index: 2; }
-.t03-ruban span { position: absolute; left: 14px; top: -42px; width: 240px; height: 42px; transform: rotate(45deg);
-  transform-origin: left bottom; background: #1E7B34; color: #fff; font-size: 19px; font-weight: 700; line-height: 42px;
-  text-align: center; text-transform: uppercase; box-shadow: 0 4px 8px rgba(0,0,0,.12); }
-.t03-tot .r.p { font-size: 18px; height: 38px; }
-.t03-tot .r.p i { font-style: italic; color: var(--o-texte-2); }
-.t03-tot .r.p .m { min-width: 190px; text-align: right; }
-.t03-i { width: 18px; height: 18px; display: inline-flex; margin-right: -12px; }
-.t03-i svg { width: 100%; height: 100%; }
-.t03-tot .r.p { justify-content: flex-end; }
-.t03-tot .r.du { border-top: 1px solid var(--o-filet); height: 52px; }
-.t03-tot .r.du b { font-size: 25px; }
 '''
 
 TUTORIEL = {
@@ -670,7 +623,7 @@ TUTORIEL = {
         'b-folio': "Le folio s'est ouvert tout seul à la confirmation : une seule note pour tout le séjour.",
         'b-acompte': "Cochée toute seule : la cliente n'est pas encore arrivée.",
         'b-taxe': "La taxe de séjour se calcule seule, selon les étoiles, sur sa propre ligne, sans TVA.",
-        'b-facture': "Les lignes de la facture sont celles du folio, une par une.",
+        'b-facture': "La facture est créée et validée toute seule, avec les lignes du folio, une par une.",
         'b-du': "L'acompte du 14/10 est déjà déduit.",
         'b-solde': "Solde à zéro : le folio passe à Soldé, sans un clic de plus.",
     },
@@ -721,10 +674,11 @@ TUTORIEL = {
                     compter('#t03-f-solde', 57000, 67800, d=0.8, apres=' FCFA', avec=True),
                     anneau('#t03-r-solde', d=1.5)]},
         {'temps': 3, 'titre': 'Check-out : une seule facture',
-         'texte': 'Valider le départ (avec le droit Facturation) : la facture reprend le folio, ligne par ligne.',
-         'voix': "Le jour du départ, Estelle est au comptoir. Mireille, qui a le droit Facturation, lance le "
-                 "check-out : l'assistant récapitule le total, l'acompte et le solde. Valider le départ : la facture "
-                 "est comptabilisée, avec les lignes exactes du folio ; il reste soixante-sept mille huit cents francs.",
+         'texte': 'Valider le départ : la facture se crée et se valide seule, le folio passe à Facturé.',
+         'voix': "Le jour du départ, Estelle est au comptoir. Mireille lance le check-out : l'assistant récapitule "
+                 "le total, l'acompte et le solde. Valider le départ : la facture est créée et validée toute seule, "
+                 "et l'écran reste sur le folio, passé à Facturé, avec son bouton Facture. L'acompte est déjà "
+                 "déduit, la facture est partiellement réglée : il reste soixante-sept mille huit cents francs.",
          'gestes': [clic('#t03-fil-res'),
                     # la réservation, encore cachée, a vécu le séjour : arrivée, fiches remplies (t06)
                     cacher('#t03-resa-ga', d=0.05, avec=True), montrer('#t03-resa-gb', d=0.05, y=0, avec=True),
@@ -733,12 +687,13 @@ TUTORIEL = {
                     defiler('#t03-resa-defil', 52, d=0.05, avec=True),
                     texte('#t03-st-fiches-v', '2/2', avec=True), texte('#t03-st-folio-v', SOLDE_2, avec=True),
                     vue('t03-resa'), clic('#t03-b-checkout', d=0.6), ouvrir('t03-co'),
-                    anneau('#t03-co-solde', d=1.0), clic('#t03-co-ok', d=0.6), fermer('t03-co'), vue('t03-facture'),
-                    pause(0.9), defiler('#t03-facture-defil', -100, d=0.6),
-                    zoom('#t03-inv-lignes', s=1.2, d=0.8),
-                    bulle('b-facture', '#t03-inv-autres', cote='droite', d=2.4), pause(1.6), dezoom(d=0.6),
-                    defiler('#t03-facture-defil', -230, d=0.6), anneau('#t03-inv-du', d=1.0),
-                    bulle('b-du', '#t03-inv-paye', cote='gauche', d=2.2), pause(1.0)]},
+                    anneau('#t03-co-solde', d=1.0), clic('#t03-co-ok', d=0.6), fermer('t03-co'), vue('t03-folio3'),
+                    pause(0.5), anneau('#t03-f3sb-1', d=1.1),
+                    zoom('#t03-st-fact3', s=1.45, d=0.8), bulle('b-facture', '#t03-st-fact3', cote='bas', d=2.6),
+                    pause(2.0), dezoom(d=0.6),
+                    defiler('#t03-folio3-defil', -160, d=0.6), zoom('#t03-r3-solde', s=1.4, d=0.8), anneau('#t03-r3-solde', d=1.0),
+                    bulle('b-du', '#t03-r3-solde', cote='gauche', d=2.2), anneau('#t03-r3-etat', d=1.0),
+                    pause(0.6), dezoom(d=0.6)]},
         {'temps': 3, 'titre': "Les soldes dus d'un coup d'œil",
          'texte': 'Facturation, Folios, filtre Avec solde dû : les notes qui restent à encaisser.',
          'voix': "Avant qu'Estelle ne reparte, Mireille ouvre la liste des folios. Le filtre Avec solde dû ne garde que "

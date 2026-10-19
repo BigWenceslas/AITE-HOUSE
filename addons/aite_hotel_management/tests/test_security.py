@@ -249,6 +249,32 @@ class TestHotelSecurity(HotelCommon):
         self.assertEqual(payment.amount, 15000.0)
         self.assertTrue(payment.sudo().move_id)
 
+    def test_receptionist_collects_the_balance_after_invoicing(self):
+        """Régression : encaisser le solde d'un folio déjà facturé.
+
+        Le lettrage du règlement avec la facture lisait la facture avec les
+        droits de la réception : AccessError sur account.move dès que le
+        cache était froid (deux requêtes distinctes, comme dans le navigateur).
+        """
+        self.company.hotel_auto_entries = True
+        self.company.hotel_payment_journal_id = False
+        reservation = self._make_reservation()
+        reservation.action_confirm()
+        folio = reservation.folio_id
+        folio.with_user(self.receptionist).action_create_invoice()
+        self.env.invalidate_all()
+        residual = folio.amount_residual
+        self.assertGreater(residual, 0.0)
+        self.env['aite.hotel.folio.payment'].with_user(
+            self.receptionist).create({
+                'folio_id': folio.id,
+                'amount': residual,
+                'method': 'cash',
+            })
+        self.env.invalidate_all()
+        self.assertEqual(folio.state, 'paid')
+        self.assertIn(folio.move_id.payment_state, ('paid', 'in_payment'))
+
     def test_manager_creates_service_with_linked_product(self):
         """Régression : créer un service crée son article support.
 

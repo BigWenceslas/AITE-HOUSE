@@ -142,9 +142,9 @@ hors du dépôt (`../aite-videos/ref_muk`).
 
 | N° | Vidéo | Fonctionnalité | Durée | Poids |
 |---|---|---|---|---|
-| 1 | `02-tutoriel-reception.mp4` | La réception, de la réservation à la facture | 2 min 06 | 8,3 Mo |
+| 1 | `02-tutoriel-reception.mp4` | La réception, de la réservation à la facture | 2 min 07 | 8,4 Mo |
 | 2 | `03-tutoriel-planning.mp4` | Planning des chambres | 2 min 04 | 8,9 Mo |
-| 3 | `04-tutoriel-folio.mp4` | Le folio du séjour | 2 min 09 | 8,5 Mo |
+| 3 | `04-tutoriel-folio.mp4` | Le folio du séjour | 2 min 11 | 9,0 Mo |
 | 4 | `05-tutoriel-note-chambre.mp4` | Note de chambre | 2 min 15 | 7,5 Mo |
 | 5 | `06-tutoriel-taxe-sejour.mp4` | Taxe de séjour automatique | 1 min 59 | 7,1 Mo |
 | 6 | `07-tutoriel-registre.mp4` | Fiche de police et statistiques | 2 min 06 | 8,4 Mo |

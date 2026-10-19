@@ -738,7 +738,8 @@ class HotelFolioPayment(models.Model):
         move = self.env['account.move'].sudo().create(move_vals)
         move.action_post()
         self.move_id = move.id
-        self._reconcile_with_invoice()
+        # Le lettrage lit la facture : écriture technique, comme l'écriture.
+        self.sudo()._reconcile_with_invoice()
 
     def _reconcile_with_invoice(self):
         """
