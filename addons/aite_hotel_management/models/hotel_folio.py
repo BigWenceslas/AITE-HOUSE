@@ -303,16 +303,29 @@ class HotelFolio(models.Model):
         if not self.line_ids:
             raise UserError(_("Le folio ne contient aucune ligne à "
                               "facturer."))
-        move = self.env['account.move'].create(self._prepare_invoice_vals())
+        # Écriture technique : la réception facture le départ sans avoir —
+        # ni avoir à avoir — les droits de la comptabilité (comme les
+        # règlements, comptabilisés en sudo()).
+        move = self.env['account.move'].sudo().create(
+            self._prepare_invoice_vals())
         move.action_post()
         self.write({'move_id': move.id, 'state': 'invoiced'})
         for payment in self.payment_ids.filtered(
                 lambda p: p.state == 'posted' and p.move_id):
-            payment._reconcile_with_invoice()
+            payment.sudo()._reconcile_with_invoice()
         # Un folio déjà réglé d'avance (acompte couvrant le séjour)
         # passe directement à 'soldé'.
         self._refresh_settlement()
-        return self.action_view_invoice()
+        if self.env['account.move'].has_access('read'):
+            return self.action_view_invoice()
+        # Sans accès aux factures, on reste sur le folio : la facture y est
+        # liée et son état s'y lit.
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'aite.hotel.folio',
+            'view_mode': 'form',
+            'res_id': self.id,
+        }
 
     def action_view_invoice(self):
         self.ensure_one()
