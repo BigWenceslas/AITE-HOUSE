@@ -117,20 +117,14 @@ la présentation : scenarios/c6_direction.py (vue « Achats »).
 
 Écarts rejoués tels quels (à reporter dans docs/videos/ECARTS.md, mention
 « Rejoué tel quel (t14) » ; ce scénario ne modifie aucun fichier partagé) :
-1. BLOQUANT — « Créances totales (409) », « Créances fournisseurs (409) » et
-   « Acomptes / soldes débiteurs (4091) » additionnent le reste dû des
-   factures ouvertes : le domaine de get_claims retient amount_residual
-   < −0,005, c'est-à-dire les lignes CRÉDITRICES du 401 (purchase_
-   dashboard.py:386-399, :409, :705), alors que le commentaire :386-387
-   annonce les soldes débiteurs (paiements non lettrés, avoirs). D'où
-   1 226 600 FCFA d'« acomptes » sans paiement d'avance et une créance plus
-   grosse que la dette. Correction attendue dans le module (hors de ce
-   fichier) : test qui reproduit le défaut, domaine amount_residual > 0,005,
-   debit_total += line.amount_residual, version 18.0.1.0.3. _domaine_409()
-   lit le domaine dans le module : la vidéo passe d'elle-même aux chiffres
-   justes (409 = 319 200 puis 247 200 FCFA, 4091 = 0 FCFA) dès que le code
-   est corrigé, et produire.py affiche un avertissement tant qu'il ne l'est
-   pas. Version à ne pas publier avant la correction.
+1. CORRIGÉ (aite_purchase_dashboard 18.0.1.0.3) — « Créances totales (409) »,
+   « Créances fournisseurs (409) » et « Acomptes / soldes débiteurs (4091) »
+   additionnaient le reste dû des factures ouvertes : le domaine de get_claims
+   retenait amount_residual < −0,005, les lignes CRÉDITRICES du 401. Le
+   domaine est désormais amount_residual > 0,005 (tests/test_claims.py).
+   _domaine_409() lit le domaine dans le module : la vidéo montre les chiffres
+   justes (409 = 319 200 puis 247 200 FCFA, 4091 = 0 FCFA) ; produire.py
+   avertirait si l'ancien domaine revenait.
 2. Dates ISO dans toutes les colonnes de date du tableau de bord
    (purchase_dashboard.py:251, 321-324, 356-357, 379-380) — « 2026-09-08 »
    — alors que le registre natif affiche 08/10/2026 (CLAUDE.md règle 6).
@@ -178,8 +172,8 @@ facture) et 420 000 FCFA à payer sous 7 jours (1 facture), 4 fournisseurs
 actifs, OTIF 83,3 %. Aucune facture ne change de statut entre le 14 et le
 16/10 (contrôlé). Restent propres à ce tutoriel, calculés par le code et
 différents de c6 : « 8 commandes · 6 réceptions » (c6 : 6 · 5), 224 000 FCFA
-de commandes en cours (c6 : 640 000), DPO 14,7 j (c6 : 24 j), et la créance
-409 tant que le défaut 1 n'est pas corrigé.
+de commandes en cours (c6 : 640 000), DPO 14,7 j (c6 : 24 j) et la créance
+409 (c6 : 95 000 FCFA).
 """
 
 import math

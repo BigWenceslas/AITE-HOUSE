@@ -158,10 +158,10 @@ hors du dépôt (`../aite-videos/ref_muk`).
 | 14 | `15-tutoriel-achats.mp4` | Achats & fournisseurs | 2 min 04 | 9,3 Mo |
 | 15 | `16-tutoriel-direction.mp4` | Cockpit Direction | 1 min 52 | 7,0 Mo |
 
-Le tutoriel 14 rejoue les cartes « Créances (409) / Acomptes (4091) » du
-tableau de bord Achats telles que le module les calcule aujourd'hui, c'est-à-dire
-fausses (`ECARTS.md`, n° 22) : **ne pas le publier** avant la correction de
-`aite_purchase_dashboard`, puis le refaire.
+Le tutoriel 14 lit dans `aite_purchase_dashboard` le calcul des créances
+fournisseurs (409/4091) : il a été refait après la correction du module
+(18.0.1.0.3, `ECARTS.md` n° 22) et `produire.py` avertit si l'ancien calcul
+revenait.
 
 Une seule donnée de démonstration traverse toute la série et la présentation :
 20 chambres, société sans TVA, numéros de téléphone dans la plage de fiction
