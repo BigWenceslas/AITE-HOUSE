@@ -102,6 +102,25 @@ Déposer les dossiers des modules ci-dessus (à côté des autres), redémarrer,
 Apps → Mettre à jour la liste → **Mettre à niveau** chacun ; Ctrl+Shift+R.
 Vérifier : Hôtel → Direction → rangée « Indicateurs de performance ».
 
+## Livraison 3 (19 octobre 2026) — correctifs relevés en tournant les tutoriels vidéo
+
+- **aite_purchase_dashboard 18.0.1.0.3** : les cartes « Créances totales
+  (409) », « Créances fournisseurs (409) » et « Acomptes / soldes débiteurs
+  (4091) » additionnaient le reste dû des factures ouvertes (la dette). Seuls
+  les soldes débiteurs du compte fournisseurs comptent désormais : paiements
+  d'avance non lettrés et avoirs. Tests : `tests/test_claims.py`.
+- **aite_hotel_management 18.0.1.0.5** : la réception seule (sans le droit
+  Facturation d'Odoo) peut valider un départ avec facture (18.0.1.0.4) puis
+  encaisser le solde (18.0.1.0.5) ; la facture et son lettrage sont des
+  écritures techniques. Sans accès aux factures, l'écran reste sur le folio.
+  Tests sous le seul profil Réception.
+
+### Mise à jour
+Déposer `aite_purchase_dashboard` et `aite_hotel_management` (à côté des
+autres), redémarrer, Apps → Mettre à jour la liste → **Mettre à niveau** les
+deux. Les 69 écarts relevés pendant le tournage sont dans
+`docs/videos/ECARTS.md`.
+
 ## Installation / mise à jour
 1. Déposer les 4 dossiers de `addons/` à côté des autres modules AITE
    (remplacer `aite_hotel_management`).

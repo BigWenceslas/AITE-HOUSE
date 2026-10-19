@@ -24,7 +24,7 @@ Légende des statuts : ✅ **Fait** (livré et testé) · 🟡 **Partiel** (une 
 
 | # | Module | Version | Rôle | Fichiers | État |
 |---|---|---|---|---|---|
-| 1 | `aite_hotel_management` | **18.0.1.0.3** | **Socle PMS** : hôtels, étages, chambres, types, équipements, réservations multi-chambres, check-in/out, folios (lignes hébergement/services, paiements, facture unique), main courante, tarifs saisonniers, commissions d'agents, planning Gantt, ménage de base, tableau de bord, cron quotidien (no-show, ménage) | 51 | ✅ corrigé le 11/10 |
+| 1 | `aite_hotel_management` | **18.0.1.0.5** | **Socle PMS** : hôtels, étages, chambres, types, équipements, réservations multi-chambres, check-in/out, folios (lignes hébergement/services, paiements, facture unique), main courante, tarifs saisonniers, commissions d'agents, planning Gantt, ménage de base, tableau de bord, cron quotidien (no-show, ménage) | 51 | ✅ corrigé le 11/10 |
 | 2 | `aite_slot_booking` | **18.0.1.0.3** | Espaces & prestations au créneau (salles VIP/VVIP, SPA, coiffure, pressing), conflits, no-show, report au folio | 25 | ✅ |
 | 3 | `aite_website_booking` | 18.0.1.0.0 | Réservation en ligne (site web) : espaces, prestations, demandes de séjour, acompte | 8 | ✅ |
 | 4 | `aite_hotel_pos_link` | 18.0.1.0.0 | **Note de chambre** : moyen de paiement POS → folio du séjour, file de rattachement | 13 | ✅ |
@@ -32,7 +32,7 @@ Légende des statuts : ✅ **Fait** (livré et testé) · 🟡 **Partiel** (une 
 | 6 | `aite_loyalty` | **18.0.1.0.1** | Fidélité unifiée : points, historisation, statut Standard/VIP/VVIP automatique | 16 | ✅ |
 | 7 | `aite_pos_analytics` | **18.0.2.1.1** | Analyses ventes POS : CA, marge, CMV, écarts de caisse, heures de pointe, produits | 36 | ✅ |
 | 8 | `aite_stock_dashboard` | 18.0.1.1.2 | Stock : valorisation, couverture, ruptures, rotation, coulage, inventaires, dépôts | 19 | ✅ |
-| 9 | `aite_purchase_dashboard` | 18.0.1.0.2 | Achats : dettes 401 / balance âgée / échéancier, créances 409, OTIF, hausses de prix | 19 | ✅ |
+| 9 | `aite_purchase_dashboard` | **18.0.1.0.3** | Achats : dettes 401 / balance âgée / échéancier, créances 409, OTIF, hausses de prix | 19 | ✅ |
 | 10 | `aite_direction_dashboard` | **18.0.1.1.0** | **Cockpit Direction** consolidé : POS + crédit + stock + achats + **hébergement (TO, ADR, RevPAR, N-1)**, cash à risque, actions | 9 | ✅ |
 | 11 | `aite_exec_dashboard` | **18.0.1.1.0** | Tableau de bord exécutif du complexe : hébergement (CA, **TO, ADR, RevPAR, pickup, pace, écarts N-1**), POS, prestations, fidélité | 14 | ✅ |
 | 12 | `aite_demo_data` | **18.0.1.2.3** | Jeu de démonstration complet (base de démo uniquement) | 17 | ✅ |
