@@ -146,6 +146,29 @@ class TestCheckoutWizard(HotelCommon):
         self.assertTrue(self.reservation.folio_id.move_id)
         self.assertEqual(self.reservation.folio_id.state, 'invoiced')
 
+    def test_receptionist_alone_checks_out_and_invoices(self):
+        """Le départ avec facture passe sous le seul profil Réception, sans
+        le droit Facturation d'Odoo : la facture est une écriture technique."""
+        receptionist = self.env['res.users'].create({
+            'name': "Réception seule",
+            'login': 'reception.depart.test',
+            'groups_id': [(6, 0, [
+                self.env.ref('base.group_user').id,
+                self.env.ref('aite_hotel_management.group_hotel_user').id,
+            ])],
+        })
+        self.assertFalse(receptionist.has_group('account.group_account_invoice'))
+        wizard = self._wizard(checkout_now=self._dt(3, 12.0)).with_user(
+            receptionist)
+        action = wizard.action_confirm()
+        folio = self.reservation.folio_id
+        self.assertTrue(folio.move_id)
+        self.assertEqual(folio.move_id.state, 'posted')
+        self.assertEqual(folio.state, 'invoiced')
+        # Sans accès aux factures, elle reste sur le folio.
+        self.assertEqual(action['res_model'], 'aite.hotel.folio')
+        self.assertEqual(action['res_id'], folio.id)
+
     def test_checkout_creates_housekeeping_task(self):
         wizard = self._wizard(checkout_now=self._dt(3, 12.0))
         wizard.action_confirm()
