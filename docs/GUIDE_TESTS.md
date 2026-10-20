@@ -25,21 +25,21 @@ La suite compte trois niveaux de vérification, chacun avec son rôle.
 
 | Module | Tests | Ce qui est vérifié |
 |---|---:|---|
-| `aite_hotel_management` | 249 | Moteur tarifaire, disponibilité, workflow de réservation, folio, taxes, facturation, gouvernante, assistants, droits par profil, tableau de bord |
-| `aite_pos_credit` | 106 | Ardoises, sévérité, remboursements, écritures 411, génération depuis le POS (paiement mixte), balance âgée, droits |
-| `aite_slot_booking` | 80 | Grille de créneaux, alignement, conflits par capacité, tarification, report au folio, cron no-show |
-| `aite_website_booking` | 57 | Tunnel public de bout en bout, validation du formulaire, CSRF, fiche client unique, espace client |
-| `aite_demo_data` | 40 | Générateur de jeu d'essai, devise, écarts de caisse, idempotence, purge, **6 parcours métier bout-en-bout** |
-| `aite_pos_analytics` | 48 | Coût figé à la vente, marge, agrégats de session, écarts de caisse et leur sévérité, API du tableau de bord |
-| `aite_loyalty` | 48 | Barème de points, grand livre, segmentation VIP / VVIP, fenêtre glissante, rétrogradation |
-| `aite_stock_dashboard` | 37 | Couverture, seuils, quantité à commander, statuts d'alerte, valorisation, rotation |
-| `aite_hotel_pos_link` | 31 | Note de chambre, décisions de rattachement, file d'attente, idempotence |
-| `aite_purchase_dashboard` | 26 | API du tableau de bord Achats, consignes fournisseurs |
-| `aite_exec_dashboard` | 20 | Consolidation des trois pôles, mix d'activité, RevPAR / pickup / pace / N-1 (F06) |
-| `aite_direction_dashboard` | 29 | Cohérence du cockpit avec les quatre moteurs, balance âgée en miroir, rangée Hébergement (F06), accès de l'administrateur |
-| `aite_housekeeping` | 13 | Tableau des chambres, pannes et remise en vente, technicien, inspection « Conforme », objets trouvés |
-| `aite_guest_registry` | 8 | Pré-remplissage de la fiche, « Mémoriser sur la fiche client », impression du registre de police |
-| `aite_city_tax` | 5 | Article de taxe créé à la première confirmation, quel que soit le profil |
+| `aite_hotel_management` | 223 | Moteur tarifaire, disponibilité, workflow de réservation, folio, taxes, facturation, gouvernante, assistants, droits par profil, tableau de bord |
+| `aite_pos_credit` | 94 | Ardoises, sévérité, remboursements, écritures 411, génération depuis le POS (paiement mixte), balance âgée, droits |
+| `aite_slot_booking` | 72 | Grille de créneaux, alignement, conflits par capacité, tarification, report au folio, cron no-show |
+| `aite_website_booking` | 53 | Tunnel public de bout en bout, validation du formulaire, CSRF, fiche client unique, espace client |
+| `aite_demo_data` | 36 | Générateur de jeu d'essai, devise, écarts de caisse, idempotence, purge, **6 parcours métier bout-en-bout** |
+| `aite_pos_analytics` | 42 | Coût figé à la vente, marge, agrégats de session, écarts de caisse et leur sévérité, API du tableau de bord |
+| `aite_loyalty` | 42 | Barème de points, grand livre, segmentation VIP / VVIP, fenêtre glissante, rétrogradation |
+| `aite_stock_dashboard` | 33 | Couverture, seuils, quantité à commander, statuts d'alerte, valorisation, rotation |
+| `aite_hotel_pos_link` | 29 | Note de chambre, décisions de rattachement, file d'attente, idempotence |
+| `aite_purchase_dashboard` | 18 | API du tableau de bord Achats, consignes fournisseurs |
+| `aite_exec_dashboard` | 18 | Consolidation des trois pôles, mix d'activité, RevPAR / pickup / pace / N-1 (F06) |
+| `aite_direction_dashboard` | 23 | Cohérence du cockpit avec les quatre moteurs, balance âgée en miroir, rangée Hébergement (F06), accès de l'administrateur |
+| `aite_housekeeping` | 9 | Tableau des chambres, pannes et remise en vente, technicien, inspection « Conforme », objets trouvés |
+| `aite_guest_registry` | 6 | Pré-remplissage de la fiche, « Mémoriser sur la fiche client », impression du registre de police |
+| `aite_city_tax` | 3 | Article de taxe créé à la première confirmation, quel que soit le profil |
 | **Total** | **701** | |
 
 Les tests sont marqués par des **étiquettes** (`aite_hotel`, `aite_credit`,
