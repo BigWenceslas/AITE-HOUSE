@@ -72,11 +72,17 @@ mot) :
   client, réglage actif par défaut ; sans folio ouvert, rien n'est reporté et
   « Reporter au folio » reste affiché, vue :44-46), :370-373 (Marquer
   retiré), :379-426 (ligne de folio « <prestation> — <référence> », une
-  seule fois), :432-450 (no-show automatique après le délai de grâce) ; data/slot_sequence_data.xml:6-7
+  seule fois), :456-481 (no-show automatique après le délai de grâce, hors
+  pressing depuis aite_slot_booking 18.0.1.0.4 : un dépôt attend son
+  retrait, ECARTS n° 36, test_cron_spares_a_pressing_deposit_awaiting_pickup) ;
+  data/slot_sequence_data.xml:6-7
   (RES/26/0158) ; data/mail_template_data.xml:3-33 (objet « <société> —
   Confirmation <réf.> », « Bonjour …, », « Votre réservation est confirmée : »,
   Référence, Ressource, Prestation, Début dd/MM/yyyy HH:mm, Fin HH:mm, Montant,
-  « À très bientôt, ») ; data/ir_cron_data.xml:3-11 (tâche toutes les heures) ;
+  « À très bientôt, » ; heures dans le fuseau de l'établissement,
+  object._local_tz(), booking_booking.py:221-229, depuis 18.0.1.0.4, ECARTS
+  n° 27, test_confirmation_mail_uses_the_company_timezone : 15:00 heure de
+  Douala) ; data/ir_cron_data.xml:3-11 (tâche toutes les heures) ;
   models/res_config_settings.py:20-35 (6 heures, report au folio et e-mail
   actifs par défaut) ; views/booking_booking_views.xml:3-30 et :111-153
   (liste « Réservations de créneaux » : colonnes, couleurs, badge d'état,
@@ -108,9 +114,11 @@ no-show) ; guide §3.3 (« le tableau de bord compte les dépôts en attente de
 retrait ») ; guide §4 (« pour voir ce qui tourne et ce qui dort ») et B07.
 
 Résultats : 5 familles (booking_resource.py:9-15) ; 3 automatismes actifs dès
-l'installation (res_config_settings.py:20-35) ; 69 tests Odoo du module
-(tests/test_booking.py 35, test_grid.py 20, test_folio_posting.py 14 ;
-docs/GUIDE_TESTS.md:30).
+l'installation (res_config_settings.py:20-35) ; 72 tests Odoo du module
+(tests/test_booking.py 37, test_grid.py 20, test_folio_posting.py 14,
+test_concurrency.py 1 — deux confirmations simultanées du même créneau —,
+comptés dans le code après les corrections du 20/10/2026 ;
+docs/GUIDE_TESTS.md:30 dit encore 69).
 
 Données : demo.py (Complexe Hôtelier — Démo, Démo Hôtellerie SARL, Estelle
 Ngono, demo.CLIENT_TEL ; Patrick Nkoulou, Brigitte Essomba ; réceptionniste
@@ -150,6 +158,19 @@ comme au chapitre 6). La journée rejouée est le jeudi 15/10/2026.
    (mail/data/ir_cron_data.xml:4-12) : jusqu'à une heure d'attente, alors que
    le guide (AITE_Guide_Espaces_Prestations.pdf §2.3) dit « dès le clic sur
    Confirmer ». La vidéo ne dit pas « aussitôt ».
+Corrigés depuis dans aite_slot_booking 18.0.1.0.4, sans changer l'image :
+- ECARTS n° 36 : le no-show automatique épargne le pressing (booking_booking
+  .py:461-472) ; la bulle et la voix de la dernière étape le disent
+  (« hors pressing »). Le dépôt de Samuel Etoga est passé « Réalisée » le
+  matin, comme avant ; il aurait aussi pu rester « Confirmé » jusqu'au
+  retrait (« Marquer retiré » s'affiche dans les deux états, vue :47-49).
+- ECARTS n° 27 : l'e-mail de confirmation donne l'heure de Douala, quel que
+  soit le fuseau de l'utilisateur (déjà 15:00 dans la vidéo).
+- ECARTS n° 32 : le contrôle de conflit verrouille la ressource
+  (booking_booking.py:269-306) : deux confirmations simultanées ne vendent
+  plus deux fois le salon ; l'étape 4 montre une confirmation successive,
+  refusée comme avant.
+
 7. Série : le folio de Brigitte Essomba est FOL/2026/0210, celui du
    tutoriel 3 (t03_folio.py:447), retenu pour toute la série
    (FOL/2026/0218 est le numéro de la réservation d'Aristide Bella au
@@ -829,7 +850,7 @@ TUTORIEL = {
         'b-calcul': 'La fin et le montant viennent de la prestation : rien à calculer.',
         'b-mail': "Confirmée : le créneau est bloqué, l'e-mail part tout seul.",
         'b-folio': 'Reportée seule sur la note de chambre, une seule fois.',
-        'b-absent': 'Client confirmé absent : No-show automatique, passé 6 h après la fin.',
+        'b-absent': 'Client confirmé absent : No-show automatique, 6 h après la fin (hors pressing).',
     },
     'reactions': {
         'r-conflit': 'Le salon est déjà pris : impossible de le vendre deux fois.',
@@ -928,9 +949,11 @@ TUTORIEL = {
                     montrer('#t09-pres-g1', d=0.2, y=0, avec=True),
                     classe('#t09-pres-retire', ajouter=['coche'], avec=True), anneau('#t09-pres-l-ret', d=1.2)]},
         {'temps': 3, 'titre': 'Le bilan du soir',
-         'texte': "Chiffre d'affaires, remplissage, retraits en attente ; un client absent passe seul en No-show.",
+         'texte': "Chiffre d'affaires, remplissage, retraits en attente ; un client absent passe seul en No-show, "
+                  "hors pressing.",
          'voix': "Le soir, le tableau de bord fait le bilan : chiffre d'affaires, remplissage, retraits en attente. Et "
-                 "un client confirmé qui ne vient pas passe tout seul en rendez-vous manqué, six heures après la fin.",
+                 "un client confirmé qui ne vient pas passe tout seul en rendez-vous manqué, six heures après la fin ; "
+                 "un dépôt de pressinng, lui, attend son retrait.",
          'gestes': naviguer('tdb', [vue('t09-tdb2'), defiler('#t09-in2', -200, d=0.01)]) + [
              anneau('#t09-d2-ca', d=1.1), anneau('#t09-d2-remp', d=1.0), anneau('#t09-d2-pr', d=1.0),
              anneau('#t09-d2-t3', d=1.0), curseur('#t09-d2-t3', fx=0.5, d=0.5, avec=True), bulle('b-absent', '#t09-d2-ns', cote='haut', d=3.4),
@@ -943,10 +966,10 @@ TUTORIEL = {
              'texte': 'salons VIP / VVIP, SPA, coiffure, pressing et autres ressources, sur un même planning'},
             {'valeur': '3', 'compter': 3, 'unite': 'automatismes', 'icone': 'eclair',
              'texte': "actifs dès l'installation : e-mail de confirmation, report au folio, no-show après 6 h"},
-            {'valeur': '69', 'compter': 69, 'unite': 'tests', 'icone': 'bouclier',
+            {'valeur': '72', 'compter': 72, 'unite': 'tests', 'icone': 'bouclier',
              'texte': 'automatisés sur le moteur : créneaux, conflits, prix, report au folio, no-show'},
         ],
-        'voix': "Cinq familles sur un seul planninng, trois automatismes dès l'installation, soixante-neuf tests "
+        'voix': "Cinq familles sur un seul planninng, trois automatismes dès l'installation, soixante-douze tests "
                 "automatisés.",
     },
     'cta': {

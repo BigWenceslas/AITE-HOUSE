@@ -46,7 +46,7 @@ Sources des écrans (libellés vérifiés mot pour mot par ``grep -rF`` dans
   ``models/booking_booking.py`` (états, « Origine » Comptoir / En ligne
   l. 87-101, montant = heures × tarif horaire ``_slot_price`` l. 126-138,
   conflit refusé au-delà de la capacité, la ressource verrouillée pendant
-  la confirmation ``_check_no_conflict`` l. 269-301) ;
+  la confirmation ``_check_no_conflict`` l. 269-306) ;
   ``data/slot_sequence_data.xml`` (référence ``RES/%(y)s/`` sur 4 chiffres
   → RES/26/0131).
 - Réception — tableau de bord ``aite_slot_booking/static/src/xml/dashboard.xml``

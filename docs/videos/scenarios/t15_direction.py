@@ -4,8 +4,8 @@
 La directrice (Danielle Eyenga, demo.POSTES['direction']) ouvre l'application
 Direction : la santé de l'affaire, l'essentiel par pôle, les filtres (le soir
 du week-end), un clic sur une carte de pôle qui ouvre son onglet (Crédit
-clients), la liste « À traiter », la rangée Hébergement comparée à l'an
-dernier, puis un clic sur une carte de l'hôtel qui ouvre le tableau de bord
+clients), la liste « À traiter », les tendances sur six mois (CA vs achats,
+balance âgée en miroir), la rangée Hébergement comparée à l'an dernier, puis un clic sur une carte de l'hôtel qui ouvre le tableau de bord
 exécutif (pickup, pace).
 
 Profil rejoué : comptes demo.direction de la base MuK (Point de Vente :
@@ -48,8 +48,10 @@ Sources des libellés (relevés mot pour mot) :
 - static/src/js/direction_dashboard.js : HEURE, JOUR, PÉRIODE, onglets
   :23-46 ; « Ce mois » calculé en heure locale puis converti par
   toISOString :57-78 (voir écart 1) ; formats fmtMoney (espaces fines
-  remplacées), fmtPct « 56,0 % », fmtDelta « ▲ +9,4 % » :81-94 ; miroir
-  (tranches et couleurs) :184-212 ; phrase de la position nette :288-298 ;
+  remplacées), fmtPct « 56,0 % », fmtDelta « ▲ +9,4 % » :81-94 ; graphique
+  des tendances (maxBar commun au CA et aux achats) :134-182 ; miroir
+  (tranches et couleurs) :184-212 ; phrase de la position nette servie par
+  le serveur (net_side_text) :288-297 ;
   sous-titres pace et pickup :300-311 ; balance âgée clients et couleur par
   tranche :369-386 (écart 4) ; « Flux net » :407-412 ; pastilles des onglets
   :494-503 ; heure et jours ne rechargent que la vue d'ensemble et les
@@ -59,21 +61,28 @@ Sources des libellés (relevés mot pour mot) :
   (« Relancer %s », « %d j », « Régulariser %d facture(s) échue(s) »,
   « échu », « Commander %s », « perd / jour », « Lancer la commande suggérée
   (%d réfs) », « sous seuil », « Écarts d'inventaire négatifs »,
-  « contrôler », « Renégocier %s », « %+.0f %% · %s ») :219-314 et
-  get_actions :570-606 (débiteurs de plus de 30 j pris dans les six plus
-  gros encours) ; tranches horaires :33-38 ; tuile Hébergement :373-410 ;
-  badges :469-474 ; courbes à rebours :149-166 ; alignement des tendances
-  :168-191 (écart 3).
+  « contrôler », « Renégocier %s », « %+.0f %% · %s », « Payer %s » et
+  l'échéance AAAA-MM-JJ) :298-391 et get_actions :689-725 (débiteurs de plus
+  de 30 j pris dans les six plus gros encours ; factures non échues dues
+  sous 6 jours) ; factures ouvertes du moteur Achats traduites
+  (residual → amount, due → planned) :150-168 ; échéancier et miroir
+  fournisseurs (ancienneté depuis la date de facture) :181-226 ; phrases
+  de la position nette et du flux net :98-124 ; tranches horaires :33-38 ;
+  tuile Hébergement ; courbes à rebours :229-246 ; tendances alignées sur
+  une clé AAAA-MM, libellés « Mai » … « Oct » :127-148, :430-462.
 - Crédit : addons/aite_pos_credit/models/pos_credit.py:27-28 (30 et 60
   jours) ; pos_credit_dashboard.py get_kpis :120-242 (encours, retard,
-  plus ancienne ardoise, flux net « nouveaux − recouvré »), get_aging
+  plus ancienne ardoise, flux net « nouveaux − recouvré », phrase
+  « nouveaux − recouvré : l'encours baisse » quand il est négatif), get_aging
   :255-289 (tranches « 0–30 j », « 30–60 j », « 60–90 j », « +90 j »),
   get_top_debtors :382-428 (tri par encours), get_recent_payments :509-529
   (date en AAAA-MM-JJ) ; moyens de paiement pos_credit_payment.py:49-56
   (« MTN Mobile Money », « Orange Money », « Espèces »).
 - Tableau exécutif, gabarit addons/aite_exec_dashboard/static/src/xml/
   dashboard.xml:4-136 (« Direction — Vue consolidée », « Hébergement ·
-  Restauration & boutique · Prestations », Période, Du, au, quatre cartes,
+  Restauration & boutique · Prestations », Période, Du, au, quatre cartes
+  — « Nuitées HT, nuit par nuit · occupation … · ADR … », « HT · <n>
+  tickets · panier … » :62-69 —,
   « Période <du> → <au> », « Hébergement — indicateurs de performance »,
   « écarts vs même période N-1 », cinq cartes et leurs « ? », « Points
   fidélité émis », « Tous services confondus », « Répartition &
@@ -102,7 +111,7 @@ hôtelier »), docs/etude_comparative/build_etude.py:167-168 et
 benchmark_pms.md:161 (RevPAR / pace / pickup, standard chez 10 leaders sur
 10, « à ajouter » avant F06) ; question — docs/guides/
 AITE_Guide_Tableau_de_bord_Direction.pdf p. 1 (« comment va l'affaire ? »
-— guide du tableau exécutif, Hôtel → Direction, montré à l'étape 6 ; sa
+— guide du tableau exécutif, Hôtel → Direction, montré à l'étape 7 ; sa
 promesse des « trente secondes » n'est pas reprise : le titre dit « d'un
 coup d'œil », une seule page, direction_dashboard.js:39-46) ;
 kicker — plaquette p. 16 (« Le pilotage du gérant ») ; « qui relancer en
@@ -143,30 +152,36 @@ statut ne change entre le 14 et le 16/10). Les chiffres se tiennent : CA
 des nuitées = 192 nuitées × 45 000 = 8 640 000 ; 20 chambres × 15 jours =
 300 nuitées disponibles, d'où 64,0 % et RevPAR 28 800 = 45 000 × 64 % ;
 cash à risque = 101 500 + 41 500 ; position nette = 150 000 − 1 280 000 ;
-tableau exécutif = celui de c6 : 8 640 000 + 3 120 000 (sans TVA, le
-TTC égale le HT ; panier 3 120 000 / 128 = 24 375) + 1 240 000 =
-13 000 000 FCFA, mix 66,5 / 24,0 / 9,5 % trié et arrondi comme _mix_rows ;
-points fidélité 10 480 = un point par 1 000 FCFA (règle de t11_fidelite.py)
-sur 8 640 000 de folios, 1 240 000 de prestations et environ 600 000 FCFA
-de tickets du bar rattachés à un client. Top débiteurs : à encours égal
+tableau exécutif = celui de c6, hors taxes comme le cockpit : 8 640 000
+(nuitées HT, nuit par nuit, le chiffre du cockpit) + 3 120 000 (HT ;
+panier 3 120 000 / 128 = 24 375) + 1 240 000 = 13 000 000 FCFA, mix 66,5 /
+24,0 / 9,5 % trié et arrondi comme _mix_rows ; points fidélité 10 480 = un
+point par 1 000 FCFA (règle corrigée d'aite_loyalty 18.0.1.0.2 : ni taxe
+de séjour ni double crédit) sur 8 640 000 de nuitées des folios, 1 240 000
+de prestations et environ 600 000 FCFA de tickets du bar rattachés à un
+client — chiffre inchangé, il ne comptait déjà ni la taxe de séjour ni une
+ligne deux fois. Tendances : CA HT des ventes de t12_ventes.py (EVO_TOUT),
+factures de t14_achats.py (FLUX), encours de t10 ; miroir fournisseurs =
+les quatre factures ouvertes de t14 par ancienneté au 14/10 (1 100 000 à
+0–30 j, 180 000 à 60–90 j) ; « Payer Boissons du Wouri SARL » 420 000 FCFA,
+échéance 2026-10-17, d'où 11 actions. Top débiteurs : à encours égal
 (30 000), Brigitte Essomba (ARD/0039, plus récente) sort avant Sylvie
 Mbarga (ARD/0017) — tri stable sur des ardoises lues en create_date desc
 (pos_credit.py:23).
 
-Cadrages choisis pour ne pas filmer les défauts du produit (non corrigés :
-les modules ne sont pas modifiés par les vidéos) :
-- étape 3 : défilement dès l'arrivée sur l'onglet Crédit clients, la
-  rangée Recouvré / Nouveaux / Flux net (phrase inversée, écart 5) ne
-  reste pas lisible ; la voix ne commente que la balance âgée, la courbe
-  et le Top débiteurs ;
-- étape 5 : défilement court (-60) qui pose la rangée Hébergement au bas
-  du cadre : TENDANCES (barres du CA à zéro, miroir fournisseurs à 0,
-  écart 3) n'est jamais à l'écran ; pas de zoom (en zoom, la légende de
-  l'étape recouvrirait la rangée) ;
-- étape 6 : le tableau exécutif défile aussitôt ouvert (les quatre cartes
+Cadrages (les écarts 2, 3 et 5 sont corrigés : ces cadrages ne cachent plus
+qu'écart 1, les dates ISO) :
+- étape 3 : défilement dès l'arrivée sur l'onglet Crédit clients, pour
+  montrer la balance âgée, la courbe et le Top débiteurs ; la rangée
+  Recouvré / Nouveaux / Flux net, juste depuis la correction, n'est pas
+  commentée ;
+- étape 5 : TENDANCES, défilé jusqu'en bas de la vue d'ensemble : les
+  barres du CA et le côté fournisseurs du miroir sont remplis ; étape 6 :
+  retour vers le haut (-60), la rangée Hébergement au bas du cadre ; pas
+  de zoom (en zoom, la légende de l'étape recouvrirait la rangée) ;
+- étape 7 : le tableau exécutif défile aussitôt ouvert (les quatre cartes
   de pôle et « Période 2026-09-30 → … » sortent du cadre), puis zoom sur
-  pickup / pace : ni le total ni les pôles ne restent lisibles, la voix ne
-  les cite pas ;
+  pickup / pace ; la voix ne cite ni le total ni les pôles ;
 - zooms des étapes 1 et 3 assez serrés (1,85 et 1,8) pour que le champ
   « Du 30/09/2026 » (écart 1) ne soit jamais en gros plan.
 
@@ -186,22 +201,24 @@ pas « vs N-1 » et toLocaleString écrit un trait d'union).
    le cockpit, « Période 2026-09-30 → 2026-10-14 » dans l'exécutif
    (direction_dashboard.js:57-78, utils.js:36-49) ; date ISO dans
    l'exécutif et dans « Derniers remboursements ».
-2. Deux bases différentes pour la même période : « CA des nuitées (HT) »
-   compte nuit par nuit (direction_dashboard.py:399), « Hébergement » les
-   folios TTC datés au départ (exec_dashboard.py:142-161, :221) ; « CA
-   encaissé » est HT (price_subtotal), « Restauration & boutique » TTC
-   (amount_total, exec_dashboard.py:247). Sans TVA et avec ce jeu (repris
-   de c6), les montants coïncident : l'écart n'est pas visible ici.
-3. Graphique « CA vs Achats » : les barres du CA restent à zéro (clés de
-   mois différentes) ; côté fournisseurs du miroir à 0 sur les quatre
-   tranches (clés amount / date / planned absentes) ; aucune ligne « Payer
-   <fournisseur> » dans « À traiter ».
+2. CORRIGÉ dans aite_exec_dashboard 18.0.1.1.1 (ECARTS.md n° 25) — deux
+   bases pour la même période (hébergement TTC des folios datés au départ,
+   restauration TTC à l'exécutif) ; tout est HT désormais, « Hébergement »
+   = les nuitées HT nuit par nuit du cockpit (exec_dashboard.py:146-157),
+   sous-titres « Nuitées HT, nuit par nuit · … » et « HT · … » ; « CA
+   encaissé » du cockpit sous-titré « HT · … ».
+3. CORRIGÉ dans aite_direction_dashboard 18.0.1.1.1 (ECARTS.md n° 23) —
+   barres du CA à zéro, côté fournisseurs du miroir à 0, aucune ligne
+   « Payer <fournisseur> » : les mois sont alignés sur AAAA-MM et les
+   factures traduites (residual / due) ; rejoué à l'étape 5 (tendances) et
+   à l'étape 4 (« Payer Boissons du Wouri SARL », échéance en AAAA-MM-JJ,
+   relevée avec les dates ISO de l'écart 1).
 4. Balance âgée clients : couleurs décalées d'une tranche (« 30–60 j » en
    vert, « +90 j » en ocre) ; « cl. » compte des ardoises.
-5. « Flux net » : le moteur calcule nouveaux − recouvré
-   (pos_credit_dashboard.py:177) mais le cockpit écrit « recouvré −
-   nouveaux » et annonce « l'encours monte » quand il baisse
-   (direction_dashboard.xml:461-465, js:407-412) ; « Délai moyen de
+5. CORRIGÉ dans aite_direction_dashboard 18.0.1.1.1 (ECARTS.md n° 24) —
+   « Flux net » écrivait « recouvré − nouveaux : l'encours monte » quand il
+   baisse ; la phrase vient du serveur : « nouveaux − recouvré : l'encours
+   baisse » (_net_flow_sentence). Restent : « Délai moyen de
    remboursement » affiche le nombre brut, sans arrondi
    (direction_dashboard.xml:447 ; ici une moyenne entière) ; pas d'accord
    du pluriel : « 1 ardoises ouvertes » (:460).
@@ -209,8 +226,9 @@ pas « vs N-1 » et toLocaleString écrit un trait d'union).
    carte « Prestations » sans liseré teal (dashboard.xml:70, classe absente
    de exec_dashboard.scss:195-199) ; espaces fines des montants de
    l'exécutif ; même titre « Direction — Vue consolidée » pour les deux
-   écrans ; phrase « vos clients vous financent » inversée quand le solde est
-   positif (js:293-297, non rejouée ici : le solde est négatif).
+   écrans. Position nette : phrase servie par le serveur
+   (_net_position_text, écart n° 24 corrigé) — ici « vos fournisseurs
+   financent l'exploitation » (solde négatif).
 7. Anglais résiduel (règle 6 du CLAUDE.md) : « RevPAR », « Pickup 7 j →
    30 j », « Pace du mois », infobulles « RevPAR : … » et « Pace : … »
    (exec_dashboard.py:28-34, dashboard.xml:95-104) ; rejoué tel quel. La
@@ -704,7 +722,7 @@ CSS = """
 .t15-mside { flex: 1; display: flex; align-items: center; }
 .t15-mside.t15-left { justify-content: flex-end; }
 .t15-mside i { height: 18px; border-radius: 3px; display: block; }
-.t15-mval { font-size: 13.5px; color: #5c5861; margin: 0 7px; min-width: 60px; }
+.t15-mval { font-size: 13.5px; color: #5c5861; margin: 0 7px; min-width: 60px; white-space: nowrap; }
 .t15-left .t15-mval { text-align: right; }
 .t15-hbar { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 .t15-hl { width: 120px; flex: none; font-size: 14.5px; color: #43404a; }
@@ -849,7 +867,7 @@ TUTORIEL = {
                     zoom('#t15-c-top-t', s=1.8, d=0.7),
                     reaction('r-relance', d=2.8), pause(2.6), dezoom(d=0.5), anneau('#t15-c-top', d=1.0)]},
         {'temps': 2, 'titre': 'À traiter : la liste du gérant',
-         'texte': 'Relancer, régulariser, commander, renégocier : la liste se construit seule.',
+         'texte': 'Relancer, régulariser, payer, commander, renégocier : la liste se construit seule.',
          'voix': "Reste à agir. L'onglet À traiter dresse la liste du gérant : relancer les ardoises de plus de trente "
                  "jours, régulariser la facture échue, payer celle qui tombe cette semaine, commander la bière en "
                  "rupture, renégocier une hausse de prix.",

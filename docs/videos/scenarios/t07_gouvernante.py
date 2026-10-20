@@ -811,8 +811,10 @@ CSS = """
 .t07-ck .entree.t07-rq.t07-edit { border-bottom-color: var(--muk-prim); }
 /* téléphones */
 .t07-tel { top: 14px; height: 768px; }
-.t07-tel .tel-haut { background: #243742; height: 66px; font-size: 25px; padding: 0 18px; }
-.t07-tel-pictos { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+.t07-tel .tel-haut { background: #243742; height: 66px; font-size: 25px; padding: 0 16px; gap: 12px; }
+.t07-tel-t { white-space: nowrap; }
+#t07-tel-a-titre { font-size: 21px; }
+.t07-tel-pictos { margin-left: auto; display: flex; align-items: center; gap: 12px; }
 .t07-tel-pictos svg { width: 26px; height: 26px; display: block; }
 .t07-tel-act { display: inline-flex; color: #fff; }
 .t07-tel-av { width: 36px; height: 36px; border-radius: 6px; background: #185FA5; color: #fff; font-size: 19px; font-weight: 700;
@@ -973,10 +975,10 @@ TUTORIEL = {
                    + [anneau('#t07-b1-103-eq', d=1.1)]},
         {'temps': 0, 'titre': 'Ma journée, sur le téléphone',
          'texte': "L'icône Hôtel ouvre le tableau des chambres, le menu mène à Ma journée : Je commence, puis C'est fait.",
-         'voix': "Sur son téléphone, %s ouvre l'application Hôtel : le tableau des chambres, puis Ma journée. Sa "
-                 "première chambre, la cent trois : Je commence, puis C'est fait. Comme l'hôtel exige l'inspection "
-                 "après recouche, la chambre passe à inspecter." % E1,
-         'gestes': [ouvrir('t07-tel-a'), pause(0.5), anneau('#t07-b9-103', d=0.8),
+         'voix': "Sur son téléphone, %s ouvre l'application Hôtel : elle arrive sur le tableau des chambres, et le "
+                 "menu la mène à Ma journée. Sa première chambre, la cent trois : Je commence, puis C'est fait. Comme "
+                 "l'hôtel exige l'inspection après recouche, la chambre passe à inspecter." % E1,
+         'gestes': [ouvrir('t07-tel-a'), pause(0.6),
                     clic('#t07-tel-a-burger', d=0.4),
                     montrer('#t07-tel-a-sbv', d=0.2, y=0),
                     animer('#t07-tel-a-sb', {'autoAlpha': 1, 'x': -342}, {'x': 0}, d=0.3, avec=True),
