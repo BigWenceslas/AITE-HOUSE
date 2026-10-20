@@ -9,7 +9,10 @@
         <field name="name">aite.hotel.reservation.line.gantt</field>
         <field name="model">aite.hotel.reservation.line</field>
         <field name="arch" type="xml">
+            <!-- delete="0" : une ligne de séjour ne se supprime pas depuis le
+                 planning (garde-fou serveur dans le socle, ECARTS n° 33). -->
             <gantt string="Planning des chambres"
+                   delete="0"
                    date_start="checkin_date"
                    date_stop="checkout_date"
                    default_group_by="room_id"
