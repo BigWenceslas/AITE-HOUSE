@@ -23,6 +23,12 @@ remboursés en espèces le 30/09, réglée le 14/10 à 15:30 en Orange Money
 avant ce règlement (encours 150 000 FCFA, les cinq ardoises de demo.py) ; écart du recouvré
 « 12,1 % vs N-1 », comme scenarios/t15_direction.py. Numéro de commande selon
 la règle des tickets du bar (caisse ouverte le 04/05, ~8,3 tickets par jour).
+
+Le remboursement validé est tracé (champs suivis et chatter, verrouillés
+après validation : aite_pos_credit/models/pos_credit_payment.py:42-84,
+ECARTS n° 20). L'écriture comptable n'est passée que si le réglage
+« Comptabiliser les remboursements » est coché, décoché par défaut
+(models/res_config_settings.py:39-44 et :60-64) : la vidéo ne la promet pas.
 """
 
 import demo
@@ -141,7 +147,7 @@ CHAPITRE = {
                  "paiement, saisit la référence de la transaction, et encaisse.",
          'gestes': [clic('#c3-b-remb'), ouvrir('c3-as'), anneau('#c3-mt', d=1.0), choisir('c3-moy', 'Orange Money'),
                     saisir('c3-ref', 'OM261014.1530.A55120'), clic('#c3-ok'), fermer('c3-as')]},
-        {'titre': "L'ardoise est réglée", 'texte': 'Reste dû à zéro, remboursement tracé, écriture comptable passée.',
+        {'titre': "L'ardoise est réglée", 'texte': 'Reste dû à zéro, ardoise Réglée, remboursement tracé.',
          'voix': "Le reste dû tombe à zéro et l'ardoise passe Réglée. Le remboursement est tracé avec son moyen de "
                  "paiement, la personne qui l'a encaissé et sa référence.",
          'gestes': [texte('#c3-reste', '0 FCFA'), texte('#c3-deja', '64 500 FCFA'), texte('#c3-sev', 'Réglée'),

@@ -32,6 +32,15 @@ n'est pas dans la colonne « À nettoyer ». Colonnes dans l'ordre où Odoo 18
 les affiche (À nettoyer, À inspecter, Nettoyage en cours, Propre : écart 1 de
 t07) ; seules quelques cartes par colonne sont rejouées. Titre de
 l'assistant : « Signaler un problème — chambre %s » (hotel_room.py:149-159).
+Urgence de l'assistant : « Important » par défaut (une étoile) ; Josiane
+choisit « Urgent » (deux étoiles). La demande de maintenance prend la
+priorité « Haute », trois étoiles sur la carte, et « Urgence : Urgent » est
+écrit en tête de sa description (report_issue_wizard.py:25-50, ECARTS
+n° 15 c). « Conforme » coche toute la checklist puis clôt l'inspection
+(hotel_room.py:125-140, ECARTS n° 19). Le technicien, même sans profil
+hôtel, passe la demande à « Réparé » ; la chambre revient en vente, à
+nettoyer, avec une tâche « Remise en service après intervention »
+(maintenance_request.py:39-89, ECARTS n° 15 a et b).
 """
 
 import demo
@@ -122,12 +131,15 @@ INSPECTION = assistant('c2-as-insp', 'Inspection — chambre 102', (
      ('c2-fermer', 'Fermer', 'gris', None)], haut=26, largeur=1260)
 
 # ------------------------------------------------------ Signaler un problème --
+# Étoile vide du widget priorité ; l'urgence « Important » (défaut) en allume une.
+ETOILE_VIDE = ('<span class="ico" style="opacity:.25"><svg viewBox="0 0 24 24" fill="#6C757D"><path d="M12 2.5l2.9 6.3 '
+               '6.9.7-5.2 4.6 1.5 6.8L12 17.4l-6.1 3.5 1.5-6.8L2.2 9.5l6.9-.7z"/></svg></span>')
 PROBLEME = assistant('c2-as-pb', 'Signaler un problème — chambre 203', m_champs([
     m_champ('Chambre', e('203 [CFT]')),
     m_champ('Quel est le problème ?', entree('c2-pb', 'Ex. : climatiseur en panne, fuite lavabo…')),
-    m_champ('Urgence', '<span class="etoiles">%s%s%s</span>' % (icone('etoile'), icone('etoile'),
-                                                                '<span class="ico" style="opacity:.25">%s</span>'
-                                                                % '<svg viewBox="0 0 24 24" fill="#6C757D"><path d="M12 2.5l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17.4l-6.1 3.5 1.5-6.8L2.2 9.5l6.9-.7z"/></svg>')),
+    m_champ('Urgence', '<span class="etoiles">%s<span class="pile" id="c2-et2">%s%s</span>%s</span>'
+             % (icone('etoile'), ETOILE_VIDE, icone('etoile').replace('class="ico"', 'class="ico masque" id="c2-et2-on"', 1),
+                ETOILE_VIDE)),
     m_champ("La chambre ne peut pas être vendue en l'état", '<span class="case" id="c2-bloque"><i></i></span>'),
     m_champ('Précisions', entree('c2-precis', 'Précisions utiles au technicien'))]),
     [('c2-pb-ok', 'Envoyer à la maintenance', 'primaire', None), ('c2-pb-non', 'Annuler', 'gris', None)], haut=120)
@@ -135,10 +147,12 @@ PROBLEME = assistant('c2-as-pb', 'Signaler un problème — chambre 203', m_cham
 # ------------------------------------------------------ Pannes & réparations --
 PANNE = carte('c2-panne', '<div class="mini">203 [CFT]</div><div style="font-size:20px;font-weight:600;color:var(--o-texte);'
                           'margin-top:4px">Chambre 203 — Climatiseur en panne</div><div class="mini">Demandé par : %s</div>'
-                          '<div class="lg" style="margin-top:6px">%s%s</div>' % (e(NOM), icone('etoile'), icone('etoile')))
+                          '<div class="lg" style="margin-top:6px" id="c2-panne-prio">%s%s%s</div>'
+                          % (e(NOM), icone('etoile'), icone('etoile'), icone('etoile')))
 PANNE_REPAREE = carte('c2-panne-r', '<div class="mini">203 [CFT]</div><div style="font-size:20px;font-weight:600;'
                                     'color:var(--o-texte);margin-top:4px">Chambre 203 — Climatiseur en panne</div>'
-                                    '<div class="mini">Demandé par : %s</div>' % e(NOM), 'masque')
+                                    '<div class="mini">Demandé par : %s</div><div class="lg" style="margin-top:6px">%s</div>'
+                      % (e(NOM), icone('etoile') * 3), 'masque')
 PANNES = vue_kanban('c2-pannes', 'Pannes & réparations', [
     ('Nouvelle demande', '1', [PANNE], 'c2-m1'), ('En cours', '0', [], 'c2-m2'),
     ('Réparé', '0', [PANNE_REPAREE], 'c2-m3')], facettes=[(None, 'À faire')])
@@ -176,8 +190,8 @@ CHAPITRE = {
                     cacher('#c2-102', d=0.3), montrer('#c2-102i', d=0.4), texte('#c2-col-1-n', '(1)'),
                     texte('#c2-col-3-n', '(1)'), anneau('#c2-102i', d=1.4)]},
         {'titre': "L'inspection avec checklist", 'texte': 'Un point non conforme renvoie la chambre en nettoyage, en urgence.',
-         'voix': "Pour inspecter, deux boutons suffisent : Conforme ou À refaire. Ou bien la checklist de huit points : "
-                 "les serviettes manquent, le point reste décoché avec sa remarque, et la chambre retourne en "
+         'voix': "Pour inspecter, deux boutons suffisent : Conforme coche toute la checklist et clôt l'inspection, "
+                 "À refaire renvoie la chambre en nettoyage. Ou bien la checklist de huit points : les serviettes manquent, le point reste décoché avec sa remarque, et la chambre retourne en "
                  "nettoyage, en urgence, chez la même équipière.",
          'gestes': [anneau('#c2-102-ok', d=0.9), anneau('#c2-102-ko', d=0.9), ouvrir('c2-as-insp'),
                     *[classe('#c2-ck%d' % i, ajouter=['on'], decale=0.05) for i in (0, 2, 3, 4, 5, 6, 7)],
@@ -186,16 +200,19 @@ CHAPITRE = {
                     texte('#c2-col-3-n', '(0)'), texte('#c2-col-1-n', '(2)'), anneau('#c2-102r', d=1.4)]},
         {'titre': 'Signaler une panne', 'texte': 'La chambre est retirée de la vente tant que la réparation n\'est pas faite.',
          'voix': "Dans la deux cent trois, libre ce jour-là, le climatiseur est en panne. La clé de la carte ouvre "
-                 "Signaler un problème. La case « ne peut pas être vendue » retire la chambre de la vente.",
+                 "Signaler un problème. Josiane passe l'urgence à Urgent, et la case « ne peut pas être vendue » "
+                 "retire la chambre de la vente.",
          'gestes': [clic('#c2-203-cle'), ouvrir('c2-as-pb'), saisir('c2-pb', 'Climatiseur en panne'),
+                    clic('#c2-et2', d=0.5), montrer('#c2-et2-on', d=0.2, y=0),
                     classe('#c2-bloque', ajouter=['coche']), anneau('#c2-bloque', d=1.2), clic('#c2-pb-ok'),
                     fermer('c2-as-pb'), classe('#c2-203', ajouter=['hors-service']),
                     texte('#c2-203-hint', 'Hors service — ne pas vendre'), montrer('#c2-203-panne', d=0.3, y=0),
                     anneau('#c2-203', d=1.6)]},
-        {'titre': 'Pannes & réparations', 'texte': 'Réparé : la chambre revient seule en vente, à nettoyer.',
-         'voix': "La demande arrive dans l'application Maintenance. Quand le technicien la passe à Réparé, la chambre "
-                 "revient toute seule en vente, avec une tâche de remise en service.",
-         'gestes': [vue('c2-pannes'), pause(0.6), anneau('#c2-panne', d=1.2), cacher('#c2-panne', d=0.3),
+        {'titre': 'Pannes & réparations', 'texte': 'Priorité haute. Réparé : la chambre revient seule en vente, à nettoyer.',
+         'voix': "La demande arrive dans l'application Maintenance, en priorité haute : trois étoiles. Quand le "
+                 "technicien la passe à Réparé, la chambre revient toute seule en vente, avec une tâche de remise en "
+                 "service.",
+         'gestes': [vue('c2-pannes'), pause(0.6), anneau('#c2-panne-prio', d=1.2), anneau('#c2-panne', d=1.0), cacher('#c2-panne', d=0.3),
                     montrer('#c2-panne-r', d=0.4), texte('#c2-m1-n', '(0)'), texte('#c2-m3-n', '(1)'),
                     anneau('#c2-panne-r', d=1.4), pause(0.3)]},
         {'titre': 'Ce qui ne la concerne pas', 'texte': 'Un lien vers un folio ? Odoo refuse et nomme les profils autorisés.',

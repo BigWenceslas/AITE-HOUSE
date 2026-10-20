@@ -28,8 +28,11 @@ stocké à l'installation, en anglais et avec le code de devise (« Cameroon —
 3 ★ : 3 000 XAF », city_tax_rate.py:71-80 ; ECARTS.md n° 39, comme t05) ;
 au check-in, seule la fiche du client principal est créée
 (aite_guest_registry/models/hotel_reservation.py:96-110), pré-remplie depuis
-le contact, nom coupé au premier espace (« Estelle » / « Ngono »,
-guest_registration.py:255-280, écart 8 de t06) : d'où le bandeau « 1 fiche(s)
+le contact, le nom complet dans « Nom » (« Estelle Ngono »), « Prénom(s) »
+vide, et « Il manque » : « le prénom, la date de naissance »
+(guest_registration.py:183-205 et :255-296, ECARTS n° 30, écart 8 de t06,
+corrigé : le nom n'est plus coupé au premier espace) ; la réception sépare
+elle-même le prénom, comme dans t06 : d'où le bandeau « 1 fiche(s)
 à compléter · 1 occupant(s) sans fiche » du chapitre 1 ; l'accompagnant,
 Arnaud Ngono, est saisi ensuite (scenarios/t06_registre.py). Registre de
 police imprimé : arrivées de la période triées par date d'arrivée, chambre
@@ -120,16 +123,16 @@ ETAT = pivot('c7-etat', 'Taxe de séjour — état mensuel', 'Mois',
              ['1 011', '3 033 000,00'])
 
 # ---------------------------------------------------- fiches clients (O01) --
-FICHES_COLS = [('Chambre', '150px'), ('Nom', '110px'), ('Prénom(s)', '110px'), ('Date de naissance', '170px'),
-               ('Nationalité', '120px'), ('Type de pièce', '230px'), ('N° de pièce', '130px'), ('Client principal', '140px'),
-               ('Signée par le client', '140px'), ('Il manque', '1fr'), ('Fiche', '130px'), ('', '40px')]
+FICHES_COLS = [('Chambre', '120px'), ('Nom', '150px'), ('Prénom(s)', '110px'), ('Date de naissance', '150px'),
+               ('Nationalité', '110px'), ('Type de pièce', '190px'), ('N° de pièce', '120px'), ('Client principal', '80px'),
+               ('Signée par le client', '80px'), ('Il manque', '1fr'), ('Fiche', '130px'), ('', '40px')]
 CASE_VIDE = '<span class="case"><i></i></span>'
-# La fiche créée au check-in : celle du client principal, pré-remplie depuis le contact (nom coupé au premier espace).
+# La fiche créée au check-in : celle du client principal, pré-remplie depuis le contact (nom complet dans « Nom »).
 FICHES_L = [{'id': 'c7-f0', 'classe': 'avert', 'cellules': [
-    '204 [CFT]', cell_html('<span class="ell" id="c7-nom0">Estelle</span>'),
-    cell_html('<span class="ell" id="c7-pre0">Ngono</span>'), cell_html('<span class="ell" id="c7-dn0"></span>'),
+    '204 [CFT]', cell_html('<span class="ell" id="c7-nom0">Estelle Ngono</span>'),
+    cell_html('<span class="ell" id="c7-pre0"></span>'), cell_html('<span class="ell" id="c7-dn0"></span>'),
     'Cameroun', "Carte nationale d'identité", '114208815', cell_html(CASE), cell_html(CASE_VIDE),
-    cell_html('<span class="ell" id="c7-im0" style="color:#8A6100">la date de naissance</span>'),
+    cell_html('<span class="ell" id="c7-im0" style="color:#8A6100">le prénom, la date de naissance</span>'),
     cell_puce('À compléter', 'orange', 'c7-et0'), cell_html('<span>%s</span>' % icone('imprimer'))]}]
 FICHES = vue_liste('c7-fiches', 'Fiches clients — %s' % demo.RESA, FICHES_COLS, FICHES_L,
                    facettes=[(None, 'Réservation %s' % demo.RESA)], pager='1-1 / 1')
@@ -208,13 +211,13 @@ CHAPITRE = {
          'gestes': aller('Configuration', 'Facturation') + [vue('c7-etat'), pause(0.4), anneau('#c7-etat-2', d=1.6),
                                                             anneau('#c7-etat-tot', d=1.2), anneau('#c7-etat-export', d=1.0)]},
         {'titre': 'Le registre des clients', 'texte': 'Fiches pré-remplies au check-in ; « Il manque » dit quoi ajouter.',
-         'voix': "Au check-in, la fiche du client principal est créée, pré-remplie depuis le contact ; on vérifie "
-                 "l'ordre du nom et du prénom. La colonne Il manque dit ce qu'il reste à demander : ici, la date de "
-                 "naissance. Une fois saisie, la fiche passe Complète.",
+         'voix': "Au check-in, la fiche du client principal est créée, pré-remplie depuis le contact, nom complet "
+                 "compris. La colonne Il manque dit ce qu'il reste à demander : le prénom et la date de naissance. "
+                 "La réception sépare le prénom, saisit la date, et la fiche passe Complète.",
          'gestes': aller('Facturation', 'Réservations') + [
-             vue('c7-fiches'), pause(0.4), anneau('#c7-nom0', d=0.9), texte('#c7-nom0', 'Ngono'),
-             texte('#c7-pre0', 'Estelle', avec=True), anneau('#c7-im0', d=1.4),
-             texte('#c7-dn0', '12/03/1991'), texte('#c7-im0', ''), etat('#c7-et0', 'Complète', 'vert'),
+             vue('c7-fiches'), pause(0.4), anneau('#c7-nom0', d=0.9), anneau('#c7-im0', d=1.4),
+             texte('#c7-nom0', 'Ngono'), texte('#c7-pre0', 'Estelle', avec=True),
+             texte('#c7-im0', 'la date de naissance', avec=True), texte('#c7-dn0', '12/03/1991'), texte('#c7-im0', ''), etat('#c7-et0', 'Complète', 'vert'),
              classe('#c7-f0', retirer=['avert']), anneau('#c7-et0', d=1.0)]},
         {'titre': 'Le registre de police', 'texte': 'Toutes les personnes hébergées sur la période, prêt pour un contrôle.',
          'voix': "Le registre de police s'imprime pour n'importe quelle période : toutes les personnes hébergées, "

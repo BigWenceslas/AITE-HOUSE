@@ -27,6 +27,14 @@ Libellés relevés dans :
 Les dates ISO (« 2026-09-30 → 2026-10-14 », « Planning du 2026-10-17 ») et
 les pourcentages à point décimal de POS Analytics sont rejoués tels que
 le code les affiche : relevés dans ECARTS.md.
+Montants hors taxes (ECARTS n° 25) : « CA encaissé » du cockpit sous-titré
+« HT · … » (direction_dashboard.xml:228), « Chiffre d'affaires » de
+l'analyse des ventes « HT · <CA / jour> / jour · <n>j » (aite_pos_analytics
+views.xml:13), cartes de l'exécutif « Nuitées HT, nuit par nuit · occupation
+… · ADR … » et « HT · <n> tickets · panier … » (aite_exec_dashboard
+dashboard.xml:62-69 ; fmtPct donne « 64 % », utils.js:11-15). Position
+nette négative (dettes > ardoises) : « vos fournisseurs financent
+l'exploitation » (direction_dashboard.py:98-111, ECARTS n° 24).
 
 Jour rejoué : le mercredi 14/10/2026, comme scenarios/t15_direction.py. La
 période « Ce mois » démarre la veille du 1er à Douala (écart 1 de t15) :
@@ -77,11 +85,11 @@ COCKPIT = vue_tdb('c6-cockpit', '<div id="c6-in">%s</div>' % (
                    ('Heure', ['Toute la journée', 'Matin 6–12h', 'Après-midi 12–18h', 'Soir 18–23h', 'Nuit 23–6h'], 0),
                    ('Vue', VUES, 0)])
     + tdb_section("Santé de l'affaire", [
-        kpi('c6-k-ca', 'CA encaissé', '3 120 000 FCFA', '128 tickets · POS payés / facturés', 'vert'),
+        kpi('c6-k-ca', 'CA encaissé', '3 120 000 FCFA', 'HT · 128 tickets · POS payés / facturés', 'vert'),
         kpi('c6-k-marge', 'Marge brute réalisée', '1 747 200 FCFA', '56,0 % du CA · CA − coût des ventes', 'teal'),
         kpi('c6-k-risque', 'Cash à risque', '143 000 FCFA', 'ardoises +30 j (101 500) + coulage (41 500)', 'rouge'),
         kpi('c6-k-net', 'Crédits clients − dettes fournisseurs', '−1 130 000 FCFA',
-            "150 000 d'ardoises · 1 280 000 de dettes — les fournisseurs financent l'exploitation", 'bleu')])
+            "150 000 d'ardoises · 1 280 000 de dettes — vos fournisseurs financent l'exploitation", 'bleu')])
     + tdb_section("L'essentiel par pôle — cliquer une carte ouvre l'onglet", [
         kpi('c6-p-tix', 'Ventes — tickets', '128', 'panier moyen 24 375 FCFA', 'violet'),
         kpi('c6-p-ard', 'Encours ardoises', '150 000 FCFA', '5 clients · 101 500 au-delà de 30 j', 'ambre'),
@@ -109,7 +117,7 @@ VENTES = vue_tdb('c6-ventes', (
                  ('Heure', ['Toute la journée', 'Matin 6–12h', 'Après-midi 12–18h', 'Soir 18–23h', 'Nuit 23–6h'], 0),
                  ('Jour', ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'], -1)])
     + '<div style="height:14px"></div><div class="tdb-grille c4">%s</div>' % ''.join([
-        kpi('c6-v-ca', "Chiffre d'affaires", '3 120 000 F', '208 000 F / jour · 15j', 'bleu'),
+        kpi('c6-v-ca', "Chiffre d'affaires", '3 120 000 F', 'HT · 208 000 F / jour · 15j', 'bleu'),
         kpi('c6-v-marge', 'Marge brute', '1 747 200 F', 'Taux: 56.0% · 13 650 F/tx', 'vert'),
         kpi('c6-v-cmv', 'CMV (coût marchandises)', '1 372 800 F', '44.0% du CA · 2 681 F/u', 'rouge'),
         kpi('c6-v-tx', 'Transactions', '128', 'Panier moy. 24 375 F · 512 u', 'violet')])
@@ -216,13 +224,13 @@ EXEC = vue_tdb('c6-exec', (
     + tdb_filtres([('Période', ['Ce mois', 'Ce trimestre', 'Cette année'], 0)])
     + '<div style="height:14px"></div><div class="tdb-grille c4">%s</div>' % ''.join([
         kpi('c6-x-tot', "Chiffre d'affaires total", '13 000 000 FCFA', 'Période 2026-09-30 → 2026-10-14', 'violet'),
-        kpi('c6-x-heb', 'Hébergement', '8 640 000 FCFA', 'Occupation 64,0 % · ADR 45 000 FCFA', 'violet'),
-        kpi('c6-x-pos', 'Restauration & boutique', '3 120 000 FCFA', '128 tickets · panier 24 375 FCFA', 'bleu'),
+        kpi('c6-x-heb', 'Hébergement', '8 640 000 FCFA', 'Nuitées HT, nuit par nuit · occupation 64 % · ADR 45 000 FCFA', 'violet'),
+        kpi('c6-x-pos', 'Restauration & boutique', '3 120 000 FCFA', 'HT · 128 tickets · panier 24 375 FCFA', 'bleu'),
         kpi('c6-x-pre', 'Prestations', '1 240 000 FCFA', '46 prestation(s) réalisée(s)', 'teal')])
     + '<div class="tdb-sect">Hébergement — indicateurs de performance <span style="text-transform:none;'
       'letter-spacing:0;font-weight:500;color:var(--o-texte-3)">écarts vs même période N-1</span></div>'
     + '<div class="tdb-grille c5">%s</div>' % ''.join([
-        kpi('c6-x-occ', "Taux d'occupation", '64,0 %', '192 nuitée(s) vendue(s)', None, ('+8,2 % vs N-1', 'haut'),
+        kpi('c6-x-occ', "Taux d'occupation", '64 %', '192 nuitée(s) vendue(s)', None, ('+8,2 % vs N-1', 'haut'),
             aide=True),
         kpi('c6-x-adr', 'ADR — prix moyen par nuit', '45 000 FCFA', 'CA hébergement ÷ nuitées vendues', None,
             ('+3,1 % vs N-1', 'haut'), aide=True),
@@ -269,7 +277,7 @@ CHAPITRE = {
     'etapes': [
         {'titre': 'Le cockpit Direction', 'texte': "Ce qui rentre, ce qu'on gagne, ce qui est à risque.",
          'voix': "Le cockpit Direction réunit les ventes, le crédit clients, le stock et les achats. En tête, la "
-                 "santé de l'affaire : le chiffre encaissé, la marge réalisée, et le cash à risque, ardoises en "
+                 "santé de l'affaire : le chiffre encaissé hors taxes, la marge réalisée, et le cash à risque, ardoises en "
                  "retard et pertes de stock comprises.",
          'gestes': [compter('#c6-k-ca-v', 0, 3120000, d=1.1, apres=' FCFA'), anneau('#c6-k-marge', d=1.2),
                     anneau('#c6-k-risque', d=1.6), anneau('#c6-k-net', d=1.4)]},
