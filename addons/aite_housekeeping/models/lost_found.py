@@ -50,6 +50,9 @@ class LostAndFound(models.Model):
                 ('state', 'in', ('checked_in', 'checked_out', 'confirmed')),
                 ('checkin_date', '<=', fields.Datetime.to_datetime(
                     str(self.found_date)).replace(hour=23, minute=59)),
+                # Un client arrivé occupe la chambre jusqu'à son check-out
+                # réel, même si son départ prévu est dépassé.
+                '|', ('state', '=', 'checked_in'),
                 ('checkout_date', '>=', fields.Datetime.to_datetime(
                     str(self.found_date))),
             ], order='checkin_date desc', limit=1)

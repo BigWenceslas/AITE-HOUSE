@@ -66,7 +66,8 @@ check("statut réservation = À compléter", res.registration_status == 'partial
       res.registration_status)
 print("     Bandeau : « %s »" % res.registration_hint)
 
-print("\n═══ 3. Elle renseigne la date de naissance : la fiche passe « Complète » seule ═══")
+print("\n═══ 3. Elle sépare le prénom et renseigne la date de naissance : la fiche passe « Complète » seule ═══")
+main.write({'last_name': "Ngo", 'first_name': "Bikaï Solange"})
 main.birth_date = date(1985, 3, 12)
 check("fiche complète sans cliquer sur un bouton", main.state == 'done', main.state)
 check("plus rien ne manque", not main.missing_info, main.missing_info)

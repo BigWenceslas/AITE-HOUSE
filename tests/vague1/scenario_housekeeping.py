@@ -64,7 +64,9 @@ check("mettre « À nettoyer » crée la tâche du jour", bool(rooms["202"].toda
 wiz = env['aite.hk.assign.wizard'].with_user(gouv).create({'hotel_id': hotel.id, 'user_ids': [(6, 0, [amina.id, rose.id])]})
 check("l'assistant compte 3 chambres à répartir", wiz.task_count == 3, wiz.task_count)
 wiz.action_assign()
-assigned = sorted(t.assigned_to.name for t in Task.search([('room_id', 'in', [r.id for r in rooms.values()]), ('state', '=', 'todo')]))
+# Seulement les tâches du jour : une base qui tourne garde celles des jours passés.
+today_hk = env['aite.hotel.housekeeping']._fields['date'].default(Task)
+assigned = sorted(t.assigned_to.name for t in Task.search([('room_id', 'in', [r.id for r in rooms.values()]), ('state', '=', 'todo'), ('date', '=', today_hk)]))
 check("réparties à tour de rôle (2 pour l'une, 1 pour l'autre)", assigned.count("Amina") + assigned.count("Rose") == 3 and abs(assigned.count("Amina") - assigned.count("Rose")) == 1, assigned)
 try:
     env['aite.hk.assign.wizard'].with_user(gouv).create({'hotel_id': hotel.id}).action_assign(); check("sans équipière : message clair", False)

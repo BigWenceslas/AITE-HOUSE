@@ -116,7 +116,9 @@ in_month = sum(1 for r in Res.search([('hotel_id', '=', hotel.id)])
                < m_first + relativedelta(months=1))
 check("pace du mois = nuitées déjà réservées pour le mois (%d)" % in_month,
       pc['nights'] == in_month, pc)
-stay(rooms[0], (m_first - relativedelta(years=1)) + timedelta(days=3), 5,
+# Les deux séjours N-1 vont sur K2 : K1 porte déjà le séjour N-1 de la
+# partie 3 (d0 − 1 an), qui chevaucherait selon le jour où l'on lance.
+stay(rooms[1], (m_first - relativedelta(years=1)) + timedelta(days=3), 5,
      created=today - relativedelta(years=1) - timedelta(days=30))   # prise avant « même date N-1 »
 stay(rooms[1], (m_first - relativedelta(years=1)) + timedelta(days=10), 2,
      created=today - relativedelta(years=1) + timedelta(days=2))    # prise APRÈS : ne compte pas
