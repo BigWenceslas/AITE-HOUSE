@@ -28,7 +28,7 @@ d'Ivoire) : chaque fiche porte toutes les données requises.
     'author': "AITE Consulting",
     'website': "https://aite-consulting.com",
     'category': 'Services/Hotel',
-    'version': '18.0.1.0.1',
+    'version': '18.0.1.0.2',
     'license': 'LGPL-3',
     'depends': ['aite_hotel_management'],
     'data': [

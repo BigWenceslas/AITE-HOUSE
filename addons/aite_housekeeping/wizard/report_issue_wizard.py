@@ -22,15 +22,31 @@ class ReportIssueWizard(models.TransientModel):
         string="Urgence", default='1')
     image = fields.Image(string="Photo", max_width=1280, max_height=1280)
 
+    # Urgence de l'équipe d'étage → priorité du module Maintenance
+    # (Très basse / Basse / Normal / Haute). Recopier la clé telle quelle
+    # faisait de « Important » une priorité « Basse » (ECARTS n° 15 c) :
+    # « Normal » reste normal, tout ce qui est au-dessus est « Haute », et
+    # l'urgence exacte est rappelée en tête de la description.
+    PRIORITY_MAP = {'0': '2', '1': '3', '2': '3', '3': '3'}
+
+    @staticmethod
+    def _maintenance_priority(urgency):
+        """Priorité Maintenance d'une urgence de l'assistant — pure."""
+        return ReportIssueWizard.PRIORITY_MAP.get(urgency or '0', '2')
+
     def action_submit(self):
         self.ensure_one()
         Request = self.env['maintenance.request']
         vals = {
             'name': _("Chambre %(room)s — %(issue)s",
                       room=self.room_id.name, issue=self.name),
-            'description': self.description or False,
+            'description': "\n".join(filter(None, [
+                _("Urgence : %s",
+                  dict(self._fields['priority']._description_selection(
+                      self.env)).get(self.priority, "")),
+                self.description])),
             'maintenance_type': 'corrective',
-            'priority': self.priority,
+            'priority': self._maintenance_priority(self.priority),
             'room_id': self.room_id.id,
             'blocks_room': self.blocks_room,
             'reported_by_hk': True,

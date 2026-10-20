@@ -48,8 +48,10 @@ regs = res.registration_ids
 check("UNE fiche créée automatiquement", len(regs) == 1, len(regs))
 main = regs.filtered('is_main_guest')
 check("c'est celle du client principal", bool(main))
-check("nom/prénom découpés : Ngo / Bikaï Solange",
-      main.last_name == "Ngo" and main.first_name == "Bikaï Solange",
+# Le contact n'a qu'un nom complet : on ne le coupe plus au premier espace
+# (« Ngo Bikaï Solange » n'est pas Nom « Ngo ») ; la réception sépare le prénom.
+check("nom complet repris dans Nom, prénom à compléter",
+      main.last_name == "Ngo Bikaï Solange" and not main.first_name,
       (main.last_name, main.first_name))
 check("pièce et nationalité pré-remplies depuis le contact",
       main.id_type == 'cni' and main.id_number == '123456789'

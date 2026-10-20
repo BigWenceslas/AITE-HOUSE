@@ -253,12 +253,29 @@ class GuestRegistration(models.Model):
     # ------------------------------------------------------------------
 
     @api.model
+    def _name_parts(self, partner):
+        """
+        (nom, prénom) d'un contact pour la fiche de police.
+
+        Si le contact porte un nom et un prénom distincts (module de
+        découpage du nom installé), on les reprend. Sinon, on ne devine
+        pas : « Ngo Bikaï Solange » comme « Estelle Ngono » ne se coupent
+        pas au premier espace sans risque d'erreur. Le nom complet reste
+        dans « Nom », le prénom vide — le bandeau « Il manque » le signale
+        à la réception (ECARTS n° 30).
+        """
+        fields_ = getattr(partner, '_fields', {})
+        if 'lastname' in fields_ and 'firstname' in fields_ \
+                and (partner.lastname or partner.firstname):
+            return (partner.lastname or partner.firstname or "",
+                    partner.firstname if partner.lastname else "")
+        return (partner.name or "").strip(), ""
+
+    @api.model
     def _vals_from_partner(self, partner, reservation, line=None,
                            main=False):
         """Valeurs d'une fiche pré-remplie depuis un contact Odoo."""
-        parts = (partner.name or "").strip().split(" ", 1)
-        last_name = parts[0] if parts else ""
-        first_name = parts[1] if len(parts) > 1 else ""
+        last_name, first_name = self._name_parts(partner)
         id_map = {'cni': 'cni', 'passport': 'passport',
                   'permit': 'permit', 'other': 'other'}
         return {
@@ -266,7 +283,7 @@ class GuestRegistration(models.Model):
             'reservation_line_id': line.id if line else False,
             'partner_id': partner.id,
             'is_main_guest': main,
-            'last_name': last_name or partner.name,
+            'last_name': last_name,
             'first_name': first_name,
             'nationality_id': (partner.nationality_id.id
                                or partner.country_id.id or False),
@@ -294,7 +311,10 @@ class GuestRegistration(models.Model):
             if reg.id_number:
                 vals['guest_id_number'] = reg.id_number
             if vals:
-                reg.partner_id.write(vals)
+                # ``sudo`` : écriture technique sur le contact (comme le
+                # marquage « client hôtel ») — la réception n'a pas, et
+                # n'a pas à avoir, la création de contacts (ECARTS n° 14).
+                reg.partner_id.sudo().write(vals)
         return True
 
     def action_mark_signed(self):

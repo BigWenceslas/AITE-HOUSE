@@ -57,6 +57,9 @@ class PoliceRegisterWizard(models.TransientModel):
         if self.date_to < self.date_from:
             raise UserError(_("La date de fin doit suivre la date de début."))
         regs = self._get_registrations()
+        # Les dates passent dans le contexte en chaînes ISO : c'est ainsi
+        # que le client web les renvoie au rapport (JSON). Le gabarit les
+        # relit depuis leur forme ISO (ECARTS n° 16).
         if not regs:
             raise UserError(_(
                 "Aucune fiche d'enregistrement entre le %(a)s et le %(b)s "
@@ -64,5 +67,6 @@ class PoliceRegisterWizard(models.TransientModel):
                 h=self.hotel_id.name))
         return self.env.ref(
             'aite_guest_registry.report_police_register').with_context(
-                date_from=self.date_from, date_to=self.date_to,
+                date_from=fields.Date.to_string(self.date_from),
+                date_to=fields.Date.to_string(self.date_to),
                 hotel_name=self.hotel_id.name).report_action(regs)

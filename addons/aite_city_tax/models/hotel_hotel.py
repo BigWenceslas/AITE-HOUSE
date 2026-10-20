@@ -91,10 +91,15 @@ class HotelHotel(models.Model):
         self.ensure_one()
         if self.city_tax_product_id:
             return self.city_tax_product_id
+        # ``sudo`` : l'article et son rattachement à l'hôtel sont des
+        # écritures techniques (comme l'article des types de chambre). La
+        # réception n'a que la lecture sur l'hôtel, le responsable n'a pas
+        # la création d'articles : sans ``sudo``, la première confirmation
+        # d'une base sans article échouait (ECARTS n° 11).
         categ = self.env.ref(
             'aite_hotel_management.product_category_hotel',
             raise_if_not_found=False)
-        product = self.env['product.product'].create({
+        product = self.env['product.product'].sudo().create({
             'name': _("Taxe de séjour — %s", self.name),
             'type': 'service',
             'invoice_policy': 'order',
@@ -105,8 +110,8 @@ class HotelHotel(models.Model):
             'categ_id': categ.id if categ else False,
             'company_id': self.company_id.id,
         })
-        self.city_tax_product_id = product.id
-        return product
+        self.sudo().city_tax_product_id = product.id
+        return product.with_env(self.env)
 
     def write(self, vals):
         res = super().write(vals)

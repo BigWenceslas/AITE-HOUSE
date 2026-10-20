@@ -61,9 +61,14 @@
             <t t-call="web.external_layout">
                 <div class="page" style="font-size:10px">
                     <h2 class="mb-0">REGISTRE DES CLIENTS HÉBERGÉS</h2>
+                    <!-- Le client web renvoie les dates du contexte en chaînes
+                         (JSON) : on les relit depuis leur forme ISO, qu'elles
+                         arrivent en chaîne ou en date (ECARTS n° 16). -->
+                    <t t-set="period_from" t-value="env.context.get('date_from') and datetime.date.fromisoformat(str(env.context['date_from'])[:10])"/>
+                    <t t-set="period_to" t-value="env.context.get('date_to') and datetime.date.fromisoformat(str(env.context['date_to'])[:10])"/>
                     <div class="text-muted mb-2">
                         <span t-esc="env.context.get('hotel_name') or (docs and docs[0].hotel_id.name) or ''"/>
-                        — du <span t-esc="env.context.get('date_from') and env.context['date_from'].strftime('%d/%m/%Y')"/> au <span t-esc="env.context.get('date_to') and env.context['date_to'].strftime('%d/%m/%Y')"/>
+                        — du <span t-esc="period_from and period_from.strftime('%d/%m/%Y')"/> au <span t-esc="period_to and period_to.strftime('%d/%m/%Y')"/>
                         — <t t-esc="len(docs)"/> personne(s)
                     </div>
                     <table class="table table-sm table-bordered">

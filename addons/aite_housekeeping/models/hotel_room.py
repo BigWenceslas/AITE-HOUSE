@@ -124,12 +124,17 @@ class HotelRoom(models.Model):
         return True
 
     def action_hk_inspect_ok(self):
-        """Inspection validée : chambre propre."""
+        """
+        Inspection validée : chambre propre. « Conforme » vaut « tout est
+        conforme » : on coche la checklist avant de clore, sinon une liste
+        non cochée était lue comme refusée (ECARTS n° 19).
+        """
         for room in self:
             task = self.env['aite.hotel.housekeeping'].search([
                 ('room_id', '=', room.id), ('task_type', '=', 'inspection'),
                 ('state', 'in', ('todo', 'in_progress'))], limit=1)
             if task:
+                task.action_check_all()
                 task.action_done()
             room.hk_state = 'clean'
         return True

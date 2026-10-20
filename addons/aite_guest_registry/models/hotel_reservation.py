@@ -140,7 +140,10 @@ class HotelReservation(models.Model):
                 if self.checkin_date else False,
                 'default_departure_date': self.checkout_date.date()
                 if self.checkout_date else False,
-                'default_country_id': self.hotel_id.country_id.id,
+                # Pas de résidence par défaut : la colonne est masquée, et
+                # un étranger dont on ne change que la nationalité serait
+                # compté résident (ECARTS n° 30). Vide, la résidence se
+                # déduit de la nationalité dans les statistiques.
                 'default_nationality_id': self.hotel_id.country_id.id,
                 'search_default_reservation_id': self.id,
             },
