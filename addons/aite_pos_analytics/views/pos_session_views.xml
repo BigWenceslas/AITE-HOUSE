@@ -34,7 +34,7 @@
             <xpath expr="//field[@name='state']" position="before">
                 <field name="total_ca" optional="show" sum="Total CA"/>
                 <field name="total_margin" optional="show" sum="Marge totale"/>
-                <field name="margin_rate" widget="percentage" optional="hide"/>
+                <field name="margin_rate" optional="hide"/>
                 <field name="cash_discrepancy_severity"
                        widget="badge"
                        optional="show"

@@ -11,8 +11,8 @@ import { _t } from "@web/core/l10n/translation";
  * ajoute donc la méthode au prototype du PaymentScreen via ``patch`` et on
  * injecte le bouton par héritage du template ``PaymentScreenButtons``.
  *
- * Le bouton s'appuie sur une méthode de paiement de type crédit
- * (``is_aite_credit`` ou native *pay_later*). Il exige un client, impute le
+ * Le bouton s'appuie sur la méthode de paiement marquée « Vente à crédit »
+ * (``is_aite_credit``, chargé dans la caisse par ``_load_pos_data_fields``). Il exige un client, impute le
  * solde dû sur cette méthode, puis valide la commande. L'ardoise et son
  * écriture au compte client (411) sont créées côté serveur.
  */
@@ -32,11 +32,10 @@ patch(PaymentScreen.prototype, {
                 methods = methods.map((id) => store.get(id)).filter(Boolean);
             }
         }
-        let method = methods.find((m) => m.is_aite_credit);
-        if (!method) {
-            method = methods.find((m) => m.type === "pay_later");
-        }
-        return method;
+        // Seule la méthode marquée « Vente à crédit (ardoise) » convient :
+        // un autre mode « payer plus tard » (Note de chambre, Compte
+        // client) porterait la dette ailleurs — pas de repli.
+        return methods.find((m) => m.is_aite_credit && !m.is_room_charge);
     },
 
     /** Commande courante, quelle que soit l'API de la version. */

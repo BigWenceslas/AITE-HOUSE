@@ -25,16 +25,25 @@ class PosPaymentMethod(models.Model):
         """
         Vrai si la méthode doit générer une ardoise.
 
-        On considère soit le marqueur explicite ``is_aite_credit``, soit une
-        méthode native de type *pay_later* (selon la version, le champ peut
-        être ``type == 'pay_later'`` ou ``split_transactions`` + compte
-        receivable). On teste de façon défensive.
+        Seul le marqueur explicite ``is_aite_credit`` compte. Le repli sur
+        « tout mode *pay_later* » est abandonné : « Note de chambre »
+        (``is_room_charge``, module Note de chambre) et le « Compte client »
+        standard sont aussi des modes *pay_later*, et un ticket réglé ainsi
+        ouvrait une ardoise en plus du report au folio — la consommation
+        était réclamée deux fois. Une note de chambre n'ouvre jamais
+        d'ardoise, même cochée par erreur.
         """
         self.ensure_one()
-        if self.is_aite_credit:
-            return True
-        # Repli : détection d'une méthode "payer plus tard" native.
-        method_type = getattr(self, 'type', False)
-        if method_type == 'pay_later':
-            return True
-        return False
+        if getattr(self, 'is_room_charge', False):
+            return False
+        return bool(self.is_aite_credit)
+
+    @api.model
+    def _load_pos_data_fields(self, config_id):
+        """Charge le marqueur dans la caisse : « Mettre sur ardoise » doit
+        viser la méthode ardoise, pas le premier mode « payer plus tard »
+        venu (qui peut être « Note de chambre »)."""
+        fields_list = super()._load_pos_data_fields(config_id)
+        if fields_list and 'is_aite_credit' not in fields_list:
+            fields_list = list(fields_list) + ['is_aite_credit']
+        return fields_list

@@ -241,6 +241,84 @@ class TestWebsiteBookingTunnel(HttpCase):
         self.assertEqual(booking.amount, 40000.0)
 
     # ------------------------------------------------------------------
+    # Écart n° 34 : passé refusé ; durée non multiple du pas
+    # ------------------------------------------------------------------
+
+    def test_past_slot_is_refused(self):
+        """Un créneau d'hier (ou de tout à l'heure) n'est pas vendu."""
+        yesterday = fields.Date.to_string(
+            fields.Date.context_today(self.env.user) - timedelta(days=1))
+        before = self.env['aite.slot.booking'].search_count([])
+        response = self.url_open('/reservation/confirmer', data={
+            'resource_id': self.salon.id,
+            'date': yesterday,
+            'start_h': '10.0',
+            'name': "Client du passé",
+            'phone': "+224 600 12 12 12",
+            'csrf_token': self._csrf(),
+        })
+        self.assertEqual(
+            self.env['aite.slot.booking'].search_count([]), before)
+        self.assertIn("error=past", response.url)
+        self.assertFalse(self.env['res.partner'].search_count(
+            [('name', '=', "Client du passé")]))
+
+    def test_date_field_refuses_past_days(self):
+        """Le champ date ne propose pas les jours passés, et une date
+        passée dans l'adresse ramène à aujourd'hui."""
+        today = fields.Date.to_string(fields.Date.context_today(self.env.user))
+        yesterday = fields.Date.to_string(
+            fields.Date.context_today(self.env.user) - timedelta(days=1))
+        for url in ('/reservation/espace/%s?date=%s' % (self.salon.id, yesterday),
+                    '/reservation/prestation/%s?date=%s' % (self.service.id, yesterday)):
+            html = self.url_open(url).text
+            self.assertIn('min="%s"' % today, html, url)
+            self.assertIn('value="%s"' % today, html, url)
+
+    def test_service_not_multiple_of_the_step_can_be_booked(self):
+        """Une prestation de 90 min sur une ressource au pas d'une heure
+        occupe deux créneaux : elle se réserve, au lieu d'échouer avec
+        « Ce créneau vient d'être pris »."""
+        self.cabine.slot_minutes = '60'
+        self.service.duration_minutes = 90
+        response = self.url_open('/reservation/confirmer', data={
+            'resource_id': self.cabine.id,
+            'service_id': self.service.id,
+            'date': self.tomorrow,
+            'start_h': '11.0',
+            'name': "Mariam Diallo",
+            'phone': "+224600909090",
+            'csrf_token': self._csrf(),
+        })
+        self.assertNotIn("error=", response.url)
+        booking = self.env['aite.slot.booking'].search(
+            [('resource_id', '=', self.cabine.id)], order='id desc', limit=1)
+        self.assertTrue(booking)
+        self.assertEqual(booking.state, 'confirmed')
+        self.assertEqual(booking.duration_hours, 2.0)
+        self.assertEqual(booking.amount, 40000.0)
+
+    # ------------------------------------------------------------------
+    # Écart n° 35 : une tentative refusée ne crée pas de contact
+    # ------------------------------------------------------------------
+
+    def test_refused_attempt_creates_no_partner(self):
+        common = {
+            'resource_id': self.salon.id,
+            'date': self.tomorrow,
+            'start_h': '17.0',
+        }
+        self.url_open('/reservation/confirmer', data=dict(
+            common, name="Premier Arrivé", phone="+224 600 55 00 55",
+            csrf_token=self._csrf()))
+        self.url_open('/reservation/confirmer', data=dict(
+            common, name="Visiteur Refusé", phone="+224 600 66 00 66",
+            csrf_token=self._csrf()))
+        self.assertFalse(self.env['res.partner'].search_count(
+            [('name', '=', "Visiteur Refusé")]),
+            "la tentative refusée ne doit pas laisser de contact")
+
+    # ------------------------------------------------------------------
     # Demande de séjour
     # ------------------------------------------------------------------
 

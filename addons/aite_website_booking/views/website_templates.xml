@@ -81,13 +81,14 @@
                     <t t-esc="resource.currency_id.symbol"/> / heure
                 </p>
                 <div t-if="error == 'slot'" class="alert alert-warning">Ce créneau vient d'être pris — choisissez-en un autre.</div>
+                <div t-if="error == 'past'" class="alert alert-warning">Ce créneau est déjà passé — choisissez une heure à venir.</div>
                 <div t-if="error == 'name'" class="alert alert-warning">Merci d'indiquer votre nom.</div>
                 <div t-if="error == 'phone'" class="alert alert-warning">Merci d'indiquer un numéro de téléphone valide.</div>
 
                 <form method="get" t-attf-action="/reservation/espace/#{resource.id}" class="row g-2 align-items-end mb-4">
                     <div class="col-auto">
                         <label class="form-label">Date</label>
-                        <input type="date" name="date" class="form-control" t-att-value="day"/>
+                        <input type="date" name="date" class="form-control" t-att-value="day" t-att-min="today"/>
                     </div>
                     <div class="col-auto">
                         <button class="btn btn-secondary" type="submit">Voir ce jour</button>
@@ -171,6 +172,7 @@
                     <t t-esc="service.currency_id.symbol"/>
                 </p>
                 <div t-if="error == 'slot'" class="alert alert-warning">Ce créneau vient d'être pris — choisissez-en un autre.</div>
+                <div t-if="error == 'past'" class="alert alert-warning">Ce créneau est déjà passé — choisissez une heure à venir.</div>
                 <div t-if="error == 'name'" class="alert alert-warning">Merci d'indiquer votre nom.</div>
                 <div t-if="error == 'phone'" class="alert alert-warning">Merci d'indiquer un numéro de téléphone valide.</div>
 
@@ -186,7 +188,7 @@
                     <input type="hidden" name="resource_id" t-att-value="resource.id" t-if="len(resources) &lt;= 1"/>
                     <div class="col-auto">
                         <label class="form-label">Date</label>
-                        <input type="date" name="date" class="form-control" t-att-value="day"/>
+                        <input type="date" name="date" class="form-control" t-att-value="day" t-att-min="today"/>
                     </div>
                     <div class="col-auto">
                         <button class="btn btn-secondary" type="submit">Voir</button>

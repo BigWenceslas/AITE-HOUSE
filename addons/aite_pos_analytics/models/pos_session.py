@@ -27,7 +27,10 @@ class PosSession(models.Model):
     # --- Agrégats CA / Marge / CMV ---
 
     total_ca = fields.Monetary(
-        string="CA",
+        string="CA HT",
+        help="Chiffre d'affaires hors taxes des commandes réglées : même "
+             "définition que le tableau de bord, le cockpit Direction et "
+             "le tableau de bord exécutif.",
         compute='_compute_session_aggregates',
         store=True,
         currency_field='currency_id',
@@ -94,6 +97,7 @@ class PosSession(models.Model):
         'order_ids.total_cost',
         'order_ids.total_margin',
         'order_ids.amount_total',
+        'order_ids.lines.price_subtotal',
         'order_ids.lines.qty',
         'order_ids.state',
     )
@@ -103,7 +107,12 @@ class PosSession(models.Model):
             valid_orders = session.order_ids.filtered(
                 lambda o: o.state in ('paid', 'done', 'invoiced')
             )
-            session.total_ca = sum(valid_orders.mapped('amount_total'))
+            # CA HORS TAXES (somme des lignes), comme partout ailleurs :
+            # la marge et le CMV sont HT, un CA TTC faussait le taux de
+            # marge et donnait deux CA différents pour la même session
+            # selon l'écran (écart n° 25, cas K04).
+            session.total_ca = sum(
+                valid_orders.mapped('lines.price_subtotal'))
             session.total_cost = sum(valid_orders.mapped('total_cost'))
             session.total_margin = sum(valid_orders.mapped('total_margin'))
             session.order_count_computed = len(valid_orders)
@@ -116,6 +125,19 @@ class PosSession(models.Model):
                 (session.total_ca / session.order_count_computed)
                 if session.order_count_computed else 0.0
             )
+
+    @staticmethod
+    def _is_cash_counted(state, counted):
+        """Vrai si la caisse a été comptée : session en clôture ou close,
+        ou montant compté déjà saisi (le comptage précède la clôture)."""
+        if state in ('closing_control', 'closed'):
+            return True
+        return bool(counted)
+
+    def _aite_cash_counted(self):
+        self.ensure_one()
+        return self._is_cash_counted(
+            self.state, self.cash_register_balance_end_real)
 
     @api.depends('cash_register_difference', 'state',
                  'cash_register_balance_end_real',
@@ -135,6 +157,13 @@ class PosSession(models.Model):
         # paiement espèces, la caisse n'a pas de solde et il n'y a pas
         # d'écart à classer.
         for session in self:
+            if not session._aite_cash_counted():
+                # Caisse encore ouverte, que personne n'a comptée : le
+                # « compté » vaut 0 et la soustraction inventerait un
+                # manquant égal au fond de caisse, classé « Critique »
+                # au-delà du seuil (écart n° 26).
+                session.cash_discrepancy_severity = 'none'
+                continue
             if session.payment_method_ids.filtered('is_cash_count'):
                 diff = (session.cash_register_balance_end_real
                         - session.cash_register_balance_end)

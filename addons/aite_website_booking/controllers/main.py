@@ -45,16 +45,37 @@ class WebsiteBooking(http.Controller):
         localized = self._tz().localize(naive)
         return localized.astimezone(pytz.utc).replace(tzinfo=None)
 
+    def _now_local(self):
+        """Maintenant, dans le fuseau de l'établissement."""
+        return datetime.now(self._tz())
+
     def _today_str(self):
-        return fields.Date.to_string(
-            fields.Date.context_today(request.env.user))
+        # Le jour de l'établissement, pas celui du visiteur public.
+        return fields.Date.to_string(self._now_local().date())
 
     def _safe_day(self, day):
+        """Jour demandé, ramené à aujourd'hui s'il est illisible ou passé
+        (écart n° 34 : les jours passés ne sont plus proposés)."""
+        today = self._today_str()
         try:
             datetime.strptime(day or '', '%Y-%m-%d')
-            return day
         except ValueError:
-            return self._today_str()
+            return today
+        return day if day >= today else today
+
+    def _now_h(self, day):
+        """Heure locale décimale actuelle si ``day`` est aujourd'hui (les
+        créneaux déjà commencés ne sont plus proposés), sinon ``None``."""
+        if day != self._today_str():
+            return None
+        now = self._now_local()
+        return now.hour + now.minute / 60.0
+
+    def _grid(self, resource, day):
+        """Grille du jour, lue dans le fuseau de l'établissement — le même
+        que celui qui convertit l'heure choisie (``_local_to_utc``)."""
+        return request.env['aite.booking.resource'].sudo().with_context(
+            tz=self._tz().zone).get_day_grid(resource.id, day)
 
     def _resources(self, kinds):
         return request.env['aite.booking.resource'].sudo().search([
@@ -90,11 +111,14 @@ class WebsiteBooking(http.Controller):
         if not resource or not resource.allow_online:
             return request.redirect('/reservation/espaces')
         day = self._safe_day(date)
-        grid = Resource.get_day_grid(resource.id, day)
+        grid = self._grid(resource, day)
         free = [s for s in grid['slots'] if s['state'] == 'free']
+        free = request.env['aite.website.booking']._future_slots(
+            free, self._now_h(day))
         return request.render('aite_website_booking.space_grid', {
             'resource': resource,
             'day': day,
+            'today': self._today_str(),
             'free_slots': free,
             'error': error,
         })
@@ -128,22 +152,32 @@ class WebsiteBooking(http.Controller):
             lambda r: r.id == int(resource_id or 0)) or resources[0]
         day = self._safe_day(date)
 
-        Resource = request.env['aite.booking.resource'].sudo()
-        grid = Resource.get_day_grid(resource.id, day)
-        helper = request.env['aite.website.booking']
-        step = grid['resource']['slot_minutes']
-        k = max(1, -(-(service.duration_minutes or step) // step))
-        starts = helper._fit_starts(grid['slots'], k)
-        start_slots = [grid['slots'][i] for i in starts]
+        start_slots, k = self._service_starts(resource, service, day)
+        start_slots = request.env['aite.website.booking']._future_slots(
+            start_slots, self._now_h(day))
         return request.render('aite_website_booking.service_grid', {
             'service': service,
             'resource': resource,
             'resources': resources,
             'day': day,
+            'today': self._today_str(),
             'start_slots': start_slots,
             'duration_slots': k,
             'error': error,
         })
+
+    def _service_starts(self, resource, service, day):
+        """Heures de début libres pour une prestation de ``k`` créneaux
+        consécutifs (``k`` = durée arrondie au pas, cf.
+        ``_slot_minutes_for``)."""
+        grid = self._grid(resource, day)
+        helper = request.env['aite.website.booking']
+        step = grid['resource']['slot_minutes']
+        minutes = helper._slot_minutes_for(
+            service.duration_minutes if service else step, step)
+        k = minutes // step
+        starts = helper._fit_starts(grid['slots'], k)
+        return [grid['slots'][i] for i in starts], k
 
     # ------------------------------------------------------------------
     # Confirmation créneau (espaces & prestations)
@@ -161,7 +195,13 @@ class WebsiteBooking(http.Controller):
 
         resource = Resource.browse(
             int(post.get('resource_id') or 0)).exists()
-        day = self._safe_day(post.get('date'))
+        # Jour posté tel quel (non ramené à aujourd'hui) : un jour passé
+        # doit être refusé ci-dessous, pas réservé à la date du jour.
+        day = post.get('date') or ''
+        try:
+            datetime.strptime(day, '%Y-%m-%d')
+        except ValueError:
+            day = self._today_str()
         try:
             start_h = float(post.get('start_h') or -1)
         except ValueError:
@@ -180,23 +220,40 @@ class WebsiteBooking(http.Controller):
         if code:
             return request.redirect(back + '&error=' + code)
 
-        # Fin de créneau : durée de la prestation, sinon 1 pas.
+        # Fin de créneau : durée de la prestation arrondie au pas de la
+        # ressource (écart n° 34), sinon 1 pas.
         step = int(resource.slot_minutes or '60')
-        minutes = (service.duration_minutes
-                   if service else step) or step
+        minutes = helper._slot_minutes_for(
+            service.duration_minutes if service else step, step)
         start_dt = self._local_to_utc(day, start_h)
         stop_dt = start_dt + timedelta(minutes=minutes)
 
-        partner = helper.find_or_create_partner(
-            post.get('name'), post.get('phone'), post.get('email'))
+        # Écart n° 34 : un créneau déjà commencé (ou d'un jour passé) n'est
+        # pas vendu, même si l'adresse ou le formulaire a été forgé.
+        if start_dt <= fields.Datetime.now():
+            return request.redirect(back + '&error=past')
+
+        # Créneau encore proposé par la grille ? Refus immédiat sinon : ni
+        # contact ni numéro de réservation consommés pour une tentative
+        # perdue d'avance (écart n° 35).
+        if service:
+            offered, _k = self._service_starts(resource, service, day)
+        else:
+            offered = [s for s in self._grid(resource, day)['slots']
+                       if s['state'] == 'free']
+        if not any(abs(s['start'] - start_h) < 1e-4 for s in offered):
+            return request.redirect(back + '&error=slot')
 
         Booking = env['aite.slot.booking'].sudo()
         try:
-            # Point de sauvegarde : si le créneau vient d'être pris (ou
-            # n'est pas valide), la création est annulée avec la
-            # confirmation. Sans cela, chaque tentative refusée laissait
+            # Point de sauvegarde : si le créneau vient d'être pris entre
+            # l'affichage et l'envoi (ou n'est pas valide), la création est
+            # annulée avec la confirmation — y compris le contact client
+            # (écart n° 35). Sans cela, chaque tentative refusée laissait
             # une réservation fantôme en brouillon dans le back-office.
             with env.cr.savepoint():
+                partner = helper.find_or_create_partner(
+                    post.get('name'), post.get('phone'), post.get('email'))
                 booking = Booking.create({
                     'resource_id': resource.id,
                     'partner_id': partner.id,

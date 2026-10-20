@@ -2,3 +2,4 @@
 from . import common
 from . import test_margins
 from . import test_dashboard_api
+from . import test_figures

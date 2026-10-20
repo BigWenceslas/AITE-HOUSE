@@ -19,9 +19,9 @@
             <td style="padding: 3px 10px 3px 0; color: #714B67;"><b>Prestation</b></td>
             <td><t t-out="object.service_id.name"/></td></tr>
         <tr><td style="padding: 3px 10px 3px 0; color: #714B67;"><b>Début</b></td>
-            <td><t t-out="format_datetime(object.start, tz=object.env.user.tz, dt_format='dd/MM/yyyy HH:mm')"/></td></tr>
+            <td><t t-out="format_datetime(object.start, tz=object._local_tz(), dt_format='dd/MM/yyyy HH:mm')"/></td></tr>
         <tr><td style="padding: 3px 10px 3px 0; color: #714B67;"><b>Fin</b></td>
-            <td><t t-out="format_datetime(object.stop, tz=object.env.user.tz, dt_format='HH:mm')"/></td></tr>
+            <td><t t-out="format_datetime(object.stop, tz=object._local_tz(), dt_format='HH:mm')"/></td></tr>
         <tr t-if="object.amount">
             <td style="padding: 3px 10px 3px 0; color: #714B67;"><b>Montant</b></td>
             <td><t t-out="format_amount(object.amount, object.currency_id)"/></td></tr>

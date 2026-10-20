@@ -37,20 +37,32 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="credit_id"/>
+                            <field name="credit_id"
+                                   readonly="id and state == 'posted'"/>
                             <field name="partner_id"/>
-                            <field name="date"/>
+                            <field name="date"
+                                   readonly="id and state == 'posted'"/>
                         </group>
                         <group>
-                            <field name="amount"/>
-                            <field name="method"/>
-                            <field name="transaction_ref"/>
-                            <field name="collected_by"/>
+                            <field name="amount"
+                                   readonly="id and state == 'posted'"/>
+                            <field name="method"
+                                   readonly="id and state == 'posted'"/>
+                            <field name="transaction_ref"
+                                   readonly="id and state == 'posted'"/>
+                            <field name="collected_by"
+                                   readonly="id and state == 'posted'"/>
                             <field name="currency_id" invisible="1"/>
                         </group>
                     </group>
+                    <div class="text-muted" invisible="not id or state != 'posted'">
+                        Remboursement validé : son écriture est passée. Pour le
+                        corriger, cliquez sur « Annuler » puis saisissez le bon
+                        remboursement — chaque changement reste tracé ci-dessous.
+                    </div>
                     <field name="note" placeholder="Note…"/>
                 </sheet>
+                <chatter/>
             </form>
         </field>
     </record>

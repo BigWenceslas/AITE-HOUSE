@@ -41,7 +41,7 @@
                 <field name="price_subtotal" sum="Total CA"/>
                 <field name="total_cost" sum="Total CMV"/>
                 <field name="margin" sum="Total marge"/>
-                <field name="margin_rate" widget="percentage" optional="hide"/>
+                <field name="margin_rate" optional="hide"/>
                 <field name="currency_id" column_invisible="True"/>
             </list>
         </field>

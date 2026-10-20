@@ -218,6 +218,16 @@ class SlotBooking(models.Model):
     # Contraintes
     # ------------------------------------------------------------------
 
+    def _local_tz(self):
+        """Fuseau de l'établissement (société) : c'est lui qui fait foi pour
+        les horaires d'ouverture, la journée du créneau et les heures
+        annoncées au client — jamais celui de l'utilisateur connecté (un
+        administrateur réglé sur Bruxelles, le visiteur public du site)."""
+        self.ensure_one()
+        return (self.company_id.partner_id.tz
+                or self.resource_id.company_id.partner_id.tz
+                or self.env.user.tz or 'UTC')
+
     @api.constrains('start', 'stop', 'resource_id')
     def _check_slot_valid(self):
         for rec in self:
@@ -229,8 +239,7 @@ class SlotBooking(models.Model):
             # administrateur réglé sur Bruxelles (ou l'installation des
             # données de démonstration) ne doit pas voir refuser un
             # créneau valable à Douala.
-            tz = (rec.company_id.partner_id.tz or res.company_id.partner_id.tz
-                  or self.env.user.tz or 'UTC')
+            tz = rec._local_tz()
             local = rec.with_context(tz=tz)
             s_local = fields.Datetime.context_timestamp(local, rec.start)
             e_local = fields.Datetime.context_timestamp(local, rec.stop)
@@ -260,6 +269,21 @@ class SlotBooking(models.Model):
     @api.constrains('start', 'stop', 'resource_id', 'state')
     def _check_no_conflict(self):
         Resource = self.env['aite.booking.resource']
+        # Verrou de ligne sur la ressource (écart n° 32) : deux
+        # confirmations simultanées du même créneau travaillent chacune sur
+        # leur photo de la base et ne se voient pas. La mise à jour (neutre)
+        # de la ligne de la ressource les sérialise : la seconde attend la
+        # première puis échoue en « accès concurrent » — Odoo rejoue alors
+        # la requête, qui voit la réservation confirmée et refuse le
+        # conflit ci-dessous. Une simple lecture FOR UPDATE ne suffirait
+        # pas en REPEATABLE READ (verrou sans nouvelle version de ligne).
+        to_lock = self.filtered(
+            lambda r: r.state in ('confirmed', 'done') and r.resource_id
+        ).resource_id
+        if to_lock:
+            self.env.cr.execute(
+                "UPDATE aite_booking_resource SET write_date = write_date "
+                "WHERE id IN %s", [tuple(sorted(to_lock.ids))])
         for rec in self:
             if rec.state not in ('confirmed', 'done'):
                 continue
@@ -432,13 +456,20 @@ class SlotBooking(models.Model):
     @api.model
     def _cron_slot_no_show(self):
         """Confirmées dont la fin + délai de grâce est dépassée →
-        no-show."""
+        no-show.
+
+        Le pressing est exclu (écart n° 36) : son créneau est celui du
+        dépôt ; une fois le linge déposé, la réservation reste « Confirmée »
+        jusqu'au retrait, qui peut avoir lieu des jours plus tard. Un
+        no-show pressing reste possible à la main (bouton).
+        """
         for company in self.env['res.company'].search([]):
             grace = company.aite_slot_no_show_hours or 6
             limit = fields.Datetime.now() - timedelta(hours=grace)
             stale = self.search([
                 ('company_id', '=', company.id),
                 ('state', '=', 'confirmed'),
+                ('kind', '!=', 'pressing'),
                 ('stop', '<', limit),
             ])
             for rec in stale:

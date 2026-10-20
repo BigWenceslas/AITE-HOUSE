@@ -10,7 +10,7 @@
             <div class="o_aite_grid_4 mb-3">
                 <KpiCard label="'Chiffre d\'affaires'"
                          value="fmtMoney(state.kpis.ca)"
-                         subtitle="fmtMoney(state.kpis.ca_per_day) + ' / jour · ' + state.kpis.days + 'j'"
+                         subtitle="'HT · ' + fmtMoney(state.kpis.ca_per_day) + ' / jour · ' + state.kpis.days + 'j'"
                          color="COLORS.info"/>
                 <KpiCard label="'Marge brute'"
                          value="fmtMoney(state.kpis.margin)"
@@ -580,7 +580,7 @@
                 <KpiCard label="'Sessions'" value="fmt(state.sessions.length)"
                          subtitle="'sur la période'" color="COLORS.info"/>
                 <KpiCard label="'CA total'" value="fmtMoney(totalCA)"
-                         subtitle="''" color="COLORS.success"/>
+                         subtitle="'hors taxes, comme le tableau de bord'" color="COLORS.success"/>
                 <KpiCard label="'Marge totale'" value="fmtMoney(totalMargin)"
                          subtitle="totalCA &gt; 0 ? fmtPct(totalMargin / totalCA * 100) + ' de taux' : ''"
                          color="COLORS.primary"/>
@@ -596,7 +596,7 @@
                                 <th>Date</th>
                                 <th>Caissier</th>
                                 <th>État</th>
-                                <th class="text-end">CA</th>
+                                <th class="text-end">CA HT</th>
                                 <th class="text-end">Marge</th>
                                 <th class="text-end">Tx</th>
                                 <th class="text-end">Cmd.</th>
@@ -908,7 +908,7 @@
                                     <th>Session</th>
                                     <th>Date</th>
                                     <th>Caissier</th>
-                                    <th class="text-end">CA</th>
+                                    <th class="text-end">CA HT</th>
                                     <th class="text-end">Écart (F)</th>
                                     <th>Sévérité</th>
                                 </tr>

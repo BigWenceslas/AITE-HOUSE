@@ -140,6 +140,8 @@
                                            optional="show"/>
                                     <field name="nights"/>
                                     <field name="price_night"/>
+                                    <field name="price_locked"
+                                           optional="show"/>
                                     <field name="price_subtotal"
                                            sum="Total"/>
                                     <field name="hotel_id"
@@ -325,6 +327,7 @@
                       color="room_id"
                       mode="month"
                       quick_create="false"
+                      delete="0"
                       event_open_popup="true">
                 <field name="room_id" filters="1"/>
                 <field name="partner_id"/>

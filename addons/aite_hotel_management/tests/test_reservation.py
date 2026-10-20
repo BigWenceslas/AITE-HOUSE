@@ -382,8 +382,9 @@ class TestReservation(HotelCommon):
             checkin_offset=0, checkout_offset=2)
         reservation.action_confirm()
         self.assertEqual(len(reservation.folio_id.line_ids), 2)
-        reservation.line_ids[0].unlink()
-        reservation._sync_folio_room_lines()
+        # Retrait par le formulaire de la réservation (seul chemin admis
+        # sur un séjour confirmé, écart n° 33) : resynchronisation auto.
+        reservation.write({'line_ids': [(2, reservation.line_ids[0].id)]})
         self.assertEqual(len(reservation.folio_id.line_ids), 1)
 
     def test_dates_default_to_hotel_hours(self):

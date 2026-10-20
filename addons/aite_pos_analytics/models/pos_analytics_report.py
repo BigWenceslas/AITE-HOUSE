@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-import re
+import pytz
 
-from odoo import fields, models, tools
+from odoo import api, fields, models, tools
 
 
 class PosDailyReport(models.Model):
@@ -57,7 +57,8 @@ class PosDailyReport(models.Model):
     # et heatmap). Calculées en SQL à partir de ``po.date_order``.
     hour = fields.Integer(
         string="Heure", readonly=True,
-        help="Heure de la commande (0-23), en heure locale serveur.",
+        help="Heure de la commande (0-23), à l'heure locale de "
+             "l'établissement (fuseau de la société).",
     )
     dow = fields.Integer(
         string="Jour de semaine", readonly=True,
@@ -84,18 +85,26 @@ class PosDailyReport(models.Model):
         Fuseau horaire :
           ``date_order`` est stocké en UTC. Pour que les filtres « heure »
           et la heatmap reflètent l'heure LOCALE d'exploitation, on
-          convertit vers le fuseau de l'utilisateur courant
-          (``self.env.user.tz``) avec repli sur ``UTC``. Le fuseau est
-          résolu à la création de la vue ; il suffit de mettre à jour le
-          module si le fuseau du parc change.
+          convertit vers le fuseau DE LA SOCIÉTÉ de chaque commande (voir
+          ``_company_timezones``) — jamais celui de l'utilisateur qui
+          installe le module : c'était le superutilisateur, sans fuseau,
+          et toute la carte heure × jour était en UTC (écart n° 27). Le
+          fuseau est résolu à la création de la vue : mettre le module à
+          niveau si celui de la société change.
         """
-        # Fuseau local d'exploitation (repli UTC si non défini).
-        tz = self.env.user.tz or 'UTC'
-        # Garde-fou : on n'autorise que des identifiants de fuseau plausibles
-        # (lettres, chiffres, '/', '_', '+', '-') pour éviter toute injection
-        # via un tz forgé. Repli UTC sinon.
-        if not re.match(r'^[A-Za-z0-9_/+\-]+$', tz):
-            tz = 'UTC'
+        # Fuseau par société : CASE company_id WHEN … THEN … ELSE 'UTC'.
+        tz_by_company = self._company_timezones()
+        tz_case = "'UTC'"
+        params = {}
+        if tz_by_company:
+            whens = []
+            for i, (company_id, tz) in enumerate(sorted(
+                    tz_by_company.items())):
+                params['c%d' % i] = company_id
+                params['tz%d' % i] = tz
+                whens.append("WHEN %%(c%d)s THEN %%(tz%d)s" % (i, i))
+            tz_case = "(CASE po.company_id %s ELSE 'UTC' END)" % (
+                " ".join(whens))
 
         tools.drop_view_if_exists(self.env.cr, self._table)
         self.env.cr.execute(f"""
@@ -118,9 +127,9 @@ class PosDailyReport(models.Model):
                     pol.margin                      AS margin,
                     pol.margin_rate                 AS margin_rate,
                     EXTRACT(HOUR FROM (po.date_order AT TIME ZONE 'UTC'
-                            AT TIME ZONE %(tz)s))::int      AS hour,
+                            AT TIME ZONE {tz_case}))::int      AS hour,
                     EXTRACT(ISODOW FROM (po.date_order AT TIME ZONE 'UTC'
-                            AT TIME ZONE %(tz)s))::int      AS dow
+                            AT TIME ZONE {tz_case}))::int      AS dow
                 FROM pos_order_line pol
                 INNER JOIN pos_order po
                     ON po.id = pol.order_id
@@ -132,4 +141,31 @@ class PosDailyReport(models.Model):
                     ON rc.id = po.company_id
                 WHERE po.state IN ('paid', 'done', 'invoiced')
             )
-        """, {'tz': tz})
+        """, params)
+
+    @api.model
+    def _company_timezones(self):
+        """
+        Fuseau d'exploitation de chaque société, de façon déterministe :
+
+        1. le fuseau de la fiche société (contact de la société) ;
+        2. sinon le fuseau du pays de la société (Cameroun →
+           Africa/Douala) quand le pays n'en a qu'un ;
+        3. sinon UTC.
+
+        Seuls des identifiants connus de pytz sont retenus : la valeur est
+        passée en paramètre SQL, mais un fuseau inconnu ferait échouer la
+        vue.
+        """
+        out = {}
+        companies = self.env['res.company'].sudo().with_context(
+            active_test=False).search([])
+        for company in companies:
+            tz = company.partner_id.tz
+            if not tz and company.country_id:
+                zones = pytz.country_timezones.get(
+                    (company.country_id.code or '').upper(), [])
+                tz = zones[0] if len(zones) == 1 else False
+            if tz in pytz.all_timezones_set:
+                out[company.id] = tz
+        return out

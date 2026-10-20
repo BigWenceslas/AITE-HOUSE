@@ -3,3 +3,4 @@ from . import common
 from . import test_grid
 from . import test_booking
 from . import test_folio_posting
+from . import test_concurrency

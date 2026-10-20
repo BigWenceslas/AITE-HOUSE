@@ -248,6 +248,10 @@ class AitePurchaseDashboard(models.AbstractModel):
                 'partner_id': mv.partner_id.id,
                 'partner': mv.partner_id.name or "",
                 'ref': mv.name or "",
+                # Date de facture : base de la balance âgée « en miroir »
+                # du cockpit Direction (ancienneté depuis la facture).
+                'date': fields.Date.to_string(
+                    mv.invoice_date or mv.date or today),
                 'due': fields.Date.to_string(due),
                 'total': abs(mv.amount_total or 0.0),
                 'paid': abs(mv.amount_total or 0.0) - residual,
@@ -429,7 +433,12 @@ class AitePurchaseDashboard(models.AbstractModel):
         MONTHS_FR = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin',
                      'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc']
         Move = self.env['account.move']
-        Payment = self.env['account.payment']
+        # Les paiements sont un objet comptable : le groupe Utilisateur
+        # des achats, à qui le menu est ouvert, n'a pas le droit de les
+        # lire (réservé à Facturation). On ne sert ici qu'un AGRÉGAT
+        # mensuel, filtré sur la société courante (et le fournisseur
+        # choisi) : lecture en sudo(), aucun paiement n'est exposé.
+        Payment = self.env['account.payment'].sudo()
         out = []
         for (yy, mm) in periods:
             start = datetime(yy, mm, 1).date()
@@ -454,7 +463,11 @@ class AitePurchaseDashboard(models.AbstractModel):
                         for b in Move.search(bill_domain))
             pays = sum(abs(p.amount or 0.0)
                        for p in Payment.search(pay_domain))
+            # ``month`` (AAAA-MM) est la clé commune à tous les tableaux
+            # de bord : le cockpit Direction aligne dessus ventes, achats
+            # et ardoises ; ``period`` reste le libellé court affiché.
             out.append({'period': MONTHS_FR[mm - 1],
+                        'month': '%04d-%02d' % (yy, mm),
                         'bills': bills, 'payments': pays})
         return out
 

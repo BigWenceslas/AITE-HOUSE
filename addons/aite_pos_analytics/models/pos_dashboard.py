@@ -2,6 +2,8 @@
 from datetime import datetime, timedelta
 from collections import defaultdict
 
+import pytz
+
 from odoo import api, fields, models, _
 
 
@@ -87,6 +89,24 @@ class PosAnalyticsDashboard(models.AbstractModel):
                 domain.append(('dow', 'in', wd))
 
         return domain
+
+    def _filtered_domain(self, date_from, date_to, config_id=None,
+                         filters=None):
+        """
+        ``_base_domain`` avec les filtres Heure / Jour du bandeau.
+
+        Les filtres sont affichés au-dessus de TOUS les blocs du tableau
+        de bord : chaque bloc doit donc les appliquer, sinon le Top 8,
+        l'évolution ou les classements montrent la journée entière sous
+        un filtre « Soir » (écart n° 26).
+        """
+        filters = filters or {}
+        return self._base_domain(
+            date_from, date_to, config_id,
+            hour_from=filters.get('hour_from'),
+            hour_to=filters.get('hour_to'),
+            weekdays=filters.get('weekdays'),
+        )
 
     def _company_currency(self):
         return self.env.company.currency_id
@@ -224,10 +244,12 @@ class PosAnalyticsDashboard(models.AbstractModel):
         return result
 
     @api.model
-    def get_top_products(self, date_from, date_to, limit=8, config_id=None):
+    def get_top_products(self, date_from, date_to, limit=8, config_id=None,
+                         filters=None):
         """Top N articles par CA, avec CA, marge, taux."""
         Report = self.env['aite.pos.daily.report']
-        domain = self._base_domain(date_from, date_to, config_id)
+        domain = self._filtered_domain(date_from, date_to, config_id,
+                                       filters)
         rows = Report.read_group(
             domain,
             fields=['price_subtotal:sum', 'margin:sum',
@@ -254,10 +276,12 @@ class PosAnalyticsDashboard(models.AbstractModel):
         return result
 
     @api.model
-    def get_category_breakdown(self, date_from, date_to, config_id=None):
+    def get_category_breakdown(self, date_from, date_to, config_id=None,
+                               filters=None):
         """Stats agrégées par catégorie POS."""
         Report = self.env['aite.pos.daily.report']
-        domain = self._base_domain(date_from, date_to, config_id)
+        domain = self._filtered_domain(date_from, date_to, config_id,
+                                       filters)
         rows = Report.read_group(
             domain,
             fields=['price_subtotal:sum', 'margin:sum',
@@ -394,10 +418,17 @@ class PosAnalyticsDashboard(models.AbstractModel):
         return {'labels': labels, 'series': series}
 
     @api.model
-    def get_monthly_evolution(self, date_from, date_to, config_id=None):
-        """Évolution CA / CMV / Marge mois par mois."""
+    def get_monthly_evolution(self, date_from, date_to, config_id=None,
+                              filters=None):
+        """Évolution CA / CMV / Marge mois par mois.
+
+        ``period`` est le libellé affiché (« octobre 2026 ») ; ``month``
+        (AAAA-MM) est la clé commune à tous les tableaux de bord, sur
+        laquelle le cockpit Direction aligne ventes et achats.
+        """
         Report = self.env['aite.pos.daily.report']
-        domain = self._base_domain(date_from, date_to, config_id)
+        domain = self._filtered_domain(date_from, date_to, config_id,
+                                       filters)
         rows = Report.read_group(
             domain,
             fields=['price_subtotal:sum', 'margin:sum', 'total_cost:sum'],
@@ -406,13 +437,30 @@ class PosAnalyticsDashboard(models.AbstractModel):
         )
         return [{
             'period': r.get('date:month', ''),
+            'month': self._month_key_of(r),
             'ca': r.get('price_subtotal') or 0.0,
             'cost': r.get('total_cost') or 0.0,
             'margin': r.get('margin') or 0.0,
         } for r in rows]
 
+    def _month_key_of(self, row):
+        """Clé AAAA-MM d'un groupe ``date:month`` de ``read_group``.
+
+        Le début du mois est rendu en UTC dans ``__range`` : on le ramène
+        dans le fuseau du contexte, celui qu'a utilisé le regroupement.
+        """
+        rng = ((row.get('__range') or {}).get('date:month') or {})
+        start = rng.get('from') if rng else None
+        if not start:
+            return ''
+        dt = fields.Datetime.to_datetime(start)
+        tz = self.env.context.get('tz')
+        if tz in pytz.all_timezones_set:
+            dt = pytz.utc.localize(dt).astimezone(pytz.timezone(tz))
+        return dt.strftime('%Y-%m')
+
     @api.model
-    def get_rankings(self, date_from, date_to, config_id=None):
+    def get_rankings(self, date_from, date_to, config_id=None, filters=None):
         """
         Trois classements pour le module "Classements produits" :
         - Top bières par quantité
@@ -420,7 +468,8 @@ class PosAnalyticsDashboard(models.AbstractModel):
         - Articles moins vendus
         """
         Report = self.env['aite.pos.daily.report']
-        domain = self._base_domain(date_from, date_to, config_id)
+        domain = self._filtered_domain(date_from, date_to, config_id,
+                                       filters)
 
         # Top bières (filtre sur libellé catégorie contenant "bière")
         # NB : la classification repose sur le nommage des catégories
@@ -447,11 +496,14 @@ class PosAnalyticsDashboard(models.AbstractModel):
                     'ca': r.get('price_subtotal') or 0.0,
                 })
 
-        # Meilleures marges — on filtre les produits avec CA significatif
-        # pour éviter le bruit des micro-ventes à 100% de marge.
+        # Meilleures marges — on ne garde que les produits au CA NET
+        # significatif, pour éviter le bruit des micro-ventes à 100 % de
+        # marge. Le seuil s'applique APRÈS agrégation : filtrer les lignes
+        # (``price_subtotal > 100``) écartait les remboursements, et un
+        # article vendu puis remboursé restait classé sur sa vente seule.
         all_products = Report.read_group(
-            domain + [('price_subtotal', '>', 100)],
-            fields=['price_subtotal:sum', 'margin:sum'],
+            domain,
+            fields=['price_subtotal:sum', 'margin:sum', 'qty:sum'],
             groupby=['product_id'],
             lazy=False,
         )
@@ -459,6 +511,8 @@ class PosAnalyticsDashboard(models.AbstractModel):
         for r in all_products:
             ca = r.get('price_subtotal') or 0.0
             mg = r.get('margin') or 0.0
+            if ca <= 100:
+                continue
             rate = (mg / ca * 100.0) if ca else 0.0
             pid, pname = r['product_id'] or (False, '')
             best_margins.append({
@@ -468,21 +522,20 @@ class PosAnalyticsDashboard(models.AbstractModel):
         best_margins.sort(key=lambda x: x['margin_rate'], reverse=True)
         best_margins = best_margins[:8]
 
-        # Moins vendus (qty > 0)
-        rows = Report.read_group(
-            domain + [('qty', '>', 0)],
-            fields=['qty:sum'],
-            groupby=['product_id'],
-            orderby='qty asc',
-            limit=8,
-        )
+        # Moins vendus : quantité NETTE (ventes − retours) strictement
+        # positive. Même raison que ci-dessus : le filtre par ligne
+        # (``qty > 0``) ignorait les remboursements.
         low_sellers = []
-        for r in rows:
+        for r in all_products:
+            qty = r.get('qty') or 0.0
+            if qty <= 0:
+                continue
             pid, pname = r['product_id'] or (False, '')
             low_sellers.append({
-                'product_id': pid, 'name': pname,
-                'qty': r.get('qty') or 0.0,
+                'product_id': pid, 'name': pname, 'qty': qty,
             })
+        low_sellers.sort(key=lambda x: x['qty'])
+        low_sellers = low_sellers[:8]
 
         return {
             'top_beers': beers,
@@ -491,10 +544,12 @@ class PosAnalyticsDashboard(models.AbstractModel):
         }
 
     @api.model
-    def get_products_full(self, date_from, date_to, config_id=None):
+    def get_products_full(self, date_from, date_to, config_id=None,
+                          filters=None):
         """Table complète de tous les articles avec stats."""
         Report = self.env['aite.pos.daily.report']
-        domain = self._base_domain(date_from, date_to, config_id)
+        domain = self._filtered_domain(date_from, date_to, config_id,
+                                       filters)
         rows = Report.read_group(
             domain,
             fields=['price_subtotal:sum', 'margin:sum',
@@ -532,6 +587,9 @@ class PosAnalyticsDashboard(models.AbstractModel):
             domain.append(('config_id', '=', int(config_id)))
 
         sessions = self.env['pos.session'].search(domain, order='start_at desc')
+        # Une caisse encore ouverte que personne n'a comptée n'a pas
+        # d'écart : la différence native (compté 0 − théorique) serait un
+        # manquant fictif (écart n° 26).
         return [{
             'id': s.id,
             'name': s.name,
@@ -547,7 +605,9 @@ class PosAnalyticsDashboard(models.AbstractModel):
             'margin_rate': s.margin_rate,
             'order_count': s.order_count_computed,
             'average_basket': s.average_basket,
-            'cash_difference': s.cash_register_difference,
+            'cash_difference': (s.cash_register_difference
+                                if s._aite_cash_counted() else 0.0),
+            'cash_counted': s._aite_cash_counted(),
             'severity': s.cash_discrepancy_severity,
         } for s in sessions]
 
@@ -594,11 +654,15 @@ class PosAnalyticsDashboard(models.AbstractModel):
         if config_id:
             domain.append(('session_id.config_id', '=', int(config_id)))
 
+        # ``lazy=False`` : le nombre de paiements est alors rendu sous
+        # ``__count`` (en mode paresseux, il s'appelle
+        # ``payment_method_id_count`` et la colonne « Nb » restait à 0).
         rows = Payment.read_group(
             domain,
             fields=['amount:sum'],
             groupby=['payment_method_id'],
             orderby='amount desc',
+            lazy=False,
         )
         total = sum(r.get('amount') or 0.0 for r in rows)
         return [{
@@ -719,6 +783,8 @@ class PosAnalyticsDashboard(models.AbstractModel):
         sessions = self.env['pos.session'].search(sess_domain)
         ecart_by_config = defaultdict(float)
         for sess in sessions:
+            if not sess._aite_cash_counted():
+                continue            # caisse ouverte, pas encore comptée
             cfg_id = sess.config_id.id if sess.config_id else False
             ecart_by_config[cfg_id] += sess.cash_register_difference or 0.0
 

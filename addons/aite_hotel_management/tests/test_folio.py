@@ -99,9 +99,11 @@ class TestFolio(HotelCommon):
         self.assertEqual(len(folio.line_ids), 2)
         self.assertEqual(folio.amount_total, 340000.0)
 
-        reservation.line_ids.filtered(
-            lambda l: l.room_id == self.room_201).unlink()
-        reservation._sync_folio_room_lines()
+        # Retrait par le formulaire de la réservation : seul chemin admis
+        # sur un séjour confirmé (écart n° 33), il resynchronise le folio.
+        removed = reservation.line_ids.filtered(
+            lambda l: l.room_id == self.room_201)
+        reservation.write({'line_ids': [(2, removed.id)]})
         folio.invalidate_recordset()
 
         self.assertEqual(len(folio.line_ids), 1)

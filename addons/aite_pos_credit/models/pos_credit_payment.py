@@ -17,6 +17,7 @@ class PosCreditPayment(models.Model):
     Client (411), rapprochant ainsi l'encours de la comptabilité OHADA.
     """
     _name = 'aite.pos.credit.payment'
+    _inherit = ['mail.thread']
     _description = "Remboursement d'ardoise"
     _order = 'date desc, id desc'
     _rec_name = 'credit_id'
@@ -38,12 +39,15 @@ class PosCreditPayment(models.Model):
         readonly=True,
     )
 
+    # Champs suivis (``tracking``) : toute correction d'un remboursement
+    # (annulé puis ressaisi) laisse une trace datée et signée.
     date = fields.Date(
         string="Date", required=True, index=True,
-        default=fields.Date.context_today,
+        default=fields.Date.context_today, tracking=True,
     )
     amount = fields.Monetary(
         string="Montant", required=True, currency_field='currency_id',
+        tracking=True,
     )
 
     method = fields.Selection(
@@ -55,13 +59,15 @@ class PosCreditPayment(models.Model):
             ('transfer', "Virement / autre"),
         ],
         string="Moyen de paiement", required=True, default='cash', index=True,
+        tracking=True,
     )
     transaction_ref = fields.Char(
-        string="Réf. transaction",
+        string="Réf. transaction", tracking=True,
         help="Identifiant Mobile Money ou référence de l'encaissement.",
     )
     collected_by = fields.Many2one(
         'res.users', string="Encaissé par", default=lambda self: self.env.user,
+        tracking=True,
     )
 
     move_id = fields.Many2one(
@@ -75,6 +81,7 @@ class PosCreditPayment(models.Model):
             ('cancelled', "Annulé"),
         ],
         string="État", default='posted', required=True, index=True, copy=False,
+        tracking=True,
     )
 
     note = fields.Char(string="Note")
@@ -120,6 +127,30 @@ class PosCreditPayment(models.Model):
             if pay.state == 'posted':
                 pay._post_accounting_entry()
         return payments
+
+    # Un remboursement validé a passé son écriture 411 : le modifier sur
+    # place décalerait l'ardoise de la comptabilité. Le geste prévu est
+    # « Annuler » (l'écriture est annulée) puis ressaisir le bon montant.
+    _LOCKED_WHEN_POSTED = frozenset((
+        'credit_id', 'date', 'amount', 'method', 'transaction_ref',
+        'collected_by',
+    ))
+
+    def write(self, vals):
+        if not self._LOCKED_WHEN_POSTED.isdisjoint(vals) \
+                and any(pay.state == 'posted' for pay in self):
+            raise UserError(_(
+                "Un remboursement validé ne se modifie plus : son écriture "
+                "est passée. Annulez-le, puis saisissez le bon "
+                "remboursement."))
+        return super().write(vals)
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_except_posted(self):
+        if any(pay.state == 'posted' for pay in self):
+            raise UserError(_(
+                "Un remboursement validé ne se supprime pas : annulez-le "
+                "d'abord (son écriture est annulée avec lui)."))
 
     def _journal_for_method(self):
         """

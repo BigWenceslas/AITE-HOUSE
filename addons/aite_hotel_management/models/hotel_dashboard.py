@@ -239,6 +239,41 @@ class HotelDashboard(models.AbstractModel):
         }
 
     # ------------------------------------------------------------------
+    # Page d'accueil de l'application (icône « Hôtel »)
+    # ------------------------------------------------------------------
+
+    @api.model
+    def action_open_home(self):
+        """
+        Écran ouvert par l'icône « Hôtel », selon le profil.
+
+        * Réception et Responsable : le tableau de bord Front Desk.
+        * Gouvernante seule : le premier écran de sa section Gouvernante
+          (le tableau des chambres quand ``aite_housekeeping`` est
+          installé, sinon les tâches de ménage). Le Front Desk lit les
+          folios et le chiffre d'affaires, qui ne relèvent pas de son
+          poste : l'y envoyer provoquait une erreur d'accès dès
+          l'ouverture de l'application.
+        """
+        Actions = self.env['ir.actions.actions']
+        if self.env.user.has_group('aite_hotel_management.group_hotel_user'):
+            return Actions._for_xml_id(
+                'aite_hotel_management.action_hotel_dashboard')
+        section = self.env.ref(
+            'aite_hotel_management.menu_hotel_housekeeping_section')
+        # ``search`` sur les menus ne rend que ceux que l'utilisateur voit
+        # (groupes, menus désactivés) : le premier menu de la section est
+        # donc celui qu'elle trouverait elle-même.
+        menu = self.env['ir.ui.menu'].search([
+            ('parent_id', '=', section.id),
+            ('action', '!=', False),
+        ], order='sequence, id', limit=1)
+        if menu:
+            return menu.action._get_action_dict()
+        return Actions._for_xml_id(
+            'aite_hotel_management.action_hotel_housekeeping')
+
+    # ------------------------------------------------------------------
     # Méta / filtres
     # ------------------------------------------------------------------
 

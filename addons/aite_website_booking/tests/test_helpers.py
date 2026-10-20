@@ -138,3 +138,49 @@ class TestWebsiteHelpers(TransactionCase):
         found = self.helper.find_or_create_partner(
             "Autre nom", "+224600333444", "b@example.com")
         self.assertEqual(by_phone, found)
+
+    # ------------------------------------------------------------------
+    # Écart n° 35 : le numéro saisi au comptoir garde ses espaces
+    # ------------------------------------------------------------------
+
+    def test_reuses_a_counter_partner_whose_phone_has_spaces(self):
+        """Fiche créée à la réception avec « +33 6 12 48 90 31 » : la
+        réservation en ligne (sans e-mail) la retrouve au lieu d'en créer
+        une seconde."""
+        comptoir = self.env['res.partner'].create({
+            'name': "Durand Paul",
+            'phone': "+33 6 12 48 90 31",
+        })
+        found = self.helper.find_or_create_partner(
+            "Paul Durand", "+33612489031", "")
+        self.assertEqual(found, comptoir)
+        found = self.helper.find_or_create_partner(
+            "Paul Durand", "+33 6-12.48 90 31", "")
+        self.assertEqual(found, comptoir)
+
+    def test_a_different_number_is_not_mistaken_for_the_counter_one(self):
+        comptoir = self.env['res.partner'].create({
+            'name': "Durand Paul",
+            'phone': "+33 6 12 48 90 31",
+        })
+        other = self.helper.find_or_create_partner(
+            "Autre Client", "+33 6 12 48 90 32", "")
+        self.assertNotEqual(other, comptoir)
+
+    # ------------------------------------------------------------------
+    # Écart n° 34 : durée arrondie au pas, créneaux passés masqués
+    # ------------------------------------------------------------------
+
+    def test_duration_is_rounded_up_to_the_step(self):
+        f = self.helper._slot_minutes_for
+        self.assertEqual(f(90, 60), 120)
+        self.assertEqual(f(60, 60), 60)
+        self.assertEqual(f(45, 30), 60)
+        self.assertEqual(f(0, 30), 30)
+
+    def test_started_slots_are_not_offered_today(self):
+        slots = [{'start': 9.0}, {'start': 10.0}, {'start': 11.0}]
+        self.assertEqual(
+            [s['start'] for s in self.helper._future_slots(slots, 10.0)],
+            [11.0])
+        self.assertEqual(len(self.helper._future_slots(slots, None)), 3)

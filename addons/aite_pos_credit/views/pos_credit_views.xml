@@ -103,11 +103,18 @@
                             <field name="payment_ids" readonly="state == 'cancelled'">
                                 <list editable="bottom"
                                       decoration-muted="state == 'cancelled'">
-                                    <field name="date"/>
-                                    <field name="method"/>
-                                    <field name="transaction_ref"/>
-                                    <field name="amount" sum="Total remboursé"/>
-                                    <field name="collected_by" optional="show"/>
+                                    <!-- Un remboursement validé (enregistré) ne se
+                                         modifie plus : « Annuler » puis ressaisir. -->
+                                    <field name="date"
+                                           readonly="id and state == 'posted'"/>
+                                    <field name="method"
+                                           readonly="id and state == 'posted'"/>
+                                    <field name="transaction_ref"
+                                           readonly="id and state == 'posted'"/>
+                                    <field name="amount" sum="Total remboursé"
+                                           readonly="id and state == 'posted'"/>
+                                    <field name="collected_by" optional="show"
+                                           readonly="id and state == 'posted'"/>
                                     <field name="state" widget="badge"
                                            decoration-success="state == 'posted'"
                                            decoration-muted="state == 'cancelled'"/>
@@ -162,8 +169,10 @@
                             context="{'group_by': 'source'}"/>
                     <filter name="group_state" string="État"
                             context="{'group_by': 'state'}"/>
-                    <filter name="group_severity" string="Sévérité"
-                            context="{'group_by': 'severity'}"/>
+                    <!-- Pas de regroupement par Sévérité : champ calculé non
+                         stocké (recalculé chaque jour), le regroupement échoue.
+                         Les filtres « En retard » / « Critiques » couvrent ce
+                         besoin. -->
                 </group>
             </search>
         </field>

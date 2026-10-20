@@ -5,3 +5,4 @@ from . import test_payment
 from . import test_pos_order
 from . import test_dashboard
 from . import test_security
+from . import test_ecarts_caisse

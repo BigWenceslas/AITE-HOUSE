@@ -33,6 +33,13 @@ class PosOrder(models.Model):
         'aite.roomcharge.pending', string="Note de chambre en attente",
         readonly=True, copy=False,
     )
+    # Un ticket peut donner plusieurs lignes de folio (une par jeu de
+    # taxes) ; ``aite_folio_line_id`` garde la première (idempotence et
+    # compatibilité), celle-ci les donne toutes.
+    aite_folio_line_ids = fields.One2many(
+        'aite.hotel.folio.line', 'aite_pos_order_id',
+        string="Lignes de folio (note de chambre)", readonly=True,
+    )
 
     # ------------------------------------------------------------------
     # Calcul pur (extrait et exécuté tel quel par les tests)
@@ -68,8 +75,13 @@ class PosOrder(models.Model):
 
     @staticmethod
     def _pos_folio_line_vals(folio_id, product_id, label, date_str,
-                             amount):
-        """Contrat de ligne du PMS : service, article requis, qté 1."""
+                             amount, tax_ids=None):
+        """Contrat de ligne du PMS : service, article requis, qté 1.
+
+        ``amount`` est le prix unitaire au sens du folio : hors taxes, sauf
+        pour les taxes « prix TTC » (``price_include``) qui y restent
+        comprises — le folio les retire lui-même au calcul.
+        """
         return {
             'folio_id': folio_id,
             'line_type': 'service',
@@ -78,15 +90,64 @@ class PosOrder(models.Model):
             'date': date_str,
             'quantity': 1,
             'price_unit': amount,
+            'tax_ids': [(6, 0, list(tax_ids or []))],
         }
+
+    def _aite_room_charge_parts(self, amount):
+        """
+        Découpe le montant reporté par jeu de taxes du ticket.
+
+        Le folio doit recevoir le **HT avec ses taxes** (et non le TTC rangé
+        en « Services (HT) ») : la facture du séjour porte alors la bonne
+        base et la bonne TVA. En paiement mixte, seule la part réglée en
+        note de chambre est reportée, au prorata du ticket.
+
+        :returns: liste de (taxes, prix unitaire pour le folio)
+        """
+        self.ensure_one()
+        total = self.amount_total
+        groups = {}
+        for line in self.lines:
+            taxes = line.tax_ids_after_fiscal_position
+            key = tuple(sorted(taxes.ids))
+            group = groups.setdefault(key, [taxes, 0.0, 0.0])
+            group[1] += line.price_subtotal
+            group[2] += line.price_subtotal_incl
+        if not total or not groups or all(not key for key in groups):
+            # Ticket sans taxe (ou sans lignes lisibles) : report tel quel.
+            return [(self.env['account.tax'], amount)]
+        ratio = amount / total
+        parts = []
+        for taxes, untaxed, taxed in groups.values():
+            if not taxed:
+                continue
+            if not taxes:
+                parts.append((taxes, taxed * ratio))
+                continue
+            base = untaxed * ratio
+            # Une taxe « prix TTC » est retirée par le folio au calcul : on
+            # la remet dans le prix unitaire pour retrouver la même base.
+            res = taxes.compute_all(
+                base, currency=self.currency_id, quantity=1.0,
+                handle_price_include=False)
+            included = sum(
+                t['amount'] for t in res['taxes']
+                if self.env['account.tax'].browse(t['id']).price_include)
+            parts.append((taxes, base + included))
+        return parts or [(self.env['account.tax'], amount)]
 
     # ------------------------------------------------------------------
     # Accroches (triple, comme Crédit clients v2)
     # ------------------------------------------------------------------
 
     def _aite_process_room_charge(self):
-        Pending = self.env['aite.roomcharge.pending']
-        for order in self:
+        # Écriture technique (cf. CLAUDE.md) : le caissier encaisse en
+        # « Note de chambre » sans avoir — ni avoir à avoir — de profil
+        # hôtel. Recherche du folio, ligne de folio et note en attente se
+        # font donc en ``sudo()`` ; sinon la synchronisation du ticket
+        # échoue (AccessError) et la caisse garde la vente en souffrance.
+        Pending = self.env['aite.roomcharge.pending'].sudo()
+        for order in self.sudo():
             if order.aite_folio_line_id or order.aite_roomcharge_pending_id:
                 continue  # idempotence
             if order.state not in _PAID_STATES:
@@ -97,7 +158,7 @@ class PosOrder(models.Model):
             if amount <= 0:
                 continue
 
-            folios = self.env['aite.hotel.folio']
+            folios = order.env['aite.hotel.folio']  # sudo (voir plus haut)
             if order.partner_id:
                 folios = folios.search([
                     ('partner_id', '=', order.partner_id.id),
@@ -128,31 +189,41 @@ class PosOrder(models.Model):
 
     def _aite_post_to_folio(self, folio, amount):
         self.ensure_one()
-        product = self.company_id.aite_roomcharge_product_id
+        # Écriture technique en ``sudo()`` : appelée pour le caissier (sans
+        # profil hôtel) comme pour la réception qui tranche la file
+        # d'attente (sans droits sur la caisse). Le contrôle d'accès porte
+        # sur le geste d'origine, pas sur cette mécanique de report.
+        order = self.sudo()
+        product = order.company_id.aite_roomcharge_product_id
         if not product:
             product = self.env.ref(
                 'aite_hotel_pos_link.product_roomcharge_pos',
                 raise_if_not_found=False)
         if not product:
             # Pas d'article configuré : file d'attente plutôt que perte.
-            self.aite_roomcharge_pending_id = \
-                self.env['aite.roomcharge.pending'].create({
-                    'order_id': self.id,
-                    'partner_id': self.partner_id.id or False,
+            order.aite_roomcharge_pending_id = \
+                self.env['aite.roomcharge.pending'].sudo().create({
+                    'order_id': order.id,
+                    'partner_id': order.partner_id.id or False,
                     'amount': amount,
                     'note': _("Article de report non configuré"),
                 }).id
             return False
-        vals = self._pos_folio_line_vals(
-            folio.id, product.id,
-            _("POS %(ref)s", ref=self.name),
-            fields.Date.to_string(fields.Date.context_today(self)),
-            amount)
-        line = self.env['aite.hotel.folio.line'].create(vals)
-        self.aite_folio_line_id = line.id
+        label = _("POS %(ref)s", ref=order.name)
+        date_str = fields.Date.to_string(fields.Date.context_today(order))
+        vals_list = []
+        # Une ligne par jeu de taxes : HT + taxes, comme sur le ticket.
+        for taxes, price_unit in order._aite_room_charge_parts(amount):
+            vals = order._pos_folio_line_vals(
+                folio.id, product.id, label, date_str, price_unit,
+                tax_ids=taxes.ids)
+            vals['aite_pos_order_id'] = order.id
+            vals_list.append(vals)
+        lines = self.env['aite.hotel.folio.line'].sudo().create(vals_list)
+        order.aite_folio_line_id = lines[:1].id
         _logger.info(
             "Note de chambre : %s → folio %s (%.0f).",
-            self.name, folio.name, amount)
+            order.name, folio.name, amount)
         return True
 
     @api.model_create_multi
@@ -173,3 +244,13 @@ class PosOrder(models.Model):
         if order_id:
             self.browse(order_id)._aite_process_room_charge()
         return order_id
+
+
+class HotelFolioLine(models.Model):
+    _inherit = 'aite.hotel.folio.line'
+
+    aite_pos_order_id = fields.Many2one(
+        'pos.order', string="Ticket de caisse (note de chambre)",
+        readonly=True, copy=False, index='btree_not_null',
+        ondelete='set null',
+    )

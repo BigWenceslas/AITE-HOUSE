@@ -6,4 +6,17 @@
         <field name="tag">aite_hotel_dashboard</field>
     </record>
 
+    <!--
+        Action de l'icône « Hôtel » : Front Desk pour la Réception et le
+        Responsable, écran Gouvernante pour le profil Gouvernante seul
+        (le Front Desk lit les folios, qui ne lui sont pas ouverts).
+    -->
+    <record id="action_hotel_home" model="ir.actions.server">
+        <field name="name">Hôtel</field>
+        <field name="model_id" ref="model_aite_hotel_dashboard"/>
+        <field name="state">code</field>
+        <field name="code">action = model.action_open_home()</field>
+        <field name="groups_id" eval="[(4, ref('group_hotel_housekeeping'))]"/>
+    </record>
+
 </odoo>

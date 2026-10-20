@@ -38,6 +38,10 @@ export class FilterBar extends Component {
         hourTo: { type: [Number, { value: null }], optional: true },
         weekdayKey: { type: String, optional: true },
         weekdays: { type: Array, optional: true },
+        // Les lignes Heure / Jour ne s'affichent que sur les onglets dont
+        // les chiffres les appliquent (tableau de bord, par caisse) : un
+        // filtre visible mais ignoré trompe le lecteur (écart n° 26).
+        showTimeFilters: { type: Boolean, optional: true },
     };
 
     setup() {

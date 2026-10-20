@@ -435,21 +435,48 @@ class HotelRoom(models.Model):
         Une chambre hors service n'est jamais disponible. Le chevauchement
         est évalué contre les lignes confirmées ou en séjour ; la borne de
         fin est exclusive : un départ à 12 h libère la chambre pour une
-        arrivée le même jour à 14 h.
+        arrivée le même jour à 14 h. Un client arrivé dont le départ prévu
+        est dépassé occupe la chambre jusqu'à son départ réel (check-out).
         """
         self.ensure_one()
         if self.out_of_order or not self.active:
             return False
-        domain = [
-            ('room_id', '=', self.id),
-            ('state', 'in', ('confirmed', 'checked_in')),
-            ('checkin_date', '<', checkout_dt),
-            ('checkout_date', '>', checkin_dt),
-        ]
+        return not self._availability_blocker(
+            checkin_dt, checkout_dt, ignore_line=ignore_line)
+
+    def _availability_blocker(self, checkin_dt, checkout_dt,
+                              ignore_line=None):
+        """Première ligne de séjour qui occupe la chambre sur
+        [checkin_dt, checkout_dt) — vide si elle est libre."""
+        self.ensure_one()
+        Line = self.env['aite.hotel.reservation.line']
+        domain = [('room_id', '=', self.id)] + Line._overlap_domain(
+            checkin_dt, checkout_dt)
         if ignore_line:
             domain.append(('id', 'not in', ignore_line.ids))
-        return not bool(
-            self.env['aite.hotel.reservation.line'].search_count(domain))
+        return Line.search(domain, limit=1)
+
+    def _lock_for_booking(self):
+        """
+        Verrouille les chambres le temps de la transaction qui les vend.
+
+        Sans verrou, deux postes qui confirment la même chambre au même
+        instant lisent chacun « libre » et la vendent deux fois. La ligne
+        SQL de la chambre est réécrite (sans changer de valeur) : la
+        seconde transaction attend la fin de la première, puis échoue en
+        erreur de sérialisation, qu'Odoo rejoue automatiquement avec des
+        données fraîches — elle voit alors le premier séjour et refuse
+        la chambre avec le message habituel. Ordre des identifiants fixe
+        pour éviter les interblocages.
+        """
+        if not self.ids:
+            return
+        self.env.cr.execute(
+            "SELECT id FROM aite_hotel_room WHERE id IN %s "
+            "ORDER BY id FOR NO KEY UPDATE", [tuple(self.ids)])
+        self.env.cr.execute(
+            "UPDATE aite_hotel_room SET write_date = write_date "
+            "WHERE id IN %s", [tuple(self.ids)])
 
     # ------------------------------------------------------------------
     # Actions gouvernante (boutons kanban / form)

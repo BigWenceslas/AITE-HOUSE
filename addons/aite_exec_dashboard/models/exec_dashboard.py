@@ -43,13 +43,17 @@ class ExecDashboard(models.AbstractModel):
     Fournisseur du tableau de bord Direction — consolidation des trois
     pôles du complexe.
 
-    Sources (une par pôle, jamais deux chiffres pour la même chose) :
+    Sources (une par pôle, jamais deux chiffres pour la même chose — cas
+    K04 de la recette, écart n° 25) :
 
-    * hébergement : folios facturés / soldés, datés par le check-out
-      réel du séjour (sinon prévu) ; occupation et ADR relus depuis le
-      provider du PMS (mêmes chiffres que son propre tableau de bord) ;
+    * hébergement : CA des nuitées HORS TAXES, nuit par nuit, relu
+      depuis le fournisseur du PMS (``room_revenue``) — le même chiffre
+      que le cockpit Direction et le tableau de bord hôtelier, cohérent
+      avec ADR et RevPAR (ADR × nuitées = CA) ; occupation et ADR
+      viennent du même appel ;
     * restauration & boutique : commandes POS réglées (date de
-      commande) ;
+      commande), HORS TAXES (somme des lignes) — comme l'analyse des
+      ventes et le cockpit Direction ;
     * prestations : réservations de créneaux réalisées (date de début).
 
     Fidélité : détection dynamique du module (aucune dépendance dure).
@@ -139,26 +143,18 @@ class ExecDashboard(models.AbstractModel):
     # Sources par pôle (une seule définition chacune)
     # ------------------------------------------------------------------
 
-    def _hotel_folios(self, dt_from, dt_to):
-        """Folios facturés / soldés dont le séjour se termine dans la
-        période (check-out réel, sinon prévu)."""
-        folios = self.env['aite.hotel.folio'].search([
-            ('company_id', '=', self.env.company.id),
-            ('state', 'in', ('invoiced', 'paid')),
-        ])
-        d0 = datetime.combine(dt_from, datetime.min.time())
-        d1 = datetime.combine(dt_to, datetime.max.time())
-        keep = folios.browse()
-        for folio in folios:
-            res = folio.reservation_id
-            out_dt = res.actual_checkout or res.checkout_date
-            if out_dt and d0 <= out_dt <= d1:
-                keep |= folio
-        return keep
-
     def _hotel_revenue(self, dt_from, dt_to):
-        return sum(self._hotel_folios(dt_from, dt_to)
-                   .mapped('amount_total'))
+        """CA hébergement HT, nuit par nuit, de la société courante :
+        la formule du PMS (``_room_revenue``), pas une copie. Le TTC des
+        folios facturés au départ datait tout le séjour du jour de départ
+        et n'était ni le chiffre du cockpit ni la base de l'ADR."""
+        hk = self.env['aite.hotel.dashboard']
+        return hk._room_revenue(hk._hotels(), dt_from, dt_to)
+
+    @staticmethod
+    def _pos_revenue(orders):
+        """CA POS hors taxes : somme des lignes (``price_subtotal``)."""
+        return sum(orders.mapped('lines.price_subtotal'))
 
     def _pos_orders(self, dt_from, dt_to):
         d0, d1 = self._day_bounds(dt_from, dt_to)
@@ -244,7 +240,7 @@ class ExecDashboard(models.AbstractModel):
 
         # Restauration & boutique
         orders = self._pos_orders(dt_from, dt_to)
-        pos_ca = sum(orders.mapped('amount_total'))
+        pos_ca = self._pos_revenue(orders)
         tickets = len(orders)
         basket = pos_ca / tickets if tickets else 0.0
 
@@ -283,8 +279,7 @@ class ExecDashboard(models.AbstractModel):
             end = nxt - timedelta(days=1)
             labels.append(key)
             hotel_s.append(self._hotel_revenue(start, end))
-            pos_s.append(sum(
-                self._pos_orders(start, end).mapped('amount_total')))
+            pos_s.append(self._pos_revenue(self._pos_orders(start, end)))
             slots_s.append(sum(
                 self._slot_bookings(start, end).mapped('amount')))
         return {

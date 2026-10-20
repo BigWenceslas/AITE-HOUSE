@@ -86,8 +86,10 @@ class HotelRoomChangeWizard(models.TransientModel):
                   "séjour confirmé ou en cours."))
         old_price = line.price_night
         line.action_change_room(self.new_room_id.id)
-        if self.keep_price and line.price_night != old_price:
-            line.price_night = old_price
+        if self.keep_price:
+            # « Prix fixé » : le tarif conservé survit aux modifications
+            # ultérieures du séjour (prolongation notamment).
+            line.write({'price_night': old_price, 'price_locked': True})
             line.reservation_id._sync_folio_room_lines()
             line.reservation_id.message_post(body=_(
                 "Surclassement gracieux : le tarif de %(price)s / nuit "

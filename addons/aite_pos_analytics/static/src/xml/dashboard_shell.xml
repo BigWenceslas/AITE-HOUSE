@@ -24,6 +24,7 @@
                 hourTo="state.hourTo"
                 weekdayKey="state.weekdayKey"
                 weekdays="state.weekdays"
+                showTimeFilters="state.tab === 'dashboard' or state.tab === 'bycaisse'"
                 onChange.bind="onFilterChange"/>
 
             <div class="o_aite_pos_dashboard_content">
@@ -168,8 +169,8 @@
             </t>
         </div>
 
-        <!-- Ligne 3 : plage horaire -->
-        <div class="o_aite_frow">
+        <!-- Ligne 3 : plage horaire (onglets qui l'appliquent seulement) -->
+        <div class="o_aite_frow" t-if="props.showTimeFilters !== false">
             <span class="o_aite_flabel">Heure</span>
             <button t-foreach="Object.entries(hourPresets)" t-as="hp" t-key="hp[0]"
                     t-att-data-hour-key="hp[0]"
@@ -187,8 +188,8 @@
             <button class="o_aite_apply_btn" t-on-click="applyCustomHour">OK</button>
         </div>
 
-        <!-- Ligne 4 : jour de semaine -->
-        <div class="o_aite_frow">
+        <!-- Ligne 4 : jour de semaine (onglets qui l'appliquent seulement) -->
+        <div class="o_aite_frow" t-if="props.showTimeFilters !== false">
             <span class="o_aite_flabel">Jour</span>
             <button data-weekday-key="all"
                     t-attf-class="o_aite_fbtn o_aite_fbtn_day {{ isAllDays() ? 'o_aite_fbtn_day_active' : '' }}"

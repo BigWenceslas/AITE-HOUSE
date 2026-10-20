@@ -93,11 +93,13 @@ export class DashboardView extends Component {
             const [kpis, top, evo, cats, rks, prods, caisse, heat, insights] =
                 await Promise.all([
                     this.orm.call("aite.pos.dashboard", "get_kpis", [from, to, cfg, filters]),
-                    this.orm.call("aite.pos.dashboard", "get_top_products", [from, to, 8, cfg]),
-                    this.orm.call("aite.pos.dashboard", "get_monthly_evolution", [from, to, cfg]),
-                    this.orm.call("aite.pos.dashboard", "get_category_breakdown", [from, to, cfg]),
-                    this.orm.call("aite.pos.dashboard", "get_rankings", [from, to, cfg]),
-                    this.orm.call("aite.pos.dashboard", "get_products_full", [from, to, cfg]),
+                    // Les filtres Heure / Jour du bandeau valent pour TOUS
+                    // les blocs de l'onglet (écart n° 26).
+                    this.orm.call("aite.pos.dashboard", "get_top_products", [from, to, 8, cfg, filters]),
+                    this.orm.call("aite.pos.dashboard", "get_monthly_evolution", [from, to, cfg, filters]),
+                    this.orm.call("aite.pos.dashboard", "get_category_breakdown", [from, to, cfg, filters]),
+                    this.orm.call("aite.pos.dashboard", "get_rankings", [from, to, cfg, filters]),
+                    this.orm.call("aite.pos.dashboard", "get_products_full", [from, to, cfg, filters]),
                     this.orm.call("aite.pos.dashboard", "get_caisse_breakdown", [from, to, cfg, filters]),
                     this.orm.call("aite.pos.dashboard", "get_hourly_heatmap", [from, to, cfg, filters]),
                     this.orm.call("aite.pos.dashboard", "get_time_insights", [from, to, cfg, filters]),

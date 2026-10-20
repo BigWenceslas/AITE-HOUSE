@@ -75,6 +75,35 @@ class HotelFolio(models.Model):
         copy=False,
     )
 
+    def _aite_loyalty_excluded_lines(self):
+        """
+        Lignes du folio qui ne rapportent pas de points au folio :
+
+        * la **taxe de séjour** (``line_type == 'city_tax'``, module Taxe de
+          séjour) : reversée à la commune, ce n'est pas une dépense chez
+          nous ;
+        * les lignes **déjà créditées** à leur source : ticket « Note de
+          chambre » (module Note de chambre) ou prestation reportée au
+          folio, dont la commande / réservation porte déjà son mouvement de
+          points.
+
+        Sans cela, un même franc rapportait deux fois des points et le
+        statut VIP / VVIP s'en trouvait gonflé. Les modules Note de chambre
+        et Taxe de séjour sont facultatifs : on teste leurs champs.
+        """
+        self.ensure_one()
+        lines = self.sudo().line_ids
+        excluded = lines.filtered(lambda l: l.line_type == 'city_tax')
+        if 'aite_pos_order_id' in lines._fields:
+            excluded |= lines.filtered(
+                lambda l: l.aite_pos_order_id.aite_loyalty_move_id)
+        bookings = self.env['aite.slot.booking'].sudo().search([
+            ('posted_line_id', 'in', lines.ids),
+            ('aite_loyalty_move_id', '!=', False),
+        ])
+        excluded |= bookings.posted_line_id
+        return excluded
+
     def _aite_award_loyalty(self):
         engine = self.env['aite.loyalty.engine']
         for folio in self:
@@ -84,8 +113,10 @@ class HotelFolio(models.Model):
                 continue
             if not folio.partner_id:
                 continue
+            excluded = folio._aite_loyalty_excluded_lines()
+            amount = folio.amount_total - sum(excluded.mapped('price_total'))
             move = engine.award(
-                folio.partner_id, folio.amount_total, 'hotel',
+                folio.partner_id, amount, 'hotel',
                 ref=folio.name, company=folio.company_id,
                 when=fields.Date.context_today(folio))
             if move:

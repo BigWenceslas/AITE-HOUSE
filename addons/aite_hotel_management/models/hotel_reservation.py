@@ -262,6 +262,12 @@ class HotelReservation(models.Model):
         return reservations
 
     def write(self, vals):
+        # Retirer une chambre depuis le formulaire de la réservation passe
+        # par ici : la réservation revalide et resynchronise son folio
+        # juste après. Le garde-fou des lignes (``_unlink_guard_line``)
+        # laisse donc passer ce chemin-là, et lui seul.
+        if 'line_ids' in vals:
+            self = self.with_context(aite_hotel_line_unlink_from_reservation=True)
         res = super().write(vals)
         # Les dates ou lignes bougent sur une réservation vivante :
         # revalider la disponibilité et resynchroniser le folio.
@@ -286,13 +292,30 @@ class HotelReservation(models.Model):
     # ------------------------------------------------------------------
 
     def _check_lines_availability(self):
-        """Vérifie chaque ligne ; message clair chambre par chambre."""
+        """Vérifie chaque ligne ; message clair chambre par chambre.
+
+        Les chambres sont d'abord verrouillées (``_lock_for_booking``) :
+        deux confirmations simultanées de la même chambre ne peuvent plus
+        lire « libre » toutes les deux."""
+        self.mapped('line_ids.room_id')._lock_for_booking()
         for res in self:
             if not res.line_ids:
                 raise UserError(
                     _("Ajoutez au moins une chambre à la réservation %s "
                       "avant de la confirmer.", res.name))
             for line in res.line_ids:
+                blocker = line.room_id._availability_blocker(
+                    line.checkin_date, line.checkout_date, ignore_line=line)
+                if blocker and blocker._is_overdue():
+                    raise UserError(
+                        _("La chambre %(room)s est toujours occupée par "
+                          "%(ref)s (%(guest)s), dont le départ était prévu "
+                          "le %(cout)s : faites d'abord son check-out, ou "
+                          "prolongez son séjour.",
+                          room=line.room_id.display_name,
+                          ref=blocker.reservation_id.name,
+                          guest=blocker.partner_id.name or "-",
+                          cout=blocker.checkout_date.strftime('%d/%m/%Y')))
                 if not line.room_id.is_available(
                         line.checkin_date, line.checkout_date,
                         ignore_line=line):
@@ -565,6 +588,14 @@ class HotelReservationLine(models.Model):
              "suppléments personnes inclus) ; ajustable tant que la "
              "réservation n'est pas terminée.",
     )
+    price_locked = fields.Boolean(
+        string="Prix fixé",
+        help="Coché, le prix / nuit n'est plus recalculé par le moteur "
+             "tarifaire quand le séjour change (prolongation, nombre "
+             "d'adultes…) : c'est le cas d'un surclassement gracieux, où "
+             "le client garde le tarif de sa chambre d'origine. Décocher "
+             "pour revenir au tarif de la chambre.",
+    )
     price_subtotal = fields.Monetary(
         string="Sous-total (HT)", compute='_compute_subtotal', store=True,
         currency_field='currency_id',
@@ -587,9 +618,16 @@ class HotelReservationLine(models.Model):
                 self.adults = min(
                     max(self.adults, 1), self.room_id.capacity_adults)
 
-    @api.depends('room_id', 'checkin_date', 'checkout_date', 'adults')
+    @api.depends('room_id', 'checkin_date', 'checkout_date', 'adults',
+                 'price_locked')
     def _compute_price_night(self):
         for line in self:
+            if line.price_locked:
+                # Prix accordé au client (surclassement gracieux) : une
+                # prolongation ne doit pas le remplacer par le tarif de la
+                # nouvelle chambre.
+                line.price_night = line.price_night
+                continue
             if not (line.room_id and line.checkin_date
                     and line.checkout_date
                     and line.checkout_date > line.checkin_date):
@@ -602,6 +640,36 @@ class HotelReservationLine(models.Model):
             extra_persons = max(
                 0, (line.adults or 0) - (rtype.capacity_adults or 0))
             line.price_night = price + extra_persons * rtype.extra_person_price
+
+    # ------------------------------------------------------------------
+    # Occupation d'une chambre
+    # ------------------------------------------------------------------
+
+    @api.model
+    def _overlap_domain(self, start, end):
+        """
+        Domaine des lignes qui occupent une chambre sur [start, end).
+
+        Ligne confirmée : occupe [arrivée, départ prévu). Client arrivé :
+        occupe la chambre jusqu'à son départ réel — si le départ prévu est
+        dépassé sans check-out, il est toujours là et la chambre reste
+        prise, quelles que soient les dates demandées. ``end`` vide =
+        période ouverte (séjour lui-même en dépassement).
+        """
+        domain = [('state', 'in', ('confirmed', 'checked_in'))]
+        if end:
+            domain.append(('checkin_date', '<', end))
+        return domain + [
+            '|', ('checkout_date', '>', start),
+            '&', ('state', '=', 'checked_in'),
+            ('checkout_date', '<=', fields.Datetime.now()),
+        ]
+
+    def _is_overdue(self):
+        """Client arrivé dont le départ prévu est passé (pas de check-out)."""
+        self.ensure_one()
+        return (self.state == 'checked_in' and self.checkout_date
+                and self.checkout_date <= fields.Datetime.now())
 
     @api.depends('price_night', 'nights')
     def _compute_subtotal(self):
@@ -649,19 +717,52 @@ class HotelReservationLine(models.Model):
         for line in self:
             if line.state not in ('confirmed', 'checked_in'):
                 continue
+            # Un séjour arrivé en dépassement occupe la chambre jusqu'au
+            # check-out : sa fin est ouverte (voir ``_overlap_domain``).
+            end = None if line._is_overdue() else line.checkout_date
             clash = Line.search([
                 ('id', '!=', line.id),
                 ('room_id', '=', line.room_id.id),
-                ('state', 'in', ('confirmed', 'checked_in')),
-                ('checkin_date', '<', line.checkout_date),
-                ('checkout_date', '>', line.checkin_date),
-            ], limit=1)
+            ] + Line._overlap_domain(line.checkin_date, end), limit=1)
             if clash:
                 raise ValidationError(
                     _("Conflit de réservation : la chambre %(room)s est "
                       "déjà prise par %(ref)s sur cette période.",
                       room=line.room_id.display_name,
                       ref=clash.reservation_id.name))
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_guard_line(self):
+        """
+        Une chambre vendue ne disparaît pas sans la réservation : supprimer
+        la ligne d'un séjour confirmé ou en cours depuis le planning (ou
+        la liste des séjours) laisserait le folio facturer une chambre
+        retirée, et une réservation confirmée sans chambre. Le retrait
+        passe par le formulaire de la réservation, qui revalide et
+        resynchronise le folio. Même règle que la réservation elle-même :
+        brouillon ou annulée seulement.
+        """
+        if self.env.context.get('aite_hotel_line_unlink_from_reservation'):
+            # Chemin du formulaire : seulement sur un séjour encore
+            # modifiable (le formulaire est en lecture seule ensuite).
+            locked = self.filtered(lambda l: l.reservation_id.state in (
+                'checked_out', 'no_show'))
+        else:
+            locked = self.filtered(lambda l: l.reservation_id.state not in (
+                'draft', 'cancelled'))
+        if locked:
+            line = locked[0]
+            raise UserError(
+                _("La chambre %(room)s fait partie de la réservation "
+                  "%(ref)s (%(state)s) : elle ne peut pas être supprimée "
+                  "d'ici. Pour retirer la chambre, ouvrez la réservation "
+                  "et supprimez la ligne dans l'onglet Chambres ; pour "
+                  "libérer tout le séjour, annulez la réservation.",
+                  room=line.room_id.display_name,
+                  ref=line.reservation_id.name,
+                  state=dict(line.reservation_id._fields['state']
+                             ._description_selection(self.env))
+                  .get(line.reservation_id.state)))
 
     @api.constrains('room_id', 'reservation_id')
     def _check_room_unique_per_reservation(self):
@@ -688,6 +789,7 @@ class HotelReservationLine(models.Model):
         """
         self.ensure_one()
         new_room = self.env['aite.hotel.room'].browse(new_room_id)
+        new_room._lock_for_booking()
         if not new_room.is_available(
                 self.checkin_date, self.checkout_date, ignore_line=self):
             raise UserError(

@@ -237,3 +237,46 @@ class TestSlotBooking(SlotCommon):
         booking.action_done()
         self.env['aite.slot.booking']._cron_slot_no_show()
         self.assertEqual(booking.state, 'done')
+
+    # ------------------------------------------------------------------
+    # Écart n° 36 : un dépôt pressing n'est jamais un no-show automatique
+    # ------------------------------------------------------------------
+
+    def test_cron_spares_a_pressing_deposit_awaiting_pickup(self):
+        """Le linge déposé attend son retrait : le créneau de dépôt
+        (30 min) dépassé de 6 h ne fait pas du client un no-show."""
+        self.company.aite_slot_no_show_hours = 6
+        comptoir = self.env['aite.booking.resource'].create({
+            'name': "Comptoir pressing",
+            'kind': 'pressing',
+            'company_id': self.company.id,
+            'open_hour': 8.0,
+            'close_hour': 20.0,
+            'slot_minutes': '30',
+        })
+        depot = self._booking(
+            resource=comptoir, days=-2, start_h=9.0, stop_h=9.5,
+            service_id=self.service_pressing.id, qty=4,
+            pickup_date=self._at(2, 17.0))
+        depot.action_confirm()
+        self.env['aite.slot.booking']._cron_slot_no_show()
+        self.assertEqual(depot.state, 'confirmed')
+
+    # ------------------------------------------------------------------
+    # Écart n° 27 : heures de l'e-mail dans le fuseau de l'établissement
+    # ------------------------------------------------------------------
+
+    def test_confirmation_mail_uses_the_company_timezone(self):
+        """L'e-mail donne l'heure de Douala, pas celle de l'utilisateur
+        connecté (ici réglé sur Bruxelles, ou le visiteur public)."""
+        self.company.partner_id.tz = 'Africa/Douala'      # UTC+1
+        self.env.user.tz = 'Asia/Tokyo'                   # UTC+9
+        # 09:00 UTC = 10:00 à Douala (créneau valide 9 h – 22 h locales).
+        booking = self._booking(start_h=9.0, stop_h=10.0)
+        template = self.env.ref(
+            'aite_slot_booking.mail_template_slot_confirmation')
+        body = template._render_field(
+            'body_html', booking.ids)[booking.id]
+        self.assertIn('10:00', body)
+        self.assertIn('11:00', body)
+        self.assertNotIn('18:00', body)

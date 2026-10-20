@@ -16,6 +16,10 @@ ORIGINS = [
     ('slot_spa', "SPA"),
     ('slot_hair', "Coiffure"),
     ('slot_pressing', "Pressing"),
+    # Famille « Autre » des ressources réservables (aite_slot_booking) :
+    # sans elle, une prestation de cette famille ne pouvait pas passer
+    # « Réalisée » (origine ``slot_other`` refusée).
+    ('slot_other', "Autre prestation"),
     ('manual', "Ajustement manuel"),
 ]
 
@@ -188,6 +192,9 @@ class LoyaltyEngine(models.AbstractModel):
         distincts ; diversité = origines distinctes (hors manuel).
         """
         Move = self.env['aite.loyalty.move']
+        rank = {code: i for i, (code, _label) in enumerate(TIERS)}
+        best = {}      # partenaire → meilleur statut, toutes sociétés
+        active = set()  # partenaires actifs dans au moins une société
         for company in self.env['res.company'].search([]):
             cfg = self._cfg(company)
             since = date.today() - relativedelta(months=cfg['window'])
@@ -210,33 +217,40 @@ class LoyaltyEngine(models.AbstractModel):
                 if mv.origin_detail != 'manual':
                     d['domains'].add(mv.origin_detail)
 
-            partners = self.env['res.partner'].browse(list(data.keys()))
-            changed = 0
-            for partner in partners:
-                d = data[partner.id]
+            for partner_id, d in data.items():
                 tier = self._tier_for(
                     d['spend'], len(d['days']), len(d['domains']), cfg)
-                if partner.loyalty_tier != tier:
-                    partner.write({
-                        'loyalty_tier': tier,
-                        'loyalty_tier_date': fields.Date.today(),
-                    })
-                    changed += 1
-            # Rétrogradation : clients segmentés sans activité fenêtre
-            stale_domain = [
-                ('loyalty_tier', 'in', ('vip', 'vvip')),
-            ]
-            if partner_ids:
-                stale_domain.append(('id', 'in', list(partner_ids)))
-            for partner in self.env['res.partner'].search(stale_domain):
-                if partner.id not in data:
-                    partner.write({
-                        'loyalty_tier': 'standard',
-                        'loyalty_tier_date': fields.Date.today(),
-                    })
-                    changed += 1
-            if changed:
-                _logger.info(
-                    "Fidélité : %s statut(s) recalculé(s) (%s).",
-                    changed, company.name)
+                if rank[tier] >= rank[best.get(partner_id, 'standard')]:
+                    best[partner_id] = tier
+            active |= set(data)
+
+        # Le statut est porté par le client (partagé entre sociétés) : on
+        # garde le meilleur obtenu dans l'une d'elles, au lieu de laisser la
+        # dernière société parcourue écraser les autres.
+        changed = 0
+        for partner in self.env['res.partner'].browse(list(best)):
+            tier = best[partner.id]
+            if partner.loyalty_tier != tier:
+                partner.write({
+                    'loyalty_tier': tier,
+                    'loyalty_tier_date': fields.Date.today(),
+                })
+                changed += 1
+        # Rétrogradation : seulement les clients sans activité sur la
+        # fenêtre dans AUCUNE société — un VIP de la société B ne redescend
+        # pas parce que la société A ne lui connaît pas d'achat.
+        stale_domain = [
+            ('loyalty_tier', 'in', ('vip', 'vvip')),
+        ]
+        if partner_ids:
+            stale_domain.append(('id', 'in', list(partner_ids)))
+        for partner in self.env['res.partner'].search(stale_domain):
+            if partner.id not in active:
+                partner.write({
+                    'loyalty_tier': 'standard',
+                    'loyalty_tier_date': fields.Date.today(),
+                })
+                changed += 1
+        if changed:
+            _logger.info("Fidélité : %s statut(s) recalculé(s).", changed)
         return True

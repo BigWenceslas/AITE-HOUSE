@@ -338,3 +338,190 @@ class TestRoomCharge(TransactionCase):
         order = self._pos_order([(self.method_room, 12000.0)],
                                 partner=self.guest)
         self.assertEqual(order.aite_folio_line_id.product_id, custom)
+
+    # ------------------------------------------------------------------
+    # Écart n° 10 — report sous les droits d'un caissier sans profil hôtel
+    # ------------------------------------------------------------------
+
+    def _cashier(self):
+        """Caissier pur : utilisateur interne + Point de vente, rien d'autre."""
+        return self.env['res.users'].create({
+            'name': "Caissier sans profil hôtel",
+            'login': 'caissier.nc.test',
+            'groups_id': [(6, 0, [
+                self.env.ref('base.group_user').id,
+                self.env.ref('point_of_sale.group_pos_user').id,
+            ])],
+        })
+
+    def _pos_order_as(self, user, payments, partner=None, total=12000.0):
+        """Même fabrique que ``_pos_order``, jouée par ``user``."""
+        env = self.env(user=user)
+        order = env['pos.order'].create({
+            'session_id': self.session.id,
+            'company_id': self.company.id,
+            'partner_id': partner.id if partner else False,
+            'amount_tax': 0.0,
+            'amount_total': total,
+            'amount_paid': total,
+            'amount_return': 0.0,
+            'lines': [(0, 0, {
+                'product_id': self.drink.id,
+                'qty': 1,
+                'price_unit': total,
+                'price_subtotal': total,
+                'price_subtotal_incl': total,
+            })],
+        })
+        for method, amount in payments:
+            env['pos.payment'].create({
+                'pos_order_id': order.id,
+                'payment_method_id': method.id,
+                'amount': amount,
+            })
+        order.write({'state': 'paid'})
+        return order
+
+    def test_cashier_without_hotel_profile_posts_to_folio(self):
+        """Le caissier n'a aucun droit hôtel : le report passe quand même."""
+        cashier = self._cashier()
+        self.assertFalse(cashier.has_group(
+            'aite_hotel_management.group_hotel_user'))
+        folio = self._folio()
+        self.env.invalidate_all()
+        order = self._pos_order_as(
+            cashier, [(self.method_room, 12000.0)], partner=self.guest)
+        self.env.invalidate_all()
+        order = order.with_user(self.env.user)
+        self.assertTrue(order.aite_folio_line_id)
+        self.assertEqual(order.aite_folio_line_id.folio_id, folio)
+
+    def test_cashier_without_hotel_profile_feeds_the_queue(self):
+        """Ticket anonyme d'un caissier pur : il entre dans la file."""
+        cashier = self._cashier()
+        self.env.invalidate_all()
+        order = self._pos_order_as(
+            cashier, [(self.method_room, 12000.0)], partner=None)
+        self.env.invalidate_all()
+        order = order.with_user(self.env.user)
+        self.assertTrue(order.aite_roomcharge_pending_id)
+        self.assertEqual(order.aite_roomcharge_pending_id.amount, 12000.0)
+
+    # ------------------------------------------------------------------
+    # Écart n° 18 — report HT avec ses taxes (pas le TTC rangé en HT)
+    # ------------------------------------------------------------------
+
+    def _vat(self, price_include=False):
+        group = self.env['account.tax.group'].create({
+            'name': "TVA (test note de chambre)",
+            'company_id': self.company.id,
+        })
+        return self.env['account.tax'].create({
+            'name': "TVA 19,25 %% NC%s" % (" TTC" if price_include else ""),
+            'amount': 19.25,
+            'amount_type': 'percent',
+            'type_tax_use': 'sale',
+            'price_include_override': (
+                'tax_included' if price_include else 'tax_excluded'),
+            'tax_group_id': group.id,
+            'company_id': self.company.id,
+        })
+
+    def _taxed_order(self, taxed_lines, payments, partner=None):
+        """``taxed_lines`` : liste de (taxes, prix unitaire, HT, TTC)."""
+        total = sum(ttc for (_t, _p, _ht, ttc) in taxed_lines)
+        order = self.env['pos.order'].create({
+            'session_id': self.session.id,
+            'company_id': self.company.id,
+            'partner_id': partner.id if partner else False,
+            'amount_tax': total - sum(ht for (_t, _p, ht, _c) in taxed_lines),
+            'amount_total': total,
+            'amount_paid': total,
+            'amount_return': 0.0,
+            'lines': [(0, 0, {
+                'product_id': self.drink.id,
+                'qty': 1,
+                'price_unit': price,
+                'price_subtotal': ht,
+                'price_subtotal_incl': ttc,
+                'tax_ids': [(6, 0, taxes.ids)],
+            }) for (taxes, price, ht, ttc) in taxed_lines],
+        })
+        for method, amount in payments:
+            self.env['pos.payment'].create({
+                'pos_order_id': order.id,
+                'payment_method_id': method.id,
+                'amount': amount if amount is not None else total,
+            })
+        order.write({'state': 'paid'})
+        return order
+
+    def test_taxed_ticket_is_posted_untaxed_with_its_vat(self):
+        """10 000 HT + 19,25 % : 10 000 en HT, 1 925 de TVA au folio."""
+        vat = self._vat()
+        folio = self._folio()
+        before_untaxed = folio.amount_untaxed
+        before_tax = folio.amount_tax
+        before_total = folio.amount_total
+        order = self._taxed_order(
+            [(vat, 10000.0, 10000.0, 11925.0)],
+            [(self.method_room, None)], partner=self.guest)
+        line = order.aite_folio_line_id
+        self.assertEqual(line.tax_ids, vat)
+        self.assertAlmostEqual(line.price_subtotal, 10000.0)
+        self.assertAlmostEqual(line.price_total, 11925.0)
+        folio.invalidate_recordset()
+        self.assertAlmostEqual(folio.amount_untaxed - before_untaxed, 10000.0)
+        self.assertAlmostEqual(folio.amount_tax - before_tax, 1925.0)
+        self.assertAlmostEqual(folio.amount_total - before_total, 11925.0)
+
+    def test_price_included_vat_is_not_counted_twice(self):
+        """Prix TTC au bar (TVA comprise) : même HT, même TVA au folio."""
+        vat = self._vat(price_include=True)
+        folio = self._folio()
+        before_total = folio.amount_total
+        order = self._taxed_order(
+            [(vat, 11925.0, 10000.0, 11925.0)],
+            [(self.method_room, None)], partner=self.guest)
+        line = order.aite_folio_line_id
+        self.assertEqual(line.tax_ids, vat)
+        self.assertAlmostEqual(line.price_subtotal, 10000.0)
+        self.assertAlmostEqual(line.price_total, 11925.0)
+        folio.invalidate_recordset()
+        self.assertAlmostEqual(folio.amount_total - before_total, 11925.0)
+
+    def test_mixed_taxes_give_one_line_per_tax(self):
+        """Un article taxé + un article sans taxe : deux lignes au folio."""
+        vat = self._vat()
+        folio = self._folio()
+        before_total = folio.amount_total
+        order = self._taxed_order(
+            [(vat, 10000.0, 10000.0, 11925.0),
+             (self.env['account.tax'], 5000.0, 5000.0, 5000.0)],
+            [(self.method_room, None)], partner=self.guest)
+        lines = order.aite_folio_line_ids
+        self.assertEqual(len(lines), 2)
+        self.assertEqual(lines.folio_id, folio)
+        taxed = lines.filtered('tax_ids')
+        self.assertAlmostEqual(taxed.price_subtotal, 10000.0)
+        self.assertAlmostEqual((lines - taxed).price_subtotal, 5000.0)
+        folio.invalidate_recordset()
+        self.assertAlmostEqual(folio.amount_total - before_total, 16925.0)
+        # Idempotence : un second passage ne double rien.
+        order._aite_process_room_charge()
+        self.assertEqual(len(order.aite_folio_line_ids), 2)
+
+    def test_partial_room_charge_keeps_the_vat_ratio(self):
+        """Moitié espèces : la moitié du HT et de la TVA va au folio."""
+        vat = self._vat()
+        folio = self._folio()
+        before_total = folio.amount_total
+        order = self._taxed_order(
+            [(vat, 20000.0, 20000.0, 23850.0)],
+            [(self.method_cash, 11925.0), (self.method_room, 11925.0)],
+            partner=self.guest)
+        line = order.aite_folio_line_id
+        self.assertAlmostEqual(line.price_subtotal, 10000.0)
+        self.assertAlmostEqual(line.price_total, 11925.0)
+        folio.invalidate_recordset()
+        self.assertAlmostEqual(folio.amount_total - before_total, 11925.0)

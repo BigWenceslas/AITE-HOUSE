@@ -13,7 +13,7 @@ class PosOrder(models.Model):
     Prend en charge le **paiement mixte** : une partie de la commande peut
     être réglée immédiatement (espèces, carte, Mobile Money…) et le reste
     porté sur ardoise. Seule la part payée via une méthode « ardoise »
-    (type *pay_later* ou marquée ``is_aite_credit``) devient une dette.
+    (marquée ``is_aite_credit``, jamais « Note de chambre ») devient une dette.
 
     Exemple : commande 50 000 → 30 000 espèces + 20 000 ardoise ⇒ une ardoise
     de 20 000 est créée, la commande est soldée au POS.

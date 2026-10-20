@@ -2,13 +2,15 @@
 <odoo>
 
     <!--
-        Menu racine : pointe explicitement sur le tableau de bord Front
-        Desk pour que l'icône de l'application ouvre toujours la même
-        chose, quel que soit le profil (même leçon que sur POS Crédit).
+        Menu racine : pointe explicitement sur une action d'accueil pour
+        que l'icône de l'application ouvre toujours le même écran pour un
+        profil donné (même leçon que sur POS Crédit) : le tableau de bord
+        Front Desk pour la Réception et le Responsable, l'écran
+        Gouvernante pour le profil Gouvernante seul.
     -->
     <menuitem id="menu_hotel_root"
               name="Hôtel"
-              action="action_hotel_dashboard"
+              action="action_hotel_home"
               web_icon="aite_hotel_management,static/description/icon.png"
               sequence="35"
               groups="group_hotel_housekeeping"/>
