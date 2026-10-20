@@ -54,6 +54,16 @@ class TestMaintenanceRoom(HotelCommon):
         self.assertFalse(self.room_101.out_of_order)
         self.assertEqual(self.room_101.hk_state, 'to_clean')
 
+    def test_technician_reads_the_room_of_the_request(self):
+        """Le technicien lit la chambre de sa demande (numéro, étage), sans
+        en voir le prix : sinon le champ « Chambre » de son formulaire
+        affiche « Vous n'avez pas accès à cet enregistrement »."""
+        req = self._report("Climatiseur en panne")
+        self.env.invalidate_all()
+        room = req.with_user(self.technician).room_id
+        self.assertEqual(room.display_name, self.room_101.display_name)
+        self.assertNotIn('price_override', room.fields_get())
+
     def test_two_blocking_requests_both_repaired(self):
         """ECARTS n° 15 (b) : deux demandes bloquantes ; la première
         réparée laisse la chambre hors service, la seconde la libère —

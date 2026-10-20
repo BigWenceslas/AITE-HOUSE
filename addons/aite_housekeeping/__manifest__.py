@@ -28,7 +28,7 @@ Pensé pour une équipe d'étage qui n'a jamais utilisé de logiciel :
     'author': "AITE Consulting",
     'website': "https://aite-consulting.com",
     'category': 'Services/Hotel',
-    'version': '18.0.1.0.4',
+    'version': '18.0.1.0.5',
     'license': 'LGPL-3',
     'depends': ['aite_hotel_management', 'maintenance'],
     'data': [

@@ -10,3 +10,5 @@ access_assign_wizard,aite.hk.assign.wizard,model_aite_hk_assign_wizard,aite_hote
 access_maintenance_request_hk,maintenance.request.hk,maintenance.model_maintenance_request,aite_hotel_management.group_hotel_housekeeping,1,1,1,0
 access_maintenance_stage_hk,maintenance.stage.hk,maintenance.model_maintenance_stage,aite_hotel_management.group_hotel_housekeeping,1,0,0,0
 access_maintenance_equipment_hk,maintenance.equipment.hk,maintenance.model_maintenance_equipment,aite_hotel_management.group_hotel_housekeeping,1,0,0,0
+access_hotel_room_maintenance,aite.hotel.room.maintenance,aite_hotel_management.model_aite_hotel_room,maintenance.group_equipment_manager,1,0,0,0
+access_hotel_room_type_maintenance,aite.hotel.room.type.maintenance,aite_hotel_management.model_aite_hotel_room_type,maintenance.group_equipment_manager,1,0,0,0
