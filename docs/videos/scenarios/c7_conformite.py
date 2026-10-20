@@ -123,9 +123,9 @@ ETAT = pivot('c7-etat', 'Taxe de séjour — état mensuel', 'Mois',
              ['1 011', '3 033 000,00'])
 
 # ---------------------------------------------------- fiches clients (O01) --
-FICHES_COLS = [('Chambre', '120px'), ('Nom', '150px'), ('Prénom(s)', '110px'), ('Date de naissance', '150px'),
-               ('Nationalité', '110px'), ('Type de pièce', '190px'), ('N° de pièce', '120px'), ('Client principal', '80px'),
-               ('Signée par le client', '80px'), ('Il manque', '1fr'), ('Fiche', '130px'), ('', '40px')]
+FICHES_COLS = [('Chambre', '110px'), ('Nom', '150px'), ('Prénom(s)', '100px'), ('Date de naissance', '140px'),
+               ('Nationalité', '110px'), ('Type de pièce', '170px'), ('N° de pièce', '120px'), ('Client principal', '70px'),
+               ('Signée par le client', '70px'), ('Il manque', '1fr'), ('Fiche', '120px'), ('', '40px')]
 CASE_VIDE = '<span class="case"><i></i></span>'
 # La fiche créée au check-in : celle du client principal, pré-remplie depuis le contact (nom complet dans « Nom »).
 FICHES_L = [{'id': 'c7-f0', 'classe': 'avert', 'cellules': [
