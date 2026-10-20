@@ -102,24 +102,44 @@ Déposer les dossiers des modules ci-dessus (à côté des autres), redémarrer,
 Apps → Mettre à jour la liste → **Mettre à niveau** chacun ; Ctrl+Shift+R.
 Vérifier : Hôtel → Direction → rangée « Indicateurs de performance ».
 
-## Livraison 3 (19 octobre 2026) — correctifs relevés en tournant les tutoriels vidéo
+## Livraison 3 (19-20 octobre 2026) — 28 écarts bloquants corrigés
 
-- **aite_purchase_dashboard 18.0.1.0.3** : les cartes « Créances totales
-  (409) », « Créances fournisseurs (409) » et « Acomptes / soldes débiteurs
-  (4091) » additionnaient le reste dû des factures ouvertes (la dette). Seuls
-  les soldes débiteurs du compte fournisseurs comptent désormais : paiements
-  d'avance non lettrés et avoirs. Tests : `tests/test_claims.py`.
-- **aite_hotel_management 18.0.1.0.5** : la réception seule (sans le droit
-  Facturation d'Odoo) peut valider un départ avec facture (18.0.1.0.4) puis
-  encaisser le solde (18.0.1.0.5) ; la facture et son lettrage sont des
-  écritures techniques. Sans accès aux factures, l'écran reste sur le folio.
-  Tests sous le seul profil Réception.
+En tournant les tutoriels vidéo, 69 écarts ont été relevés et vérifiés dans le
+code (`docs/videos/ECARTS.md`). Les 28 qui bloquaient un utilisateur sont
+corrigés ; chaque correction est précédée d'un test qui reproduisait le défaut.
+
+| Module | Version | Ce qui change pour l'utilisateur |
+|---|---|---|
+| `aite_hotel_management` | 18.0.1.0.6 | la réception seule valide un départ avec facture et encaisse le solde ; la gouvernante ouvre l'application Hôtel sur son tableau des chambres ; le prix d'un surclassement gracieux survit à une prolongation (« Prix fixé ») ; un client resté au-delà de son départ prévu garde sa chambre jusqu'au check-out ; deux confirmations simultanées ne vendent plus la même chambre ; plus de « Supprimer » dans le planning |
+| `aite_hotel_gantt` | 18.0.1.0.1 | plus de « Supprimer » dans le planning Gantt |
+| `aite_slot_booking` | 18.0.1.0.4 | un créneau ne se vend plus deux fois en même temps ; le pressing ne passe plus « No-show » ; l'e-mail donne l'heure de Douala |
+| `aite_website_booking` | 18.0.1.0.1 | heures passées refusées ; prestation de 90 min réservable ; plus de contact en double ni de contact créé par une tentative refusée |
+| `aite_hotel_pos_link` | 18.0.1.0.1 | le caissier reporte en note de chambre sans profil hôtel ; le ticket arrive au folio en HT + taxes |
+| `aite_pos_credit` | 18.0.2.0.4 | une note de chambre n'ouvre plus d'ardoise ; un remboursement validé ne se modifie plus (annuler puis ressaisir), ses changements sont suivis ; « Regrouper par Sévérité » retiré |
+| `aite_loyalty` | 18.0.1.0.2 | plus de points sur la taxe de séjour ni de points comptés deux fois ; « Autre prestation » valide ; statut VIP multi-société |
+| `aite_city_tax` | 18.0.1.0.1 | première confirmation possible par la réception et le responsable |
+| `aite_guest_registry` | 18.0.1.0.2 | « Mémoriser sur la fiche client » pour la réception ; le registre de police s'imprime ; le nom n'est plus coupé au premier espace ; plus de résidence par défaut |
+| `aite_housekeeping` | 18.0.1.0.5 | le technicien passe une panne à « Réparé » et lit la chambre ; la chambre revient en vente quand plus aucune panne ne la bloque ; « Conforme » coche la checklist ; priorité Maintenance valide ; l'objet trouvé devine le séjour d'un client en dépassement |
+| `aite_purchase_dashboard` | 18.0.1.0.4 | créances 409/4091 justes ; tableau de bord ouvert à l'acheteur sans Facturation |
+| `aite_direction_dashboard` | 18.0.1.1.1 | barres CA vs Achats, échéancier, balance âgée, « Payer … » et carte heure × jour remplis ; phrases Flux net et position nette dans le bon sens |
+| `aite_exec_dashboard` | 18.0.1.1.1 | une seule définition par chiffre : hors taxes partout (hébergement = nuitées du PMS) |
+| `aite_pos_analytics` | 18.0.2.1.2 | CA des sessions HT (migration) ; taux de marge, compteurs de paiements, sessions ouvertes et classements justes ; heures de Douala |
+
+Les trois modules de la vague 1 ont maintenant leurs tests Odoo. Campagne
+complète sur base vierge (15 modules + données de démonstration) : 698 tests,
+0 échec ; `dev/run_tests.sh` : tout est vert.
+
+**À trancher par l'équipe** (détail dans `docs/videos/ECARTS.md`) : la double
+créance comptable d'un ticket reporté au folio à la clôture de session ; la
+nature HT/TTC des tarifs de prestation ; le no-show d'un linge jamais
+retiré ; les niveaux d'urgence des pannes ; un vrai découpage nom / prénom
+sur le contact (`partner_firstname`).
 
 ### Mise à jour
-Déposer `aite_purchase_dashboard` et `aite_hotel_management` (à côté des
-autres), redémarrer, Apps → Mettre à jour la liste → **Mettre à niveau** les
-deux. Les 69 écarts relevés pendant le tournage sont dans
-`docs/videos/ECARTS.md`.
+Déposer les dossiers des modules ci-dessus (à côté des autres), redémarrer,
+Apps → Mettre à jour la liste → **Mettre à niveau** chacun ; Ctrl+Shift+R.
+Le script de migration d'`aite_pos_analytics` recalcule le CA des sessions
+existantes.
 
 ## Installation / mise à jour
 1. Déposer les 4 dossiers de `addons/` à côté des autres modules AITE
