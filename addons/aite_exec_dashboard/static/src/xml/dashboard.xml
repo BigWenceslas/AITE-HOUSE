@@ -62,11 +62,11 @@
                     <KpiCard mega="true" accent="'primary'"
                              label="'Hébergement'"
                              value="money(state.kpis.hotel_ca)"
-                             sub="'Occupation ' + pct(state.kpis.occupancy) + ' · ADR ' + money(state.kpis.adr)"/>
+                             sub="'Nuitées HT, nuit par nuit · occupation ' + pct(state.kpis.occupancy) + ' · ADR ' + money(state.kpis.adr)"/>
                     <KpiCard mega="true" accent="'info'"
                              label="'Restauration &amp; boutique'"
                              value="money(state.kpis.pos_ca)"
-                             sub="num(state.kpis.tickets) + ' tickets · panier ' + money(state.kpis.basket)"/>
+                             sub="'HT · ' + num(state.kpis.tickets) + ' tickets · panier ' + money(state.kpis.basket)"/>
                     <KpiCard mega="true" accent="'teal'"
                              label="'Prestations'"
                              value="money(state.kpis.slots_ca)"

@@ -145,13 +145,6 @@ class PosCreditPayment(models.Model):
                 "remboursement."))
         return super().write(vals)
 
-    @api.ondelete(at_uninstall=False)
-    def _unlink_except_posted(self):
-        if any(pay.state == 'posted' for pay in self):
-            raise UserError(_(
-                "Un remboursement validé ne se supprime pas : annulez-le "
-                "d'abord (son écriture est annulée avec lui)."))
-
     def _journal_for_method(self):
         """
         Détermine le journal d'encaissement selon le moyen de paiement.

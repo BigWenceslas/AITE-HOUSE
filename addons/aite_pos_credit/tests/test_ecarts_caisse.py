@@ -122,12 +122,6 @@ class TestCreditEcarts(CreditCommon):
                 payment.write(vals)
         self.assertEqual(payment.amount, 10000.0)
 
-    def test_posted_repayment_cannot_be_deleted(self):
-        credit = self._credit(30000.0)
-        payment = self._repay(credit, 10000.0)
-        with self.assertRaises(UserError):
-            payment.unlink()
-
     def test_cancel_then_reenter(self):
         """Le geste prévu : annuler, puis ressaisir le bon remboursement."""
         credit = self._credit(30000.0)

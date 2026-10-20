@@ -177,3 +177,17 @@ class TestDirectionConsistency(PosAnalyticsCommon):
         order.write({'state': 'paid'})
         self.env.flush_all()
         return order
+
+    # ------------------------------------------------------------------
+    # n° 27 — la carte heure × jour du cockpit lit le rapport POS
+    # ------------------------------------------------------------------
+
+    def test_pos_tab_heatmap_is_filled_by_the_sales(self):
+        self._sale([(self.beer, 2, 5000.0)])
+        report = self.env['aite.pos.daily.report'].search(
+            [('config_id', '=', self.pos_config.id)], limit=1)
+        heat = self.direction.get_pos_tab(self.d_from, self.d_to)['heatmap']
+        cell = [h for h in heat if h['weekday'] == report.dow
+                and h['hour'] == report.hour]
+        self.assertTrue(cell, "la vente doit apparaître sur la carte")
+        self.assertGreaterEqual(cell[0]['ca'], 10000.0)

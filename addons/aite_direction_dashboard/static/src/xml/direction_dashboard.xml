@@ -225,7 +225,7 @@
                             label="'CA encaissé'"
                             value="money(o.pos.ca)"
                             delta="o.pos.ca_delta"
-                            sub="o.pos.order_count + ' tickets · POS payés / facturés'"/>
+                            sub="'HT · ' + o.pos.order_count + ' tickets · POS payés / facturés'"/>
                         <KpiCard mega="true" accent="'teal'" badge="'per'"
                             label="'Marge brute réalisée'"
                             value="money(o.pos.margin)"
@@ -461,8 +461,7 @@
                         <KpiCard accent="'teal'" badge="'per'"
                             label="'Flux net'"
                             value="netFlowText"
-                            sub="'recouvré − nouveaux : l\'encours '
-                                 + (d.kpis.net_flow >= 0 ? 'baisse' : 'monte')"/>
+                            sub="d.net_flow_text"/>
                         <KpiCard badge="'per'"
                             label="'Taux de recouvrement'"
                             value="pct(d.kpis.recovery_rate, 0)"

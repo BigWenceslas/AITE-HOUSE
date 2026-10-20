@@ -40,6 +40,9 @@ TRANCHES = {
 AGE_BUCKETS = ((0, 30, '0_30'), (31, 60, '31_60'),
                (61, 90, '61_90'), (91, None, '90p'))
 
+MONTHS_FR = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin',
+             'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc']
+
 
 class AiteDirectionDashboard(models.AbstractModel):
     _name = 'aite.direction.dashboard'
@@ -81,13 +84,88 @@ class AiteDirectionDashboard(models.AbstractModel):
         """
         Crédits clients − dettes fournisseurs.
 
-        :returns: (solde, lecture) — lecture ∈ 'clients' (les clients
-            vous financent… rare), 'fournisseurs', 'equilibre'.
+        :returns: (solde, lecture) — lecture ∈ 'clients' (ardoises
+            supérieures aux dettes : vous financez vos clients),
+            'fournisseurs' (vos fournisseurs vous financent), 'equilibre'.
+            La phrase affichée vient de ``_net_position_text``.
         """
         net = (outstanding or 0.0) - (supplier_debt or 0.0)
         if abs(net) < 1.0:
             return 0.0, 'equilibre'
         return net, ('clients' if net > 0 else 'fournisseurs')
+
+    @staticmethod
+    def _net_position_text(side):
+        """
+        Phrase d'état de la position nette (crédits clients − dettes
+        fournisseurs), d'après le côté rendu par ``_net_position``.
+
+        Ardoises > dettes (``'clients'``) : c'est VOUS qui faites crédit à
+        vos clients. Dettes > ardoises (``'fournisseurs'``) : vos
+        fournisseurs financent l'exploitation.
+        """
+        if side == 'clients':
+            return "vous financez vos clients (ardoises > dettes)"
+        if side == 'fournisseurs':
+            return "vos fournisseurs financent l'exploitation"
+        return "position équilibrée"
+
+    @staticmethod
+    def _net_flow_sentence(net_flow):
+        """
+        Phrase sous la carte « Flux net » des ardoises. Le moteur Crédit
+        calcule ``net_flow = nouveaux − recouvré`` : positif, l'encours
+        MONTE ; négatif, il baisse.
+        """
+        v = net_flow or 0.0
+        if abs(v) < 1.0:
+            return "nouveaux − recouvré : l'encours est stable"
+        return "nouveaux − recouvré : l'encours %s" % (
+            'monte' if v > 0 else 'baisse')
+
+    @staticmethod
+    def _month_label(month):
+        """'2026-10' → 'Oct' (libellé court des barres)."""
+        try:
+            return MONTHS_FR[int(str(month)[5:7]) - 1]
+        except (ValueError, IndexError):
+            return month or ''
+
+    @staticmethod
+    def _months_back(today, n):
+        """Les ``n`` derniers mois (mois courant inclus) en 'AAAA-MM',
+        du plus ancien au plus récent."""
+        t = fields.Date.to_date(today)
+        y, m = t.year, t.month
+        out = []
+        for _i in range(n):
+            out.append('%04d-%02d' % (y, m))
+            m -= 1
+            if m == 0:
+                y, m = y - 1, 12
+        out.reverse()
+        return out
+
+    @staticmethod
+    def _supplier_rows(rows):
+        """
+        Factures ouvertes du moteur Achats → lignes du cockpit.
+
+        Le moteur rend le reste dû sous ``residual`` et l'échéance sous
+        ``due`` ; l'échéancier, la balance âgée et la liste d'actions
+        lisent ``amount`` / ``planned`` : sans cette traduction, tout
+        restait à zéro (écart n° 23). Une ligne qui porte déjà les clés
+        du cockpit est reprise telle quelle.
+        """
+        out = []
+        for r in rows or []:
+            r = dict(r)
+            if 'amount' not in r:
+                r['amount'] = float(r.get('residual') or 0.0)
+            if 'planned' not in r:
+                r['planned'] = r.get('due') or None
+            out.append(r)
+        return out
 
     @staticmethod
     def _age_bucket(days):
@@ -335,16 +413,53 @@ class AiteDirectionDashboard(models.AbstractModel):
         """CA par (jour ISO, heure) sur le report POS — dégradation
         douce si les champs n'existent pas."""
         Report = self.env['aite.pos.daily.report']
-        if 'hour' not in Report._fields or 'weekday' not in Report._fields:
+        # Le rapport POS nomme le jour ISO ``dow`` (pas ``weekday``) : la
+        # garde sur ``weekday`` renvoyait toujours une carte vide. Heure
+        # et jour y sont à l'heure locale de la société (écart n° 27).
+        if 'hour' not in Report._fields or 'dow' not in Report._fields:
             return []
-        domain = [('date', '>=', date_from), ('date', '<=', date_to)]
-        if config_id:
-            domain.append(('config_id', '=', int(config_id)))
+        # Mêmes bornes que le moteur POS (jour de fin inclus en entier).
+        domain = self.env['aite.pos.dashboard']._base_domain(
+            date_from, date_to, config_id)
         rows = Report.read_group(
-            domain, ['price_subtotal'], ['weekday', 'hour'], lazy=False)
-        return [{'weekday': int(r.get('weekday') or 0),
+            domain, ['price_subtotal'], ['dow', 'hour'], lazy=False)
+        return [{'weekday': int(r.get('dow') or 0),
                  'hour': int(r.get('hour') or 0),
                  'ca': r.get('price_subtotal') or 0.0} for r in rows]
+
+    def _month_trends(self, pos_rows, bill_rows, encours_rows, today):
+        """
+        Aligne CA / achats / encours sur une clé de mois COMMUNE
+        (AAAA-MM). Les moteurs libellent leurs mois chacun à sa façon
+        (« octobre 2026 » côté ventes, « Oct » côté achats et ardoises) :
+        alignées sur le libellé, les barres du CA restaient à zéro (écart
+        n° 23). On rekey chaque source sur ``month`` avant de les
+        assembler, puis on rend le libellé court sous ``period``.
+        """
+        months = self._months_back(today, 6)
+
+        def keyed(rows, positional):
+            out = []
+            rows = list(rows or [])
+            for i, r in enumerate(rows):
+                month = r.get('month')
+                if not month and positional and len(rows) <= len(months):
+                    # Série « N derniers mois » sans clé : alignée sur la
+                    # fin de la fenêtre (le dernier point = mois courant).
+                    month = months[len(months) - len(rows) + i]
+                if month in months:
+                    out.append(dict(r, period=month))
+            return out
+
+        rows = self._zip_trends(keyed(pos_rows, False),
+                                keyed(bill_rows, True),
+                                keyed(encours_rows, True))
+        rows = [r for r in rows if r['period'] in months]
+        rows.sort(key=lambda r: r['period'])
+        for r in rows:
+            r['month'] = r['period']
+            r['period'] = self._month_label(r['month'])
+        return rows
 
     # ==================================================================
     # RPC
@@ -420,7 +535,7 @@ class AiteDirectionDashboard(models.AbstractModel):
         aging_c = self._rows(cred.get_aging(config_id=config_id))
         s = stock.get_kpis(date_from, date_to)
         a = pur.get_kpis(date_from, date_to)
-        inv = self._rows(pur.get_open_invoices())
+        inv = self._supplier_rows(self._rows(pur.get_open_invoices()))
         today = fields.Date.context_today(self).isoformat()
         buckets = self._bucket_supplier_invoices(inv, today)
         risk = self._cash_at_risk(c.get('late_amount'), s.get('pertes'))
@@ -435,7 +550,7 @@ class AiteDirectionDashboard(models.AbstractModel):
         cred_ev = self._rows(cred.get_evolution(6,
                                                 config_id=config_id))
         enc = self._encours_series(c.get('outstanding'), cred_ev)
-        trends = self._zip_trends(pos_ev, flux, enc)
+        trends = self._month_trends(pos_ev, flux, enc, today)
 
         aging_clients = {'0_30': 0.0, '31_60': 0.0,
                          '61_90': 0.0, '90p': 0.0}
@@ -463,6 +578,7 @@ class AiteDirectionDashboard(models.AbstractModel):
             'cash_risk_parts': {'late': c.get('late_amount', 0.0),
                                 'coulage': s.get('pertes', 0.0)},
             'net_position': net, 'net_side': net_side,
+            'net_side_text': self._net_position_text(net_side),
             'supplier_buckets': buckets,
             'aging_clients': aging_clients,
             'trends': trends,
@@ -515,6 +631,7 @@ class AiteDirectionDashboard(models.AbstractModel):
             'recent_payments': self._rows(cred.get_recent_payments(
                 date_from, date_to, limit=5, config_id=config_id)),
             'evolution': self._encours_series(k.get('outstanding'), ev),
+            'net_flow_text': self._net_flow_sentence(k.get('net_flow')),
         }
 
     @api.model
@@ -539,7 +656,8 @@ class AiteDirectionDashboard(models.AbstractModel):
     @api.model
     def get_purchase_tab(self, date_from, date_to, supplier_id=None):
         _p, _c, _s, pur = self._engines()
-        inv = self._rows(pur.get_open_invoices(supplier_id=supplier_id))
+        inv = self._supplier_rows(
+            self._rows(pur.get_open_invoices(supplier_id=supplier_id)))
         today = fields.Date.context_today(self).isoformat()
         claims = pur.get_claims(supplier_id=supplier_id)
         return {
@@ -574,7 +692,7 @@ class AiteDirectionDashboard(models.AbstractModel):
                          filters={'compare': False})
         s = stock.get_kpis(date_from, date_to)
         a = pur.get_kpis(date_from, date_to)
-        inv = self._rows(pur.get_open_invoices())
+        inv = self._supplier_rows(self._rows(pur.get_open_invoices()))
         today = fields.Date.context_today(self).isoformat()
         rows = self._rows(stock.get_stock_list())
         price_up = [{'name': m.get('name'), 'partner': m.get('partner'),

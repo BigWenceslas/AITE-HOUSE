@@ -135,12 +135,16 @@ class TestExecDashboard(TransactionCase):
         """Écart n° 25 / cas K04 : le CA hébergement est celui du PMS et
         du cockpit Direction — HT, nuit par nuit — pas le TTC des folios
         facturés au départ."""
-        self._stay()
         d_from = fields.Date.to_string(self.today - timedelta(days=7))
         d_to = fields.Date.to_string(self.today)
+        # La base peut porter d'autres séjours (jeu de démonstration) : on
+        # mesure l'apport du séjour de ce test.
+        before = self.dashboard.get_kpis(d_from, d_to)['hotel_ca']
+        self._stay()
         kpis = self.dashboard.get_kpis(d_from, d_to)
         pms = self.env['aite.hotel.dashboard'].get_kpis(d_from, d_to)
-        self.assertEqual(kpis['hotel_ca'], 80000.0, "une nuit dans la période")
+        self.assertEqual(kpis['hotel_ca'] - before, 80000.0,
+                         "une seule nuit dans la période, HT")
         self.assertAlmostEqual(kpis['hotel_ca'],
                                pms['period']['room_revenue'], places=2)
         evo = self.dashboard.get_evolution(months=1)

@@ -29,7 +29,7 @@ dure).
     'author': "AITE CONSULTING",
     'website': "https://aiteconsulting.com",
     'category': 'Industries',
-    'version': '18.0.1.1.0',
+    'version': '18.0.1.1.1',
     'license': 'LGPL-3',
     'depends': ['web', 'point_of_sale', 'aite_hotel_management',
                 'aite_slot_booking'],

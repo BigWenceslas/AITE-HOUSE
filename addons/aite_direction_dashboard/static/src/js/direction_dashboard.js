@@ -290,10 +290,9 @@ export class DirectionDashboard extends Component {
         if (!o) return "";
         const c = this.moneyShort(o.credit.outstanding);
         const s = this.moneyShort(o.purchase.encours);
-        const who = o.net_side === "fournisseurs"
-            ? "les fournisseurs financent l'exploitation"
-            : o.net_side === "clients"
-                ? "vos clients vous financent" : "position équilibrée";
+        // Phrase servie par le serveur (``_net_position_text``, testée) :
+        // ardoises > dettes = VOUS financez vos clients (écart n° 24).
+        const who = o.net_side_text || "";
         return `${c} d'ardoises · ${s} de dettes — ${who}`;
     }
     /* — tuile Hébergement (présente si le PMS est installé) — */
