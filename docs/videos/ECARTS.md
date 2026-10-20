@@ -43,6 +43,38 @@ vidéo** = rejoué tel quel, ou contourné (et comment).
 Erreurs d'accès sur un geste normal d'un profil, doublons de données, calculs
 ou phrases fausses.
 
+> **État au 20/10/2026 : les 28 écarts de cette section sont corrigés** (le
+> tableau garde le constat d'origine). Chaque correction est précédée d'un
+> test qui reproduisait le défaut. Versions : `aite_hotel_management`
+> 18.0.1.0.6 (n° 9, 12, 31, 32, 33), `aite_slot_booking` 18.0.1.0.4 et
+> `aite_website_booking` 18.0.1.0.1 (n° 27 e-mail, 32 créneaux, 34, 35, 36),
+> `aite_hotel_pos_link` 18.0.1.0.1, `aite_pos_credit` 18.0.2.0.4,
+> `aite_loyalty` 18.0.1.0.2 (n° 10, 17, 18, 20, 21, 28, 29), `aite_city_tax`
+> 18.0.1.0.1, `aite_guest_registry` 18.0.1.0.2, `aite_housekeeping` 18.0.1.0.3
+> (n° 11, 14, 15, 16, 19, 30), `aite_purchase_dashboard` 18.0.1.0.4,
+> `aite_direction_dashboard` 18.0.1.1.1, `aite_exec_dashboard` 18.0.1.1.1,
+> `aite_pos_analytics` 18.0.2.1.2 (n° 13, 22, 23, 24, 25, 26, 27 analyse).
+>
+> **Restent à trancher par l'équipe** (non corrigés ou corrigés selon un
+> choix à valider) :
+> - n° 18 : la double créance à la clôture de session pour un ticket reporté
+>   au folio (le « payer plus tard » passe CA et TVA à la clôture, puis la
+>   facture du séjour les repasse) — décision comptable : compte de transit
+>   dédié, ou exclusion des tickets reportés de l'écriture de clôture ;
+> - n° 25 : définition retenue « hors taxes partout » (hébergement = CA HT
+>   des nuitées du PMS, restauration HT) ; tarif des prestations HT ou TTC
+>   inconnu ;
+> - n° 32 : un séjour « Arrivé » en dépassement bloque sa chambre jusqu'au
+>   check-out réel, pour toutes les dates ;
+> - n° 36 : le pressing est exclu du no-show automatique (pas de règle
+>   « linge jamais retiré ») ;
+> - n° 15 : urgences Important / Urgent / Très urgent → priorité Maintenance
+>   « Haute », urgence exacte recopiée dans la description ;
+> - n° 30 : le contact Odoo n'a qu'un nom complet — le nom complet va dans
+>   « Nom », la réception sépare le prénom (`partner_firstname` à décider) ;
+> - n° 20 : un remboursement validé reste supprimable par le seul
+>   responsable crédit (nécessaire à la purge des données de démonstration).
+
 | # | Module et fichier:ligne | Constat | Règle ou source contredite | Tutoriels | Dans la vidéo | Correction proposée |
 |---|---|---|---|---|---|---|
 | 9 | `aite_hotel_management` — `models/hotel_folio.py:294-315` (`action_create_invoice`), `:736-748` (`_reconcile_with_invoice`) | La facture du départ est créée, comptabilisée et lettrée avec les droits de l'utilisateur. Un compte au seul profil Réception (sans le droit « Facturation » d'Odoo, cas de `demo.reception`) obtient une erreur d'accès sur `account.move` à « Valider le départ » avec « Générer la facture » coché. | `CLAUDE.md` (écritures techniques en `sudo()`) ; `odoo18/addons/account/security/ir.model.access.csv:40-44` | t01, t03 | **Corrigé** dans `aite_hotel_management` 18.0.1.0.4 (facture créée, validée et lettrée en `sudo()` ; sans accès aux factures, la réception reste sur le folio) et 18.0.1.0.5 (l'encaissement du solde après la facture lettrait le règlement sans `sudo()` : même erreur d'accès). Tests `test_receptionist_alone_checks_out_and_invoices`, `test_receptionist_collects_the_balance_after_invoicing`. t01 et t03 refaits sans le droit Facturation. | — |
