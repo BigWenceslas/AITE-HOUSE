@@ -61,21 +61,24 @@ benchmark_afrique_odoo.md:69). Le MINTOUL ne paraît que dans la douleur
    (folio 57 000 FCFA après l'acompte, check-in réel 14:06:12).
 3. Fiches clients — models/hotel_reservation.py:112-148 (fenêtre
    « Fiches clients — RES/2026/0214 », facette Réservation, valeurs
-   proposées : chambre du séjour, dates, nationalité et résidence = pays de
-   l'hôtel) ; views/guest_registration_views.xml:5-33 (liste éditable en
+   proposées : chambre du séjour, dates, nationalité = pays de l'hôtel ;
+   plus de résidence par défaut depuis aite_guest_registry 18.0.1.0.2,
+   :143-146) ; views/guest_registration_views.xml:5-33 (liste éditable en
    bas, lignes orange « À compléter » / vertes « Complète », colonnes
    Chambre, Nom, Prénom(s), Date de naissance, Nationalité, Type de pièce,
    N° de pièce, Client principal, Signée par le client, Il manque, Fiche,
    imprimante « Imprimer la fiche » ; Résidence et Téléphone masquées) ;
    models/guest_registration.py:70-79 (types de pièce), :182-206 (les six
    informations et la phrase « Il manque »), :218-241 (la fiche passe
-   « Complète » toute seule à l'enregistrement), :255-280 (pré-remplissage
-   depuis le contact : nom coupé au premier espace, nationalité, pièce,
-   adresse, téléphone ; jamais la date de naissance). Le contact
-   « Estelle Ngono » (demo.CLIENT) donne donc Nom « Estelle » et Prénom(s)
-   « Ngono » (:259-261, voir écart 8 ; captures/11_fiches_du_sejour.png
-   montre la même coupe sur un contact de recette) : la vidéo le montre, et Mireille
-   remet l'ordre avant de saisir la date de naissance. Boutons « Enregistrer »
+   « Complète » toute seule à l'enregistrement), :255-301 (pré-remplissage
+   depuis le contact : nom, nationalité, résidence, pièce, adresse,
+   téléphone ; jamais la date de naissance). _name_parts (:255-273) : le
+   contact n'a qu'un nom complet, le module ne le coupe plus ; « Estelle
+   Ngono » (demo.CLIENT) donne Nom « Estelle Ngono » et Prénom(s) vide, et
+   « Il manque » commence par « le prénom » (écart 8, corrigé). Mireille
+   sépare elle-même le nom et le prénom avant de saisir la date de
+   naissance (tests/test_guest_registry.py, test_prefill_keeps_full_name_in_last_name).
+   Boutons « Enregistrer »
    / « Ignorer » d'une ligne en saisie et fil d'Ariane à deux niveaux :
    odoo18/addons/web/static/src/views/list/list_controller.xml:7-13 et
    :105-114, search/breadcrumbs/breadcrumbs.xml:4-46 ; traductions
@@ -101,8 +104,12 @@ benchmark_afrique_odoo.md:69). Le MINTOUL ne paraît que dans la douleur
    :274-275) : « Bonapriso Douala » pour Estelle (son contact :
    t04_note_chambre.py:334), vide pour Arnaud, saisi dans une ligne sans
    colonne Adresse et sans contact lié (rapport :65). Pays de résidence et
-   nationalité « Cameroun » (default_country_id / default_nationality_id,
-   hotel_reservation.py:143-144) ; motif « Loisirs / tourisme »
+   nationalité « Cameroun » pour Estelle (country_id de son contact,
+   guest_registration.py:290) ; pour Arnaud, nationalité « Cameroun »
+   proposée (default_nationality_id, hotel_reservation.py:147) et pays de
+   résidence vide : plus de résidence par défaut (écart 6, corrigé) ; il est
+   compté résident par sa nationalité (guest_registration.py:174-180) ;
+   motif « Loisirs / tourisme »
    (guest_registration.py:102-110, valeur par défaut).
 5. Registre des clients — views/guest_registration_views.xml:36-61
    (colonnes, lignes orange « À compléter »), :155-188 (filtres « À
@@ -169,9 +176,9 @@ montants comme dans t01. Ajoutés ici, fictifs : Arnaud Ngono
 (l'accompagnant d'Estelle, repris de scenarios/c7_conformite.py), dates de
 naissance et numéros de pièce. Le contact d'Estelle porte déjà sa
 nationalité et sa pièce (cliente connue). Les fiches de Claire et de Martin,
-créées à leur check-in et pas encore reprises, gardent le nom coupé au
-premier espace (Nom « Claire », Prénom(s) « Durand » ; Nom « Martin »,
-Prénom(s) « Ebode ») : rejoué tel quel (écart 8). Groupes du registre du
+créées à leur check-in et pas encore reprises, portent le nom complet du
+contact et un prénom vide (Nom « Claire Durand », Nom « Martin Ebode ») :
+elles restent « À compléter ». Groupes du registre du
 08 au 14/10 : 9, 8, 9, 7, 10, 7 et 4 fiches = 54 (c7), soit 4 à 10
 arrivées par jour pour les 20 chambres de l'hôtel (environ 1,5 occupant par
 chambre). Les statistiques d'août à octobre 2026 sont celles de c7 (sommes
@@ -180,16 +187,14 @@ octobre est partiel (du 01 au 14/10), d'où « en cours de mois » dans la
 voix. Plausibles pour 20 chambres : 408 nuitées en septembre, soit environ
 270 nuits-chambres sur 600 possibles (20 × 30) à 1,5 occupant.
 
-Écarts relevés dans l'application, rejoués tels quels ou évités :
-1. Le registre de police (Facturation → Registre de police (impression))
-   ne s'imprime pas depuis l'interface : action_print place des dates dans
-   le contexte (wizard/police_register_wizard.py:65-68) ; le client web les
-   renvoie sérialisées en chaînes (odoo18 web/static/src/webclient/actions/
-   action_service.js:1323-1327, reports/utils.js:14-20 ; controllers/
-   report.py:35-37) et le gabarit appelle strftime dessus
-   (report/police_register_report.xml:66) : QWebException. La vidéo ne
-   montre donc pas ce PDF ; elle montre le registre des clients (liste) et
-   la fiche imprimée, qui fonctionnent.
+Écarts relevés dans l'application (rejoués tels quels, ou corrigés depuis) :
+1. Corrigé dans aite_guest_registry 18.0.1.0.2 (ECARTS n° 16) : le registre
+   de police (Facturation → Registre de police (impression)) s'imprime
+   depuis l'interface (dates passées en chaînes ISO,
+   wizard/police_register_wizard.py:55-72, relues par le gabarit,
+   report/police_register_report.xml:64-71). Ce tutoriel ne le montre pas
+   (durée) : il montre le registre des clients (liste) et la fiche
+   imprimée ; le chapitre 7 de la présentation montre le registre imprimé.
 2. La colonne « Registre » des listes de réservations affiche « Aucune
    fiche » en rouge sur toutes les réservations pas encore arrivées
    (hotel_reservation.py:52-53, views:62-66) : rejoué tel quel sur les
@@ -203,19 +208,19 @@ voix. Plausibles pour 20 chambres : 408 nuitées en septembre, soit environ
    clients s'ouvre » (aite_hotel_management/views/hotel_reservation_views.xml
    :286) : aucune fenêtre ne s'ouvre, on reste sur la réservation avec le
    bandeau (action_checkin rend True) ; la vidéo montre le comportement réel.
-6. Une nouvelle ligne reçoit d'office Résidence = pays de l'hôtel, colonne
-   masquée (hotel_reservation.py:143-144, views:20) : un étranger dont on ne
-   change que la nationalité serait compté résident. L'accompagnant de la
-   vidéo est camerounais : sans effet ici.
-7. « Mémoriser sur la fiche client » écrit sur le contact sans sudo
-   (guest_registration.py:282-298) : refusé au seul profil Réception. Non
+6. Corrigé dans aite_guest_registry 18.0.1.0.2 (ECARTS n° 30 b) : une
+   nouvelle ligne ne reçoit plus d'office Résidence = pays de l'hôtel
+   (hotel_reservation.py:143-147) ; la page d'Arnaud du PDF a donc un pays
+   de résidence vide.
+7. Corrigé dans aite_guest_registry 18.0.1.0.2 (ECARTS n° 14) :
+   « Mémoriser sur la fiche client » écrit sur le contact en sudo
+   (guest_registration.py:299-318, test_reception_copies_back_to_partner) et fonctionne pour la Réception. Non
    montré.
-8. Le pré-remplissage coupe le nom du contact au premier espace : le
-   premier mot devient le Nom, la suite le Prénom(s)
-   (guest_registration.py:259-261). Un contact saisi « Prénom Nom »
-   (« Estelle Ngono ») donne donc Nom « Estelle », Prénom(s) « Ngono », et le
-   PDF imprimerait « ESTELLE ». Rejoué tel quel : Mireille remet l'ordre à
-   l'étape 2, les fiches de Claire et de Martin le gardent au registre.
+8. Corrigé dans aite_guest_registry 18.0.1.0.2 (ECARTS n° 30 a) : le
+   pré-remplissage ne coupe plus le nom au premier espace ; le nom complet
+   du contact va dans « Nom », « Prénom(s) » reste vide et « Il manque » le
+   signale (guest_registration.py:255-296). Montré à l'étape 2 : Mireille
+   sépare elle-même « Ngono » et « Estelle ».
 
 Captures de référence (modèle visuel, jamais incrustées) : ref_muk/023,
 026, 027, 032, 033, 306 ; captures/10, 11, 12, nouvelles/13, nouvelles/14.
@@ -388,14 +393,17 @@ RESA = vue_fiche('t06-resa', cp_fiche('Arrivées du jour', demo.RESA, '2 / 3', s
     boutons_apres=[B_ARRIVE])
 
 # ====================================================== 3. Fiches clients --
-COLS_F = [('Chambre', '104px'), ('Nom', '86px'), ('Prénom(s)', '98px'), ('Date de naissance', '132px'),
-          ('Nationalité', '108px'), ('Type de pièce', '218px'), ('N° de pièce', '112px'), ('Client principal', '84px'),
-          ('Signée par le client', '84px'), ('Il manque', '1fr'), ('Fiche', '120px'), ('', '30px')]
+COLS_F = [('Chambre', '96px'), ('Nom', '124px'), ('Prénom(s)', '86px'), ('Date de naissance', '118px'),
+          ('Nationalité', '100px'), ('Type de pièce', '206px'), ('N° de pièce', '108px'), ('Client principal', '68px'),
+          ('Signée par le client', '68px'), ('Il manque', '1fr'), ('Fiche', '116px'), ('', '30px')]
 CNI = "Carte nationale d'identité"
 MANQUE_NOUVELLE = ['le nom, le prénom, la date de naissance, le type de pièce, le numéro de pièce',
                    'le prénom, la date de naissance, le type de pièce, le numéro de pièce',
                    'la date de naissance, le type de pièce, le numéro de pièce',
                    'le type de pièce, le numéro de pièce', 'le numéro de pièce', '']
+# La fiche d'Estelle pré-remplie depuis son contact : nom complet dans « Nom », prénom vide
+# (guest_registration.py:255-272) ; nationalité et pièce viennent du contact.
+MANQUE_ESTELLE = ['le prénom, la date de naissance', 'la date de naissance', '']
 
 
 def cel(ident, valeur=''):
@@ -405,9 +413,9 @@ def cel(ident, valeur=''):
 
 IMPRIMANTE = ('<span class="t06-print">%s</span>' % ICONES['imprimer'],)
 FICHE_ESTELLE = ligne6('t06-f0', COLS_F, [
-    '204 [CFT]', cel('t06-f0-nom', 'Estelle'), cel('t06-f0-pre', 'Ngono'), cel('t06-f0-dn'), 'Cameroun', CNI,
+    '204 [CFT]', cel('t06-f0-nom', demo.CLIENT), cel('t06-f0-pre'), cel('t06-f0-dn'), 'Cameroun', CNI,
     '114208815', case(True), case(False),
-    ('<span class="ell" id="t06-f0-im">la date de naissance</span>',), badge('À compléter', 'orange', 't06-f0-et'),
+    ('<span class="ell" id="t06-f0-im">%s</span>' % e(MANQUE_ESTELLE[0]),), badge('À compléter', 'orange', 't06-f0-et'),
     IMPRIMANTE], 'avert')
 FICHE_ARNAUD = ligne6('t06-f1', COLS_F, [
     '204 [CFT]', cel('t06-f1-nom'), cel('t06-f1-pre'), cel('t06-f1-dn'), cel('t06-f1-nat', 'Cameroun'),
@@ -426,7 +434,7 @@ FICHES = vue_libre('t06-fiches', CP_FICHES + '<div class="liste t06-lf">%s%s%s</
     tete(COLS_F, '<span class="t06-opt">%s</span>' % REGLAGES), FICHE_ESTELLE, FICHE_ARNAUD))
 
 # ======================================= 4. La fiche d'enregistrement (PDF) --
-def pdf_page(ident, num, nom, prenom, ne, tel, piece, adresse):
+def pdf_page(ident, num, nom, prenom, ne, tel, piece, adresse, residence):
     """Une page du PDF « Fiche d'enregistrement » (registration_card_report.xml), telle que l'imprime Odoo."""
     def lig(a, va, b, vb):
         return '<tr><td><b>%s</b></td><td>%s</td><td><b>%s</b></td><td>%s</td></tr>' % (e(a), va, e(b), vb)
@@ -439,7 +447,7 @@ def pdf_page(ident, num, nom, prenom, ne, tel, piece, adresse):
         + lig('Type', e(CNI), 'Numéro', e(piece)) + lig('Délivrée le', '', 'Par', '')
         + '<tr><th colspan="4">DOMICILE &amp; DÉPLACEMENT</th></tr>'
         + '<tr><td><b>Adresse</b></td><td colspan="3">%s</td></tr>' % e(adresse)
-        + lig('Pays de résidence', 'Cameroun', 'Motif du séjour', 'Loisirs / tourisme')
+        + lig('Pays de résidence', e(residence), 'Motif du séjour', 'Loisirs / tourisme')
         + lig('Provenance', '', 'Destination', '')
         + '<tr><th colspan="4">SÉJOUR</th></tr>'
         + lig('Arrivée', '14/10/2026', 'Départ prévu', '16/10/2026') + lig('Nuits', '2', 'Accompagnants', '1'))
@@ -469,15 +477,15 @@ PDF = ('<div class="t06-pdf masque" id="t06-pdf" data-layout-allow-overlap data-
        '<div class="t06-pages">%s%s</div></div>'
        % (e(FICHIER_PDF),
           pdf_page('t06-p1', 'FICHE/2026/00412', 'Ngono', 'Estelle', '12/03/1991', demo.CLIENT_TEL, '114208815',
-                   'Bonapriso Douala'),
-          pdf_page('t06-p2', 'FICHE/2026/00413', 'Ngono', 'Arnaud', '27/08/1989', '', '116502371', '')))
+                   'Bonapriso Douala', 'Cameroun'),
+          pdf_page('t06-p2', 'FICHE/2026/00413', 'Ngono', 'Arnaud', '27/08/1989', '', '116502371', '', '')))   # pas de résidence par défaut
 
 # ============================================== 5. Le registre des clients --
 DEROULANT = ('<div class="t06-dd masque" id="t06-dd" data-layout-allow-overlap data-layout-allow-occlusion>%s</div>'
              % ''.join('<div class="t06-dd-i" id="t06-dd-%s">%s</div>' % (i, e(t)) for i, t in (
                  ('tdb', 'Tableau de bord'), ('rap', 'Réservation rapide'), ('arr', 'Arrivées du jour'),
                  ('dep', 'Départs du jour'), ('reg', 'Registre des clients'), ('pre', 'Clients présents'))))
-COLS_R = [('Arrivée', '112px'), ('Départ', '112px'), ('Chambre', '104px'), ('Nom', '100px'), ('Prénom(s)', '100px'),
+COLS_R = [('Arrivée', '112px'), ('Départ', '112px'), ('Chambre', '104px'), ('Nom', '136px'), ('Prénom(s)', '92px'),
           ('Date de naissance', '136px'), ('Nationalité', '110px'), ('Type de pièce', '222px'), ('N° de pièce', '112px'),
           ('Fiche', '124px'), ('Signée par le client', '1fr')]
 GROUPES = [('14 oct. 2026', 4), ('13 oct. 2026', 7), ('12 oct. 2026', 10), ('11 oct. 2026', 7), ('10 oct. 2026', 9),
@@ -501,10 +509,10 @@ REG_A = ('<div class="liste t06-lr" id="t06-rg-a">%s%s</div>'
          % (TETE_R, ''.join(groupe_r('t06-rg-g%d' % i, lib, n) for i, (lib, n) in enumerate(GROUPES))))
 REG_B = ('<div class="liste t06-lr masque" id="t06-rg-b">%s%s%s%s</div>' % (
     TETE_R, groupe_r('t06-rg-b-g0', GROUPES[0][0], GROUPES[0][1], ouvert=True),
-    # ordre « arrival_date desc, id desc » : la dernière fiche créée en tête ; Claire et Martin gardent le nom
-    # coupé au premier espace (écart 8)
-    personne('t06-rg-claire', '15/10/2026', '401 [VIP]', 'Claire', 'Durand', '', 'France', '', '', False)
-    + personne('t06-rg-martin', '17/10/2026', '104 [STD]', 'Martin', 'Ebode', '', 'Cameroun', CNI, '112640339', False)
+    # ordre « arrival_date desc, id desc » : la dernière fiche créée en tête ; Claire et Martin, pas encore
+    # repris, gardent le nom complet du contact et un prénom vide (guest_registration.py:255-272)
+    personne('t06-rg-claire', '15/10/2026', '401 [VIP]', 'Claire Durand', '', '', 'France', '', '', False)
+    + personne('t06-rg-martin', '17/10/2026', '104 [STD]', 'Martin Ebode', '', '', 'Cameroun', CNI, '112640339', False)
     + personne('t06-rg-arnaud', '16/10/2026', '204 [CFT]', 'Ngono', 'Arnaud', '27/08/1989', 'Cameroun', CNI,
                '116502371', True)
     + personne('t06-rg-estelle', '16/10/2026', '204 [CFT]', 'Ngono', 'Estelle', '12/03/1991', 'Cameroun', CNI,
@@ -760,26 +768,27 @@ TUTORIEL = {
                     defiler('#t06-resa-defil', 52, d=0.4, avec=True),
                     zoom('#t06-bandeau', s=1.6, d=0.8, fx=0.3), bulle('b-fiche', '#t06-bandeau', cote='bas', d=3.0),
                     pause(2.8), dezoom(d=0.6)]},
-        {'temps': 1, 'titre': 'Il ne manque que la date de naissance',
-         'texte': "La fiche reprend le contact : on vérifie l'ordre nom / prénom, « Il manque » dit le reste.",
-         'voix': "Le lien ouvre les fiches du séjour. Tout vient du contact, mais son nom est coupé au premier espace : "
-                 "Mireille vérifie l'ordre, remet Ngono en nom et Estelle en prénom. Il ne manque que la date de "
+        {'temps': 1, 'titre': 'Le prénom et la date de naissance',
+         'texte': "La fiche reprend le contact, nom complet compris ; « Il manque » dit le prénom et la date de naissance.",
+         'voix': "Le lien ouvre les fiches du séjour. Tout vient du contact, le nom complet compris ; Il manque "
+                 "signale le prénom. Mireille sépare elle-même : Ngono en nom, Estelle en prénom. Reste la date de "
                  "naissance : elle la saisit, enregistre, et la fiche passe Complète, toute seule.",
          'gestes': [clic('#t06-completer', d=0.6), vue('t06-fiches'), pause(0.3),
-                    zoom('#t06-f0', s=1.25, d=0.8, fx=0.4), anneau('#t06-f0-nom', d=1.0),
-                    anneau('#t06-f0-pre', d=1.0),
+                    zoom('#t06-f0', s=1.25, d=0.8, fx=0.55), anneau('#t06-f0-nom', d=1.0),
+                    anneau('#t06-f0-im', d=1.0),
                     clic('#t06-f0-nom', fx=0.4, d=0.6), classe('#t06-f0', ajouter=['t06-edit']),
                     classe('#t06-f-nouveau', ajouter=['masque']), classe('#t06-f-sbts', retirer=['masque'], avec=True),
                     animer('#t06-f-fil', {'x': 0}, {'x': 140}, d=0.2, avec=True),
                     saisir('t06-f0-nom', 'Ngono', d=0.5), curseur('#t06-f0-pre', d=0.3, avec=True),
-                    saisir('t06-f0-pre', 'Estelle', d=0.5), anneau('#t06-f0-im', d=1.0),
+                    saisir('t06-f0-pre', 'Estelle', d=0.5), texte('#t06-f0-im', MANQUE_ESTELLE[1]),
+                    anneau('#t06-f0-im', d=1.0),
                     curseur('#t06-f0-dn', fx=0.3, d=0.4),
-                    saisir('t06-f0-dn', '12/03/1991', d=0.8), texte('#t06-f0-im', ''),
+                    saisir('t06-f0-dn', '12/03/1991', d=0.8), texte('#t06-f0-im', MANQUE_ESTELLE[2]),
                     clic('#t06-f-save', d=0.7), classe('#t06-f0', retirer=['avert', 't06-edit'], ajouter=['t06-vert']),
                     etat('#t06-f0-et', 'Complète', 'vert'),
                     classe('#t06-f-sbts', ajouter=['masque']), classe('#t06-f-nouveau', retirer=['masque'], avec=True),
                     animer('#t06-f-fil', {'x': 140}, {'x': 0}, d=0.2, avec=True),
-                    bulle('b-complete', '#t06-f0-et', cote='bas', d=2.8), pause(2.4)]},
+                    bulle('b-complete', '#t06-f0-dn', cote='bas', d=2.8), pause(2.4)]},
         {'temps': 1, 'titre': "L'accompagnant, en une ligne",
          'texte': 'Chambre et nationalité proposées ; « Il manque » raccourcit à chaque saisie.',
          'voix': "Pour l'accompagnant, Mireille clique sur Nouveau : une ligne suffit. La chambre et la nationalité sont "

@@ -29,19 +29,26 @@ Elles n'ont que le profil Gouvernante. Leurs prénoms (« Clarisse »,
 « Sidonie ») sont fictifs, absents des seeds et des jeux de recette
 (E1, E2 = sorted(demo.EQUIPIERES)).
 
-Comment l'équipière arrive sur « Ma journée ». Avec le seul profil
-Gouvernante, l'icône de l'application Hôtel ouvre le tableau de bord Front
-Desk, qui échoue (écart 11) : la vidéo ne montre donc ni cette icône ni le
-menu de l'application sur le téléphone. Elle rejoue la configuration
-standard d'Odoo qui l'évite : « Ma journée » posée comme « Action de la page
-d'accueil » sur la fiche de l'équipière (res.users.action_id, « If
-specified, this action will be opened at log on for this user » :
-odoo18/odoo/addons/base/models/res_users.py:384-385 ; libellé français
-odoo/addons/base/i18n/fr.po:30391-30392 ; champ du groupe « Personnalisation
-des menus », visible en mode développeur : base/views/res_users_views.xml
-:239-242 ; ouverture : web/models/ir_http.py:125 et web/static/src/webclient/
-actions/action_service.js:571-572). Ce n'est pas un réglage du module : la
-légende de l'étape 3 le dit (« sa page d'accueil »).
+Comment l'équipière arrive sur « Ma journée ». Depuis aite_hotel_management
+18.0.1.0.6 (ECARTS n° 12, écart 11 ci-dessous), l'icône Hôtel ouvre l'action
+« Hôtel » (action_hotel_home, views/hotel_dashboard_actions.xml:9-21 ;
+menu racine, hotel_menus.xml:11-17) : le Front Desk pour la Réception, et
+pour le seul profil Gouvernante le premier menu de sa section Gouvernante,
+le « Tableau des chambres » (action_open_home, models/hotel_dashboard.py
+:245-274 ; test_ecarts_videos.py:73-79). Le téléphone s'ouvre donc sur le
+tableau des chambres en kanban mobile (ref_muk/401 : colonne « À nettoyer
+(1) » et sa carte 103 affectée à E1, la colonne « Propre (19) » qui dépasse
+à droite, pas de bouton « Nouveau »), puis l'équipière ouvre le menu de
+l'application (≡) et choisit « Ma journée ». Menu de l'application sur
+téléphone : odoo18/addons/web/static/src/webclient/navbar/navbar.xml:47-73 et
+:105-141 (bandeau « Toutes les applications » — web/i18n/fr.po:754-755 —,
+croix, icône et nom de l'application, section en gras, entrées en retrait ;
+largeur min(360 px, 80 %) et fond : burger_menu.scss:5-7,
+burger_menu.variables.scss). Sections visibles pour le seul profil
+Gouvernante : « Gouvernante » seule (hotel_menus.xml:84-98), sans
+« Répartir les chambres du jour » (Réception, menus.xml:9-12) ni « Chambres
+(liste) » (désactivé, menus.xml:19-21). L'ancien contournement (« Ma
+journée » posée en page d'accueil sur la fiche de l'équipière) est retiré.
 
 La journée rejouée : le jeudi 15/10/2026, le matin.
 - L'hôtel de la série compte 20 chambres vendables, la liste commune à
@@ -129,8 +136,10 @@ Sources des libellés et des règles (relevés mot pour mot) :
   « Inspection après recouche » : la recouche passe la chambre « à
   inspecter » (:101-115).
 - Téléphone : barre MuK, bulle, horloge des activités et avatar relevés sur
-  ref_muk/400-mobile-ma-journee.png. Il s'ouvre directement sur Ma journée,
-  la page d'accueil de l'équipière (voir plus haut).
+  ref_muk/400-mobile-ma-journee.png et ref_muk/401-mobile-tableau.png. Il
+  s'ouvre sur le tableau des chambres, l'écran de l'icône Hôtel, puis passe à
+  Ma journée par le menu (voir plus haut). Au second passage (étape 5), il est
+  resté sur Ma journée.
 - Tâche d'inspection : type Inspection (hotel_housekeeping.py:38-46), créée
   depuis Tâches de ménage (hotel_menus.xml:83-92 ;
   hotel_housekeeping_views.xml:75-125). Le geste n'est pas montré ; la voix
@@ -157,6 +166,12 @@ Sources des libellés et des règles (relevés mot pour mot) :
   Plus disponible à la vente : aite_hotel_management/models/hotel_room.py
   :431-442. Check-in refusé : aite_hotel_management/models/
   hotel_reservation.py:379-383.
+- Priorité de la demande : l'urgence « Important » (défaut de l'assistant)
+  devient la priorité Maintenance « Haute », trois étoiles sur la carte et la
+  fiche, et « Urgence : Important » est écrit en tête de la description,
+  onglet Notes (report_issue_wizard.py:25-50 ; odoo18 maintenance.py:256 ;
+  maintenance_views.xml:131, :137-138 et :175 ; corrigé dans aite_housekeeping 18.0.1.0.3,
+  ECARTS n° 15 c, écart 7 ci-dessous).
 - Pannes & réparations : aite_housekeeping/views/maintenance_views.xml:29-55
   (chambre et case « chambre invendable » sur la carte, facette « À faire »,
   titre). Carte, fiche et étapes de l'app Maintenance : odoo18/addons/
@@ -215,9 +230,8 @@ Ce que la vidéo montre, et ce qu'elle évite :
   :1382-1394) : la notification d'abord, puis le tableau rechargé par le
   menu. Chaque changement d'écran passe par le menu Gouvernante, sauf
   l'ouverture d'une fiche ou d'une fenêtre.
-- Sur le téléphone, l'équipière arrive sur Ma journée, sa page d'accueil.
-  L'application Hôtel n'est pas montrée : avec le seul profil Gouvernante,
-  elle échoue (écart 11).
+- Sur le téléphone, l'équipière ouvre l'application Hôtel : le tableau des
+  chambres, puis Ma journée par le menu (écart 11 corrigé).
 - Après « C'est fait », la tâche est « Terminé » et sa carte n'a plus de
   bouton (housekeeping_task_views.xml:34-48). Elle quitte Ma journée au
   rechargement (domaine :62).
@@ -225,22 +239,30 @@ Ce que la vidéo montre, et ce qu'elle évite :
   elle paraît dans Ma journée de Josiane (filtre « Mes chambres ») et « Je
   commence » la lui affecte (hotel_housekeeping.py:97-98).
 - Le bouton « Conforme » est visible sur la carte « À inspecter » de la 103,
-  comme dans Odoo pour le profil Réception (écart 5) : il n'est ni montré du
-  doigt ni cliqué.
+  comme dans Odoo pour le profil Réception. Il n'est ni montré du doigt ni
+  cliqué : la scène montre une inspection refusée (écart 5 corrigé, il coche
+  désormais toute la checklist avant de clore).
 - La remarque de la checklist n'est saisissable qu'une fois la ligne en
   édition : l'indication « Remarque si non conforme » apparaît alors.
-- On ne clique ni « Tout cocher » (il ferme la fenêtre, écart 6) ni
-  « Conforme » (écart 5).
+- On ne clique pas « Tout cocher » (il ferme la fenêtre, écart 6).
 - Après la validation, Ma journée de Josiane est vide : la recouche urgente
   est affectée à E1. Son état vide s'affiche, sans compteur.
 - C'est Josiane, auteure de la demande, qui la passe à « Réparé » : la voix
-  et la légende le disent (écart 9).
+  et la légende le disent. Depuis aite_housekeeping 18.0.1.0.3 (écart 9
+  corrigé), un technicien sans profil hôtel le peut aussi ; la vidéo ne le
+  montre pas : dans sa fiche, le champ « Chambre » (modèle aite.hotel.room,
+  qu'il ne peut pas lire) afficherait « Vous n'avez pas accès à cet
+  enregistrement » (odoo18/addons/web/models/models.py:235-239 ;
+  web/i18n/fr.po:7449-7450 ; aite_hotel_management/security/
+  ir.model.access.csv:10-11), relevé comme nouvel écart.
 - Un seul réglage de couleur : le texte gris « Standard · Rez-de-chaussée »
   d'une carte hors service est foncé (#565D64) pour passer le contrôle de
   contraste AA. Dans Odoo, text-muted sur bg-danger-subtle donne 3,6:1
   (écart 10).
 
-Écarts relevés, rejoués tels quels (voir le rapport) :
+Écarts relevés (voir le rapport). Les n° 5, 7, 8, 9 et 11 sont corrigés
+(aite_hotel_management 18.0.1.0.6, aite_housekeeping 18.0.1.0.3 ; ECARTS
+n° 12, 15, 19) ; les autres sont rejoués tels quels :
 1. Les colonnes du tableau s'affichent dans l'ordre À nettoyer · À inspecter ·
    Nettoyage en cours · Propre. Odoo 18 trie la sélection par clé : « hk_state
    desc » donne to_clean, inspect, cleaning, clean. Le commentaire de la vue
@@ -257,32 +279,33 @@ Ce que la vidéo montre, et ce qu'elle évite :
    inspecter » (aite_hotel_management/models/hotel_housekeeping.py:101-115).
    La checklist n'est atteignable qu'après avoir créé à la main une tâche
    « Inspection » : la voix le dit, le geste n'est pas montré.
-5. « Conforme » clôt la tâche d'inspection ouverte par action_done alors que
-   ses huit cases sont décochées. Une recouche urgente « Inspection refusée »
-   est créée, puis la chambre est forcée « Propre » (hotel_room.py:126-135,
-   housekeeping_task.py:121-153).
+5. Corrigé (ECARTS n° 19) : « Conforme » coche toute la checklist puis clôt
+   l'inspection, sans recouche « Inspection refusée » (hotel_room.py:126-140 ;
+   tests/test_inspection.py). Avant : les huit cases décochées valaient
+   refus.
 6. « Tout cocher » renvoie True : Odoo ferme la fenêtre d'inspection
    (housekeeping_task.py:170-172).
-7. L'urgence de l'assistant (Normal / Important / Urgent / Très urgent) est
-   recopiée telle quelle dans la priorité Maintenance (Très basse / Basse /
-   Normal / Haute) : « Important » devient « Basse » (report_issue_wizard.py:
-   19-22, 33 ; odoo18 maintenance.py:256).
-8. Avec deux demandes bloquantes sur une chambre, toutes deux passées à
-   « Réparé », la chambre reste hors service (maintenance_request.py:46-63).
-9. Un technicien sans profil hôtel ne peut pas passer la demande à
-   « Réparé » : la chambre est écrite sans sudo (maintenance_request.py:33-69).
-   Il ne voit pas non plus une demande dont il n'est ni l'auteur, ni le
-   suiveur, ni le responsable : c'est la règle standard de Maintenance, et la
-   demande créée par l'assistant n'a pas de responsable (odoo18/addons/
-   maintenance/security/maintenance.xml:15-20).
+7. Corrigé (ECARTS n° 15 c) : Normal → Normal, Important / Urgent / Très
+   urgent → Haute, et « Urgence : … » en tête de la description
+   (report_issue_wizard.py:25-50). Rejoué : trois étoiles sur la carte et la
+   fiche, « Urgence : Important » dans l'onglet Notes. Avant : « Important »
+   devenait « Basse ».
+8. Corrigé (ECARTS n° 15 b) : la chambre revient en vente quand plus aucune
+   demande bloquante n'est ouverte, quel que soit l'ordre des réparations
+   (maintenance_request.py:39-89). Non montré (une seule panne ici).
+9. Corrigé (ECARTS n° 15 a) : la chambre est écrite en sudo, un technicien
+   sans profil hôtel passe la demande à « Réparé » (maintenance_request.py
+   :39-89 ; tests/test_maintenance.py). Reste la règle standard de
+   Maintenance : un simple utilisateur ne voit pas une demande dont il n'est
+   ni l'auteur, ni le suiveur, ni le responsable (le test donne au
+   technicien le profil Administrateur de Maintenance ; odoo18/addons/
+   maintenance/security/maintenance.xml:15-20). Nouveau : sa fiche afficherait
+   « Vous n'avez pas accès à cet enregistrement » dans « Chambre ».
 10. Contraste du texte gris sur une carte hors service : 3,6:1 (sous le seuil
    AA de 4,5:1).
-11. Une équipière qui n'a que le profil Gouvernante et qui ouvre
-   l'application Hôtel arrive sur le tableau de bord Front Desk
-   (hotel_menus.xml:9-14). Celui-ci appelle get_kpis dès le chargement
-   (static/src/js/views/hotel_dashboard_view.js:76-90), qui lit
-   aite.hotel.folio.line sans sudo (hotel_dashboard.py:173-181). Ce modèle
-   est réservé à la Réception (ir.model.access.csv:23) : erreur d'accès.
+11. Corrigé (ECARTS n° 12) : avec le seul profil Gouvernante, l'icône
+   Hôtel ouvre le « Tableau des chambres » (action_open_home), plus le Front
+   Desk et son erreur d'accès. Rejoué sur le téléphone de l'équipière.
 12. Un même geste porte trois libellés selon l'écran : « Commencer /
    Terminé » (tableau), « Je commence / C'est fait » (Ma journée),
    « Démarrer / Terminer » (Tâches de ménage). C'est contraire à la règle 4
@@ -293,11 +316,11 @@ Ce que la vidéo montre, et ce qu'elle évite :
 """
 
 import demo
-from ecrans import (APPS_PROFIL, ICONES, avec_chatter, cp_fiche, e, entree, fenetre_muk, icone, interrupteur,
-                    navigateur, onglets, recherche, statusbar, toast, vue_fiche, vue_libre)
+from ecrans import (APPS_PROFIL, ICONES, avec_chatter, cp_fiche, e, entree, fenetre_muk, icone, icone_app,
+                    interrupteur, navigateur, onglets, recherche, statusbar, toast, vue_fiche, vue_libre)
 from marketing import bulle, dezoom, reaction, zoom
-from moteur import (anneau, cacher, clic, classe, curseur, etat, fermer, montrer, notifier, ouvrir, pause, saisir,
-                    texte, vue)
+from moteur import (animer, anneau, cacher, clic, classe, curseur, etat, fermer, montrer, notifier, ouvrir, pause,
+                    saisir, survol, texte, vue)
 
 NOM, _ROLE = demo.POSTES['gouvernante']
 ROLE = 'Gouvernante (profil Réception)'
@@ -543,18 +566,59 @@ def bts_tel(ident, second='fin'):
                                                                         second, ico(svg), e(lib)))
 
 
-def telephone_(ident, initiale, cartes):
-    """Le téléphone de l'équipière, thème MuK (ref_muk/400), ouvert sur Ma
-    journée, sa page d'accueil."""
+# Le menu de l'application sur téléphone (odoo18/addons/web/static/src/webclient/navbar/navbar.xml:47-73
+# et :105-141 ; burger_menu.scss, burger_menu.variables.scss) : bandeau gris clair avec « Toutes les
+# applications » (web/i18n/fr.po:754-755) et la croix, l'application, puis ses sections. Une équipière
+# n'a que le profil Gouvernante : la seule section visible est « Gouvernante », sans « Répartir les
+# chambres du jour » (Réception) ni « Chambres (liste) » (désactivé) — menus.xml:3-18,
+# hotel_menus.xml:84-98.
+APPS_I = ('<svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="5" height="5" rx="1"/>'
+          '<rect x="9.5" y="3" width="5" height="5" rx="1"/><rect x="16" y="3" width="5" height="5" rx="1"/>'
+          '<rect x="3" y="9.5" width="5" height="5" rx="1"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/>'
+          '<rect x="16" y="9.5" width="5" height="5" rx="1"/><rect x="3" y="16" width="5" height="5" rx="1"/>'
+          '<rect x="9.5" y="16" width="5" height="5" rx="1"/><rect x="16" y="16" width="5" height="5" rx="1"/></svg>')
+ROUAGE = ('<svg viewBox="0 0 24 24" fill="currentColor"><path d="M10.3 2h3.4l.5 2.6 1.9.8 2.2-1.5 2.4 2.4-1.5 '
+          '2.2.8 1.9 2.6.5v3.4l-2.6.5-.8 1.9 1.5 2.2-2.4 2.4-2.2-1.5-1.9.8-.5 2.6h-3.4l-.5-2.6-1.9-.8-2.2 1.5-2.4'
+          '-2.4 1.5-2.2-.8-1.9L2 13.7v-3.4l2.6-.5.8-1.9-1.5-2.2 2.4-2.4 2.2 1.5 1.9-.8z"/><circle cx="12" cy="12" '
+          'r="3.4" fill="#F8F9FA"/></svg>')
+MENU_TEL = [(None, 'Tableau des chambres'), ('jour', 'Ma journée'), (None, 'Tâches de ménage'),
+            (None, 'Pannes & réparations'), (None, 'Objets trouvés')]
+
+
+def accueil_tel(ident):
+    """Ce que l'icône Hôtel ouvre pour le seul profil Gouvernante : le tableau des
+    chambres (action_open_home, aite_hotel_management 18.0.1.0.6), en kanban
+    mobile (ref_muk/401) ; puis le menu de l'application, glissé depuis la gauche."""
+    cols = ('<div class="t07-mk-col"><div class="t07-mk-t">À nettoyer <span>(1)</span><i>%s</i></div>%s</div>'
+            '<div class="t07-mk-col"><div class="t07-mk-t">Propre <span>(19)</span><i>%s</i></div>%s</div>'
+            % (ROUAGE, carte_ch(9, '103', 'Recouche à faire', 'Standard · Rez-de-chaussée', GASTON, ARR_103, E1,
+                                [COMMENCER]),
+               ROUAGE, carte_ch(9, '101', 'Propre — libre', 'Standard · Rez-de-chaussée', boutons=[A_NETTOYER])))
+    tableau = ('<div class="t07-tel-tab" id="%s-tab"><div class="t07-tel-barre"><span class="t07-tel-g"><i>%s</i>'
+               '<i>%s</i></span></div><div class="kanban t07-k t07-mk">%s</div></div>' % (ident, KANBAN, ICONES['loupe'],
+                                                                                       cols))
+    entrees = ''.join('<li%s>%s</li>' % (' id="%s-sb-%s"' % (ident, i) if i else '', e(lib)) for i, lib in MENU_TEL)
+    menu = ('<div class="t07-sbv masque" id="%s-sbv"></div><div class="t07-sb masque" id="%s-sb">'
+            '<div class="t07-sb-h"><span class="bt primaire">%sToutes les applications</span><span class="t07-sb-x">%s'
+            '</span></div><div class="t07-sb-app">%s<b>Hôtel</b></div><ul><li class="sec">Gouvernante</li>%s</ul></div>'
+            % (ident, ident, ico(APPS_I), ICONES['x'], icone_app('Hôtel'), entrees))
+    return tableau + menu
+
+
+def telephone_(ident, initiale, cartes, accueil=False):
+    """Le téléphone de l'équipière, thème MuK (ref_muk/400, 401). ``accueil`` :
+    il s'ouvre sur l'écran de l'icône Hôtel, le tableau des chambres, d'où le
+    menu mène à Ma journée ; sinon, il est resté sur Ma journée."""
     return ('<div class="voile masque" id="%s-voile" data-layout-allow-overlap data-layout-allow-occlusion></div>'
             '<div class="tel masque t07-tel" id="%s" data-layout-allow-overlap data-layout-allow-occlusion>'
-            '<div class="tel-ecran"><div class="tel-haut"><span class="burger">≡</span><span class="t07-tel-t">'
-            'Ma journée</span><span class="t07-tel-pictos">%s%s<span class="t07-tel-av">%s</span>'
-            '</span></div><div class="t07-tel-jour" id="%s-jour"><div class="t07-tel-barre"><span class="bt '
+            '<div class="tel-ecran"><div class="tel-haut"><span class="burger" id="%s-burger">≡</span>'
+            '<span class="t07-tel-t" id="%s-titre">%s</span><span class="t07-tel-pictos">%s%s<span class="t07-tel-av">%s'
+            '</span></span></div><div class="t07-tel-jour%s" id="%s-jour"><div class="t07-tel-barre"><span class="bt '
             'primaire">Nouveau</span><span class="t07-tel-g"><i>‹</i><i>›</i><i>%s</i><i>%s</i></span></div>'
-            '<div class="tel-corps">%s</div></div></div></div>'
-            % (ident, ident, ICONES['bulle'], ico(ICONES['horloge'], 't07-tel-act'), e(initiale), ident, KANBAN,
-               ICONES['loupe'], cartes))
+            '<div class="tel-corps">%s</div></div>%s</div></div>'
+            % (ident, ident, ident, ident, 'Tableau des chambres' if accueil else 'Ma journée', ICONES['bulle'],
+               ico(ICONES['horloge'], 't07-tel-act'), e(initiale), ' masque' if accueil else '', ident, KANBAN,
+               ICONES['loupe'], cartes, accueil_tel(ident) if accueil else ''))
 
 
 def menages_e1(p):
@@ -566,7 +630,7 @@ def menages_e1(p):
 
 
 TEL_A = telephone_('t07-tel-a', E1[0], tache('t07-ta103', '103 [STD]', 'Recouche complète (départ)', GASTON,
-                                              boutons=bts_tel('t07-ta103')) + menages_e1('t07-ta'))
+                                              boutons=bts_tel('t07-ta103')) + menages_e1('t07-ta'), accueil=True)
 NOTE_103 = 'Inspection refusée. À reprendre : Salle de bain nettoyée, serviettes changées — serviettes manquantes'
 TEL_B = telephone_('t07-tel-b', E1[0], tache('t07-tb103', '103 [STD]', 'URGENT — Recouche complète (départ)',
                                               GASTON, note=NOTE_103, urgent=True, boutons=bts_tel('t07-tb103'))
@@ -625,8 +689,9 @@ TOAST_PB = toast('t07-toast-pb', 'Problème signalé', 'La demande « Chambre 10
 # ------------------------------------------------------ Pannes & réparations --
 CARTE_P = ('<div class="t07-pcarte" id="t07-pn-carte"><div>102 [STD]</div><span class="t07-cb">%s</span>'
            '<div class="n">Chambre 102 — Climatiseur en panne</div><div>Demandé par : %s</div>'
-           '<div class="t07-pied">%s<span class="t07-pd"><i class="t07-ks"></i><i class="t07-av0"></i></span></div></div>'
-           % (ICONES['coche'], e(NOM), etoiles(1)))
+           '<div class="t07-pied"><span id="t07-pn-prio">%s</span><span class="t07-pd"><i class="t07-ks"></i>'
+           '<i class="t07-av0"></i></span></div></div>'
+           % (ICONES['coche'], e(NOM), etoiles(3)))
 
 
 def colonne_p(titre, n, cartes=''):
@@ -657,11 +722,12 @@ def gauche(cloture):
 
 
 DROITE = ''.join([ch('Équipe', 'Maintenance interne'), ch('Responsable', ''), ch('Date planifiée', '', aide=True),
-                  ch('Durée', '00:00 <span class="t07-gris">heures</span>', aide=True), ch('Priorité', etoiles(1))])
+                  ch('Durée', '00:00 <span class="t07-gris">heures</span>', aide=True),
+                  ch('Priorité', etoiles(3), ident='t07-dm-prio')])
 FICHE = ('<i class="t07-ks t07-ks-f"></i><div class="t07-lab">Demande</div>'
          '<div class="f-titre">Chambre 102 — Climatiseur en panne</div>'
          '<div class="f-cols"><div class="pile"><div class="masque" id="t07-dm-g1">%s</div><div id="t07-dm-g0">%s</div>'
-         '</div><div>%s</div></div>%s<div class="t07-ph">Notes internes</div>'
+         '</div><div>%s</div></div>%s<div class="t07-notes" id="t07-dm-notes">Urgence : Important</div>'
          % (gauche(True), gauche(False), DROITE, onglets(['Notes', 'Instructions'])))
 DEMANDE = avec_chatter(vue_fiche('t07-demande', cp_fiche('Pannes & réparations', 'Chambre 102 — Climatiseur en panne',
                                                          '1 / 1'),
@@ -765,6 +831,29 @@ CSS = """
 .t07-note { margin-top: 6px; display: flex; gap: 8px; font-size: 16px; line-height: 1.35; color: #B02A37; }
 .t07-note .ico { width: 16px; height: 16px; flex: none; margin-top: 2px; display: inline-flex; }
 .t07-pile { margin-top: 12px; }
+/* téléphone : l'accueil de l'icône Hôtel (tableau des chambres) et le menu de l'application */
+.t07-tel-tab { position: absolute; left: 0; right: 0; top: 66px; bottom: 0; background: #F8F9FA; }
+.t07-tel-tab .t07-tel-barre { background: #fff; border-bottom: 0; }
+.t07-mk.kanban { gap: 16px; padding: 16px 0 0 16px; }
+.t07-mk .t07-mk-col { width: 340px; flex: none; }
+.t07-mk-t { display: flex; align-items: center; gap: 6px; font-size: 22px; color: var(--o-texte); margin-bottom: 12px; }
+.t07-mk-t span { color: var(--o-texte); }
+.t07-mk-t i { margin-left: auto; margin-right: 6px; width: 18px; height: 18px; color: #ADB5BD; display: inline-flex; }
+.t07-mk-t i svg { width: 18px; height: 18px; }
+.t07-sbv { position: absolute; inset: 0; background: rgba(0,0,0,.5); z-index: 5; }
+.t07-sb { position: absolute; left: 0; top: 0; bottom: 0; width: 342px; background: #fff; z-index: 6;
+  box-shadow: 4px 0 18px rgba(0,0,0,.25); color: #343A40; }
+.t07-sb-h { height: 66px; display: flex; align-items: center; justify-content: space-between; padding: 0 12px 0 10px;
+  background: #F8F9FA; box-shadow: inset 0 -1px 0 var(--o-filet); }
+.t07-sb-h .bt { height: 42px; font-size: 17px; gap: 8px; padding: 0 12px; }
+.t07-sb-h .bt .ico { width: 16px; height: 16px; display: inline-flex; }
+.t07-sb-x { width: 26px; height: 26px; display: inline-flex; color: #212529; }
+.t07-sb-app { display: flex; align-items: center; gap: 10px; margin: 16px 16px 0; font-size: 23px; color: #212529; }
+.t07-sb-app .muk-ico { width: 38px; height: 38px; border-radius: 6px; }
+.t07-sb ul { list-style: none; margin: 0; padding: 8px 16px; }
+.t07-sb li { padding: 9px 0 9px 8px; font-size: 19px; }
+.t07-sb li.sec { padding: 16px 0 8px; font-weight: 800; color: #212529; }
+.t07-sb li.survol { background: #E9ECEF; }
 .t07-pile .tel-bt { margin-top: 0; }
 /* Ma journée (bureau) */
 .t07-grille { position: absolute; left: 0; right: 0; top: 80px; padding: 16px 20px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
@@ -813,6 +902,7 @@ CSS = """
 .t07-radio i.on { border: 5px solid var(--muk-prim); }
 .t07-gris { color: var(--o-texte-3); }
 .t07-ph { padding: 14px 0; font-size: 18px; color: #6C757D; }
+.t07-notes { padding: 14px 0; font-size: 18px; color: var(--o-texte); }
 #t07-demande .onglets { margin-top: 18px; }
 .t07-trk { margin-top: 4px; padding-left: 18px; }
 .t07-old { color: #6C757D; margin-right: 4px; }
@@ -882,11 +972,18 @@ TUTORIEL = {
                    + naviguer('tableau', [cacher('#t07-b0', d=0.2), montrer('#t07-b1', d=0.35, y=0, avec=True)])
                    + [anneau('#t07-b1-103-eq', d=1.1)]},
         {'temps': 0, 'titre': 'Ma journée, sur le téléphone',
-         'texte': "Ma journée, sa page d'accueil : Je commence, puis C'est fait.",
-         'voix': "Sur son téléphone, %s arrive sur Ma journée, sa page d'accueil. Sa première chambre, la cent "
-                 "trois : Je commence, puis C'est fait. Comme l'hôtel exige l'inspection après recouche, la chambre "
-                 "passe à inspecter." % E1,
-         'gestes': [ouvrir('t07-tel-a'), pause(0.4),
+         'texte': "L'icône Hôtel ouvre le tableau des chambres, le menu mène à Ma journée : Je commence, puis C'est fait.",
+         'voix': "Sur son téléphone, %s ouvre l'application Hôtel : le tableau des chambres, puis Ma journée. Sa "
+                 "première chambre, la cent trois : Je commence, puis C'est fait. Comme l'hôtel exige l'inspection "
+                 "après recouche, la chambre passe à inspecter." % E1,
+         'gestes': [ouvrir('t07-tel-a'), pause(0.5), anneau('#t07-b9-103', d=0.8),
+                    clic('#t07-tel-a-burger', d=0.4),
+                    montrer('#t07-tel-a-sbv', d=0.2, y=0),
+                    animer('#t07-tel-a-sb', {'autoAlpha': 1, 'x': -342}, {'x': 0}, d=0.3, avec=True),
+                    clic('#t07-tel-a-sb-jour', fx=0.3, d=0.45), survol('#t07-tel-a-sb-jour'),
+                    cacher('#t07-tel-a-sb', d=0.2), cacher('#t07-tel-a-sbv', d=0.2, avec=True),
+                    texte('#t07-tel-a-titre', 'Ma journée'), cacher('#t07-tel-a-tab', d=0.15),
+                    montrer('#t07-tel-a-jour', d=0.3, y=0, avec=True), pause(0.3),
                     bulle('b-tel', '#t07-ta103-go', cote='droite', d=2.4), pause(0.3),
                     clic('#t07-ta103-go', d=0.5), etat('#t07-ta103-etat', 'En cours', 'info'),
                     cacher('#t07-ta103-go', d=0.2), montrer('#t07-ta103-fin', d=0.3, y=0), pause(0.3),
@@ -935,12 +1032,12 @@ TUTORIEL = {
              pause(1.5), dezoom(d=0.6)]},
         {'temps': 2, 'titre': 'Pannes & réparations',
          'texte': 'Josiane passe la demande à Réparé : la chambre revient en vente, à nettoyer.',
-         'voix': "La demande arrive dans Pannes et réparations. Une fois le climatiseur réparé, Josiane ouvre la "
-                 "demande et la passe à Réparé : la chambre revient en vente, à nettoyer, avec sa tâche de remise en "
-                 "service.",
+         'voix': "La demande arrive dans Pannes et réparations, en priorité haute. Une fois le climatiseur réparé, "
+                 "Josiane ouvre la demande et la passe à Réparé : la chambre revient en vente, à nettoyer, avec sa "
+                 "tâche de remise en service.",
          'gestes': naviguer('pannes', [vue('t07-pannes'), cacher('#t07-b4', d=0.01, avec=True),
                                        montrer('#t07-b5', d=0.01, y=0, avec=True)]) + [
-             clic('#t07-pn-carte', d=0.45), vue('t07-demande'), anneau('#t07-dm-st', d=0.6),
+             anneau('#t07-pn-prio', d=1.0), clic('#t07-pn-carte', d=0.45), vue('t07-demande'), anneau('#t07-dm-st', d=0.6),
              clic('#t07-dm-st-2', d=0.45), classe('#t07-dm-st-0', retirer=['actif']),
              classe('#t07-dm-st-2', ajouter=['actif']), cacher('#t07-dm-g0', d=0.15),
              montrer('#t07-dm-g1', d=0.3, y=0, avec=True), montrer('#t07-dm-suivi', d=0.3, y=-6, avec=True),

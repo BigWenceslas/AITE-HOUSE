@@ -12,28 +12,26 @@ roomcharge_menus.xml:3-8). Public visé du guide : « Caissiers (restaurant &
 boutique), réception » (docs/guides/AITE_Guide_Note_de_chambre.pdf p.1).
 Le titre reprend l'annonce du tutoriel 3 (t03_folio.py:660-662).
 
-Conditions du monde rejoué (voir le rapport, « défauts restants ») :
+Conditions du monde rejoué (aite_hotel_pos_link 18.0.1.0.1, aite_pos_credit
+18.0.2.0.4) :
 
-- le caissier a AUSSI le profil « Réception » de « Gestion Hôtelière »
-  (aite_hotel_management/security/hotel_security.xml:6, :20) — c'est dit à
-  l'écran (bulle b-droits). Le report tourne avec les droits de l'utilisateur
-  de la caisse, sans sudo() : lecture des folios, création de la note en
-  attente et de la ligne de folio (aite_hotel_pos_link/models/pos_order.py:100-
-  106, :118-123, :151 ; Odoo 18 synchronise sans sudo,
-  point_of_sale/models/pos_order.py:67-127, :1155-1192) ; ces objets sont
-  réservés à group_hotel_user (aite_hotel_management/security/
-  ir.model.access.csv:21-23, aite_hotel_pos_link/security/
-  ir.model.access.csv:2-3). Un caissier sans profil hôtel (demo.caisse,
-  aite_demo_data/models/demo_generator.py:65-69) verrait la synchronisation
-  du ticket échouer : ce n'est jamais montré ;
-- aite_pos_credit n'est PAS installé : ni application « POS Crédit » dans la
-  barre, ni bouton « Mettre sur ardoise » (pos_paiement(..., ardoise=False)).
-  Avec ce module, le mode « Note de chambre » (sans journal, donc « payer plus
-  tard », point_of_sale/models/pos_payment_method.py:106-112) ouvrirait aussi
-  une ardoise du même montant (aite_pos_credit/models/pos_payment_method.py:
-  24-40, pos_order.py:103-130). aite_hotel_pos_link n'en dépend pas
-  (__manifest__.py : 'depends': ['point_of_sale', 'aite_hotel_management']),
-  aite_pos_analytics (« Analyse AITE ») non plus ;
+- le caissier n'a que son profil de caisse (demo.caisse, APPS_PROFIL['caisse'],
+  sans « Hôtel ») : le report au folio — recherche du folio ouvert, ligne de
+  folio, note en attente — est une écriture technique en sudo()
+  (aite_hotel_pos_link/models/pos_order.py:143-228). Corrigé (ECARTS n° 10) :
+  avant 18.0.1.0.1, il fallait donner au caissier le profil « Réception »
+  pour que le ticket se synchronise ; ce contournement et sa bulle ont été
+  retirés ;
+- aite_pos_credit est installé, comme au tutoriel 10 : application « POS
+  Crédit » dans la barre de la direction, case sans libellé « Vente à crédit
+  (ardoise) » après le nom du mode (aite_pos_credit/views/
+  res_config_settings_views.xml:4-14, écart 6 de t10_ardoises.py), mode
+  « Ardoise client » et bouton « Mettre sur ardoise » à la caisse. Corrigé
+  (ECARTS n° 17) : seul le mode coché « Vente à crédit » ouvre une ardoise,
+  jamais « Note de chambre » (aite_pos_credit/models/pos_payment_method.py:
+  24-40, static/src/js/pos/payment_screen_button.js:35-38) — la
+  consommation n'est réclamée qu'une fois, sur le folio ; c'est dit à
+  l'étape 4. aite_pos_analytics (« Analyse AITE ») est installé ;
 - pas de TVA, comme aux tutoriels 1 et 3 et au chapitre 1 de la
   présentation (t03_folio.py:141-143 : « aucun taux n'est livré par les
   modules ») : la nuitée prend les taxes de l'article du type de chambre
@@ -92,7 +90,7 @@ Sources des libellés (relevés mot pour mot) :
    en file d'attente si ambigu). »). Mise en page, case « Société » (base
    multi-sociétés) et infobulle noire : capture en lecture seule de la base
    MuK (Point de Vente → Configuration → Modes de paiement → Note de chambre).
-   Applications de la direction : APPS_PROFIL['direction'] sans « POS Crédit ».
+   Applications de la direction : APPS_PROFIL['direction'] (avec « POS Crédit »).
 2. La caisse — odoo18/addons/point_of_sale/static/src/app : écran de vente
    (ecrans.pos_produits, captures ref_muk/611 et 612) ; unité « Unité(s) »
    (uom/i18n/fr.po:376-379, nom traduit de uom.product_uom_unit) ; recherche
@@ -137,8 +135,10 @@ Sources des libellés (relevés mot pour mot) :
    folios « create_date desc » (hotel_folio.py:25) : FOL/2026/0210 est le
    12e des 14 folios « Avec solde dû » du tutoriel 3 (t03_folio.py:436-457),
    d'où « 12 / 14 ». La ligne reportée :
-   aite_hotel_pos_link/models/pos_order.py:69-81 (type service, quantité 1,
-   prix = montant) et :146-156 (libellé « POS <commande> », date du jour).
+   aite_hotel_pos_link/models/pos_order.py:76-141 (type service, quantité 1,
+   une ligne par jeu de taxes du ticket, en HT avec ses taxes — ECARTS n° 18,
+   corrigé dans 18.0.1.0.1 ; ticket sans taxe : une seule ligne, HT = TTC,
+   colonne Taxes vide) et :212-222 (libellé « POS <commande> », date du jour).
    Aspect : ref_muk/029.
 5. La file — aite_hotel_pos_link/views/roomcharge_pending_views.xml:3-21
    (liste sans « Nouveau », lignes orange « À rattacher », somme du montant
@@ -181,7 +181,9 @@ Sources des affirmations :
   « Identifier le client » obligatoire pour laisser le journal vide
   (pos_payment_method_views.xml:19-20) et « Client requis » à la caisse
   (payment_screen.js:424-439) ;
-- profil « Réception » du caissier : voir « Conditions » ci-dessus ;
+- caissier sans profil hôtel, report en sudo() : voir « Conditions » ci-dessus ;
+- pas d'ardoise en double : aite_pos_credit/models/pos_payment_method.py:24-40
+  (« Une note de chambre n'ouvre jamais d'ardoise ») ;
 - lien par la fiche client, pas par le numéro de chambre : guide p.1 §3
   (« Bon réflexe ») et pos_order.py:100-106 (recherche par partner_id) ;
 - l'avertissement n'empêche pas de valider : payment_screen.js:113-125
@@ -194,9 +196,8 @@ Sources des affirmations :
   tests/test_room_charge.py:210-217 ; trois gestes et « C'est tout » : guide
   p.1 §3 (« Côté caisse : trois gestes », « C'est tout ») ;
 - solde dû à jour : 157 500 − 100 000 = 57 500 FCFA (hotel_folio.py:
-  _compute_amounts) ; la voix ne présente pas « Services (HT) » comme un
-  résultat (le report pose le montant TTC du ticket sans taxe, voir le
-  rapport) ;
+  _compute_amounts) ; « Services (HT) » vaut bien le HT du ticket (report HT
+  + taxes, pos_order.py:96-141 ; sans TVA, HT = TTC) ;
 - le motif dit pourquoi : guide p.2, légende de l'écran 3 ; seuls les
   folios ouverts : roomcharge_pending.py:28-31 ; une réservation confirmée a
   déjà son folio ouvert (d'où « 2 folios ouverts ») : hotel_reservation.py:
@@ -270,7 +271,9 @@ MODE = vue_libre('t4-mode', (
     cp_fiche('Modes de paiement', 'Nouveau')
     + '<div class="t04-pm" id="t4-pm">'
       '<div class="t04-lab">Mode<sup>?</sup></div>'
-    + entree('t4-nom', 'par ex. Espèces', classe='entree t04-nom')
+    + '<div class="t04-titre">' + entree('t4-nom', 'par ex. Espèces', classe='entree t04-nom')
+    # aite_pos_credit : la case « Vente à crédit (ardoise) », sans libellé, après le nom (écart 6 de t10)
+    + '<span class="t04-cb t04-cb-ard"></span></div>'
     + '<div class="t04-cols"><div id="t4-pm-g">'
     + ligne_pm('Paiement en ligne', '<span class="t04-cb"></span>')
     + ligne_pm('Identifier le client', '<span class="t04-cb" id="t4-cb-ident"></span>', 't4-l-ident')
@@ -285,8 +288,7 @@ MODE = vue_libre('t4-mode', (
       'client (ou en file d\'attente si ambigu).</div></div>'), initiale=True)
 
 MENUS_POS = ['Tableau de bord', 'Commandes', 'Produits', 'Analyse AITE', 'Analyse', 'Configuration']
-# le monde de ce tutoriel n'a pas aite_pos_credit (voir l'en-tête)
-APPS_DIRECTION = [a for a in APPS_PROFIL['direction'] if a != 'POS Crédit']
+APPS_DIRECTION = APPS_PROFIL['direction']
 NAV_CONFIG = navigateur(fenetre_muk('app-t4c', 'Point de Vente', MENUS_POS, [MODE], actif='Configuration',
                                     societe=demo.SOCIETE, initiale=DIRECTION[0], avatar='#8E3B46',
                                     apps=APPS_DIRECTION, app_active='Point de Vente'))
@@ -332,8 +334,9 @@ ICO_PLUS_TARD = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" str
                  '<path d="M3.5 7v9a2 2 0 002 2h6.5"/><path d="M5.5 7h12.5a2 2 0 012 2v2.5"/>'
                  '<circle cx="16.8" cy="11" r=".9"/><circle cx="17.5" cy="17.5" r="4"/><path d="M17.5 15.5v2.2h1.8"/></svg>')
 MODES = [('t4-m-esp', 'Espèces', ICO_ESPECES), ('t4-m-om', 'Orange Money', ICO_BANQUE),
-         ('t4-m-momo', 'MTN MoMo', ICO_BANQUE), ('t4-m-note', 'Note de chambre', ICO_PLUS_TARD)]
-PAIEMENT = pos_paiement('t4-paie', [(i, l) for i, l, _ in MODES], TICKET, ardoise=False)
+         ('t4-m-momo', 'MTN MoMo', ICO_BANQUE), ('t4-m-note', 'Note de chambre', ICO_PLUS_TARD),
+         ('t4-m-ard', 'Ardoise client', ICO_PLUS_TARD)]       # comme au tutoriel 10 (t10_ardoises.py, MODES)
+PAIEMENT = pos_paiement('t4-paie', [(i, l) for i, l, _ in MODES], TICKET)
 for _i, _l, _svg in MODES:
     PAIEMENT = remplacer(PAIEMENT, 'id="%s">%s' % (_i, icone('carte')), 'id="%s"><span class="ico">%s</span>' % (_i, _svg))
 PAIEMENT = remplacer(PAIEMENT, icone('personne') + 'Client</span>',
@@ -518,6 +521,8 @@ CSS = """
   border: 1px solid var(--o-filet); padding: 22px 30px; color: var(--o-texte); }
 .t04-lab { font-size: 19px; font-weight: 600; }
 .t04-pm sup { margin-left: 3px; font-size: 13px; color: #3F6A83; font-weight: 600; }
+.t04-titre { display: flex; align-items: center; gap: 18px; }
+.t04-cb-ard { margin-top: 18px; }
 .t04-nom { margin-top: 4px; width: 640px; height: 64px; border-width: 0 0 1px 0; border-radius: 0; padding: 0 4px; font-size: 40px; }
 .t04-nom .ph, .t04-nom .val { left: 4px; }
 .t04-nom .val { font-weight: 400; }
@@ -580,7 +585,6 @@ CSS = """
 /* -- 3. l'hôtel -- */
 #t4-fsb .st-et, #t4-nsb .st-et { color: #5C636A; }
 #b-ident { max-width: 780px; }
-#b-droits { max-width: 1000px; white-space: nowrap; }
 #b-aucun { max-width: 640px; }
 .table .t-ligne.t04-nuitee { color: var(--info); }
 #t4-folio .ch { min-height: 38px; }
@@ -632,10 +636,9 @@ TUTORIEL = {
     'vues_initiales': {'odoo': 't4-mode', 'pos': 't4-vente', 'hotel': 't4-folio'},
     'bulles': {
         'b-ident': 'Sans client, la caisse demande « Client requis » avant de valider.',
-        'b-droits': 'Hervé a aussi le profil « Réception » de Gestion Hôtelière, requis pour le report.',
         'b-avert': 'Avertissement standard d\'Odoo : il n\'empêche pas de valider.',
         'b-mixte': 'Paiement mixte : seule la part « Note de chambre » part sur la chambre.',
-        'b-ligne': 'Une seule ligne par ticket, avec sa référence : la caisse et le numéro.',
+        'b-ligne': 'Une seule ligne par ticket, avec sa référence. Et aucune ardoise en double.',
         'b-motif': 'Le motif dit pourquoi le rattachement automatique n\'a pas eu lieu.',
         'b-folio': 'Seuls les folios ouverts sont proposés, les plus récents d\'abord.',
         'b-aucun': 'Aucun folio ouvert : on rattache plus tard si le client prend une chambre ; sinon, le ticket se '
@@ -659,14 +662,12 @@ TUTORIEL = {
                     pause(2.3), cacher('#t4-tip', d=0.3), dezoom(d=0.6)]},
         {'temps': 1, 'titre': 'Au bar : le ticket et le client',
          'texte': 'Le bouton Client relie le ticket à la fiche du client, pas au numéro de chambre.',
-         'voix': "Au bar de la terrasse, Hervé a aussi le profil Réception de l'hôtel, requis pour le report. "
-                 "Brigitte Essomba, cliente de la chambre deux cent deux, termine son dîner : il touche Client et la "
-                 "choisit. C'est sa fiche, et non le numéro de chambre, qui relie le ticket à son séjour.",
+         'voix': "Au bar de la terrasse, Brigitte Essomba, cliente de la chambre deux cent deux, termine son dîner. "
+                 "Hervé touche Client et la choisit. C'est sa fiche, et non le numéro de chambre, qui relie le ticket à son séjour.",
          'gestes': personnage('t04-pc', CAISSIER[0]) + [
                     texte('#r-caisse .av', CAISSIER[0], avec=True), texte('#r-caisse b', CAISSIER.split()[0], avec=True),
                     montrer('#nav-pos', d=0.5, y=0, avec=True), pause(0.4),
-                    curseur('#t4-caissier', fx=0.3, d=0.6), bulle('b-droits', '#t4-caissier', cote='gauche', d=3.4),
-                    pause(3.0), anneau('#t4-vente-ticket', d=1.2), clic('#t4-cli'),
+                    anneau('#t4-vente-ticket', d=1.2), clic('#t4-cli'),
                     ouvrir('t4-dlg'), saisir('t4-q', 'Essomba', d=0.6), cacher('#t4-tous', d=0.25),
                     montrer('#t4-trouves', d=0.3, y=0), pause(0.3), curseur('#t4-c-brigitte', fx=0.15, d=0.5),
                     survol('#t4-c-brigitte'), anneau('#t4-c-brigitte', d=1.4), clic('#t4-c-brigitte', fx=0.15),
@@ -687,7 +688,8 @@ TUTORIEL = {
         {'temps': 2, 'titre': 'Sur le folio, sans ressaisie',
          'texte': 'Une ligne de service « POS Bar de la terrasse/1360 », et le solde dû à jour.',
          'voix': "À la réception, Mireille ouvre le folio de Brigitte : le dîner y est déjà, en ligne de service, avec "
-                 "la référence du ticket. Le solde dû est à jour, sans rien ressaisir.",
+                 "la référence du ticket, et aucune ardoise n'est ouverte en double. Le solde dû est à jour, sans rien "
+                 "ressaisir.",
          'gestes': personnage('t04-pr', RECEPTION[0], retirer=['t04-pc']) + [
                     montrer('#nav-hotel', d=0.5, y=0, avec=True), pause(0.5), defiler('#t4-folio-defil', -400, d=0.9),
                     anneau('#t4-fl3', d=1.2), zoom('#t4-fl3', s=1.3, d=0.7),

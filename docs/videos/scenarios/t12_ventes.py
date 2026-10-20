@@ -55,9 +55,13 @@ Sources des libellés (relevés mot pour mot) :
   raccourci ne reste allumé : components/filter_bar.js:79-96 ; couleurs des
   pastilles dans l'ordre des pos.config : models/pos_dashboard.py:651-654,
   905-912 (Bar violet, Restaurant bleu, Boutique vert, comme
-  t10_ardoises.py, PALETTE) ; styles : pos_dashboard.scss:70-125, 451-511.
+  t10_ardoises.py, PALETTE) ; styles : pos_dashboard.scss:70-125, 451-511 ;
+  lignes Heure et Jour affichées sur les seuls onglets « Tableau de bord » et
+  « Par caisse », qui les appliquent (showTimeFilters,
+  dashboard_shell.xml:27, :172, :191 ; components/filter_bar.js:41-44) :
+  elles disparaissent sur « Articles » et « Écarts de caisse ».
 - Tableau de bord : static/src/xml/views.xml:5-420 — quatre grandes cartes
-  (« Chiffre d'affaires » « <montant> / jour · <n>j », « Marge brute »
+  (« Chiffre d'affaires » « HT · <montant> / jour · <n>j », « Marge brute »
   « Taux: <x>% · <montant>/tx », « CMV (coût marchandises) » « <x>% du CA ·
   <montant>/u », « Transactions » « Panier moy. <montant> · <n> u ») :9-27 ;
   bande « CA vs N-1 · Marge vs N-1 · CMV vs N-1 · Commandes vs N-1 »,
@@ -78,14 +82,16 @@ Sources des libellés (relevés mot pour mot) :
   « Pic <h>h-<h>h (<x>%) », « Jour fort : <jour> », « Jour \\ h » :250-306 ;
   « Classements produits », « Bières · Marges · Moins vendus », « 🍺 Top
   bières (qté) », « ⭐ Meilleures marges », « 📉 Moins vendus » :308-357
-  (marges et moins vendus sur les seules lignes positives :
-  pos_dashboard.py:450-485). Formats : utils.js:58-107 (fmt « 1 234 567 »,
+  (marges sur le CA net de plus de 100 F, moins vendus sur la quantité nette
+  positive : un article vendu puis remboursé n'y figure pas,
+  pos_dashboard.py:496-538). Formats : utils.js:58-107 (fmt « 1 234 567 »,
   fmtMoney « … F », fmtPct « 56.0% », fmtDelta « ▲ +9.4% », fmtSigned
   « −322 500 F ») ; couleurs : utils.js:11-18 ; graphiques :
   static/src/js/views/dashboard_view.js:125-237 (étiquettes tronquées à neuf
   caractères suivis de « … », graduations « k ») ; carte de chaleur :
   dashboard_view.js:253-268 et models/pos_dashboard.py:772-902 (7 × 24,
-  jours Lun … Dim, créneau de deux heures glissant, « Samedi ») ; mois de
+  jours Lun … Dim, créneau de deux heures glissant, « Samedi »), à l'heure
+  de la société (models/pos_analytics_report.py:85-104, :146-171) ; mois de
   l'évolution au format d'Odoo (« octobre 2026 ») :
   models/pos_dashboard.py:396-412.
 - Calculs : marge = CA HT − CMV, CMV = quantité × coût unitaire, coût
@@ -121,7 +127,9 @@ Sources des libellés (relevés mot pour mot) :
   clôturées », « Sessions avec écart » « <n> nég. · <n> pos. », « Écart
   moyen » « par session négative », « Plus grand écart » « à investiguer en
   priorité », bandeau à partir de six sessions négatives, colonnes Session ·
-  Date · Caissier · CA · Écart (F) · Sévérité) ; libellés et couleurs des
+  Date · Caissier · CA HT · Écart (F) · Sévérité) ; CA HT des sessions
+  (somme des lignes, pos_session.py:107-115) ; session ouverte non comptée
+  sans écart (pos_session.py:129-140, :160-166) ; libellés et couleurs des
   sévérités : static/src/js/views/discrepancies_view.js:8-14 ; seuils
   200 000 F (Critique) et 100 000 F (Élevé), écart = compté − théorique :
   models/pos_session.py:19-25, 120-155 ; tri Critique > Élevé > Modéré >
@@ -146,8 +154,8 @@ CA dans le flux réel de caisse (voir le rapport) ; comparaison à la période
 précédente de même durée (pos_dashboard.py:130-153) ; classement des écarts
 (pos_session.py:120-155). Le « coût figé à la vente » de la fiche produit
 n'est pas repris : la vérification l'a jugé non prouvé dans le flux réel de
-caisse. La voix ne donne pas l'heure du pic : la carte l'affiche en UTC
-(écart 11). Résultats : 8 onglets (utils.js:188-197), 7 × 24 = 168 cases et
+caisse. La voix donne l'heure du pic, de 20 h à 22 h : la carte est à
+l'heure de Douala (écart 11, corrigé). Résultats : 8 onglets (utils.js:188-197), 7 × 24 = 168 cases et
 créneau de deux heures (pos_dashboard.py:800-873), 4 niveaux de gravité pour
 un écart non nul — Excédent, Modéré, Élevé, Critique (pos_session.py:78-84).
 
@@ -164,7 +172,8 @@ de la cave repris de t13_stock.py (ARTICLES) (Bière blonde 65 cl : 1 500 F pour
 650 F, soit 850 F de marge, comme t04:285, au TICKET de t10_ardoises.py et
 au PRIX de t14_achats.py), plats de la
 carte de t04:274-281 ; articles sans taxe, comme au ticket de t04 (t04:37-44,
-282) : le CA des sessions (TTC) égale donc le CA HT. Paulin Essama et Larissa
+282) : HT = TTC ; le CA des sessions est d'ailleurs HT partout (écart 4,
+corrigé). Paulin Essama et Larissa
 Mbida (caissiers), les autres prix, quantités, sessions et montants sont
 fictifs. Le jour rejoué est le mercredi 14/10/2026 au matin, navigateur en
 français à Douala ; la période saisie va du 01/10 au 13/10/2026 (treize
@@ -213,10 +222,10 @@ Ce que la vidéo montre, et ce qu'elle évite :
    l'année précédente (pos_dashboard.py:130-146) ; une hausse du CMV s'y
    affiche en vert comme une bonne nouvelle (views.xml:46-51,
    scss:537-538).
-4. Le « CA » des sessions (onglet Écarts de caisse) est TTC (amount_total)
-   alors que celui du tableau de bord et de « Par caisse » est HT
-   (pos_session.py:106 ; pos_dashboard.py:107-114) ; invisible ici, les
-   articles étant sans taxe.
+4. CORRIGÉ dans aite_pos_analytics 18.0.2.1.2 (ECARTS.md n° 25) — le CA des
+   sessions était TTC (amount_total) quand celui du tableau de bord et de
+   « Par caisse » était HT ; il est HT partout, colonne « CA HT » de l'onglet
+   Écarts de caisse et carte « Chiffre d'affaires » sous-titrée « HT · … ».
 5. Pourcentages à point décimal sans espace (« 56.0% », « Taux: 56.0% »),
    abréviations « /tx », « /u », « Cmdes », symbole « F » forcé, anglais
    résiduel « Pivot & Graph » et « happy hours » (utils.js:67-75 ;
@@ -232,14 +241,18 @@ Ce que la vidéo montre, et ce qu'elle évite :
 10. Contraste du gris du module (#888780 sur blanc : 3,6:1, sous le seuil
    AA de 4,5:1) ; texte gris (#5f5e5a) et blanc des cases moyennes de la
    carte de chaleur sous le seuil (dashboard_view.js:253-262).
-11. La carte heure × jour et le repère « Pic » sont en UTC, une heure plus tôt
-   qu'à Douala : la vue SQL convertit l'heure dans le fuseau de
-   self.env.user.tz au moment de init() (pos_analytics_report.py:93,
-   118-121), qui tourne en superutilisateur (odoo/modules/registry.py:588) ;
-   OdooBot n'a pas de fuseau (base/data/res_partner_data.xml:15-20 ;
-   odoo/service/db.py:87-89 ne règle que les utilisateurs actifs), d'où le
-   repli UTC. Les ventes de 20 h à 22 h à Douala s'affichent « Pic
-   19h-21h » ; une vente de samedi 0 h 30 tombe sur « Ven », 23 h.
+11. CORRIGÉ dans aite_pos_analytics 18.0.2.1.2 (ECARTS.md n° 27) — la carte
+   heure × jour et le repère « Pic » étaient en UTC (fuseau du
+   superutilisateur qui installe le module) ; la vue SQL prend désormais le
+   fuseau de la société (pos_analytics_report.py:85-104, :146-171) : les
+   ventes de 20 h à 22 h à Douala s'affichent « Pic 20h-22h », une vente de
+   samedi 0 h 30 tombe sur « Sam », 0 h.
+12. CORRIGÉ dans aite_pos_analytics 18.0.2.1.2 (ECARTS.md n° 26) — lignes
+   Heure / Jour affichées sur les huit onglets mais ignorées par la plupart :
+   elles ne s'affichent plus que sur « Tableau de bord » et « Par caisse »
+   (rejoué à l'étape 5) ; classements nets des remboursements ; « Nb » et
+   carte Paiements, taux de marge d'un ticket et session ouverte sans
+   comptage, non montrés ici.
 """
 
 import math
@@ -471,10 +484,10 @@ def couleurs_cat(nom, rang):
 
 # La carte de chaleur. Les ventes sont posées à l'heure de Douala (UTC+1) :
 # déjeuner au restaurant, soirée au bar, après minuit les nuits du vendredi et
-# du samedi. La vue SQL convertit l'heure dans le fuseau de l'utilisateur qui
-# a installé le module, OdooBot, qui n'en a pas : la carte et les repères
-# sont donc en UTC, une heure plus tôt (écart 11). Treize jours de vente :
-# deux de chaque jour, un seul mercredi (le 07/10).
+# du samedi. La vue SQL convertit l'heure dans le fuseau de la société
+# (Africa/Douala, pos_analytics_report.py:85-104, :128-132, :146-171) : la
+# carte et les repères sont à l'heure locale. Treize jours de vente : deux de
+# chaque jour, un seul mercredi (le 07/10).
 NB_JOURS = [2, 2, 1, 2, 2, 2, 2]                    # Lun … Dim, du 01/10 au 13/10
 POIDS_JOUR = [0.75, 0.8, 0.85, 0.9, 1.35, 1.6, 1.0]
 POIDS_HEURE = {10: 0.2, 11: 0.6, 12: 1.6, 13: 1.9, 14: 1.0, 15: 0.5, 16: 0.5, 17: 0.8, 18: 1.4, 19: 2.0, 20: 2.6,
@@ -490,14 +503,8 @@ def carte_chaleur():
     # après minuit : la nuit du vendredi au samedi (Sam 0 h) et du samedi au dimanche (Dim 0 h)
     local[5][0] = NB_JOURS[4] * 0.3 * POIDS_JOUR[4]
     local[6][0] = NB_JOURS[5] * 0.3 * POIDS_JOUR[5]
-    # heure de Douala → UTC (pos_analytics_report.py:93, 118-121) : une heure plus tôt
-    brut = [[0.0] * 24 for _ in range(7)]
-    for d in range(7):
-        for h in range(24):
-            if h:
-                brut[d][h - 1] += local[d][h]
-            else:
-                brut[(d - 1) % 7][23] += local[d][h]
+    # la carte est à l'heure de la société : aucun décalage
+    brut = local
     total = sum(map(sum, brut))
     mat = [[int(round(v * CA / total, -2)) for v in ligne] for ligne in brut]
     # Pas de case d'intensité entre 0,55 et 0,70 (voir l'en-tête) : on la pousse
@@ -539,7 +546,7 @@ def insights():
 
 
 PIC, JOUR_FORT, H_PIC, J_FORT = insights()
-assert (H_PIC, J_FORT) == (19, 5)          # 20 h – 22 h à Douala, affiché « 19h-21h » ; samedi
+assert (H_PIC, J_FORT) == (20, 5)          # 20 h – 22 h à Douala, affiché « Pic 20h-22h » ; samedi
 
 # « Toute la période » : du 04/05/2026 (première ouverture de session : les
 # ardoises de mai, en-tête de t10_ardoises.py) au 13/10/2026 (dernière
@@ -645,14 +652,16 @@ FILTRES = '<div class="t12-fbar" id="t12-fbar">%s</div>' % ''.join([
     '<div class="t12-frow"><span class="t12-flab">Caisse</span>%s</div>'
     % ''.join([fb('Toutes les caisses', on=True), fb(BAR, point=PRIMARY), fb(RESTO, point=INFO),
                fb(BOUT, point=SUCCESS)]),
-    '<div class="t12-frow"><span class="t12-flab">Heure</span>%s<span class="t12-esp"></span>'
+    # Heure et Jour : seulement sur les onglets qui les appliquent, Tableau de bord et Par caisse
+    # (dashboard_shell.xml:27, :172, :191 — showTimeFilters)
+    '<div id="t12-fbar-temps"><div class="t12-frow"><span class="t12-flab">Heure</span>%s<span class="t12-esp"></span>'
     '<span class="t12-heure">18</span><span class="t12-du">h →</span><span class="t12-heure">23</span>'
     '<span class="t12-du">h</span><span class="t12-ok">OK</span></div>'
     % ''.join([fb('Toute la journée', on=True, alt=True), fb('Matin 6–12h'), fb('Après-midi 12–18h'),
                fb('Soir 18–23h', 't12-h-soir'), fb('Nuit 23–6h')]),
     # « Tous » est actif mais blanc sur blanc (écart 2) : sa place reste vide
     '<div class="t12-frow"><span class="t12-flab">Jour</span><span class="t12-tous"></span>%s'
-    '<span class="t12-esp"></span>%s%s</div>'
+    '<span class="t12-esp"></span>%s%s</div></div>'
     % (''.join(fb(j, jour=True) for j in JOURS_SEMAINE), fb('Semaine (lun–ven)', jour=True), fb('Week-ends', jour=True)),
 ])
 
@@ -845,7 +854,7 @@ def chaleur():
         corps.append('<tr id="t12-hm-d%d"><td class="t12-hd">%s</td>%s</tr>' % (d, jour, ''.join(cases)))
     droite = ('<div class="t12-ins" id="t12-ins"><span class="t12-chip">%s</span><span class="t12-chip">%s</span></div>'
               % (e(PIC), e(JOUR_FORT)))
-    # le créneau du pic (deux colonnes, heures UTC : écart 11), cible de l'anneau et de la bulle ;
+    # le créneau du pic (deux colonnes, heure de Douala), cible de l'anneau et de la bulle ;
     # rentré de 7 px de chaque côté, pour que l'anneau (10 px de marge) tombe sur les bords des deux colonnes
     soir = ('<div class="t12-soir" id="t12-hm-soir" style="left:calc(86px + %d * (100%% - 83px) / 24 + 7px);'
             'width:calc(2 * (100%% - 83px) / 24 - 17px)"></div>' % H_PIC)
@@ -861,11 +870,10 @@ def module_classements():
         return ('<div class="t12-rk"><span class="n">%d</span><span class="nm">%s</span><span class="bg"><i style="width:%.1f%%;'
                 'background:%s"></i></span><span class="vl">%s</span></div>' % (i, e(nom), min(pctg, 100), coul, e(val)))
     bieres = sorted([p for p in PRODUITS if p['cat'] == 'Bières'], key=lambda p: -p['qty'])
-    # « Meilleures marges » et « Moins vendus » ne lisent que les lignes positives
-    # (pos_dashboard.py:450-485) : un article vendu puis remboursé y compte sa vente.
-    positifs = [dict(p, qty=1, taux=pct(p['prix'] - p['cout'], p['prix'])) if p['rembourse'] else p for p in PRODUITS]
-    marges = sorted(positifs, key=lambda p: -p['taux'])[:8]
-    moins = sorted(positifs, key=lambda p: p['qty'])[:8]
+    # « Meilleures marges » (CA net > 100 F) et « Moins vendus » (quantité nette > 0) se lisent nets des
+    # remboursements (pos_dashboard.py:496-538) : un article vendu puis remboursé n'y figure plus.
+    marges = sorted([p for p in PRODUITS if p['ca'] > 100], key=lambda p: -p['taux'])[:8]
+    moins = sorted([p for p in PRODUITS if p['qty'] > 0], key=lambda p: p['qty'])[:8]
     qmax_b, qmax_m = max(p['qty'] for p in bieres), max(p['qty'] for p in moins)
     corps = ('<div class="t12-g3"><div><div class="t12-st">🍺 Top bières (qté)</div>%s</div>'
              '<div><div class="t12-st">⭐ Meilleures marges</div>%s</div><div><div class="t12-st">📉 Moins vendus</div>'
@@ -884,7 +892,7 @@ def contenu_tableau(cle, d, top, evo, articles, meilleur, delta=False):
     i = 't12-%s' % cle
     rangee1 = '<div class="t12-g4" id="%s-r1">%s</div>' % (i, ''.join([
         kpi(i + '-ca', "Chiffre d'affaires", fmt_money(d['ca']),
-            '%s / jour · %dj' % (fmt_money(d['ca'] / float(d['jours'])), d['jours']), INFO),
+            'HT · %s / jour · %dj' % (fmt_money(d['ca'] / float(d['jours'])), d['jours']), INFO),
         kpi(i + '-marge', 'Marge brute', fmt_money(d['marge']),
             'Taux: %s · %s/tx' % (fmt_pct(pct(d['marge'], d['ca'])), fmt_money(d['marge'] / float(d['cmdes']))), SUCCESS),
         kpi(i + '-cmv', 'CMV (coût marchandises)', fmt_money(d['cmv']),
@@ -1072,7 +1080,7 @@ LIGNES_ECARTS = ''.join(
        SEV_LIB[severite(ec)])
     for i, (nom, date, qui, _, ca_ttc, ec) in enumerate(SESSIONS))
 C_ECARTS = ('<div class="t12-c masque" id="t12-c-ecarts"><div class="t12-g4">%s</div><div class="t12-mod t12-nomt">'
-            '<table class="t12-t" id="t12-etab"><thead><tr><th>Session</th><th>Date</th><th>Caissier</th><th class="r">CA</th>'
+            '<table class="t12-t" id="t12-etab"><thead><tr><th>Session</th><th>Date</th><th>Caissier</th><th class="r">CA HT</th>'
             '<th class="r">Écart (F)</th><th>Sévérité</th></tr></thead><tbody>%s</tbody></table></div></div>'
             % (ECARTS_KPI, LIGNES_ECARTS))
 
@@ -1161,6 +1169,13 @@ CSS = """
   display: inline-flex; align-items: center; justify-content: center; }
 .t12-contenu { position: relative; margin-top: 14px; }
 .t12-c { position: absolute; left: 0; right: 0; top: 0; }
+/* Articles et Écarts de caisse : la barre de filtres perd ses lignes Heure et Jour (100 px) ;
+   leur contenu est posé 100 px plus haut dès le départ, pour que les cibles mesurées au
+   chargement tombent juste une fois la barre raccourcie (classe t12-court) */
+#t12-fbar-temps > .t12-frow { border-top: 1px dashed rgba(0,0,0,.14); }
+.t12-court #t12-fbar-temps { display: none; }
+#t12-c-art, #t12-c-ecarts { top: -100px; }
+.t12-court #t12-c-art, .t12-court #t12-c-ecarts { top: 0; }
 .t12-g4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
 .t12-g4 + .t12-g4, .t12-strip + .t12-g4, .t12-g4 + .t12-strip { margin-top: 12px; }
 .t12-g2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
@@ -1352,9 +1367,10 @@ TUTORIEL = {
                     anneau('#t12-strip-1', d=1.6), pause(0.8), anneau('#t12-m-r1', d=1.4)]},
         {'temps': 1, 'titre': 'Les heures de pointe',
          'texte': "La carte heure × jour : le pic de deux heures et le jour fort, calculés seuls.",
-         'voix': "Plus bas, la carte des heures et des jours : plus la case est foncée, plus la vente est forte. Les "
-                 "deux repères se calculent seuls : le meilleur créneau de deux heures tombe en soirée, et le samedi "
-                 "est le jour fort. De quoi organiser le service du soir, et renforcer l'équipe le samedi.",
+         'voix': "Plus bas, la carte des heures et des jours, à l'heure de Douala : plus la case est foncée, plus "
+                 "la vente est forte. Les deux repères se calculent seuls : le meilleur créneau va de vingt à "
+                 "vingt-deux heures, et le samedi est le jour fort. De quoi organiser le service du soir, et "
+                 "renforcer l'équipe le samedi.",
          'gestes': [defiler('#t12-defil', DEFIL_CHALEUR, d=1.6), pause(0.4),
                     curseur('#t12-ins', fx=0.25, fy=0.85, d=0.6), anneau('#t12-ins', d=1.6),
                     zoom('#t12-hm-tab', s=1.3, fx=ZOOM_HM_FX, fy=0.5, d=0.8),
@@ -1375,7 +1391,8 @@ TUTORIEL = {
                  "blonde ouvre son détail : quantité vendue, taux de marge, et surtout le prix, le coût et la marge "
                  "ramenés à l'unité. Ici, chaque bouteille laisse huit cent cinquante francs de marge.",
          'gestes': onglet('caisse', 'art', 't12-c-caisse', 't12-c-art')
-                   + [clic('#t12-q', fx=0.2, d=0.6), saisir('t12-q', 'bière', d=0.6),
+                   # les lignes Heure et Jour disparaissent : l'onglet Articles ne les applique pas
+                   + [classe('#t12-defil', ajouter=['t12-court'], avec=True), pause(0.2), clic('#t12-q', fx=0.2, d=0.6), saisir('t12-q', 'bière', d=0.6),
                       cacher('#t12-art-tous', d=0.05), montrer('#t12-art-bieres', d=0.05, y=0, avec=True),
                       texte('#t12-art-n', '%d / %d articles' % (len(BIERES), len(PRODUITS)), avec=True),
                       clic('#t12-ab-0', fx=0.12, d=0.6), montrer('#t12-voile', d=0.25, y=0),

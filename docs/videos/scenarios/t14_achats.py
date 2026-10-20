@@ -9,11 +9,13 @@ des consignes qu'elle met à jour après un retour de casiers, l'OTIF des
 livraisons, la dépendance à un fournisseur et ses seuils, enfin la dérive des
 prix d'achat.
 
-Profil rejoué : celui du compte demo.direction (Responsable Achats + droit
-Facturation : addons/aite_demo_data/models/demo_generator.py:74-83), le seul
-compte de démonstration qui ouvre ce tableau de bord et voit le bouton
+Profil rejoué : celui du compte demo.direction (Responsable Achats :
+addons/aite_demo_data/models/demo_generator.py:74-83), qui voit le bouton
 « ⚙ Configurer les alertes » (réservé à purchase.group_purchase_manager :
-static/src/xml/dashboard.xml:168-170, models/purchase_dashboard.py:206-208).
+static/src/xml/dashboard.xml:168-170, models/purchase_dashboard.py:206-208)
+et tient le registre des consignes. Le droit Facturation n'est plus requis
+pour ouvrir le tableau de bord (écart 8, corrigé) : Danielle est gardée
+pour la continuité avec le cockpit de t15, pas pour contourner un droit.
 Applications de la barre : ecrans.APPS_PROFIL['direction'] ; menus de
 l'application Achats relevés sur ../aite-videos/ref_muk/014-achats-tableau-
 de-bord-aite.png (« Commandes », « Tableau de bord AITE », « Produits »,
@@ -143,10 +145,12 @@ la présentation : scenarios/c6_direction.py (vue « Achats »).
 7. « À payer sous 8–30 j » figé alors que la fenêtre d'alerte se règle
    (dashboard.xml:231 ; purchase_dashboard.py:635-637) — sans effet visible
    ici, l'alerte restant à 7 jours.
-8. Seul un profil Achats doté d'un droit Facturation ouvre le tableau de
-   bord : get_flux_months lit account.payment (purchase_dashboard.py:430,
-   :453-454 ; odoo18/addons/account/security/ir.model.access.csv:120-121) ;
-   d'où le profil demo.direction.
+8. CORRIGÉ dans aite_purchase_dashboard 18.0.1.0.4 (ECARTS.md n° 13) — seul
+   un profil Achats doté d'un droit Facturation ouvrait le tableau de bord
+   (get_flux_months lisait account.payment) ; l'agrégat mensuel des paiements
+   se lit désormais en sudo() (purchase_dashboard.py:436-441,
+   tests/test_access.py) : un acheteur sans Facturation l'ouvre. Rien ne
+   change à l'écran.
 9. Le menu « Consignes fournisseurs » est sous Achats → Configuration,
    réservé aux responsables (purchase_dashboard_menus.xml:15-20 ;
    odoo18/addons/purchase/views/purchase_views.xml:19), alors que le README

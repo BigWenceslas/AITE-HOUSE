@@ -50,11 +50,14 @@ Sources des libellés et des règles (relevés mot pour mot) :
   bornés par les séquences visibles dans la série (voir « Données »).
 - Ce que montre le grand livre : les ventes rattachées à un client identifié,
   au-dessus du minimum (hooks.py:38-41, loyalty_move.py:162-163) ; ce n'est
-  pas le chiffre d'affaires d'un service (pas de ticket sans nom, taxe de
-  séjour comprise, doubles comptes de l'écart 2). La voix dit donc « d'où
+  pas le chiffre d'affaires d'un service (pas de ticket sans nom ; le folio
+  est crédité hors taxe de séjour et hors lignes déjà créditées à leur
+  source : écart 2, corrigé). La voix dit donc « d'où
   viennent les points » et la directrice « où mes clients fidèles dépensent ».
 - Attribution : models/hooks.py:21 et :32-48 (ticket payé avec un client,
-  sinon rien), :78-99 (folio facturé), :110-125 (prestation réalisée) ;
+  sinon rien), :78-125 (folio facturé, crédité sur son total moins la taxe
+  de séjour et les lignes déjà créditées : _aite_loyalty_excluded_lines),
+  :141-155 (prestation réalisée) ;
   « Un ticket sans client identifié ne donne rien — le réflexe caisse « à
   quel nom ? » » : docs/guides/AITE_Guide_Fidelite.pdf p. 2 (§3).
 - Clients VIP & VVIP : loyalty_move_views.xml:47-56 (titre « Clients VIP &
@@ -144,9 +147,13 @@ Ngono, caissier Hervé Tchakounté, directrice Danielle Eyenga, Claire
 Durand). FOL/2026/0214 vaut 112 800 FCFA au départ, comme au tutoriel 3 :
 deux nuits Confort (90 000), 12 000 FCFA de taxe de séjour et quatre «
 Petit-déjeuner buffet » à 2 700 FCFA (10 800), passé « Facturé » le 16/10 à
-11:42 (t03_folio.py:137-141, :200-206, :428, :702) ; il rapporte donc 112
-points, et « Facturé » sur la fiche cumule ses trois folios (96 000 + 144
-000 + 112 800). Le script relit ce total dans t03_folio.py et s'arrête s'il
+11:42 (t03_folio.py:137-141, :200-206, :428, :702) ; il rapporte 100
+points sur 100 800 FCFA, la taxe de séjour n'étant plus créditée
+(aite_loyalty 18.0.1.0.2, hooks.py:78-125). Ses deux séjours précédents,
+une personne en Confort, sont crédités de même hors taxe : FOL/2026/0084
+(2 nuits, 90 000 + 6 000 de taxe) et FOL/2026/0189 (3 nuits, 135 000 +
+9 000) ; « Facturé » sur la fiche cumule, lui, les trois folios TTC (96 000
++ 144 000 + 112 800). Le script relit ce total dans t03_folio.py et s'arrête s'il
 diverge. Le journal du 15/10 reprend les prestations réalisées du tutoriel 9
 (t09_espaces.py:242-254 : Samuel Etoga au pressing, Yves Tchana, Linda
 Ewané, Carine Ndongo, Paul Essomba, Rachel Bilong, et le massage de Brigitte
@@ -154,7 +161,7 @@ Essomba RES/26/0158 à 27 000 FCFA, reporté sur son folio FOL/2026/0210 :
 t09:168-171, :249) et le départ de Claire Durand (RES/2026/0201, chambre
 401, du 14 au 15/10 : t02_planning.py:259, :288 ; folio FOL/2026/0201 de
 123 000 FCFA, soit une nuit VIP à 120 000 et 3 000 de taxe pour un adulte,
-selon folio_resa de t03_folio.py:416-420). Estelle n'a donc aucune
+selon folio_resa de t03_folio.py:416-420 ; crédité sur 120 000). Estelle n'a donc aucune
 prestation le 15/10 : son folio facturé (112 800 FCFA, t03) n'en porte
 aucune. Séquences recalées sur la série : la caisse « Bar de la terrasse »
 a ouvert le 04/05/2026 (t12_ventes.py:544) ; environ 8,3 tickets par jour
@@ -167,10 +174,10 @@ le /1377 du 16/10 à 22:41 (Martin Ebode, t04) ; prestations « RES/%(y)s/ »
 (sans remise à zéro) vers RES/26/0140 au matin du 15/10 (t09:242-254),
 environ 0,4 par jour depuis novembre 2025, sans réutiliser un numéro du
 t09 ; folios FOL/2026/0084 le 22/02 et 0189 le 02/09. Les volumes du
-regroupement par origine (348 mouvements, 22 968 points depuis novembre
-2025) restent sous ces séquences ; ils ne peuvent pas suivre la tuile
-« Points fidélité émis » du t15 (12 480 points du 30/09 au 14/10,
-t15_direction.py:547), qui demanderait une centaine de folios sur la
+regroupement par origine (348 mouvements, 21 734 points depuis novembre
+2025, folios hors taxe de séjour) restent sous ces séquences ; ils ne
+peuvent pas suivre la tuile « Points fidélité émis » du t15 (10 480 points
+du 30/09 au 14/10, t15_direction.py:528-531), qui demanderait une centaine de folios sur la
 période quand le t03 n'en compte que 211 depuis l'ouverture
 (t03_folio.py:456). Autres clients fictifs ajoutés : Boris Ndzana (client
 du bar), Carine Owona, Gaëlle Nkeng, Hugues Mbida, Nadège Abena, Pauline
@@ -178,7 +185,7 @@ Ekotto (t02_planning.py:254), Sandrine Mvondo, Thierry Etoundi ; Patrick
 Nkoulou, Brigitte Essomba, Martin Ebode, Samuel Etoga et Paul Essomba
 viennent des tutoriels 3, 4 et 9 ; téléphones de la plage de fiction de la
 série (t10_ardoises.py, TELEPHONES ; demo.CLIENT_TEL). Les tickets du bar d'Estelle sont réglés
-en espèces (voir écart 2).
+en espèces.
 
 Captures de référence (modèle visuel, jamais incrustées) : ref_muk/053,
 054, 055, 056, 602, 613 ; captures de lecture prises pour ce tutoriel sur la
@@ -193,11 +200,11 @@ client VIP, « Points de … ».
    ticket de caisse dans une session clôturée (prestations seules :
    pos_session.py:1013-1015) n'apparaissent qu'une fois la facette retirée
    (10 cartes, puis 12).
-2. La taxe de séjour rapporte des points (le folio est crédité sur son total,
-   hooks.py:88) ; un ticket réglé en « Note de chambre » ou une prestation
-   reportée au folio sont crédités deux fois (hooks.py:42-45, 87-90 ;
-   aite_hotel_pos_link/models/pos_order.py:146-152 ; aite_slot_booking/
-   models/booking_booking.py:340-342).
+2. Corrigé dans aite_loyalty 18.0.1.0.2 (ECARTS n° 28) : la taxe de séjour
+   rapportait des points et un ticket « Note de chambre » ou une prestation
+   reportée au folio étaient crédités deux fois ; le folio est désormais
+   crédité sur son total moins ces lignes (hooks.py:78-125). FOL/2026/0214 :
+   100 points au lieu de 112.
 3. La carte des clients VIP et la liste n'affichent ni le statut ni les
    points, contrairement à l'aide de l'action (loyalty_move_views.xml:55).
 4. Les sommes de groupe de « Montant de base » s'affichent avec « ,00 » en
@@ -321,7 +328,8 @@ def ref_presta(d, n=None):
 # au bar après ses réunions depuis juillet, et trois séjours
 # (folio = nuits + taxe de séjour ; le dernier avec ses quatre petits-déjeuners).
 D = date
-AUJOURDHUI_FOLIO = 112800                          # t03_folio.py:204-206, :428
+AUJOURDHUI_FOLIO = 112800                          # t03_folio.py:204-206, :428 (TTC)
+AUJOURDHUI_TAXE = 12000                            # 2 nuits × 2 adultes × 3 000 FCFA de taxe de séjour
 
 
 def _folio_du_t03():
@@ -333,8 +341,16 @@ def _folio_du_t03():
 
 
 assert _folio_du_t03() in (None, AUJOURDHUI_FOLIO), 't11 : FOL/2026/0214 vaut %s au t03' % _folio_du_t03()
-FOLIOS = {D(2026, 2, 22): ('FOL/2026/0084', 96000), D(2026, 9, 2): ('FOL/2026/0189', 144000),
-          AUJOURDHUI: (demo.FOLIO, AUJOURDHUI_FOLIO)}
+# (référence, total TTC, taxe de séjour) : le folio est crédité hors taxe de séjour
+# (aite_loyalty 18.0.1.0.2, hooks.py:78-125, _aite_loyalty_excluded_lines).
+FOLIOS = {D(2026, 2, 22): ('FOL/2026/0084', 96000, 6000), D(2026, 9, 2): ('FOL/2026/0189', 144000, 9000),
+          AUJOURDHUI: (demo.FOLIO, AUJOURDHUI_FOLIO, AUJOURDHUI_TAXE)}
+
+
+def base_folio(d):
+    """Le montant de base du mouvement d'un folio : son total moins la taxe de séjour."""
+    return FOLIOS[d][1] - FOLIOS[d][2]
+
 ANNEE = [
     (D(2025, 11, 14), 'slot_space', 90000), (D(2025, 11, 28), 'slot_hair', 12000),
     (D(2025, 12, 12), 'slot_space', 120000), (D(2025, 12, 20), 'slot_spa', 25000),
@@ -358,7 +374,7 @@ def _mouvements():
     mvts = []
     for d, origine, montant in ANNEE:
         if origine == 'hotel':
-            ref, montant = FOLIOS[d]
+            ref, montant = FOLIOS[d][0], base_folio(d)
         elif origine == 'pos':
             ref = ref_bar(TICKETS_BAR[d])
         else:
@@ -541,7 +557,7 @@ D15 = date(2026, 10, 15)
 JOURNAL = [  # (date, client, origine, référence, montant) — du plus récent au plus ancien (date desc, id desc)
     (AUJOURDHUI, CLIENTE, 'pos', ref_bar(TICKETS_BAR[AUJOURDHUI]), TICKET),
     (AUJOURDHUI, 'Patrick Nkoulou', 'pos', ref_bar(TICKETS_BAR[AUJOURDHUI] - 1), 7500),
-    (AUJOURDHUI, CLIENTE, 'hotel', demo.FOLIO, FOLIOS[AUJOURDHUI][1]),
+    (AUJOURDHUI, CLIENTE, 'hotel', demo.FOLIO, base_folio(AUJOURDHUI)),
     # le jeudi 15/10 : les prestations réalisées de t09_espaces.py:242-254, de la
     # dernière à la première (le massage de Brigitte Essomba, reporté sur
     # FOL/2026/0210 ; le pressing de Samuel Etoga), et le départ de Claire Durand
@@ -551,7 +567,7 @@ JOURNAL = [  # (date, client, origine, référence, montant) — du plus récent
     (D15, 'Rachel Bilong', 'slot_spa', ref_presta(D15, 150), 23000),
     (D15, 'Paul Essomba', 'slot_space', ref_presta(D15, 133), 45000),
     (D15, 'Carine Ndongo', 'slot_hair', ref_presta(D15, 142), 19000),
-    (D15, 'Claire Durand', 'hotel', 'FOL/2026/0201', 123000),
+    (D15, 'Claire Durand', 'hotel', 'FOL/2026/0201', 123000 - 3000),   # hors taxe de séjour
     (D15, 'Linda Ewané', 'slot_spa', ref_presta(D15, 145), 27000),
     (D15, 'Yves Tchana', 'slot_hair', ref_presta(D15, 138), 6200),
     (D15, 'Samuel Etoga', 'slot_pressing', ref_presta(D15, 141), 4800),
@@ -567,7 +583,7 @@ assert not [m for m in MVTS if m[0] == D15], 'Estelle n\'a aucune prestation le 
 # et Boutique/0018 (t04_note_chambre.py, ATTENTE) ; prestations jusqu'à
 # RES/26/0159 (t09_espaces.py:253). Les points d'un groupe
 # ne dépassent jamais montant ÷ 1 000 (partie entière ligne par ligne).
-GROUPES = [('hotel', 168, 19824000, 19790), ('manual', 5, None, -1650), ('pos', 54, 745200, 718),
+GROUPES = [('hotel', 168, 18590000, 18556), ('manual', 5, None, -1650), ('pos', 54, 745200, 718),
            ('slot_hair', 30, 345000, 330), ('slot_pressing', 26, 140400, 128), ('slot_spa', 34, 870400, 862),
            ('slot_space', 31, 2790000, 2790)]
 NB_MVTS = sum(g[1] for g in GROUPES)
@@ -655,7 +671,7 @@ def stat(ident, svg, libelle, valeur):
 
 
 SEJOURS = len(FOLIOS)
-STATS = ''.join([stat(None, CRAYON, 'Facturé', fcfa(sum(m for _, m in FOLIOS.values()))),
+STATS = ''.join([stat(None, CRAYON, 'Facturé', fcfa(sum(f[1] for f in FOLIOS.values()))),
                  stat(None, ICONES['carte'], 'Achats', '0'),
                  stat(None, CAMION, 'Taux de livraisons dans les temps', 'Pas encore de données'),
                  stat(None, ICONES['liste'], 'Lot/Numéros de série', None),
@@ -946,6 +962,7 @@ TUTORIEL = {
         'b-nom': 'Le geste clé : un ticket sans client ne rapporte aucun point.',
         'b-pts': 'Un point par tranche de %s, soit %d%spoints pour %s.' % (fcfa(1000), points(TICKET), NBSP,
                                                                        fcfa(TICKET)),
+        'b-taxe': 'Le séjour rapporte ses points hors taxe de séjour, reversée à la commune.',
         'b-seuils': 'VIP : %s et 10%svisites sur 12%smois. VVIP : %s, 25%svisites et 3%sfamilles de services.'
                     % (fcfa(500000), NBSP, NBSP, fcfa(2000000), NBSP, NBSP),
         'b-trace': 'Chaque changement de statut est noté et daté, sans aucune saisie.',
@@ -971,10 +988,11 @@ TUTORIEL = {
         {'temps': 0, 'titre': 'Les points tombent seuls',
          'texte': 'Mouvements de points : la cliente, l\'origine, le ticket, et 12 points.',
          'voix': "Dans le grand livre des points, la vente est déjà là : la cliente, le bar, le ticket, et douze "
-                 "points, un par tranche de mille francs. Son séjour facturé ce matin en a rapporté cent douze.",
+                 "points, un par tranche de mille francs. Son séjour facturé ce matin en a rapporté cent : la taxe de séjour ne compte pas.",
          'gestes': [*personnage(None, NOM[0], retirer=['t11-pc']), cacher('#t11-pos', d=0.5), pause(0.3), classe('#t11-l0', ajouter=['survol']),
                     zoom('#t11-l0', s=1.25, fx=0.6, d=0.8), bulle('b-pts', '#t11-l5', cote='bas', d=3.0),
-                    pause(2.8), dezoom(d=0.6), anneau('#t11-l2', d=1.6), pause(0.6)]},
+                    pause(2.8), dezoom(d=0.6), anneau('#t11-l2', d=1.6),
+                    bulle('b-taxe', '#t11-l2', cote='bas', d=2.6, avec=True), pause(0.6)]},
         {'temps': 0, 'titre': 'Regroupé par origine',
          'texte': 'Séjours, bar, coiffure, pressing, spa, espaces VIP : un seul capital.',
          'voix': "Regroupé par origine, le grand livre montre d'où viennent les points : séjours, bar, coiffure, "

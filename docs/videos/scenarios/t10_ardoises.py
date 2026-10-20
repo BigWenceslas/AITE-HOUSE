@@ -42,9 +42,9 @@ Sources des libellés (relevés mot pour mot) :
    méthodes « Ardoise client » (is_aite_credit) et « Note de chambre »
    (is_room_charge) sont celles que aite_demo_data crée et rattache à la
    caisse (models/demo_generator.py:288-320) ; la caisse du bar montre donc
-   Espèces, Orange Money, MTN MoMo, Note de chambre, Ardoise client — les
-   quatre premiers comme t04_note_chambre.py:310-311. L'ardoise est trouvée
-   par payment_screen_button.js:24-40.
+   Espèces, Orange Money, MTN MoMo, Note de chambre, Ardoise client — comme
+   t04_note_chambre.py (MODES). La méthode ardoise est trouvée par
+   payment_screen_button.js:24-39 : la seule cochée « Vente à crédit ».
    La fenêtre des clients : screens/partner_list/partner_list.xml:5-56 et
    partner_line/partner_line.xml:46-86 ; fr.po « Créer » :2261-2262,
    « Recherche des clients... » :6921-6922, « Nom » :4363, « Adresse » :721,
@@ -151,9 +151,15 @@ Sources des affirmations :
   de paiement n'ont pas d'état sélectionné (payment_screen.xml:141-149) ;
   « Restant 0 FCFA » en vert : pos_order.js:886-891 (hasRemainingAmount
   vrai à zéro) et payment_status.xml:8-14 ;
-- le remboursement « s'inscrit » sur la fiche (onglet Remboursements) : la
-  vidéo ne dit pas « tracé » — les lignes restent modifiables après coup,
-  sans historique (pos_credit_views.xml:155-170, pos_credit_payment.py:19-23) ;
+- le remboursement « s'inscrit » sur la fiche (onglet Remboursements) et,
+  validé, ne se modifie plus : champs en lecture seule dans la liste de
+  l'ardoise et dans le formulaire, refus côté serveur (« Un remboursement
+  validé ne se modifie plus : son écriture est passée. Annulez-le, puis
+  saisissez le bon remboursement. »), suivi des changements dans
+  l'historique du remboursement (pos_credit_views.xml:103-121,
+  pos_credit_payment_views.xml:36-66, pos_credit_payment.py:20, :42-85,
+  :131-146) ; corrigé dans aite_pos_credit 18.0.2.0.4 (ECARTS n° 20) : le
+  geste montré est « Annuler » (fa-times de la ligne), puis ressaisir ;
 - résultats : 1 bouton (payment_screen_button.xml:12-18) ; 5 moyens de
   remboursement (pos_credit_payment.py:49-58) ; 8 indicateurs
   (dashboard.xml:85-122) et balance âgée en 4 tranches
@@ -217,7 +223,14 @@ Ce que la vidéo montre, et ce qu'elle évite :
   l'ardoise réglée n'a plus de bouton d'en-tête.
 - La vignette est prise à l'étape 5 (« Réglée »), pas sur la carte
   « ▲ 147 % vs N-1 » (écart 5).
-- « Regrouper par Sévérité » (erreur, champ non stocké) n'est pas montré.
+- « Regrouper par Sévérité » (erreur, champ non stocké) : retiré du menu de
+  recherche, corrigé dans aite_pos_credit 18.0.2.0.4 (ECARTS n° 21,
+  pos_credit_views.xml:160-176) ; le menu n'est pas montré.
+- « Mettre sur ardoise » vise la seule méthode cochée « Vente à crédit »
+  (is_aite_credit), jamais « Note de chambre » ni un autre mode « payer plus
+  tard » : corrigé dans aite_pos_credit 18.0.2.0.4 (ECARTS n° 17,
+  payment_screen_button.js:24-39, models/pos_payment_method.py:24-49) ;
+  c'est bien « Ardoise client » qui reçoit la ligne au ticket.
 - Deux tons de texte foncés pour le contraste AA, comme aite.css :
   orange #8A6100 des lignes « En retard », vert #1A6E2E du « Restant » nul.
 
@@ -1150,6 +1163,7 @@ TUTORIEL = {
         'b-part': 'Seule la part mise sur ardoise devient une dette.',
         'b-sev': 'Récente, En retard dès 30 jours, Critique dès 60 jours.',
         'b-pre': 'Le reste dû est proposé ; un montant trop élevé est plafonné.',
+        'b-fige': 'Validé, il ne se modifie plus : une erreur s\'annule, puis se ressaisit.',
         'b-retard': 'Les ardoises de 30 jours et plus, et leur part dans l\'encours.',
         'b-top': 'Un clic sur un débiteur ouvre ses ardoises ouvertes.',
     },
@@ -1217,9 +1231,10 @@ TUTORIEL = {
         {'temps': 2, 'titre': 'Réglée, toute seule',
          'texte': 'Reste dû à zéro, ardoise Réglée ; le remboursement est inscrit avec son moyen et son encaisseur.',
          'voix': "Le reste dû tombe à zéro, et l'ardoise passe Réglée, toute seule. Le remboursement s'inscrit sur la "
-                 "fiche : le moyen, la référence, et qui l'a encaissé.",
+                 "fiche : le moyen, la référence, et qui l'a encaissé. Validé, il ne se modifie plus.",
          'gestes': [zoom('#t10-g-mt', s=1.5, d=0.7, fx=0.3), anneau('#t10-f-reste', d=1.2),
                     anneau('#t10-sb', d=1.0), dezoom(d=0.5), anneau('#t10-tb-0', d=1.6),
+                    bulle('b-fige', '#t10-tb-0', cote='bas', d=2.6, avec=True), pause(0.6),
                     reaction('t10-r-regle', d=2.6), pause(1.6)]},
         {'temps': 3, 'titre': 'Le tableau de bord Recouvrement',
          'texte': "L'encours, le recouvré du mois, le taux, la part en retard, et la balance âgée.",

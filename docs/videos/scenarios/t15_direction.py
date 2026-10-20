@@ -222,7 +222,7 @@ import contextlib
 import io
 
 import demo
-from scenarios import t13_stock
+from scenarios import t12_ventes, t13_stock
 with contextlib.redirect_stderr(io.StringIO()):     # l'avertissement 409 de t14 ne concerne pas ce tutoriel
     from scenarios import t14_achats
 from ecrans import APPS_PROFIL, ICONES, e, fenetre_muk, icone, navigateur, vue_libre
@@ -327,7 +327,7 @@ ONGLETS = [('vue', "Vue d'ensemble", None), ('pos', 'Ventes (POS)', None), ('cre
 def onglet(cle, libelle, n):
     pastille = '<span class="t15-n" id="t15-tab-%s-n">%s</span>' % (cle, n) if n else ''
     if cle == 'todo':        # la pastille n'apparaît qu'une fois l'onglet ouvert (js:494-503)
-        pastille = '<span class="t15-n t15-attente" id="t15-tab-todo-n">10</span>'
+        pastille = '<span class="t15-n t15-attente" id="t15-tab-todo-n">11</span>'
     return '<span class="t15-tab%s" id="t15-tab-%s">%s%s</span>' % (' on' if cle == 'vue' else '', cle, e(libelle),
                                                                    pastille)
 
@@ -353,14 +353,14 @@ TOP = ('<div class="t15-top"><div class="t15-head"><div class="t15-h1">Direction
 
 # -- la vue d'ensemble : chiffres du 30/09 au 14/10/2026, toutes caisses --
 SANTE = rangee(
-    carte('t15-k-ca', 'CA encaissé', '3 120 000 FCFA', '128 tickets · POS payés / facturés', 'per', 'vert', True,
+    carte('t15-k-ca', 'CA encaissé', '3 120 000 FCFA', 'HT · 128 tickets · POS payés / facturés', 'per', 'vert', True,
           '▲ +9,4 %'),
     carte('t15-k-marge', 'Marge brute réalisée', '1 747 200 FCFA', '56,0 % du CA · CA − coût des ventes', 'per', 'teal',
           True),
     carte('t15-k-risque', 'Cash à risque', '143 000 FCFA', 'ardoises +30 j (101 500) + coulage (41 500)', 'per', 'rouge',
           True),
     carte('t15-k-net', 'Crédits clients − dettes fournisseurs', '-1 130 000 FCFA',
-          "150 000 d'ardoises · 1 280 000 de dettes — les fournisseurs financent l'exploitation", 'photo', 'info', True),
+          "150 000 d'ardoises · 1 280 000 de dettes — vos fournisseurs financent l'exploitation", 'photo', 'info', True),
     ident='t15-sante')
 POLES = rangee(
     carte('t15-p-tix', 'Ventes — tickets', '128', 'panier moyen 24 375 FCFA', 'per'),
@@ -379,24 +379,31 @@ HOTEL = rangee(
           delta='▲ +11,6 %', aide=True),
     ident='t15-hr')
 
-# Tendances (direction_dashboard.xml:42-107) : 6 mois, barres CA à zéro (écart 3).
+# Tendances (direction_dashboard.xml:42-107) : 6 mois alignés sur la clé AAAA-MM (_month_trends,
+# direction_dashboard.py:430-462), libellés courts « Mai » … « Oct » (_month_label).
 MOIS = ['Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct']
+# CA HT des ventes par mois : l'évolution mensuelle de t12_ventes.py (EVO_TOUT ; octobre : du 01 au 13/10,
+# rien n'est encore vendu le 14 au matin), relue sur les 183 derniers jours (get_overview).
+VENTES = [m[1] for m in t12_ventes.EVO_TOUT]
+assert [m[0] for m in t12_ventes.EVO_TOUT][0] == 'mai 2026' and VENTES[-1] == 3120000
 # Factures fournisseurs par mois : celles de t14_achats.py (FLUX ; octobre : les factures de la période).
 ACHATS = [f[1] for f in t14_achats.FLUX]
+MAX_BARRE = max(VENTES + ACHATS)                     # maxBar : CA et achats sur la même échelle (js:134-140)
 # Encours de fin de mois, à rebours (direction_dashboard.py:149-166) : ceux que donnent les flux mensuels de
 # t10_ardoises.py (OUVERTES_MOIS, RECOUVRE_MOIS) ; octobre : la photo du 14/10 au matin.
 ENCOURS = [16000, 19000, 25000, 94500, 148500, 150000]
 
 
 def trend_svg():
-    mb, ml = max(ACHATS), max(ENCOURS)
+    mb, ml = MAX_BARRE, max(ENCOURS)
     slot = 500.0 / 6
     corps = []
     pts = []
     for i, p in enumerate(MOIS):
         x0 = 45 + i * slot
         h = ACHATS[i] / float(mb) * 160
-        corps.append('<rect x="%.1f" y="180" width="22" height="0" fill="#714B67"/>' % (x0 + slot / 2 - 24))
+        hc = VENTES[i] / float(mb) * 160
+        corps.append('<rect x="%.1f" y="%.1f" width="22" height="%.1f" fill="#714B67"/>' % (x0 + slot / 2 - 24, 180 - hc, hc))
         corps.append('<rect x="%.1f" y="%.1f" width="22" height="%.1f" fill="#185FA5"/>' % (x0 + slot / 2 + 2, 180 - h, h))
         corps.append('<text x="%.1f" y="198" font-size="10" fill="#62615C" text-anchor="middle">%s</text>'
                      % (x0 + slot / 2, p))
@@ -418,18 +425,28 @@ LEGENDE_TREND = ('<div class="t15-legend"><i class="t15-dot" style="background:#
 MIROIR_CLI = [('0–30 j', '48 500', 67.8, '#3B6D11'), ('30–60 j', '71 500', 100, '#854F0B'),
               ('60–90 j', '0', 2, '#a3702a'), ('+90 j', '30 000', 42.0, '#A32D2D')]
 MIROIR_FOUR = ['#185FA5', '#5b83b0', '#8fa8c4', '#b9c9da']
+# Côté fournisseurs : les factures ouvertes de t14_achats.py (FACTURES) rangées par ancienneté depuis la date de
+# facture au 14/10 (_bucket_supplier_invoices, direction_dashboard.py:181-226 ; clé « date » de get_open_invoices).
+_AUJ15 = t14_achats.date(2026, 10, 14)
+_TRANCHES = [0.0, 0.0, 0.0, 0.0]
+for _f in t14_achats.FACTURES:
+    _age = (_AUJ15 - _f[2]).days
+    _TRANCHES[0 if _age <= 30 else 1 if _age <= 60 else 2 if _age <= 90 else 3] += _f[4] - _f[5]
+assert _TRANCHES == [1100000, 0, 180000, 0] and sum(_TRANCHES) == 1280000
+MIROIR_SUP = [('{:,}'.format(int(v)).replace(',', ' '), max(2.0, v * 100.0 / max(_TRANCHES))) for v in _TRANCHES]
 MIROIR = ('<div class="t15-mhead"><span>Vos clients vous doivent</span><span class="t15-msp"></span>'
-          '<span>Vous devez aux fournisseurs</span></div><div class="t15-mirror">%s</div>'
+          '<span>Vous devez aux fournisseurs</span></div><div class="t15-mirror" id="t15-mirror">%s</div>'
           '<div class="t15-legend">Gauche : du cash qui s\'évapore avec l\'âge. Droite : du crédit fournisseur — gratuit '
           'tant que les échéances tiennent.</div>'
           % ''.join('<div class="t15-mrow"><div class="t15-mside t15-left"><span class="t15-mval">%s</span>'
                     '<i style="width:%.1f%%;background:%s"></i></div><div class="t15-mlab">%s</div><div class="t15-mside">'
-                    '<i style="width:2%%;background:%s"></i><span class="t15-mval">0</span></div></div>'
-                    % (v, w, c, e(l), MIROIR_FOUR[i]) for i, (l, v, w, c) in enumerate(MIROIR_CLI)))
-TENDANCES = ('<div class="t15-row">%s%s</div>'
+                    '<i style="width:%.1f%%;background:%s"></i><span class="t15-mval">%s</span></div></div>'
+                    % (v, w, c, e(l), MIROIR_SUP[i][1], MIROIR_FOUR[i], MIROIR_SUP[i][0])
+                    for i, (l, v, w, c) in enumerate(MIROIR_CLI)))
+TENDANCES = ('<div class="t15-row" id="t15-tend">%s%s</div>'
              % (panneau('CA vs Achats — 6 mois, et encours d\'ardoises', 'POS · Achats · Crédit',
-                        trend_svg() + LEGENDE_TREND),
-                panneau('Balance âgée en miroir', 'Crédit · Achats', MIROIR)))
+                        trend_svg() + LEGENDE_TREND, 't15-tend-ca'),
+                panneau('Balance âgée en miroir', 'Crédit · Achats', MIROIR, 't15-tend-mir')))
 
 TIP_REVPAR = ('<div class="infobulle masque t15-tip" id="t15-tip-revpar" data-layout-allow-overlap '
               'data-layout-allow-occlusion>RevPAR : ce que rapporte chaque chambre disponible, vendue ou non — c\'est '
@@ -449,7 +466,7 @@ CREDIT_KPI = (
     + rangee(carte('t15-c-rec', 'Recouvré', '37 000 FCFA', '4 remboursements', 'per', 'vert', delta='▲ +12,1 %'),
              carte('t15-c-new', 'Nouveaux crédits', '18 500 FCFA', '1 ardoises ouvertes', 'per', 'ambre',
                    delta='▼ 63,0 %'),
-             carte('t15-c-flux', 'Flux net', '−18 500 FCFA', "recouvré − nouveaux : l'encours monte", 'per', 'teal'),
+             carte('t15-c-flux', 'Flux net', '−18 500 FCFA', "nouveaux − recouvré : l'encours baisse", 'per', 'teal'),
              carte('t15-c-taux', 'Taux de recouvrement', '20 %', 'ardoise moyenne 30 000 FCFA', 'per')))
 # couleurs de la balance âgée telles que keyOf les choisit (écart 4)
 AGING = (hbar('0–30 j', 67.8, '#3B6D11', '48 500', '2 cl.') + hbar('30–60 j', 100, '#3B6D11', '71 500', '2 cl.')
@@ -479,17 +496,24 @@ VUE_CREDIT = ('<div class="vue t15-pane" id="t15-b-credit"><div class="t15-defil
                        + chip('t15-o-sale', 'Ventes / factures')),
                  sect('CRÉDIT CLIENTS — ARDOISES'), CREDIT_KPI, CREDIT_PANNEAUX))
 
-# -- onglet À traiter (get_actions, sans ligne « Payer » : écart 3) --
+# -- onglet À traiter (get_actions) : « Payer <fournisseur> » pour une facture non échue due sous 6 jours (au
+# 14/10 : BILL/2026/10/0001 de Boissons du Wouri SARL, due le 17/10), date d'échéance en AAAA-MM-JJ (planned) --
+PAYER = [(f[0], '{:,}'.format(f[4] - f[5]).replace(',', ' ') + FCFA, f[3].isoformat()) for f in t14_achats.FACTURES
+         if 0 <= (f[3] - t14_achats.date(2026, 10, 14)).days <= 6]
+assert PAYER == [('Boissons du Wouri SARL', '420 000 FCFA', '2026-10-17')]
+NB_ACTIONS = 3 + 1 + len(PAYER) + len(COMMANDER) + 1 + 1 + len(HAUSSES)
+assert NB_ACTIONS == 11
 VUE_TODO = ('<div class="vue t15-pane" id="t15-b-todo"><div class="t15-defil">%s<div class="t15-row t15-wrap">%s</div>'
             '<div class="t15-legend t15-pad">Chaque ligne ouvre le tableau de bord spécialisé correspondant.</div>'
             '</div></div>'
-            % (sect('À TRAITER — LA LISTE DU GÉRANT (10 actions)'), ''.join([
+            % (sect('À TRAITER — LA LISTE DU GÉRANT (%d actions)' % NB_ACTIONS), ''.join([
                 panneau('Ardoises anciennes', 'Crédit', mini([
                     ('t15-r-mvogo', 'Relancer Armand Mvogo', '44 500 FCFA', '57 j'),
                     ('t15-r-mbarga', 'Relancer Sylvie Mbarga', '30 000 FCFA', '104 j'),
                     ('t15-r-kamga', 'Relancer Joël Kamga', '27 000 FCFA', '39 j')]), 't15-s-credit', 'URGENT'),
                 panneau('Fournisseurs', 'Achats', mini([
-                    (None, 'Régulariser 1 facture(s) échue(s)', '180 000 FCFA', 'échu')]), 't15-s-four', 'URGENT'),
+                    (None, 'Régulariser 1 facture(s) échue(s)', '180 000 FCFA', 'échu')]
+                    + [('t15-r-payer', 'Payer %s' % n, m, d) for n, m, d in PAYER]), 't15-s-four', 'URGENT'),
                 panneau('Stock', 'Stock', mini(
                     [(None, 'Commander %s' % n, m, 'perd / jour') for n, m in COMMANDER]
                     + [(None, 'Lancer la commande suggérée (%d réfs)' % NB_CMD, VAL_CMD, 'sous seuil')]), 't15-s-stock',
@@ -526,9 +550,12 @@ TOTAL_EXEC = sum(m[2] for m in MIX)
 MIX = [m + (('%.1f' % (m[2] * 100.0 / TOTAL_EXEC)).replace('.', ',') + ' %',) for m in MIX]
 assert TOTAL_EXEC == 13000000 and [m[4] for m in MIX] == ['66,5 %', '24,0 %', '9,5 %']
 # Points fidélité émis du 30/09 au 14/10 : un point par tranche de 1 000 FCFA (aite_loyalty, _points_for, comme
-# t11_fidelite.py), sur les folios de la période (8 640 points), les prestations réalisées (1 240) et les tickets
-# du bar rattachés à un client (environ 600 000 FCFA, 600 points) : 10 480 points, sous les 13 000 qu'un client
-# sur chaque franc donnerait.
+# t11_fidelite.py), selon la règle corrigée (aite_loyalty 18.0.1.0.2, ECARTS.md n° 28 : le folio ne crédite ni la
+# taxe de séjour ni les lignes déjà créditées à leur source, hooks.py:_aite_loyalty_excluded_lines) : les folios
+# de la période hors taxe de séjour et hors tickets ou prestations reportés (8 640 000 FCFA de nuitées, 8 640
+# points, 45 par nuitée à 45 000), les prestations réalisées, créditées une fois à leur source (1 240), et les
+# tickets du bar réglés par un client identifié (environ 600 000 FCFA, 600 points) : 10 480 points. Le jeu
+# n'impute à aucun folio de ticket ni de prestation reportés : rien n'y est compté deux fois.
 POINTS = 8640 + 1240 + 600
 
 
@@ -578,9 +605,9 @@ EXEC = vue_libre('t15-exec', '<div class="t15-x" id="t15-exec-defil" data-layout
                      '<div class="t15-xg4">%s</div>' % ''.join([
                          ek('t15-e-tot', "Chiffre d'affaires total", ex('13 000 000'), 'Période 2026-09-30 → 2026-10-14',
                             'primary'),
-                         ek('t15-e-heb', 'Hébergement', ex('8 640 000'), 'Occupation 64 % · ADR ' + ex('45 000'),
+                         ek('t15-e-heb', 'Hébergement', ex('8 640 000'), 'Nuitées HT, nuit par nuit · occupation 64 % · ADR ' + ex('45 000'),
                             'primary'),
-                         ek('t15-e-pos', 'Restauration & boutique', ex('3 120 000'), '128 tickets · panier ' + ex('24 375'),
+                         ek('t15-e-pos', 'Restauration & boutique', ex('3 120 000'), 'HT · 128 tickets · panier ' + ex('24 375'),
                             'info'),
                          ek('t15-e-pre', 'Prestations', ex('1 240 000'), '46 prestation(s) réalisée(s)', 'teal')]),
                      '<div class="t15-xsect">Hébergement — indicateurs de performance <span>écarts vs même période N-1'
@@ -603,6 +630,9 @@ EXEC = vue_libre('t15-exec', '<div class="t15-x" id="t15-exec-defil" data-layout
                      '%s</div><div class="t15-xcard"><h3>Évolution mensuelle — 6 mois</h3>%s</div></div>'
                      % (anneau_mix(), evolution()),
                      TIP_PACE]), fond='tdb')
+
+# Le défilement qui amène TENDANCES dans le cadre (mesuré sur la planche).
+DEFIL_TEND = -480
 
 ECRAN = navigateur(fenetre_muk('t15-app', 'Direction', [], [COCKPIT, EXEC], societe=SOCIETE, initiale=NOM[0],
                                avatar='#854F0B', apps=APPS_PROFIL['direction'], app_active='Direction'))
@@ -803,7 +833,7 @@ TUTORIEL = {
                     classe('#t15-h-soir', ajouter=['on'], avec=True), clic('#t15-j-4', d=0.5),
                     classe('#t15-j-4', ajouter=['on']), clic('#t15-j-5', d=0.4), classe('#t15-j-5', ajouter=['on']),
                     texte('#t15-k-ca-v', '1 405 000 FCFA'), texte('#t15-k-ca-d', '▲ +6,8 %', avec=True),
-                    texte('#t15-k-ca-s', '52 tickets · POS payés / facturés', avec=True),
+                    texte('#t15-k-ca-s', 'HT · 52 tickets · POS payés / facturés', avec=True),
                     texte('#t15-k-marge-v', '790 400 FCFA', avec=True),
                     texte('#t15-k-marge-s', '56,3 % du CA · CA − coût des ventes', avec=True),
                     texte('#t15-p-tix-v', '52', avec=True), texte('#t15-p-tix-s', 'panier moyen 27 019 FCFA', avec=True),
@@ -821,18 +851,29 @@ TUTORIEL = {
         {'temps': 2, 'titre': 'À traiter : la liste du gérant',
          'texte': 'Relancer, régulariser, commander, renégocier : la liste se construit seule.',
          'voix': "Reste à agir. L'onglet À traiter dresse la liste du gérant : relancer les ardoises de plus de trente "
-                 "jours, régulariser la facture échue, commander la bière en rupture, renégocier une hausse de prix.",
+                 "jours, régulariser la facture échue, payer celle qui tombe cette semaine, commander la bière en "
+                 "rupture, renégocier une hausse de prix.",
          'gestes': [clic('#t15-tab-todo', d=0.7), classe('#t15-tab-credit', retirer=['on']),
                     classe('#t15-tab-todo', ajouter=['on', 'vu'], avec=True), vue('t15-b-todo', 'corps'), pause(0.3),
                     anneau('#t15-s-credit', d=1.2), bulle('b-todo', '#t15-s-four', cote='bas', d=3.0), pause(2.4),
-                    anneau('#t15-s-four', d=1.1), anneau('#t15-s-stock', d=1.2), anneau('#t15-s-prix', d=1.2)]},
-        {'temps': 3, 'titre': "L'hôtel face à l'an dernier",
-         'texte': "Occupation, prix moyen, RevPAR : l'écart N-1 en couleur, et un « ? » qui explique.",
-         'voix': "Retour à la vue d'ensemble, côté hôtel. Occupation, prix moyen par nuit, revpar : chaque carte se "
-                 "compare à la même période l'an dernier, et son point d'interrogation l'explique en une phrase.",
+                    anneau('#t15-s-four', d=1.1), anneau('#t15-r-payer', d=1.2), anneau('#t15-s-stock', d=1.2),
+                    anneau('#t15-s-prix', d=1.2)]},
+        {'temps': 3, 'titre': 'Six mois, dans les deux sens',
+         'texte': "Le chiffre encaissé face aux achats, l'encours des ardoises, et la balance âgée en miroir.",
+         'voix': "Retour à la vue d'ensemble. Tout en bas, six mois d'un coup d'œil : le chiffre encaissé face aux "
+                 "achats, et l'encours des ardoises. À côté, la balance âgée en miroir : ce que vos clients vous "
+                 "doivent, face à ce que vous devez à vos fournisseurs.",
          'gestes': [clic('#t15-tab-vue', d=0.7), classe('#t15-tab-todo', retirer=['on']),
                     classe('#t15-tab-vue', ajouter=['on'], avec=True), vue('t15-b-vue', 'corps'),
-                    defiler('#t15-vue-defil', -60, d=0.6), anneau('#t15-x-occ', d=1.2), anneau('#t15-x-adr', d=1.2),
+                    defiler('#t15-vue-defil', DEFIL_TEND, d=1.0), pause(0.2),
+                    curseur('#t15-tend-ca', fx=0.5, fy=0.55, d=0.6), anneau('#t15-tend-ca', d=3.0),
+                    zoom('#t15-tend-mir', s=1.45, d=0.8), anneau('#t15-mirror', d=3.2), pause(1.0),
+                    dezoom(d=0.6)]},
+        {'temps': 3, 'titre': "L'hôtel face à l'an dernier",
+         'texte': "Occupation, prix moyen, RevPAR : l'écart N-1 en couleur, et un « ? » qui explique.",
+         'voix': "Plus haut, côté hôtel. Occupation, prix moyen par nuit, revpar : chaque carte se compare à la même "
+                 "période l'an dernier, et son point d'interrogation l'explique en une phrase.",
+         'gestes': [defiler('#t15-vue-defil', -60, d=0.9), anneau('#t15-x-occ', d=1.2), anneau('#t15-x-adr', d=1.2),
                     bulle('b-n1', '#t15-x-revpar', cote='haut', d=2.8), pause(2.4),
                     curseur('#t15-x-revpar-aide', d=0.6), montrer('#t15-tip-revpar', d=0.3, y=6), pause(2.6),
                     cacher('#t15-tip-revpar', d=0.2), curseur('#t15-x-revpar', fx=0.6, fy=-0.25, d=0.5)]},

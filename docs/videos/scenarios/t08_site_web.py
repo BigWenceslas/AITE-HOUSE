@@ -24,21 +24,29 @@ Sources des écrans (libellés vérifiés mot pour mot par ``grep -rF`` dans
   (``odoo18/addons/website/i18n/fr.po`` l. 2388, 4539, 4617, 7865, 9309,
   11846, 12967, 15364, 15701-15713 ; ``portal/i18n/fr.po`` « Se connecter »).
 - Tunnel — ``aite_website_booking/controllers/main.py`` : routes
-  ``auth='public'`` (l. 69-146, 228-238) ; seules les ressources
-  « Réservable en ligne » (l. 59-63, 78-91) ; grille = ``get_day_grid``, seuls
-  les créneaux ``free`` (l. 92-100) ; fin = début + un pas, création
-  ``source='online'`` puis ``action_confirm`` sous point de sauvegarde, refus
-  → retour sur la grille avec ``error=slot`` (l. 157-222) ; demande de séjour
-  en brouillon, canal ``website``, arrivée 14:00 et départ 11:00 (l. 236-278) ;
-  client retrouvé par téléphone normalisé puis par e-mail, sinon créé
-  (``models/website_booking.py`` l. 21-31, 74-91).
+  ``auth='public'`` ; seules les ressources « Réservable en ligne » ; jour
+  passé ramené à aujourd'hui (``_safe_day``, l. 56-64) ; grille =
+  ``get_day_grid`` dans le fuseau de l'établissement (``_grid``, l. 74-78),
+  seuls les créneaux ``free`` encore à venir (``_now_h`` l. 66-72,
+  ``_future_slots`` l. 116-117 ; ``models/website_booking.py`` l. 84-89) ;
+  à la validation : créneau commencé refusé (``error=past``, l. 232-234),
+  créneau qui n'est plus proposé par la grille refusé avant toute écriture
+  (``error=slot``, l. 236-245 : ni contact ni numéro consommés), puis
+  contact, création ``source='online'`` et ``action_confirm`` sous point de
+  sauvegarde (l. 247-270) ; fin = début + durée de la prestation arrondie au
+  pas, sinon un pas (``_slot_minutes_for``, website_booking.py l. 69-82) ;
+  demande de séjour en brouillon, canal ``website``, arrivée 14:00 et départ
+  11:00 ; client retrouvé par téléphone (numéros normalisés des deux côtés,
+  ``_search_partner_by_phone`` l. 115-137) puis par e-mail, sinon créé
+  (``find_or_create_partner`` l. 95-113).
 - Moteur de créneaux — ``aite_slot_booking/models/booking_resource.py``
   (``get_day_grid``, « source de vérité unique » du site et du tableau de
   bord, l. 27-30, 157-223 : seules les réservations confirmées ou réalisées
   occupent la grille, l. 182-183 ; champ « Réservable en ligne », l. 74-77) ;
   ``models/booking_booking.py`` (états, « Origine » Comptoir / En ligne
   l. 87-101, montant = heures × tarif horaire ``_slot_price`` l. 126-138,
-  conflit refusé au-delà de la capacité ``_check_no_conflict`` l. 260-282) ;
+  conflit refusé au-delà de la capacité, la ressource verrouillée pendant
+  la confirmation ``_check_no_conflict`` l. 269-301) ;
   ``data/slot_sequence_data.xml`` (référence ``RES/%(y)s/`` sur 4 chiffres
   → RES/26/0131).
 - Réception — tableau de bord ``aite_slot_booking/static/src/xml/dashboard.xml``
@@ -111,25 +119,30 @@ SiteMinder, c'est-à-dire PMS et channel manager) ;
 Promesse : bornée à ce que la vidéo montre et que le code garantit. Un
 salon se réserve en ligne et se confirme aussitôt (``_confirm_slot``) ; un
 séjour n'est qu'une demande en brouillon (``rooms_submit``). Les prestations
-(spa, coiffure) ne sont pas promises : une prestation dont la durée n'est pas
-un multiple du pas de la ressource échoue à chaque fois (voir les écarts). Le
-refus d'un créneau déjà confirmé est prouvé pour des validations successives
-(``test_double_booking_is_refused``) : le contrôle ne pose ni verrou ni
-contrainte SQL (voir les écarts), d'où l'absence de toute promesse absolue
-(« sans double vente », « jamais »). Titre et accroche disent « encore
-libres » et « déjà vendu », pas « vraiment libre » : la grille ne cache que
-les heures déjà réservées (confirmées ou réalisées) ; une heure déjà passée
-du jour reste proposée et acceptée (pas d'attribut ``min`` sur le champ Date,
-``website_templates.xml`` l. 90 ; ``_safe_day`` l. 52-57 ; ``get_day_grid``
-l. 92-94 ; aucun contrôle début ≥ maintenant dans ``_confirm_slot`` ni dans
-``_check_slot_valid``). La vidéo réserve un samedi à venir.
+(spa, coiffure) se réservent aussi en ligne depuis aite_website_booking
+18.0.1.0.1 (durée arrondie au pas, ECARTS n° 34 b,
+``test_service_not_multiple_of_the_step_can_be_booked``) ; la vidéo ne les
+montre pas (le tutoriel 9 les traite au comptoir). Le refus d'un créneau
+déjà confirmé est prouvé pour des validations successives
+(``test_double_booking_is_refused``) et, depuis aite_slot_booking 18.0.1.0.4,
+pour deux confirmations simultanées (verrou sur la ressource,
+``test_simultaneous_confirmations_cannot_double_book``, ECARTS n° 32) ; la
+vidéo montre une validation tardive. Titre et accroche disent « encore
+libres » et « déjà vendu » : la grille cache les heures déjà réservées
+(confirmées ou réalisées) et, aujourd'hui, les heures déjà commencées ; le
+champ Date refuse les jours passés (attribut ``min``,
+``website_templates.xml`` l. 91) et le serveur refuse un créneau commencé
+(« Ce créneau est déjà passé — choisissez une heure à venir. », l. 84 ;
+ECARTS n° 34 a, corrigé dans aite_website_booking 18.0.1.0.1). La vidéo le
+montre à l'étape 2 : à 10:20, la grille du jour commence à 11:00.
 
 Résultats : trois parcours publics (``website_templates.xml`` l. 10-38) ;
 une seule grille pour le site et la réception (``booking_resource.py``
-l. 27-30, ``slot_dashboard.py`` l. 107-117, ``controllers/main.py`` l. 93) ;
-45 tests Odoo du module, dont ``test_double_booking_is_refused``
-(``docs/GUIDE_TESTS.md`` l. 31, ``aite_website_booking/tests/test_controllers.py``
-l. 155-173 : 22 tests, ``test_helpers.py`` : 23 tests).
+l. 27-30, ``slot_dashboard.py`` l. 107-117, ``controllers/main.py`` l. 74-78) ;
+53 tests Odoo du module, dont ``test_double_booking_is_refused``
+(``aite_website_booking/tests/test_controllers.py`` : 26 tests,
+``test_helpers.py`` : 27 tests, comptés dans le code après les corrections
+du 20/10/2026 ; ``docs/GUIDE_TESTS.md`` l. 31 dit encore 45).
 
 Données : fictives (``demo.py``). Claire Durand (cliente), Mireille Ateba
 (réception). Les huit ressources (salons « Wouri », « Sanaga »,
@@ -144,8 +157,8 @@ et deux dépôts de pressing non retirés, que le tutoriel 9 compte encore le
 référence du créneau, RES/26/0131, précède celles que le tutoriel 9 crée le
 15/10 (RES/26/0158 à 11:09). Claire reprend l'adresse de la série
 (claire.durand@exemple.fr, ``t04_note_chambre.py`` l. 333) : le site
-retrouve sa fiche, la réservation affiche le téléphone déjà enregistré
-(voir ``TEL_FICHE``). Les réservations confirmées de la liste de l'hôtel,
+retrouve sa fiche par son téléphone, la réservation affiche le téléphone
+déjà enregistré (voir ``TEL_FICHE``). Les réservations confirmées de la liste de l'hôtel,
 celle de Rodrigue Tamba et le brouillon de Jacques Owona sont ceux du
 tutoriel 2 (``scenarios/t02_planning.py`` l. 231-260, 277-289, 648-680 ;
 tarifs Standard 35 000, Confort 45 000, Suite Junior 75 000, Suite VIP
@@ -161,8 +174,8 @@ par l'établissement (liens et texte « À propos de nous » fictifs, à la plac
 du texte d'exemple du gabarit).
 
 Chronologie : « aujourd'hui » vaut le mercredi 14/10/2026 (``demo.ARRIVEES``).
-Claire réserve le salon à 07:52, avant l'ouverture : la grille du jour
-commence donc à 09:00 sans heure déjà passée. Le salon est réservé pour le
+Claire réserve le salon à 10:20 : la grille du jour ne propose plus 09:00
+ni 10:00, déjà commencées, et commence à 11:00. Le salon est réservé pour le
 samedi 17/10/2026. Elle envoie sa demande de séjour plus tard dans la
 matinée, vers 10:40 : après les réservations RES/2026/0221 et 0222 que le
 tutoriel 2 crée à 10:06 et 10:09, et après celle de Yannick Mbassi
@@ -195,10 +208,10 @@ SITE = 'Complexe Hôtelier'
 TEL_HOTEL = '+237 6 00 00 00 10'
 TEL_CLAIRE = '+33 6 39 98 21 47'                  # saisi sur le site (plage ARCEP réservée à la fiction)
 MAIL_CLAIRE = 'claire.durand@exemple.fr'          # l'adresse de Claire dans la série (t04_note_chambre.py l. 333)
-# find_or_create_partner cherche d'abord le téléphone normalisé (égalité stricte,
-# website_booking.py l. 80-82 : la fiche porte le numéro avec ses espaces, pas
-# « +33639982147 »), puis l'e-mail (l. 83-85) : la fiche existante de Claire est
-# retrouvée, sans doublon. La réservation affiche donc le téléphone déjà
+# find_or_create_partner cherche d'abord le téléphone, en comparant les numéros
+# normalisés des deux côtés (_search_partner_by_phone, website_booking.py
+# l. 115-137 : la fiche porte le numéro avec ses espaces), puis l'e-mail : la
+# fiche existante de Claire est retrouvée, sans doublon. La réservation affiche donc le téléphone déjà
 # enregistré sur ce contact (partner_phone = related partner_id.phone,
 # booking_booking.py l. 53-54) : le même numéro, celui de Claire dans toute la série.
 TEL_FICHE = TEL_CLAIRE
@@ -207,7 +220,7 @@ SALON = 'Salon VIP Wouri'
 REF_CRENEAU = 'RES/26/0131'                       # séquence RES/%(y)s/ (créneaux), avant celles du 15/10 (t09)
 REF_SEJOUR = 'RES/2026/0224'                      # séquence RES/%(year)s/ (séjours)
 REF_YANNICK = 'RES/2026/0223'
-HEURE_RESA = '07:52'                              # l'heure où Claire a réservé le salon
+HEURE_RESA = '10:20'                              # l'heure où Claire a réservé le salon
 # Tarif horaire des salons, comme au tutoriel 9 (t09_espaces.py l. 192-201).
 TARIF_SALON, TARIF_VVIP = 15000, 25000
 
@@ -323,10 +336,11 @@ ESPACES = vue_site('t08-espaces', (
                fcfa(TARIF_VVIP) + ' / heure'))), haut_pied=440)
 
 # Les créneaux libres du salon (pas d'une heure, 09:00 → 23:00), cohérents
-# avec le planning de la réception : le mercredi 14/10 à 07:52 (12:00-14:00
-# et 16:00-20:00 vendus, aucune heure encore passée), et le samedi 17/10
-# (12:00-14:00 et 19:00-21:00 vendus).
-LIBRES_14 = ['09:00', '10:00', '11:00', '14:00', '15:00', '20:00', '21:00', '22:00']
+# avec le planning de la réception : le mercredi 14/10 à 10:20 (12:00-14:00
+# et 16:00-20:00 vendus ; 09:00 et 10:00, déjà commencées, ne sont plus
+# proposées : _future_slots), et le samedi 17/10 (12:00-14:00 et 19:00-21:00
+# vendus).
+LIBRES_14 = ['11:00', '14:00', '15:00', '20:00', '21:00', '22:00']
 LIBRES_17 = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00', '18:00', '21:00', '22:00']
 
 
@@ -992,7 +1006,8 @@ TUTORIEL = {
     'bulles': {
         'b-public': 'Pages publiques : ni compte à créer, ni mot de passe.',
         'b-grille': "La même grille qu'à la réception.",
-        'b-refus': 'Créneau confirmé entre-temps : la validation tardive est refusée.',
+        'b-passe': "Aujourd'hui, 10 h 20 : les heures déjà commencées ne sont plus proposées.",
+        'b-refus': 'Créneau confirmé entre-temps : refusé, sans rien créer.',
         'b-origine': 'Créée et confirmée par le site : rien à ressaisir.',
         'b-brouillon': "Aucune chambre n'est bloquée tant que la réception n'a pas confirmé.",
     },
@@ -1010,9 +1025,11 @@ TUTORIEL = {
                     anneau('#t08-salons', d=1.4), pause(0.6), clic('#t08-e1-bt'), vue('t08-g14', 'site'), pause(0.3)]},
         {'temps': 0, 'titre': 'Les créneaux encore libres',
          'texte': 'Une date, et la grille ne propose que les créneaux libres ce jour-là.',
-         'voix': "Claire choisit samedi : la grille ne montre que les heures encore libres. Ce qui est déjà confirmé, "
-                 "au comptoir ou en ligne, n'y figure plus. Elle coche seize heures, pour une heure.",
-         'gestes': [clic('#t08-g14-date', fx=0.3), saisir('t08-g14-date', '17/10/2026'), clic('#t08-g14-voir'),
+         'voix': "Pour aujourd'hui, les heures déjà commencées ne sont plus proposées. Claire choisit samedi : la "
+                 "grille ne montre que les heures encore libres ; ce qui est confirmé, au comptoir ou en ligne, n'y "
+                 "figure plus. Elle coche seize heures.",
+         'gestes': [anneau('#t08-g14-creneaux', d=1.0), bulle('b-passe', '#t08-g14-h22', cote='droite', d=2.6),
+                    pause(1.4), clic('#t08-g14-date', fx=0.3), saisir('t08-g14-date', '17/10/2026'), clic('#t08-g14-voir'),
                     vue('t08-g17', 'site'), pause(0.2), zoom('#t08-g17-creneaux', s=1.55, d=0.7),
                     bulle('b-grille', '#t08-g17-h22', cote='droite', d=2.4), pause(1.6), clic('#t08-g17-h16'),
                     classe('#t08-g17-h16', ajouter=['coche']), pause(0.7), dezoom(d=0.6)]},
@@ -1032,7 +1049,8 @@ TUTORIEL = {
         {'temps': 1, 'titre': 'Une validation tardive est refusée',
          'texte': "Un second visiteur valide le même créneau : refusé, le site lui demande d'en choisir un autre.",
          'voix': "Un autre visiteur, resté sur la page, valide seize heures à son tour : trop tard. Le site refuse la "
-                 "seconde réservation, lui demande un autre créneau, et seize heures a disparu de la grille.",
+                 "seconde réservation sans rien créer, lui demande un autre créneau, et seize heures a disparu de "
+                 "la grille.",
          'gestes': acteur('t08-pa') + [
              vue('t08-ga', 'site', avec=True), pause(0.4), anneau('#t08-ga-h16', d=1.0), clic('#t08-ga-reserver'),
              vue('t08-gr', 'site'), pause(0.3), zoom('#t08-gr-alerte', s=1.5, d=0.7),
@@ -1104,10 +1122,10 @@ TUTORIEL = {
              'texte': 'publics sur une même page : salons, spa et coiffure, chambres — sans compte'},
             {'valeur': '1', 'compter': 1, 'unite': 'grille', 'icone': 'horloge',
              'texte': 'de disponibilités pour le site et la réception : une seule source'},
-            {'valeur': '45', 'compter': 45, 'unite': 'tests', 'icone': 'bouclier',
+            {'valeur': '53', 'compter': 53, 'unite': 'tests', 'icone': 'bouclier',
              'texte': "automatisés du tunnel public, dont le refus d'un créneau déjà pris"},
         ],
-        'voix': "Trois parcours publics, une seule grille pour le site et la réception, et quarante-cinq tests "
+        'voix': "Trois parcours publics, une seule grille pour le site et la réception, et cinquante-trois tests "
                 "automatisés, dont le refus d'un créneau déjà pris.",
     },
     'cta': {
