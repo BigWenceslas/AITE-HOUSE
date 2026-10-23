@@ -16,6 +16,7 @@ HOTEL = 'Complexe Hôtelier — Démo'
 SOCIETE = 'Démo Hôtellerie SARL'
 VILLE = 'Douala'
 ETOILES = '3 ★'
+TEL_HOTEL = '+237 6 00 00 00 10'      # plage de fiction, comme tous les numéros de la série
 
 # Les postes, un collaborateur fictif par poste (nom, rôle, initiale de l'avatar).
 POSTES = {
@@ -41,6 +42,16 @@ CHAMBRE = '204 [CFT]'
 TYPE = 'Confort'
 PRIX_NUIT = '45 000 FCFA'
 TOTAL_HEB = '90 000 FCFA'
+
+# Les réservations de créneaux (espaces et prestations) qui reviennent d'une
+# vidéo à l'autre. Depuis la livraison 4, leur référence a son propre préfixe
+# et l'année sur quatre chiffres, comme les séjours (« CRN/2026/0131 » et non
+# plus « RES/26/0131 ») : aite_slot_booking/data/slot_sequence_data.xml,
+# préfixe « CRN/%(range_year)s/ », 4 chiffres, numérotation annuelle (écart
+# n° 61). Les séjours gardent « RES/2026/… ».
+CRENEAU_SALON = 'CRN/2026/0131'      # Claire Durand, salon VIP Wouri, samedi 17/10/2026 16:00
+CRENEAU_MASSAGE = 'CRN/2026/0158'    # Brigitte Essomba, massage du 15/10, reporté sur FOL/2026/0210
+CRENEAU_PRESSING = 'CRN/2026/0141'   # Samuel Etoga, pressing
 
 ARRIVEES = [
     # (référence, client, arrivée, départ, nuits, chambres, total hébergement HT, solde du folio)

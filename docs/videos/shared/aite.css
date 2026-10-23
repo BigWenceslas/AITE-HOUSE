@@ -410,6 +410,7 @@ img { display: block; }
 .kpi-d { margin-top: 4px; font-size: 16px; font-weight: 700; }
 .kpi-d.haut { color: #1D7A33; }
 .kpi-d.bas { color: #B4232C; }
+.kpi-d.nul { color: #757A7F; }   /* écart nul « ■ 0,0 % » : text-muted d'Odoo 18 (rgba(#495057,.76) sur blanc) */
 .kpi-s { margin-top: 4px; font-size: 16px; color: var(--o-texte-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .g-carte { background: #fff; border-radius: 12px; padding: 16px 20px; height: 250px; position: relative; overflow: hidden; }
 .g-titre { font-size: 19px; color: var(--o-texte); }

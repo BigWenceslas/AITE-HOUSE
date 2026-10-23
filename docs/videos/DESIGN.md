@@ -67,8 +67,22 @@ folio. Le folio d'Estelle : 102 000 FCFA, acompte MTN Mobile Money de
 45 000, 57 000 FCFA dus.
 
 Claire Durand réserve en ligne le salon VIP Wouri pour le samedi 17/10 à
-16:00 (`RES/26/0131`) ; on retrouve sa réservation dans le planning des
-espaces de la direction.
+16:00 (`CRN/2026/0131`) ; on retrouve sa réservation dans le planning des
+espaces de la direction. Les réservations de créneaux portent le préfixe
+`CRN/` et l'année sur quatre chiffres depuis la livraison 4
+(`demo.CRENEAU_SALON`, `CRENEAU_MASSAGE` `CRN/2026/0158`,
+`CRENEAU_PRESSING` `CRN/2026/0141`) ; les séjours restent en `RES/2026/…`.
+
+Les nombres s'écrivent comme le produit depuis la livraison 4 (helpers de
+`ecrans.py`) : montants « 45 000 FCFA » (`fcfa`), pourcentages à une
+décimale fixe « 56,0 % » (`pct`), variations « ▲ +12,5 % », « ▼ 3,0 % »,
+« ■ 0,0 % » en gris (`variation`, `kpi(delta=…)`), durées « 12,3 j »
+(`jours`), âges « 160 j » (`age`), mots accordés sans « (s) » (`compte`),
+dates « 14/10/2026 » (`date_fr`), mois « sept. » / « octobre 2026 »
+(`mois_abrege`, `mois_long`). Champs d'Odoo : espace insécable entre les
+milliers ; tableaux de bord AITE : espace fine (`tdb=True`). Les barres de
+menus de chaque profil sont dans `ecrans.MENUS_MUK` (« Réception », et non
+plus « Front Desk » ; « Activité par pôle », et non plus « Direction »).
 
 Les personnes sont **fictives**, une par poste : Mireille Ateba (réception),
 Josiane Fouda (gouvernante, avec Clarisse et Sidonie), Hervé Tchakounté (caisse du

@@ -13,7 +13,12 @@ Chaque fonction rend une chaîne HTML. Les identifiants posés sur les
 doivent être uniques dans toute la vidéo (préfixer par le chapitre).
 """
 
+import datetime as _dt
+import math as _math
+import re as _re
 from html import escape as _e
+
+import demo
 
 
 def e(texte):
@@ -23,6 +28,127 @@ def e(texte):
 
 def _id(identifiant):
     return ' id="%s"' % identifiant if identifiant else ''
+
+
+# ----------------------------------------------------- formats du produit --
+# Les nombres tels que le produit les écrit depuis la livraison 4 (écarts
+# n° 37-77, « formats unifiés »). Deux familles, à ne pas mélanger :
+#  - les champs d'Odoo (fiches, listes, pivots) : milliers séparés par
+#    l'espace insécable de la langue fr_FR (odoo/addons/base/data/
+#    res.lang.csv), symbole monétaire après une espace insécable
+#    (web/static/src/core/currency.js) ;
+#  - les tableaux de bord OWL d'AITE (``fmtInt`` / ``fmtMoney`` des
+#    ``static/src/js/services/utils.js``) : ``toLocaleString("fr-FR")``,
+#    soit l'espace FINE insécable U+202F entre les milliers, une espace
+#    simple avant le symbole, une espace insécable avant « % ».
+
+NBSP = ' '     # espace insécable
+NNBSP = ' '    # espace fine insécable (toLocaleString fr-FR)
+
+# Mois abrégés des six moteurs serveur et de l'exécutif (MONTHS_FR de
+# aite_*_dashboard/models/*_dashboard.py, monthLabel de
+# aite_exec_dashboard/static/src/js/services/utils.js).
+MOIS_ABREGES = ('janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.')
+# Mois en toutes lettres : regroupement « par mois » d'Odoo en français
+# (pivots et listes groupées : « octobre 2026 »).
+MOIS = ('janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre',
+        'novembre', 'décembre')
+
+
+def _rond(v):
+    """``Math.round`` de JavaScript (le demi va vers le haut)."""
+    return int(_math.floor(float(v or 0) + 0.5))
+
+
+def _rond1(v):
+    """``round1`` des utils.js : une décimale, jamais « -0,0 »."""
+    return (_math.floor(float(v or 0) * 10 + 0.5) / 10.0) or 0.0
+
+
+def _dec1(v):
+    return ('%.1f' % _rond1(v)).replace('.', ',')
+
+
+def entier(n, tdb=False):
+    """Un entier à la française : « 2 159 ». ``tdb`` : tableau de bord OWL
+    (``fmtInt`` : espace fine), sinon champ d'Odoo (espace insécable)."""
+    v = _rond(n)
+    return ('-' if v < 0 else '') + '{:,}'.format(abs(v)).replace(',', NNBSP if tdb else NBSP)
+
+
+def fcfa(n, tdb=False, symbole='FCFA'):
+    """Un montant en francs CFA : « 45 000 FCFA ». Champ d'Odoo (devise XAF,
+    symbole « FCFA », arrondi 1) ou, avec ``tdb``, ``fmtMoney`` d'un tableau
+    de bord (symbole de la société, « FCFA » et non plus « F » sur l'analyse
+    des ventes : setCurrencySymbol)."""
+    return entier(n, tdb) + (' ' if tdb else NBSP) + symbole
+
+
+def pct(v):
+    """« 56,0 % » : une décimale fixe, virgule, espace insécable (``fmtPct``
+    de hotel_utils.js, pos_credit, pos_analytics, exec, direction)."""
+    return _dec1(v) + NBSP + '%'
+
+
+def variation(v):
+    """« ▲ +12,5 % », « ▼ 3,0 % », « ■ 0,0 % » : le rendu unique des
+    tableaux de bord AITE (``fmtDelta``) — la flèche dit le sens, jamais de
+    « − » en plus, un écart nul n'est ni vert ni « +0,0 »."""
+    r = _rond1(v)
+    return ('▲ +' if r > 0 else '▼ ' if r < 0 else '■ ') + pct(abs(r))
+
+
+def sens(v, hausse_mauvaise=False):
+    """La couleur d'une variation, lue sur la valeur affichée (``deltaClass``) :
+    'haut' (vert), 'bas' (rouge), 'nul' (gris). ``hausse_mauvaise`` : un coût,
+    une dette, les nouvelles ardoises (``upIsBad``) — une hausse est rouge."""
+    r = _rond1(v)
+    if not r:
+        return 'nul'
+    return 'haut' if (r > 0) != bool(hausse_mauvaise) else 'bas'
+
+
+def jours(v):
+    """Une durée ou une moyenne en jours : « 12,3 j » (``fmtDays``)."""
+    return _dec1(v) + ' j'
+
+
+def age(v, tdb=True):
+    """L'âge d'une ardoise en jours entiers : « 160 j » (``fmtAge``)."""
+    return entier(v, tdb) + ' j'
+
+
+def compte(n, un, plusieurs, tdb=True):
+    """Un nombre suivi du mot accordé : « 1 remboursement », « 12 nuitées
+    vendues » — pluriel à partir de 2, jamais de « (s) » (``fmtCount``)."""
+    k = _rond(n)
+    return entier(k, tdb) + ' ' + (plusieurs if abs(k) > 1 else un)
+
+
+def date_fr(d):
+    """« 14/10/2026 » (règle 6) : une date, ou une chaîne « AAAA-MM-JJ »."""
+    if isinstance(d, str):
+        a, m, j = d[:10].split('-')
+        return '%s/%s/%s' % (j, m, a)
+    return d.strftime('%d/%m/%Y')
+
+
+def mois_abrege(mois, annee=None):
+    """« sept. » ; avec l'année, « sept. 26 » (monthLabel de l'exécutif et
+    graphiques mensuels de l'analyse des ventes)."""
+    m = MOIS_ABREGES[mois - 1]
+    return m if annee is None else '%s %s' % (m, str(annee)[2:])
+
+
+def mois_long(mois, annee):
+    """« octobre 2026 » : un regroupement par mois d'Odoo en français."""
+    return '%s %d' % (MOIS[mois - 1], annee)
+
+
+assert (entier(2159), fcfa(45000), pct(56), variation(12.46), variation(-3), variation(-0.04), jours(12.34),
+        compte(1, 'fiche complète', 'fiches complètes'), date_fr(_dt.date(2026, 10, 14)), mois_abrege(9, 2026)) == (
+    '2 159', '45 000 FCFA', '56,0 %', '▲ +12,5 %', '▼ 3,0 %', '■ 0,0 %', '12,3 j',
+    '1 fiche complète', '14/10/2026', 'sept. 26')
 
 
 # --------------------------------------------------------------- icônes --
@@ -127,17 +253,20 @@ def cp_liste(titre, facettes=(), pager='', nouveau=True, ident=None):
                recherche(facettes, ident and ident + '-rech'), e(pager)))
 
 
-def cp_fiche(parent, reference, pager='', stats=()):
+def cp_fiche(parent, reference, pager='', stats=(), nouveau=True):
     """Le panneau d'une fiche : « Nouveau », fil d'Ariane, boutons intelligents, pagination.
 
-    ``stats`` : (identifiant, icône, libellé, valeur).
+    ``stats`` : (identifiant, icône, libellé, valeur). ``nouveau=False`` pour
+    une fiche ``create="0"``, qui n'a pas de bouton « Nouveau » (la note de
+    chambre en attente depuis la livraison 4, roomcharge_pending_views.xml).
     """
     boutons = ''.join('<span class="stat"%s>%s<span class="st-t"><span>%s</span><b id="%s-v">%s</b></span></span>'
                       % (_id(i), icone(ic, 'sic'), e(l), i, e(v)) for i, ic, l, v in stats)
-    return ('<div class="cp"><span class="bt contour">Nouveau</span>'
+    return ('<div class="cp">%s'
             '<div class="fil"><span class="parent">%s</span><span class="ref">%s</span></div>'
             '<div class="stats">%s</div><span class="pager">%s</span></div>'
-            % (e(parent), e(reference), boutons, e(pager)))
+            % ('<span class="bt contour">Nouveau</span>' if nouveau else '', e(parent), e(reference), boutons,
+               e(pager)))
 
 
 def vue_liste(identifiant, titre, colonnes, lignes, facettes=(), pager='', initiale=False, total=None, nouveau=True,
@@ -297,11 +426,49 @@ def tdb_filtres(lignes):
     return '<div class="tdb-filtres">%s</div>' % ''.join(rangs)
 
 
+def _kpi_delta(delta):
+    """La ligne de variation d'une carte, au rendu du produit (``variation``) :
+    flèche, signe « + » d'une hausse, pas de « − » sous « ▼ », écart nul en
+    gris (classe ``nul``)."""
+    if isinstance(delta, (int, float)):
+        delta = (delta,)
+    premier = delta[0]
+    if isinstance(premier, (int, float)):
+        libelle = delta[1] if len(delta) > 1 else ''
+        texte = variation(premier) + (' ' + libelle if libelle else '')
+        genre = sens(premier, len(delta) > 2 and delta[2])
+    else:
+        texte, genre = premier.strip(), delta[1]
+        if texte[:1] not in '▲▼■':
+            if genre == 'haut':
+                texte = '▲ ' + (texte if texte.startswith('+') else '+' + texte)
+            elif genre == 'bas':
+                texte = '▼ ' + texte.lstrip('-−')
+            else:
+                texte = '■ ' + texte
+        texte = _re.sub(r'(\d) %', '\\1' + NBSP + '%', texte)
+    return '<div class="kpi-d %s">%s</div>' % (genre, e(texte))
+
+
 def kpi(identifiant, libelle, valeur, sous='', accent=None, delta=None, aide=False):
-    """Une carte d'indicateur : ``delta`` = (texte, 'haut' | 'bas')."""
-    d = ''
-    if delta:
-        d = '<div class="kpi-d %s">%s %s</div>' % (delta[1], '▲' if delta[1] == 'haut' else '▼', e(delta[0]))
+    """Une carte d'indicateur des tableaux de bord AITE.
+
+    ``delta``, la variation, rendue comme le produit (« ▲ +12,5 % vs période
+    précédente », « ▼ 3,0 % », « ■ 0,0 % ») :
+
+    - un nombre (la variation en %), coloré par son signe ;
+    - (nombre, libellé[, hausse_mauvaise]) : suivi du libellé de la carte
+      (« vs période précédente » sur la Réception et POS Crédit ; « vs N-1 »
+      sur l'exécutif, sauf le rythme du mois : « vs même date N-1 » ; aucun
+      libellé sur les cartes Hébergement du cockpit) ; ``hausse_mauvaise``
+      pour un coût ou les nouvelles ardoises (``upIsBad``) ;
+    - (texte, 'haut' | 'bas' | 'nul') : un texte déjà composé ; la flèche, et
+      le « + » d'une hausse, s'ajoutent s'il ne les porte pas. Ici le genre
+      donne à la fois la flèche ET la couleur : une baisse qui est une bonne
+      nouvelle (ardoises ▼ en vert) ou une hausse mauvaise (CMV ▲ en rouge)
+      s'écrit OBLIGATOIREMENT sous la forme numérique (v, libellé, True).
+    """
+    d = _kpi_delta(delta) if delta is not None else ''
     a = '<span class="kpi-aide">?</span>' if aide else ''
     return ('<div class="kpi%s" id="%s"><div class="kpi-l">%s%s</div><div class="kpi-v" id="%s-v">%s</div>%s'
             '<div class="kpi-s">%s</div></div>' % (' acc-' + accent if accent else '', identifiant, e(libelle), a,
@@ -450,13 +617,19 @@ def calendrier(identifiant, mois, numeros, gris, aujourdhui, evenements, initial
 
 # ------------------------------------------------------------- site web --
 
-def site(identifiant, vues, nom_site, calques=''):
-    """Le site web public de l'établissement : en-tête, page, vues empilées."""
+def site(identifiant, vues, nom_site, calques='', tel=None):
+    """Le site web public de l'établissement : en-tête, page, vues empilées.
+
+    Menus « Accueil » et « Contactez-nous » (website, i18n/fr.po : « Home »,
+    « Contact us ») et « Réservation » (aite_website_booking,
+    data/website_menu_data.xml) ; bouton « Contactez-nous » (« Contact Us ») ;
+    le téléphone de l'hôtel (``demo.TEL_HOTEL``).
+    """
     return ('<div class="app site" id="%s"><div class="s-nav"><span class="s-logo">%s</span>'
-            '<span class="s-m">Accueil</span><span class="s-m actif">Réservation</span><span class="s-m">Nous contacter</span>'
-            '<span class="s-tel">%s+237 6 99 00 00 00</span><span class="bt primaire s-bt">Nous contacter</span></div>'
+            '<span class="s-m">Accueil</span><span class="s-m actif">Réservation</span><span class="s-m">Contactez-nous</span>'
+            '<span class="s-tel">%s%s</span><span class="bt primaire s-bt">Contactez-nous</span></div>'
             '<div class="s-page">%s</div>%s</div>'
-            % (identifiant, e(nom_site), icone('telephone'), ''.join(vues), calques))
+            % (identifiant, e(nom_site), icone('telephone'), e(tel or demo.TEL_HOTEL), ''.join(vues), calques))
 
 
 def s_vue(identifiant, contenu, initiale=False):
@@ -512,6 +685,48 @@ APPS_PROFIL = {
     'caisse': ['Discussion', 'Tableaux de bord', 'POS Crédit', 'Point de Vente', 'Site Web', 'Maintenance', 'Apps'],
     'magasin': ['Discussion', 'Tableaux de bord', 'Site Web', 'Inventaire', 'Maintenance', 'Apps'],
 }
+
+# Les menus de la barre du haut, par application et par profil (livraison 4).
+# Ordre = séquence des menuitem, puis ordre de création ; un menu réservé à
+# un groupe n'apparaît que pour ce profil.
+#  - Hôtel : aite_hotel_management/views/hotel_menus.xml (« Réception »,
+#    anciennement « Front Desk », écart n° 42 ; Réservations ; Facturation ;
+#    Gouvernante ; Configuration, Responsable), aite_exec_dashboard/views/
+#    exec_menus.xml (« Activité par pôle », anciennement « Direction »,
+#    Responsable), aite_slot_booking/views/slot_menus.xml (Espaces &
+#    Prestations), aite_hotel_pos_link/views/roomcharge_menus.xml (Notes de
+#    chambre en attente), aite_loyalty/views/loyalty_menus.xml (Fidélité) ;
+#    le profil Gouvernante seul ne voit que « Gouvernante ».
+#  - Point de Vente : point_of_sale (fr.po : Tableau de bord, Commandes,
+#    Produits, Analyse, Configuration). « Analyse AITE » n'est plus dans la
+#    barre : c'est une section du menu « Analyse » (aite_pos_analytics/views/
+#    pos_analytics_menus.xml, parent point_of_sale.menu_point_rep, écart n° 67).
+#  - Achats, Inventaire : purchase et stock (fr.po), plus « Tableau de bord
+#    AITE » (aite_purchase_dashboard, aite_stock_dashboard) ; « Analyse » et
+#    « Configuration » sont réservés aux responsables (profil Direction).
+#  - POS Crédit : aite_pos_credit/views/pos_credit_menus.xml.
+#  - Direction : aucun sous-menu (aite_direction_dashboard).
+MENUS_MUK = {
+    'hotel_reception': ['Réception', 'Réservations', 'Espaces & Prestations', 'Notes de chambre en attente',
+                        'Facturation', 'Fidélité', 'Gouvernante'],
+    'hotel_direction': ['Activité par pôle', 'Réception', 'Réservations', 'Espaces & Prestations',
+                        'Notes de chambre en attente', 'Facturation', 'Fidélité', 'Gouvernante', 'Configuration'],
+    'hotel_gouvernante': ['Gouvernante'],
+    # Profils responsables (Direction) : « Analyse » et « Configuration »
+    # n'apparaissent qu'aux groupes group_pos_manager / group_purchase_manager.
+    'point_de_vente': ['Tableau de bord', 'Commandes', 'Produits', 'Analyse', 'Configuration'],
+    'achats': ['Commandes', 'Tableau de bord AITE', 'Produits', 'Analyse', 'Configuration'],
+    # Profil Caisse (group_pos_user seul) : ni « Analyse » ni « Configuration ».
+    'point_de_vente_caisse': ['Tableau de bord', 'Commandes', 'Produits'],
+    'inventaire': ["Vue d'ensemble", 'Opérations', 'Tableau de bord AITE', 'Produits'],
+    'pos_credit': ['Recouvrement', 'Ardoises', 'Remboursements'],
+    'direction': [],
+}
+# Les entrées du menu « Analyse » du Point de Vente, section « Analyse AITE »
+# (pos_analytics_menus.xml ; « Pivot & Graph » est devenu « Tableau croisé &
+# graphique »).
+MENU_ANALYSE_AITE = ['Tableau de bord', 'Par caisse', 'Sessions POS', 'Par catégorie', 'Écarts de caisse',
+                     'Tableau croisé & graphique']
 
 
 def icone_app(app):
