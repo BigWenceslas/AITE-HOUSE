@@ -28,7 +28,7 @@ Légende des statuts : ✅ **Fait** (livré et testé) · 🟡 **Partiel** (une 
 | 2 | `aite_slot_booking` | **18.0.1.0.4** | Espaces & prestations au créneau (salles VIP/VVIP, SPA, coiffure, pressing), conflits, no-show, report au folio | 25 | ✅ |
 | 3 | `aite_website_booking` | **18.0.1.0.1** | Réservation en ligne (site web) : espaces, prestations, demandes de séjour, acompte | 8 | ✅ |
 | 4 | `aite_hotel_pos_link` | **18.0.1.0.1** | **Note de chambre** : moyen de paiement POS → folio du séjour, file de rattachement | 13 | ✅ |
-| 5 | `aite_pos_credit` | **18.0.2.0.4** | Crédit clients (ardoises) POS + Ventes : plafonds, encours, remboursements, écritures 411, recouvrement | 38 | ✅ |
+| 5 | `aite_pos_credit` | **18.0.2.0.4** | Crédit clients (ardoises) POS + Ventes : encours et sévérité par âge (pas de plafond par client), remboursements, écritures 411, recouvrement | 38 | ✅ |
 | 6 | `aite_loyalty` | **18.0.1.0.2** | Fidélité unifiée : points, historisation, statut Standard/VIP/VVIP automatique | 16 | ✅ |
 | 7 | `aite_pos_analytics` | **18.0.2.1.2** | Analyses ventes POS : CA, marge, CMV, écarts de caisse, heures de pointe, produits | 36 | ✅ |
 | 8 | `aite_stock_dashboard` | **18.0.1.1.2** | Stock : valorisation, couverture, ruptures, rotation, coulage, inventaires, dépôts | 19 | ✅ |

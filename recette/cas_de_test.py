@@ -170,11 +170,12 @@ CAS = [
      "Seules les chambres réellement disponibles sont proposées, avec "
      "leur tarif en FCFA."),
     ("C02", "C", 1, "Recherche effectuée",
-     "Réserver en ligne avec acompte",
+     "Envoyer une demande de séjour en ligne",
      "1. Choisir une chambre.\n2. Renseigner les informations client.\n"
-     "3. Payer l'acompte en ligne.",
-     "La réservation est confirmée, le client reçoit sa confirmation, "
-     "et l'acompte est enregistré."),
+     "3. Envoyer la demande.",
+     "Une réservation en brouillon est créée au nom du client (sans "
+     "doublon de contact) ; la réception la confirme et encaisse "
+     "l'acompte au comptoir (pas de paiement en ligne)."),
     ("C03", "C", 1, "Réservation en ligne confirmée",
      "Vérifier la retombée dans le planning de la réception",
      "1. Côté back-office, ouvrir le planning et la main courante.",
@@ -277,8 +278,8 @@ CAS = [
     # ══════════ E — NOTE DE CHAMBRE ══════════
     ("E01", "E", 1, "Un séjour en cours (chambre occupée), caisse ouverte",
      "Encaisser une consommation sur la note de chambre",
-     "1. Au POS, composer un ticket.\n2. Paiement → Note de chambre.\n"
-     "3. Sélectionner la chambre occupée.\n4. Valider.",
+     "1. Au POS, composer un ticket.\n2. Sélectionner le client du "
+     "séjour.\n3. Paiement → Note de chambre.\n4. Valider.",
      "Le paiement est accepté, le ticket mentionne la chambre, et "
      "aucun encaissement espèces n'est enregistré."),
     ("E02", "E", 1, "Consommation reportée (cas E01)",
@@ -286,11 +287,13 @@ CAS = [
      "1. Ouvrir le folio de la chambre concernée.",
      "La consommation du bar apparaît, datée, au bon montant, "
      "identifiée par sa caisse d'origine."),
-    ("E03", "E", 1, "Aucune chambre occupée",
-     "Empêcher un report sur une chambre libre",
-     "1. Au POS, ouvrir la liste des chambres pour la note de chambre.",
-     "Seules les chambres réellement occupées sont proposées ; une "
-     "chambre libre ne peut pas recevoir de report."),
+    ("E03", "E", 1, "Client sans séjour ouvert (ou avec plusieurs)",
+     "Ne jamais reporter au hasard",
+     "1. Au POS, régler en Note de chambre un ticket d'un client sans "
+     "folio ouvert (ou sans client).\n2. Ouvrir Hôtel → Notes de "
+     "chambre en attente.",
+     "Le ticket n'est rattaché à aucun folio : il attend dans « Notes "
+     "de chambre en attente », où la réception choisit le folio."),
     ("E04", "E", 1, "Folio alimenté par un report bar",
      "Facturer le séjour incluant le bar",
      "1. Effectuer le check-out.\n2. Générer la facture.",
@@ -320,22 +323,26 @@ CAS = [
      "clair est affiché."),
 
     # ══════════ F — CRÉDIT CLIENTS ══════════
-    ("F01", "F", 1, "Module installé, client créé",
-     "Définir un plafond de crédit client",
-     "1. Ouvrir la fiche client.\n2. Renseigner le plafond autorisé.\n"
-     "3. Enregistrer.",
-     "Le plafond est enregistré et visible sur la fiche."),
-    ("F02", "F", 1, "Client avec plafond, session de caisse ouverte",
+    ("F01", "F", 1, "Module installé",
+     "Activer la vente à crédit sur un mode de paiement",
+     "1. Point de Vente → Configuration → Modes de paiement.\n2. Ouvrir "
+     "« Ardoise client ».\n3. Vérifier la case « Vente à crédit ».",
+     "Le mode « Ardoise client » existe dès l'installation, case cochée ; "
+     "seul un mode coché ouvre une ardoise (pas la Note de chambre). "
+     "Il n'y a pas de plafond de crédit par client."),
+    ("F02", "F", 1, "Client identifié, session de caisse ouverte",
      "Accorder un crédit à la caisse",
      "1. Composer un ticket.\n2. Paiement → Crédit.\n3. Sélectionner "
      "le client.\n4. Valider.",
      "La vente est enregistrée en crédit, l'encours du client augmente "
      "du montant exact."),
-    ("F03", "F", 1, "Client dont l'encours atteint le plafond",
-     "Bloquer un crédit au-delà du plafond",
-     "1. Tenter un nouveau crédit dépassant le plafond.",
-     "Le système refuse ou alerte explicitement selon le paramétrage ; "
-     "aucun dépassement silencieux."),
+    ("F03", "F", 1, "Ardoises d'âges différents",
+     "Repérer les ardoises à relancer",
+     "1. Ouvrir POS Crédit → Ardoises.\n2. Lire la colonne Sévérité et "
+     "le tableau de bord du crédit.",
+     "Chaque ardoise est classée selon son âge (Récente, En retard, "
+     "Critique ; Réglée une fois soldée) ; les plus anciennes ressortent "
+     "dans le tableau de bord. La relance se fait à la main."),
     ("F04", "F", 1, "Client avec encours",
      "Enregistrer un remboursement partiel",
      "1. Saisir un remboursement inférieur à l'encours (espèces).",
@@ -400,11 +407,14 @@ CAS = [
      "Déclencher le passage au niveau VIP",
      "1. Réaliser la vente qui fait franchir le seuil.\n2. Consulter "
      "la fiche client.",
-     "Le niveau passe automatiquement à VIP dès le seuil atteint."),
+     "Le niveau passe à VIP au recalcul quotidien des statuts (tâche "
+     "planifiée « Fidélité : recalcul des statuts clients »), dès que "
+     "les seuils de dépenses ET de visites sont atteints."),
     ("G04", "G", 2, "Client VIP proche du seuil VVIP",
      "Déclencher le passage VVIP",
-     "1. Franchir le seuil de dépenses et de visites requis.",
-     "Le niveau VVIP n'est attribué que si les deux conditions "
+     "1. Franchir les seuils de dépenses, de visites et de pôles "
+     "(hébergement, restauration, prestations) requis.",
+     "Le niveau VVIP n'est attribué que si les trois conditions "
      "paramétrées sont remplies."),
     ("G05", "G", 2, "Catégorie comptant double paramétrée",
      "Vérifier les catégories à points doublés",
