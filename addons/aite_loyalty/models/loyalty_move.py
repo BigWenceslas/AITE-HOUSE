@@ -9,10 +9,13 @@ from odoo import api, fields, models, _
 
 _logger = logging.getLogger(__name__)
 
+# Libellés lus par la réception et la direction : « Espace VIP / VVIP » se
+# confondait avec les statuts client VIP / VVIP, et « Restaurant / Boutique
+# (POS) » ne disait pas « bar ». Les codes ne changent pas.
 ORIGINS = [
-    ('pos', "Restaurant / Boutique (POS)"),
+    ('pos', "Bar & restaurant"),
     ('hotel', "Hébergement (folio)"),
-    ('slot_space', "Espace VIP / VVIP"),
+    ('slot_space', "Espaces réservés"),
     ('slot_spa', "SPA"),
     ('slot_hair', "Coiffure"),
     ('slot_pressing', "Pressing"),
@@ -69,7 +72,10 @@ class LoyaltyMove(models.Model):
     note = fields.Char(string="Note")
 
     def _sync_partner_balance(self, partners):
-        for partner in partners:
+        # Écriture technique en ``sudo()`` : le solde est un champ calculé
+        # stocké du contact ; le Responsable qui ajuste des points n'a pas (et
+        # n'a pas à avoir) le droit de modifier les contacts.
+        for partner in partners.sudo():
             partner._compute_loyalty_points()
 
     @api.model_create_multi

@@ -7,8 +7,9 @@ class ResCompany(models.Model):
     Paramètres du moteur Espaces & Prestations, par société.
 
     * ``no_show_hours``     — délai de grâce après l'heure de fin au-delà
-      duquel une réservation confirmée non honorée passe en no-show
-      (cron quotidien, même logique que le PMS).
+      duquel une réservation confirmée non honorée passe « Non présenté »
+      (tâche planifiée vérifiée toutes les heures — écart n° 50 : ce texte
+      annonçait un traitement quotidien ; le pressing en est exclu).
     * ``auto_post_folio``   — au passage « Réalisée », reporter
       automatiquement la prestation au folio du séjour si un folio ouvert
       unique existe pour le client.
@@ -18,9 +19,11 @@ class ResCompany(models.Model):
     _inherit = 'res.company'
 
     aite_slot_no_show_hours = fields.Integer(
-        string="No-show après (heures)", default=6,
-        help="Délai de grâce après l'heure de fin avant no-show "
-             "automatique d'une réservation confirmée.",
+        string="« Non présenté » après (heures)", default=6,
+        help="Délai de grâce après l'heure de fin : une réservation "
+             "confirmée non honorée passe « Non présenté » au plus tard une "
+             "heure après ce délai (vérification toutes les heures ; le "
+             "pressing n'est jamais concerné).",
     )
     aite_slot_auto_post_folio = fields.Boolean(
         string="Report automatique au folio", default=True,

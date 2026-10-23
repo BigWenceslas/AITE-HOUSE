@@ -18,18 +18,22 @@ Un capital de points **unique** alimenté par tous les services :
 
 Chaque gain est historisé (grand livre de points, origine détaillée,
 montant de base). Le **statut client** — Standard / VIP / VVIP — est
-recalculé chaque nuit sur une fenêtre glissante, selon les trois
-critères du cahier des charges : fréquence de visite (jours distincts),
-montant des dépenses, et diversité des services utilisés.
+recalculé une fois par jour (tâche planifiée « Fidélité : recalcul des
+statuts clients », toutes les 24 heures) sur une fenêtre glissante,
+selon les trois critères du cahier des charges : fréquence de visite
+(jours distincts), montant des dépenses, et diversité des services
+utilisés.
 
-Barème et seuils entièrement paramétrables (Réglages → AITE Fidélité) ;
+Barème et seuils entièrement paramétrables (Hôtel → Fidélité →
+Configuration → Barème pour le Responsable, ou Paramètres → AITE
+Fidélité pour l'administrateur) ;
 ajustement manuel réservé aux responsables ; règles de calcul pures,
 extraites et exécutées par les tests.
 """,
     'author': "AITE CONSULTING",
     'website': "https://aiteconsulting.com",
     'category': 'Industries',
-    'version': '18.0.1.0.2',
+    'version': '18.0.1.0.3',
     'license': 'LGPL-3',
     'depends': ['base', 'mail', 'point_of_sale',
                 'aite_hotel_management', 'aite_slot_booking'],
@@ -40,6 +44,7 @@ extraites et exécutées par les tests.
         'views/res_partner_views.xml',
         'views/res_config_settings_views.xml',
         'wizard/loyalty_adjust_wizard_views.xml',
+        'wizard/loyalty_bareme_wizard_views.xml',
         'views/loyalty_menus.xml',
     ],
     'installable': True,

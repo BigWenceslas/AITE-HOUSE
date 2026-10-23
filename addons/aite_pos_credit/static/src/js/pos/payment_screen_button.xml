@@ -13,7 +13,8 @@
         <xpath expr="//div[hasclass('payment-buttons')]" position="inside">
             <button class="button btn btn-secondary btn-lg py-3 mb-2 w-100 aite-credit-btn"
                     t-on-click="() => this.putOnCredit()">
-                <i class="fa fa-book me-2" role="img" aria-label="Ardoise"/>
+                <i class="fa fa-book me-2" role="img" aria-label="Ardoise"
+                   title="Mettre sur ardoise"/>
                 Mettre sur ardoise
             </button>
         </xpath>

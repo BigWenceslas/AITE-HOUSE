@@ -81,6 +81,15 @@ class PosCreditDashboard(models.AbstractModel):
         return domain
 
     @staticmethod
+    def _date_label(value):
+        """Date affichée au format jj/mm/aaaa (règle 6) ; '' si absente.
+
+        Les clés ISO (``date``, ``last_payment``) restent fournies : le
+        cockpit Direction et les filtres s'en servent pour calculer.
+        """
+        return value.strftime('%d/%m/%Y') if value else ""
+
+    @staticmethod
     def _delta_pct(current, previous):
         """Variation en % vs période précédente ; None si non significatif."""
         if previous:
@@ -114,7 +123,7 @@ class PosCreditDashboard(models.AbstractModel):
         }
 
     # ------------------------------------------------------------------
-    # KPIs (avec comparaison N-1)
+    # KPIs (avec comparaison à la période précédente de même durée)
     # ------------------------------------------------------------------
 
     @api.model
@@ -249,7 +258,22 @@ class PosCreditDashboard(models.AbstractModel):
 
     @api.model
     def get_aging(self, config_id=None, source=None):
-        """Balance âgée de l'encours ouvert, en 4 tranches d'ancienneté."""
+        """Balance âgée de l'encours ouvert, en 4 tranches d'ancienneté.
+
+        Contrat (lu par le cockpit Direction) — une ligne par tranche :
+
+        * ``key`` : IDENTIFIANT stable de la tranche (``'0_30'``,
+          ``'31_60'``, ``'61_90'``, ``'90p'``), à utiliser pour classer ou
+          colorer. Ce n'est PAS une borne : les chiffres du nom ne disent
+          pas où tombe une ardoise de 30, 60 ou 90 jours ;
+        * ``min`` / ``max`` : bornes en jours, règle ``min ≤ âge < max``
+          (borne basse incluse, haute exclue). Une ardoise de 30 jours est
+          donc dans la 2e tranche (``'31_60'``), comme elle passe « En
+          retard » (``AGE_THRESHOLD_LATE``) ; idem à 60 et 90 jours ;
+        * ``label`` : libellé d'affichage (« 0–30 j », « 30–60 j »…) ;
+        * ``amount`` (reste dû) et ``count`` (nombre d'ARDOISES, pas de
+          clients).
+        """
         Credit = self.env['aite.pos.credit']
         today = fields.Date.context_today(self)
         open_credits = Credit.search(self._credit_domain(config_id,
@@ -388,6 +412,7 @@ class PosCreditDashboard(models.AbstractModel):
 
         by_partner = defaultdict(lambda: {
             'outstanding': 0.0, 'max_age': 0, 'last_payment': None,
+            'last_payment_label': "",
         })
         for c in open_credits:
             d = by_partner[c.partner_id]
@@ -404,6 +429,8 @@ class PosCreditDashboard(models.AbstractModel):
             ], order='date desc', limit=1)
             by_partner[partner]['last_payment'] = (
                 fields.Date.to_string(last.date) if last else None)
+            by_partner[partner]['last_payment_label'] = self._date_label(
+                last.date if last else None)
 
         rows = []
         late = Credit.AGE_THRESHOLD_LATE
@@ -423,6 +450,7 @@ class PosCreditDashboard(models.AbstractModel):
                 'outstanding': d['outstanding'],
                 'max_age': age,
                 'last_payment': d['last_payment'],
+                'last_payment_label': d['last_payment_label'],
                 'severity': sev,
             })
         rows.sort(key=lambda r: r['outstanding'], reverse=True)
@@ -518,6 +546,7 @@ class PosCreditDashboard(models.AbstractModel):
         return [{
             'id': p.id,
             'date': fields.Date.to_string(p.date),
+            'date_label': self._date_label(p.date),
             'partner_name': p.partner_id.name or "",
             'credit_ref': p.credit_id.name or "",
             'method': p.method,

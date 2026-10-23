@@ -24,4 +24,19 @@
               action="action_loyalty_adjust_wizard"
               sequence="30"
               groups="aite_hotel_management.group_hotel_manager"/>
+
+    <!-- Barème : Paramètres → AITE Fidélité exige l'administration ; le
+         Responsable (directrice) le règle ici. -->
+    <menuitem id="menu_loyalty_config"
+              name="Configuration"
+              parent="menu_loyalty_root"
+              sequence="90"
+              groups="aite_hotel_management.group_hotel_manager"/>
+
+    <menuitem id="menu_loyalty_bareme"
+              name="Barème"
+              parent="menu_loyalty_config"
+              action="action_loyalty_bareme"
+              sequence="10"
+              groups="aite_hotel_management.group_hotel_manager"/>
 </odoo>

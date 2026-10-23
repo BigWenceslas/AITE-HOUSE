@@ -95,16 +95,19 @@ class TestValidateOnlineBooking(unittest.TestCase):
 class TestFitStarts(unittest.TestCase):
     """Départs possibles pour k créneaux consécutifs libres."""
 
-    def test_k1_tous_les_libres(self):
-        self.assertEqual(_fit_starts(S("fxfpf"), 1), [0, 2, 4])
+    def test_k1_tous_les_non_complets(self):
+        # Écart n° 59 : le créneau « partial » (index 3) reste proposé.
+        self.assertEqual(_fit_starts(S("fxfpf"), 1), [0, 2, 3, 4])
 
     def test_k2_paires_consecutives(self):
         # ffxff → paires libres en 0-1 et 3-4.
         self.assertEqual(_fit_starts(S("ffxff"), 2), [0, 3])
 
-    def test_partial_bloque(self):
-        # partial = capacité entamée : refusé pour une prestation.
-        self.assertEqual(_fit_starts(S("fpf"), 2), [])
+    def test_partial_reste_reservable(self):
+        # partial = capacité entamée mais pas atteinte (écart n° 59) :
+        # le créneau reste proposé ; seul « full » bloque.
+        self.assertEqual(_fit_starts(S("fpf"), 2), [0, 1])
+        self.assertEqual(_fit_starts(S("fpx"), 2), [0])
 
     def test_k_egal_longueur(self):
         self.assertEqual(_fit_starts(S("fff"), 3), [0])

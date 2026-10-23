@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Vérification toutes les heures (écart n° 50 : les textes qui
+         annonçaient un traitement « quotidien » ont été alignés sur elle). -->
     <record id="cron_slot_no_show" model="ir.cron">
-        <field name="name">Espaces &amp; Prestations : no-show automatique</field>
+        <field name="name">Espaces &amp; Prestations : clients non présentés (toutes les heures)</field>
         <field name="model_id" ref="model_aite_slot_booking"/>
         <field name="state">code</field>
         <field name="code">model._cron_slot_no_show()</field>

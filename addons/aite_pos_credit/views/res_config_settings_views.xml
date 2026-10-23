@@ -1,14 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Champ "vente à crédit" sur la méthode de paiement POS -->
+    <!-- Champ "vente à crédit" sur la méthode de paiement POS.
+         Placé dans le groupe des réglages, avec son libellé (il était
+         injecté dans le titre, après le nom, sans libellé), suivi de la
+         phrase « ce qui va se passer ». La phrase est visible AVANT de
+         cocher (règle 1 : celui qui hésite lit ce que la case va faire) ;
+         la consigne de configuration ne s'affiche qu'une fois cochée. -->
     <record id="view_pos_payment_method_form_aite" model="ir.ui.view">
         <field name="name">pos.payment.method.form.aite.credit</field>
         <field name="model">pos.payment.method</field>
         <field name="inherit_id" ref="point_of_sale.pos_payment_method_view_form"/>
         <field name="arch" type="xml">
-            <field name="name" position="after">
+            <field name="journal_id" position="after">
                 <field name="is_aite_credit"/>
+                <div class="text-muted" colspan="2">
+                    Case cochée : chaque ticket réglé avec ce mode ouvre une
+                    ardoise au nom du client (POS Crédit → Ardoises).
+                    <span invisible="not is_aite_credit">Laissez le journal
+                    vide et cochez « Identifier le client » : le mode est
+                    alors de type « Compte client ».</span>
+                </div>
             </field>
         </field>
     </record>

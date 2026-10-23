@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Barème de fidélité : écran du Responsable (Paramètres → AITE
+         Fidélité reste ouvert à l'administration). -->
+    <record id="view_loyalty_bareme_wizard_form" model="ir.ui.view">
+        <field name="name">aite.loyalty.bareme.wizard.form</field>
+        <field name="model">aite.loyalty.bareme.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Barème de fidélité">
+                <field name="company_id" invisible="1"/>
+                <field name="currency_id" invisible="1"/>
+                <group string="Points gagnés">
+                    <group>
+                        <field name="rate_per_1000"/>
+                        <field name="min_amount"/>
+                    </group>
+                    <group>
+                        <field name="window_months"/>
+                    </group>
+                </group>
+                <group string="Statuts clients (dépenses ET visites sur la fenêtre)">
+                    <group string="VIP">
+                        <field name="vip_min_spend"/>
+                        <field name="vip_min_visits"/>
+                    </group>
+                    <group string="VVIP">
+                        <field name="vvip_min_spend"/>
+                        <field name="vvip_min_visits"/>
+                        <field name="vvip_min_domains"/>
+                    </group>
+                </group>
+                <div class="alert alert-info mb-0" role="status">
+                    <field name="summary" readonly="1" nolabel="1"/>
+                </div>
+                <footer>
+                    <button name="action_save" type="object"
+                            string="Enregistrer le barème" class="btn-primary"/>
+                    <button string="Annuler" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_loyalty_bareme" model="ir.actions.act_window">
+        <field name="name">Barème de fidélité</field>
+        <field name="res_model">aite.loyalty.bareme.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

@@ -6,7 +6,7 @@
         <t t-call="website.layout">
             <div class="container my-5">
                 <h1 class="mb-2">Réserver en ligne</h1>
-                <p class="text-muted mb-4">Disponibilités en temps réel — confirmation immédiate par e-mail.</p>
+                <p class="text-muted mb-4">Disponibilités en temps réel<t t-if="mail_on_confirm"> — confirmation immédiate par e-mail</t>.</p>
                 <div class="row g-4">
                     <div class="col-12 col-md-4">
                         <div class="card h-100 shadow-sm">
@@ -286,7 +286,7 @@
                 <t t-if="mode == 'slot'">
                     <p class="lead">Votre réservation <b t-esc="booking.name"/> est <b>confirmée</b>.</p>
                     <p><t t-esc="booking.resource_id.name"/><t t-if="booking.service_id"> — <t t-esc="booking.service_id.name"/></t></p>
-                    <p t-if="booking.partner_id.email" class="text-muted">Un e-mail de confirmation vous a été envoyé.</p>
+                    <p t-if="mail_sent" class="text-muted">Un e-mail de confirmation vous a été envoyé.</p>
                     <div class="alert alert-info mt-4">
                         L'acompte se règle au comptoir à votre arrivée —
                         <b>Orange Money, MTN MoMo ou espèces</b>.

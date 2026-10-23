@@ -69,7 +69,7 @@
             </div>
 
             <div t-if="state.loading" class="asb-loading">
-                <i class="fa fa-spinner fa-spin"/> Chargement…
+                <i class="fa fa-spinner fa-spin" role="img" title="Chargement"/> Chargement…
             </div>
 
             <div t-else="">
@@ -86,7 +86,7 @@
                              value="pct(state.kpis.fill_rate)"
                              sub="hours(state.kpis.booked_hours) + ' réservées / ' + hours(state.kpis.open_hours) + ' ouvrées'"/>
                     <KpiCard mega="true" accent="'danger'"
-                             label="'No-show'"
+                             label="'Non présentés'"
                              value="pct(state.kpis.no_show_pct)"
                              sub="num(state.kpis.no_show_count) + ' rendez-vous manqué(s)'"/>
                     <KpiCard mega="true" accent="'warning'"
@@ -96,7 +96,7 @@
                 </div>
 
                 <!-- Planning du jour -->
-                <div class="asb-section-title">Planning du <t t-esc="state.day"/></div>
+                <div class="asb-section-title">Planning du <t t-esc="dayLabel"/></div>
                 <div class="asb-card">
                     <div class="asb-board">
                         <t t-foreach="state.board" t-as="bd" t-key="bd.resource.id">

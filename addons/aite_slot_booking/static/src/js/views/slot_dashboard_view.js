@@ -6,7 +6,7 @@ import { loadChart, destroyChart } from "../services/chartjs_loader";
 import { KpiCard } from "../components/kpi_card";
 import {
     COLORS, STATE_BADGE, STATE_LABEL,
-    fmtMoney, fmtPct, fmtHours, hourLabel,
+    fmtMoney, fmtPct, fmtHours, hourLabel, fmtDay,
     PERIOD_PRESETS, periodRange, shiftDay,
 } from "../services/utils";
 
@@ -164,6 +164,11 @@ export class SlotDashboardView extends Component {
         return "" + (v === undefined || v === null ? 0 : v);
     }
 
+    /** Jour du planning au format JJ/MM/AAAA (règle 6). */
+    get dayLabel() {
+        return fmtDay(this.state.day);
+    }
+
     badge(state) {
         return STATE_BADGE[state] || STATE_BADGE.draft;
     }
@@ -219,11 +224,14 @@ export class SlotDashboardView extends Component {
     }
 
     boardFreeText(board) {
+        // Écart n° 59 : un créneau « partial » (capacité entamée, pas
+        // atteinte : 2e fauteuil, 2e comptoir) a encore de la place — il
+        // compte comme libre, comme sur le site web. Seul « full » est pris.
         let free = 0;
         let total = 0;
         for (const s of board.slots) {
             total += 1;
-            if (s.state === "free") {
+            if (s.state !== "full") {
                 free += 1;
             }
         }

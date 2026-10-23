@@ -215,3 +215,27 @@ class TestSlotFolioPosting(SlotCommon):
         booking.action_post_to_folio()
         folio.invalidate_recordset()
         self.assertEqual(folio.amount_total, before + 45000.0)
+
+    # ------------------------------------------------------------------
+    # Écart n° 60 : bouton « Reporter au folio » seulement s'il peut servir
+    # ------------------------------------------------------------------
+
+    def test_post_button_offered_with_a_single_open_folio(self):
+        self._open_folio()
+        booking = self._booking(resource=self.cabine, start_h=10.0,
+                                stop_h=11.0, service_id=self.service_spa.id)
+        self.assertTrue(booking.can_post_to_folio)
+        booking.action_confirm()
+        booking.action_post_to_folio()
+        self.assertFalse(
+            booking.can_post_to_folio,
+            "une prestation déjà reportée ne se reporte pas deux fois")
+
+    def test_post_button_hidden_without_a_service_article(self):
+        """Espace loué au tarif horaire, sans prestation, pour un client
+        résident (cas B04 de la recette) : le folio existe, mais le report
+        exige un article — le bouton échouerait à chaque clic."""
+        self._open_folio()
+        booking = self._booking(start_h=10.0, stop_h=12.0)
+        self.assertFalse(booking.service_id)
+        self.assertFalse(booking.can_post_to_folio)

@@ -25,7 +25,8 @@ class SlotBooking(models.Model):
       confirmées/réalisées, comparé à la capacité.
 
     Workflow : brouillon → confirmée (e-mail auto optionnel) → réalisée
-    (report au folio optionnel) ; annulation, no-show (manuel ou cron).
+    (report au folio optionnel) ; annulation, non présenté (manuel ou
+    tâche horaire).
     Pressing : quantité d'articles + date/indicateur de retrait.
     """
     _name = 'aite.slot.booking'
@@ -90,7 +91,9 @@ class SlotBooking(models.Model):
             ('confirmed', "Confirmée"),
             ('done', "Réalisée"),
             ('cancelled', "Annulée"),
-            ('no_show', "No-show"),
+            # Écart n° 42 : pas d'anglais à l'écran (liste, badge, filtre,
+            # espace client du site) ; la clé technique ne change pas.
+            ('no_show', "Non présenté"),
         ],
         string="État", default='draft', required=True, index=True,
         copy=False, tracking=True,
@@ -110,6 +113,13 @@ class SlotBooking(models.Model):
         copy=False,
         help="Ligne créée sur le folio — garantit l'idempotence du "
              "report.",
+    )
+    can_post_to_folio = fields.Boolean(
+        string="Report au folio possible",
+        compute='_compute_can_post_to_folio',
+        help="Vrai quand la prestation n'est pas encore reportée, qu'elle "
+             "porte un article et qu'un folio ouvert est identifié : "
+             "choisi sur la réservation, ou seul folio ouvert du client.",
     )
 
     # Pressing
@@ -201,6 +211,20 @@ class SlotBooking(models.Model):
                 rec.resource_id.price_hour if rec.resource_id else 0.0,
                 rec.amount_manual,
             )
+
+    @api.depends('posted_line_id', 'folio_id', 'folio_id.state',
+                 'partner_id', 'company_id', 'service_id.product_id')
+    def _compute_can_post_to_folio(self):
+        """Écart n° 60 : « Reporter au folio » n'est proposé que s'il peut
+        aboutir — pas à un client de passage sans séjour, ni à un client
+        qui a plusieurs folios ouverts tant qu'aucun n'est choisi, ni à un
+        espace loué au tarif horaire sans prestation (le folio exige un
+        article, cf. ``action_post_to_folio``)."""
+        for rec in self:
+            rec.can_post_to_folio = bool(
+                not rec.posted_line_id and rec.partner_id
+                and rec.service_id.product_id
+                and rec._find_open_folio())
 
     @api.onchange('service_id', 'start')
     def _onchange_service_start(self):
@@ -299,8 +323,10 @@ class SlotBooking(models.Model):
             busy = [(o.start, o.stop) for o in others]
             used = Resource._overlap_count(busy, rec.start, rec.stop)
             if used + 1 > rec.resource_id.capacity:
+                # Écart n° 44 : tournure sans accord (« est complète »
+                # supposait une ressource féminine : « Salon … complète »).
                 raise ValidationError(_(
-                    "Conflit : « %(res)s » est complète sur ce créneau "
+                    "Plus de place sur « %(res)s » pour ce créneau "
                     "(capacité %(cap)s).",
                     res=rec.resource_id.name,
                     cap=rec.resource_id.capacity))
@@ -316,6 +342,13 @@ class SlotBooking(models.Model):
                 vals['name'] = self.env['ir.sequence'].next_by_code(
                     'aite.slot.booking') or _("Nouveau")
         return super().create(vals_list)
+
+    def _creation_message(self):
+        """Écart n° 43 : le standard écrit « <description du modèle> créé »
+        (« Réservation de créneau (espace / prestation) créé ») — accord
+        faux et libellé technique dans le fil de discussion."""
+        self.ensure_one()
+        return _("Réservation créée")
 
     # ------------------------------------------------------------------
     # Workflow
@@ -352,7 +385,22 @@ class SlotBooking(models.Model):
                 "Slot %s : pas d'e-mail client, confirmation non "
                 "envoyée.", self.name)
             return
-        template.send_mail(self.id, force_send=False)
+        # Écart n° 49 : envoi immédiat. Mis en file, l'e-mail attendait la
+        # tâche d'envoi d'Odoo (jusqu'à une heure) alors que le client et
+        # le guide l'attendent « dès le clic sur Confirmer ».
+        # L'envoi part juste APRÈS la validation de la transaction (comme
+        # les notifications du standard, ``send_after_commit``), jamais
+        # pendant : la confirmation tient le verrou de la ressource
+        # (``_check_no_conflict``), qu'un serveur SMTP lent garderait jusqu'à
+        # 60 s ; et une confirmation finalement refusée n'envoie rien.
+        # Un échec SMTP ne bloque pas la confirmation : l'e-mail passe en
+        # erreur, visible dans Paramètres → Technique → E-mails, et peut
+        # être renvoyé. Pendant une installation ou une mise à niveau en
+        # ligne de commande, l'e-mail reste en file (même règle que le
+        # standard).
+        mail_id = template.send_mail(self.id, force_send=False)
+        if not self.pool._init:
+            self.env['mail.mail'].sudo().browse(mail_id).send_after_commit()
 
     def action_done(self):
         for rec in self:
@@ -364,8 +412,14 @@ class SlotBooking(models.Model):
             if rec.company_id.aite_slot_auto_post_folio:
                 try:
                     rec.action_post_to_folio(silent=True)
-                except UserError:
-                    pass  # pas de folio ouvert unique : report manuel
+                except UserError as err:
+                    # Pas de folio ouvert unique (client de passage, deux
+                    # séjours) ou prestation sans article : la prestation se
+                    # clôture quand même, et le fil dit pourquoi rien n'a
+                    # été reporté (écart n° 60 : l'erreur était avalée).
+                    rec.message_post(body=_(
+                        "Rien reporté au folio : %(why)s",
+                        why=err.args[0] if err.args else ''))
         return True
 
     def action_cancel(self):
@@ -380,8 +434,8 @@ class SlotBooking(models.Model):
         for rec in self:
             if rec.state != 'confirmed':
                 raise UserError(_(
-                    "Seule une réservation confirmée peut passer en "
-                    "no-show."))
+                    "Seule une réservation confirmée peut être marquée "
+                    "« Non présenté »."))
             rec.state = 'no_show'
         return True
 
@@ -456,12 +510,12 @@ class SlotBooking(models.Model):
     @api.model
     def _cron_slot_no_show(self):
         """Confirmées dont la fin + délai de grâce est dépassée →
-        no-show.
+        « Non présenté » (tâche planifiée toutes les heures).
 
         Le pressing est exclu (écart n° 36) : son créneau est celui du
         dépôt ; une fois le linge déposé, la réservation reste « Confirmée »
         jusqu'au retrait, qui peut avoir lieu des jours plus tard. Un
-        no-show pressing reste possible à la main (bouton).
+        « Non présenté » pressing reste possible à la main (bouton).
         """
         for company in self.env['res.company'].search([]):
             grace = company.aite_slot_no_show_hours or 6
@@ -477,5 +531,5 @@ class SlotBooking(models.Model):
             if stale:
                 _logger.info(
                     "Slot cron : %s réservation(s) passée(s) en "
-                    "no-show (%s).", len(stale), company.name)
+                    "« Non présenté » (%s).", len(stale), company.name)
         return True

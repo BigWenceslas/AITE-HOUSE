@@ -9,7 +9,9 @@
                 <field name="partner_id"/>
                 <field name="origin_detail"/>
                 <field name="ref"/>
-                <field name="amount_base" optional="show"/>
+                <!-- FCFA sans centimes : la somme d'un regroupement ne
+                     connaît pas la devise et s'écrivait « 19 824 000,00 ». -->
+                <field name="amount_base" optional="show" digits="[16, 0]"/>
                 <field name="points" sum="Total points"/>
                 <field name="note" optional="hide"/>
                 <field name="currency_id" column_invisible="1"/>
@@ -44,15 +46,68 @@
             réglées, folios de séjour, prestations réalisées.</p>
         </field>
     </record>
+    <!-- Clients VIP / VVIP : carte et liste dédiées, qui montrent le statut
+         et les points (l'aide les promettait, les vues standard des
+         contacts ne les affichaient pas). Vues « primaires » : les écrans
+         Contacts ne changent pas. -->
+    <record id="view_partner_kanban_loyalty" model="ir.ui.view">
+        <field name="name">res.partner.kanban.aite.loyalty</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.res_partner_kanban_view"/>
+        <field name="mode">primary</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <xpath expr="//footer" position="before">
+                <div class="d-flex align-items-center gap-2 mt-1">
+                    <field name="loyalty_tier" widget="badge"
+                           decoration-warning="loyalty_tier == 'vip'"
+                           decoration-danger="loyalty_tier == 'vvip'"/>
+                    <span><field name="loyalty_points"/> points</span>
+                </div>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_partner_list_loyalty" model="ir.ui.view">
+        <field name="name">res.partner.list.aite.loyalty</field>
+        <field name="model">res.partner</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <list string="Clients VIP &amp; VVIP" create="false"
+                  default_order="loyalty_points desc">
+                <field name="complete_name" string="Client"/>
+                <field name="phone" optional="show"/>
+                <field name="email" optional="show"/>
+                <field name="loyalty_tier" widget="badge"
+                       decoration-warning="loyalty_tier == 'vip'"
+                       decoration-danger="loyalty_tier == 'vvip'"/>
+                <field name="loyalty_tier_date" optional="show"/>
+                <field name="loyalty_points"/>
+            </list>
+        </field>
+    </record>
+    <!-- Sans facette « Clients » (search_default_customer) : elle cachait
+         les VIP servis seulement en prestations ou en espaces réservés. -->
     <record id="action_loyalty_vip_partners" model="ir.actions.act_window">
         <field name="name">Clients VIP &amp; VVIP</field>
         <field name="res_model">res.partner</field>
         <field name="view_mode">kanban,list,form</field>
         <field name="domain">[('loyalty_tier','in',('vip','vvip'))]</field>
-        <field name="context">{'search_default_customer': 1}</field>
+        <field name="context">{}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Aucun client VIP ou VVIP pour l'instant</p>
-            <p>Le statut se calcule tout seul à partir des points gagnés sur les 12 derniers mois (séjours, bar, prestations). Dès qu'un client franchit le palier VIP, il apparaît ici avec son niveau et ses points ; vous pouvez aussi <b>Ajuster des points</b> depuis le menu Fidélité (geste commercial).</p>
+            <p>Rien à saisir : le statut se recalcule chaque jour à partir de ce que le client a dépensé et du nombre de ses visites sur les derniers mois (séjours, bar, prestations), selon le barème (Fidélité → Configuration → Barème). Dès qu'un client franchit le palier VIP, il apparaît ici avec son statut et ses points ; un geste commercial passe par <b>Ajuster des points</b> (menu Fidélité).</p>
         </field>
+    </record>
+    <record id="action_loyalty_vip_partners_kanban" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">kanban</field>
+        <field name="view_id" ref="view_partner_kanban_loyalty"/>
+        <field name="act_window_id" ref="action_loyalty_vip_partners"/>
+    </record>
+    <record id="action_loyalty_vip_partners_list" model="ir.actions.act_window.view">
+        <field name="sequence" eval="2"/>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="view_partner_list_loyalty"/>
+        <field name="act_window_id" ref="action_loyalty_vip_partners"/>
     </record>
 </odoo>

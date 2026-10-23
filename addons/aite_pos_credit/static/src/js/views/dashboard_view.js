@@ -6,14 +6,14 @@ import { loadChart, destroyChart } from "../services/chartjs_loader";
 import { KpiCard } from "../components/kpi_card";
 import {
     COLORS, PAYMENT_COLORS, AGING_COLORS, SEVERITY_BADGE, PAYMENT_LABELS,
-    fmtMoney, fmtCompact, fmtPct, periodRange, PERIOD_PRESETS,
+    fmtMoney, fmtCompact, fmtPct, fmtDelta, periodRange, PERIOD_PRESETS,
 } from "../services/utils";
 
 /**
  * Tableau de bord de recouvrement — version enrichie.
  *
  * Inspiré du dashboard Analytics : filtres période (presets + plage libre),
- * filtre par caisse, KPI avec variation vs période N-1, encours par caisse,
+ * filtre par caisse, KPI avec variation vs période précédente, encours par caisse,
  * remboursements journaliers et top débiteurs avec barres proportionnelles.
  *
  * Règle d'or apprise sur le terrain : AUCUNE fonction globale JS (String,
@@ -176,12 +176,14 @@ export class CreditDashboardView extends Component {
         if (pct === null || pct === undefined) {
             return undefined;
         }
-        const rounded = ((pct * 10 + (pct >= 0 ? 0.5 : -0.5)) | 0) / 10;
-        const abs = rounded < 0 ? -rounded : rounded;
-        const arrow = rounded > 0 ? "▲" : rounded < 0 ? "▼" : "■";
-        const isGood = goodWhenUp ? rounded >= 0 : rounded <= 0;
+        // « ▲ +12,5 % » : une décimale fixe, espace insécable (règle 6,
+        // même rendu que le cockpit Direction).
+        const delta = fmtDelta(pct);
+        const isGood = goodWhenUp ? delta.value >= 0 : delta.value <= 0;
         return {
-            text: arrow + " " + ("" + abs).replace(".", ",") + " % vs N-1",
+            // Comparaison avec la période précédente de même durée (et non
+            // avec l'année précédente : « N-1 » était trompeur).
+            text: delta.text + " vs période précédente",
             cls: isGood ? "text-success" : "text-danger",
         };
     }
@@ -216,7 +218,8 @@ export class CreditDashboardView extends Component {
     }
 
     lastPay(row) {
-        return row.last_payment ? row.last_payment : "—";
+        // Date déjà formatée jj/mm/aaaa par le serveur (règle 6).
+        return row.last_payment_label || row.last_payment || "—";
     }
 
     get periodPresets() {

@@ -53,15 +53,19 @@ class WebsiteBookingHelper(models.AbstractModel):
     def _fit_starts(slots, k):
         """
         Créneaux de départ possibles pour une prestation occupant ``k``
-        créneaux consécutifs : liste des index ``i`` tels que
-        ``slots[i .. i+k-1]`` sont tous ``free``.
+        créneaux consécutifs : liste des index ``i`` tels qu'aucun des
+        ``slots[i .. i+k-1]`` n'est ``full``.
+
+        Écart n° 59 : ``partial`` (capacité entamée mais pas atteinte — 2e
+        fauteuil, 2e comptoir) reste réservable ; le refuser cachait le
+        créneau dès la première réservation d'une ressource de capacité 2.
         """
         if k <= 0:
             return []
         out = []
         n = len(slots)
         for i in range(n - k + 1):
-            if all(slots[i + j].get('state') == 'free'
+            if all(slots[i + j].get('state') in ('free', 'partial')
                    for j in range(k)):
                 out.append(i)
         return out

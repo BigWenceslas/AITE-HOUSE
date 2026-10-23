@@ -90,7 +90,11 @@ class WebsiteBooking(http.Controller):
     @http.route('/reservation', type='http', auth='public',
                 website=True, sitemap=True)
     def landing(self, **kw):
-        return request.render('aite_website_booking.landing', {})
+        return request.render('aite_website_booking.landing', {
+            # Écart n° 49 : ne promettre l'e-mail que s'il part.
+            'mail_on_confirm':
+                request.env.company.sudo().aite_slot_mail_on_confirm,
+        })
 
     # ------------------------------------------------------------------
     # Espaces VIP / VVIP (D1)
@@ -111,8 +115,7 @@ class WebsiteBooking(http.Controller):
         if not resource or not resource.allow_online:
             return request.redirect('/reservation/espaces')
         day = self._safe_day(date)
-        grid = self._grid(resource, day)
-        free = [s for s in grid['slots'] if s['state'] == 'free']
+        free = self._space_slots(resource, day)
         free = request.env['aite.website.booking']._future_slots(
             free, self._now_h(day))
         return request.render('aite_website_booking.space_grid', {
@@ -166,6 +169,16 @@ class WebsiteBooking(http.Controller):
             'error': error,
         })
 
+    def _space_slots(self, resource, day):
+        """Créneaux encore réservables d'un espace (un pas de grille).
+
+        Écart n° 59 : un créneau « partial » (capacité entamée mais pas
+        atteinte) reste proposé ; seul « full » est retiré — même règle que
+        les prestations (``_fit_starts`` avec k = 1)."""
+        slots = self._grid(resource, day)['slots']
+        helper = request.env['aite.website.booking']
+        return [slots[i] for i in helper._fit_starts(slots, 1)]
+
     def _service_starts(self, resource, service, day):
         """Heures de début libres pour une prestation de ``k`` créneaux
         consécutifs (``k`` = durée arrondie au pas, cf.
@@ -177,6 +190,22 @@ class WebsiteBooking(http.Controller):
             service.duration_minutes if service else step, step)
         k = minutes // step
         starts = helper._fit_starts(grid['slots'], k)
+        # Écart n° 59 : les créneaux « partial » sont acceptés par
+        # ``_fit_starts``. Sur plusieurs créneaux, la confirmation compte
+        # toutes les réservations qui chevauchent la durée entière
+        # (``_check_no_conflict``) : on applique ici la même règle, pour ne
+        # jamais proposer une heure que la confirmation refuserait.
+        # Point ouvert : cette règle compte des chevauchements, pas des
+        # présences simultanées (aide du champ Capacité) ; si elle change,
+        # elle change ici ET dans ``_check_no_conflict``.
+        busy = [(b['start_h'], b['stop_h']) for b in grid['bookings']]
+        capacity = grid['resource']['capacity']
+        overlap = request.env['aite.booking.resource']._overlap_count
+        starts = [
+            i for i in starts
+            if overlap(busy, grid['slots'][i]['start'],
+                       grid['slots'][i]['start'] + minutes / 60.0) < capacity
+        ]
         return [grid['slots'][i] for i in starts], k
 
     # ------------------------------------------------------------------
@@ -239,8 +268,7 @@ class WebsiteBooking(http.Controller):
         if service:
             offered, _k = self._service_starts(resource, service, day)
         else:
-            offered = [s for s in self._grid(resource, day)['slots']
-                       if s['state'] == 'free']
+            offered = self._space_slots(resource, day)
         if not any(abs(s['start'] - start_h) < 1e-4 for s in offered):
             return request.redirect(back + '&error=slot')
 
@@ -276,6 +304,11 @@ class WebsiteBooking(http.Controller):
         return request.render('aite_website_booking.thanks', {
             'mode': 'slot',
             'booking': booking,
+            # Écart n° 49 : la page n'annonce l'e-mail que s'il part
+            # vraiment (envoi automatique activé et adresse connue).
+            'mail_sent': bool(
+                booking.company_id.aite_slot_mail_on_confirm
+                and booking.partner_id.email),
         })
 
     # ------------------------------------------------------------------
@@ -316,12 +349,21 @@ class WebsiteBooking(http.Controller):
             adults = max(1, int(post.get('adults') or 1))
         except ValueError:
             adults = 1
+        # Écart n° 58 : heures standard de l'hôtel (fiche de l'hôtel, « Heure
+        # d'arrivée / de départ standard ») au lieu de 14:00 / 11:00 écrits
+        # en dur. Même hôtel que celui que la réservation retient par défaut
+        # (le premier de la société).
+        hotel = env['aite.hotel.hotel'].sudo().search(
+            [('company_id', '=', env.company.id)], limit=1)
+        checkin_h = hotel.checkin_hour if hotel else 14.0
+        checkout_h = hotel.checkout_hour if hotel else 12.0
         reservation = env['aite.hotel.reservation'].sudo().create({
             'partner_id': partner.id,
+            'hotel_id': hotel.id or False,
             'checkin_date': fields.Datetime.to_string(
-                self._local_to_utc(checkin, 14.0)),
+                self._local_to_utc(checkin, checkin_h)),
             'checkout_date': fields.Datetime.to_string(
-                self._local_to_utc(checkout, 11.0)),
+                self._local_to_utc(checkout, checkout_h)),
             'adults': adults,
             'source': 'website',
             'note': _("Demande site web — %(n)s adulte(s). %(msg)s",

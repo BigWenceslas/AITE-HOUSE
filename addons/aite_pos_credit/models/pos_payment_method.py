@@ -17,8 +17,8 @@ class PosPaymentMethod(models.Model):
     is_aite_credit = fields.Boolean(
         string="Vente à crédit (ardoise)",
         help="Cochez pour que les paiements via cette méthode créent une "
-             "ardoise dans le module POS Crédit. Méthode généralement de "
-             "type « Payer plus tard » (compte client).",
+             "ardoise dans le module POS Crédit. Méthode de type « Compte "
+             "client » : sans journal, « Identifier le client » coché.",
     )
 
     def _is_aite_credit_method(self):

@@ -42,7 +42,9 @@ class ResPartner(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': _("Points de %(p)s", p=self.name),
+            # « Points — Estelle Ngono » : « Points de » ne s'élide pas
+            # devant une voyelle (« Points de Estelle »).
+            'name': _("Points — %(p)s", p=self.name),
             'res_model': 'aite.loyalty.move',
             'view_mode': 'list',
             'domain': [('partner_id', '=', self.id)],

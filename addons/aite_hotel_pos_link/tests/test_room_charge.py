@@ -525,3 +525,132 @@ class TestRoomCharge(TransactionCase):
         self.assertAlmostEqual(line.price_total, 11925.0)
         folio.invalidate_recordset()
         self.assertAlmostEqual(folio.amount_total - before_total, 11925.0)
+
+    # ------------------------------------------------------------------
+    # Écart n° 55 — file d'attente lisible (nom, folios proposés)
+    # ------------------------------------------------------------------
+
+    def _arrived_folio(self, partner=None, room=None):
+        folio = self._folio(partner=partner, room=room, offset=0)
+        folio.reservation_id.action_checkin()
+        return folio
+
+    def test_pending_is_named_after_the_ticket(self):
+        """Fil d'Ariane : le numéro du ticket, pas « aite.roomcharge.pending,12 »."""
+        order = self._pos_order([(self.method_room, 12000.0)], partner=None)
+        pending = order.aite_roomcharge_pending_id
+        self.assertEqual(pending.display_name, order.name)
+
+    def test_candidates_are_the_customer_arrived_stays(self):
+        """Client connu : seuls ses séjours arrivés sont proposés."""
+        arrived = self._arrived_folio(room=self.room)
+        future = self._folio(room=self.room_2, offset=10)
+        other = self.env['res.partner'].create({'name': "Autre client"})
+        room_3 = self.env['aite.hotel.room'].create({
+            'name': 'NC3', 'hotel_id': self.hotel.id,
+            'room_type_id': self.rtype.id})
+        other_folio = self._arrived_folio(partner=other, room=room_3)
+        order = self._pos_order([(self.method_room, 12000.0)],
+                                partner=self.guest)
+        pending = order.aite_roomcharge_pending_id
+        self.assertTrue(pending, "Deux folios ouverts : file d'attente.")
+        self.assertEqual(pending.folio_candidate_ids, arrived)
+        self.assertNotIn(future, pending.folio_candidate_ids)
+        self.assertNotIn(other_folio, pending.folio_candidate_ids)
+
+    def test_candidates_without_customer_are_all_arrived_stays(self):
+        """Ticket anonyme : tous les séjours arrivés, jamais un séjour à venir."""
+        arrived = self._arrived_folio(room=self.room)
+        future = self._folio(room=self.room_2, offset=10)
+        order = self._pos_order([(self.method_room, 12000.0)], partner=None)
+        pending = order.aite_roomcharge_pending_id
+        self.assertIn(arrived, pending.folio_candidate_ids)
+        self.assertNotIn(future, pending.folio_candidate_ids)
+
+    def test_candidates_fall_back_when_the_customer_has_no_stay(self):
+        """Client sans séjour arrivé (ex. invité d'un client) : la réception
+        garde le choix parmi les séjours arrivés."""
+        arrived = self._arrived_folio(room=self.room)
+        order = self._pos_order([(self.method_room, 12000.0)],
+                                partner=self.walkin)
+        pending = order.aite_roomcharge_pending_id
+        self.assertIn(arrived, pending.folio_candidate_ids)
+
+    def _depart_without_invoice(self, folio):
+        """Départ avec « Générer la facture » décoché : le séjour passe
+        « Parti », le folio reste ouvert (facturé plus tard)."""
+        self.env['aite.hotel.checkout.wizard'].create({
+            'reservation_id': folio.reservation_id.id,
+            'create_invoice': False,
+        }).action_confirm()
+        self.assertEqual(folio.reservation_id.state, 'checked_out')
+        self.assertEqual(folio.state, 'open')
+
+    def test_candidates_keep_a_departed_stay_whose_folio_is_open(self):
+        """Client parti sans facture : son folio, encore ouvert, reste
+        proposé. Sans cela, le ticket restait bloqué dans la file ou
+        partait sur le folio d'un autre client (repli sur les séjours en
+        cours)."""
+        departed = self._arrived_folio(room=self.room)
+        self._depart_without_invoice(departed)
+        future = self._folio(room=self.room_2, offset=10)
+        other = self.env['res.partner'].create({'name': "Autre client"})
+        room_3 = self.env['aite.hotel.room'].create({
+            'name': 'NC3', 'hotel_id': self.hotel.id,
+            'room_type_id': self.rtype.id})
+        other_folio = self._arrived_folio(partner=other, room=room_3)
+        # Client connu, deux folios ouverts (parti + à venir) : file
+        # d'attente, et seul son séjour parti est proposé.
+        order = self._pos_order([(self.method_room, 12000.0)],
+                                partner=self.guest)
+        pending = order.aite_roomcharge_pending_id
+        self.assertTrue(pending, "Deux folios ouverts : file d'attente.")
+        self.assertEqual(pending.folio_candidate_ids, departed)
+        self.assertNotIn(future, pending.folio_candidate_ids)
+        self.assertNotIn(other_folio, pending.folio_candidate_ids)
+        # Ticket anonyme : le folio du client parti figure parmi les choix.
+        anonymous = self._pos_order([(self.method_room, 8000.0)],
+                                    partner=None, total=8000.0)
+        candidates = anonymous.aite_roomcharge_pending_id.folio_candidate_ids
+        self.assertIn(departed, candidates)
+        self.assertIn(other_folio, candidates)
+        self.assertNotIn(future, candidates)
+
+    def test_folio_label_shows_the_customer(self):
+        folio = self._arrived_folio()
+        label = folio.with_context(
+            aite_folio_with_partner=True).display_name
+        self.assertIn(folio.name, label)
+        self.assertIn(self.guest.name, label)
+        # Ailleurs, le folio garde sa référence seule.
+        self.assertEqual(folio.display_name, folio.name)
+
+    # ------------------------------------------------------------------
+    # Écart n° 75 — la réception tranche la file sous son propre profil
+    # ------------------------------------------------------------------
+
+    def test_reception_resolves_the_queue(self):
+        """Réception sans droit sur la caisse : « Rattacher au folio » passe."""
+        reception = self.env['res.users'].create({
+            'name': "Réception note de chambre",
+            'login': 'reception.nc.test',
+            'groups_id': [(6, 0, [
+                self.env.ref('base.group_user').id,
+                self.env.ref('aite_hotel_management.group_hotel_user').id,
+            ])],
+        })
+        self.assertFalse(reception.has_group('point_of_sale.group_pos_user'))
+        folio = self._arrived_folio()
+        order = self._pos_order([(self.method_room, 12000.0)], partner=None)
+        pending = order.aite_roomcharge_pending_id
+        self.env.invalidate_all()
+        pending_r = pending.with_user(reception)
+        # Ce que l'écran lit : nom, candidats, puis le geste.
+        self.assertEqual(pending_r.display_name, order.name)
+        self.assertIn(folio, pending_r.folio_candidate_ids)
+        pending_r.folio_id = folio.id
+        self.env.invalidate_all()  # le clic sur le bouton : autre requête
+        pending_r.action_resolve()
+        self.env.invalidate_all()
+        self.assertEqual(pending.state, 'done')
+        self.assertEqual(order.aite_folio_line_id.folio_id, folio)

@@ -76,8 +76,17 @@ hook automatique), `pos.payment.method` (marqueur « ardoise »),
 
 Le module ajoute un bouton **« Mettre sur ardoise »** directement dans
 l'écran de paiement du POS. Techniquement, il s'appuie sur une **méthode de
-paiement native de type *pay_later*** (créée automatiquement à l'installation
-via le `post_init_hook`, et marquée `is_aite_credit`). Le bouton :
+paiement native de type *pay_later*** : le mode **« Ardoise client »**, créé
+automatiquement à l'installation par le `post_init_hook` pour chaque société
+(type « Compte client » : sans journal, « Identifier le client » coché, case
+« Vente à crédit (ardoise) » cochée) et ajouté aux caisses existantes. Le
+compte client est repris s'il existe déjà (réglage « Compte client » de POS
+Crédit, sinon compte client par défaut de la société) ; sinon — cas d'une
+base neuve, où Odoo 18 charge le plan comptable après les hooks
+d'installation — le mode est créé sans compte imposé et la créance va au
+compte client de chaque client. Si le hook ne peut pas le créer, il l'écrit
+dans le journal du serveur (avertissement) sans bloquer l'installation. Le
+bouton :
 
 1. exige qu'un client soit sélectionné (sinon ouvre la sélection client) ;
 2. impute le solde dû sur la méthode « ardoise » ;
@@ -88,7 +97,7 @@ via le `post_init_hook`, et marquée `is_aite_credit`). Le bouton :
 Un client peut **régler une partie immédiatement** (espèces, carte, Mobile
 Money…) et **porter le reste sur ardoise**. Dans l'écran de paiement, on
 ajoute simplement plusieurs lignes : par exemple 30 000 en espèces puis
-20 000 sur « Ardoise / Crédit ». Le module ne met sur ardoise **que la part
+20 000 sur « Ardoise client ». Le module ne met sur ardoise **que la part
 réglée via la méthode ardoise** — ici 20 000, pas le total de 50 000. La
 commande est soldée au POS, et l'ardoise reflète exactement le crédit
 accordé. La fiche de l'ardoise affiche le total commande et la part payée

@@ -75,9 +75,12 @@ patch(PaymentScreen.prototype, {
         if (!method) {
             this.notification.add(
                 _t(
-                    "Aucune méthode de paiement « ardoise » n'est configurée. " +
-                    "Créez-en une (type « Payer plus tard ») et cochez " +
-                    "« Vente à crédit » dans sa fiche, puis ajoutez-la au POS."
+                    "Aucun mode de paiement « ardoise » sur cette caisse. " +
+                    "Dans Point de Vente → Configuration → Modes de paiement, " +
+                    "ouvrez « Ardoise client » (ou créez un mode de type " +
+                    "« Compte client » : sans journal, « Identifier le " +
+                    "client » coché), cochez « Vente à crédit (ardoise) », " +
+                    "puis ajoutez-le à la caisse."
                 ),
                 { type: "danger" }
             );

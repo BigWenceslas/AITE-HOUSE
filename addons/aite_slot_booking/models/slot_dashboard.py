@@ -189,7 +189,9 @@ class SlotDashboard(models.AbstractModel):
             out.append({
                 'id': b.id,
                 'ref': b.name,
-                'date': local_start.strftime('%d/%m %H:%M'),
+                # Règle 6 : l'année figure (« Cette semaine » peut
+                # chevaucher le 1er janvier).
+                'date': local_start.strftime('%d/%m/%Y %H:%M'),
                 'partner': b.partner_id.name or "",
                 'resource': b.resource_id.name,
                 'kind': b.kind,

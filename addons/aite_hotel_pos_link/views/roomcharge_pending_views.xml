@@ -6,12 +6,15 @@
         <field name="arch" type="xml">
             <list decoration-warning="state == 'todo'"
                   decoration-success="state == 'done'" create="false">
-                <field name="create_date" widget="datetime"/>
+                <!-- Libellé explicite : le champ technique create_date
+                     s'affichait « Created on » (module sans traduction). -->
+                <field name="create_date" widget="datetime" string="Reçue le"/>
                 <field name="order_id"/>
                 <field name="partner_id"/>
                 <field name="amount" sum="Total"/>
                 <field name="note"/>
-                <field name="folio_id"/>
+                <field name="folio_id"
+                       context="{'aite_folio_with_partner': True}"/>
                 <field name="state" widget="badge"
                        decoration-warning="state == 'todo'"
                        decoration-success="state == 'done'"/>
@@ -23,7 +26,9 @@
         <field name="name">aite.roomcharge.pending.form</field>
         <field name="model">aite.roomcharge.pending</field>
         <field name="arch" type="xml">
-            <form string="Note de chambre en attente">
+            <!-- create="0" : une note en attente naît d'un ticket de caisse,
+                 jamais d'une saisie (la liste l'interdisait déjà). -->
+            <form string="Note de chambre en attente" create="0">
                 <header>
                     <button name="action_resolve" type="object"
                             string="Rattacher au folio" class="btn-primary"
@@ -39,8 +44,16 @@
                             <field name="note" readonly="1"/>
                         </group>
                         <group>
+                            <!-- Folios proposés : séjours commencés
+                                 (arrivé, ou parti sans facture), ceux du
+                                 client du ticket d'abord ; référence suivie
+                                 du nom du client. -->
+                            <field name="folio_candidate_ids" invisible="1"/>
                             <field name="folio_id"
-                                   readonly="state == 'done'"/>
+                                   readonly="state == 'done'"
+                                   domain="[('id', 'in', folio_candidate_ids)]"
+                                   context="{'aite_folio_with_partner': True}"
+                                   options="{'no_create': True}"/>
                             <field name="currency_id" invisible="1"/>
                         </group>
                     </group>
@@ -55,9 +68,11 @@
         <field name="context">{'search_default_todo': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Rien à rattacher</p>
-            <p>Les encaissements « Note de chambre » ambigus (client non
-            identifié, aucun ou plusieurs folios ouverts) attendent ici
-            le choix de la réception.</p>
+            <p>Quand le bar encaisse en « Note de chambre » sans pouvoir
+            trouver le séjour (client non identifié, aucun ou plusieurs
+            folios ouverts), le ticket arrive ici. Ouvrez-le, choisissez le
+            folio du client dans « Folio choisi » puis cliquez sur
+            « Rattacher au folio » : la consommation s'ajoute à sa note.</p>
         </field>
     </record>
     <record id="view_roomcharge_pending_search" model="ir.ui.view">

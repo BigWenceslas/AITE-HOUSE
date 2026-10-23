@@ -39,7 +39,7 @@ Compatible Odoo 18 Enterprise.
     'author': "AITE CONSULTING",
     'website': "https://aiteconsulting.com",
     'category': 'Point of Sale',
-    'version': '18.0.2.0.4',
+    'version': '18.0.2.0.5',
     'license': 'LGPL-3',
 
     'depends': [

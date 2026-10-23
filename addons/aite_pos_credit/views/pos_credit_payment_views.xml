@@ -99,6 +99,18 @@
         <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="view_aite_pos_credit_payment_search"/>
         <field name="context">{'search_default_posted': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucun remboursement enregistré
+            </p>
+            <p>
+                Quand un client vient régler sa dette, ouvrez POS Crédit →
+                Ardoises, choisissez son ardoise puis cliquez sur
+                « Enregistrer un remboursement » (espèces, MTN MoMo ou
+                Orange Money). Le remboursement s'affiche ici et le reste dû
+                de l'ardoise baisse aussitôt.
+            </p>
+        </field>
     </record>
 
 </odoo>

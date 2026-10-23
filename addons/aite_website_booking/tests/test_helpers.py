@@ -92,9 +92,15 @@ class TestWebsiteHelpers(TransactionCase):
         slots = self._slots(['free', 'full', 'free'])
         self.assertEqual(self.helper._fit_starts(slots, 2), [])
 
-    def test_partial_slots_do_not_count_as_free(self):
+    def test_partial_slots_still_have_room(self):
+        """Écart n° 59 : « partial » = capacité entamée mais pas atteinte
+        (2e fauteuil, 2e comptoir) ; le créneau reste réservable."""
         slots = self._slots(['free', 'partial', 'free'])
-        self.assertEqual(self.helper._fit_starts(slots, 2), [])
+        self.assertEqual(self.helper._fit_starts(slots, 2), [0, 1])
+
+    def test_full_slots_block(self):
+        slots = self._slots(['free', 'partial', 'full'])
+        self.assertEqual(self.helper._fit_starts(slots, 2), [0])
 
     def test_zero_length_service(self):
         self.assertEqual(

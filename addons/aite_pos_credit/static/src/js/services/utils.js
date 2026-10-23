@@ -65,25 +65,53 @@ export function fmtCompact(value) {
     return String(Math.round(n));
 }
 
-/** Pourcentage formaté (entier). */
-export function fmtPct(value) {
-    return (Math.round((value || 0) * 10) / 10).toString().replace(".", ",") + " %";
+/** Arrondi à une décimale ; « || 0 » évite un « -0,0 » pour -0,04. */
+function round1(value) {
+    return Math.round((value || 0) * 10) / 10 || 0;
 }
 
-/** Variation signée colorée : renvoie {text, cls}. */
+/**
+ * Pourcentage à la française, une décimale FIXE : « 64,0 % » (virgule,
+ * espace insécable avant %). Même rendu que la carte du cockpit Direction,
+ * qui reprend ces chiffres (écart n° 41 : « 64 % » ici, « 64,0 % » là-bas).
+ */
+export function fmtPct(value) {
+    return round1(value).toFixed(1).replace(".", ",") + "\u00a0%";
+}
+
+/**
+ * Variation signée : « ▲ +12,5 % », « ▼ 3,0 % », « ■ 0,0 % » (même rendu
+ * que le cockpit Direction). Renvoie {text, value} ; ``value`` est la
+ * variation arrondie à une décimale, qui décide de la couleur.
+ */
 export function fmtDelta(pct) {
-    const v = Math.round((pct || 0) * 10) / 10;
-    const arrow = v > 0 ? "▲" : v < 0 ? "▼" : "■";
+    const v = round1(pct);
+    const arrow = v > 0 ? "▲ +" : v < 0 ? "▼ " : "■ ";
     return {
-        text: `${arrow} ${Math.abs(v).toString().replace(".", ",")} %`,
+        text: arrow + fmtPct(Math.abs(v)),
         value: v,
     };
 }
 
-/** Périodes rapides : renvoie {date_from, date_to} en YYYY-MM-DD. */
-export function periodRange(key) {
-    const today = new Date();
-    const iso = (d) => d.toISOString().slice(0, 10);
+/**
+ * Date LOCALE au format AAAA-MM-JJ (paramètre de période envoyé au serveur).
+ *
+ * Pas de ``toISOString()`` : elle passe par UTC, et le minuit local du 1er
+ * devenait la veille sur un poste à l'est de Greenwich (Douala, UTC+1) —
+ * « Ce mois » démarrait le 30 du mois précédent.
+ */
+export function localIsoDate(d) {
+    const pad = (n) => (n < 10 ? "0" : "") + n;
+    return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+}
+
+/**
+ * Périodes rapides : renvoie {date_from, date_to} en YYYY-MM-DD (date locale).
+ * ``now`` (facultatif, maintenant par défaut) sert aux tests.
+ */
+export function periodRange(key, now = new Date()) {
+    const today = new Date(now);
+    const iso = localIsoDate;
     let from = new Date(today);
     const to = new Date(today);
     switch (key) {

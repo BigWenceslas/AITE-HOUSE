@@ -35,8 +35,9 @@ class ResCompany(models.Model):
         string="VVIP — visites min.", default=25)
     aite_loyalty_vvip_min_domains = fields.Integer(
         string="VVIP — familles de services min.", default=3,
-        help="Nombre de familles distinctes utilisées (restaurant/"
-             "boutique, hébergement, SPA, coiffure, pressing, espaces).")
+        help="Nombre de familles distinctes utilisées (bar & restaurant, "
+             "hébergement, SPA, coiffure, pressing, espaces réservés, "
+             "autres prestations).")
 
 
 class ResConfigSettings(models.TransientModel):
