@@ -82,6 +82,12 @@ class HotelHousekeeping(models.Model):
                     'aite.hotel.housekeeping') or _("Nouveau")
         return super().create(vals_list)
 
+    def _creation_message(self):
+        # Le message standard « %s créé » donnait « Tâche de gouvernante
+        # créé » dans le fil (accord au masculin, ECARTS n° 43).
+        self.ensure_one()
+        return _("Tâche de ménage créée")
+
     # ------------------------------------------------------------------
     # Workflow
     # ------------------------------------------------------------------
@@ -108,11 +114,36 @@ class HotelHousekeeping(models.Model):
             if task.task_type == 'checkout_clean' \
                     and task.company_id.hotel_inspection_required:
                 room.hk_state = 'inspect'
+                # La chambre « à inspecter » reçoit sa tâche d'inspection :
+                # la gouvernante la trouve prête (checklist comprise avec
+                # ``aite_housekeeping``) au lieu de devoir la créer à la
+                # main (ECARTS n° 52).
+                task._ensure_inspection_task()
             elif task.task_type == 'inspection':
                 room.hk_state = 'clean'
             elif task.task_type in ('checkout_clean', 'daily_clean'):
                 room.hk_state = 'clean'
         return True
+
+    def _ensure_inspection_task(self):
+        """Une tâche d'inspection ouverte par chambre, jamais deux : une
+        recouche refaite après une inspection refusée retrouve celle qui
+        attend déjà, ramenée au jour (sinon elle sortait des listes du
+        jour)."""
+        self.ensure_one()
+        today = fields.Date.context_today(self)
+        open_inspection = self.search([
+            ('room_id', '=', self.room_id.id),
+            ('task_type', '=', 'inspection'),
+            ('state', 'in', ('todo', 'in_progress')),
+        ], limit=1)
+        if not open_inspection:
+            self.create({
+                'room_id': self.room_id.id,
+                'task_type': 'inspection',
+            })
+        elif open_inspection.date < today:
+            open_inspection.date = today
 
     def action_cancel(self):
         for task in self:

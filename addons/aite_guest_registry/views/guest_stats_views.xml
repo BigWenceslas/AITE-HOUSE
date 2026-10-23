@@ -4,8 +4,10 @@
         <field name="name">aite.guest.stats.pivot</field>
         <field name="model">aite.guest.stats</field>
         <field name="arch" type="xml">
+            <!-- Lignes par mois d'arrivée : « octobre 2026 », pas « 2026-10 »
+                 (ECARTS n° 4). -->
             <pivot string="Statistiques d'hébergement" sample="1">
-                <field name="month" type="row"/>
+                <field name="arrival_date" interval="month" type="row"/>
                 <field name="resident_type" type="col"/>
                 <field name="arrivals" type="measure"/>
                 <field name="nights" type="measure"/>
@@ -17,7 +19,7 @@
         <field name="model">aite.guest.stats</field>
         <field name="arch" type="xml">
             <graph string="Nuitées par mois" type="bar" stacked="1" sample="1">
-                <field name="month"/>
+                <field name="arrival_date" interval="month"/>
                 <field name="resident_type"/>
                 <field name="nights" type="measure"/>
             </graph>
@@ -28,7 +30,6 @@
         <field name="model">aite.guest.stats</field>
         <field name="arch" type="xml">
             <list create="false" edit="false" delete="false">
-                <field name="month"/>
                 <field name="arrival_date"/>
                 <field name="hotel_id" optional="hide"/>
                 <field name="registration_id"/>
@@ -45,15 +46,14 @@
         <field name="model">aite.guest.stats</field>
         <field name="arch" type="xml">
             <search>
-                <field name="month"/>
                 <field name="nationality_id"/>
                 <filter name="residents" string="Résidents"
                         domain="[('resident_type', '=', 'resident')]"/>
                 <filter name="non_residents" string="Non-résidents"
                         domain="[('resident_type', '=', 'non_resident')]"/>
                 <group expand="1" string="Regrouper par">
-                    <filter name="group_month" string="Mois"
-                            context="{'group_by': 'month'}"/>
+                    <filter name="group_month" string="Date d'arrivée"
+                            context="{'group_by': 'arrival_date:month'}"/>
                     <filter name="group_nationality" string="Nationalité"
                             context="{'group_by': 'nationality_id'}"/>
                     <filter name="group_purpose" string="Motif"

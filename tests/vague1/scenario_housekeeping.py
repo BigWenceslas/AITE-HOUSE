@@ -25,6 +25,7 @@ rooms = {n: Room.search([('name', '=', n), ('hotel_id', '=', hotel.id)], limit=1
 # deux équipières + une gouvernante
 G = env.ref('aite_hotel_management.group_hotel_housekeeping')
 U = env.ref('aite_hotel_management.group_hotel_user')
+GG = env.ref('aite_housekeeping.group_hk_governess')   # « Gouvernante générale »
 # créés comme depuis l'écran Utilisateurs : utilisateur interne + profil hôtel
 def user(name, login, group):
     u = env['res.users'].search([('login', '=', login)], limit=1)
@@ -46,12 +47,15 @@ occ_rooms = [n for n, r in rooms.items() if r.occupancy_state == 'occupied' and 
 check("une chambre propre occupée dit « Propre — client présent »", all(rooms[n].hk_hint == "Propre — client présent" for n in occ_rooms), occ_rooms)
 for n, r in rooms.items():
     print("     Chambre %s → %s" % (n, r.hk_hint))
-# Les colonnes du tableau doivent suivre l'ordre du travail (Odoo 18 trie une
-# sélection par ordre alphabétique de la clé : le kanban impose « hk_state desc »).
+# Les colonnes du tableau suivent l'ordre du travail, toutes affichées : le
+# group_expand de hk_state les rend dans l'ordre de la sélection. Le kanban ne
+# trie plus sur hk_state (le client web n'enverrait que ce tri pour les
+# colonnes, et « desc » les retournerait) — ECARTS n° 50.
 arch = Room.get_views([(env.ref('aite_housekeeping.view_room_board_kanban').id, 'kanban')])['views']['kanban']['arch']
 ORDER = ['to_clean', 'cleaning', 'inspect', 'clean']
-cols = [g['hk_state'] for g in Room.read_group([('hotel_id', '=', hotel.id)], ['id:count'], ['hk_state'], orderby='hk_state desc')]
-check("colonnes du tableau : À nettoyer → En cours → À inspecter → Propre", 'default_order="hk_state desc' in arch and cols == sorted(cols, key=ORDER.index), cols)
+cols = [g['hk_state'] for g in Room.web_read_group([('hotel_id', '=', hotel.id)], ['hk_state'], ['hk_state'])['groups']]
+check("colonnes du tableau : À nettoyer → Nettoyage en cours → À inspecter → Propre",
+      'default_order="name"' in arch and cols == ORDER, cols)
 
 print("\n═══ 2. La gouvernante répartit les chambres du jour entre Amina et Rose ═══")
 Task.search([('date', '=', env['aite.hotel.housekeeping']._fields['date'].default(Task))]).unlink()
@@ -72,6 +76,19 @@ try:
     env['aite.hk.assign.wizard'].with_user(gouv).create({'hotel_id': hotel.id}).action_assign(); check("sans équipière : message clair", False)
 except Exception as e:
     check("sans équipière : message clair", "équipière" in str(e), str(e)[:60])
+# « Équipières présentes » : l'équipe d'étage seulement (ECARTS n° 52).
+W = env['aite.hk.assign.wizard']
+staff = env['res.users'].search(W._fields['user_ids'].get_domain_list(W))
+check("« Équipières présentes » : Amina et Rose, ni la réception ni la direction",
+      amina in staff and rose in staff and gouv not in staff and env.ref('base.user_admin') not in staff,
+      staff.mapped('login'))
+# Une gouvernante sans le profil Réception répartit aussi (ECARTS n° 1 et 52).
+gouv_seule = user("Gouvernante générale", 'gouv_generale', GG)
+check("profil « Gouvernante générale » seul : menu « Répartir » visible",
+      env.ref('aite_housekeeping.menu_assign').id in env['ir.ui.menu'].with_user(gouv_seule)._visible_menu_ids())
+wiz_g = env['aite.hk.assign.wizard'].with_user(gouv_seule).create({'hotel_id': hotel.id, 'user_ids': [(6, 0, [amina.id, rose.id])], 'reassign': True})
+check("… et lance la répartition (écran rechargé ensuite)",
+      wiz_g.action_assign()['params']['next'] == {'type': 'ir.actions.client', 'tag': 'soft_reload'})
 
 print("\n═══ 3. Amina, sur son téléphone : « Ma journée » ═══")
 mine = Task.with_user(amina).search([('assigned_to', '=', amina.id), ('state', 'in', ('todo', 'in_progress'))])
@@ -90,11 +107,15 @@ env.company.hotel_inspection_required = True
 t2 = mine[1] if len(mine) > 1 else Task.search([('assigned_to', '=', rose.id), ('state', '=', 'todo')], limit=1)
 t2.action_start(); t2.action_done()
 check("après recouche → « À inspecter »", t2.room_id.hk_state == 'inspect', t2.room_id.hk_state)
-insp = Task.with_user(gouv).create({'room_id': t2.room_id.id, 'task_type': 'inspection'})
+# La tâche d'inspection s'ouvre toute seule (ECARTS n° 52) : plus de création à la main.
+insp = Task.search([('room_id', '=', t2.room_id.id), ('task_type', '=', 'inspection'),
+                    ('state', 'in', ('todo', 'in_progress'))])
+check("la tâche d'inspection est créée toute seule", len(insp) == 1, len(insp))
 check("la checklist est pré-remplie (8 points standard)", len(insp.check_ids) == 8, len(insp.check_ids))
 check("résumé « 0 / 8 »", insp.checks_summary == "0 / 8", insp.checks_summary)
 insp.action_start()
-insp.action_check_all()
+act = insp.action_check_all()
+check("« Tout cocher » garde la checklist ouverte", isinstance(act, dict) and act.get('res_id') == insp.id, act)
 insp.check_ids[1].write({'ok': False, 'remark': "serviettes manquantes"})
 check("résumé « 7 / 8 »", insp.checks_summary == "7 / 8", insp.checks_summary)
 insp.with_user(gouv).action_done()
@@ -103,7 +124,10 @@ redo = Task.search([('room_id', '=', t2.room_id.id), ('state', '=', 'todo'), ('p
 check("… avec une tâche URGENTE qui reprend la remarque", redo and "serviettes manquantes" in (redo.note or ""), redo.note)
 check("… affectée à la même équipière", redo.assigned_to == t2.assigned_to, (redo.assigned_to.name, t2.assigned_to.name))
 redo.action_start(); redo.action_done()
-insp2 = Task.create({'room_id': t2.room_id.id, 'task_type': 'inspection'}); insp2.action_start(); insp2.action_check_all(); insp2.action_done()
+insp2 = Task.search([('room_id', '=', t2.room_id.id), ('task_type', '=', 'inspection'),
+                     ('state', '=', 'todo')], limit=1)
+check("nouvelle recouche → nouvelle inspection ouverte toute seule", bool(insp2))
+insp2.action_start(); insp2.action_check_all(); insp2.action_done()
 check("inspection conforme → chambre propre", t2.room_id.hk_state == 'clean', t2.room_id.hk_state)
 env.company.hotel_inspection_required = False
 

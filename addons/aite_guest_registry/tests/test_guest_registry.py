@@ -67,7 +67,7 @@ class TestGuestRegistry(HotelCommon):
             lastname = "Ngono"
             firstname = "Estelle"
             nationality_id = country_id = self.env['res.country']
-            guest_id_type = guest_id_number = False
+            guest_id_type = guest_id_number = guest_birth_date = False
             street = city = phone = mobile = email = False
 
         vals = Reg._vals_from_partner(FakePartner(), reservation)

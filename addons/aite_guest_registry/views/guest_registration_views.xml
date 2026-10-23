@@ -75,7 +75,7 @@
                     <button name="action_copy_back_to_partner" type="object"
                             string="Mémoriser sur la fiche client"
                             invisible="not partner_id"
-                            help="Enregistre la pièce et la nationalité sur le contact : la prochaine fois, tout sera pré-rempli."/>
+                            help="Enregistre la pièce, la nationalité et la date de naissance sur le contact : la prochaine fois, elles seront pré-remplies."/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -205,7 +205,7 @@
                 réservation. Ce registre est l'état chronologique à
                 présenter en cas de contrôle — exportez-le en un clic
                 (⚙ → Exporter) ou imprimez-le depuis
-                <b>Facturation → Registre de police</b>.
+                <b>Hôtel → Facturation → Registre de police (impression)</b>.
             </p>
         </field>
     </record>

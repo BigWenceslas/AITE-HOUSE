@@ -48,6 +48,11 @@
                     <group>
                         <field name="partner_id"
                                context="{'default_is_hotel_guest': True}"/>
+                        <field name="source"/>
+                        <field name="agent_id"
+                               invisible="source != 'agent'"
+                               required="source == 'agent'"
+                               options="{'no_create': True}"/>
                     </group>
                     <group>
                         <field name="confirm_immediately"/>

@@ -1,32 +1,35 @@
 # Gestion Hôtelière (aite_hotel_management)
 
 Module complet de gestion hôtelière (PMS — Property Management System)
-pour **Odoo 18 Enterprise**, développé par **AITE CONSULTING**.
+pour **Odoo 18** (Community et Enterprise), développé par **AITE CONSULTING**.
 
 Il couvre le cycle de vie complet d'un séjour : réservation, check-in,
 folio (compte client), consommation de services, encaissements
 (Mobile Money inclus), facturation, check-out et ménage — avec un
-tableau de bord Front Desk temps réel (Occupation, ADR, RevPAR, room
-board interactif).
+tableau de bord de la réception en temps réel (occupation, prix moyen
+par nuit, revenu par chambre disponible, plan des chambres
+interactif).
 
 ---
 
 ## 1. Fonctionnalités
 
-### Front Desk
+### Réception
 - **Tableau de bord temps réel** : photo du jour (occupation, arrivées,
-  départs, clients présents), KPIs de période (taux d'occupation, ADR,
-  RevPAR, chiffre d'affaires) avec variation vs période précédente,
-  graphiques d'évolution, room board interactif et résumé gouvernante.
+  départs, clients présents), indicateurs de période (taux d'occupation,
+  prix moyen / nuit, revenu par chambre disponible, chiffre d'affaires)
+  avec variation « vs période précédente », graphiques d'évolution, plan
+  des chambres interactif et résumé gouvernante.
 - **Réservation rapide** : assistant de recherche de disponibilités par
   dates / type / capacité, avec prix calculés (saisons comprises) et
   création de la réservation en un clic.
 - **Vues opérationnelles** : arrivées du jour, départs du jour, clients
-  présents (in-house).
+  présents.
 
 ### Réservations
 - Workflow complet : Brouillon → Confirmée → Arrivé (check-in) → Parti
-  (check-out), avec annulation et no-show (manuel ou automatique).
+  (check-out), avec annulation et « Non présenté » (manuel ou
+  automatique).
 - Multi-chambres sur une même réservation, contrôle de disponibilité
   (chevauchements) et de capacité (adultes / enfants).
 - Prix par nuit calculé automatiquement : prix spécifique chambre >
@@ -39,7 +42,8 @@ board interactif).
   tarif d'origine.
 - E-mail de confirmation automatique (modèle fourni, activable dans la
   configuration).
-- **Planning Gantt** des chambres (vue Enterprise) + calendrier.
+- **Planning des chambres** en calendrier ; vue **Gantt** sur Odoo
+  Enterprise avec le module passerelle `aite_hotel_gantt`.
 - Changement de chambre en cours de séjour (`action_change_room` sur la
   ligne de réservation).
 
@@ -58,12 +62,16 @@ board interactif).
   paiement suivis sur le folio.
 
 ### Gouvernante (housekeeping)
-- États de chambre : Propre / À nettoyer / Ménage en cours / À
-  contrôler, avec inspection optionnelle par la gouvernante.
+- États de chambre : À nettoyer / Nettoyage en cours / À inspecter /
+  Propre, avec inspection optionnelle par la gouvernante : la tâche
+  d'inspection se crée à la fin de la recouche, et se clôt aussi quand
+  la chambre est déclarée « Conforme » depuis sa carte ou sa fiche.
+- Boutons « Je commence » / « C'est fait » (et « Conforme » pour une
+  chambre à inspecter) sur les tâches comme sur les chambres.
 - **Tâches de ménage** (kanban) : ménage de départ créé automatiquement
   au check-out, ménage quotidien des chambres occupées (cron
   optionnel), inspections et maintenance.
-- Room rack kanban par étage avec actions de ménage directes ; chambres
+- Kanban des chambres par étage avec actions de ménage directes ; chambres
   **hors service** (réservation bloquée) avec motif.
 
 ### Configuration & sécurité
@@ -72,9 +80,9 @@ board interactif).
   (opérations courantes), **Manager** (configuration, annulations,
   check-in anticipé, hors service).
 - Paramètres : compte client par défaut, journal d'encaissement,
-  écritures automatiques, e-mail de confirmation, no-show automatique
-  (avec délai de grâce), ménage quotidien automatique, inspection
-  obligatoire.
+  écritures automatiques, e-mail de confirmation, « Non présenté »
+  automatique (avec délai de grâce), ménage quotidien automatique,
+  inspection obligatoire.
 - Rapports PDF : confirmation de réservation et folio détaillé.
 
 ---
@@ -88,11 +96,13 @@ board interactif).
 | `product`   | Articles liés aux types de chambre / services |
 | `account`   | Factures clients, écritures d'encaissement |
 | `sale`      | Paramétrage commercial de base            |
-| `web_gantt` | Planning des chambres (**Odoo Enterprise**) |
 
-> Le module vise **Odoo 18 Enterprise**. Pour une édition Community,
-> retirer `web_gantt` des dépendances et la vue `gantt` du fichier
-> `views/hotel_reservation_views.xml`.
+> Le module s'installe **tel quel** sur Odoo 18 Community et Enterprise.
+> La vue Gantt du planning vit dans le module passerelle
+> `aite_hotel_gantt` (dépend de `web_gantt`, Enterprise) : il s'installe
+> seul avec le socle sur une base neuve ; sur une base où le socle est
+> déjà installé, il s'installe **à la main** une fois (Applications →
+> chercher « Gantt » → Installer, voir `docs/INSTALLATION.md`).
 
 ## 3. Installation
 
@@ -140,10 +150,13 @@ board interactif).
 
 - **Taux d'occupation** = nuitées vendues / nuitées disponibles
   (chambres vendables × jours), hors chambres hors service.
-- **ADR** (Average Daily Rate) = CA hébergement HT / nuitées vendues.
-- **RevPAR** = CA hébergement HT / nuitées disponibles.
-- Les variations affichées comparent la période sélectionnée à la
-  période précédente de même durée (N-1).
+- **Prix moyen / nuit** (ADR, *Average Daily Rate*) = CA hébergement
+  HT / nuitées vendues.
+- **Revenu par chambre disponible** (RevPAR) = CA hébergement HT /
+  nuitées disponibles.
+- Les variations affichées (« vs période précédente ») comparent la
+  période sélectionnée à la période précédente de même durée, pas à
+  l'année précédente.
 
 ## 7. Structure technique
 
@@ -153,13 +166,13 @@ aite_hotel_management/
 ├── data/            séquences, aménités, e-mail, cron quotidien
 ├── demo/            hôtel de démonstration complet
 ├── models/          hôtel, chambres, réservations, folios,
-│                    gouvernante, dashboard (RPC), partenaires, config
+│                    gouvernante, tableau de bord (RPC), partenaires, config
 ├── wizard/          réservation rapide, check-out, encaissement,
 │                    changement de chambre
 ├── security/        groupes, ACL, règles multi-sociétés
-├── views/           toutes les vues + menus + action dashboard
+├── views/           toutes les vues + menus + action du tableau de bord
 ├── report/          PDF confirmation & folio (QWeb)
-└── static/src/      dashboard OWL (JS/XML/SCSS), icône
+└── static/src/      tableau de bord OWL (JS/XML/SCSS), icône
 ```
 
 Modèles principaux : `aite.hotel.hotel`, `aite.hotel.floor`,
@@ -182,4 +195,4 @@ Modèles principaux : `aite.hotel.hotel`, `aite.hotel.floor`,
 
 - Licence : **LGPL-3**
 - Auteur : **AITE CONSULTING** — Yaoundé, Cameroun
-- Version : 18.0.1.0.0
+- Version : 18.0.1.0.7

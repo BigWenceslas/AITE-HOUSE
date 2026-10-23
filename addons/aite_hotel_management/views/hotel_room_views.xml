@@ -179,17 +179,28 @@
                                 <i class="fa fa-user me-1" title="Client"/>
                                 <field name="current_line_id"/>
                             </div>
+                            <!-- Mêmes mots que les tâches de ménage et
+                                 « Ma journée » : un geste, un libellé
+                                 (ECARTS n° 51). En « À inspecter »,
+                                 « Conforme » comme sur le tableau de la
+                                 gouvernante : l'inspection ouverte est
+                                 close avec la chambre. -->
                             <div class="mt-2 d-flex gap-1">
                                 <button name="action_start_cleaning"
                                         type="object"
                                         class="btn btn-sm btn-secondary"
                                         invisible="hk_state != 'to_clean'">
-                                    Démarrer ménage
+                                    Je commence
                                 </button>
                                 <button name="action_set_clean" type="object"
                                         class="btn btn-sm btn-success"
-                                        invisible="hk_state not in ('cleaning','inspect')">
-                                    Propre
+                                        invisible="hk_state != 'cleaning'">
+                                    C'est fait
+                                </button>
+                                <button name="action_set_clean" type="object"
+                                        class="btn btn-sm btn-success"
+                                        invisible="hk_state != 'inspect'">
+                                    Conforme
                                 </button>
                             </div>
                         </div>
@@ -208,12 +219,16 @@
                     <button name="action_set_to_clean" type="object"
                             string="À nettoyer"
                             invisible="hk_state != 'clean'"/>
+                    <!-- Un geste, un libellé (ECARTS n° 51). -->
                     <button name="action_start_cleaning" type="object"
-                            string="Démarrer le ménage"
+                            string="Je commence"
                             invisible="hk_state != 'to_clean'"/>
                     <button name="action_set_clean" type="object"
-                            string="Marquer propre" class="btn-primary"
-                            invisible="hk_state not in ('cleaning','inspect')"/>
+                            string="C'est fait" class="btn-primary"
+                            invisible="hk_state != 'cleaning'"/>
+                    <button name="action_set_clean" type="object"
+                            string="Conforme" class="btn-primary"
+                            invisible="hk_state != 'inspect'"/>
                     <button name="action_toggle_out_of_order" type="object"
                             string="Mettre hors service"
                             invisible="out_of_order"

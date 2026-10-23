@@ -22,7 +22,7 @@ AITE_HOUSE/
 
 | Module | Version | Rôle |
 |---|---|---|
-| aite_hotel_management | 18.0.1.0.3 | **Socle hôtelier** : chambres, réservations, séjours, folios, main courante, facturation |
+| aite_hotel_management | 18.0.1.0.7 | **Socle hôtelier** : chambres, réservations, séjours, folios, main courante, facturation |
 | aite_slot_booking | 18.0.1.0.3 | Espaces & prestations réservables au créneau (salles, piscine, billard…) |
 | aite_website_booking | 18.0.1.0.0 | Réservation en ligne depuis le site web, acompte |
 | aite_hotel_pos_link | 18.0.1.0.0 | **Note de chambre** : report des consommations du bar sur le folio |
@@ -33,7 +33,7 @@ AITE_HOUSE/
 | aite_purchase_dashboard | 18.0.1.0.2 | Achats : échéancier fournisseurs, OTIF, hausses de prix |
 | aite_direction_dashboard | 18.0.1.0.2 | **Cockpit Direction** : vue consolidée, cash à risque, actions |
 | aite_exec_dashboard | 18.0.1.0.2 | Tableau de bord exécutif hôtel |
-| aite_hotel_gantt | 18.0.1.0.0 | **Enterprise uniquement** : planning Gantt des chambres (auto-installé) |
+| aite_hotel_gantt | 18.0.1.0.2 | **Enterprise uniquement** : planning Gantt des chambres (automatique sur une base neuve, **à installer à la main** sur une base existante — voir §3) |
 | aite_demo_data | 18.0.1.2.3 | Jeu de démonstration (établissement complet pré-chargé) |
 | aite_city_tax | 18.0.1.0.0 | **Taxe de séjour** automatique : barèmes par pays et étoiles, ligne sur le folio, état mensuel |
 | aite_guest_registry | 18.0.1.0.1 | **Registre des clients** : fiche d'enregistrement au check-in, registre de police, statistiques |
@@ -61,9 +61,33 @@ La suite s'installe sur les **deux éditions**. Le seul écart est le
 planning des chambres :
 
 - sur **Community**, il s'affiche en vue **calendrier** ;
-- sur **Enterprise**, le module `aite_hotel_gantt` s'installe
-  automatiquement et le planning s'ouvre en vue **Gantt** (barres par
-  chambre). Aucune action n'est requise.
+- sur **Enterprise**, le module `aite_hotel_gantt` ajoute la vue
+  **Gantt** (barres par chambre) : Hôtel → Réservations → Planning des
+  chambres s'ouvre alors sur le Gantt, le calendrier restant accessible.
+
+Sur Enterprise, `aite_hotel_gantt` ne s'installe **tout seul** que
+lorsqu'une de ses dépendances est elle-même en cours d'installation :
+sur une **base neuve**, en même temps que le socle `aite_hotel_management`
+(étape 1 du §4), ou plus tard si une application Enterprise installe
+`web_gantt`. Odoo n'examine un module « auto-installable » qu'à ce
+moment-là :
+
+- **base où le socle est déjà installé** (cas d'une mise à jour, comme
+  chez LAVERANDAH) : une mise à niveau du socle **ne l'installe pas**.
+  Il faut l'installer **une fois, à la main** :
+  1. déposer le dossier `aite_hotel_gantt` à côté des autres, redémarrer ;
+  2. Apps → **« Mettre à jour la liste des applications »** ;
+  3. Apps → retirer le filtre « Applications » → chercher **« Gantt »** →
+     « AITE — Planning Gantt des chambres (Enterprise) » → **Installer**.
+
+  En ligne de commande, c'est équivalent à
+  `odoo-bin -c <odoo.conf> -d <base> -i aite_hotel_gantt --stop-after-init`.
+  Si le module Odoo `web_gantt` n'était pas encore installé, il
+  s'installe avec. Ensuite plus rien à faire : les mises à niveau suivantes
+  le gardent.
+- **Vérifier** : Hôtel → Réservations → **Planning des chambres** propose
+  la vue Gantt dans le sélecteur de vues (en haut à droite) et s'ouvre
+  dessus.
 
 ## 4. Installation
 
@@ -87,8 +111,10 @@ planning des chambres :
       séjour demande)
    8. `aite_demo_data` *(uniquement sur une base de démonstration)*
 
-   Sur Enterprise, `aite_hotel_gantt` s'ajoute seul à l'étape 1 : il ne
-   figure pas dans cette liste et ne demande aucune manipulation.
+   Sur Enterprise, `aite_hotel_gantt` s'ajoute seul à l'étape 1 (base
+   neuve) : il ne figure pas dans cette liste. Si le socle était **déjà
+   installé** avant d'y déposer `aite_hotel_gantt`, installez-le à la main
+   (voir « Community ou Enterprise ? » au §3).
 5. **Ctrl+Shift+R** dans le navigateur (les assets sont recompilés).
 6. Vérifier : l'écran **Paramètres** doit s'afficher jusqu'en bas, avec les
    sections AITE (Note de chambre, Fidélité, Crédit, Réservations…).
@@ -96,7 +122,10 @@ planning des chambres :
 ## 5. Mise à jour d'une installation existante
 
 Remplacer le dossier du module concerné, redémarrer le service, puis
-Apps → **« Mettre à niveau »** sur ce module. Ne jamais retirer des
+Apps → **« Mettre à niveau »** sur ce module. Sur Enterprise, si
+`aite_hotel_gantt` est livré pour la première fois sur une base où le
+socle est déjà installé, la mise à niveau ne l'installe pas : l'installer
+à la main une fois (§3, « Community ou Enterprise ? »). Ne jamais retirer des
 fichiers avant d'avoir désinstallé proprement le module depuis Apps.
 
 ## 6. Désinstallation
@@ -115,6 +144,7 @@ dernier.
 | Erreur à l'installation | Dépendance Odoo absente | Installer d'abord le module standard concerné (voir §3) |
 | `Ensure that there is an existing bank journal` | Aucun plan comptable sur la société | Installer le module de localisation comptable du pays, puis relancer l'installation (voir §3) |
 | `aite_hotel_gantt` reste « non installé » | Odoo Community : `web_gantt` n'existe pas | Comportement normal — le planning s'affiche en vue calendrier |
+| Odoo Enterprise, pas de vue Gantt dans « Planning des chambres » | `aite_hotel_gantt` déposé sur une base où le socle était déjà installé : Odoo ne l'installe pas tout seul à la mise à niveau | Apps → retirer le filtre « Applications » → chercher « Gantt » → Installer (voir §3) |
 | Montants affichés dans la mauvaise devise | Devise de la société non positionnée | Paramètres → Sociétés → Devise, **avant** toute écriture comptable |
 | Tableaux de bord vides sur une base de démonstration | Jeu d'essai daté, devenu hors période | Paramètres → **Jeu d'essai AITE** → Générer |
 

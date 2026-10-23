@@ -6,10 +6,12 @@
     <menuitem id="menu_my_day" name="Ma journée"
               parent="aite_hotel_management.menu_hotel_housekeeping_section"
               action="action_my_day" sequence="8"/>
+    <!-- La gouvernante répartit (recette P02) : profil « Gouvernante
+         générale », que la Réception implique (ECARTS n° 1 et n° 52). -->
     <menuitem id="menu_assign" name="Répartir les chambres du jour"
               parent="aite_hotel_management.menu_hotel_housekeeping_section"
               action="action_assign_wizard" sequence="12"
-              groups="aite_hotel_management.group_hotel_user"/>
+              groups="group_hk_governess"/>
     <menuitem id="menu_room_maintenance" name="Pannes &amp; réparations"
               parent="aite_hotel_management.menu_hotel_housekeeping_section"
               action="action_room_maintenance" sequence="30"/>

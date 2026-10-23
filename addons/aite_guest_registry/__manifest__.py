@@ -18,8 +18,9 @@ Ce module le fait **au moment du check-in, sans écran supplémentaire** :
 * **Registre chronologique** des arrivées et départs, consultable et
   exportable (Excel / PDF) pour tout contrôle de police ;
 * **Statistiques mensuelles** : arrivées, nuitées, résidents / non-résidents,
-  nationalités, durée moyenne de séjour, taux d'occupation — le format
-  attendu par le ministère du Tourisme (MINTOUL) ;
+  nationalités et motifs du séjour, en tableau croisé exportable — la base
+  des états attendus par le ministère du Tourisme (MINTOUL) ; la durée
+  moyenne de séjour se déduit (nuitées ÷ arrivées) ;
 * Rappel automatique : un séjour arrivé sans fiche complète est signalé.
 
 Prêt pour une future plateforme de télédéclaration (modèle HORA, Côte
@@ -28,7 +29,7 @@ d'Ivoire) : chaque fiche porte toutes les données requises.
     'author': "AITE Consulting",
     'website': "https://aite-consulting.com",
     'category': 'Services/Hotel',
-    'version': '18.0.1.0.2',
+    'version': '18.0.1.0.3',
     'license': 'LGPL-3',
     'depends': ['aite_hotel_management'],
     'data': [

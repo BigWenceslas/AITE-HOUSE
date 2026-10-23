@@ -6,7 +6,7 @@ access_hk_check_manager,aite.hk.check.manager,model_aite_hk_check,aite_hotel_man
 access_lost_found_hk,aite.hk.lost.found.hk,model_aite_hk_lost_found,aite_hotel_management.group_hotel_housekeeping,1,1,1,0
 access_lost_found_manager,aite.hk.lost.found.manager,model_aite_hk_lost_found,aite_hotel_management.group_hotel_manager,1,1,1,1
 access_report_issue_wizard,aite.hk.report.issue.wizard,model_aite_hk_report_issue_wizard,aite_hotel_management.group_hotel_housekeeping,1,1,1,1
-access_assign_wizard,aite.hk.assign.wizard,model_aite_hk_assign_wizard,aite_hotel_management.group_hotel_user,1,1,1,1
+access_assign_wizard,aite.hk.assign.wizard,model_aite_hk_assign_wizard,group_hk_governess,1,1,1,1
 access_maintenance_request_hk,maintenance.request.hk,maintenance.model_maintenance_request,aite_hotel_management.group_hotel_housekeeping,1,1,1,0
 access_maintenance_stage_hk,maintenance.stage.hk,maintenance.model_maintenance_stage,aite_hotel_management.group_hotel_housekeeping,1,0,0,0
 access_maintenance_equipment_hk,maintenance.equipment.hk,maintenance.model_maintenance_equipment,aite_hotel_management.group_hotel_housekeeping,1,0,0,0

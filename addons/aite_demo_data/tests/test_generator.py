@@ -136,6 +136,44 @@ class TestDemoGenerator(TransactionCase):
         self.assertFalse(housekeeper.has_group(
             'aite_hotel_management.group_hotel_user'))
 
+    def test_governess_distributes_to_a_floor_attendant(self):
+        """Avec aite_housekeeping : la gouvernante de démonstration voit
+        « Répartir » et « Conforme », et l'équipière de démonstration est
+        proposée dans « Équipières présentes » (ECARTS n° 1 et n° 52)."""
+        if 'aite.hk.assign.wizard' not in self.env:
+            self.skipTest("aite_housekeeping non installé")
+        Users = self.env['res.users']
+        self.generator.generate_all(scale='small')
+        governess = Users.search([('login', '=', 'demo.gouvernante')], limit=1)
+        attendant = Users.search([('login', '=', 'demo.equipiere')], limit=1)
+        self.assertTrue(attendant)
+        self.assertTrue(governess.has_group(
+            'aite_housekeeping.group_hk_governess'))
+        menu = self.env.ref('aite_housekeeping.menu_assign')
+        self.assertIn(menu.id, self.env['ir.ui.menu'].with_user(
+            governess)._visible_menu_ids())
+        Wizard = self.env['aite.hk.assign.wizard']
+        staff = Users.search(
+            Wizard._fields['user_ids'].get_domain_list(Wizard))
+        self.assertIn(attendant, staff)
+        self.assertNotIn(governess, staff)
+
+    def test_existing_profile_receives_the_missing_groups(self):
+        """Profil créé avant l'installation d'un module : la génération
+        suivante lui ajoute le groupe manquant, sans rien retirer."""
+        if 'aite.hk.assign.wizard' not in self.env:
+            self.skipTest("aite_housekeeping non installé")
+        governess_group = self.env.ref('aite_housekeeping.group_hk_governess')
+        self.generator.generate_all(scale='small')
+        governess = self.env['res.users'].search(
+            [('login', '=', 'demo.gouvernante')], limit=1)
+        governess.write({'groups_id': [(3, governess_group.id)]})
+        self.assertFalse(governess.has_group(
+            'aite_housekeeping.group_hk_governess'))
+        self.generator._generate_users()
+        self.assertTrue(governess.has_group(
+            'aite_housekeeping.group_hk_governess'))
+
     def test_manager_profile_sees_the_dashboards(self):
         self.generator.generate_all(scale='small')
         manager = self.env['res.users'].search(

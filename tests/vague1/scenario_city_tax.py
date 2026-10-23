@@ -44,8 +44,11 @@ hotel = env['aite.hotel.hotel'].create({
 check("le barème s'est appliqué tout seul", bool(hotel.city_tax_rate_id))
 check("montant 3★ Cameroun = 3 000 F", hotel.city_tax_amount == 3000,
       hotel.city_tax_amount)
-check("l'explication est lisible", "3 000 XAF" in (hotel.city_tax_help or ""),
+# Le symbole de la devise (« FCFA »), pas son code ISO (« XAF ») : ECARTS n° 7.
+check("l'explication est lisible, en FCFA", "3 000 FCFA" in (hotel.city_tax_help or ""),
       hotel.city_tax_help)
+check("le libellé du barème dit « FCFA » (ECARTS n° 39)",
+      "3 000 FCFA" in hotel.city_tax_rate_id.display_name, hotel.city_tax_rate_id.display_name)
 print("     Écran dit : « %s »" % hotel.city_tax_help)
 
 print("\n═══ 2. Il crée un type de chambre et une chambre ═══")
@@ -166,8 +169,24 @@ hotel_td = env['aite.hotel.hotel'].create({
     'country_id': env.ref('base.td').id,
 })
 check("aucun barème", not hotel_td.city_tax_rate_id)
-check("l'écran dit où ajouter le barème", "Configuration" in hotel_td.city_tax_help,
+check("l'écran dit où ajouter le barème (chemin réel du menu)",
+      "Hôtel → Configuration → Barèmes de taxe de séjour" in hotel_td.city_tax_help,
       hotel_td.city_tax_help)
+# Le responsable ajoute le barème du Tchad : l'hôtel le prend tout seul (ECARTS n° 73).
+rate_td = env['aite.city.tax.rate'].create({
+    'country_id': env.ref('base.td').id, 'stars': '3', 'amount': 1000,
+    'currency_id': XAF.id,
+})
+check("barème ajouté après coup → appliqué à l'hôtel", hotel_td.city_tax_rate_id == rate_td,
+      hotel_td.city_tax_rate_id)
+
+print("\n═══ 13. La ligne de taxe ne se supprime pas à la main (ECARTS n° 57) ═══")
+tl2 = res2.folio_id.line_ids.filtered(lambda l: l.line_type == 'city_tax')
+try:
+    tl2.unlink(); check("suppression à la main refusée", False)
+except Exception as e:
+    check("suppression à la main refusée, message qui dit quoi faire",
+          "Collecter la taxe de séjour" in str(e), str(e)[:80])
 
 env.cr.rollback()
 print("\n══════════════════════════════════════")

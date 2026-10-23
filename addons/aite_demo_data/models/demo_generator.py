@@ -58,7 +58,16 @@ DEMO_USERS = [
         'aite_hotel_management.group_hotel_user',
         'aite_slot_booking.group_slot_user',
     ]),
+    # La gouvernante répartit les chambres et valide les inspections
+    # (« Gouvernante générale », aite_housekeeping — ignoré si le module
+    # n'est pas installé) ; l'équipière fait le ménage et apparaît dans
+    # « Équipières présentes ».
     ('housekeeping', "Fanta Souaré (Gouvernante)", 'demo.gouvernante', [
+        'base.group_user',
+        'aite_hotel_management.group_hotel_housekeeping',
+        'aite_housekeeping.group_hk_governess',
+    ]),
+    ('floor', "Mariama Keïta (Équipière)", 'demo.equipiere', [
         'base.group_user',
         'aite_hotel_management.group_hotel_housekeeping',
     ]),
@@ -256,14 +265,21 @@ class AiteDemoGenerator(models.AbstractModel):
         Users = self.env['res.users'].sudo()
         created = Users.browse()
         for key, name, login, group_xmlids in DEMO_USERS:
-            if Users.with_context(active_test=False).search_count(
-                    [('login', '=', login)]):
-                continue
             groups = self.env['res.groups'].browse()
             for xmlid in group_xmlids:
                 group = self.env.ref(xmlid, raise_if_not_found=False)
                 if group:
                     groups |= group
+            existing = Users.with_context(active_test=False).search(
+                [('login', '=', login)], limit=1)
+            if existing:
+                # Profil déjà créé (module installé après coup, par ex.
+                # aite_housekeeping) : on ajoute les groupes manquants,
+                # sans jamais en retirer.
+                missing = groups - existing.groups_id
+                if missing:
+                    existing.write({'groups_id': [(4, g.id) for g in missing]})
+                continue
             if not groups:
                 continue
             user = Users.create({

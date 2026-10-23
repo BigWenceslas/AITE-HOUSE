@@ -7,10 +7,11 @@
         <field name="model">aite.hotel.room</field>
         <field name="priority">50</field>
         <field name="arch" type="xml">
-            <!-- default_order : Odoo 18 trie les colonnes d'une sélection par
-                 ordre alphabétique de la clé ; « desc » donne l'ordre du
-                 travail : À nettoyer → En cours → À inspecter → Propre. -->
-            <kanban default_group_by="hk_state" default_order="hk_state desc, name"
+            <!-- Colonnes dans l'ordre du travail — À nettoyer → Nettoyage en
+                 cours → À inspecter → Propre — par le group_expand de
+                 hk_state (models/hotel_room.py). Ne pas remettre hk_state
+                 dans default_order : « desc » retournerait les colonnes. -->
+            <kanban default_group_by="hk_state" default_order="name"
                     quick_create="false"
                     records_draggable="false" group_create="false"
                     group_delete="false" group_edit="false">
@@ -33,7 +34,11 @@
                                 </span>
                             </div>
                             <div class="fw-bold text-primary"><field name="hk_hint"/></div>
-                            <div class="text-muted small">
+                            <!-- Gris lisible sur le fond rouge d'une chambre hors
+                                 service : text-muted y tombait à 3,6:1, sous le
+                                 seuil AA de 4,5:1 (ECARTS n° 71). -->
+                            <div class="small"
+                                 t-attf-class="#{record.out_of_order.raw_value ? 'text-body' : 'text-muted'}">
                                 <field name="room_type_id"/>
                                 <span t-if="record.floor_id.raw_value"> · <field name="floor_id"/></span>
                             </div>
@@ -47,26 +52,30 @@
                                 <i class="fa fa-female me-1" title="Affectée à"/><field name="assigned_to"/>
                             </div>
                             <div class="mt-2 d-flex flex-wrap gap-1">
+                                <!-- Mêmes mots que « Ma journée » : un geste, un
+                                     libellé (ECARTS n° 51). -->
                                 <button name="action_hk_start" type="object"
                                         class="btn btn-sm btn-primary"
                                         invisible="hk_state != 'to_clean' or out_of_order">
-                                    <i class="fa fa-play me-1" title="Commencer"/>Commencer
+                                    <i class="fa fa-play me-1" title="Je commence"/>Je commence
                                 </button>
                                 <button name="action_hk_done" type="object"
                                         class="btn btn-sm btn-success"
                                         invisible="hk_state != 'cleaning'">
-                                    <i class="fa fa-check me-1" title="Terminé"/>Terminé
+                                    <i class="fa fa-check me-1" title="C'est fait"/>C'est fait
                                 </button>
+                                <!-- Inspection : profil « Gouvernante générale »
+                                     (impliqué par la Réception), ECARTS n° 52. -->
                                 <button name="action_hk_inspect_ok" type="object"
                                         class="btn btn-sm btn-success"
                                         invisible="hk_state != 'inspect'"
-                                        groups="aite_hotel_management.group_hotel_user">
+                                        groups="aite_housekeeping.group_hk_governess">
                                     <i class="fa fa-check me-1" title="Conforme"/>Conforme
                                 </button>
                                 <button name="action_hk_inspect_ko" type="object"
                                         class="btn btn-sm btn-outline-danger"
                                         invisible="hk_state != 'inspect'"
-                                        groups="aite_hotel_management.group_hotel_user">
+                                        groups="aite_housekeeping.group_hk_governess">
                                     À refaire
                                 </button>
                                 <button name="action_set_to_clean" type="object"
@@ -96,9 +105,9 @@
         <field name="context">{'default_group_by': 'hk_state'}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Aucune chambre pour l'instant</p>
-            <p>Les chambres se créent dans <b>Configuration → Chambres</b>.
+            <p>Les chambres se créent dans <b>Hôtel → Configuration → Chambres</b>.
                Elles apparaîtront ici, classées par état de ménage :
-               à nettoyer, en cours, à inspecter, propre.</p>
+               à nettoyer, nettoyage en cours, à inspecter, propre.</p>
         </field>
     </record>
 

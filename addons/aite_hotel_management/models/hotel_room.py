@@ -406,7 +406,50 @@ class HotelRoom(models.Model):
                 "Responsable. Vous pouvez en revanche mettre à jour "
                 "l'état de ménage et signaler une chambre hors service.",
                 fields=labels))
-        return super().write(vals)
+        # Chambres qui attendaient l'inspection, lues avant l'écriture.
+        awaiting = self.filtered(lambda r: r.hk_state == 'inspect') \
+            if vals.get('hk_state') == 'clean' else self.browse()
+        res = super().write(vals)
+        if vals.get('hk_state') == 'clean':
+            self._close_open_inspections(awaiting)
+        return res
+
+    def _close_open_inspections(self, accepted):
+        """
+        Chambre déclarée propre sans passer par sa tâche d'inspection
+        (« Conforme » sur la chambre, check-in) : ses inspections encore
+        ouvertes sont closes avec elle. Sinon elles restaient ouvertes
+        pour toujours dans les tâches de ménage, et la recouche suivante
+        réutilisait une inspection de plusieurs jours (relecture du
+        n° 52).
+
+        ``accepted`` : chambres qui étaient « À inspecter » — la chambre
+        a été acceptée, l'inspection est donc faite (« Terminé »). Pour
+        les autres (inspection en attente pendant que la chambre est
+        refaite), l'inspection n'a pas eu lieu : « Annulé ». Écriture
+        technique en ``sudo()`` : la Réception clôt aussi la tâche au
+        check-in.
+        """
+        Task = self.env['aite.hotel.housekeeping'].sudo()
+        inspections = Task.search([
+            ('room_id', 'in', self.ids),
+            ('task_type', '=', 'inspection'),
+            ('state', 'in', ('todo', 'in_progress')),
+        ])
+        done = inspections.filtered(lambda t: t.room_id in accepted)
+        if done:
+            done.write({'state': 'done'})
+            for task in done:
+                task.message_post(body=_(
+                    "Chambre %s déclarée propre directement : inspection "
+                    "close.", task.room_id.name))
+        cancelled = inspections - done
+        if cancelled:
+            cancelled.write({'state': 'cancelled'})
+            for task in cancelled:
+                task.message_post(body=_(
+                    "Chambre %s déclarée propre sans repasser par "
+                    "l'inspection : tâche annulée.", task.room_id.name))
 
     # ------------------------------------------------------------------
     # Métier

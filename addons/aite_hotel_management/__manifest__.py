@@ -21,9 +21,9 @@ Fonctionnel
   transport…), tarifs saisonniers.
 * **Réservations** : contrôle de disponibilité, réservation rapide,
   workflow brouillon → confirmée → arrivée (check-in) → départ
-  (check-out), annulation et no-show, changement de chambre,
+  (check-out), annulation et client non présenté, changement de chambre,
   commissions d'agents / apporteurs.
-* **Front desk** : planning des chambres (vue calendrier sur Community,
+* **Réception** : planning des chambres (vue calendrier sur Community,
   Gantt sur Enterprise via ``aite_hotel_gantt``), calendrier des
   réservations, arrivées / départs / clients présents du jour.
 * **Folio client** : note de séjour regroupant nuitées et services
@@ -32,9 +32,9 @@ Fonctionnel
   comptables 411 et facturation au départ, lettrage automatique.
 * **Gouvernante** : états de chambre (propre / à nettoyer / en cours /
   à inspecter), tâches de ménage auto au départ, chambres hors service.
-* **Pilotage** : tableau de bord OWL — taux d'occupation, ADR, RevPAR,
-  chiffre d'affaires, room board temps réel, mouvements du jour,
-  graphiques d'évolution.
+* **Pilotage** : tableau de bord OWL — taux d'occupation, prix moyen
+  par nuit, revenu par chambre disponible, chiffre d'affaires, plan des
+  chambres en temps réel, mouvements du jour, graphiques d'évolution.
 
 Compatible Odoo 18 Community et Enterprise. Conçu dans la continuité du
 module ``aite_pos_credit`` (mêmes conventions, même charte de tableau de
@@ -43,7 +43,7 @@ bord).
     'author': "AITE CONSULTING",
     'website': "https://aiteconsulting.com",
     'category': 'Industries',
-    'version': '18.0.1.0.6',
+    'version': '18.0.1.0.7',
     'license': 'LGPL-3',
 
     'depends': [
@@ -54,9 +54,12 @@ bord).
         'sale',
     ],
     # Le planning Gantt des chambres est fourni par le module passerelle
-    # ``aite_hotel_gantt``, auto-installé quand ``web_gantt`` (Enterprise)
-    # est présent. Le socle reste ainsi installable sur Odoo Community,
-    # où le planning s'affiche en vue calendrier.
+    # ``aite_hotel_gantt`` (Enterprise). Il s'installe tout seul quand il
+    # est installé EN MÊME TEMPS que le socle ; sur une base où le socle
+    # est déjà installé, Odoo ne le retient pas à la mise à niveau : il
+    # s'installe alors à la main (docs/INSTALLATION.md, ECARTS n° 72). Le
+    # socle reste ainsi installable sur Odoo Community, où le planning
+    # s'affiche en vue calendrier.
 
     'data': [
         'security/hotel_security.xml',

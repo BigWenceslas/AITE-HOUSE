@@ -10,9 +10,14 @@ class HotelRoom(models.Model):
     """
     _inherit = 'aite.hotel.room'
 
-    # Les colonnes du tableau suivent l'ordre du travail (à nettoyer → en
-    # cours → à inspecter → propre) : c'est l'ordre de la sélection
-    # ``hk_state`` du socle (18.0.1.0.3), plus besoin de la redéfinir ici.
+    # Les colonnes du tableau suivent l'ordre du travail : À nettoyer →
+    # Nettoyage en cours → À inspecter → Propre, l'ordre de la sélection du
+    # socle. Sans ``group_expand``, Odoo 18 trie les groupes d'une sélection
+    # par la clé (« hk_state desc » donnait À nettoyer · À inspecter ·
+    # Nettoyage en cours · Propre, ECARTS n° 50). Avec lui, les colonnes
+    # suivent la sélection et restent toutes affichées, même vides : le
+    # tableau a toujours la même forme.
+    hk_state = fields.Selection(group_expand='_group_expand_hk_state')
     today_task_id = fields.Many2one(
         'aite.hotel.housekeeping', string="Tâche du jour",
         compute='_compute_today', help="Tâche de ménage ouverte du jour.",
@@ -39,6 +44,11 @@ class HotelRoom(models.Model):
         string="À faire", compute='_compute_today',
         help="Phrase d'écran pour l'équipe d'étage.",
     )
+
+    @api.model
+    def _group_expand_hk_state(self, states, domain):
+        """Toutes les colonnes, dans l'ordre de la sélection."""
+        return [key for key, _label in self._fields['hk_state'].selection]
 
     @api.depends('hk_state', 'out_of_order', 'housekeeping_task_ids.state',
                  'housekeeping_task_ids.assigned_to',

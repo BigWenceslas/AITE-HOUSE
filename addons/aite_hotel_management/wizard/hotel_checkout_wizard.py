@@ -64,11 +64,15 @@ class HotelCheckoutWizard(models.TransientModel):
 
     @api.depends('checkout_now', 'planned_checkout')
     def _compute_is_early(self):
+        # Jours comparés à l'heure locale : en UTC, un départ tôt le matin
+        # du jour prévu tombait la veille et passait pour « anticipé »
+        # (une nuitée retirée à tort, ECARTS n° 37).
+        Res = self.env['aite.hotel.reservation']
         for wiz in self:
             wiz.is_early = bool(
                 wiz.checkout_now and wiz.planned_checkout
-                and wiz.checkout_now.date()
-                < wiz.planned_checkout.date())
+                and Res._local_dt(wiz.checkout_now).date()
+                < Res._local_dt(wiz.planned_checkout).date())
 
     def action_confirm(self):
         self.ensure_one()
@@ -81,8 +85,10 @@ class HotelCheckoutWizard(models.TransientModel):
         # Départ anticipé : ajuster la date de départ (le compute des
         # nuits et la synchro folio suivent).
         if self.is_early and self.recompute_nights:
+            # Jour local du départ réel : ``_compose_datetime`` attend un
+            # jour local (le jour UTC recalait le départ la veille).
             new_checkout = reservation._compose_datetime(
-                self.checkout_now.date(),
+                reservation._local_dt(self.checkout_now).date(),
                 reservation.hotel_id.checkout_hour)
             if new_checkout <= reservation.checkin_date:
                 # Départ le jour même de l'arrivée : on facture 1 nuitée

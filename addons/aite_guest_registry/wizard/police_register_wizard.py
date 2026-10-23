@@ -61,10 +61,12 @@ class PoliceRegisterWizard(models.TransientModel):
         # que le client web les renvoie au rapport (JSON). Le gabarit les
         # relit depuis leur forme ISO (ECARTS n° 16).
         if not regs:
+            # Dates au format jj/mm/aaaa (règle 6), comme sur le registre
+            # imprimé : pas de « 2020-01-13 » dans le message.
             raise UserError(_(
                 "Aucune fiche d'enregistrement entre le %(a)s et le %(b)s "
-                "pour %(h)s.", a=self.date_from, b=self.date_to,
-                h=self.hotel_id.name))
+                "pour %(h)s.", a=self.date_from.strftime('%d/%m/%Y'),
+                b=self.date_to.strftime('%d/%m/%Y'), h=self.hotel_id.name))
         return self.env.ref(
             'aite_guest_registry.report_police_register').with_context(
                 date_from=fields.Date.to_string(self.date_from),

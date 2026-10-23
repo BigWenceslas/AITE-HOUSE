@@ -20,7 +20,9 @@
                 <field name="room_count"/>
                 <field name="amount_room_total" sum="Total hébergement"/>
                 <field name="folio_amount_residual" optional="show"/>
-                <field name="source" widget="badge" optional="hide"/>
+                <!-- Canal visible par défaut : la réception repère d'un
+                     coup d'œil ce qui arrive du site (ECARTS n° 58). -->
+                <field name="source" widget="badge" optional="show"/>
                 <field name="state" widget="badge"
                        decoration-info="state == 'confirmed'"
                        decoration-success="state == 'checked_in'"
@@ -55,7 +57,7 @@
                             string="Envoyer la confirmation"
                             invisible="state not in ('confirmed','checked_in')"/>
                     <button name="action_set_no_show" type="object"
-                            string="No-show" confirm="Marquer ce client non présenté ?"
+                            string="Non présenté" confirm="Marquer ce client non présenté ? Ses chambres seront libérées."
                             invisible="state != 'confirmed'"/>
                     <button name="action_cancel" type="object"
                             string="Annuler" confirm="Annuler cette réservation ?"
@@ -203,14 +205,23 @@
         </field>
     </record>
 
-    <!-- ============ CALENDRIER ============ -->
+    <!-- ============ CALENDRIER ============
+         hide_date : l'en-tête de date de la fenêtre du calendrier standard
+         s'écrit à l'anglaise (« octobre 14-16, 2026 », ECARTS n° 43). On le
+         masque et on affiche l'arrivée et le départ au format de la langue
+         (« 14/10/2026 14:00 »). -->
     <record id="view_hotel_reservation_calendar" model="ir.ui.view">
         <field name="name">aite.hotel.reservation.calendar</field>
         <field name="model">aite.hotel.reservation</field>
         <field name="arch" type="xml">
             <calendar string="Réservations" date_start="checkin_date"
                       date_stop="checkout_date" color="partner_id"
-                      mode="month" quick_create="0" event_open_popup="1">
+                      mode="month" quick_create="0" event_open_popup="1"
+                      hide_date="1">
+                <field name="checkin_date"
+                       options="{'show_seconds': false}"/>
+                <field name="checkout_date"
+                       options="{'show_seconds': false}"/>
                 <field name="partner_id"/>
                 <field name="room_count"/>
                 <field name="state"/>
@@ -243,8 +254,11 @@
                         domain="[('state', '=', 'draft')]"/>
                 <filter name="filter_confirmed" string="Confirmées"
                         domain="[('state', '=', 'confirmed')]"/>
-                <filter name="filter_no_show" string="No-show"
+                <filter name="filter_no_show" string="Non présentés"
                         domain="[('state', '=', 'no_show')]"/>
+                <separator/>
+                <filter name="filter_website" string="Du site web"
+                        domain="[('source', '=', 'website')]"/>
                 <group expand="0" string="Regrouper par">
                     <filter name="group_state" string="État"
                             context="{'group_by': 'state'}"/>
@@ -285,7 +299,7 @@
         <field name="context">{'search_default_filter_arrivals_today': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Aucune arrivée prévue aujourd'hui</p>
-            <p>Les réservations <b>confirmées</b> dont la date d'arrivée est aujourd'hui apparaissent ici. Ouvrez-en une et cliquez <b>Check-in</b> à l'arrivée du client : la chambre passe « occupée » et le registre des clients s'ouvre.</p>
+            <p>Les réservations <b>confirmées</b> dont la date d'arrivée est aujourd'hui apparaissent ici. Ouvrez-en une et cliquez <b>Check-in</b> à l'arrivée du client : la chambre passe « occupée » et le séjour rejoint « Clients présents ». Si le registre des clients est installé, un bandeau sur la réservation indique les fiches d'enregistrement à compléter.</p>
         </field>
     </record>
 
@@ -297,7 +311,7 @@
         <field name="context">{'search_default_filter_departures_today': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Aucun départ prévu aujourd'hui</p>
-            <p>Les séjours en cours dont le départ est aujourd'hui apparaissent ici. Cliquez <b>Check-out</b> pour encaisser le solde et générer la facture ; la chambre passe « à nettoyer ».</p>
+            <p>Les séjours en cours dont le départ est aujourd'hui apparaissent ici. Ouvrez-en un et cliquez <b>Check-out</b> : l'assistant récapitule le folio, clôt le séjour et génère la facture ; la chambre passe « à nettoyer ». S'il reste un solde, encaissez-le ensuite depuis le folio (bouton <b>Encaisser</b>).</p>
         </field>
     </record>
 
@@ -328,7 +342,14 @@
                       mode="month"
                       quick_create="false"
                       delete="0"
-                      event_open_popup="true">
+                      event_open_popup="true"
+                      hide_date="1">
+                <!-- hide_date : voir la vue calendrier des réservations
+                     (date d'en-tête à l'anglaise, ECARTS n° 43). -->
+                <field name="checkin_date"
+                       options="{'show_seconds': false}"/>
+                <field name="checkout_date"
+                       options="{'show_seconds': false}"/>
                 <field name="room_id" filters="1"/>
                 <field name="partner_id"/>
                 <field name="reservation_id"/>

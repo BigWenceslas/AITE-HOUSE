@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+from odoo.tools.misc import format_amount
 
 
 class HotelRoomChangeWizard(models.TransientModel):
@@ -91,7 +92,11 @@ class HotelRoomChangeWizard(models.TransientModel):
             # ultérieures du séjour (prolongation notamment).
             line.write({'price_night': old_price, 'price_locked': True})
             line.reservation_id._sync_folio_room_lines()
+            # Montant écrit avec la devise et ses séparateurs (« 45 000
+            # FCFA »), pas le flottant brut « 45000.0 » (ECARTS n° 40).
             line.reservation_id.message_post(body=_(
                 "Surclassement gracieux : le tarif de %(price)s / nuit "
-                "est conservé.", price=old_price))
+                "est conservé.",
+                price=format_amount(self.env, old_price,
+                                    line.currency_id)))
         return {'type': 'ir.actions.act_window_close'}

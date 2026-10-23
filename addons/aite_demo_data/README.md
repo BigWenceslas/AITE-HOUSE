@@ -36,9 +36,9 @@ le relancer ne duplique rien.
 | Tarifs saisonniers | 2 par type de chambre |
 | Commandes d'achat | 8, confirmées et en demande de prix |
 | Consignes fournisseurs | 5 |
-| Profils utilisateurs | 5 postes métier (mot de passe = identifiant) |
+| Profils utilisateurs | 6 postes métier (mot de passe = identifiant) |
 
-Les profils `demo.reception`, `demo.gouvernante`, `demo.caisse`,
+Les profils `demo.reception`, `demo.gouvernante`, `demo.equipiere`, `demo.caisse`,
 `demo.magasin` et `demo.direction` servent aux démonstrations et à la
 recette applicative.
 

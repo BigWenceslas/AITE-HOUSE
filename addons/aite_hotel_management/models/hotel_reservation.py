@@ -134,7 +134,7 @@ class HotelReservation(models.Model):
             ('checked_in', "Arrivé"),
             ('checked_out', "Parti"),
             ('cancelled', "Annulée"),
-            ('no_show', "No-show"),
+            ('no_show', "Non présenté"),
         ],
         string="État", default='draft', required=True, index=True,
         copy=False, tracking=True,
@@ -181,6 +181,24 @@ class HotelReservation(models.Model):
         tz = pytz.timezone(self.env.user.tz or 'UTC')
         return tz.localize(naive_dt).astimezone(pytz.utc).replace(tzinfo=None)
 
+    # Affichage des dates dans les messages et libellés (règle 6 :
+    # « 14/10/2026 », à l'heure de l'utilisateur, jamais l'UTC brut).
+
+    @api.model
+    def _local_dt(self, dt):
+        """Datetime UTC stocké → datetime à l'heure de l'utilisateur."""
+        return fields.Datetime.context_timestamp(self, dt) if dt else dt
+
+    @api.model
+    def _fmt_local_date(self, dt):
+        """« 14/10/2026 » : date locale d'un datetime stocké."""
+        return self._local_dt(dt).strftime('%d/%m/%Y') if dt else ""
+
+    @api.model
+    def _fmt_local_datetime(self, dt):
+        """« 14/10/2026 14:00 » : date et heure locales d'un datetime."""
+        return self._local_dt(dt).strftime('%d/%m/%Y %H:%M') if dt else ""
+
     # ------------------------------------------------------------------
     # Compute
     # ------------------------------------------------------------------
@@ -225,10 +243,15 @@ class HotelReservation(models.Model):
     def _onchange_hotel_id(self):
         """Recaler les heures par défaut sur celles de l'hôtel choisi."""
         if self.hotel_id and self.checkin_date and self.checkout_date:
+            # Jour LOCAL des dates saisies : ``_compose_datetime`` attend un
+            # jour local (le jour UTC reculait l'arrivée d'un jour pour une
+            # heure tôt le matin, ECARTS n° 37).
             self.checkin_date = self._compose_datetime(
-                self.checkin_date.date(), self.hotel_id.checkin_hour)
+                self._local_dt(self.checkin_date).date(),
+                self.hotel_id.checkin_hour)
             self.checkout_date = self._compose_datetime(
-                self.checkout_date.date(), self.hotel_id.checkout_hour)
+                self._local_dt(self.checkout_date).date(),
+                self.hotel_id.checkout_hour)
         # Les chambres appartiennent à l'hôtel : purge en cas de changement.
         self.line_ids = [(5, 0, 0)]
 
@@ -260,6 +283,12 @@ class HotelReservation(models.Model):
         # res.partner (profil « Ventes : documents personnels »).
         reservations.partner_id.sudo().write({'is_hotel_guest': True})
         return reservations
+
+    def _creation_message(self):
+        # Le message standard « %s créé » donnait « Réservation hôtelière
+        # créé » dans le fil (accord au masculin, ECARTS n° 43).
+        self.ensure_one()
+        return _("Réservation créée")
 
     def write(self, vals):
         # Retirer une chambre depuis le formulaire de la réservation passe
@@ -315,17 +344,20 @@ class HotelReservation(models.Model):
                           room=line.room_id.display_name,
                           ref=blocker.reservation_id.name,
                           guest=blocker.partner_id.name or "-",
-                          cout=blocker.checkout_date.strftime('%d/%m/%Y')))
+                          cout=self._fmt_local_date(blocker.checkout_date)))
                 if not line.room_id.is_available(
                         line.checkin_date, line.checkout_date,
                         ignore_line=line):
+                    # Heure locale de l'utilisateur, au format français
+                    # (ECARTS n° 37) — et non l'UTC ISO de la base.
                     raise UserError(
                         _("La chambre %(room)s n'est pas disponible du "
                           "%(cin)s au %(cout)s (déjà réservée ou hors "
                           "service).",
                           room=line.room_id.display_name,
-                          cin=fields.Datetime.to_string(line.checkin_date),
-                          cout=fields.Datetime.to_string(line.checkout_date)))
+                          cin=self._fmt_local_datetime(line.checkin_date),
+                          cout=self._fmt_local_datetime(
+                              line.checkout_date)))
 
     # ------------------------------------------------------------------
     # Folio
@@ -392,13 +424,16 @@ class HotelReservation(models.Model):
                     _("Le check-in n'est possible que sur une réservation "
                       "confirmée."))
             now = fields.Datetime.now()
-            if res.checkin_date.date() > now.date() \
+            # Jour d'arrivée comparé à « aujourd'hui » à l'heure locale :
+            # en UTC, une arrivée tôt le matin tombait la veille.
+            if res._local_dt(res.checkin_date).date() \
+                    > fields.Date.context_today(res) \
                     and not self.env.user.has_group(
                         'aite_hotel_management.group_hotel_manager'):
                 raise UserError(
                     _("L'arrivée est prévue le %s : un check-in anticipé "
                       "nécessite le profil Responsable.",
-                      res.checkin_date.date()))
+                      res._fmt_local_date(res.checkin_date)))
             for line in res.line_ids:
                 if line.room_id.out_of_order:
                     raise UserError(
@@ -442,11 +477,11 @@ class HotelReservation(models.Model):
             if res.state != 'confirmed':
                 raise UserError(
                     _("Seule une réservation confirmée peut être marquée "
-                      "no-show."))
+                      "« Non présenté »."))
             res.state = 'no_show'
             res.message_post(body=_(
-                "Client non présenté (no-show). Les chambres sont "
-                "libérées ; d'éventuels frais de no-show peuvent être "
+                "Client non présenté. Les chambres sont libérées ; "
+                "d'éventuels frais de non-présentation peuvent être "
                 "ajoutés au folio %s.", res.folio_id.name or "-"))
         return True
 
@@ -454,8 +489,8 @@ class HotelReservation(models.Model):
         for res in self:
             if res.state not in ('cancelled', 'no_show'):
                 raise UserError(
-                    _("Seule une réservation annulée ou no-show peut "
-                      "repasser en brouillon."))
+                    _("Seule une réservation annulée ou « Non présenté » "
+                      "peut repasser en brouillon."))
             res.state = 'draft'
             if res.folio_id and res.folio_id.state == 'cancelled':
                 res.folio_id.state = 'open'

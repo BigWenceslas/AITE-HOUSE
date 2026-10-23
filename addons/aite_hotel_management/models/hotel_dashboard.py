@@ -418,7 +418,11 @@ class HotelDashboard(models.AbstractModel):
                 'status': room.status,
                 'hk_state': room.hk_state,
                 'guest': line.partner_id.name if line else "",
-                'until': fields.Date.to_string(line.checkout_date.date())
+                # Jour de départ à l'heure locale (le client web l'écrit
+                # ensuite au format français).
+                'until': fields.Date.to_string(
+                    fields.Datetime.context_timestamp(
+                        self, line.checkout_date).date())
                          if line and room.status == 'occupied' else "",
                 'reservation_id': line.reservation_id.id if line else 0,
             })

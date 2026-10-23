@@ -29,15 +29,17 @@
                                 <field name="assigned_to"/>
                             </div>
                             <div class="mt-2 d-flex gap-1">
+                                <!-- Même geste, mêmes mots que « Ma journée »
+                                     (ECARTS n° 51). -->
                                 <button name="action_start" type="object"
                                         class="btn btn-sm btn-secondary"
                                         invisible="state != 'todo'">
-                                    Démarrer
+                                    Je commence
                                 </button>
                                 <button name="action_done" type="object"
                                         class="btn btn-sm btn-success"
                                         invisible="state not in ('todo','in_progress')">
-                                    Terminer
+                                    C'est fait
                                 </button>
                             </div>
                         </div>
@@ -79,10 +81,10 @@
             <form string="Tâche de gouvernante">
                 <header>
                     <button name="action_start" type="object"
-                            string="Démarrer" class="btn-primary"
+                            string="Je commence" class="btn-primary"
                             invisible="state != 'todo'"/>
                     <button name="action_done" type="object"
-                            string="Terminer" class="btn-primary"
+                            string="C'est fait" class="btn-primary"
                             invisible="state not in ('todo','in_progress')"/>
                     <button name="action_cancel" type="object"
                             string="Annuler"

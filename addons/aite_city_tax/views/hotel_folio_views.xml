@@ -43,6 +43,13 @@
                    position="attributes">
                 <attribute name="readonly">line_type == 'city_tax'</attribute>
             </xpath>
+            <!-- La taxe de séjour est hors TVA : sa colonne Taxes ne se
+                 modifie pas non plus ; la suppression est refusée par le
+                 serveur (ECARTS n° 57). -->
+            <xpath expr="//field[@name='line_ids']/list/field[@name='tax_ids']"
+                   position="attributes">
+                <attribute name="readonly">line_type == 'city_tax'</attribute>
+            </xpath>
         </field>
     </record>
 

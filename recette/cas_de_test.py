@@ -92,9 +92,9 @@ CAS = [
      "Les compteurs Présents, Arrivées, Départs et Hors service "
      "correspondent exactement à la réalité du planning."),
     ("A11", "A", 2, "Réservation confirmée non arrivée",
-     "Annuler une réservation et gérer le no-show",
-     "1. Annuler une réservation confirmée.\n2. Marquer une autre en "
-     "no-show.",
+     "Annuler une réservation et gérer un client non présenté",
+     "1. Annuler une réservation confirmée.\n2. Marquer une autre "
+     "« Non présenté » (bouton de la réservation).",
      "Les statuts sont mis à jour, les chambres se libèrent, et le "
      "motif reste consultable dans l'historique."),
     ("A12", "A", 2, "Deux types de chambre avec tarifs différents",

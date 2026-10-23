@@ -59,11 +59,11 @@ def scenario_front_desk(page):
     # -- Étape 1 : le tableau de bord d'ouverture ----------------------
     ses.open_action('aite_hotel_management.action_hotel_dashboard')
     ses.check(
-        "Ouvrir le Front Desk",
+        "Ouvrir le tableau de bord de la réception",
         "Le tableau de bord affiche l'occupation du jour, les arrivées, "
-        "les départs et le room board.",
-        ses.has("Front Desk") and ses.has("ROOM BOARD"),
-        "Occupation, arrivées, départs et room board sont affichés.",
+        "les départs et le plan des chambres.",
+        ses.has("Réception") and ses.has("Plan des chambres"),
+        "Occupation, arrivées, départs et plan des chambres sont affichés.",
         "Le tableau de bord ne s'affiche pas.")
 
     # -- Étape 2 : les arrivées attendues ------------------------------

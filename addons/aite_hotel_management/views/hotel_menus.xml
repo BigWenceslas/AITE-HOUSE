@@ -5,7 +5,7 @@
         Menu racine : pointe explicitement sur une action d'accueil pour
         que l'icône de l'application ouvre toujours le même écran pour un
         profil donné (même leçon que sur POS Crédit) : le tableau de bord
-        Front Desk pour la Réception et le Responsable, l'écran
+        de la réception pour la Réception et le Responsable, l'écran
         Gouvernante pour le profil Gouvernante seul.
     -->
     <menuitem id="menu_hotel_root"
@@ -15,9 +15,11 @@
               sequence="35"
               groups="group_hotel_housekeeping"/>
 
-    <!-- ============ FRONT DESK ============ -->
+    <!-- ============ RÉCEPTION ============
+         (anciennement « Front Desk » : pas d'anglais à l'écran, ECARTS
+         n° 42 ; l'identifiant technique reste inchangé) -->
     <menuitem id="menu_hotel_frontdesk"
-              name="Front Desk"
+              name="Réception"
               parent="menu_hotel_root"
               sequence="10"
               groups="group_hotel_user"/>

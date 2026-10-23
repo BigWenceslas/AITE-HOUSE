@@ -205,6 +205,12 @@ class GuestRegistration(models.Model):
             missing = self._missing_labels(values)
             reg.missing_info = ", ".join(missing) if missing else ""
 
+    def _creation_message(self):
+        # Le message standard « %s créé » donnait « Fiche d'enregistrement
+        # client créé » dans le fil (accord au masculin, ECARTS n° 43).
+        self.ensure_one()
+        return _("Fiche d'enregistrement créée")
+
     @api.depends('last_name', 'first_name')
     def _compute_display_name(self):
         for reg in self:
@@ -285,6 +291,7 @@ class GuestRegistration(models.Model):
             'is_main_guest': main,
             'last_name': last_name,
             'first_name': first_name,
+            'birth_date': partner.guest_birth_date or False,
             'nationality_id': (partner.nationality_id.id
                                or partner.country_id.id or False),
             'country_id': partner.country_id.id or False,
@@ -298,13 +305,16 @@ class GuestRegistration(models.Model):
 
     def action_copy_back_to_partner(self):
         """
-        Met à jour la fiche client Odoo avec la pièce et la nationalité
-        saisies : la prochaine réservation sera pré-remplie.
+        Met à jour la fiche client Odoo avec la pièce, la nationalité et la
+        date de naissance saisies : la prochaine réservation sera
+        pré-remplie.
         """
         for reg in self.filtered('partner_id'):
             vals = {}
             if reg.nationality_id:
                 vals['nationality_id'] = reg.nationality_id.id
+            if reg.birth_date:
+                vals['guest_birth_date'] = reg.birth_date
             if reg.id_type and reg.id_type in ('cni', 'passport',
                                                'permit', 'other'):
                 vals['guest_id_type'] = reg.id_type

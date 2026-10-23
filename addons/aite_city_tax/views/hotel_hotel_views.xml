@@ -37,8 +37,8 @@
                         recalculée si les dates, les chambres ou le nombre de
                         personnes changent. Elle n'entre pas dans la base de
                         la TVA. Pour modifier un montant (nouvelle loi de
-                        finances) : <b>Hôtel → Configuration → Taxe de séjour →
-                        Barèmes</b>.
+                        finances) : <b>Hôtel → Configuration → Barèmes de taxe
+                        de séjour</b>.
                     </p>
                 </page>
             </xpath>

@@ -8,6 +8,15 @@ class ResPartner(models.Model):
     registration_count = fields.Integer(
         string="Fiches d'enregistrement", compute='_compute_registration_count',
     )
+    # Exigée pour une fiche complète : mémorisée avec la pièce et la
+    # nationalité (« Mémoriser sur la fiche client »), puis pré-remplie au
+    # séjour suivant. Sans elle, le registre restait « à compléter » à
+    # chaque séjour d'un client déjà venu (ECARTS n° 54).
+    guest_birth_date = fields.Date(
+        string="Date de naissance",
+        help="Reprise automatiquement sur la fiche d'enregistrement du "
+             "client à son prochain séjour.",
+    )
 
     def _compute_registration_count(self):
         data = self.env['aite.guest.registration']._read_group(

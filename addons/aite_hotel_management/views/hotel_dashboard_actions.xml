@@ -2,14 +2,15 @@
 <odoo>
 
     <record id="action_hotel_dashboard" model="ir.actions.client">
-        <field name="name">Front Desk</field>
+        <field name="name">Tableau de bord — Réception</field>
         <field name="tag">aite_hotel_dashboard</field>
     </record>
 
     <!--
-        Action de l'icône « Hôtel » : Front Desk pour la Réception et le
-        Responsable, écran Gouvernante pour le profil Gouvernante seul
-        (le Front Desk lit les folios, qui ne lui sont pas ouverts).
+        Action de l'icône « Hôtel » : tableau de bord de la réception pour
+        la Réception et le Responsable, écran Gouvernante pour le profil
+        Gouvernante seul (le tableau de bord lit les folios, qui ne lui
+        sont pas ouverts).
     -->
     <record id="action_hotel_home" model="ir.actions.server">
         <field name="name">Hôtel</field>

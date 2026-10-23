@@ -6,8 +6,10 @@
         <field name="name">aite.city.tax.report.pivot</field>
         <field name="model">aite.city.tax.report</field>
         <field name="arch" type="xml">
+            <!-- Lignes par mois de départ : « octobre 2026 », pas « 2026-10 »
+                 (ECARTS n° 4). -->
             <pivot string="Taxe de séjour collectée" sample="1">
-                <field name="month" type="row"/>
+                <field name="checkout_date" interval="month" type="row"/>
                 <field name="hotel_id" type="col"/>
                 <field name="units" type="measure"/>
                 <field name="amount" type="measure"/>
@@ -21,13 +23,13 @@
         <field name="arch" type="xml">
             <list string="Taxe de séjour — détail" create="false" edit="false"
                   delete="false">
-                <field name="month"/>
                 <field name="checkout_date"/>
                 <field name="hotel_id" optional="show"/>
                 <field name="reservation_id"/>
                 <field name="partner_id"/>
                 <field name="units" sum="Nuitées taxées"/>
-                <field name="amount" sum="Taxe collectée"/>
+                <field name="amount" sum="Taxe collectée" widget="monetary"
+                       options="{'currency_field': 'currency_id'}"/>
                 <field name="folio_state" widget="badge"
                        decoration-warning="folio_state == 'open'"
                        decoration-success="folio_state in ('invoiced', 'paid')"/>
@@ -41,7 +43,7 @@
         <field name="model">aite.city.tax.report</field>
         <field name="arch" type="xml">
             <graph string="Taxe de séjour par mois" type="bar" sample="1">
-                <field name="month"/>
+                <field name="checkout_date" interval="month"/>
                 <field name="amount" type="measure"/>
             </graph>
         </field>
@@ -54,7 +56,6 @@
             <search>
                 <field name="partner_id"/>
                 <field name="reservation_id"/>
-                <field name="month"/>
                 <filter name="this_month" string="Départs du mois"
                         domain="[('checkout_date', '>=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d')),
                                  ('checkout_date', '&lt;', (context_today() + relativedelta(months=1, day=1)).strftime('%Y-%m-%d'))]"/>
@@ -67,8 +68,8 @@
                 <filter name="open" string="Séjours en cours (prévision)"
                         domain="[('folio_state', '=', 'open')]"/>
                 <group expand="1" string="Regrouper par">
-                    <filter name="group_month" string="Mois"
-                            context="{'group_by': 'month'}"/>
+                    <filter name="group_month" string="Date de départ"
+                            context="{'group_by': 'checkout_date:month'}"/>
                     <filter name="group_hotel" string="Hôtel"
                             context="{'group_by': 'hotel_id'}"/>
                 </group>
@@ -81,16 +82,20 @@
         <field name="res_model">aite.city.tax.report</field>
         <field name="view_mode">pivot,list,graph</field>
         <field name="search_view_id" ref="view_city_tax_report_search"/>
-        <field name="context">{'search_default_group_month': 1}</field>
+        <!-- Ouvert sur les séjours terminés : un folio encore ouvert n'est
+             pas à déclarer (ECARTS n° 48). -->
+        <field name="context">{'search_default_closed': 1, 'search_default_group_month': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Aucune taxe de séjour collectée pour l'instant
+                Aucune taxe de séjour à déclarer pour l'instant
             </p>
             <p>
-                Dès qu'un séjour est confirmé, sa taxe de séjour apparaît
-                ici. Chaque mois, filtrez « Départs du mois dernier » :
-                le total <b>Taxe collectée</b> est le montant à déclarer
-                et à reverser avant le 15.
+                L'écran s'ouvre sur les <b>séjours terminés</b> (facturés
+                ou soldés), regroupés par mois de départ. Chaque mois,
+                ajoutez le filtre « Départs du mois dernier » : le total
+                <b>Taxe collectée</b> est le montant à déclarer et à
+                reverser avant le 15. Les séjours encore ouverts se voient
+                avec le filtre « Séjours en cours (prévision) ».
             </p>
         </field>
     </record>

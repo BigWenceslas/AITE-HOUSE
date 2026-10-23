@@ -34,12 +34,12 @@
                                 <button name="action_start" type="object"
                                         class="btn btn-primary flex-fill"
                                         invisible="state != 'todo'">
-                                    <i class="fa fa-play me-1" title="Commencer"/>Je commence
+                                    <i class="fa fa-play me-1" title="Je commence"/>Je commence
                                 </button>
                                 <button name="action_done" type="object"
                                         class="btn btn-success flex-fill"
                                         invisible="state != 'in_progress' or task_type == 'inspection'">
-                                    <i class="fa fa-check me-1" title="Terminé"/>C'est fait
+                                    <i class="fa fa-check me-1" title="C'est fait"/>C'est fait
                                 </button>
                                 <button name="action_open_inspection" type="object"
                                         class="btn btn-success flex-fill"

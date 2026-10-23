@@ -104,6 +104,8 @@ comp.action_copy_back_to_partner()
 check("le contact Odoo porte maintenant passeport + nationalité",
       p2.guest_id_type == 'passport' and p2.guest_id_number == '19AB12345'
       and p2.nationality_id == fr, (p2.guest_id_type, p2.guest_id_number))
+check("… et la date de naissance, reprise au prochain séjour (ECARTS n° 54)",
+      p2.guest_birth_date == date(1979, 7, 2), p2.guest_birth_date)
 check("compteur de fiches sur le contact", p2.registration_count == 1)
 
 print("\n═══ 7. Impression : fiche individuelle et registre de police ═══")

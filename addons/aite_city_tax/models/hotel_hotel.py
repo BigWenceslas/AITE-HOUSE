@@ -49,7 +49,10 @@ class HotelHotel(models.Model):
             hotel.city_tax_rate_id = Rate._find_rate(
                 hotel.country_id, hotel.stars)
 
-    @api.depends('city_tax_rate_id', 'city_tax_enabled', 'country_id')
+    @api.depends('city_tax_rate_id.amount', 'city_tax_rate_id.basis',
+                 'city_tax_rate_id.currency_id', 'city_tax_enabled',
+                 'country_id.name')
+    @api.depends_context('lang')
     def _compute_city_tax_help(self):
         for hotel in self:
             if not hotel.city_tax_enabled:
@@ -61,20 +64,23 @@ class HotelHotel(models.Model):
                     "Renseignez le pays de l'hôtel pour appliquer le "
                     "barème officiel.")
             elif not hotel.city_tax_rate_id:
+                # Chemin réel du menu (ECARTS n° 46) : menus.xml.
                 hotel.city_tax_help = _(
                     "Aucun barème connu pour %s : ajoutez-le dans "
-                    "Configuration → Taxe de séjour → Barèmes.",
+                    "Hôtel → Configuration → Barèmes de taxe de séjour.",
                     hotel.country_id.name)
             else:
                 rate = hotel.city_tax_rate_id
                 basis = (_("par personne et par nuit")
                          if rate.basis == 'person'
                          else _("par chambre et par nuit"))
+                # Le symbole de la devise (« FCFA »), pas son code ISO
+                # (« XAF ») : règle 6, montants en FCFA (ECARTS n° 7).
                 hotel.city_tax_help = _(
                     "Chaque séjour portera une ligne « Taxe de séjour » de "
                     "%(amount)s %(cur)s %(basis)s, hors TVA.",
                     amount="{:,.0f}".format(rate.amount).replace(",", " "),
-                    cur=rate.currency_id.name, basis=basis)
+                    cur=rate.currency_id.symbol, basis=basis)
 
     # ------------------------------------------------------------------
     # Article de service dédié (sans TVA)

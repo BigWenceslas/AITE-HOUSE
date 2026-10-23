@@ -27,9 +27,9 @@
             <!-- En-tête -->
             <div class="ahm-topbar">
                 <div>
-                    <h2 class="ahm-title">Front Desk — Réception</h2>
+                    <h2 class="ahm-title">Réception — tableau de bord</h2>
                     <div class="ahm-sub">
-                        Occupation, arrivées &amp; départs, room board ·
+                        Occupation, arrivées &amp; départs, plan des chambres ·
                         <t t-esc="state.companyName"/>
                     </div>
                 </div>
@@ -96,7 +96,7 @@
                     <KpiCard mega="true" accent="'warning'"
                              label="'Départs prévus'"
                              value="num(state.kpis.today.departures)"
-                             sub="'check-out attendus aujourd\'hui'"/>
+                             sub="'chambres à libérer aujourd\'hui'"/>
                     <KpiCard mega="true" accent="'success'"
                              label="'Clients présents'"
                              value="num(state.kpis.today.inhouse_guests)"
@@ -110,14 +110,14 @@
                              value="pct(state.kpis.period.occupancy)"
                              delta="deltaOf(state.kpis.deltas.occupancy, true)"
                              sub="num(state.kpis.period.nights_sold) + ' nuitées vendues'"/>
-                    <KpiCard label="'ADR — prix moyen / nuit'"
+                    <KpiCard label="'Prix moyen / nuit'"
                              value="money(state.kpis.period.adr)"
                              delta="deltaOf(state.kpis.deltas.adr, true)"
                              sub="'CA hébergement / nuitées vendues'"/>
-                    <KpiCard label="'RevPAR'"
+                    <KpiCard label="'Revenu par chambre disponible'"
                              value="money(state.kpis.period.revpar)"
                              delta="deltaOf(state.kpis.deltas.revpar, true)"
-                             sub="'revenu / chambre disponible'"/>
+                             sub="'CA hébergement / nuitées disponibles'"/>
                     <KpiCard label="'Chiffre d\'affaires (HT)'"
                              value="money(state.kpis.period.total_revenue)"
                              delta="deltaOf(state.kpis.deltas.total_revenue, true)"
@@ -140,9 +140,9 @@
                     </div>
                 </div>
 
-                <!-- Room board -->
+                <!-- Plan des chambres (room board) -->
                 <div class="ahm-section-title ahm-flex-between">
-                    <span>Room board</span>
+                    <span>Plan des chambres</span>
                     <span class="ahm-legend">
                         <t t-foreach="statusLegend" t-as="s" t-key="s.key">
                             <span class="ahm-legend-item">

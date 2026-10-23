@@ -48,11 +48,11 @@ class ResCompany(models.Model):
         default=False,
     )
     hotel_auto_no_show = fields.Boolean(
-        string="No-show automatique",
+        string="« Non présenté » automatique",
         default=False,
     )
     hotel_no_show_grace = fields.Integer(
-        string="Délai de grâce no-show (heures)",
+        string="Délai de grâce avant « Non présenté » (heures)",
         default=24,
     )
     hotel_auto_daily_hk = fields.Boolean(
@@ -113,10 +113,10 @@ class ResConfigSettings(models.TransientModel):
              "est confirmée (si un e-mail est renseigné).",
     )
     hotel_auto_no_show = fields.Boolean(
-        string="No-show automatique",
+        string="« Non présenté » automatique",
         related='company_id.hotel_auto_no_show', readonly=False,
-        help="Le cron quotidien bascule en no-show les réservations "
-             "confirmées dont l'arrivée est dépassée du délai de grâce.",
+        help="Chaque jour, les réservations confirmées dont l'arrivée est "
+             "dépassée du délai de grâce passent « Non présenté ».",
     )
     hotel_no_show_grace = fields.Integer(
         string="Délai de grâce (heures)",

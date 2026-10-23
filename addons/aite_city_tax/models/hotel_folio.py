@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 
 
 class HotelFolioLine(models.Model):
@@ -23,6 +24,24 @@ class HotelFolioLine(models.Model):
     def _compute_is_city_tax(self):
         for line in self:
             line.is_city_tax = line.line_type == 'city_tax'
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_guard_city_tax(self):
+        """
+        La ligne de taxe ne se supprime pas à la main (ECARTS n° 57) : elle
+        reviendrait à la synchronisation suivante, et le folio la montre
+        comme calculée. Seule la synchronisation la retire (contexte
+        ``aite_city_tax_sync``) ; la suppression d'un folio passe par la
+        cascade SQL et n'est pas concernée.
+        """
+        if self.env.context.get('aite_city_tax_sync'):
+            return
+        if any(line.line_type == 'city_tax' for line in self):
+            raise UserError(_(
+                "La ligne « Taxe de séjour » se calcule seule et ne se "
+                "supprime pas à la main. Pour un hôtel exonéré, décochez "
+                "« Collecter la taxe de séjour » sur la fiche de l'hôtel "
+                "(onglet Taxe de séjour)."))
 
 
 class HotelFolio(models.Model):
@@ -111,8 +130,11 @@ class HotelFolio(models.Model):
             if folio.move_id or folio.state in ('invoiced', 'paid',
                                                 'cancelled'):
                 continue
+            # Seule la synchronisation peut retirer une ligne de taxe
+            # (garde-fou ``_unlink_guard_city_tax``).
             existing = folio.line_ids.filtered(
-                lambda l: l.line_type == 'city_tax')
+                lambda l: l.line_type == 'city_tax').with_context(
+                    aite_city_tax_sync=True)
             amount, units, rate = folio._compute_city_tax_values()
             if not rate or not units or not amount:
                 existing.unlink()

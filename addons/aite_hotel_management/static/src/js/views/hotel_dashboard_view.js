@@ -6,16 +6,18 @@ import { loadChart, destroyChart } from "../services/chartjs_loader";
 import { KpiCard } from "../components/kpi_card";
 import {
     COLORS, ROOM_STATUS_COLORS, ROOM_STATUS_LABELS, ROOM_STATUS_ORDER,
-    fmtMoney, fmtCompact, fmtPct, periodRange, PERIOD_PRESETS,
+    fmtMoney, fmtCompact, fmtPct, fmtDay, periodRange, PERIOD_PRESETS,
 } from "../services/hotel_utils";
 
 /**
- * Tableau de bord Front Desk — vue d'ensemble opérationnelle de l'hôtel.
+ * Tableau de bord de la réception — vue d'ensemble opérationnelle de
+ * l'hôtel.
  *
  * Photo du jour (occupation, arrivées, départs, clients présents),
- * indicateurs de performance de la période (Occupation / ADR / RevPAR / CA
- * avec variation vs période N-1), room board interactif, mouvements du
- * jour et résumé gouvernante.
+ * indicateurs de performance de la période (occupation, prix moyen,
+ * revenu par chambre disponible, CA, avec variation vs la période
+ * précédente de même durée), plan des chambres interactif, mouvements
+ * du jour et résumé gouvernante.
  *
  * Règle d'or apprise sur le terrain : AUCUNE fonction globale JS (String,
  * Math…) dans le template OWL — tout calcul/formatage passe par des
@@ -169,7 +171,9 @@ export class HotelDashboardView extends Component {
     }
 
     /**
-     * Variation formatée pour un KPI.
+     * Variation formatée pour un KPI, par rapport à la période
+     * précédente de même durée (``deltas`` du serveur) — et non à l'année
+     * précédente : le libellé le dit (ECARTS n° 62).
      * :param pct: variation en % (peut être null → pas de delta affiché)
      * :param goodWhenUp: true si une hausse est positive (vert)
      * :returns: {text, cls} ou undefined
@@ -183,7 +187,7 @@ export class HotelDashboardView extends Component {
         const arrow = rounded > 0 ? "▲" : rounded < 0 ? "▼" : "■";
         const isGood = goodWhenUp ? rounded >= 0 : rounded <= 0;
         return {
-            text: arrow + " " + ("" + abs).replace(".", ",") + " % vs N-1",
+            text: arrow + " " + ("" + abs).replace(".", ",") + " % vs période précédente",
             cls: isGood ? "text-success" : "text-danger",
         };
     }
@@ -224,7 +228,8 @@ export class HotelDashboardView extends Component {
             title += " · " + room.guest;
         }
         if (room.until) {
-            title += " (jusqu'au " + room.until + ")";
+            // Date au format français (règle 6), pas l'ISO du serveur.
+            title += " (jusqu'au " + fmtDay(room.until) + ")";
         }
         return title;
     }

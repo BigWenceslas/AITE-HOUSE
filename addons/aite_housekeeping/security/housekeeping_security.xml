@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!--
+            Gouvernante générale : répartit les chambres du jour et valide
+            ou refuse les inspections (ECARTS n° 1 et n° 52). Jusqu'ici, ces
+            gestes demandaient le profil Réception, et le profil du socle
+            « Gouvernante » sert aussi aux équipières : impossible de les
+            distinguer dans « Équipières présentes ».
+
+            Rangée dans la même catégorie que les profils du socle, entre
+            « Gouvernante » (l'équipe d'étage) et « Réception » : la liste
+            déroulante de l'écran Utilisateurs reste un seul choix. La
+            Réception l'implique et garde donc ce qu'elle avait.
+        -->
+        <record id="group_hk_governess" model="res.groups">
+            <field name="name">Gouvernante générale</field>
+            <field name="category_id" ref="aite_hotel_management.module_category_hotel"/>
+            <field name="implied_ids" eval="[(4, ref('aite_hotel_management.group_hotel_housekeeping'))]"/>
+            <field name="comment">Tout le profil Gouvernante, plus : répartit les chambres du jour entre les équipières, valide (« Conforme ») ou refuse (« À refaire ») les inspections.</field>
+        </record>
+
+        <record id="aite_hotel_management.group_hotel_user" model="res.groups">
+            <field name="implied_ids" eval="[(4, ref('group_hk_governess'))]"/>
+        </record>
+
+    </data>
+</odoo>

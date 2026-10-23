@@ -26,7 +26,10 @@
                 <div class="alert alert-warning mb-0" role="status"
                      invisible="state != 'checked_in' or registration_status == 'done'">
                     <i class="fa fa-id-card-o me-2" title="Registre des clients"/>
-                    <b>Registre des clients :</b>
+                    <!-- Espace dans la balise : entre </b> et le champ, le blanc
+                         seul est retiré par le moteur de gabarits, d'où
+                         « clients :1 fiche(s) » (ECARTS n° 47). -->
+                    <b>Registre des clients&#160;: </b>
                     <field name="registration_hint" readonly="1" nolabel="1" class="d-inline"/>
                     — <a type="object" name="action_open_registrations" class="alert-link">
                         compléter maintenant</a>
@@ -60,10 +63,13 @@
         <field name="inherit_id" ref="aite_hotel_management.view_hotel_reservation_list"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='state']" position="before">
+                <!-- Rouge seulement pour un client arrivé : avant l'arrivée,
+                     « Aucune fiche » est normal, le badge reste neutre
+                     (ECARTS n° 54). -->
                 <field name="registration_status" widget="badge" optional="show"
                        decoration-success="registration_status == 'done'"
                        decoration-warning="registration_status == 'partial'"
-                       decoration-danger="registration_status == 'none'"/>
+                       decoration-danger="registration_status == 'none' and state in ('checked_in', 'checked_out')"/>
             </xpath>
         </field>
     </record>

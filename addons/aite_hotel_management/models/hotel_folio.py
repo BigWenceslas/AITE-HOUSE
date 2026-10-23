@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
+
+_logger = logging.getLogger(__name__)
 
 
 class HotelFolio(models.Model):
@@ -249,20 +253,26 @@ class HotelFolio(models.Model):
     def _prepare_room_line_vals(self, rline):
         self.ensure_one()
         product = rline.room_type_id.product_id
+        Res = self.env['aite.hotel.reservation']
         return {
             'line_type': 'room',
             'reservation_line_id': rline.id,
             'product_id': product.id,
+            # Dates au format français, à l'heure locale (règle 6) : le
+            # libellé est repris tel quel sur la facture (ECARTS n° 37).
             'name': _("Nuitée %(room)s (%(type)s) — %(cin)s → %(cout)s",
                       room=rline.room_id.name,
                       type=rline.room_type_id.name,
-                      cin=rline.checkin_date.date(),
-                      cout=rline.checkout_date.date()),
+                      cin=Res._fmt_local_date(rline.checkin_date),
+                      cout=Res._fmt_local_date(rline.checkout_date)),
             'quantity': rline.nights,
             'price_unit': rline.price_night,
             'tax_ids': [(6, 0, product.taxes_id.filtered(
                 lambda t: t.company_id == self.company_id).ids)],
-            'date': fields.Date.context_today(self),
+            # La nuitée est datée de l'arrivée, pas du jour de la
+            # synchronisation : sinon, au départ, elle passait après les
+            # extras du séjour sur le folio (ECARTS n° 56).
+            'date': Res._local_dt(rline.checkin_date).date(),
         }
 
     # ------------------------------------------------------------------
@@ -759,10 +769,20 @@ class HotelFolioPayment(models.Model):
         to_reconcile = pay_lines | inv_lines
         if len(to_reconcile) >= 2:
             try:
-                to_reconcile.reconcile()
-            except Exception:
-                # Le lettrage est un confort : on ne bloque jamais.
-                pass
+                # Point de sauvegarde : un lettrage qui échoue à mi-chemin
+                # (erreur SQL, écritures partielles) est annulé en entier ;
+                # sans lui, la transaction restait interrompue et la
+                # facturation du départ échouait quand même.
+                with self.env.cr.savepoint():
+                    to_reconcile.reconcile()
+            except Exception as exc:
+                # Le lettrage est un confort : on ne bloque jamais, mais on
+                # le dit dans le journal du serveur (la facture reste alors
+                # « non payée » malgré l'acompte, ECARTS n° 75).
+                _logger.warning(
+                    "Lettrage impossible du règlement %s (folio %s) avec "
+                    "la facture %s : %s", self.move_id.name,
+                    self.folio_id.name, invoice.name, exc)
 
     # ------------------------------------------------------------------
     # Actions

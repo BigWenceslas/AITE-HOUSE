@@ -10,15 +10,16 @@ AITE HOUSE — Gouvernante & maintenance
 
 Pensé pour une équipe d'étage qui n'a jamais utilisé de logiciel :
 
-* **Tableau des chambres** par état de ménage — À nettoyer · En cours ·
-  À inspecter · Propre — avec le client présent, l'heure d'arrivée
-  attendue et un seul bouton par étape ;
+* **Tableau des chambres** par état de ménage — À nettoyer · Nettoyage en
+  cours · À inspecter · Propre, dans cet ordre — avec le client présent,
+  l'heure d'arrivée attendue et un seul bouton par étape ;
 * **Ma journée** : chaque femme de chambre voit ses chambres, dans l'ordre,
   sur son téléphone, et coche au fur et à mesure ;
-* **Répartition en un clic** : la gouvernante distribue les chambres du
-  jour entre ses équipières ;
-* **Inspection avec checklist** (lit, salle de bain, minibar, linge…) :
-  une case non cochée renvoie la chambre en nettoyage avec le motif ;
+* **Répartition en un clic** : la gouvernante (profil « Gouvernante
+  générale ») distribue les chambres du jour entre ses équipières ;
+* **Inspection avec checklist** (lit, salle de bain, minibar, linge…),
+  ouverte d'elle-même quand la chambre passe « À inspecter » : une case
+  non cochée renvoie la chambre en nettoyage avec le motif ;
 * **Signaler une panne** depuis la chambre : la demande de maintenance
   est créée (app Maintenance d'Odoo), la chambre peut être mise hors
   service, et **revient en vente automatiquement** quand la réparation est
@@ -28,10 +29,11 @@ Pensé pour une équipe d'étage qui n'a jamais utilisé de logiciel :
     'author': "AITE Consulting",
     'website': "https://aite-consulting.com",
     'category': 'Services/Hotel',
-    'version': '18.0.1.0.5',
+    'version': '18.0.1.0.6',
     'license': 'LGPL-3',
     'depends': ['aite_hotel_management', 'maintenance'],
     'data': [
+        'security/housekeeping_security.xml',
         'security/ir.model.access.csv',
         'data/housekeeping_data.xml',
         'views/hotel_room_views.xml',

@@ -15,4 +15,17 @@
             </div>
         </field>
     </record>
+
+    <!-- Onglet « Hôtel » du contact : la date de naissance mémorisée avec la
+         pièce (ECARTS n° 54). -->
+    <record id="view_res_partner_form_hotel_registry" model="ir.ui.view">
+        <field name="name">res.partner.form.hotel.registry</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="aite_hotel_management.view_res_partner_form_hotel"/>
+        <field name="arch" type="xml">
+            <field name="guest_id_number" position="after">
+                <field name="guest_birth_date"/>
+            </field>
+        </field>
+    </record>
 </odoo>

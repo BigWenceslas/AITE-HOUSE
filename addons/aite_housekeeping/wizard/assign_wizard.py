@@ -18,18 +18,31 @@ class AssignWizard(models.TransientModel):
             [('company_id', '=', self.env.company.id)], limit=1))
     date = fields.Date(string="Jour", required=True,
                        default=fields.Date.context_today)
+    # L'équipe d'étage seulement : profil Gouvernante, sans « Gouvernante
+    # générale » ni « Réception » (ECARTS n° 52). La Réception est écartée
+    # explicitement, sans dépendre de son implication de « Gouvernante
+    # générale » ; le Responsable et l'administrateur impliquent la
+    # Réception et sont écartés avec elle.
     user_ids = fields.Many2many(
         'res.users', string="Équipières présentes",
-        domain=lambda self: [('groups_id', 'in', self.env.ref(
-            'aite_hotel_management.group_hotel_housekeeping').ids)])
+        domain=lambda self: [
+            ('groups_id', 'in', self.env.ref(
+                'aite_hotel_management.group_hotel_housekeeping').ids),
+            ('groups_id', 'not in', (
+                self.env.ref('aite_housekeeping.group_hk_governess')
+                | self.env.ref('aite_hotel_management.group_hotel_user')).ids),
+        ])
     reassign = fields.Boolean(
         string="Redistribuer aussi les chambres déjà affectées")
     task_count = fields.Integer(string="Chambres à répartir",
                                 compute='_compute_task_count')
 
     def _tasks(self):
+        # Le ménage seulement : les inspections restent à la gouvernante
+        # (elles s'ouvrent seules quand une chambre passe « À inspecter »).
         domain = [('hotel_id', '=', self.hotel_id.id), ('date', '=', self.date),
-                  ('state', 'in', ('todo', 'in_progress'))]
+                  ('state', 'in', ('todo', 'in_progress')),
+                  ('task_type', '!=', 'inspection')]
         if not self.reassign:
             domain.append(('assigned_to', '=', False))
         return self.env['aite.hotel.housekeeping'].search(
@@ -64,6 +77,9 @@ class AssignWizard(models.TransientModel):
                 'title': _("Chambres réparties"),
                 'message': _("%(n)d chambre(s) réparties entre %(u)d "
                              "équipière(s).", n=len(tasks), u=len(self.user_ids)),
-                'next': {'type': 'ir.actions.act_window_close'},
+                # Ferme la fenêtre et recharge l'écran du dessous (tableau
+                # des chambres) : les équipières y apparaissent aussitôt
+                # (ECARTS n° 53).
+                'next': {'type': 'ir.actions.client', 'tag': 'soft_reload'},
             },
         }

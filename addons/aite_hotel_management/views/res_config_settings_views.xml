@@ -30,7 +30,7 @@
                             <field name="hotel_send_confirmation"/>
                         </setting>
                         <setting id="hotel_auto_no_show"
-                                 help="Bascule en no-show les réservations confirmées dont l'arrivée est dépassée du délai de grâce (cron quotidien).">
+                                 help="Chaque jour, les réservations confirmées dont l'arrivée est dépassée du délai de grâce passent « Non présenté » et leurs chambres sont libérées.">
                             <field name="hotel_auto_no_show"/>
                             <div class="mt-2"
                                  invisible="not hotel_auto_no_show">

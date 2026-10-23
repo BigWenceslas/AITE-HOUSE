@@ -29,7 +29,11 @@ class CityTaxReport(models.Model):
     partner_id = fields.Many2one('res.partner', string="Client", readonly=True)
     checkin_date = fields.Date(string="Arrivée", readonly=True)
     checkout_date = fields.Date(string="Départ", readonly=True)
-    month = fields.Char(string="Mois", readonly=True,
+    # Mois technique (AAAA-MM), gardé pour les exports et les filtres
+    # écrits à la main. Les vues regroupent sur ``checkout_date:month`` :
+    # Odoo affiche alors « octobre 2026 » dans la langue de l'utilisateur,
+    # au lieu de « 2026-10 » (ECARTS n° 4).
+    month = fields.Char(string="Mois (AAAA-MM)", readonly=True,
                         help="Mois du départ (AAAA-MM) : mois de déclaration.")
     folio_state = fields.Selection(
         selection=[
@@ -40,8 +44,12 @@ class CityTaxReport(models.Model):
         string="État du folio", readonly=True,
     )
     units = fields.Integer(string="Nuitées taxées", readonly=True)
-    amount = fields.Monetary(
-        string="Taxe collectée", readonly=True, currency_field='currency_id')
+    # Montant sans décimale : les barèmes sont en FCFA, CFA ou GNF (devises
+    # sans centimes). En ``Monetary``, le tableau croisé ignore la devise et
+    # affichait « 1 293 000,00 » (ECARTS n° 40) ; la liste garde le symbole
+    # par le widget ``monetary``.
+    amount = fields.Float(
+        string="Taxe collectée", readonly=True, digits=(16, 0))
 
     @api.model
     def _search(self, domain, offset=0, limit=None, order=None):

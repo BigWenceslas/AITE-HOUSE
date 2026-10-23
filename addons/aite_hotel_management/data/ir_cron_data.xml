@@ -3,7 +3,7 @@
     <data noupdate="1">
 
         <record id="ir_cron_hotel_daily" model="ir.cron">
-            <field name="name">Hôtel : tâches quotidiennes (no-show, ménage)</field>
+            <field name="name">Hôtel : tâches quotidiennes (non-présentations, ménage)</field>
             <field name="model_id" ref="model_aite_hotel_reservation"/>
             <field name="state">code</field>
             <field name="code">model._cron_daily_tasks()</field>

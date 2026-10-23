@@ -168,5 +168,12 @@ class HotelHousekeeping(models.Model):
         }
 
     def action_check_all(self):
+        """
+        « Tout cocher » : coche la checklist et garde la fenêtre
+        d'inspection ouverte, pour corriger un point puis valider. Un
+        bouton qui renvoie ``True`` ferme la fenêtre (ECARTS n° 52).
+        """
         self.mapped('check_ids').write({'ok': True})
+        if len(self) == 1:
+            return self.action_open_inspection()
         return True

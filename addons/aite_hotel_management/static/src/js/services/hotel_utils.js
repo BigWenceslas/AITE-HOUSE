@@ -66,6 +66,20 @@ export function fmtPct(value) {
         .toString().replace(".", ",") + " %";
 }
 
+/**
+ * « 2026-10-16 » → « 16/10/2026 » (règle 6). Simple découpage de la
+ * chaîne : aucune conversion par l'UTC, la date reste celle du serveur.
+ */
+export function fmtDay(isoDay) {
+    if (!isoDay) {
+        return "";
+    }
+    const parts = String(isoDay).slice(0, 10).split("-");
+    return parts.length === 3
+        ? parts[2] + "/" + parts[1] + "/" + parts[0]
+        : String(isoDay);
+}
+
 /** Périodes rapides : renvoie {date_from, date_to} en YYYY-MM-DD. */
 export function periodRange(key) {
     const today = new Date();

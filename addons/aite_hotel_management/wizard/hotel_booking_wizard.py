@@ -43,6 +43,20 @@ class HotelBookingWizard(models.TransientModel):
         'res.partner', string="Client",
         domain="[('is_company', '=', False)]",
     )
+    # Le canal est demandé ici comme sur la fiche de réservation : sans
+    # lui, toute réservation rapide partait en « Direct / comptoir » et
+    # faussait la répartition par canal (ECARTS n° 56).
+    source = fields.Selection(
+        selection='_selection_source', string="Canal",
+        default='direct', required=True,
+        help="Par où la demande est arrivée : comptoir, téléphone / "
+             "WhatsApp, site web, OTA ou agent. Sert aux statistiques "
+             "par canal.",
+    )
+    agent_id = fields.Many2one(
+        'res.partner', string="Agent / apporteur",
+        domain="[('is_booking_agent', '=', True)]",
+    )
     confirm_immediately = fields.Boolean(
         string="Confirmer immédiatement", default=True,
         help="Décoché : la réservation est créée en brouillon.",
@@ -52,6 +66,17 @@ class HotelBookingWizard(models.TransientModel):
         string="Chambres disponibles",
     )
     searched = fields.Boolean(default=False)
+
+    @api.model
+    def _selection_source(self):
+        """Mêmes canaux que la réservation (extensions comprises)."""
+        return self.env['aite.hotel.reservation']._fields[
+            'source']._description_selection(self.env)
+
+    @api.onchange('source')
+    def _onchange_source(self):
+        if self.source != 'agent':
+            self.agent_id = False
 
     @api.onchange('hotel_id', 'checkin_date', 'checkout_date',
                   'room_type_id', 'adults')
@@ -88,6 +113,9 @@ class HotelBookingWizard(models.TransientModel):
         self.write({'line_ids': [(5, 0, 0)] + lines, 'searched': True})
         return {
             'type': 'ir.actions.act_window',
+            # Sans nom, la fenêtre rouverte s'intitulait « Odoo »
+            # (ECARTS n° 45).
+            'name': _("Réservation rapide"),
             'res_model': self._name,
             'res_id': self.id,
             'view_mode': 'form',
@@ -107,6 +135,9 @@ class HotelBookingWizard(models.TransientModel):
             'partner_id': self.partner_id.id,
             'checkin_date': self.checkin_date,
             'checkout_date': self.checkout_date,
+            'source': self.source,
+            'agent_id': self.agent_id.id if self.source == 'agent'
+            else False,
             'line_ids': [(0, 0, {
                 'room_type_id': line.room_id.room_type_id.id,
                 'room_id': line.room_id.id,

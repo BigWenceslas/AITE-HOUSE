@@ -9,7 +9,8 @@ class GuestStats(models.Model):
     Une ligne par fiche d'enregistrement, datée du mois d'arrivée. En pivot
     mois × hôtel on obtient : arrivées (nombre de fiches), nuitées
     (somme des nuits), résidents / non-résidents, répartition par
-    nationalité et par motif, durée moyenne de séjour (nuitées ÷ arrivées).
+    nationalité et par motif. La durée moyenne de séjour n'est pas une
+    mesure : elle se déduit (nuitées ÷ arrivées).
     """
     _name = 'aite.guest.stats'
     _description = "Statistiques d'hébergement (MINTOUL)"
@@ -25,7 +26,10 @@ class GuestStats(models.Model):
     company_id = fields.Many2one('res.company', string="Société", readonly=True)
     arrival_date = fields.Date(string="Arrivée", readonly=True)
     departure_date = fields.Date(string="Départ", readonly=True)
-    month = fields.Char(string="Mois", readonly=True)
+    # Mois technique (AAAA-MM), gardé pour les exports. Les vues regroupent
+    # sur ``arrival_date:month`` : « octobre 2026 » plutôt que « 2026-10 »
+    # (ECARTS n° 4).
+    month = fields.Char(string="Mois (AAAA-MM)", readonly=True)
     nationality_id = fields.Many2one(
         'res.country', string="Nationalité", readonly=True)
     residence_country_id = fields.Many2one(
@@ -51,7 +55,7 @@ class GuestStats(models.Model):
         selection=[
             ('draft', "Brouillon"), ('confirmed', "Confirmée"),
             ('checked_in', "Arrivé"), ('checked_out', "Parti"),
-            ('cancelled', "Annulée"), ('no_show', "No-show"),
+            ('cancelled', "Annulée"), ('no_show', "Non présenté"),
         ],
         string="Séjour", readonly=True,
     )

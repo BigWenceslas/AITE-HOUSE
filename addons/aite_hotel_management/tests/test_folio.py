@@ -295,12 +295,16 @@ class TestFolio(HotelCommon):
             'is_deposit': True,
         })
         self.folio.action_create_invoice()
-        payment.move_id.line_ids.filtered(
-            lambda l: l.account_id.account_type == 'asset_receivable')
         self.assertTrue(payment.move_id)
-        # Le lettrage est best-effort : on vérifie qu'il ne casse rien et
-        # que la facture voit bien un règlement partiel.
         self.assertEqual(self.folio.amount_residual, 60000.0)
+        # Écart n° 75 : le solde du folio se calcule sans la comptabilité ;
+        # c'est la facture qui dit si l'acompte a vraiment été lettré.
+        invoice = self.folio.move_id
+        self.assertEqual(invoice.payment_state, 'partial')
+        self.assertEqual(invoice.amount_residual, 60000.0)
+        pay_line = payment.move_id.line_ids.filtered(
+            lambda l: l.account_id.account_type == 'asset_receivable')
+        self.assertTrue(pay_line.reconciled)
 
     def test_invoiced_folio_lines_are_frozen(self):
         self.folio.action_create_invoice()
