@@ -39,8 +39,8 @@ res.action_confirm()
 check("avant check-in : aucune fiche, 2 occupants attendus",
       res.registration_count == 0 and res.expected_guests == 2,
       (res.registration_count, res.expected_guests))
-check("bandeau : « Aucune fiche … 2 occupant(s) attendu(s) »",
-      "2 occupant" in res.registration_hint, res.registration_hint)
+check("bandeau : « Aucune fiche … 2 occupants attendus »",
+      "2 occupants attendus" in res.registration_hint, res.registration_hint)
 
 print("\n═══ 2. La réception clique « Check-in » (arrivée anticipée → responsable) ═══")
 res.action_checkin()
@@ -72,7 +72,7 @@ main.birth_date = date(1985, 3, 12)
 check("fiche complète sans cliquer sur un bouton", main.state == 'done', main.state)
 check("plus rien ne manque", not main.missing_info, main.missing_info)
 check("mais 1 occupant sur 2 → toujours « À compléter »",
-      res.registration_status == 'partial' and "1 occupant(s) sans fiche" in res.registration_hint,
+      res.registration_status == 'partial' and "1 occupant sans fiche" in res.registration_hint,
       res.registration_hint)
 
 print("\n═══ 4. Elle ajoute l'accompagnant, un touriste français ═══")

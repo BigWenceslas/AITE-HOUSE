@@ -19,16 +19,35 @@ export function fmtPct(value, digits = 1) {
 }
 
 export function fmtInt(value) {
-    return (value || 0).toLocaleString("fr-FR");
+    return Math.round(Number(value) || 0).toLocaleString("fr-FR");
 }
 
-/** Écart en % avec son sens : « ▲ +12,5 % » / « ▼ 3,0 % ». */
+/**
+ * Nombre suivi du mot accordé : « 1 nuitée », « 12 nuitées » — pluriel
+ * à partir de 2, jamais de « (s) » (relecture de l'écart n° 44).
+ */
+export function fmtCount(n, one, many) {
+    const k = Math.round(Number(n) || 0);
+    return fmtInt(k) + " " + (Math.abs(k) > 1 ? many : one);
+}
+
+/** Arrondi à une décimale ; « || 0 » évite un « -0,0 ». */
+export function round1(value) {
+    return Math.round((Number(value) || 0) * 10) / 10 || 0;
+}
+
+/**
+ * Écart en % avec son sens : « ▲ +12,5 % », « ▼ 3,0 % », « ■ 0,0 % » —
+ * le rendu unique des tableaux de bord AITE (un écart nul s'écrivait
+ * « ▲ +0,0 % », en vert).
+ */
 export function fmtDelta(value) {
     if (value === null || value === undefined) {
         return "";
     }
-    const sign = value >= 0 ? "▲ +" : "▼ ";
-    return sign + fmtPct(Math.abs(value));
+    const v = round1(value);
+    const sign = v > 0 ? "▲ +" : v < 0 ? "▼ " : "■ ";
+    return sign + fmtPct(Math.abs(v));
 }
 
 export const PERIOD_PRESETS = [
@@ -69,9 +88,11 @@ export function periodRange(key) {
     return { date_from: iso(from), date_to: iso(today) };
 }
 
+/** « 2026-09 » → « sept. 26 » : abréviations françaises avec leur
+ *  point, la table des autres tableaux de bord (règle 6). */
 export function monthLabel(key) {
-    const NAMES = ["janv", "févr", "mars", "avr", "mai", "juin",
-        "juil", "août", "sept", "oct", "nov", "déc"];
+    const NAMES = ["janv.", "févr.", "mars", "avr.", "mai", "juin",
+        "juil.", "août", "sept.", "oct.", "nov.", "déc."];
     const parts = key.split("-");
     const m = parseInt(parts[1], 10) - 1;
     return NAMES[m] + " " + parts[0].slice(2);

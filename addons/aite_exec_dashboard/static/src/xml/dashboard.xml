@@ -66,11 +66,11 @@
                     <KpiCard mega="true" accent="'info'"
                              label="'Restauration &amp; boutique'"
                              value="money(state.kpis.pos_ca)"
-                             sub="'HT · ' + num(state.kpis.tickets) + ' tickets · panier ' + money(state.kpis.basket)"/>
+                             sub="'HT · ' + count(state.kpis.tickets, 'ticket', 'tickets') + ' · panier ' + money(state.kpis.basket)"/>
                     <KpiCard mega="true" accent="'teal'"
                              label="'Prestations'"
                              value="money(state.kpis.slots_ca)"
-                             sub="num(state.kpis.slots_count) + ' prestation(s) réalisée(s)'"/>
+                             sub="count(state.kpis.slots_count, 'prestation réalisée', 'prestations réalisées')"/>
                 </div>
 
                 <div class="aed-section-title">Hébergement — indicateurs de performance
@@ -81,7 +81,7 @@
                              value="pct(state.kpis.occupancy)"
                              hint="hint('occupancy')"
                              delta="state.kpis.deltas_ly.occupancy"
-                             sub="num(state.kpis.nights_sold) + ' nuitée(s) vendue(s)'"/>
+                             sub="count(state.kpis.nights_sold, 'nuitée vendue', 'nuitées vendues')"/>
                     <KpiCard label="'Prix moyen par nuit (ADR)'"
                              value="money(state.kpis.adr)"
                              hint="hint('adr')"
@@ -93,11 +93,11 @@
                              delta="state.kpis.deltas_ly.revpar"
                              sub="'par chambre disponible, vendue ou non'"/>
                     <KpiCard label="'Réservations récentes (pickup)'"
-                             value="num(state.kpis.pickup.nights) + ' nuitée(s)'"
+                             value="count(state.kpis.pickup.nights, 'nuitée', 'nuitées')"
                              hint="hint('pickup')"
                              sub="pickupSub"/>
                     <KpiCard label="'Rythme du mois (pace)'"
-                             value="num(state.kpis.pace.nights) + ' nuitée(s)'"
+                             value="count(state.kpis.pace.nights, 'nuitée', 'nuitées')"
                              hint="hint('pace')"
                              delta="state.kpis.pace.delta"
                              deltaLabel="'vs même date N-1'"

@@ -2,6 +2,8 @@
 from datetime import datetime, timedelta
 from collections import defaultdict
 
+import pytz
+
 from odoo import api, fields, models, _
 
 from .booking_resource import KINDS
@@ -51,15 +53,35 @@ class SlotDashboard(models.AbstractModel):
             dt_from, dt_to = dt_to, dt_from
         return dt_from, dt_to
 
+    def _period_tz(self):
+        """Fuseau des jours de la période : celui du contexte, sinon celui
+        de l'utilisateur, sinon UTC — la règle de l'analyse des ventes et
+        de l'activité par pôle de la Direction (même chiffre partout, cas
+        K04), et celle de la grille du jour (``context_timestamp``)."""
+        tz_name = self.env.context.get('tz') or self.env.user.tz
+        if tz_name in pytz.all_timezones_set:
+            return pytz.timezone(tz_name)
+        return pytz.utc
+
+    def _day_bounds(self, dt_from, dt_to):
+        """Jours LOCAUX ``dt_from`` → ``dt_to`` (inclus) en bornes UTC :
+        [minuit local du premier jour, minuit local du lendemain du
+        dernier[. Des jours UTC rangeaient une prestation de 0 h 30 le 1er,
+        à Douala, dans le mois précédent (relecture K04)."""
+        tz = self._period_tz()
+
+        def to_utc(day):
+            local = tz.localize(datetime.combine(day, datetime.min.time()))
+            return fields.Datetime.to_string(
+                local.astimezone(pytz.utc).replace(tzinfo=None))
+        return to_utc(dt_from), to_utc(dt_to + timedelta(days=1))
+
     def _booking_domain(self, dt_from, dt_to, kind=None, resource_id=None,
                         states=None):
-        d0 = fields.Datetime.to_string(
-            datetime.combine(dt_from, datetime.min.time()))
-        d1 = fields.Datetime.to_string(
-            datetime.combine(dt_to, datetime.max.time()))
+        d0, d1 = self._day_bounds(dt_from, dt_to)
         domain = [
             ('company_id', '=', self.env.company.id),
-            ('start', '>=', d0), ('start', '<=', d1),
+            ('start', '>=', d0), ('start', '<', d1),
         ]
         if states:
             domain.append(('state', 'in', list(states)))

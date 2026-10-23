@@ -34,6 +34,20 @@ export function fmtPct(value) {
     return n.toFixed(1).replace(".", ",") + "\u00a0%";
 }
 
+/** Nombre entier à la française : « 1 234 » (espace fine insécable). */
+export function fmtInt(value) {
+    return Math.round(Number(value) || 0).toLocaleString("fr-FR");
+}
+
+/**
+ * Nombre suivi du mot accordé : « 1 réalisée », « 3 réalisées » —
+ * pluriel à partir de 2, jamais de « (s) » (relecture de l'écart n° 44).
+ */
+export function fmtCount(n, one, many) {
+    const k = Math.round(Number(n) || 0);
+    return fmtInt(k) + " " + (Math.abs(k) > 1 ? many : one);
+}
+
 export function fmtHours(value) {
     const n = value || 0;
     const r = ((n * 10 + 0.5) | 0) / 10;

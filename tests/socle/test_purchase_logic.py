@@ -332,7 +332,7 @@ class TestJsPeriodeEtFormats(unittest.TestCase):
         self.assertFalse("' cmd'" in xml)
         self.assertFalse('"auj."' in view)
         self.assertFalse('"S1"' in view)
-        out = _node(_js_functions(['fmtCount', 'scheduleLabels'])
+        out = _node(_js_functions(['fmtInt', 'fmtCount', 'scheduleLabels'])
                     + "console.log(JSON.stringify([fmtCount(1, 'commande',"
                     " 'commandes'), fmtCount(0, 'commande', 'commandes'),"
                     " fmtCount(3, 'commande', 'commandes'),"

@@ -181,7 +181,11 @@ class TestCreditDashboard(CreditCommon):
             fields.Date.to_string(self.today - timedelta(days=300)),
             fields.Date.to_string(self.today))
         self.assertLess(len(rows), 62)
-        self.assertRegex(rows[0]['label'], r'^[A-ZÉÀÛ][a-zûéô]+ \d{2}$')
+        # Mois en abréviation française (« déc. 25 », « mai 26 ») : plus de
+        # « Dec » / « Sep » à l'anglaise (relecture de l'intégration).
+        self.assertRegex(rows[0]['label'],
+                         r'^(janv\.|févr\.|mars|avr\.|mai|juin|juil\.|août'
+                         r'|sept\.|oct\.|nov\.|déc\.) \d{2}$')
 
     def test_recent_payments_listing(self):
         credit = self._credit(30000.0)

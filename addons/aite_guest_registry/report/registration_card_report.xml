@@ -20,7 +20,7 @@
                         <div class="row mb-2">
                             <div class="col-7">
                                 <h2 class="mb-0">FICHE D'ENREGISTREMENT CLIENT</h2>
-                                <div class="text-muted">Registre des voyageurs — <span t-field="doc.hotel_id.name"/></div>
+                                <div class="text-muted">Registre des clients — <span t-field="doc.hotel_id.name"/></div>
                             </div>
                             <div class="col-5 text-end">
                                 <div><b>N°</b> <span t-field="doc.name"/></div>

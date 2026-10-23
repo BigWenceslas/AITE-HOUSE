@@ -3,7 +3,7 @@
 import { Component, useState, useRef, onWillStart, onMounted, onWillUnmount, onWillUpdateProps, onPatched } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { loadChart, destroyChart } from "../services/chartjs_loader";
-import { fmt, fmtMoney, fmtPct, COLORS, getCategoryColors } from "../services/utils";
+import { fmt, fmtMoney, fmtCompact, fmtPct, COLORS, getCategoryColors } from "../services/utils";
 
 export class CategoriesView extends Component {
     static template = "aite_pos_analytics.CategoriesView";
@@ -97,7 +97,7 @@ export class CategoriesView extends Component {
                 scales: {
                     y: { ticks: {
                         font: { size: 9 },
-                        callback: v => v >= 1000 ? Math.round(v / 1000) + "k" : v,
+                        callback: v => fmtCompact(v),
                     } },
                 },
             },
@@ -133,7 +133,7 @@ export class CategoriesView extends Component {
                 scales: {
                     y: { ticks: {
                         font: { size: 9 },
-                        callback: v => v >= 1000 ? Math.round(v / 1000) + "k" : v,
+                        callback: v => fmtCompact(v),
                     } },
                     x: { ticks: { font: { size: 10 } } },
                 },

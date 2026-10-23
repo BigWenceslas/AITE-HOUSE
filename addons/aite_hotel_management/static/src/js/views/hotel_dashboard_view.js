@@ -6,7 +6,8 @@ import { loadChart, destroyChart } from "../services/chartjs_loader";
 import { KpiCard } from "../components/kpi_card";
 import {
     COLORS, ROOM_STATUS_COLORS, ROOM_STATUS_LABELS, ROOM_STATUS_ORDER,
-    fmtMoney, fmtCompact, fmtPct, fmtDay, periodRange, PERIOD_PRESETS,
+    fmtMoney, fmtCompact, fmtPct, fmtDelta, fmtInt, fmtCount, fmtDay,
+    periodRange, PERIOD_PRESETS,
 } from "../services/hotel_utils";
 
 /**
@@ -147,13 +148,19 @@ export class HotelDashboardView extends Component {
     }
 
     num(v) {
-        return "" + (v === undefined || v === null ? 0 : v);
+        return fmtInt(v);
     }
 
-    /** "12 / 20" — chambres occupées sur total vendable. */
-    occFraction() {
+    /** « 1 nuitée vendue », « 12 nuitées vendues » (accord en nombre). */
+    count(n, one, many) {
+        return fmtCount(n, one, many);
+    }
+
+    /** « 12 chambres occupées sur 20 » — sur le total vendable. */
+    occupiedSub() {
         const t = this.state.kpis.today || {};
-        return this.num(t.occupied) + " / " + this.num(t.total_rooms);
+        return fmtCount(t.occupied, "chambre occupée", "chambres occupées")
+            + " sur " + this.num(t.total_rooms);
     }
 
     /** Extrait l'heure locale HH:MM d'un datetime serveur (UTC). */
@@ -182,13 +189,15 @@ export class HotelDashboardView extends Component {
         if (pct === null || pct === undefined) {
             return undefined;
         }
-        const rounded = ((pct * 10 + (pct >= 0 ? 0.5 : -0.5)) | 0) / 10;
-        const abs = rounded < 0 ? -rounded : rounded;
-        const arrow = rounded > 0 ? "▲" : rounded < 0 ? "▼" : "■";
-        const isGood = goodWhenUp ? rounded >= 0 : rounded <= 0;
+        // Rendu unique des tableaux de bord AITE : « ▲ +12,5 % », « ▼ 3,0 % »,
+        // « ■ 0,0 % » (gris). Ici s'écrivait « ▲ 156 % » sans signe ni
+        // décimale fixe (relecture de l'intégration).
+        const delta = fmtDelta(pct);
+        const isGood = goodWhenUp ? delta.value > 0 : delta.value < 0;
         return {
-            text: arrow + " " + ("" + abs).replace(".", ",") + " % vs période précédente",
-            cls: isGood ? "text-success" : "text-danger",
+            text: delta.text + " vs période précédente",
+            cls: !delta.value ? "text-muted"
+                : isGood ? "text-success" : "text-danger",
         };
     }
 

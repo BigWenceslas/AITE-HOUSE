@@ -94,7 +94,11 @@ class PosAnalyticsDashboard(models.AbstractModel):
           * ``weekdays`` : liste d'entiers ISO 1=lundi … 7=dimanche.
         """
         dt_from, dt_to = self._utc_period(date_from, date_to)
+        # Société courante, comme l'activité par pôle de la Direction et
+        # les moteurs Crédit, Stock et Achats : sans ce filtre, les tickets
+        # de toutes les sociétés de la base s'additionnaient (cas K04).
         domain = [
+            ('company_id', '=', self.env.company.id),
             ('date', '>=', dt_from),
             ('date', '<', dt_to),
         ]
@@ -418,8 +422,10 @@ class PosAnalyticsDashboard(models.AbstractModel):
             if m == 0:
                 y, m = y - 1, 12
         periods.reverse()
-        MONTHS_FR = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin',
-                     'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc']
+        # Abréviations françaises (règle 6) : « Jan », « Sep » étaient
+        # anglaises — même table dans tous les tableaux de bord AITE.
+        MONTHS_FR = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin',
+                     'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.']
 
         labels = []
         months_data = []
@@ -613,6 +619,7 @@ class PosAnalyticsDashboard(models.AbstractModel):
         """Liste des sessions de la période avec métriques."""
         dt_from, dt_to = self._utc_period(date_from, date_to)
         domain = [
+            ('company_id', '=', self.env.company.id),
             ('start_at', '>=', dt_from),
             ('start_at', '<', dt_to),
         ]
@@ -681,6 +688,7 @@ class PosAnalyticsDashboard(models.AbstractModel):
         dt_from, dt_to = self._utc_period(date_from, date_to)
         Payment = self.env['pos.payment']
         domain = [
+            ('company_id', '=', self.env.company.id),
             ('payment_date', '>=', dt_from),
             ('payment_date', '<', dt_to),
         ]
@@ -825,6 +833,7 @@ class PosAnalyticsDashboard(models.AbstractModel):
         # read_group. On lit les sessions puis on somme côté Python.
         dt_from, dt_to = self._utc_period(date_from, date_to)
         sess_domain = [
+            ('company_id', '=', self.env.company.id),
             ('start_at', '>=', dt_from),
             ('start_at', '<', dt_to),
         ]

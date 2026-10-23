@@ -1,7 +1,7 @@
 /** @odoo-module **/
 
 import { Component } from "@odoo/owl";
-import { fmtDelta } from "../services/utils";
+import { fmtDelta, round1 } from "../services/utils";
 
 /**
  * Carte indicateur. ``hint`` est la phrase d'explication (infobulle au
@@ -33,6 +33,8 @@ export class KpiCard extends Component {
     }
 
     get deltaCls() {
-        return (this.props.delta || 0) >= 0 ? "aed-up" : "aed-down";
+        // Écart nul (arrondi) en gris, comme sur les autres écrans.
+        const v = round1(this.props.delta);
+        return v > 0 ? "aed-up" : v < 0 ? "aed-down" : "aed-flat";
     }
 }

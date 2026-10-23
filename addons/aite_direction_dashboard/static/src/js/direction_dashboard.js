@@ -86,10 +86,20 @@ export function rangeFor(key, today) {
 }
 
 /* ── formatage ─────────────────────────────────────────────────── */
+/* Montant à la française : séparateur de milliers fr-FR (espace fine
+   INSÉCABLE, comme les autres tableaux de bord — les espaces ordinaires
+   coupaient un montant en fin de ligne). */
 export function fmtMoney(v, symbol) {
-    const n = Math.round(v || 0);
-    const s = n.toLocaleString("fr-FR").replace(/[\u202f\u00a0]/g, " ");
+    const s = Math.round(v || 0).toLocaleString("fr-FR");
     return symbol ? `${s} ${symbol}` : s;
+}
+/* Nombre entier à la française : « 1 234 » (« 1234 tickets » ici). */
+export function fmtInt(v) {
+    return Math.round(Number(v) || 0).toLocaleString("fr-FR");
+}
+/* Arrondi à une décimale ; « || 0 » évite un « -0,0 ». */
+export function round1(v) {
+    return Math.round((Number(v) || 0) * 10) / 10 || 0;
 }
 /* Pourcentages à la française : virgule, espace insécable avant %,
    décimales fixées (écart n° 41 — même rendu que l'exécutif). */
@@ -97,15 +107,38 @@ export function fmtPct(v, digits = 1) {
     return (v === null || v === undefined)
         ? "—" : `${(v).toFixed(digits).replace(".", ",")}\u00a0%`;
 }
+/* Variation : « ▲ +12,5 % », « ▼ 3,0 % », « ■ 0,0 % » — le rendu unique
+   des tableaux de bord AITE (un écart nul s'écrivait « ▲ +0,0 % »). */
 export function fmtDelta(v) {
     if (v === null || v === undefined) return "";
-    const s = v >= 0 ? "▲ +" : "▼ ";
-    return s + Math.abs(v).toFixed(1).replace(".", ",") + "\u00a0%";
+    const r = round1(v);
+    const s = r > 0 ? "▲ +" : r < 0 ? "▼ " : "■ ";
+    return s + Math.abs(r).toFixed(1).replace(".", ",") + "\u00a0%";
+}
+/* Classe d'une variation : vert si elle est bonne, rouge sinon, gris si
+   elle s'affiche « 0,0 ». ``upIsBad`` pour un coût ou une dette (nouvelles
+   ardoises) : une hausse est alors rouge, comme sur POS Crédit et
+   l'analyse des ventes (relecture de l'écart n° 62). */
+export function deltaClass(v, upIsBad = false) {
+    const r = round1(v);
+    if (!r) return "flat";
+    return (r > 0) !== Boolean(upIsBad) ? "up" : "down";
 }
 /* Durée en jours, une décimale : « 12,3 j » (le délai moyen de
    remboursement s'affichait sans arrondi — écart n° 41). */
 export function fmtDays(v) {
-    return (v || 0).toFixed(1).replace(".", ",") + " j";
+    return round1(v).toFixed(1).replace(".", ",") + " j";
+}
+/* Âge d'une ardoise en jours entiers : « 160 j », comme POS Crédit ; une
+   moyenne de jours garde sa décimale (``fmtDays``). */
+export function fmtAge(v) {
+    return fmtInt(v) + " j";
+}
+/* Couverture de stock : « ∞ » à partir d'un an (une référence sans vente
+   a une couverture infinie, 999 j pour le moteur Stock), sinon
+   ``fmtDays`` — la règle de l'écran Stock & Inventaire. */
+export function fmtCoverage(v) {
+    return (Number(v) || 0) >= 365 ? "∞" : fmtDays(v);
 }
 /* « 2026-10-14 » → « 14/10/2026 » (règle 6, écart n° 37) ; un texte déjà
    formaté par le moteur passe tel quel. */
@@ -116,8 +149,8 @@ export function fmtDate(v) {
 /* Nombre suivi du mot accordé : « 1 facture », « 4 factures » — en
    toutes lettres, sans « fact. » ni « réfs » (reprise de l'écart n° 42). */
 export function fmtCount(n, one, many) {
-    const k = n || 0;
-    return k + " " + (k > 1 ? many : one);
+    const k = Math.round(Number(n) || 0);
+    return fmtInt(k) + " " + (Math.abs(k) > 1 ? many : one);
 }
 /* Fenêtre « à payer bientôt » : celle du réglage des Achats (``cfg.soon``,
    7 j par défaut) — le libellé restait à « 7 j » quand le montant suivait
@@ -151,6 +184,8 @@ export class KpiCard extends Component {
         accent: { type: String, optional: true },
         delta: { type: [Number, { value: null }], optional: true },
         deltaLabel: { type: String, optional: true },
+        // Une hausse est une mauvaise nouvelle (coût, nouvelles ardoises).
+        upIsBad: { type: Boolean, optional: true },
         mega: { type: Boolean, optional: true },
         onClick: { type: Function, optional: true },
         hint: { type: String, optional: true },   // phrase d'explication
@@ -160,7 +195,7 @@ export class KpiCard extends Component {
         return t && this.props.deltaLabel ? t + " " + this.props.deltaLabel : t;
     }
     get deltaCls() {
-        return (this.props.delta || 0) >= 0 ? "up" : "down";
+        return deltaClass(this.props.delta, this.props.upIsBad);
     }
 }
 
@@ -333,6 +368,15 @@ export class DirectionDashboard extends Component {
     days(v) {
         return fmtDays(v);
     }
+    coverage(v) {
+        return fmtCoverage(v);
+    }
+    age(v) {
+        return fmtAge(v);
+    }
+    num(v) {
+        return fmtInt(v);
+    }
     date(v) {
         return fmtDate(v);
     }
@@ -361,14 +405,16 @@ export class DirectionDashboard extends Component {
     get hotelPaceSub() {
         const h = this.state.data.vue && this.state.data.vue.hotel;
         if (!h || !h.pace) return "";
-        return `${h.nights_sold} nuitée(s) vendue(s) · rythme du mois `
-            + `(pace) : ${h.pace.nights} (N-1 : ${h.pace.nights_ly})`;
+        return fmtCount(h.nights_sold, "nuitée vendue", "nuitées vendues")
+            + ` · rythme du mois (pace) : ${fmtInt(h.pace.nights)}`
+            + ` (N-1 : ${fmtInt(h.pace.nights_ly)})`;
     }
     get hotelPickupSub() {
         const h = this.state.data.vue && this.state.data.vue.hotel;
         if (!h || !h.pickup) return "";
-        return `réservations récentes (pickup) : ${h.pickup.nights} `
-            + `nuitée(s) prises ces ${h.pickup.window_days} j pour les `
+        return "réservations récentes (pickup) : "
+            + fmtCount(h.pickup.nights, "nuitée prise", "nuitées prises")
+            + ` ces ${h.pickup.window_days} j pour les `
             + `${h.pickup.horizon_days} prochains`;
     }
     hotelHint(key) {
@@ -388,7 +434,7 @@ export class DirectionDashboard extends Component {
     }
     get posQty() {
         const k = this.state.data.pos && this.state.data.pos.kpis;
-        return k ? String(Math.round(k.qty || 0)) : "0";
+        return fmtInt(k ? k.qty : 0);
     }
     get caisseLabel() {
         if (!this.state.configId) return "toutes les caisses";
@@ -477,9 +523,10 @@ export class DirectionDashboard extends Component {
         const rows = asList(d.by_category).slice(0, 6);
         return this._colored(rows, "value");
     }
+    /* « 1 unité », « 1 234 unités » (accord et séparateur français). */
     get stockUnits() {
         const d = this.state.data.stock;
-        return d ? String(Math.round(d.kpis.total_units || 0)) : "0";
+        return fmtCount(d ? d.kpis.total_units : 0, "unité", "unités");
     }
     get stockCoverage() {
         const d = this.state.data.stock;
@@ -494,7 +541,7 @@ export class DirectionDashboard extends Component {
             ...r,
             pct: Math.max(2, (r.couv / max) * 100),
             color: P[i % P.length],
-            text: fmtDays(r.couv),
+            text: fmtCoverage(r.couv),
         }));
     }
     penaltyText(r) {
@@ -507,13 +554,14 @@ export class DirectionDashboard extends Component {
         return s.slice(0, 4);
     }
     // Mêmes tranches que ``_bucket_supplier_invoices`` (jours avant
-    // l'échéance : 0–6, 7–13, 14–20, 21 et plus), dites en toutes lettres
-    // (« S + 1 » — reprise de l'écart n° 42).
+    // l'échéance : 0–7, 8–14, 15–21, 22 et plus), dites en toutes lettres
+    // (« S + 1 » — reprise de l'écart n° 42). « Sous 7 jours » couvre
+    // exactement la carte « À payer sous 7 j » (réglage par défaut).
     static SCHED = [["overdue", "Échues", "#A32D2D"],
                     ["w0", "Sous 7 jours", "#A32D2D"],
-                    ["w1", "Dans 7 à 13 jours", "#854F0B"],
-                    ["w2", "Dans 14 à 20 jours", "#185FA5"],
-                    ["w3p", "Dans 21 jours et +", "#8fa8c4"]];
+                    ["w1", "Dans 8 à 14 jours", "#854F0B"],
+                    ["w2", "Dans 15 à 21 jours", "#185FA5"],
+                    ["w3p", "Dans 22 jours et +", "#8fa8c4"]];
     get purchaseSchedule() {
         const d = this.state.data.achat;
         if (!d) return [];

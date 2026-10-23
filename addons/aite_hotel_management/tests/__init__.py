@@ -9,3 +9,4 @@ from . import test_dashboard
 from . import test_wizards
 from . import test_ecarts_videos
 from . import test_ecarts_nb
+from . import test_migration

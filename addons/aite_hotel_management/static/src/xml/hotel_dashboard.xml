@@ -27,7 +27,7 @@
             <!-- En-tête -->
             <div class="ahm-topbar">
                 <div>
-                    <h2 class="ahm-title">Réception — tableau de bord</h2>
+                    <h2 class="ahm-title">Tableau de bord — Réception</h2>
                     <div class="ahm-sub">
                         Occupation, arrivées &amp; départs, plan des chambres ·
                         <t t-esc="state.companyName"/>
@@ -88,7 +88,7 @@
                     <KpiCard mega="true" accent="'primary'"
                              label="'Occupation ce soir'"
                              value="pct(state.kpis.today.occupancy)"
-                             sub="occFraction() + ' chambres occupées'"/>
+                             sub="occupiedSub()"/>
                     <KpiCard mega="true" accent="'info'"
                              label="'Arrivées attendues'"
                              value="num(state.kpis.today.arrivals)"
@@ -100,7 +100,7 @@
                     <KpiCard mega="true" accent="'success'"
                              label="'Clients présents'"
                              value="num(state.kpis.today.inhouse_guests)"
-                             sub="num(state.kpis.today.inhouse_reservations) + ' séjours en cours'"/>
+                             sub="count(state.kpis.today.inhouse_reservations, 'séjour en cours', 'séjours en cours')"/>
                 </div>
 
                 <!-- Performance de la période -->
@@ -109,15 +109,17 @@
                     <KpiCard label="'Taux d\'occupation'"
                              value="pct(state.kpis.period.occupancy)"
                              delta="deltaOf(state.kpis.deltas.occupancy, true)"
-                             sub="num(state.kpis.period.nights_sold) + ' nuitées vendues'"/>
-                    <KpiCard label="'Prix moyen / nuit'"
+                             sub="count(state.kpis.period.nights_sold, 'nuitée vendue', 'nuitées vendues')"/>
+                    <!-- Mêmes libellés que « Direction — Activité par pôle » et
+                         le cockpit (relecture de l'intégration). -->
+                    <KpiCard label="'Prix moyen par nuit (ADR)'"
                              value="money(state.kpis.period.adr)"
                              delta="deltaOf(state.kpis.deltas.adr, true)"
-                             sub="'CA hébergement / nuitées vendues'"/>
-                    <KpiCard label="'Revenu par chambre disponible'"
+                             sub="'CA hébergement ÷ nuitées vendues'"/>
+                    <KpiCard label="'Revenu par chambre disponible (RevPAR)'"
                              value="money(state.kpis.period.revpar)"
                              delta="deltaOf(state.kpis.deltas.revpar, true)"
-                             sub="'CA hébergement / nuitées disponibles'"/>
+                             sub="'par chambre disponible, vendue ou non'"/>
                     <KpiCard label="'Chiffre d\'affaires (HT)'"
                              value="money(state.kpis.period.total_revenue)"
                              delta="deltaOf(state.kpis.deltas.total_revenue, true)"

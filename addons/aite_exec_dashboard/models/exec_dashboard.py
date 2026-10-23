@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from datetime import date, datetime, timedelta
 
+import pytz
+
 from odoo import api, fields, models
 
 _POS_PAID_STATES = ('paid', 'done', 'invoiced')
@@ -133,13 +135,34 @@ class ExecDashboard(models.AbstractModel):
             dt_from, dt_to = dt_to, dt_from
         return dt_from, dt_to
 
-    @staticmethod
-    def _day_bounds(dt_from, dt_to):
-        d0 = fields.Datetime.to_string(
-            datetime.combine(dt_from, datetime.min.time()))
-        d1 = fields.Datetime.to_string(
-            datetime.combine(dt_to, datetime.max.time()))
-        return d0, d1
+    def _period_tz(self):
+        """Fuseau des jours de la période : celui du contexte, sinon celui
+        de l'utilisateur, sinon UTC — la règle du moteur Ventes
+        (``aite.pos.dashboard._period_tz``) et du tableau de bord des
+        créneaux. Copiée ici : ce module ne dépend pas de l'analyse des
+        ventes."""
+        tz_name = self.env.context.get('tz') or self.env.user.tz
+        if tz_name in pytz.all_timezones_set:
+            return pytz.timezone(tz_name)
+        return pytz.utc
+
+    def _day_bounds(self, dt_from, dt_to):
+        """Jours LOCAUX ``dt_from`` → ``dt_to`` (inclus) en bornes UTC
+        pour un champ date-heure : [minuit local du premier jour, minuit
+        local du lendemain du dernier jour[ — borne de fin EXCLUSIVE.
+
+        Les bornes étaient 00:00 → 23:59:59 UTC : à Douala (UTC+1), un
+        ticket encaissé à 0 h 30 le 1er du mois (23 h 30 UTC la veille)
+        comptait dans le mois précédent ici, et dans le bon mois sur le
+        cockpit Direction et l'analyse des ventes (relecture du cas K04).
+        """
+        tz = self._period_tz()
+
+        def to_utc(day):
+            local = tz.localize(datetime.combine(day, datetime.min.time()))
+            return fields.Datetime.to_string(
+                local.astimezone(pytz.utc).replace(tzinfo=None))
+        return to_utc(dt_from), to_utc(dt_to + timedelta(days=1))
 
     # ------------------------------------------------------------------
     # Sources par pôle (une seule définition chacune)
@@ -163,7 +186,7 @@ class ExecDashboard(models.AbstractModel):
         return self.env['pos.order'].search([
             ('company_id', '=', self.env.company.id),
             ('state', 'in', _POS_PAID_STATES),
-            ('date_order', '>=', d0), ('date_order', '<=', d1),
+            ('date_order', '>=', d0), ('date_order', '<', d1),
         ])
 
     def _slot_bookings(self, dt_from, dt_to):
@@ -171,7 +194,7 @@ class ExecDashboard(models.AbstractModel):
         return self.env['aite.slot.booking'].search([
             ('company_id', '=', self.env.company.id),
             ('state', '=', 'done'),
-            ('start', '>=', d0), ('start', '<=', d1),
+            ('start', '>=', d0), ('start', '<', d1),
         ])
 
     def _has_loyalty(self):

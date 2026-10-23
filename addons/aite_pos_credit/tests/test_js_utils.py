@@ -38,6 +38,11 @@ console.log(JSON.stringify({
     delta: [u.fmtDelta(12.5).text, u.fmtDelta(-3).text, u.fmtDelta(0).text,
             u.fmtDelta(12).text],
     deltaValue: [u.fmtDelta(12.46).value, u.fmtDelta(-3.04).value],
+    days: [u.fmtDays(12.34), u.fmtDays(45), u.fmtDays(null)],
+    ages: [u.fmtAge(160), u.fmtAge(0), u.fmtAge(1234)],
+    count: [u.fmtCount(1, "ardoise ouverte", "ardoises ouvertes"),
+            u.fmtCount(0, "ardoise ouverte", "ardoises ouvertes"),
+            u.fmtCount(1234, "ardoise ouverte", "ardoises ouvertes")],
 }));
 """
 
@@ -87,3 +92,15 @@ class TestCreditJsUtils(TransactionCase):
                                         '▲ +12,0' + nbsp + '%'])
         # La valeur arrondie (une décimale) reste fournie pour la couleur.
         self.assertEqual(res['deltaValue'], [12.5, -3])
+
+    def test_jours_et_nombres_comme_le_cockpit(self):
+        """Relecture : « délai moyen 12 j » ici, « 12,3 j » au cockpit pour
+        la même valeur — une décimale fixe partout ; nombres accordés et
+        séparés à la française (« 1 234 ardoises ouvertes »)."""
+        res = self._run('Africa/Douala')
+        self.assertEqual(res['days'], ['12,3 j', '45,0 j', '0,0 j'])
+        # Âge d'une ardoise en jours entiers, comme le cockpit.
+        self.assertEqual(res['ages'], ['160 j', '0 j', '1\u202f234 j'])
+        self.assertEqual(res['count'], ['1 ardoise ouverte',
+                                        '0 ardoise ouverte',
+                                        '1\u202f234 ardoises ouvertes'])

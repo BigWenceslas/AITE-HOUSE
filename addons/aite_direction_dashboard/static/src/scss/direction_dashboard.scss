@@ -152,9 +152,14 @@
         color: #fff; font-size: 9px; text-align: center; cursor: help;
         text-transform: none; letter-spacing: 0;
     }
+    /* Bloc insécable : « ▼ 10,8 % vs période précédente » passe en entier
+       à la ligne au lieu de laisser « précédente » seul sous le montant. */
     .add-delta { font-size: 12px; font-weight: 700; margin-left: 6px;
+                 display: inline-block; white-space: nowrap;
+                 line-height: 1.4;
                  &.up { color: var(--add-vert); }
-                 &.down { color: var(--add-rouge); } }
+                 &.down { color: var(--add-rouge); }
+                 &.flat { color: var(--add-muted); } }
 
     .add-panel {
         background: #fff;

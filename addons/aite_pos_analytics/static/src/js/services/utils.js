@@ -75,16 +75,48 @@ export function fmtUnits(n) {
 }
 
 /**
- * Format un montant avec symbole de devise (suffixe par défaut).
- * On utilise "F" pour FCFA car le symbole "FCFA" est trop long pour les KPIs.
+ * Symbole de la devise de la société (« FCFA » chez LAVERANDAH), fixé au
+ * chargement du tableau de bord (``get_dashboard_meta``). Les montants
+ * s'écrivaient « 4 127 500 F » ici et « 4 127 500 FCFA » sur tous les
+ * autres tableaux de bord pour le même CA (relecture de l'intégration).
  */
-export function fmtMoney(n, symbol = "F") {
-    return `${fmt(n)} ${symbol}`;
+let CURRENCY_SYMBOL = "FCFA";
+
+export function setCurrencySymbol(symbol) {
+    if (symbol) {
+        CURRENCY_SYMBOL = symbol;
+    }
+}
+
+/** Montant arrondi, séparateurs fr-FR, suivi du symbole de la devise. */
+export function fmtMoney(n, symbol) {
+    return `${fmt(n)} ${symbol || CURRENCY_SYMBOL}`;
+}
+
+/**
+ * Graduation compacte d'un axe : « 250 k », « 4,0 M » (et non « 250k »,
+ * « 4000k ») — le rendu des autres tableaux de bord AITE.
+ */
+export function fmtCompact(value) {
+    const n = Number(value) || 0;
+    const abs = Math.abs(n);
+    if (abs >= 1e6) {
+        return (n / 1e6).toFixed(1).replace(".", ",") + " M";
+    }
+    if (abs >= 1e3) {
+        return Math.round(n / 1e3) + " k";
+    }
+    return String(Math.round(n));
+}
+
+/** Arrondi à une décimale ; « || 0 » évite un « -0,0 ». */
+function round1(v) {
+    return Math.round((Number(v) || 0) * 10) / 10 || 0;
 }
 
 /** Nombre à une décimale, virgule française : 56 → « 56,0 ». */
 function fmtDecimal1(v) {
-    return Number(v).toFixed(1).replace(".", ",");
+    return round1(v).toFixed(1).replace(".", ",");
 }
 
 /**
@@ -98,27 +130,30 @@ export function fmtPct(n) {
 
 /**
  * Formate une variation (delta %) avec signe et flèche :
- * « ▲ +12,5 % », « ▼ −3,0 % », « ■ 0,0 % ».
+ * « ▲ +12,5 % », « ▼ 3,0 % », « ■ 0,0 % » — le rendu unique des tableaux
+ * de bord AITE (POS Crédit, Direction) : la flèche dit le sens, pas de
+ * « − » en plus (« ▼ −3,0 % » ici seulement — relecture de l'intégration).
  * Retourne null si la valeur n'est pas comparable (pas de base de
  * comparaison sur la période précédente).
  */
 export function fmtDelta(n) {
     if (n === null || n === undefined || isNaN(n)) return null;
-    const v = Number(n);
-    const arrow = v > 0 ? "▲" : (v < 0 ? "▼" : "■");
-    const sign = v > 0 ? "+" : (v < 0 ? "−" : "");
-    return `${arrow} ${sign}${fmtDecimal1(Math.abs(v))}\u00a0%`;
+    const v = round1(n);
+    const arrow = v > 0 ? "▲ +" : (v < 0 ? "▼ " : "■ ");
+    return `${arrow}${fmtDecimal1(Math.abs(v))}\u00a0%`;
 }
 
 /**
- * Classe CSS (up = vert / down = rouge / flat) d'une variation.
+ * Classe CSS (up = vert / down = rouge / flat) d'une variation, sur la
+ * valeur AFFICHÉE (arrondie) : « ■ 0,0 % » est toujours neutre.
  * ``higherIsBetter`` à false pour un coût : un CMV qui monte est une
  * mauvaise nouvelle et s'affiche en rouge (écart n° 62).
  */
 export function deltaClass(n, higherIsBetter = true) {
     if (n === null || n === undefined || isNaN(n)) return "flat";
-    const good = higherIsBetter ? n > 0 : n < 0;
-    const bad = higherIsBetter ? n < 0 : n > 0;
+    const v = round1(n);
+    const good = higherIsBetter ? v > 0 : v < 0;
+    const bad = higherIsBetter ? v < 0 : v > 0;
     if (good) return "up";
     if (bad) return "down";
     return "flat";
@@ -126,14 +161,24 @@ export function deltaClass(n, higherIsBetter = true) {
 
 /**
  * Formate un montant signé (utile pour les écarts de caisse).
- * Ex : -42000 → "−42 000 F" ; 12000 → "+12 000 F".
+ * Ex : -42000 → "−42 000 FCFA" ; 12000 → "+12 000 FCFA".
  */
-export function fmtSigned(n, symbol = "F") {
-    if (n === null || n === undefined || isNaN(n)) return `0 ${symbol}`;
+export function fmtSigned(n, symbol) {
+    const sym = symbol || CURRENCY_SYMBOL;
+    if (n === null || n === undefined || isNaN(n)) return `0 ${sym}`;
     const v = Math.round(Number(n));
-    if (v === 0) return `0 ${symbol}`;
+    if (v === 0) return `0 ${sym}`;
     const sign = v > 0 ? "+" : "−";
-    return `${sign}${Math.abs(v).toLocaleString("fr-FR")} ${symbol}`;
+    return `${sign}${Math.abs(v).toLocaleString("fr-FR")} ${sym}`;
+}
+
+/**
+ * Nombre suivi du mot accordé : « 1 commande », « 1 234 commandes » —
+ * pluriel à partir de 2, jamais de « (s) ».
+ */
+export function fmtCount(n, one, many) {
+    const k = Math.round(Number(n) || 0);
+    return `${fmt(k)} ${Math.abs(k) > 1 ? many : one}`;
 }
 
 /**

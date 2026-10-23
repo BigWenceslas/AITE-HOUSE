@@ -93,6 +93,38 @@ export function fmtDelta(pct) {
     };
 }
 
+/** Nombre entier à la française : « 1 234 » (espace fine insécable). */
+export function fmtInt(value) {
+    return Math.round(Number(value) || 0).toLocaleString("fr-FR");
+}
+
+/**
+ * Nombre suivi du mot accordé : « 1 ardoise ouverte », « 12 ardoises
+ * ouvertes » — pluriel à partir de 2, jamais de « (s) ».
+ */
+export function fmtCount(n, one, many) {
+    const k = Math.round(Number(n) || 0);
+    return fmtInt(k) + " " + (Math.abs(k) > 1 ? many : one);
+}
+
+/**
+ * Durée en jours, une décimale FIXE : « 12,3 j », « 45,0 j » — le rendu du
+ * cockpit Direction et des Achats pour le même délai (« 12 j » ici, arrondi
+ * à l'entier — relecture de l'écart n° 41).
+ */
+export function fmtDays(value) {
+    return round1(value).toFixed(1).replace(".", ",") + " j";
+}
+
+/**
+ * Âge d'une ardoise, en jours entiers : « 160 j » — le même rendu que le
+ * cockpit Direction (« Plus ancienne dette », « Top débiteurs »). Une
+ * MOYENNE de jours garde sa décimale (:func:`fmtDays`).
+ */
+export function fmtAge(value) {
+    return fmtInt(value) + " j";
+}
+
 /**
  * Date LOCALE au format AAAA-MM-JJ (paramètre de période envoyé au serveur).
  *

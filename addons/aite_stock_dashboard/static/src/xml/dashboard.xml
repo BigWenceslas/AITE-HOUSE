@@ -127,7 +127,7 @@
                                  sub="'valeur à commander ' + money(state.kpis.cmd_value)"/>
                         <KpiCard label="'Écarts d\'inventaire (période)'"
                                  value="money(state.kpis.gap_net)"
-                                 sub="plural(state.kpis.gap_refs, 'réf concernée', 'réfs concernées')"/>
+                                 sub="plural(state.kpis.gap_refs, 'référence concernée', 'références concernées')"/>
                     </div>
 
                     <div class="asd-section-title">Valorisation &amp; flux</div>
@@ -377,7 +377,7 @@
                         <KpiCard mega="true" accent="'warning'"
                                  label="'Écart net (période)'"
                                  value="money(state.kpis.gap_net)"
-                                 sub="plural(state.kpis.gap_refs, 'réf concernée', 'réfs concernées')"/>
+                                 sub="plural(state.kpis.gap_refs, 'référence concernée', 'références concernées')"/>
                         <KpiCard mega="true" accent="coulAccent()"
                                  label="'Pertes (écarts négatifs + casse)'"
                                  value="money(state.kpis.pertes)"

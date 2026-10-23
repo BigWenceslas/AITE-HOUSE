@@ -6,7 +6,7 @@ class HotelReservation(models.Model):
     """
     Le check-in ouvre le registre : la fiche du client principal est créée
     et pré-remplie ; la réception complète les autres occupants depuis le
-    bouton « Fiches clients » de la réservation. Rien de bloquant — mais
+    bouton « Fiches d'enregistrement » de la réservation. Rien de bloquant — mais
     l'écran dit clairement ce qui manque.
     """
     _inherit = 'aite.hotel.reservation'
@@ -75,18 +75,30 @@ class HotelReservation(models.Model):
                 status, count, done, expected)
 
     def _hint_text(self, status, count, done, expected):
-        """Phrase d'écran qui dit quoi faire."""
+        """Phrase d'écran qui dit quoi faire, accordée en nombre
+        (« 1 fiche complète », « 2 fiches complètes ») : plus de « (s) »,
+        comme les tableaux de bord (relecture de l'écart n° 44)."""
         if status == 'done':
-            return _("Registre à jour : %d fiche(s) complète(s).", done)
+            return (_("Registre à jour : %d fiche complète.", done)
+                    if done <= 1 else
+                    _("Registre à jour : %d fiches complètes.", done))
         if status == 'none':
-            return _("Aucune fiche d'enregistrement : %d occupant(s) "
-                     "attendu(s).", expected)
+            return (_("Aucune fiche d'enregistrement : %d occupant "
+                      "attendu.", expected)
+                    if expected <= 1 else
+                    _("Aucune fiche d'enregistrement : %d occupants "
+                      "attendus.", expected))
         missing_people = max(0, expected - count)
+        to_fill = count - done
         parts = []
-        if count - done:
-            parts.append(_("%d fiche(s) à compléter", count - done))
+        if to_fill:
+            parts.append(_("%d fiche à compléter", to_fill)
+                         if to_fill <= 1 else
+                         _("%d fiches à compléter", to_fill))
         if missing_people:
-            parts.append(_("%d occupant(s) sans fiche", missing_people))
+            parts.append(_("%d occupant sans fiche", missing_people)
+                         if missing_people <= 1 else
+                         _("%d occupants sans fiche", missing_people))
         return " · ".join(parts) or _("Registre à compléter.")
 
     # ------------------------------------------------------------------
@@ -121,7 +133,7 @@ class HotelReservation(models.Model):
         line = self.line_ids[:1]
         return {
             'type': 'ir.actions.act_window',
-            'name': _("Fiches clients — %s", self.name),
+            'name': _("Fiches d'enregistrement — %s", self.name),
             'res_model': 'aite.guest.registration',
             'view_mode': 'list,form',
             'views': [

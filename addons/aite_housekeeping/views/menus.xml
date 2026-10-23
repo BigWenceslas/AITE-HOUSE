@@ -7,11 +7,15 @@
               parent="aite_hotel_management.menu_hotel_housekeeping_section"
               action="action_my_day" sequence="8"/>
     <!-- La gouvernante répartit (recette P02) : profil « Gouvernante
-         générale », que la Réception implique (ECARTS n° 1 et n° 52). -->
+         générale », que la Réception implique (ECARTS n° 1 et n° 52).
+         « groups » ne fait qu'AJOUTER des groupes à la mise à niveau : le
+         « - » retire l'ancien groupe Réception d'une base livrée, sinon le
+         menu resterait lié à la Réception sur la base du client mais pas
+         sur une base neuve (relecture de l'intégration). -->
     <menuitem id="menu_assign" name="Répartir les chambres du jour"
               parent="aite_hotel_management.menu_hotel_housekeeping_section"
               action="action_assign_wizard" sequence="12"
-              groups="group_hk_governess"/>
+              groups="-aite_hotel_management.group_hotel_user,group_hk_governess"/>
     <menuitem id="menu_room_maintenance" name="Pannes &amp; réparations"
               parent="aite_hotel_management.menu_hotel_housekeeping_section"
               action="action_room_maintenance" sequence="30"/>

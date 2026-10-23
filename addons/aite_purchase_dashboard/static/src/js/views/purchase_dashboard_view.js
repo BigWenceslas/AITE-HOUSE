@@ -7,7 +7,8 @@ import { KpiCard } from "../components/kpi_card";
 import {
     COLORS, AGING_COLORS, BADGE_CLS,
     fmtMoney, fmtNegMoney, fmtCompact, fmtQty, fmtPct, fmtDays, fmtDate,
-    fmtCount, scheduleLabels, dueWindowLabel, PERIOD_PRESETS, periodRange,
+    fmtCount, fmtInt, scheduleLabels, dueWindowLabel, PERIOD_PRESETS,
+    periodRange,
 } from "../services/utils";
 
 /**
@@ -257,7 +258,7 @@ export class PurchaseDashboardView extends Component {
     }
 
     num(v) {
-        return "" + (v === undefined || v === null ? 0 : v);
+        return fmtInt(v);
     }
 
     badge(cls) {

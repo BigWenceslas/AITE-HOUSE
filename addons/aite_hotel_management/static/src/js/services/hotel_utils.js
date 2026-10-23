@@ -60,10 +60,45 @@ export function fmtCompact(value) {
     return String(Math.round(n));
 }
 
-/** Pourcentage formaté (1 décimale, virgule française). */
+/** Arrondi à une décimale ; « || 0 » évite un « -0,0 » pour -0,04. */
+function round1(value) {
+    return Math.round((Number(value) || 0) * 10) / 10 || 0;
+}
+
+/**
+ * Pourcentage à la française, une décimale FIXE : « 56,0 % » (virgule,
+ * espace insécable avant %). Le même taux d'occupation s'écrivait
+ * « 56 % » ici et « 56,0 % » sur les tableaux de bord de la Direction
+ * (relecture de l'intégration, règle 6).
+ */
 export function fmtPct(value) {
-    return (Math.round((value || 0) * 10) / 10)
-        .toString().replace(".", ",") + " %";
+    return round1(value).toFixed(1).replace(".", ",") + "\u00a0%";
+}
+
+/**
+ * Variation : « ▲ +12,5 % », « ▼ 3,0 % », « ■ 0,0 % » — le rendu unique
+ * des tableaux de bord AITE (POS Crédit, Direction, analyse des ventes).
+ * Renvoie {text, value} ; ``value`` (arrondie à une décimale) décide de
+ * la couleur.
+ */
+export function fmtDelta(pct) {
+    const v = round1(pct);
+    const arrow = v > 0 ? "▲ +" : v < 0 ? "▼ " : "■ ";
+    return { text: arrow + fmtPct(Math.abs(v)), value: v };
+}
+
+/** Nombre entier à la française : « 1 234 » (espace fine insécable). */
+export function fmtInt(value) {
+    return Math.round(Number(value) || 0).toLocaleString("fr-FR");
+}
+
+/**
+ * Nombre suivi du mot accordé : « 1 nuitée vendue », « 12 nuitées
+ * vendues » — pluriel à partir de 2, jamais de « (s) ».
+ */
+export function fmtCount(n, one, many) {
+    const k = Math.round(Number(n) || 0);
+    return fmtInt(k) + " " + (Math.abs(k) > 1 ? many : one);
 }
 
 /**

@@ -728,7 +728,7 @@ CAS = [
      "1. Faire le check-in.\n2. Observer la réservation.",
      "Une fiche d'enregistrement existe pour le client principal, "
      "pré-remplie (nom, pièce, nationalité, dates) ; un bandeau indique ce "
-     "qu'il reste à faire ; bouton « Fiches clients x/y »."),
+     "qu'il reste à faire ; bouton « Fiches d'enregistrement x/y »."),
     ("O02", "O", 1, "Fiche pré-remplie incomplète",
      "Compléter la fiche jusqu'à « Complète »",
      "1. Cliquer « compléter maintenant ».\n2. Renseigner la date de "
@@ -738,7 +738,7 @@ CAS = [
      "enregistrés."),
     ("O03", "O", 1, "Séjour à 2 occupants",
      "Ajouter un accompagnant",
-     "1. Dans la fenêtre Fiches clients, ajouter une ligne pour "
+     "1. Dans la fenêtre Fiches d'enregistrement, ajouter une ligne pour "
      "l'accompagnant (étranger).",
      "La fiche est complète d'emblée ; « Registre à jour 2/2 » ; le "
      "non-résident est identifié."),
@@ -825,7 +825,7 @@ CAS = [
     # ══════════ Q — INDICATEURS HÔTELIERS (F06) ══════════
     ("Q01", "Q", 1, "Séjours confirmés sur la période, 2 chambres ou plus",
      "Lire le taux d'occupation, l'ADR et le RevPAR",
-     "1. Hôtel → Direction.\n2. Période « Ce mois ».\n3. Lire la rangée "
+     "1. Hôtel → Activité par pôle.\n2. Période « Ce mois ».\n3. Lire la rangée "
      "« Hébergement — indicateurs de performance ».",
      "TO = nuitées vendues ÷ (chambres en service × jours) ; ADR = CA "
      "des nuitées ÷ nuitées vendues ; RevPAR = CA des nuitées ÷ chambres "
@@ -860,7 +860,7 @@ CAS = [
      "réservation N-1 prise après cette date n'est pas comptée."),
     ("Q06", "Q", 1, "Modules hôtel et Direction installés",
      "Retrouver les mêmes chiffres dans le cockpit Direction",
-     "1. Hôtel → Direction (tableau exécutif) : noter TO, ADR, RevPAR.\n"
+     "1. Hôtel → Activité par pôle (tableau exécutif) : noter TO, ADR, RevPAR.\n"
      "2. Direction → Vue d'ensemble, même période.\n3. Cliquer une carte "
      "de la rangée « Hébergement ».",
      "TO, ADR et RevPAR sont identiques sur les deux écrans ; le clic "

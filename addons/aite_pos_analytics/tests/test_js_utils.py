@@ -48,7 +48,15 @@ console.log(JSON.stringify({
                u.toLocalDay(now), u.toLocalDay(false)],
     units: [u.fmtUnits(0), u.fmtUnits(1), u.fmtUnits(1.4), u.fmtUnits(2),
             u.fmtUnits(926)],
+    moneyDefault: u.fmtMoney(4127500),
+    signedDefault: u.fmtSigned(-42000),
+    count: [u.fmtCount(1, "commande", "commandes"),
+            u.fmtCount(1234, "commande", "commandes")],
+    compact: [u.fmtCompact(250000), u.fmtCompact(4000000), u.fmtCompact(800)],
+    smallDelta: [u.fmtDelta(-0.04), u.deltaClass(0.04)],
 }));
+u.setCurrencySymbol("€");
+console.log(JSON.stringify({money: u.fmtMoney(1500)}));
 """
 
 
@@ -93,7 +101,13 @@ class TestPosJsUtils(TransactionCase):
                           "vérifié")
         returncode, stdout, stderr = out
         self.assertEqual(returncode, 0, stderr)
-        return json.loads(stdout)
+        # Une ligne JSON par étape du script (la seconde après le choix
+        # d'une autre devise).
+        res = {}
+        for line in stdout.splitlines():
+            if line.strip():
+                res.update(json.loads(line))
+        return res
 
     def test_quick_periods_are_local_dates(self):
         res = self._run('Africa/Douala')
@@ -109,9 +123,30 @@ class TestPosJsUtils(TransactionCase):
         self.assertEqual(res['pct'], ['56,0' + nbsp + '%',
                                       '0,5' + nbsp + '%',
                                       '0,0' + nbsp + '%'])
+        # Rendu unique des tableaux de bord AITE : la flèche dit le sens,
+        # sans « − » en plus (« ▼ −3,0 % » ici seulement — relecture).
         self.assertEqual(res['delta'], ['▲ +12,5' + nbsp + '%',
-                                        '▼ −3,0' + nbsp + '%',
+                                        '▼ 3,0' + nbsp + '%',
                                         '■ 0,0' + nbsp + '%'])
+        # Un écart qui s'affiche « 0,0 » est neutre (ni « −0,0 », ni vert).
+        self.assertEqual(res['smallDelta'], ['■ 0,0' + nbsp + '%', 'flat'])
+
+    def test_amounts_carry_the_company_currency(self):
+        """Relecture : « 4 127 500 F » ici, « 4 127 500 FCFA » ailleurs ;
+        le symbole de la société (``get_dashboard_meta``) fait foi."""
+        res = self._run('Africa/Douala')
+        nnbsp = '\u202f'
+        self.assertEqual(res['moneyDefault'],
+                         '4' + nnbsp + '127' + nnbsp + '500 FCFA')
+        self.assertEqual(res['signedDefault'], '−42' + nnbsp + '000 FCFA')
+        self.assertEqual(res['money'], '1' + nnbsp + '500 €')
+
+    def test_counts_and_axes_are_french(self):
+        res = self._run('Africa/Douala')
+        nnbsp = '\u202f'
+        self.assertEqual(res['count'], ['1 commande',
+                                        '1' + nnbsp + '234 commandes'])
+        self.assertEqual(res['compact'], ['250 k', '4,0 M', '800'])
 
     def test_dates_are_day_month_year_in_the_local_zone(self):
         res = self._run('Africa/Douala')

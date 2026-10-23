@@ -141,6 +141,95 @@ Apps → Mettre à jour la liste → **Mettre à niveau** chacun ; Ctrl+Shift+R.
 Le script de migration d'`aite_pos_analytics` recalcule le CA des sessions
 existantes.
 
+## Livraison 4 (23 octobre 2026) — écarts non bloquants, relecture croisée
+
+Les 41 écarts non bloquants relevés par les tutoriels (n° 37 à 77 de
+`docs/videos/ECARTS.md`) sont corrigés, puis une relecture croisée des
+écrans a aligné les formats et les définitions d'un tableau de bord à
+l'autre. La livraison s'applique sur une base en livraison 2 (production
+LAVERANDAH) comme en livraison 3 : les scripts de migration ne tournent que
+sur les modules qui en ont besoin.
+
+| Module | Version | Ce qui change pour l'utilisateur |
+|---|---|---|
+| `aite_hotel_management` | 18.0.1.0.7 | dates locales et françaises ; tableau de bord « Tableau de bord — Réception » : taux « 56,0 % », écarts « ▲ +12,5 % », mêmes libellés ADR / RevPAR que la Direction ; tâche quotidienne renommée (migration) |
+| `aite_hotel_gantt` | 18.0.1.0.2 | libellés français du planning |
+| `aite_slot_booking` | 18.0.1.0.5 | numérotation CRN/2026/0001 par année ; refus « hors horaires (08:00 – 22:30) » ; tableau de bord en jours locaux |
+| `aite_website_booking` | 18.0.1.0.2 | formats et libellés du site |
+| `aite_hotel_pos_link` | 18.0.1.0.2 | lien ticket ↔ ligne de folio rétabli sur les séjours en cours (migration, fidélité) |
+| `aite_pos_credit` | 18.0.2.0.5 | mode « Ardoise client » créé s'il manque (migration) ; mois en français ; délais « 12,3 j » ; libellés accordés |
+| `aite_loyalty` | 18.0.1.0.3 | libellés et aides |
+| `aite_pos_analytics` | 18.0.2.1.3 | montants en FCFA (et non « F ») ; écarts « ▼ 3,0 % » ; badge « Aucun écart » ; seuils d'écart de caisse réglables ; société courante seulement (règle multi-sociétés) |
+| `aite_stock_dashboard` | 18.0.1.1.3 | « 3 références » (plus de « réfs ») ; couverture « 12,0 j » ou « ∞ » |
+| `aite_purchase_dashboard` | 18.0.1.0.5 | « Factures échues » en positif, comme le cockpit ; libellés accordés |
+| `aite_direction_dashboard` | 18.0.1.1.2 | « À payer sous N j », barre « Sous 7 jours », liste « Échéances » et lignes « Payer … » d'accord ; seuil de 30 jours du moteur Crédit ; filtre d'origine appliqué aux remboursements ; nouvelles ardoises en hausse = rouge ; libellés de POS Crédit ; mois « janv. », « sept. » |
+| `aite_exec_dashboard` | 18.0.1.1.2 | menu « Hôtel → Activité par pôle » ; ventes et prestations en jours locaux (même chiffre que le cockpit, cas K04) |
+| `aite_demo_data` | 18.0.1.2.4 | jeu d'essai aligné |
+| `aite_city_tax` | 18.0.1.0.2 | barème réappliqué aux hôtels créés avant le module (migration) |
+| `aite_guest_registry` | 18.0.1.0.3 | un seul nom : « Fiches d'enregistrement » (bouton, fenêtre, imprimé « Registre des clients ») ; bandeau accordé |
+| `aite_housekeeping` | 18.0.1.0.6 | profil « Gouvernante générale » ; heure d'arrivée « 14:00 » ; menu « Répartir » réservé à la gouvernante générale |
+
+### Ce que la mise à niveau fait seule (migrations)
+- `aite_pos_analytics` : CA des sessions de caisse recalculé hors taxes.
+- `aite_hotel_management` : tâche planifiée renommée « Hôtel : tâches
+  quotidiennes (non-présentations, ménage) » (un nom choisi par le client
+  est conservé).
+- `aite_city_tax` : barème de taxe de séjour réappliqué à l'hôtel qui en
+  était privé (créé avant le module) ; ligne « Taxe de séjour » ajoutée aux
+  folios **ouverts et non facturés** de cet hôtel — y compris ceux d'un
+  client déjà parti dont le folio est resté ouvert.
+- `aite_pos_credit` : mode « Ardoise client » créé et ajouté aux caisses
+  **si aucun mode n'est coché « Vente à crédit (ardoise) »**.
+- `aite_hotel_pos_link` : chaque ligne de folio reportée par la caisse est
+  rattachée à son ticket — la fidélité ne crédite plus deux fois les
+  consommations de bar d'un séjour en cours.
+
+### Mise à jour
+Voir `docs/INSTALLATION.md` §5 : sauvegarder ; **fermer toutes les sessions
+de caisse** ; déposer les dossiers à côté des autres ; redémarrer ; Apps →
+Mettre à jour la liste → **Mettre à niveau chaque module AITE** ; Ctrl+F5
+pour chaque utilisateur. Ne rien désinstaller.
+
+### À vérifier après la mise à niveau
+1. **Ardoises — avant de rouvrir les caisses.** Jusqu'ici, tout mode
+   « payer plus tard » ouvrait une ardoise ; désormais seul le mode coché
+   « Vente à crédit (ardoise) » le fait. Point de Vente → Configuration →
+   Modes de paiement : repérer le mode que les caissiers utilisaient pour
+   les ardoises (souvent « Compte client »). Soit le cocher « Vente à crédit
+   (ardoise) » et retirer des caisses le mode « Ardoise client » créé par la
+   mise à niveau ; soit garder « Ardoise client » et retirer l'ancien mode
+   des caisses. **Un seul bouton d'ardoise par caisse.** Contrôler le compte
+   client (Point de Vente → Paramètres → Ardoises / Crédit POS, compte 411).
+2. Hôtel → Configuration → Hôtels → onglet Taxe de séjour : « Cameroun —
+   3 ★ : 3 000 FCFA ». Prévenir la réception que les séjours ouverts portent
+   la ligne de taxe ; vérifier le solde des folios restés ouverts après un
+   départ. Un folio oublié se rattrape avec « Recalculer la taxe de séjour ».
+3. Paramètres → Utilisateurs : donner « Gouvernante générale » à la
+   gouvernante (répartition, validation des inspections) ; les équipières
+   restent « Gouvernante ». Les utilisateurs Réception l'ont d'office.
+4. Point de Vente → Configuration → Paramètres → « Analyse AITE — écarts de
+   caisse » : seuils Élevé 100 000 FCFA, Critique 200 000 FCFA par défaut.
+5. Créneaux : nouvelles réservations numérotées CRN/2026/0001 ; les
+   références RES/26/… déjà attribuées ne changent pas.
+6. Enterprise : si `aite_hotel_gantt` n'est pas installé, Apps → retirer le
+   filtre « Applications » → « Gantt » → Installer ; sinon le mettre à
+   niveau.
+
+### À trancher par l'équipe (relecture croisée)
+- Le mode d'ardoise à garder après la mise à niveau (point 1 ci-dessus) :
+  reprise automatique du mode qui a porté des ardoises, ou choix manuel.
+- Les ardoises ouvertes en livraison 2 par des tickets « Note de chambre »
+  (déjà portés au folio) : annulation automatique ou liste pour la
+  comptable.
+- La taxe ajoutée aux folios restés ouverts d'un client déjà parti.
+- Les données antérieures non rattrapées : prix fixé des surclassements
+  gracieux, dates de naissance des fiches, pressing passé « Non présenté ».
+- Cockpit : base HT ou TTC de « Ventes à crédit … % du CA » et des barres
+  « CA vs Achats » ; références comptées dans « Lancer la commande
+  suggérée » ; seuil des « Prix en hausse » ; définition de la balance âgée
+  fournisseurs (âge de facture ou retard) ; un seul mot pour une vente en
+  caisse (ticket, commande, transaction).
+
 ## Installation / mise à jour
 1. Déposer les 4 dossiers de `addons/` à côté des autres modules AITE
    (remplacer `aite_hotel_management`).

@@ -60,6 +60,20 @@ class AssignWizard(models.TransientModel):
             return {}
         return {t: user_ids[i % len(user_ids)] for i, t in enumerate(task_ids)}
 
+    def _assign_message(self, rooms, staff):
+        """« 1 chambre confiée à 1 équipière. », « 5 chambres réparties
+        entre 2 équipières. » — accordé, sans « (s) » : « 1 chambre(s)
+        réparties » était faux même au singulier (relecture n° 44)."""
+        if staff <= 1:
+            return (_("%(n)d chambre confiée à %(u)d équipière.",
+                      n=rooms, u=staff) if rooms <= 1 else
+                    _("%(n)d chambres confiées à %(u)d équipière.",
+                      n=rooms, u=staff))
+        return (_("%(n)d chambre répartie entre %(u)d équipières.",
+                  n=rooms, u=staff) if rooms <= 1 else
+                _("%(n)d chambres réparties entre %(u)d équipières.",
+                  n=rooms, u=staff))
+
     def action_assign(self):
         self.ensure_one()
         if not self.user_ids:
@@ -75,8 +89,8 @@ class AssignWizard(models.TransientModel):
             'params': {
                 'type': 'success', 'sticky': False,
                 'title': _("Chambres réparties"),
-                'message': _("%(n)d chambre(s) réparties entre %(u)d "
-                             "équipière(s).", n=len(tasks), u=len(self.user_ids)),
+                'message': self._assign_message(len(tasks),
+                                                len(self.user_ids)),
                 # Ferme la fenêtre et recharge l'écran du dessous (tableau
                 # des chambres) : les équipières y apparaissent aussitôt
                 # (ECARTS n° 53).

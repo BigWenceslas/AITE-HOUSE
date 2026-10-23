@@ -17,7 +17,7 @@ import { CategoriesView } from "./views/categories_view";
 import { DiscrepanciesView } from "./views/discrepancies_view";
 import { PaymentsView } from "./views/payments_view";
 import { ConfigView } from "./views/config_view";
-import { localIsoDate, toLocalDay } from "./services/utils";
+import { localIsoDate, setCurrencySymbol, toLocalDay } from "./services/utils";
 
 /**
  * Action client AITE POS Analytics — composant racine.
@@ -87,6 +87,9 @@ export class PosAnalyticsDashboard extends Component {
             "aite.pos.dashboard", "get_dashboard_meta", [],
         );
         this.state.meta = meta;
+        // Symbole de la devise de la société pour tous les montants
+        // (« FCFA », comme les autres tableaux de bord).
+        setCurrencySymbol(meta && meta.currency_symbol);
 
         // Jour LOCAL d'une date-heure du serveur (UTC) : le serveur filtre
         // la période sur des jours locaux (voir ``toLocalDay``).

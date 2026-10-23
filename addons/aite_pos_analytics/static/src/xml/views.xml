@@ -595,7 +595,7 @@
                          subtitle="totalCA &gt; 0 ? fmtPct(totalMargin / totalCA * 100) + ' de taux' : ''"
                          color="COLORS.primary"/>
                 <KpiCard label="'Panier moyen'" value="fmtMoney(avgBasket)"
-                         subtitle="fmt(totalOrders) + ' transactions'" color="COLORS.warning"/>
+                         subtitle="fmtCount(totalOrders, 'transaction', 'transactions')" color="COLORS.warning"/>
             </div>
             <div class="o_aite_mod_card">
                 <div class="o_aite_mod_body p-0">
@@ -740,7 +740,7 @@
                 <KpiCard label="'Marge brute'" value="fmtMoney(state.kpis.margin)"
                          subtitle="fmtPct(state.kpis.margin_rate) + ' de taux'" color="COLORS.success"/>
                 <KpiCard label="'Marge / transaction'" value="fmtMoney(state.kpis.margin_per_order)"
-                         subtitle="fmt(state.kpis.order_count) + ' commandes'" color="COLORS.primary"/>
+                         subtitle="fmtCount(state.kpis.order_count, 'commande', 'commandes')" color="COLORS.primary"/>
             </div>
             <div class="o_aite_mod_card">
                 <div class="o_aite_mod_body">
@@ -896,7 +896,7 @@
                              color="COLORS.danger"/>
                     <KpiCard label="'Sessions avec écart'"
                              value="fmt(state.data.count_negative + state.data.count_positive)"
-                             subtitle="fmt(state.data.count_negative) + ' nég. · ' + fmt(state.data.count_positive) + ' pos.'"
+                             subtitle="fmtCount(state.data.count_negative, 'manquant', 'manquants') + ' · ' + fmtCount(state.data.count_positive, 'excédent', 'excédents')"
                              color="COLORS.warning"/>
                     <KpiCard label="'Écart moyen'"
                              value="fmtMoney(Math.abs(state.data.average_negative))"

@@ -87,15 +87,15 @@
                         <KpiCard mega="true" accent="'info'"
                                  label="'Achats (période)'"
                                  value="money(state.kpis.achats)"
-                                 sub="num(state.kpis.orders_count) + ' commandes · ' + num(state.kpis.recus_count) + ' réceptions'"/>
+                                 sub="count(state.kpis.orders_count, 'commande', 'commandes') + ' · ' + count(state.kpis.recus_count, 'réception', 'réceptions')"/>
                         <KpiCard mega="true" accent="'danger'"
                                  label="'Dette fournisseurs (401)'"
                                  value="money(state.kpis.encours)"
-                                 sub="num(state.kpis.open_count) + ' factures ouvertes'"/>
+                                 sub="count(state.kpis.open_count, 'facture ouverte', 'factures ouvertes')"/>
                         <KpiCard mega="true" accent="'warning'"
                                  label="'À payer sous ' + num(state.kpis.cfg.soon) + ' j'"
                                  value="money(state.kpis.soon)"
-                                 sub="num(state.kpis.soon_count) + ' facture(s) · trésorerie à prévoir'"/>
+                                 sub="count(state.kpis.soon_count, 'facture', 'factures') + ' · trésorerie à prévoir'"/>
                         <KpiCard mega="true" accent="'primary'"
                                  label="'Délai de paiement (DPO)'"
                                  value="days(state.kpis.dpo)"
@@ -104,9 +104,12 @@
 
                     <div class="apd-section-title">Indicateurs</div>
                     <div class="apd-grid apd-grid-4">
-                        <KpiCard label="'En retard de paiement'" accent="'danger'"
-                                 value="negMoney(state.kpis.retard)"
-                                 sub="num(state.kpis.retard_count) + ' facture(s) · ' + pct(state.kpis.retard_pct) + ' de l\'encours'"/>
+                        <!-- Une dette s'écrit en positif, sous le même nom que sur
+                             le cockpit Direction (« −12 000 FCFA » ici, « 12 000
+                             FCFA » là-bas — relecture de l'intégration). -->
+                        <KpiCard label="'Factures échues'" accent="'danger'"
+                                 value="money(state.kpis.retard)"
+                                 sub="count(state.kpis.retard_count, 'facture', 'factures') + ' · ' + pct(state.kpis.retard_pct) + ' de l\'encours'"/>
                         <KpiCard label="'Créances fournisseurs (409)'"
                                  value="money(state.kpis.claims_total)"
                                  sub="'consignes + avoirs + acomptes'"/>
@@ -220,11 +223,11 @@
                         <KpiCard mega="true" accent="'danger'"
                                  label="'Encours total dû'"
                                  value="money(state.kpis.encours)"
-                                 sub="num(state.kpis.open_count) + ' factures ouvertes'"/>
+                                 sub="count(state.kpis.open_count, 'facture ouverte', 'factures ouvertes')"/>
                         <KpiCard mega="true" accent="'warning'"
-                                 label="'En retard'"
-                                 value="negMoney(state.kpis.retard)"
-                                 sub="num(state.kpis.retard_count) + ' facture(s) échue(s)'"/>
+                                 label="'Factures échues'"
+                                 value="money(state.kpis.retard)"
+                                 sub="count(state.kpis.retard_count, 'facture échue', 'factures échues')"/>
                         <KpiCard label="'À payer sous ' + num(state.kpis.cfg.soon) + ' j'"
                                  value="money(state.kpis.soon)"
                                  sub="'échéances imminentes'"/>
@@ -298,11 +301,11 @@
                         <KpiCard mega="true" accent="'info'"
                                  label="'Consignes en cours (4096)'"
                                  value="money(state.kpis.deposits_total)"
-                                 sub="num(state.kpis.deposits_qty) + ' casiers chez les fournisseurs'"/>
+                                 sub="count(state.kpis.deposits_qty, 'casier', 'casiers') + ' chez les fournisseurs'"/>
                         <KpiCard mega="true" accent="'warning'"
                                  label="'Avoirs à déduire (4097/4098)'"
                                  value="money(state.kpis.avoirs_total)"
-                                 sub="num(state.kpis.avoirs_count) + ' avoir(s) ouvert(s)'"/>
+                                 sub="count(state.kpis.avoirs_count, 'avoir ouvert', 'avoirs ouverts')"/>
                         <KpiCard label="'Acomptes / soldes débiteurs (4091)'"
                                  value="money(state.kpis.acomptes_est)"
                                  sub="'paiements non lettrés (estimation)'"/>
@@ -399,7 +402,7 @@
                         <KpiCard mega="true" accent="'warning'"
                                  label="'En retard de livraison'"
                                  value="num(state.kpis.pending_late + state.kpis.recv_late)"
-                                 sub="num(state.kpis.pending_late) + ' en attente · ' + num(state.kpis.recv_late) + ' reçues en retard'"/>
+                                 sub="num(state.kpis.pending_late) + ' en attente · ' + count(state.kpis.recv_late, 'reçue en retard', 'reçues en retard')"/>
                         <KpiCard label="'Livré à temps et complet (OTIF)'"
                                  value="pct(state.kpis.otif)"
                                  sub="'commandes reçues sur la période'"/>

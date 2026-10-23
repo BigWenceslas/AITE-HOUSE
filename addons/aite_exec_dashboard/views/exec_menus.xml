@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- « Activité par pôle » : le menu s'appelait « Direction », comme
+         l'application du cockpit (« Direction — Vue consolidée ») ; le
+         cockpit renvoie à « Direction — Activité par pôle », qu'on
+         retrouve désormais sous ce nom (relecture de l'écart n° 70). -->
     <menuitem id="menu_exec_dashboard"
-              name="Direction"
+              name="Activité par pôle"
               parent="aite_hotel_management.menu_hotel_root"
               action="action_aite_exec_dashboard"
               sequence="5"

@@ -80,7 +80,7 @@
                     <KpiCard mega="true" accent="'primary'"
                              label="'CA prestations réalisées'"
                              value="money(state.kpis.ca_done)"
-                             sub="num(state.kpis.done_count) + ' réalisée(s)'"/>
+                             sub="count(state.kpis.done_count, 'réalisée', 'réalisées')"/>
                     <KpiCard mega="true" accent="'info'"
                              label="'Taux de remplissage'"
                              value="pct(state.kpis.fill_rate)"
@@ -88,11 +88,11 @@
                     <KpiCard mega="true" accent="'danger'"
                              label="'Non présentés'"
                              value="pct(state.kpis.no_show_pct)"
-                             sub="num(state.kpis.no_show_count) + ' rendez-vous manqué(s)'"/>
+                             sub="count(state.kpis.no_show_count, 'rendez-vous manqué', 'rendez-vous manqués')"/>
                     <KpiCard mega="true" accent="'warning'"
                              label="'Retraits pressing en attente'"
                              value="num(state.kpis.pickups_waiting)"
-                             sub="num(state.kpis.confirmed_count) + ' réservation(s) à venir'"/>
+                             sub="count(state.kpis.confirmed_count, 'réservation à venir', 'réservations à venir')"/>
                 </div>
 
                 <!-- Planning du jour -->

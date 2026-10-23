@@ -93,3 +93,41 @@ class TestRegistryEcarts(HotelCommon):
         })
         with self.assertRaisesRegex(UserError, "13/01/2020"):
             wizard.action_print()
+
+    # ------------------------------------------------------------------
+    # Relecture : bandeau accordé en nombre, sans « (s) »
+    # ------------------------------------------------------------------
+
+    def test_hint_agrees_in_number(self):
+        Res = self.env['aite.hotel.reservation']
+        hint = Res._hint_text
+        self.assertEqual(hint('done', 1, 1, 1),
+                         "Registre à jour : 1 fiche complète.")
+        self.assertEqual(hint('done', 2, 2, 2),
+                         "Registre à jour : 2 fiches complètes.")
+        self.assertEqual(hint('none', 0, 0, 1),
+                         "Aucune fiche d'enregistrement : 1 occupant "
+                         "attendu.")
+        self.assertEqual(hint('none', 0, 0, 2),
+                         "Aucune fiche d'enregistrement : 2 occupants "
+                         "attendus.")
+        self.assertEqual(hint('partial', 1, 0, 2),
+                         "1 fiche à compléter · 1 occupant sans fiche")
+        self.assertEqual(hint('partial', 3, 1, 5),
+                         "2 fiches à compléter · 2 occupants sans fiche")
+
+    def test_one_name_for_the_registration_card(self):
+        """Un seul nom pour la fiche (« fiche d'enregistrement ») : la
+        fenêtre ne s'appelle plus « Fiches clients » et l'imprimé ne parle
+        plus de « Registre des voyageurs »."""
+        reservation = self._checked_in_reservation(self.room_101)
+        action = reservation.action_open_registrations()
+        self.assertTrue(action['name'].startswith("Fiches d'enregistrement"),
+                        action['name'])
+        arch = self.env.ref(
+            'aite_guest_registry.view_hotel_reservation_form_registry').arch
+        self.assertNotIn("Fiches clients</span>", arch)
+        report = self.env.ref(
+            'aite_guest_registry.report_registration_card_document').arch
+        self.assertNotIn("Registre des voyageurs", report)
+        self.assertIn("Registre des clients", report)

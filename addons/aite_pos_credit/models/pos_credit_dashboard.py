@@ -367,8 +367,10 @@ class PosCreditDashboard(models.AbstractModel):
             self._payment_domain(dt_from, dt_to, config_id, source))
 
         span = (dt_to - dt_from).days + 1
-        MONTHS_FR = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin',
-                     'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc']
+        # Abréviations françaises (règle 6) : « Jan », « Sep » étaient
+        # anglaises — même table dans tous les tableaux de bord AITE.
+        MONTHS_FR = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin',
+                     'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.']
 
         if span <= 62:
             # Buckets journaliers, zéros compris.
@@ -501,8 +503,10 @@ class PosCreditDashboard(models.AbstractModel):
                 y -= 1
         periods.reverse()
 
-        MONTHS_FR = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin',
-                     'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc']
+        # Abréviations françaises (règle 6) : « Jan », « Sep » étaient
+        # anglaises — même table dans tous les tableaux de bord AITE.
+        MONTHS_FR = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin',
+                     'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.']
 
         result = []
         for (yy, mm) in periods:

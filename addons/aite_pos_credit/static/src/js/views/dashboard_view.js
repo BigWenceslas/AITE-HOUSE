@@ -6,7 +6,8 @@ import { loadChart, destroyChart } from "../services/chartjs_loader";
 import { KpiCard } from "../components/kpi_card";
 import {
     COLORS, PAYMENT_COLORS, AGING_COLORS, SEVERITY_BADGE, PAYMENT_LABELS,
-    fmtMoney, fmtCompact, fmtPct, fmtDelta, periodRange, PERIOD_PRESETS,
+    fmtMoney, fmtCompact, fmtPct, fmtDelta, fmtInt, fmtCount, fmtDays,
+    fmtAge, periodRange, PERIOD_PRESETS,
 } from "../services/utils";
 
 /**
@@ -156,14 +157,22 @@ export class CreditDashboardView extends Component {
     }
 
     num(v) {
-        return "" + (v === undefined || v === null ? 0 : v);
+        return fmtInt(v);
     }
 
+    /** « 1 remboursement », « 12 remboursements » (accord en nombre). */
+    count(n, one, many) {
+        return fmtCount(n, one, many);
+    }
+
+    /** Durée moyenne : « 12,3 j » (comme le cockpit). */
     days(v) {
-        const n = v === undefined || v === null ? 0 : v;
-        // Arrondi à l'entier côté JS (pas de Math dans le template).
-        const rounded = n >= 0 ? (n + 0.5) | 0 : -((-n + 0.5) | 0);
-        return "" + rounded + " j";
+        return fmtDays(v);
+    }
+
+    /** Âge d'une ardoise : « 160 j » (comme le cockpit). */
+    age(v) {
+        return fmtAge(v);
     }
 
     /**
@@ -179,12 +188,14 @@ export class CreditDashboardView extends Component {
         // « ▲ +12,5 % » : une décimale fixe, espace insécable (règle 6,
         // même rendu que le cockpit Direction).
         const delta = fmtDelta(pct);
-        const isGood = goodWhenUp ? delta.value >= 0 : delta.value <= 0;
+        const isGood = goodWhenUp ? delta.value > 0 : delta.value < 0;
         return {
             // Comparaison avec la période précédente de même durée (et non
             // avec l'année précédente : « N-1 » était trompeur).
             text: delta.text + " vs période précédente",
-            cls: isGood ? "text-success" : "text-danger",
+            // « ■ 0,0 % » en gris, comme sur les autres tableaux de bord.
+            cls: !delta.value ? "text-muted"
+                : isGood ? "text-success" : "text-danger",
         };
     }
 

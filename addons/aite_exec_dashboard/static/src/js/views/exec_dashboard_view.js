@@ -5,8 +5,8 @@ import { useService } from "@web/core/utils/hooks";
 import { loadChart, destroyChart } from "../services/chartjs_loader";
 import { KpiCard } from "../components/kpi_card";
 import {
-    fmtMoney, fmtPct, fmtInt, fmtDate, PERIOD_PRESETS, periodRange,
-    monthLabel,
+    fmtMoney, fmtPct, fmtInt, fmtCount, fmtDate, PERIOD_PRESETS,
+    periodRange, monthLabel,
 } from "../services/utils";
 
 /**
@@ -147,11 +147,17 @@ export class ExecDashboardView extends Component {
         return (this.state.meta.hints || {})[key] || "";
     }
 
+    /** « 1 nuitée », « 12 nuitées » : accord en nombre, sans « (s) ». */
+    count(n, one, many) {
+        return fmtCount(n, one, many);
+    }
+
     get pickupSub() {
         const p = this.state.kpis.pickup || {};
         // Le libellé de la carte ne porte plus « 7 j → 30 j » : la fenêtre
         // est dite ici, en toutes lettres.
-        return this.num(p.reservations) + " réservation(s) prise(s) ces "
+        return fmtCount(p.reservations, "réservation prise",
+            "réservations prises") + " ces "
             + (p.window_days || 7) + " derniers jours pour les "
             + (p.horizon_days || 30) + " prochains";
     }
@@ -159,7 +165,7 @@ export class ExecDashboardView extends Component {
     get paceSub() {
         const p = this.state.kpis.pace || {};
         return "mois " + (p.month ? monthLabel(p.month) : "") + " · N-1 à la même date : "
-            + this.num(p.nights_ly) + " nuitée(s)";
+            + fmtCount(p.nights_ly, "nuitée", "nuitées");
     }
 
     /** Graduation de l'axe au format français : « 1,5 M », « 250 k »,

@@ -5,7 +5,7 @@ import { useService } from "@web/core/utils/hooks";
 import { KpiCard } from "../components/kpi_card";
 import { RankRow } from "../components/rank_row";
 import { loadChart, destroyChart } from "../services/chartjs_loader";
-import { fmt, fmtMoney, fmtPct, fmtDelta, deltaClass, fmtSigned, fmtDate, fmtUnits, COLORS, getCategoryColors } from "../services/utils";
+import { fmt, fmtMoney, fmtCompact, fmtPct, fmtDelta, deltaClass, fmtSigned, fmtDate, fmtUnits, COLORS, getCategoryColors } from "../services/utils";
 
 /**
  * Vue "Tableau de bord" — la vue principale et la plus dense.
@@ -150,7 +150,7 @@ export class DashboardView extends Component {
                     scales: {
                         x: { ticks: { font: { size: 10 }, color: COLORS.muted, maxRotation: 30 } },
                         y: { ticks: { font: { size: 9 }, color: COLORS.muted,
-                                      callback: v => v >= 1000 ? Math.round(v / 1000) + "k" : v } },
+                                      callback: v => fmtCompact(v) } },
                     },
                 },
             });
@@ -179,7 +179,7 @@ export class DashboardView extends Component {
                     scales: {
                         x: { ticks: { font: { size: 9 }, color: COLORS.muted } },
                         y: { ticks: { font: { size: 9 }, color: COLORS.muted,
-                                      callback: v => v >= 1000 ? Math.round(v / 1000) + "k" : v } },
+                                      callback: v => fmtCompact(v) } },
                     },
                 },
             });
@@ -205,7 +205,7 @@ export class DashboardView extends Component {
                     scales: {
                         x: { ticks: { font: { size: 10 } } },
                         y: { ticks: { font: { size: 9 }, color: COLORS.muted,
-                                      callback: v => v >= 1000 ? Math.round(v / 1000) + "k" : v } },
+                                      callback: v => fmtCompact(v) } },
                     },
                 },
             });
@@ -281,8 +281,7 @@ export class DashboardView extends Component {
     /** Abrège un montant pour l'affichage compact dans la heatmap. */
     heatLabel(value) {
         if (!value) return "";
-        if (value >= 1000) return Math.round(value / 1000) + "k";
-        return Math.round(value).toString();
+        return fmtCompact(value);
     }
 
     catColors(name, idx) { return getCategoryColors(name, idx); }

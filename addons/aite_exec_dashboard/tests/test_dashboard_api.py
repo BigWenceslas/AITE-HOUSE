@@ -302,3 +302,88 @@ class TestExecDashboard(TransactionCase):
         data = self.dashboard.get_evolution(months=6)
         labels = data['labels'] if isinstance(data, dict) else data
         self.assertEqual(len(labels), 6)
+
+    # ------------------------------------------------------------------
+    # Relecture K04 — jours LOCAUX, comme l'analyse des ventes, le
+    # cockpit et le tableau de bord des créneaux
+    # ------------------------------------------------------------------
+
+    def test_services_use_local_days_like_the_slot_dashboard(self):
+        """Prestation réalisée de 0 h à 1 h, heure de Douala, le 1er du
+        mois (23 h UTC la veille) : comptée le 1er par l'activité par
+        pôle ET par le tableau de bord des créneaux, jamais la veille."""
+        self.company.partner_id.tz = 'Africa/Douala'
+        night = self.env['aite.booking.resource'].create({
+            'name': "Salle de nuit (exec)",
+            'kind': 'space',
+            'company_id': self.company.id,
+            'capacity': 1,
+            'open_hour': 0.0,
+            'close_hour': 23.0,
+            'slot_minutes': '60',
+            'price_hour': 10000.0,
+        })
+        first = self.today.replace(day=1)
+        eve = first - timedelta(days=1)
+        start = fields.Datetime.to_datetime('%s 23:00:00' % eve)
+        booking = self.env['aite.slot.booking'].create({
+            'resource_id': night.id,
+            'partner_id': self.guest.id,
+            'company_id': self.company.id,
+            'start': start,
+            'stop': start + timedelta(hours=1),
+        })
+        booking.action_confirm()
+        booking.action_done()
+        self.env.flush_all()
+        execd = self.dashboard.with_context(tz='Africa/Douala')
+        board = self.env['aite.slot.dashboard'].with_context(
+            tz='Africa/Douala')
+        for day, expected in ((first, 1), (eve, 0)):
+            with self.subTest(day=str(day)):
+                kpis = execd.get_kpis(str(day), str(day))
+                slots = board.get_kpis(str(day), str(day))
+                self.assertEqual(
+                    kpis['slots_count'] - slots['done_count'], 0)
+                mine = execd._slot_bookings(day, day) & booking
+                self.assertEqual(len(mine), expected)
+
+    def test_evolution_month_follows_the_local_day(self):
+        """Série mensuelle : la prestation du 1er à 0 h (heure de Douala)
+        est dans la barre de son mois."""
+        self.company.partner_id.tz = 'Africa/Douala'
+        night = self.env['aite.booking.resource'].create({
+            'name': "Salle de nuit (série)",
+            'kind': 'space',
+            'company_id': self.company.id,
+            'capacity': 1,
+            'open_hour': 0.0,
+            'close_hour': 23.0,
+            'slot_minutes': '60',
+            'price_hour': 10000.0,
+        })
+        first = self.today.replace(day=1)
+        eve = first - timedelta(days=1)
+        execd = self.dashboard.with_context(tz='Africa/Douala')
+        before = execd.get_evolution(months=2)
+        start = fields.Datetime.to_datetime('%s 23:00:00' % eve)
+        booking = self.env['aite.slot.booking'].create({
+            'resource_id': night.id,
+            'partner_id': self.guest.id,
+            'company_id': self.company.id,
+            'start': start,
+            'stop': start + timedelta(hours=1),
+        })
+        booking.action_confirm()
+        booking.action_done()
+        self.assertGreater(booking.amount, 0.0)
+        self.env.flush_all()
+        after = execd.get_evolution(months=2)
+
+        def slots(data):
+            serie = next(s for s in data['series'] if s['key'] == 'slots')
+            return dict(zip(data['labels'], serie['data']))
+        diff = {m: slots(after)[m] - slots(before)[m]
+                for m in slots(after)}
+        self.assertEqual(diff[first.strftime('%Y-%m')], booking.amount)
+        self.assertEqual(diff[eve.strftime('%Y-%m')], 0.0)

@@ -72,10 +72,15 @@ export function pluralWord(n, singular, pluralForm) {
     return (Number(n) || 0) > 1 ? pluralForm : singular;
 }
 
-/** Accord en nombre : « 1 rupture », « 0 rupture », « 2 ruptures ». */
+/** Nombre entier à la française : « 1 234 » (espace fine insécable). */
+export function fmtInt(value) {
+    return Math.round(Number(value) || 0).toLocaleString("fr-FR");
+}
+
+/** Accord en nombre : « 1 rupture », « 0 rupture », « 1 234 ruptures ». */
 export function plural(n, singular, pluralForm) {
     const count = Number(n) || 0;
-    return count + " " + pluralWord(count, singular, pluralForm);
+    return fmtInt(count) + " " + pluralWord(count, singular, pluralForm);
 }
 
 /**
@@ -89,13 +94,24 @@ export function fmtUnits(value) {
     return fmtQty(value) + " " + (shown >= 2 ? "unités" : "unité");
 }
 
+/**
+ * Durée en jours, une décimale FIXE : « 12,0 j », « 12,3 j » — le rendu du
+ * cockpit Direction et des Achats (« 12 j » ici — relecture de l'écart
+ * n° 41).
+ */
 export function fmtDays(value) {
-    const n = value || 0;
-    if (n >= 365) {
-        return "∞";
-    }
-    const r = ((n * 10 + 0.5) | 0) / 10;
-    return ("" + r).replace(".", ",") + " j";
+    const n = Number(value) || 0;
+    const r = Math.round(n * 10) / 10 || 0;
+    return r.toFixed(1).replace(".", ",") + " j";
+}
+
+/**
+ * Couverture de stock : « ∞ » à partir d'un an — une référence sans
+ * vente a une couverture infinie (999 j pour le moteur) — sinon
+ * :func:`fmtDays`. Même règle sur le cockpit Direction.
+ */
+export function fmtCoverage(value) {
+    return (Number(value) || 0) >= 365 ? "∞" : fmtDays(value);
 }
 
 export const PERIOD_PRESETS = [

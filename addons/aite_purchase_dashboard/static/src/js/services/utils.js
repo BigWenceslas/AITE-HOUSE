@@ -102,8 +102,13 @@ export function dueWindowLabel(soon) {
  * toutes lettres (« 3 cmd » — reprise de l'écart n° 42).
  */
 export function fmtCount(n, one, many) {
-    const k = n || 0;
-    return k + " " + (k > 1 ? many : one);
+    const k = Math.round(Number(n) || 0);
+    return fmtInt(k) + " " + (Math.abs(k) > 1 ? many : one);
+}
+
+/** Nombre entier à la française : « 1 234 » (espace fine insécable). */
+export function fmtInt(value) {
+    return Math.round(Number(value) || 0).toLocaleString("fr-FR");
 }
 
 /**
@@ -124,7 +129,7 @@ export function scheduleLabels() {
 /** Durée en jours, une décimale fixe : « 23,0 j » — même rendu que le
  *  cockpit Direction pour le même délai (écart n° 41). */
 export function fmtDays(value) {
-    const n = value || 0;
+    const n = Math.round((Number(value) || 0) * 10) / 10 || 0;
     return n.toFixed(1).replace(".", ",") + " j";
 }
 

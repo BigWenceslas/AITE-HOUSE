@@ -92,12 +92,12 @@
                              label="'Recouvré (période)'"
                              value="money(state.kpis.recovered)"
                              delta="deltaOf(state.kpis.recovered_delta, true)"
-                             sub="state.kpis.payment_count + ' remboursements'"/>
+                             sub="count(state.kpis.payment_count, 'remboursement', 'remboursements')"/>
                     <KpiCard mega="true" accent="'warning'"
                              label="'Nouvelles ardoises (période)'"
                              value="money(state.kpis.opened_amount)"
                              delta="deltaOf(state.kpis.opened_delta, false)"
-                             sub="num(state.kpis.new_credits) + ' ardoises ouvertes'"/>
+                             sub="count(state.kpis.new_credits, 'ardoise ouverte', 'ardoises ouvertes')"/>
                     <KpiCard mega="true" accent="'primary'"
                              label="'Taux de recouvrement'"
                              value="pct(state.kpis.recovery_rate)"
@@ -109,11 +109,11 @@
                 <div class="apc-grid apc-grid-4">
                     <KpiCard label="'Ardoise moyenne'"
                              value="money(state.kpis.avg_ardoise)"
-                             sub="num(state.kpis.debtor_count) + ' débiteurs actifs'"/>
+                             sub="count(state.kpis.debtor_count, 'débiteur actif', 'débiteurs actifs')"/>
                     <KpiCard label="'Plus ancienne dette'"
-                             value="days(state.kpis.oldest_age)"
+                             value="age(state.kpis.oldest_age)"
                              sub="state.kpis.oldest_partner"/>
-                    <KpiCard label="'En retard (+30j)'" accent="'danger'"
+                    <KpiCard label="'En retard (+30 j)'" accent="'danger'"
                              value="money(state.kpis.late_amount)"
                              sub="pct(state.kpis.late_pct) + ' de l\'encours'"/>
                     <KpiCard label="'Ardoises réglées (période)'"
@@ -211,7 +211,7 @@
                                         <div class="apc-bar" t-att-style="debtorBarStyle(d)"/>
                                         <strong t-esc="money(d.outstanding)"/>
                                     </td>
-                                    <td class="text-end" t-esc="days(d.max_age)"/>
+                                    <td class="text-end" t-esc="age(d.max_age)"/>
                                     <td class="text-muted" t-esc="lastPay(d)"/>
                                     <td>
                                         <span t-att-class="'badge ' + severityBadge(d.severity).cls"

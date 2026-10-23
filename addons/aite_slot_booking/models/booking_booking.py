@@ -242,6 +242,13 @@ class SlotBooking(models.Model):
     # Contraintes
     # ------------------------------------------------------------------
 
+    @staticmethod
+    def _hour_label(hour):
+        """Heure décimale → « HH:MM » (8.0 → « 08:00 », 22.5 →
+        « 22:30 ») : le rendu du widget ``float_time`` de la fiche."""
+        minutes = int(round((hour or 0.0) * 60))
+        return '%02d:%02d' % divmod(minutes, 60)
+
     def _local_tz(self):
         """Fuseau de l'établissement (société) : c'est lui qui fait foi pour
         les horaires d'ouverture, la journée du créneau et les heures
@@ -280,10 +287,13 @@ class SlotBooking(models.Model):
                 raise ValidationError(
                     _("La fin doit être après le début."))
             if code == 'hours':
+                # Heures en HH:MM, comme la fiche, le site et le tableau
+                # de bord : « 22.50 » se lisait 22 h 50 pour 22 h 30.
                 raise ValidationError(_(
                     "Créneau hors horaires de « %(res)s » "
-                    "(%(o).2f – %(c).2f).",
-                    res=res.name, o=res.open_hour, c=res.close_hour))
+                    "(%(o)s – %(c)s).",
+                    res=res.name, o=rec._hour_label(res.open_hour),
+                    c=rec._hour_label(res.close_hour)))
             if code == 'grid':
                 raise ValidationError(_(
                     "Le créneau doit être aligné sur le pas de "

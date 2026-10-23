@@ -25,7 +25,7 @@ NS = {
     "max": max, "min": min,
 }
 # constantes de module nécessaires aux purs
-for const in ("TRANCHES", "AGE_BUCKETS"):
+for const in ("TRANCHES", "AGE_BUCKETS", "LATE_AGE"):
     m = re.search(r"^%s = .*?(?=^\w|\Z)" % const, CODE, re.S | re.M)
     exec(textwrap.dedent(m.group(0)), NS)
 
@@ -47,6 +47,7 @@ _age_bucket = _extract("_age_bucket")
 NS["AiteDirectionDashboard"] = types.SimpleNamespace(
     _age_bucket=_age_bucket)
 _bucket = _extract("_bucket_supplier_invoices")
+_due_soon = _extract("_due_soon")
 _encours = _extract("_encours_series")
 _zip = _extract("_zip_trends")
 _penalty = _extract("_penalty_rows")
@@ -108,9 +109,11 @@ class TestSante(unittest.TestCase):
 
 class TestAgeBucket(unittest.TestCase):
     def test_bornes(self):
-        for d, k in ((0, "0_30"), (30, "0_30"), (31, "31_60"),
-                     (60, "31_60"), (61, "61_90"), (90, "61_90"),
-                     (91, "90p"), (400, "90p")):
+        """Borne basse incluse, haute exclue — le contrat du moteur Crédit :
+        30 jours est en « 30–60 j », comme une ardoise de 30 jours."""
+        for d, k in ((0, "0_30"), (29, "0_30"), (30, "31_60"),
+                     (59, "31_60"), (60, "61_90"), (89, "61_90"),
+                     (90, "90p"), (400, "90p")):
             self.assertEqual(_age_bucket(d), k, d)
 
     def test_negatif_ramene_a_zero(self):
@@ -164,6 +167,36 @@ class TestEcheancierFournisseurs(unittest.TestCase):
         aging = _bucket(rows, self.TODAY)["aging"]
         self.assertEqual(aging, {"0_30": 100, "31_60": 200,
                                  "61_90": 300, "90p": 400})
+
+
+class TestEcheancesProches(unittest.TestCase):
+    """Liste « Échéances » et lignes « Payer … » : la définition de la carte
+    « À payer sous N j » du moteur Achats (non échue, ≤ N jours)."""
+
+    ROWS = [
+        {"partner": "A", "planned": "2026-07-28", "days_to_due": 7,
+         "days_late": 0},
+        {"partner": "B", "planned": "2026-07-31", "days_to_due": 10,
+         "days_late": 0},
+        {"partner": "C", "planned": "2026-07-10", "days_to_due": 0,
+         "days_late": 11},
+        {"partner": "D", "planned": "2026-07-21", "days_to_due": 0,
+         "days_late": 0},
+    ]
+
+    def test_sept_jours_bornes_incluses(self):
+        self.assertEqual([r["partner"] for r in _due_soon(self.ROWS, 7)],
+                         ["D", "A"])
+
+    def test_fenetre_reglee_a_14_jours(self):
+        self.assertEqual([r["partner"] for r in _due_soon(self.ROWS, 14)],
+                         ["D", "A", "B"])
+
+    def test_echeancier_sous_7_jours_couvre_la_carte(self):
+        out = _bucket([{"amount": 100, "date": "2026-07-21",
+                        "planned": "2026-07-28", "days_late": 0}],
+                      "2026-07-21")
+        self.assertEqual(out["schedule"]["w0"], 100)
 
 
 class TestSerieEncours(unittest.TestCase):
@@ -261,6 +294,27 @@ class TestActions(unittest.TestCase):
                       if s["key"] == "credit")
         self.assertEqual(len(credit["rows"]), 1)
         self.assertIn("Mballa", credit["rows"][0]["label"])
+
+    def test_debiteur_de_30_jours_a_relancer(self):
+        """Seuil du moteur Crédit : en retard dès 30 jours (≥ 30)."""
+        inp = dict(self.BASE, debtors=[{"name": "Pile 30", "outstanding": 1,
+                                        "max_age": 30}])
+        credit = [s for s in _actions(inp)["sections"]
+                  if s["key"] == "credit"]
+        self.assertEqual(len(credit), 1)
+
+    def test_libelles_accordes_sans_parentheses(self):
+        out = _actions(dict(self.BASE, overdue_count=1, ann_count=1,
+                            cmd_refs=1))
+        labels = [r["label"] for s in out["sections"] for r in s["rows"]]
+        self.assertIn("Régulariser 1 facture échue", labels)
+        self.assertIn("Annulations / retours : 1 ticket", labels)
+        self.assertIn("Lancer la commande suggérée (1 référence)", labels)
+        out = _actions(dict(self.BASE))
+        labels = [r["label"] for s in out["sections"] for r in s["rows"]]
+        self.assertIn("Régulariser 2 factures échues", labels)
+        self.assertIn("Annulations / retours : 11 tickets", labels)
+        self.assertFalse([lbl for lbl in labels if "(s)" in lbl])
 
     def test_coulage_sous_seuil_absent(self):
         inp = dict(self.BASE, coul_pct=1.5, gap_net=0)

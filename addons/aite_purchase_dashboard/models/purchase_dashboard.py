@@ -457,8 +457,10 @@ class AitePurchaseDashboard(models.AbstractModel):
             if m == 0:
                 y, m = y - 1, 12
         periods.reverse()
-        MONTHS_FR = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin',
-                     'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc']
+        # Abréviations françaises (règle 6) : « Jan », « Sep » étaient
+        # anglaises — même table dans tous les tableaux de bord AITE.
+        MONTHS_FR = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin',
+                     'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.']
         Move = self.env['account.move']
         # Les paiements sont un objet comptable : le groupe Utilisateur
         # des achats, à qui le menu est ouvert, n'a pas le droit de les
@@ -569,8 +571,10 @@ class AitePurchaseDashboard(models.AbstractModel):
             if m == 0:
                 y, m = y - 1, 12
         periods.reverse()
-        MONTHS_FR = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin',
-                     'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc']
+        # Abréviations françaises (règle 6) : « Jan », « Sep » étaient
+        # anglaises — même table dans tous les tableaux de bord AITE.
+        MONTHS_FR = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin',
+                     'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.']
         labels = [MONTHS_FR[mm - 1] for (_yy, mm) in periods]
         series = []
         palette = self._SUP_PALETTE

@@ -150,7 +150,7 @@ class TestTemplates(unittest.TestCase):
     def test_props_kpicard(self):
         self.assertTrue(self._attrs("KpiCard") <= {
             "label", "value", "sub", "badge", "accent", "delta",
-            "deltaLabel", "hint", "mega", "onClick"})
+            "deltaLabel", "upIsBad", "hint", "mega", "onClick"})
 
     def test_props_autres_composants(self):
         self.assertTrue(self._attrs("HBar") <= {
@@ -316,12 +316,20 @@ class TestJsPeriodeEtFormats(unittest.TestCase):
 
     def test_pourcentages_a_la_francaise(self):
         """n° 41 : virgule, espace insécable avant %, décimales fixées."""
-        code = _js_functions(["fmtPct", "fmtDelta"])
+        code = _js_functions(["round1", "fmtPct", "fmtDelta",
+                              "deltaClass"])
         out = _node(code + "console.log(JSON.stringify([fmtPct(64),"
                     " fmtPct(64.25, 0), fmtPct(null), fmtDelta(12.5),"
-                    " fmtDelta(-3)]));")
+                    " fmtDelta(-3), fmtDelta(0), fmtDelta(0.04),"
+                    " deltaClass(20), deltaClass(20, true),"
+                    " deltaClass(-3, true), deltaClass(0.04)]));")
+        # Relecture : écart nul « ■ 0,0 % » en gris (et non « ▲ +0,0 % »
+        # en vert) ; une hausse des nouvelles ardoises est rouge, comme
+        # sur POS Crédit.
         self.assertEqual(out, ["64,0\u00a0%", "64\u00a0%", "—",
-                               "▲ +12,5\u00a0%", "▼ 3,0\u00a0%"])
+                               "▲ +12,5\u00a0%", "▼ 3,0\u00a0%",
+                               "■ 0,0\u00a0%", "■ 0,0\u00a0%",
+                               "up", "down", "up", "flat"])
 
     def test_dates_affichees_jj_mm_aaaa(self):
         """n° 37 : échéances et remboursements affichés en AAAA-MM-JJ."""
@@ -333,10 +341,16 @@ class TestJsPeriodeEtFormats(unittest.TestCase):
 
     def test_delai_moyen_arrondi(self):
         """n° 41 : « Délai moyen de remboursement » sans arrondi."""
-        code = _js_functions(["fmtDays"])
+        code = _js_functions(["round1", "fmtInt", "fmtDays", "fmtCoverage",
+                              "fmtAge"])
         out = _node(code + "console.log(JSON.stringify([fmtDays("
-                    "12.3333333), fmtDays(0), fmtDays(null)]));")
-        self.assertEqual(out, ["12,3 j", "0,0 j", "0,0 j"])
+                    "12.3333333), fmtDays(0), fmtDays(null), fmtDays(400),"
+                    " fmtCoverage(400), fmtCoverage(12), fmtAge(160)]));")
+        # « ∞ » pour une couverture de stock (sans vente), comme l'écran
+        # Stock ; un délai reste chiffré ; l'âge d'une ardoise en jours
+        # entiers, comme POS Crédit.
+        self.assertEqual(out, ["12,3 j", "0,0 j", "0,0 j", "400,0 j",
+                               "∞", "12,0 j", "160 j"])
 
     def test_balance_agee_clients_classee_par_cle(self):
         """n° 70 : les bornes 30 / 60 / 90 du moteur Crédit étaient
@@ -385,13 +399,23 @@ class TestJsPeriodeEtFormats(unittest.TestCase):
         self.assertFalse("réfs" in XML)
         self.assertFalse("' fact.'" in XML)
         self.assertFalse('"S + 1"' in JS)
-        code = _js_functions(["fmtCount"])
+        code = _js_functions(["fmtInt", "fmtCount", "fmtMoney"])
         out = _node(code + "console.log(JSON.stringify([fmtCount(1,"
                     " 'facture', 'factures'), fmtCount(0, 'facture',"
                     " 'factures'), fmtCount(4, 'facture', 'factures'),"
-                    " fmtCount(undefined, 'facture', 'factures')]));")
+                    " fmtCount(undefined, 'facture', 'factures'),"
+                    " fmtCount(1234, 'ticket', 'tickets'),"
+                    " fmtMoney(1234567, 'FCFA')]));")
+        # Séparateur de milliers fr-FR (espace fine insécable), comme les
+        # autres tableaux de bord : « 1234 tickets » et des espaces
+        # sécables dans les montants (relecture de l'intégration).
         self.assertEqual(out, ["1 facture", "0 facture", "4 factures",
-                               "0 facture"])
+                               "0 facture", "1\u202f234 tickets",
+                               "1\u202f234\u202f567 FCFA"])
+        self.assertFalse("(s)" in XML)
+        self.assertFalse("(s)" in JS)
+        for name in ("POS Analytics", "Crédit v2", "'vs dernier achat'"):
+            self.assertFalse(name in XML, name)
 
 
 if __name__ == "__main__":

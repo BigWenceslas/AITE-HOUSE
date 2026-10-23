@@ -6,3 +6,4 @@ from . import test_figures
 from . import test_display
 from . import test_js_utils
 from . import test_periods
+from . import test_relecture

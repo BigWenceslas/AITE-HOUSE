@@ -4,7 +4,7 @@ import { Component, useState, useRef, onWillStart, onMounted, onWillUnmount, onW
 import { useService } from "@web/core/utils/hooks";
 import { KpiCard } from "../components/kpi_card";
 import { loadChart, destroyChart } from "../services/chartjs_loader";
-import { fmt, fmtMoney, fmtPct, COLORS, getCategoryColors } from "../services/utils";
+import { fmt, fmtCount, fmtMoney, fmtCompact, fmtPct, COLORS, getCategoryColors } from "../services/utils";
 
 /**
  * Vue Marges & CMV — focus rentabilité.
@@ -97,7 +97,7 @@ export class MarginsView extends Component {
                 scales: {
                     y: { ticks: {
                         font: { size: 9 },
-                        callback: v => v >= 1000 ? Math.round(v / 1000) + "k" : v,
+                        callback: v => fmtCompact(v),
                     } },
                 },
             },
@@ -119,6 +119,7 @@ export class MarginsView extends Component {
 
     get fmt() { return fmt; }
     get fmtMoney() { return fmtMoney; }
+    get fmtCount() { return fmtCount; }
     get fmtPct() { return fmtPct; }
     get COLORS() { return COLORS; }
     catColors(name, idx) { return getCategoryColors(name, idx); }

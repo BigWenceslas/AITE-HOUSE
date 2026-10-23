@@ -227,12 +227,29 @@ class TestJsPeriodeEtFormats(unittest.TestCase):
     def test_pourcentages_a_la_francaise(self):
         """n° 41 : « 64 % » ici, « 64,0 % » au cockpit — une décimale
         fixe, virgule, espace insécable avant %."""
-        code = _js_functions(JS_UTILS, ['fmtPct', 'fmtDelta'])
+        code = _js_functions(JS_UTILS, ['fmtPct', 'round1', 'fmtDelta'])
         out = _node(code + "console.log(JSON.stringify([fmtPct(64),"
                     " fmtPct(56.04), fmtPct(0), fmtDelta(12.5),"
-                    " fmtDelta(-3)]));")
+                    " fmtDelta(-3), fmtDelta(0), fmtDelta(-0.04)]));")
+        # Écart nul : « ■ 0,0 % », comme POS Crédit et l'analyse des
+        # ventes (relecture de l'intégration : « ▲ +0,0 % » en vert).
         self.assertEqual(out, ["64,0\u00a0%", "56,0\u00a0%", "0,0\u00a0%",
-                               "▲ +12,5\u00a0%", "▼ 3,0\u00a0%"])
+                               "▲ +12,5\u00a0%", "▼ 3,0\u00a0%",
+                               "■ 0,0\u00a0%", "■ 0,0\u00a0%"])
+
+    def test_nombres_accordes_et_mois_francais(self):
+        """Relecture : « 1 nuitée », « 1 234 nuitées » (séparateur
+        français, accord sans « (s) ») ; mois « sept. 26 »."""
+        code = _js_functions(JS_UTILS, ['fmtInt', 'fmtCount', 'monthLabel'])
+        out = _node(code + "console.log(JSON.stringify([fmtCount(1, "
+                    "'nuitée', 'nuitées'), fmtCount(0, 'nuitée', 'nuitées'),"
+                    " fmtCount(1234, 'nuitée', 'nuitées'),"
+                    " monthLabel('2026-09'), monthLabel('2027-01')]));")
+        self.assertEqual(out, ["1 nuitée", "0 nuitée",
+                               "1\u202f234 nuitées", "sept. 26",
+                               "janv. 27"])
+        with open(JS_XML, encoding='utf-8') as fh:
+            self.assertNotIn("(s)", fh.read())
 
     def test_dates_affichees_jj_mm_aaaa(self):
         """n° 2 : « Période 2026-10-01 → 2026-10-15 »."""

@@ -477,8 +477,10 @@ class AiteStockDashboard(models.AbstractModel):
             if m == 0:
                 y, m = y - 1, 12
         periods.reverse()
-        MONTHS_FR = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin',
-                     'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc']
+        # Abréviations françaises (règle 6) : « Jan », « Sep » étaient
+        # anglaises — même table dans tous les tableaux de bord AITE.
+        MONTHS_FR = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin',
+                     'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.']
         out = []
         for (yy, mm) in periods:
             start = datetime(yy, mm, 1).date()
@@ -503,8 +505,10 @@ class AiteStockDashboard(models.AbstractModel):
             if m == 0:
                 y, m = y - 1, 12
         periods.reverse()
-        MONTHS_FR = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin',
-                     'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc']
+        # Abréviations françaises (règle 6) : « Jan », « Sep » étaient
+        # anglaises — même table dans tous les tableaux de bord AITE.
+        MONTHS_FR = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin',
+                     'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.']
         out = []
         for (yy, mm) in periods:
             start = datetime(yy, mm, 1).date()

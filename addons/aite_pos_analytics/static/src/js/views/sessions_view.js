@@ -3,10 +3,12 @@
 import { Component, useState, onWillStart, onWillUpdateProps } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { KpiCard } from "../components/kpi_card";
-import { fmt, fmtMoney, fmtPct, fmtDate, COLORS } from "../services/utils";
+import { fmt, fmtCount, fmtMoney, fmtPct, fmtDate, COLORS } from "../services/utils";
 
 const SEVERITY_LABEL = {
-    none: "OK", over: "Excédent",
+    // Libellés de la sélection du modèle (pos.session) : « Aucun écart »,
+    // pas « OK » (relecture de l'intégration).
+    none: "Aucun écart", over: "Excédent",
     low: "Modéré", med: "Élevé", high: "Critique",
 };
 const SEVERITY_BADGE = {
@@ -76,6 +78,7 @@ export class SessionsView extends Component {
 
     get fmt() { return fmt; }
     get fmtMoney() { return fmtMoney; }
+    get fmtCount() { return fmtCount; }
     get fmtPct() { return fmtPct; }
     get fmtDate() { return fmtDate; }
     get COLORS() { return COLORS; }

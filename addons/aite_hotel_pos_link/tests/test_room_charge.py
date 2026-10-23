@@ -7,8 +7,8 @@ from odoo.exceptions import UserError
 from odoo.tests import TransactionCase, tagged
 
 
-@tagged('post_install', '-at_install', 'aite_roomcharge')
-class TestRoomCharge(TransactionCase):
+class RoomChargeCommon(TransactionCase):
+    """Hôtel, séjour et caisse « Note de chambre » communs aux tests."""
 
     @classmethod
     def setUpClass(cls):
@@ -125,6 +125,10 @@ class TestRoomCharge(TransactionCase):
             })
         order.write({'state': 'paid'})
         return order
+
+
+@tagged('post_install', '-at_install', 'aite_roomcharge')
+class TestRoomCharge(RoomChargeCommon):
 
     # ------------------------------------------------------------------
     # Décisions (fonctions pures)
@@ -654,3 +658,57 @@ class TestRoomCharge(TransactionCase):
         self.env.invalidate_all()
         self.assertEqual(pending.state, 'done')
         self.assertEqual(order.aite_folio_line_id.folio_id, folio)
+
+
+@tagged('post_install', '-at_install', 'aite_roomcharge')
+class TestRoomChargeMigration(RoomChargeCommon):
+    """Base livrée (livraison 2) : les lignes reportées par la caisse n'ont
+    pas encore le lien ``aite_pos_order_id`` ; la migration 18.0.1.0.2 le
+    rétablit depuis ``pos.order.aite_folio_line_id``."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        from odoo.addons.aite_hotel_management.tests.test_migration import (
+            load_migration)
+        cls.migration = load_migration('aite_hotel_pos_link', '18.0.1.0.2')
+
+    def _delivered_state(self, line):
+        """La ligne telle que la livraison 2 l'a créée : sans lien."""
+        self.env.flush_all()
+        self.env.cr.execute(
+            "UPDATE aite_hotel_folio_line SET aite_pos_order_id = NULL "
+            "WHERE id = %s", (line.id,))
+        self.env.invalidate_all()
+
+    def test_link_is_restored(self):
+        self._folio()
+        order = self._pos_order([(self.method_room, 12000.0)],
+                                partner=self.guest)
+        line = order.aite_folio_line_id
+        self._delivered_state(line)
+        self.assertFalse(line.aite_pos_order_id)
+        self.migration.migrate(self.env.cr, '18.0.1.0.0')
+        self.env.invalidate_all()
+        self.assertEqual(line.aite_pos_order_id, order)
+        self.assertIn(line, order.aite_folio_line_ids)
+
+    def test_migration_is_idempotent_and_keeps_existing_links(self):
+        self._folio()
+        order = self._pos_order([(self.method_room, 12000.0)],
+                                partner=self.guest)
+        line = order.aite_folio_line_id
+        self.migration.migrate(self.env.cr, '18.0.1.0.0')
+        self.migration.migrate(self.env.cr, '18.0.1.0.0')
+        self.env.invalidate_all()
+        self.assertEqual(line.aite_pos_order_id, order)
+
+    def test_fresh_install_is_ignored(self):
+        self._folio()
+        order = self._pos_order([(self.method_room, 12000.0)],
+                                partner=self.guest)
+        line = order.aite_folio_line_id
+        self._delivered_state(line)
+        self.migration.migrate(self.env.cr, None)
+        self.env.invalidate_all()
+        self.assertFalse(line.aite_pos_order_id)

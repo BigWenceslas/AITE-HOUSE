@@ -6,7 +6,7 @@ import { loadChart, destroyChart } from "../services/chartjs_loader";
 import { KpiCard } from "../components/kpi_card";
 import {
     COLORS, STATE_BADGE, STATE_LABEL,
-    fmtMoney, fmtPct, fmtHours, hourLabel, fmtDay,
+    fmtMoney, fmtPct, fmtHours, hourLabel, fmtDay, fmtInt, fmtCount,
     PERIOD_PRESETS, periodRange, shiftDay,
 } from "../services/utils";
 
@@ -161,7 +161,12 @@ export class SlotDashboardView extends Component {
     }
 
     num(v) {
-        return "" + (v === undefined || v === null ? 0 : v);
+        return fmtInt(v);
+    }
+
+    /** « 1 réalisée », « 3 réalisées » (accord en nombre). */
+    count(n, one, many) {
+        return fmtCount(n, one, many);
     }
 
     /** Jour du planning au format JJ/MM/AAAA (règle 6). */
@@ -235,7 +240,8 @@ export class SlotDashboardView extends Component {
                 free += 1;
             }
         }
-        return free + "/" + total + " créneaux libres";
+        return free + "/" + total + " "
+            + (free > 1 ? "créneaux libres" : "créneau libre");
     }
 
     // ------------------------------------------------------------------

@@ -30,6 +30,15 @@
         <field name="comment">Accès complet aux analyses POS, export et configuration.</field>
     </record>
 
+    <!-- Cloisonnement par société de la vue SQL d'analyse (comme les
+         commandes POS) : sans règle, le rapport et le cockpit lisaient les
+         tickets de toutes les sociétés de la base. -->
+    <record id="rule_pos_daily_report_company" model="ir.rule">
+        <field name="name">Analyse POS : multi-sociétés</field>
+        <field name="model_id" ref="model_aite_pos_daily_report"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
     <!-- L'administrateur système reçoit le profil Manager : sur une base
          neuve, le premier utilisateur ouvre les analyses (et le cockpit
          Direction qui les consolide) sans manipulation de droits. Même

@@ -225,7 +225,8 @@
                             label="'CA encaissé'"
                             value="money(o.pos.ca)"
                             delta="o.pos.ca_delta"
-                            sub="'HT · ' + o.pos.order_count + ' tickets · POS payés / facturés'"/>
+                            deltaLabel="'vs période précédente'"
+                            sub="'HT · ' + count(o.pos.order_count, 'ticket', 'tickets') + ' · POS payés / facturés'"/>
                         <KpiCard mega="true" accent="'teal'" badge="'per'"
                             label="'Marge brute réalisée'"
                             value="money(o.pos.margin)"
@@ -244,14 +245,14 @@
                         une carte ouvre l'onglet</div>
                     <div class="add-row">
                         <KpiCard badge="'per'" label="'Ventes — tickets'"
-                            value="'' + o.pos.order_count"
+                            value="num(o.pos.order_count)"
                             sub="'panier moyen ' + money(o.pos.average_basket)"
                             onClick="() => this.setTab('pos')"/>
                         <KpiCard accent="'ambre'" badge="'photo'"
                             label="'Encours ardoises'"
                             value="money(o.credit.outstanding)"
-                            sub="o.credit.debtor_count + ' clients · '
-                                 + moneyShort(o.credit.late_amount) + ' au-delà de 30 j'"
+                            sub="count(o.credit.debtor_count, 'débiteur', 'débiteurs') + ' · '
+                                 + moneyShort(o.credit.late_amount) + ' en retard (+30 j)'"
                             onClick="() => this.setTab('credit')"/>
                         <KpiCard accent="'info'" badge="'photo'"
                             label="'Dettes fournisseurs'"
@@ -334,10 +335,12 @@
                         <KpiCard mega="true" accent="'vert'" badge="'per'"
                             label="'CA encaissé'" value="money(d.kpis.ca)"
                             delta="d.kpis.ca_delta"
-                            sub="'vs période précédente'"/>
+                            deltaLabel="'vs période précédente'"
+                            sub="'HT · POS payés / facturés'"/>
                         <KpiCard badge="'per'" label="'Tickets'"
-                            value="'' + d.kpis.order_count"
+                            value="num(d.kpis.order_count)"
                             delta="d.kpis.order_count_delta"
+                            deltaLabel="'vs période précédente'"
                             sub="money(d.kpis.ca_per_day) + ' / jour'"/>
                         <KpiCard badge="'per'" label="'Panier moyen'"
                             value="money(d.kpis.average_basket)"
@@ -346,6 +349,7 @@
                             label="'Marge brute'"
                             value="pct(d.kpis.margin_rate)"
                             delta="d.kpis.margin_delta"
+                            deltaLabel="'vs période précédente'"
                             sub="money(d.kpis.margin)"/>
                     </div>
                     <div class="add-row">
@@ -359,22 +363,22 @@
                             label="'Ventes à crédit'"
                             value="money(d.new_credits.amount)"
                             sub="pct(d.new_credits.pct) + ' du CA · '
-                                 + d.new_credits.count + ' ardoises'"/>
+                                 + count(d.new_credits.count, 'ardoise', 'ardoises')"/>
                         <KpiCard badge="'photo'" label="'Caisses actives'"
-                            value="'' + configs.length"
+                            value="num(configs.length)"
                             sub="'filtre en cours : ' + caisseLabel"/>
                     </div>
                     <div class="add-row">
                         <div class="add-panel">
                             <h3>Chaleur des ventes — jours × heures
-                                <span class="add-src">POS Analytics</span></h3>
+                                <span class="add-src">Analyse AITE</span></h3>
                             <Heatmap rows="d.heatmap"/>
                             <div class="add-legend">Plus la case est
                                 foncée, plus le CA de la tranche est
                                 élevé.</div>
                             <a class="add-drill"
                                t-on-click="() => this.drill('pos')">
-                                Ouvrir POS Analytics ↗</a>
+                                Ouvrir Analyse AITE ↗</a>
                         </div>
                         <div class="add-panel">
                             <h3>Top 5 produits
@@ -423,7 +427,7 @@
                     <button t-att-class="'add-chip'
                             + (state.creditSource === 'pos' ? ' add-on' : '')"
                             t-on-click="() => this.setCreditSource('pos')">
-                        POS</button>
+                        Point de vente</button>
                     <button t-att-class="'add-chip'
                             + (state.creditSource === 'sale' ? ' add-on' : '')"
                             t-on-click="() => this.setCreditSource('sale')">
@@ -436,32 +440,37 @@
                         <KpiCard mega="true" accent="'ambre'"
                             badge="'photo'" label="'Encours total'"
                             value="money(d.kpis.outstanding)"
-                            sub="d.kpis.debtor_count + ' clients débiteurs'"/>
+                            sub="count(d.kpis.debtor_count, 'débiteur actif', 'débiteurs actifs')"/>
                         <KpiCard accent="'rouge'" badge="'photo'"
-                            label="'Au-delà de 30 j'"
+                            label="'En retard (+30 j)'"
                             value="money(d.kpis.late_amount)"
                             sub="pct(d.kpis.late_pct) + ' de l\'encours'"/>
                         <KpiCard badge="'photo'"
-                            label="'Plus ancienne ardoise'"
-                            value="(d.kpis.oldest_age || 0) + ' j'"
+                            label="'Plus ancienne dette'"
+                            value="age(d.kpis.oldest_age)"
                             sub="(d.kpis.oldest_partner || '—') + ' · '
                                  + money(d.kpis.oldest_amount)"/>
                         <KpiCard badge="'photo'"
                             label="'Délai moyen de remboursement'"
                             value="days(d.kpis.avg_settle_days)"
-                            sub="d.kpis.settled_count + ' ardoises soldées'"/>
+                            sub="count(d.kpis.settled_count, 'ardoise réglée', 'ardoises réglées')"/>
                     </div>
                     <div class="add-row">
                         <KpiCard accent="'vert'" badge="'per'"
                             label="'Recouvré'"
                             value="money(d.kpis.recovered)"
                             delta="d.kpis.recovered_delta"
-                            sub="d.kpis.payment_count + ' remboursements'"/>
+                            deltaLabel="'vs période précédente'"
+                            sub="count(d.kpis.payment_count, 'remboursement', 'remboursements')"/>
+                        <!-- Une hausse des nouvelles ardoises est en rouge, comme
+                             sur POS Crédit (relecture de l'écart n° 62). -->
                         <KpiCard accent="'ambre'" badge="'per'"
-                            label="'Nouveaux crédits'"
+                            label="'Nouvelles ardoises'"
                             value="money(d.kpis.opened_amount)"
                             delta="d.kpis.opened_delta"
-                            sub="d.kpis.new_credits + ' ardoises ouvertes'"/>
+                            deltaLabel="'vs période précédente'"
+                            upIsBad="true"
+                            sub="count(d.kpis.new_credits, 'ardoise ouverte', 'ardoises ouvertes')"/>
                         <KpiCard accent="'teal'" badge="'per'"
                             label="'Flux net'"
                             value="netFlowText"
@@ -475,13 +484,13 @@
                     <div class="add-row">
                         <div class="add-panel">
                             <h3>Balance âgée clients
-                                <span class="add-src">Crédit v2</span></h3>
+                                <span class="add-src">POS Crédit</span></h3>
                             <t t-foreach="creditAging" t-as="a"
                                t-key="a_index">
                                 <HBar label="a.label" pct="a.pct"
                                     color="a.color"
                                     value="moneyShort(a.amount)"
-                                    hint="a.count + ' ardoise(s)'"/>
+                                    hint="count(a.count, 'ardoise', 'ardoises')"/>
                             </t>
                             <h3 class="add-mt">Encours — 6 mois
                                 (fin de mois)</h3>
@@ -508,7 +517,7 @@
                                                 + ((r.max_age || 0) > 60
                                                    ? 'add-p-rouge'
                                                    : 'add-p-ambre')"
-                                                t-esc="(r.max_age || 0) + ' j'"/>
+                                                t-esc="age(r.max_age)"/>
                                         </td>
                                     </tr>
                                 </t>
@@ -530,7 +539,7 @@
                             </table>
                             <a class="add-drill"
                                t-on-click="() => this.drill('credit')">
-                                Ouvrir Crédit clients ↗</a>
+                                Ouvrir POS Crédit ↗</a>
                         </div>
                     </div>
                 </t>
@@ -562,7 +571,7 @@
                             value="money(d.kpis.total_value)"
                             sub="count(d.kpis.refs_count, 'référence',
                                        'références') + ' · '
-                                 + stockUnits + ' unités'"/>
+                                 + stockUnits"/>
                         <KpiCard mega="true" accent="'teal'"
                             badge="'photo'"
                             label="'Valeur — prix de vente'"
@@ -575,8 +584,8 @@
                             value="count(d.kpis.rupt_count
                                          + d.kpis.crit_count,
                                          'référence', 'références')"
-                            sub="d.kpis.rupt_count + ' ruptures · '
-                                 + d.kpis.crit_count + ' critiques'"/>
+                            sub="count(d.kpis.rupt_count, 'rupture', 'ruptures') + ' · '
+                                 + count(d.kpis.crit_count, 'critique', 'critiques')"/>
                         <KpiCard accent="'ambre'" badge="'photo'"
                             label="'À commander'"
                             value="money(d.kpis.cmd_value)"
@@ -587,7 +596,7 @@
                     <div class="add-row">
                         <KpiCard badge="'photo'"
                             label="'Couverture moyenne'"
-                            value="days(d.kpis.couv_moy)"
+                            value="coverage(d.kpis.couv_moy)"
                             sub="'rotation ' + (d.kpis.rot_moy || 0)
                                  .toFixed(1).replace('.', ',')
                                  + '× / mois'"/>
@@ -689,16 +698,16 @@
                             badge="'photo'"
                             label="'Dettes fournisseurs'"
                             value="money(d.kpis.encours)"
-                            sub="d.kpis.open_count + ' factures ouvertes'"/>
+                            sub="count(d.kpis.open_count, 'facture ouverte', 'factures ouvertes')"/>
                         <KpiCard accent="'rouge'" badge="'photo'"
-                            label="'Échues'"
+                            label="'Factures échues'"
                             value="money(d.kpis.retard)"
-                            sub="d.kpis.retard_count + ' factures ('
+                            sub="count(d.kpis.retard_count, 'facture', 'factures') + ' ('
                                  + pct(d.kpis.retard_pct) + ')'"/>
                         <KpiCard accent="'rouge'" badge="'photo'"
                             label="soonLabel(d.kpis)"
                             value="money(d.kpis.soon)"
-                            sub="d.kpis.soon_count + ' échéances'"/>
+                            sub="count(d.kpis.soon_count, 'échéance', 'échéances')"/>
                         <KpiCard badge="'photo'"
                             label="'Consignes &amp; avoirs'"
                             value="money((d.claims.deposits_total || 0)
@@ -711,7 +720,7 @@
                     <div class="add-row">
                         <KpiCard badge="'per'" label="'Volume acheté'"
                             value="money(d.kpis.achats)"
-                            sub="d.kpis.recus_count + ' réceptions'"/>
+                            sub="count(d.kpis.recus_count, 'réception', 'réceptions')"/>
                         <KpiCard accent="'vert'" badge="'per'"
                             label="'Livré à temps et complet (OTIF)'"
                             value="pct(d.kpis.otif)"
@@ -723,7 +732,7 @@
                         <KpiCard accent="'ambre'" badge="'per'"
                             label="'Prix en hausse'"
                             value="priceUpCount"
-                            sub="'vs dernier achat'"/>
+                            sub="'prix des 45 derniers jours vs il y a 4 à 7 mois'"/>
                     </div>
                     <div class="add-row">
                         <div class="add-panel">
@@ -766,7 +775,8 @@
                                     </tr>
                                 </t>
                             </table>
-                            <h3 class="add-mt">Échéances — 7 jours</h3>
+                            <h3 class="add-mt"
+                                t-esc="'Échéances sous ' + (d.soon_days || 7) + ' j'"/>
                             <table class="add-mini">
                                 <t t-foreach="d.week_bills" t-as="r"
                                    t-key="r_index">
@@ -792,7 +802,7 @@
             <div t-if="state.tab === 'todo'">
                 <t t-if="state.data.todo">
                     <div class="add-sect">À TRAITER — LA LISTE DU GÉRANT
-                        (<t t-esc="state.data.todo.count"/> actions)</div>
+                        (<t t-esc="count(state.data.todo.count, 'action', 'actions')"/>)</div>
                     <div class="add-row add-wrap">
                         <t t-foreach="state.data.todo.sections" t-as="s"
                            t-key="s.key">
@@ -832,7 +842,7 @@
             </div>
 
             <div class="add-footer">
-                Sources : POS Analytics · Crédit clients v2 · Stock &amp;
+                Sources : Analyse AITE · POS Crédit · Stock &amp;
                 Inventaire · Achats &amp; Fournisseurs. Les cartes
                 « période » suivent les filtres ; les cartes « photo »
                 sont des instantanés. Caisse, tranche horaire et jours

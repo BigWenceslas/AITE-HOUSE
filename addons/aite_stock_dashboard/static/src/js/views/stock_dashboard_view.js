@@ -6,7 +6,8 @@ import { loadChart, destroyChart } from "../services/chartjs_loader";
 import { KpiCard } from "../components/kpi_card";
 import {
     COLORS, CATEG_PALETTE, BADGE_CLS,
-    fmtMoney, fmtCompact, fmtQty, fmtPct, fmtDays, plural, pluralWord, fmtUnits,
+    fmtMoney, fmtCompact, fmtQty, fmtPct, fmtCoverage, fmtInt, plural,
+    pluralWord, fmtUnits,
     PERIOD_PRESETS, periodRange,
 } from "../services/utils";
 
@@ -295,12 +296,13 @@ export class StockDashboardView extends Component {
         return fmtPct(v);
     }
 
+    /** Couverture en jours (« 12,3 j », « ∞ » sans vente). */
     days(v) {
-        return fmtDays(v);
+        return fmtCoverage(v);
     }
 
     num(v) {
-        return "" + (v === undefined || v === null ? 0 : v);
+        return fmtInt(v);
     }
 
     /** Accord en nombre (« 1 rupture », « 2 ruptures ») — écart n° 44. */
@@ -318,8 +320,10 @@ export class StockDashboardView extends Component {
         return fmtUnits(v);
     }
 
+    /** « 1 référence », « 3 références » — en toutes lettres, comme le
+     *  cockpit Direction (« 3 réfs » ici — reprise de l'écart n° 42). */
     refs(n) {
-        return plural(n, "réf", "réfs");
+        return plural(n, "référence", "références");
     }
 
     /** Sous-titre de la carte « Ruptures & critiques », accordé. */

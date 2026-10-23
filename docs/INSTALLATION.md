@@ -23,21 +23,21 @@ AITE_HOUSE/
 | Module | Version | Rôle |
 |---|---|---|
 | aite_hotel_management | 18.0.1.0.7 | **Socle hôtelier** : chambres, réservations, séjours, folios, main courante, facturation |
-| aite_slot_booking | 18.0.1.0.3 | Espaces & prestations réservables au créneau (salles, piscine, billard…) |
-| aite_website_booking | 18.0.1.0.0 | Réservation en ligne depuis le site web, acompte |
-| aite_hotel_pos_link | 18.0.1.0.0 | **Note de chambre** : report des consommations du bar sur le folio |
-| aite_pos_credit | 18.0.2.0.3 | Crédit clients (ardoises) : plafonds, encours, recouvrement |
-| aite_loyalty | 18.0.1.0.1 | Fidélité : points, niveaux VIP & VVIP |
-| aite_pos_analytics | 18.0.2.1.1 | Analyses des ventes : heures de pointe, marges, CMV |
-| aite_stock_dashboard | 18.0.1.1.2 | Stock : ruptures, coulage, couverture, inventaires |
-| aite_purchase_dashboard | 18.0.1.0.2 | Achats : échéancier fournisseurs, OTIF, hausses de prix |
-| aite_direction_dashboard | 18.0.1.0.2 | **Cockpit Direction** : vue consolidée, cash à risque, actions |
-| aite_exec_dashboard | 18.0.1.0.2 | Tableau de bord exécutif hôtel |
+| aite_slot_booking | 18.0.1.0.5 | Espaces & prestations réservables au créneau (salles, piscine, billard…) |
+| aite_website_booking | 18.0.1.0.2 | Réservation en ligne depuis le site web, acompte |
+| aite_hotel_pos_link | 18.0.1.0.2 | **Note de chambre** : report des consommations du bar sur le folio |
+| aite_pos_credit | 18.0.2.0.5 | Crédit clients (ardoises) : plafonds, encours, recouvrement |
+| aite_loyalty | 18.0.1.0.3 | Fidélité : points, niveaux VIP & VVIP |
+| aite_pos_analytics | 18.0.2.1.3 | Analyses des ventes : heures de pointe, marges, CMV |
+| aite_stock_dashboard | 18.0.1.1.3 | Stock : ruptures, coulage, couverture, inventaires |
+| aite_purchase_dashboard | 18.0.1.0.5 | Achats : échéancier fournisseurs, OTIF, hausses de prix |
+| aite_direction_dashboard | 18.0.1.1.2 | **Cockpit Direction** : vue consolidée, cash à risque, actions |
+| aite_exec_dashboard | 18.0.1.1.2 | **Activité par pôle** (Hôtel → Activité par pôle) : hébergement, restauration, prestations, RevPAR, pickup, pace |
 | aite_hotel_gantt | 18.0.1.0.2 | **Enterprise uniquement** : planning Gantt des chambres (automatique sur une base neuve, **à installer à la main** sur une base existante — voir §3) |
-| aite_demo_data | 18.0.1.2.3 | Jeu de démonstration (établissement complet pré-chargé) |
-| aite_city_tax | 18.0.1.0.0 | **Taxe de séjour** automatique : barèmes par pays et étoiles, ligne sur le folio, état mensuel |
-| aite_guest_registry | 18.0.1.0.1 | **Registre des clients** : fiche d'enregistrement au check-in, registre de police, statistiques |
-| aite_housekeeping | 18.0.1.0.2 | **Gouvernante & maintenance** : tableau des chambres, « Ma journée », inspections, pannes, objets trouvés |
+| aite_demo_data | 18.0.1.2.4 | Jeu de démonstration (établissement complet pré-chargé) |
+| aite_city_tax | 18.0.1.0.2 | **Taxe de séjour** automatique : barèmes par pays et étoiles, ligne sur le folio, état mensuel |
+| aite_guest_registry | 18.0.1.0.3 | **Registre des clients** : fiche d'enregistrement au check-in, registre de police, statistiques |
+| aite_housekeeping | 18.0.1.0.6 | **Gouvernante & maintenance** : tableau des chambres, « Ma journée », inspections, pannes, objets trouvés |
 
 ## 3. Prérequis
 
@@ -121,12 +121,29 @@ moment-là :
 
 ## 5. Mise à jour d'une installation existante
 
-Remplacer le dossier du module concerné, redémarrer le service, puis
-Apps → **« Mettre à niveau »** sur ce module. Sur Enterprise, si
-`aite_hotel_gantt` est livré pour la première fois sur une base où le
-socle est déjà installé, la mise à niveau ne l'installe pas : l'installer
-à la main une fois (§3, « Community ou Enterprise ? »). Ne jamais retirer des
-fichiers avant d'avoir désinstallé proprement le module depuis Apps.
+1. **Sauvegarder la base** (et le dossier `filestore`).
+2. **Fermer toutes les sessions de caisse** : une caisse ouverte ne peut pas
+   recevoir de nouveau mode de paiement (le journal le signale par un
+   avertissement, la mise à niveau continue).
+3. **Déposer** les dossiers `addons/aite_*` livrés **à côté** des autres, en
+   remplaçant chaque dossier AITE par sa nouvelle version — jamais le
+   répertoire `addons` entier.
+4. Redémarrer le service Odoo, puis Apps → **« Mettre à jour la liste des
+   applications »** → **« Mettre à niveau »** **chaque** module AITE installé
+   (ou en ligne de commande : `-u` suivi de la liste des modules AITE). Les
+   scripts de migration livrés s'exécutent à cette étape (voir les notes de
+   version de la livraison).
+5. Chaque utilisateur recharge la page (**Ctrl+F5**) : le JavaScript et les
+   styles des tableaux de bord changent.
+6. Faire les **vérifications** listées dans les notes de version de la
+   livraison (barème de taxe de séjour, mode « Ardoise », profil
+   « Gouvernante générale »…).
+
+Ne rien désinstaller. Sur Enterprise, si `aite_hotel_gantt` est livré pour
+la première fois sur une base où le socle est déjà installé, la mise à
+niveau ne l'installe pas : l'installer à la main une fois (§3, « Community
+ou Enterprise ? »). Ne jamais retirer des fichiers avant d'avoir désinstallé
+proprement le module depuis Apps.
 
 ## 6. Désinstallation
 

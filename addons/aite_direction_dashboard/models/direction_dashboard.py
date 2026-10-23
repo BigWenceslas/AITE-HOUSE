@@ -37,11 +37,22 @@ TRANCHES = {
     'nuit': (23, 5),     # 23 h 00 → 5 h 59 (passage minuit)
 }
 
-AGE_BUCKETS = ((0, 30, '0_30'), (31, 60, '31_60'),
-               (61, 90, '61_90'), (91, None, '90p'))
+# Tranches d'ancienneté : borne basse INCLUSE, haute EXCLUE (``lo ≤ âge <
+# hi``), le contrat du moteur Crédit (``get_aging``) — une facture de 30
+# jours est en « 30–60 j » comme une ardoise de 30 jours ; elle restait en
+# « 0–30 j » sous les mêmes libellés (relecture de l'intégration).
+AGE_BUCKETS = ((0, 30, '0_30'), (30, 60, '31_60'),
+               (60, 90, '61_90'), (90, None, '90p'))
 
-MONTHS_FR = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin',
-             'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc']
+# Âge (jours) à partir duquel une ardoise est « en retard » et à relancer :
+# ``AGE_THRESHOLD_LATE`` du moteur Crédit, la base de « Cash à risque —
+# ardoises +30 j ».
+LATE_AGE = 30
+
+# Abréviations françaises des mois (règle 6) : « Jan », « Sep » étaient
+# anglaises — même table dans tous les tableaux de bord AITE.
+MONTHS_FR = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin',
+             'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.']
 
 
 class AiteDirectionDashboard(models.AbstractModel):
@@ -125,7 +136,7 @@ class AiteDirectionDashboard(models.AbstractModel):
 
     @staticmethod
     def _month_label(month):
-        """'2026-10' → 'Oct' (libellé court des barres)."""
+        """'2026-10' → 'oct.' (libellé court des barres)."""
         try:
             return MONTHS_FR[int(str(month)[5:7]) - 1]
         except (ValueError, IndexError):
@@ -169,12 +180,13 @@ class AiteDirectionDashboard(models.AbstractModel):
 
     @staticmethod
     def _age_bucket(days):
-        """Ancienneté en jours → clé de tranche ('0_30' … '90p')."""
+        """Ancienneté en jours → clé de tranche ('0_30' … '90p'), règle
+        ``lo ≤ âge < hi`` (voir ``AGE_BUCKETS``) ; un âge négatif compte
+        dans la première tranche."""
         d = max(0, int(days or 0))
         for lo, hi, key in AGE_BUCKETS:
-            if hi is None or d <= hi:
-                if d >= lo or key == '0_30':
-                    return key
+            if hi is None or d < hi:
+                return key
         return '90p'
 
     @staticmethod
@@ -186,7 +198,11 @@ class AiteDirectionDashboard(models.AbstractModel):
             'YYYY-MM-DD'|None, 'days_late': int}]
         :param today: 'YYYY-MM-DD'
         :returns: dict {
-            'schedule': {'overdue', 'w0', 'w1', 'w2', 'w3p'} montants,
+            'schedule': {'overdue', 'w0', 'w1', 'w2', 'w3p'} montants —
+            échéance dans 0 à 7 jours, 8 à 14, 15 à 21, 22 et plus : la
+            barre « Sous 7 jours » couvre exactement la carte « À payer
+            sous 7 j » du moteur Achats (``jours avant échéance ≤ 7``),
+            qui s'arrêtait à 6 jours ici,
             'schedule_counts': idem en nombre,
             'aging': {'0_30','31_60','61_90','90p'} sur la date de
             facture (miroir fournisseurs)}
@@ -209,11 +225,11 @@ class AiteDirectionDashboard(models.AbstractModel):
                     delta = (dp - t).days
                     if delta < 0:
                         key = 'overdue'
-                    elif delta <= 6:
+                    elif delta <= 7:
                         key = 'w0'
-                    elif delta <= 13:
+                    elif delta <= 14:
                         key = 'w1'
-                    elif delta <= 20:
+                    elif delta <= 21:
                         key = 'w2'
                     else:
                         key = 'w3p'
@@ -224,6 +240,21 @@ class AiteDirectionDashboard(models.AbstractModel):
             aging[AiteDirectionDashboard._age_bucket(age)] += amt
         return {'schedule': sched, 'schedule_counts': counts,
                 'aging': aging}
+
+    @staticmethod
+    def _due_soon(rows, soon):
+        """
+        Factures « à payer bientôt » du moteur Achats : non échues et dues
+        dans ``soon`` jours au plus (``days_to_due ≤ soon``, réglage des
+        Achats, 7 j par défaut) — la définition de la carte « À payer sous
+        N j ». La liste « Échéances » et les lignes « Payer … » s'arrêtaient
+        à 6 jours, quel que soit le réglage (relecture de l'intégration).
+        Triées par échéance.
+        """
+        picked = [r for r in rows or []
+                  if not (r.get('days_late') or 0) > 0
+                  and (r.get('days_to_due') or 0) <= (soon or 7)]
+        return sorted(picked, key=lambda r: r.get('planned') or '9999')
 
     @staticmethod
     def _encours_series(current, rows):
@@ -329,6 +360,12 @@ class AiteDirectionDashboard(models.AbstractModel):
             return ('%.*f' % (digits, value or 0.0)).replace('.', ',') \
                 + '\u00a0%'
 
+        # Nombre suivi du mot accordé (« 1 facture échue », « 2 factures
+        # échues ») : plus de « (s) » (relecture de l'écart n° 44).
+        def count(n, one, many):
+            n = int(n or 0)
+            return '%d %s' % (n, one if n <= 1 else many)
+
         def sec(key, title, prio, source, rows):
             rows = [r for r in rows if r]
             if rows:
@@ -340,13 +377,14 @@ class AiteDirectionDashboard(models.AbstractModel):
                 'hint': "%d j" % int(d.get('max_age') or 0),
                 'action': 'credit'}
                for d in (inp.get('debtors') or [])
-               if (d.get('max_age') or 0) > 30][:3]
+               if (d.get('max_age') or 0) >= LATE_AGE][:3]
         sec('credit', "Ardoises anciennes", 'urgent', "Crédit", deb)
 
         rows = []
         if inp.get('overdue_amount'):
-            rows.append({'label': "Régulariser %d facture(s) échue(s)"
-                         % int(inp.get('overdue_count') or 0),
+            rows.append({'label': "Régulariser %s" % count(
+                             inp.get('overdue_count'), "facture échue",
+                             "factures échues"),
                          'amount': inp['overdue_amount'],
                          'hint': "échu", 'action': 'purchase'})
         rows += [{'label': "Payer %s" % b.get('partner', ''),
@@ -364,10 +402,9 @@ class AiteDirectionDashboard(models.AbstractModel):
                 (inp.get('penalties') or [])[:2]]
         if inp.get('cmd_value'):
             # « réfs » en toutes lettres (reprise de l'écart n° 42).
-            refs = int(inp.get('cmd_refs') or 0)
-            rows.append({'label': "Lancer la commande suggérée (%d %s)"
-                         % (refs, "référence" if refs <= 1
-                            else "références"),
+            rows.append({'label': "Lancer la commande suggérée (%s)"
+                         % count(inp.get('cmd_refs'), "référence",
+                                 "références"),
                          'amount': inp['cmd_value'], 'hint': "sous seuil",
                          'action': 'stock'})
         sec('stock', "Stock", 'urgent', "Stock", rows)
@@ -388,8 +425,8 @@ class AiteDirectionDashboard(models.AbstractModel):
 
         rows = []
         if inp.get('ann_count'):
-            rows.append({'label': "Annulations / retours : %d ticket(s)"
-                         % int(inp['ann_count']),
+            rows.append({'label': "Annulations / retours : %s"
+                         % count(inp['ann_count'], "ticket", "tickets"),
                          'amount': inp.get('ann_amount', 0.0),
                          'hint': "par caisse", 'action': 'pos'})
         if (inp.get('rem_pct') or 0.0) >= 3.0:
@@ -397,7 +434,7 @@ class AiteDirectionDashboard(models.AbstractModel):
                          % pct(inp['rem_pct']),
                          'amount': inp.get('rem_amount', 0.0),
                          'hint': "par vendeur", 'action': 'pos'})
-        sec('pos', "Caisse", 'watch', "POS", rows)
+        sec('pos', "Caisse", 'watch', "Point de vente", rows)
 
         rows = [{'label': "Renégocier %s" % p.get('name', ''),
                  'amount': None,
@@ -649,8 +686,11 @@ class AiteDirectionDashboard(models.AbstractModel):
                 config_id=config_id, source=source)),
             'top_debtors': self._rows(cred.get_top_debtors(
                 limit=5, config_id=config_id, source=source)),
+            # Le filtre d'origine vaut aussi pour la liste : avec « Ventes /
+            # factures », elle montrait les remboursements de caisse.
             'recent_payments': self._rows(cred.get_recent_payments(
-                date_from, date_to, limit=5, config_id=config_id)),
+                date_from, date_to, limit=5, config_id=config_id,
+                source=source)),
             'evolution': self._encours_series(k.get('outstanding'), ev),
             'net_flow_text': self._net_flow_sentence(k.get('net_flow')),
         }
@@ -681,15 +721,13 @@ class AiteDirectionDashboard(models.AbstractModel):
             self._rows(pur.get_open_invoices(supplier_id=supplier_id)))
         today = fields.Date.context_today(self).isoformat()
         claims = pur.get_claims(supplier_id=supplier_id)
+        soon = pur._cfg()['soon']
         return {
             'kpis': pur.get_kpis(date_from, date_to,
                                  supplier_id=supplier_id),
             'buckets': self._bucket_supplier_invoices(inv, today),
-            'week_bills': sorted(
-                [r for r in inv if 0 <= self._days_until(
-                    r.get('planned'), today) <= 6
-                 and not (r.get('days_late') or 0) > 0],
-                key=lambda r: r.get('planned') or '9999')[:5],
+            'soon_days': soon,
+            'week_bills': self._due_soon(inv, soon)[:5],
             'overdue_bills': [r for r in inv
                               if (r.get('days_late') or 0) > 0][:5],
             'suppliers': self._rows(pur.get_supplier_rows(
@@ -699,13 +737,6 @@ class AiteDirectionDashboard(models.AbstractModel):
             'claims': claims,
         }
 
-    @staticmethod
-    def _days_until(planned, today):
-        if not planned:
-            return 999
-        return (fields.Date.to_date(planned)
-                - fields.Date.to_date(today)).days
-
     @api.model
     def get_actions(self, date_from, date_to, config_id=None):
         pos, cred, stock, pur = self._engines()
@@ -714,7 +745,6 @@ class AiteDirectionDashboard(models.AbstractModel):
         s = stock.get_kpis(date_from, date_to)
         a = pur.get_kpis(date_from, date_to)
         inv = self._supplier_rows(self._rows(pur.get_open_invoices()))
-        today = fields.Date.context_today(self).isoformat()
         rows = self._rows(stock.get_stock_list())
         price_up = [{'name': m.get('name'), 'partner': m.get('partner'),
                      'delta_pct': ((m.get('p1') or 0.0)
@@ -726,11 +756,7 @@ class AiteDirectionDashboard(models.AbstractModel):
                 limit=6, config_id=config_id)),
             'overdue_amount': a.get('retard', 0.0),
             'overdue_count': a.get('retard_count', 0),
-            'week_bills': sorted(
-                [r for r in inv if 0 <= self._days_until(
-                    r.get('planned'), today) <= 6
-                 and not (r.get('days_late') or 0) > 0],
-                key=lambda r: r.get('planned') or '9999'),
+            'week_bills': self._due_soon(inv, pur._cfg()['soon']),
             'penalties': self._penalty_rows(rows, limit=3),
             'cmd_value': s.get('cmd_value', 0.0),
             'cmd_refs': s.get('seuil_count', 0),

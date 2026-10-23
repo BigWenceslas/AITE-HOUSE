@@ -184,6 +184,51 @@ class TestDirectionConsistency(PosAnalyticsCommon):
         self.session.invalidate_recordset()
         self.assertEqual(self.session.total_ca, overview['pos']['ca'])
 
+    def test_restaurant_revenue_uses_local_days_on_every_screen(self):
+        """K04 à Douala (UTC+1) : un ticket encaissé à 0 h 30 le 1er du
+        mois — 23 h 30 UTC la veille — tombe dans le même mois, la même
+        journée et la même barre mensuelle sur le cockpit et sur
+        « Direction — Activité par pôle ». L'exécutif bornait ses jours en
+        UTC : le ticket glissait dans le mois précédent (relecture K04)."""
+        if 'aite.exec.dashboard' not in self.env:
+            self.skipTest("tableau de bord exécutif absent")
+        first = (self.today.replace(day=1)
+                 - timedelta(days=1)).replace(day=1)
+        last = self.today.replace(day=1) - timedelta(days=1)
+        eve = first - timedelta(days=1)
+        order = self._sale([(self.beer, 2, 5000.0)])
+        order.write({'date_order': fields.Datetime.to_datetime(
+            '%s 23:30:00' % eve)})
+        self.env.flush_all()
+        cockpit = self.direction.with_context(tz='Africa/Douala')
+        execd = self.env['aite.exec.dashboard'].with_context(
+            tz='Africa/Douala')
+
+        def both(d_from, d_to):
+            pos = cockpit.get_overview(str(d_from), str(d_to))['pos']
+            kpis = execd.get_kpis(str(d_from), str(d_to))
+            return ((pos['ca'], pos['order_count']),
+                    (kpis['pos_ca'], kpis['tickets']))
+
+        month_cockpit, month_exec = both(first, last)
+        self.assertEqual(month_exec, month_cockpit, "même mois")
+        self.assertGreaterEqual(month_exec[0], 10000.0,
+                                "le ticket du 1er à 0 h 30 est du mois")
+        self.assertEqual(*both(first, first), msg="même journée (le 1er)")
+        self.assertEqual(*both(eve, eve), msg="même journée (la veille)")
+        day_cockpit, _day_exec = both(first, first)
+        self.assertGreaterEqual(day_cockpit[0], 10000.0)
+
+        series = execd.get_evolution()
+        pos_serie = next(s for s in series['series'] if s['key'] == 'pos')
+        by_month = dict(zip(series['labels'], pos_serie['data']))
+        trends = {t['month']: t['ca'] for t in cockpit.get_overview(
+            self.d_from, self.d_to)['trends']}
+        for month in (eve.strftime('%Y-%m'), first.strftime('%Y-%m')):
+            if month in trends and month in by_month:
+                self.assertAlmostEqual(by_month[month], trends[month],
+                                       places=2, msg=month)
+
     def test_hotel_revenue_is_the_same_on_every_screen(self):
         if 'aite.exec.dashboard' not in self.env:
             self.skipTest("tableau de bord exécutif absent")

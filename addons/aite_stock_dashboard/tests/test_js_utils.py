@@ -41,6 +41,9 @@ console.log(JSON.stringify({
            u.pluralWord(4, "référence à zéro", "références à zéro")],
     units: [u.fmtUnits(0), u.fmtUnits(1), u.fmtUnits(1.5), u.fmtUnits(2),
             u.fmtUnits(24)],
+    durations: [u.fmtDays(12), u.fmtDays(12.34), u.fmtDays(400),
+                u.fmtCoverage(12), u.fmtCoverage(999)],
+    big: u.plural(1234, "référence", "références"),
 }));
 """
 
@@ -114,3 +117,12 @@ class TestStockJsUtils(TransactionCase):
                                        'références à zéro'])
         self.assertEqual(res['units'], ['0 unité', '1 unité', '1,5 unité',
                                         '2 unités', '24 unités'])
+
+    def test_days_like_the_direction_cockpit(self):
+        """Relecture : « 12 j » ici, « 12,0 j » au cockpit pour la même
+        couverture ; « ∞ » réservé à la couverture (sans vente), sur les
+        deux écrans. Nombres séparés à la française."""
+        res = self._run()
+        self.assertEqual(res['durations'], ['12,0 j', '12,3 j', '400,0 j',
+                                            '12,0 j', '∞'])
+        self.assertEqual(res['big'], '1\u202f234 références')

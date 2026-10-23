@@ -66,9 +66,11 @@ class HotelRoom(models.Model):
             line = room.current_line_id
             room.guest_name = line.partner_id.name if line else False
             if room.occupancy_state == 'arrival' and line:
+                # « 14:00 », comme le tableau de bord Réception et les
+                # messages de réservation (« 14h00 » ici seulement).
                 room.arrival_hint = _("Arrivée prévue %s",
                                       fields.Datetime.context_timestamp(
-                                          room, line.checkin_date).strftime("%Hh%M"))
+                                          room, line.checkin_date).strftime("%H:%M"))
             else:
                 room.arrival_hint = False
             room.hk_hint = room._hint_for(
