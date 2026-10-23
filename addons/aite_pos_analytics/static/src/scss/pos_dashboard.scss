@@ -15,7 +15,14 @@
     --aite-info: #185FA5;
     --aite-warning: #854F0B;
     --aite-danger: #A32D2D;
-    --aite-text-muted: #888780;
+    // Vert des boutons de jour (« Tous », « Lun »…) : la variable était
+    // employée sans être définie, le bouton actif restait blanc sur blanc
+    // (écart n° 67).
+    --aite-teal: #0F6E56;
+    // Gris de texte secondaire : #888780 n'offrait que 3,6:1 sur blanc ;
+    // #66655f dépasse 4,5:1 (WCAG AA) sur tous les fonds du tableau de
+    // bord, y compris le fond #e8e6e0 (écart n° 71).
+    --aite-text-muted: #66655f;
     --aite-bg-secondary: #f5f5f4;
     --aite-bg-tertiary: #eeede8;
     --aite-border: rgba(0, 0, 0, 0.08);
@@ -129,6 +136,7 @@
         background: var(--aite-bg-secondary);
         border-radius: var(--aite-radius-md);
         padding: 10px 12px;
+        min-width: 0;   // une carte de grille peut rétrécir : l'ellipse joue
     }
     .o_aite_kpi_label {
         font-size: 10px;
@@ -190,7 +198,7 @@
     }
     .o_aite_mod_sub {
         font-size: 10px;
-        color: #888780;
+        color: var(--aite-text-muted);
         margin-top: 1px;
     }
     .o_aite_mod_body { padding: 12px 14px; }
@@ -224,7 +232,7 @@
     }
     .o_aite_rank_n {
         font-size: 10px;
-        color: #888780;
+        color: var(--aite-text-muted);
         width: 16px;
         text-align: right;
     }
@@ -248,7 +256,10 @@
     .o_aite_rank_val {
         font-size: 10px;
         color: #5f5e5a;
-        width: 52px;
+        // « 1 234 unités » : la valeur garde sa ligne, le nom s'abrège.
+        flex: 0 0 auto;
+        min-width: 52px;
+        white-space: nowrap;
         text-align: right;
     }
 
@@ -408,7 +419,7 @@
         cursor: pointer;
         font-size: 22px;
         line-height: 1;
-        color: #888780;
+        color: var(--aite-text-muted);
         padding: 0 6px;
         &:hover { color: #1a1a18; }
     }
@@ -534,9 +545,20 @@
         font-size: 13px;
         font-weight: 700;
     }
+    .o_aite_delta_title {
+        font-size: 11px;
+        color: var(--aite-text-muted);
+    }
     .o_aite_up   { color: var(--aite-success); }
     .o_aite_down { color: var(--aite-danger); }
     .o_aite_flat { color: var(--aite-text-muted); }
+
+    /* Nom long coupé proprement, lisible en entier dans l'infobulle */
+    .o_aite_ellipsis {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 
     /* ---- Synthèse par caisse (module dashboard) ---- */
     .o_aite_caisse_line {

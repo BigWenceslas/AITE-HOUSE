@@ -31,7 +31,9 @@ class PosAnalyticsDashboard(models.AbstractModel):
 
     def _parse_period(self, date_from, date_to):
         """
-        Bornes de période, en deux ``datetime`` (fin exclusive).
+        Bornes de période, en deux ``datetime`` (fin exclusive) : minuit
+        des jours LOCAUX choisis (voir :meth:`_utc_period` pour filtrer un
+        champ date-heure).
 
         Convention commune à toute la suite AITE : une période illisible
         — champ vidé, saisie partielle, appel sans paramètre — retombe
@@ -51,6 +53,34 @@ class PosAnalyticsDashboard(models.AbstractModel):
         # Borne haute exclusive : le jour de fin est inclus dans la période.
         return dt_from, dt_to + timedelta(days=1)
 
+    def _period_tz(self):
+        """Fuseau des jours de la période : celui du contexte, sinon celui
+        de l'utilisateur — la règle d'Odoo pour « aujourd'hui »
+        (``fields.Date.context_today``) et pour l'affichage d'une date-heure
+        (``context_timestamp``). UTC si aucun n'est connu."""
+        tz_name = self.env.context.get('tz') or self.env.user.tz
+        if tz_name in pytz.all_timezones_set:
+            return pytz.timezone(tz_name)
+        return pytz.utc
+
+    def _utc_period(self, date_from, date_to):
+        """
+        Bornes de :meth:`_parse_period` en UTC, pour filtrer un champ
+        date-heure (``date_order``, ``start_at``, ``payment_date`` : stockés
+        en UTC). Minuit à Douala (UTC+1) est 23 h UTC la veille.
+
+        Les dates s'affichent dans le fuseau de l'utilisateur ; des jours
+        UTC rangeaient une session ouverte à 0 h 30 le 01/10 — affichée
+        « 01/10/2026 » — dans la période de septembre (relecture des
+        écarts n° 37 / 38).
+        """
+        dt_from, dt_to = self._parse_period(date_from, date_to)
+        tz = self._period_tz()
+
+        def to_utc(dt):
+            return tz.localize(dt).astimezone(pytz.utc).replace(tzinfo=None)
+        return to_utc(dt_from), to_utc(dt_to)
+
     def _base_domain(self, date_from, date_to, config_id=None,
                      hour_from=None, hour_to=None, weekdays=None):
         """
@@ -63,7 +93,7 @@ class PosAnalyticsDashboard(models.AbstractModel):
             ``hour_from`` > ``hour_to`` (ex. 22→2 = nuit).
           * ``weekdays`` : liste d'entiers ISO 1=lundi … 7=dimanche.
         """
-        dt_from, dt_to = self._parse_period(date_from, date_to)
+        dt_from, dt_to = self._utc_period(date_from, date_to)
         domain = [
             ('date', '>=', dt_from),
             ('date', '<', dt_to),
@@ -185,7 +215,10 @@ class PosAnalyticsDashboard(models.AbstractModel):
 
         :returns: dict avec CA, marge, CMV, qty, nb commandes, taux marge,
                   ratio CMV/CA, panier moyen, CA/jour, marge/commande,
-                  coût/unité, et variations ``*_delta`` vs N-1.
+                  coût/unité, et variations ``*_delta`` par rapport à la
+                  période PRÉCÉDENTE de même durée (pas l'année
+                  précédente : l'écran ne dit plus « vs N-1 », écart
+                  n° 62).
         """
         filters = filters or {}
         hour_from = filters.get('hour_from')
@@ -578,7 +611,7 @@ class PosAnalyticsDashboard(models.AbstractModel):
     @api.model
     def get_sessions(self, date_from, date_to, config_id=None):
         """Liste des sessions de la période avec métriques."""
-        dt_from, dt_to = self._parse_period(date_from, date_to)
+        dt_from, dt_to = self._utc_period(date_from, date_to)
         domain = [
             ('start_at', '>=', dt_from),
             ('start_at', '<', dt_to),
@@ -645,7 +678,7 @@ class PosAnalyticsDashboard(models.AbstractModel):
     @api.model
     def get_payment_breakdown(self, date_from, date_to, config_id=None):
         """Répartition par mode de paiement."""
-        dt_from, dt_to = self._parse_period(date_from, date_to)
+        dt_from, dt_to = self._utc_period(date_from, date_to)
         Payment = self.env['pos.payment']
         domain = [
             ('payment_date', '>=', dt_from),
@@ -716,6 +749,23 @@ class PosAnalyticsDashboard(models.AbstractModel):
         '#714B67', '#185FA5', '#3B6D11', '#854F0B',
         '#0F6E56', '#A32D2D', '#1D9E75', '#BA7517',
     ]
+    _NO_CAISSE_COLOR = '#5F5E5A'
+
+    def _caisse_colors(self):
+        """Couleur de chaque caisse, fixée par son ordre de création.
+
+        La couleur était l'indice de la caisse dans la liste du moment :
+        rang au chiffre d'affaires dans « Par caisse », ordre de recherche
+        dans le filtre. Une même caisse changeait donc de couleur d'un
+        onglet à l'autre, ou dès qu'elle passait devant une autre
+        (écart n° 67). Lecture technique des seuls identifiants, en
+        ``sudo()`` : la couleur ne dépend pas des caisses que voit
+        l'utilisateur.
+        """
+        ids = self.env['pos.config'].sudo().with_context(
+            active_test=False).search([], order='id').ids
+        palette = self._CAISSE_PALETTE
+        return {cid: palette[i % len(palette)] for i, cid in enumerate(ids)}
 
     @api.model
     def get_caisse_breakdown(self, date_from, date_to, config_id=None,
@@ -773,7 +823,7 @@ class PosAnalyticsDashboard(models.AbstractModel):
         # période. ``cash_register_difference`` est un champ CALCULÉ
         # NON-STOCKÉ (Odoo 18) — on ne peut donc pas l'agréger en SQL via
         # read_group. On lit les sessions puis on somme côté Python.
-        dt_from, dt_to = self._parse_period(date_from, date_to)
+        dt_from, dt_to = self._utc_period(date_from, date_to)
         sess_domain = [
             ('start_at', '>=', dt_from),
             ('start_at', '<', dt_to),
@@ -789,9 +839,10 @@ class PosAnalyticsDashboard(models.AbstractModel):
             ecart_by_config[cfg_id] += sess.cash_register_difference or 0.0
 
         total_ca = sum(r.get('price_subtotal') or 0.0 for r in rows)
+        colors = self._caisse_colors()
 
         caisses = []
-        for idx, r in enumerate(rows):
+        for r in rows:
             cfg = r.get('config_id')
             cfg_id, cfg_name = cfg if cfg else (False, _("(sans caisse)"))
             ca = r.get('price_subtotal') or 0.0
@@ -802,7 +853,7 @@ class PosAnalyticsDashboard(models.AbstractModel):
             caisses.append({
                 'config_id': cfg_id,
                 'name': cfg_name,
-                'color': self._CAISSE_PALETTE[idx % len(self._CAISSE_PALETTE)],
+                'color': colors.get(cfg_id, self._NO_CAISSE_COLOR),
                 'ca': ca,
                 'margin': margin,
                 'cost': cost,
@@ -971,11 +1022,12 @@ class PosAnalyticsDashboard(models.AbstractModel):
     def get_pos_configs(self):
         """Liste des points de vente accessibles, avec couleur stable."""
         configs = self.env['pos.config'].search([])
+        colors = self._caisse_colors()
         return [{
             'id': c.id,
             'name': c.name,
-            'color': self._CAISSE_PALETTE[idx % len(self._CAISSE_PALETTE)],
-        } for idx, c in enumerate(configs)]
+            'color': colors.get(c.id, self._NO_CAISSE_COLOR),
+        } for c in configs]
 
     @api.model
     def get_dashboard_meta(self):

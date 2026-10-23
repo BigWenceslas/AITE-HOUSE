@@ -5,7 +5,8 @@ import { useService } from "@web/core/utils/hooks";
 import { loadChart, destroyChart } from "../services/chartjs_loader";
 import { KpiCard } from "../components/kpi_card";
 import {
-    fmtMoney, fmtPct, fmtInt, PERIOD_PRESETS, periodRange, monthLabel,
+    fmtMoney, fmtPct, fmtInt, fmtDate, PERIOD_PRESETS, periodRange,
+    monthLabel,
 } from "../services/utils";
 
 /**
@@ -131,6 +132,12 @@ export class ExecDashboardView extends Component {
         return "background:" + this.poleColor(key);
     }
 
+    /** « Du 01/10/2026 au 15/10/2026 » (règle 6 ; écart n° 2). */
+    get periodText() {
+        return "Du " + fmtDate(this.state.dateFrom) + " au "
+            + fmtDate(this.state.dateTo);
+    }
+
     mixLine(row) {
         return this.money(row.amount) + " · " + this.pct(row.pct);
     }
@@ -142,14 +149,31 @@ export class ExecDashboardView extends Component {
 
     get pickupSub() {
         const p = this.state.kpis.pickup || {};
+        // Le libellé de la carte ne porte plus « 7 j → 30 j » : la fenêtre
+        // est dite ici, en toutes lettres.
         return this.num(p.reservations) + " réservation(s) prise(s) ces "
-            + (p.window_days || 7) + " derniers jours";
+            + (p.window_days || 7) + " derniers jours pour les "
+            + (p.horizon_days || 30) + " prochains";
     }
 
     get paceSub() {
         const p = this.state.kpis.pace || {};
         return "mois " + (p.month ? monthLabel(p.month) : "") + " · N-1 à la même date : "
             + this.num(p.nights_ly) + " nuitée(s)";
+    }
+
+    /** Graduation de l'axe au format français : « 1,5 M », « 250 k »,
+     *  « 0,5 » (l'axe écrivait « 2.5k », au point décimal). */
+    kTick(v) {
+        const opt = { maximumFractionDigits: 1 };
+        const a = Math.abs(v);
+        if (a >= 1e6) {
+            return (v / 1e6).toLocaleString("fr-FR", opt) + "\u00a0M";
+        }
+        if (a >= 1e3) {
+            return (v / 1e3).toLocaleString("fr-FR", opt) + "\u00a0k";
+        }
+        return v.toLocaleString("fr-FR", opt);
     }
 
     // ------------------------------------------------------------------
@@ -233,7 +257,7 @@ export class ExecDashboardView extends Component {
                     y: {
                         ticks: {
                             font: { size: 9 },
-                            callback: (v) => (v / 1000) + "k",
+                            callback: (v) => this.kTick(v),
                         },
                     },
                 },

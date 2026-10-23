@@ -17,6 +17,7 @@ import { CategoriesView } from "./views/categories_view";
 import { DiscrepanciesView } from "./views/discrepancies_view";
 import { PaymentsView } from "./views/payments_view";
 import { ConfigView } from "./views/config_view";
+import { localIsoDate, toLocalDay } from "./services/utils";
 
 /**
  * Action client AITE POS Analytics — composant racine.
@@ -87,23 +88,13 @@ export class PosAnalyticsDashboard extends Component {
         );
         this.state.meta = meta;
 
-        /**
-         * Conversion défensive d'une valeur datetime Odoo vers string ISO
-         * (YYYY-MM-DD). Odoo 18 peut retourner :
-         *   - string "2025-10-01 08:00:00"  → on slice
-         *   - luxon DateTime                → .toFormat('yyyy-MM-dd')
-         *   - JS Date                       → .toISOString().slice
-         *   - false / null                  → null (session sans date)
-         */
-        const toISO = (val) => {
-            if (!val) return null;
-            if (typeof val === "string") return val.slice(0, 10);
-            if (typeof val.toFormat === "function") return val.toFormat("yyyy-MM-dd");
-            if (typeof val.toISOString === "function") return val.toISOString().slice(0, 10);
-            return String(val).slice(0, 10);
-        };
+        // Jour LOCAL d'une date-heure du serveur (UTC) : le serveur filtre
+        // la période sur des jours locaux (voir ``toLocalDay``).
+        const toISO = toLocalDay;
 
-        const today = new Date().toISOString().slice(0, 10);
+        // Date du jour LOCALE : en UTC, peu après minuit à Douala, on
+        // était encore la veille (écart n° 38).
+        const today = localIsoDate(new Date());
 
         // Filtrer start_at != false pour exclure les sessions en cours
         // d'ouverture qui n'ont pas encore de date de démarrage.

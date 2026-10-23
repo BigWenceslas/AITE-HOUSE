@@ -313,6 +313,22 @@ class AiteDirectionDashboard(models.AbstractModel):
         """
         S = []
 
+        # Règle 6 (écarts n° 37 et 41) : échéance en JJ/MM/AAAA, taux à la
+        # française (« 7,9 % », espace insécable) — la liste s'affichait
+        # en « 2026-10-25 » et « 7.9 % ».
+        def day(value):
+            v = str(value or '')
+            if len(v) >= 10 and v[4] == '-' and v[7] == '-':
+                return '%s/%s/%s' % (v[8:10], v[5:7], v[0:4])
+            return v
+
+        # Une décimale fixe pour tous les taux, comme les tableaux de bord
+        # d'où ils viennent (Stock : seuil « 2,0 % », Achats : hausse
+        # « +12,5 % ») — reprise de l'écart n° 41.
+        def pct(value, digits=1):
+            return ('%.*f' % (digits, value or 0.0)).replace('.', ',') \
+                + '\u00a0%'
+
         def sec(key, title, prio, source, rows):
             rows = [r for r in rows if r]
             if rows:
@@ -335,7 +351,7 @@ class AiteDirectionDashboard(models.AbstractModel):
                          'hint': "échu", 'action': 'purchase'})
         rows += [{'label': "Payer %s" % b.get('partner', ''),
                   'amount': b.get('amount', 0.0),
-                  'hint': b.get('planned') or '',
+                  'hint': day(b.get('planned')),
                   'action': 'purchase'}
                  for b in (inp.get('week_bills') or [])[:3]]
         sec('purchase', "Fournisseurs", 'urgent', "Achats", rows)
@@ -347,17 +363,20 @@ class AiteDirectionDashboard(models.AbstractModel):
                  'action': 'stock'} for p in
                 (inp.get('penalties') or [])[:2]]
         if inp.get('cmd_value'):
-            rows.append({'label': "Lancer la commande suggérée "
-                         "(%d réfs)" % int(inp.get('cmd_refs') or 0),
+            # « réfs » en toutes lettres (reprise de l'écart n° 42).
+            refs = int(inp.get('cmd_refs') or 0)
+            rows.append({'label': "Lancer la commande suggérée (%d %s)"
+                         % (refs, "référence" if refs <= 1
+                            else "références"),
                          'amount': inp['cmd_value'], 'hint': "sous seuil",
                          'action': 'stock'})
         sec('stock', "Stock", 'urgent', "Stock", rows)
 
         rows = []
         if (inp.get('coul_pct') or 0.0) > (inp.get('coul_seuil') or 0.0):
-            rows.append({'label': "Coulage au-dessus du seuil "
-                         "(%.1f %% > %.0f %%)" % (inp['coul_pct'],
-                                                  inp['coul_seuil']),
+            rows.append({'label': "Coulage au-dessus du seuil (%s > %s)"
+                         % (pct(inp['coul_pct']),
+                            pct(inp['coul_seuil'])),
                          'amount': inp.get('coul_amount', 0.0),
                          'hint': "inventaire tournant",
                          'action': 'stock'})
@@ -374,16 +393,18 @@ class AiteDirectionDashboard(models.AbstractModel):
                          'amount': inp.get('ann_amount', 0.0),
                          'hint': "par caisse", 'action': 'pos'})
         if (inp.get('rem_pct') or 0.0) >= 3.0:
-            rows.append({'label': "Remises élevées (%.1f %% du CA)"
-                         % inp['rem_pct'],
+            rows.append({'label': "Remises élevées (%s du CA)"
+                         % pct(inp['rem_pct']),
                          'amount': inp.get('rem_amount', 0.0),
                          'hint': "par vendeur", 'action': 'pos'})
         sec('pos', "Caisse", 'watch', "POS", rows)
 
         rows = [{'label': "Renégocier %s" % p.get('name', ''),
                  'amount': None,
-                 'hint': "%+.0f %% · %s" % (p.get('delta_pct') or 0.0,
-                                            p.get('partner', '')),
+                 'hint': "%s%s · %s" % (
+                     '+' if (p.get('delta_pct') or 0.0) >= 0 else '−',
+                     pct(abs(p.get('delta_pct') or 0.0)),
+                     p.get('partner', '')),
                  'action': 'purchase'}
                 for p in (inp.get('price_up') or [])[:2]]
         sec('prices', "Prix d'achat", 'watch', "Achats", rows)

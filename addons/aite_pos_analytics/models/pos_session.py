@@ -13,14 +13,16 @@ class PosSession(models.Model):
     métier (modéré / élevé / critique / excédent) utilisable pour
     déclencher des alertes, filtrer les vues, et colorer le dashboard.
 
-    Les seuils sont définis comme des constantes de classe pour faciliter
-    leur surcharge dans un module dérivé (overlay client).
+    Les seuils « Élevé » et « Critique » se règlent par société
+    (Point de Vente → Configuration → Paramètres, section Analyse AITE ;
+    champs ``res.company.aite_pos_gap_med`` / ``aite_pos_gap_high``). Les
+    constantes de classe ci-dessous n'en sont plus que les valeurs par
+    défaut (écart n° 67 : réglables sans code).
     """
     _inherit = 'pos.session'
 
-    # Seuils en valeur absolue de la devise de la session — par défaut
-    # calibrés pour le FCFA, à surcharger si besoin pour d'autres
-    # contextes (EUR, USD, ...).
+    # Valeurs par défaut des seuils, en valeur absolue de la devise —
+    # calibrées pour le FCFA.
     DISCREPANCY_THRESHOLD_HIGH = 200_000.0   # au-delà → critique
     DISCREPANCY_THRESHOLD_MED = 100_000.0    # au-delà → élevé
 
@@ -143,7 +145,11 @@ class PosSession(models.Model):
                  'cash_register_balance_end_real',
                  'cash_register_balance_start',
                  'cash_real_transaction', 'payment_method_ids',
-                 'order_ids.payment_ids.amount')
+                 'order_ids.payment_ids.amount',
+                 # Un seuil modifié dans les réglages reclasse les sessions
+                 # déjà comptées de la société.
+                 'company_id.aite_pos_gap_med',
+                 'company_id.aite_pos_gap_high')
     def _compute_cash_discrepancy_severity(self):
         # ``cash_register_difference`` est calculé et NON stocké, et son
         # ``@api.depends`` natif omet ``cash_register_balance_end_real``
@@ -176,9 +182,14 @@ class PosSession(models.Model):
                 session.cash_discrepancy_severity = 'over'
             else:
                 abs_diff = abs(diff)
-                if abs_diff >= self.DISCREPANCY_THRESHOLD_HIGH:
+                company = session.company_id
+                high = (company.aite_pos_gap_high
+                        or self.DISCREPANCY_THRESHOLD_HIGH)
+                med = (company.aite_pos_gap_med
+                       or self.DISCREPANCY_THRESHOLD_MED)
+                if abs_diff >= high:
                     session.cash_discrepancy_severity = 'high'
-                elif abs_diff >= self.DISCREPANCY_THRESHOLD_MED:
+                elif abs_diff >= med:
                     session.cash_discrepancy_severity = 'med'
                 else:
                     session.cash_discrepancy_severity = 'low'

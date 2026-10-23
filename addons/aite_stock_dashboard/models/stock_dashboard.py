@@ -2,8 +2,11 @@
 from datetime import datetime, timedelta
 from collections import defaultdict
 
+import pytz
+
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessError
+from odoo.tools.misc import format_date
 
 
 class AiteStockDashboard(models.AbstractModel):
@@ -116,6 +119,9 @@ class AiteStockDashboard(models.AbstractModel):
         return 'product_uom_qty'
 
     def _parse_period(self, date_from, date_to):
+        """Jours LOCAUX de la période (deux ``date``, bornes incluses) ;
+        :meth:`_date_domain` les traduit en domaine sur un champ
+        date-heure. Une période illisible retombe sur le mois courant."""
         try:
             dt_from = datetime.strptime(date_from, '%Y-%m-%d').date()
             dt_to = datetime.strptime(date_to, '%Y-%m-%d').date()
@@ -126,6 +132,63 @@ class AiteStockDashboard(models.AbstractModel):
         if dt_from > dt_to:
             dt_from, dt_to = dt_to, dt_from
         return dt_from, dt_to
+
+    def _period_tz(self):
+        """Fuseau des jours de la période et des dates affichées : celui du
+        contexte, sinon celui de l'utilisateur — la règle d'Odoo pour
+        « aujourd'hui » (``fields.Date.context_today``). UTC si aucun n'est
+        connu."""
+        tz_name = self.env.context.get('tz') or self.env.user.tz
+        if tz_name in pytz.all_timezones_set:
+            return pytz.timezone(tz_name)
+        return pytz.utc
+
+    def _date_domain(self, d_from, d_to, field='date'):
+        """
+        Domaine « ``field`` dans les jours locaux ``d_from`` → ``d_to`` »
+        (bornes incluses) pour un champ date-heure stocké en UTC : minuit à
+        Douala (UTC+1) est 23 h UTC la veille.
+
+        Les dates s'affichent dans le fuseau de l'utilisateur
+        (:meth:`_display_date`) ; des jours UTC listaient dans la période du
+        14/10 un mouvement affiché « 15/10/2026 » (relecture de l'écart
+        n° 37).
+        """
+        tz = self._period_tz()
+
+        def utc_midnight(day):
+            local = tz.localize(datetime.combine(day, datetime.min.time()))
+            return fields.Datetime.to_string(
+                local.astimezone(pytz.utc).replace(tzinfo=None))
+        return [(field, '>=', utc_midnight(d_from)),
+                (field, '<', utc_midnight(d_to + timedelta(days=1)))]
+
+    def _display_date(self, value):
+        """Date d'un mouvement telle que l'écran l'affiche : format de la
+        langue (``%d/%m/%Y`` en français) et jour LOCAL — le fuseau même
+        des bornes de période (:meth:`_date_domain`). Un mouvement de
+        23 h 30 UTC est déjà du lendemain à Douala ; l'ISO « 2026-10-14 »
+        tiré de l'UTC n'était ni lisible ni juste (écart n° 37)."""
+        if not value:
+            return ""
+        local = pytz.utc.localize(value).astimezone(self._period_tz())
+        return format_date(self.env, local.date())
+
+    # Raisons d'inventaire posées par Odoo en anglais, sans traduction
+    # possible : l'assistant « Appliquer » de l'inventaire propose
+    # « Quantity Updated » en valeur par défaut, chaîne non traduisible
+    # du standard (stock.inventory.adjustment.name). Elle devient le nom
+    # — donc la référence — du mouvement (écart n° 43).
+    def _display_reference(self, ref):
+        if not ref:
+            return ""
+        untranslated = {
+            "Quantity Updated": _("Quantité mise à jour"),
+        }
+        for source, label in untranslated.items():
+            if ref == source or ref.startswith(source + " ("):
+                return label + ref[len(source):]
+        return ref
 
     def _company_cfg(self):
         c = self.env.company
@@ -278,9 +341,13 @@ class AiteStockDashboard(models.AbstractModel):
     def get_locations(self):
         locs = self._internal_locations()
         palette = self._LOC_PALETTE
+        # Nom COMPLET (« WH/Stock », « BJ/Stock ») : le dernier segment
+        # seul nommait « Stock » l'emplacement principal de chaque
+        # entrepôt, indiscernables dans le filtre et les colonnes du stock
+        # complet dès le deuxième entrepôt (écart n° 68).
         return [{
             'id': l.id,
-            'name': l.display_name.split('/')[-1].strip() or l.name,
+            'name': l.complete_name or l.display_name or l.name,
             'color': palette[i % len(palette)],
         } for i, l in enumerate(locs)]
 
@@ -468,10 +535,7 @@ class AiteStockDashboard(models.AbstractModel):
         domain = [
             ('state', '=', 'done'),
             ('company_id', '=', self.env.company.id),
-            ('date', '>=', fields.Datetime.to_string(
-                datetime.combine(dt_from, datetime.min.time()))),
-            ('date', '<=', fields.Datetime.to_string(
-                datetime.combine(dt_to, datetime.max.time()))),
+            *self._date_domain(dt_from, dt_to),
         ]
         categ_set = self._categ_children(categ_id)
         moves = Move.search(domain, order='date desc', limit=limit * 3)
@@ -518,7 +582,7 @@ class AiteStockDashboard(models.AbstractModel):
                 signed = qty if dst.usage == 'internal' else -qty
             out.append({
                 'id': mv.id,
-                'date': fields.Date.to_string(mv.date),
+                'date': self._display_date(mv.date),
                 'type': mtype, 'type_cls': cls,
                 'product': mv.product_id.display_name,
                 'qty': signed,
@@ -600,10 +664,7 @@ class AiteStockDashboard(models.AbstractModel):
         base = [
             ('state', '=', 'done'),
             ('company_id', '=', self.env.company.id),
-            ('date', '>=', fields.Datetime.to_string(
-                datetime.combine(dt_from, datetime.min.time()))),
-            ('date', '<=', fields.Datetime.to_string(
-                datetime.combine(dt_to, datetime.max.time()))),
+            *self._date_domain(dt_from, dt_to),
         ]
         categ_set = self._categ_children(categ_id)
 
@@ -635,10 +696,7 @@ class AiteStockDashboard(models.AbstractModel):
         base = [
             ('state', '=', 'done'),
             ('company_id', '=', self.env.company.id),
-            ('date', '>=', fields.Datetime.to_string(
-                datetime.combine(dt_from, datetime.min.time()))),
-            ('date', '<=', fields.Datetime.to_string(
-                datetime.combine(dt_to, datetime.max.time()))),
+            *self._date_domain(dt_from, dt_to),
         ]
         categ_set = self._categ_children(categ_id)
         out = []
@@ -653,13 +711,14 @@ class AiteStockDashboard(models.AbstractModel):
             cost = mv.product_id.standard_price or 0.0
             out.append({
                 'id': mv.id,
-                'date': fields.Date.to_string(mv.date),
+                'date': self._display_date(mv.date),
                 'product_id': mv.product_id.id,
                 'product': mv.product_id.display_name,
                 'qty': signed_qty,
                 'value': signed_qty * cost,
                 'gtype': gtype, 'gtype_cls': cls,
-                'ref': mv.reference or mv.origin or "",
+                'ref': self._display_reference(
+                    mv.reference or mv.origin or ""),
             })
 
         if 'is_inventory' in Move._fields:
@@ -684,10 +743,7 @@ class AiteStockDashboard(models.AbstractModel):
             ('state', '=', 'done'),
             ('company_id', '=', self.env.company.id),
             ('location_dest_id.usage', '=', 'customer'),
-            ('date', '>=', fields.Datetime.to_string(
-                datetime.combine(dt_from, datetime.min.time()))),
-            ('date', '<=', fields.Datetime.to_string(
-                datetime.combine(dt_to, datetime.max.time()))),
+            *self._date_domain(dt_from, dt_to),
         ]
         categ_set = self._categ_children(categ_id)
         total = 0.0

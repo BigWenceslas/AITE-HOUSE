@@ -2,14 +2,20 @@
 <odoo>
 
     <!--
-        Menu "Analyse AITE" dans le Point de Vente.
+        Section « Analyse AITE » du menu Point de Vente → Analyse.
         Pointe sur l'action client du dashboard OWL, et chaque sous-menu
         ouvre le dashboard avec ``default_view`` adapté.
+
+        Un seul menu « Analyse » dans la barre du Point de Vente : la
+        section AITE s'accroche au menu Analyse standard (où Odoo range déjà
+        Commandes, Détails des ventes, Rapport de session) au lieu d'ajouter
+        un menu « Analyse AITE » juste à côté (écart n° 67 ; règle 5 :
+        s'accrocher aux écrans existants plutôt que créer des menus).
     -->
 
     <menuitem id="menu_aite_pos_analytics_root"
               name="Analyse AITE"
-              parent="point_of_sale.menu_point_root"
+              parent="point_of_sale.menu_point_rep"
               sequence="80"
               groups="aite_pos_analytics.group_aite_pos_analytics_user"/>
 
@@ -44,7 +50,7 @@
               sequence="40"/>
 
     <menuitem id="menu_aite_pos_daily_report"
-              name="Pivot &amp; Graph"
+              name="Tableau croisé &amp; graphique"
               parent="menu_aite_pos_analytics_root"
               action="action_pos_daily_report"
               sequence="50"/>

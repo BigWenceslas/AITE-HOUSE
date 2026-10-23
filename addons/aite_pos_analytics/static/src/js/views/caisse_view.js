@@ -131,8 +131,8 @@ export class CaisseView extends Component {
                     plugins: { legend: { display: false } },
                     scales: {
                         x: { ticks: { font: { size: 10 } } },
-                        y: { ticks: { font: { size: 9 }, color: "#888780",
-                                      callback: v => v + "%" } },
+                        y: { ticks: { font: { size: 9 }, color: COLORS.muted,
+                                      callback: v => fmtPct(v) } },
                     },
                 },
             });

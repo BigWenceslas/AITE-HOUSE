@@ -54,10 +54,18 @@ function asList(x) {
     }
     return [];
 }
-function iso(d) {
-    return d.toISOString().slice(0, 10);
+/*
+ * Date LOCALE en AAAA-MM-JJ (borne de période envoyée au serveur).
+ * ``toISOString()`` passe par l'UTC : à Douala (UTC+1), minuit le 1er
+ * devenait le 30 du mois précédent — « Ce mois » démarrait la veille
+ * (écart n° 38).
+ */
+export function localIsoDate(d) {
+    const pad = (n) => (n < 10 ? "0" : "") + n;
+    return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-"
+        + pad(d.getDate());
 }
-function rangeFor(key, today) {
+export function rangeFor(key, today) {
     const t = new Date(today + "T00:00:00");
     const from = new Date(t);
     if (key === "today") {
@@ -74,7 +82,7 @@ function rangeFor(key, today) {
     } else {
         return ["2000-01-01", today];
     }
-    return [iso(from), today];
+    return [localIsoDate(from), today];
 }
 
 /* ── formatage ─────────────────────────────────────────────────── */
@@ -83,14 +91,53 @@ export function fmtMoney(v, symbol) {
     const s = n.toLocaleString("fr-FR").replace(/[\u202f\u00a0]/g, " ");
     return symbol ? `${s} ${symbol}` : s;
 }
+/* Pourcentages à la française : virgule, espace insécable avant %,
+   décimales fixées (écart n° 41 — même rendu que l'exécutif). */
 export function fmtPct(v, digits = 1) {
     return (v === null || v === undefined)
-        ? "—" : `${(v).toFixed(digits).replace(".", ",")} %`;
+        ? "—" : `${(v).toFixed(digits).replace(".", ",")}\u00a0%`;
 }
 export function fmtDelta(v) {
     if (v === null || v === undefined) return "";
     const s = v >= 0 ? "▲ +" : "▼ ";
-    return s + Math.abs(v).toFixed(1).replace(".", ",") + " %";
+    return s + Math.abs(v).toFixed(1).replace(".", ",") + "\u00a0%";
+}
+/* Durée en jours, une décimale : « 12,3 j » (le délai moyen de
+   remboursement s'affichait sans arrondi — écart n° 41). */
+export function fmtDays(v) {
+    return (v || 0).toFixed(1).replace(".", ",") + " j";
+}
+/* « 2026-10-14 » → « 14/10/2026 » (règle 6, écart n° 37) ; un texte déjà
+   formaté par le moteur passe tel quel. */
+export function fmtDate(v) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(v || "");
+    return m ? `${m[3]}/${m[2]}/${m[1]}` : (v || "");
+}
+/* Nombre suivi du mot accordé : « 1 facture », « 4 factures » — en
+   toutes lettres, sans « fact. » ni « réfs » (reprise de l'écart n° 42). */
+export function fmtCount(n, one, many) {
+    const k = n || 0;
+    return k + " " + (k > 1 ? many : one);
+}
+/* Fenêtre « à payer bientôt » : celle du réglage des Achats (``cfg.soon``,
+   7 j par défaut) — le libellé restait à « 7 j » quand le montant suivait
+   une fenêtre réglée à 14 j (reprise de l'écart n° 69). */
+export function dueSoonLabel(soon) {
+    return "À payer sous " + (soon || 7) + " j";
+}
+/* Tranche de la balance âgée clients : la clé rendue par le moteur
+   Crédit (``get_aging``) fait foi. Le repli sur les bornes compare aux
+   bornes du moteur (30 / 60 / 90) — comparées à 31 / 61 / 91, les
+   couleurs glissaient d'une tranche (écart n° 70). */
+export function agingKey(r) {
+    if (["0_30", "31_60", "61_90", "90p"].includes(r.key)) {
+        return r.key;
+    }
+    const lo = r.min || 0;
+    if (lo >= 90 || r.max === null || r.max === undefined) {
+        return "90p";
+    }
+    return lo >= 60 ? "61_90" : lo >= 30 ? "31_60" : "0_30";
 }
 
 /* ── sous-composants purs ──────────────────────────────────────── */
@@ -283,6 +330,21 @@ export class DirectionDashboard extends Component {
     pct(v, d = 1) {
         return fmtPct(v, d);
     }
+    days(v) {
+        return fmtDays(v);
+    }
+    date(v) {
+        return fmtDate(v);
+    }
+    count(n, one, many) {
+        return fmtCount(n, one, many);
+    }
+    soonDays(k) {
+        return (k && k.cfg && k.cfg.soon) || 7;
+    }
+    soonLabel(k) {
+        return dueSoonLabel(this.soonDays(k));
+    }
 
     /* — dérivés pour les templates (pas de logique dans le XML) — */
     get netPositionSub() {
@@ -299,14 +361,15 @@ export class DirectionDashboard extends Component {
     get hotelPaceSub() {
         const h = this.state.data.vue && this.state.data.vue.hotel;
         if (!h || !h.pace) return "";
-        return `${h.nights_sold} nuitée(s) vendue(s) · pace du mois : `
-            + `${h.pace.nights} (N-1 : ${h.pace.nights_ly})`;
+        return `${h.nights_sold} nuitée(s) vendue(s) · rythme du mois `
+            + `(pace) : ${h.pace.nights} (N-1 : ${h.pace.nights_ly})`;
     }
     get hotelPickupSub() {
         const h = this.state.data.vue && this.state.data.vue.hotel;
         if (!h || !h.pickup) return "";
-        return `pickup ${h.pickup.nights} nuitée(s) prises ces `
-            + `${h.pickup.window_days} j pour les ${h.pickup.horizon_days} prochains`;
+        return `réservations récentes (pickup) : ${h.pickup.nights} `
+            + `nuitée(s) prises ces ${h.pickup.window_days} j pour les `
+            + `${h.pickup.horizon_days} prochains`;
     }
     hotelHint(key) {
         const h = this.state.data.vue && this.state.data.vue.hotel;
@@ -372,15 +435,12 @@ export class DirectionDashboard extends Component {
         if (!d) return [];
         const rows = asList(d.aging);
         const max = Math.max(1, ...rows.map((r) => r.amount || 0));
-        const keyOf = (r) => (r.min >= 91 || r.max === null
-            || r.max === undefined) ? "90p"
-            : r.min >= 61 ? "61_90" : r.min >= 31 ? "31_60" : "0_30";
         return rows.map((r) => ({
             label: r.label,
             amount: r.amount || 0,
             count: r.count || 0,
             pct: Math.max(2, ((r.amount || 0) / max) * 100),
-            color: DirectionDashboard.AGING_COLORS[keyOf(r)],
+            color: DirectionDashboard.AGING_COLORS[agingKey(r)],
         }));
     }
     get creditLinePoints() {
@@ -406,8 +466,10 @@ export class DirectionDashboard extends Component {
     get netFlowText() {
         const d = this.state.data.credit;
         if (!d) return "";
-        const v = d.kpis.net_flow || 0;
-        return (v >= 0 ? "+" : "−") + this.money(Math.abs(v));
+        // Signe seulement pour un flux non nul : ni « +0 » ni « −0 »
+        // (même règle que les cartes Achats, écarts n° 6 et 69).
+        const v = Math.round(d.kpis.net_flow || 0);
+        return (v > 0 ? "+" : v < 0 ? "−" : "") + this.money(Math.abs(v));
     }
     get stockByCat() {
         const d = this.state.data.stock;
@@ -432,7 +494,7 @@ export class DirectionDashboard extends Component {
             ...r,
             pct: Math.max(2, (r.couv / max) * 100),
             color: P[i % P.length],
-            text: r.couv.toFixed(1).replace(".", ",") + " j",
+            text: fmtDays(r.couv),
         }));
     }
     penaltyText(r) {
@@ -444,11 +506,14 @@ export class DirectionDashboard extends Component {
         const s = (this.state.meta && this.state.meta.suppliers) || [];
         return s.slice(0, 4);
     }
+    // Mêmes tranches que ``_bucket_supplier_invoices`` (jours avant
+    // l'échéance : 0–6, 7–13, 14–20, 21 et plus), dites en toutes lettres
+    // (« S + 1 » — reprise de l'écart n° 42).
     static SCHED = [["overdue", "Échues", "#A32D2D"],
-                    ["w0", "Cette semaine", "#A32D2D"],
-                    ["w1", "S + 1", "#854F0B"],
-                    ["w2", "S + 2", "#185FA5"],
-                    ["w3p", "S + 3 et +", "#8fa8c4"]];
+                    ["w0", "Sous 7 jours", "#A32D2D"],
+                    ["w1", "Dans 7 à 13 jours", "#854F0B"],
+                    ["w2", "Dans 14 à 20 jours", "#185FA5"],
+                    ["w3p", "Dans 21 jours et +", "#8fa8c4"]];
     get purchaseSchedule() {
         const d = this.state.data.achat;
         if (!d) return [];
@@ -470,16 +535,18 @@ export class DirectionDashboard extends Component {
             .map((m) => ({
                 name: m.name,
                 partner: m.partner || "",
-                deltaText: "+" + (((m.p1 || 0) / (m.p0 || 1) - 1)
-                    * 100).toFixed(0) + " %",
+                // une décimale, comme la colonne du tableau Achats
+                deltaText: "+" + fmtPct(((m.p1 || 0) / (m.p0 || 1) - 1)
+                    * 100),
             }));
     }
     get priceUpCount() {
-        return String(this.priceUp.length);
+        return fmtCount(this.priceUp.length, "référence", "références");
     }
     get dpoText() {
+        // Même rendu que le tableau de bord Achats (« 23,0 j »).
         const d = this.state.data.achat;
-        return d ? String(Math.round(d.kpis.dpo || 0)) : "0";
+        return fmtDays(d ? d.kpis.dpo : 0);
     }
     get configs() {
         return (this.state.meta ? this.state.meta.configs : []).map(

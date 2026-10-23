@@ -10,7 +10,7 @@ de bord spécialisés, dont il orchestre les moteurs sans dupliquer les
 formules.""",
     'description': "Tableau de bord consolidé multi-onglets pour la "
                    "direction (LAVERANDAH).",
-    'version': '18.0.1.1.1',
+    'version': '18.0.1.1.2',
     'author': 'AITE Consulting',
     'license': 'LGPL-3',
     'category': 'AITE/Dashboards',

@@ -849,12 +849,12 @@ CAS = [
      "Lire le pickup",
      "1. Créer et confirmer une réservation pour dans 10 jours.\n2. "
      "Recharger le tableau exécutif.",
-     "Le pickup « 7 j → 30 j » augmente du nombre de nuits de la "
+     "La carte « Réservations récentes (pickup) » augmente du nombre de nuits de la "
      "réservation ; une réservation pour dans 40 jours ne le change "
      "pas."),
     ("Q05", "Q", 3, "Réservations du mois en cours et historique N-1",
      "Lire le pace du mois",
-     "1. Lire la carte « Pace du mois ».",
+     "1. Lire la carte « Rythme du mois (pace) ».",
      "Elle donne les nuitées déjà réservées pour le mois, et celles qui "
      "l'étaient à la même date l'an dernier pour le même mois ; une "
      "réservation N-1 prise après cette date n'est pas comptée."),

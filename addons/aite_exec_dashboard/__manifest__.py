@@ -1,15 +1,20 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "AITE — Tableau de bord Direction",
-    'summary': "Vue consolidée du complexe : hébergement (CA, occupation, "
+    # Nom et résumé alignés sur le titre de l'écran, « Direction — Activité
+    # par pôle » : « Vue consolidée » est le cockpit (aite_direction_dashboard)
+    # et les deux modules se confondaient dans Apps (reprise de l'écart n° 70).
+    'name': "AITE — Direction (activité par pôle)",
+    'summary': "Activité par pôle du complexe : hébergement (CA, occupation, "
                "ADR), restauration & boutique (CA POS, tickets, panier), "
                "prestations (SPA, coiffure, pressing, espaces) et points "
                "de fidélité — sur la charte AITE.",
     'description': """
-AITE Tableau de bord Direction (adaptation A2)
-==============================================
+AITE Direction — Activité par pôle (adaptation A2)
+==================================================
 
-Une page unique pour la direction, qui consolide les trois pôles :
+Une page unique pour la direction, qui présente l'activité des trois pôles
+(le cockpit « Direction — Vue consolidée » est le module
+aite_direction_dashboard) :
 
 * **Hébergement** — chiffre d'affaires, taux d'occupation et ADR,
   fournis par le tableau de bord du PMS (même source, mêmes chiffres) ;
@@ -29,7 +34,7 @@ dure).
     'author': "AITE CONSULTING",
     'website': "https://aiteconsulting.com",
     'category': 'Industries',
-    'version': '18.0.1.1.1',
+    'version': '18.0.1.1.2',
     'license': 'LGPL-3',
     'depends': ['web', 'point_of_sale', 'aite_hotel_management',
                 'aite_slot_booking'],

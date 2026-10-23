@@ -24,15 +24,17 @@ KPI_HINTS = {
     'occupancy': "Taux d'occupation : part des chambres disponibles qui "
                  "ont été vendues sur la période (chambres hors service "
                  "exclues).",
-    'adr': "ADR (prix moyen) : ce que rapporte en moyenne une chambre "
-           "vendue par nuit, hors taxes et hors services.",
-    'revpar': "RevPAR : ce que rapporte chaque chambre disponible, "
-              "vendue ou non — c'est l'indicateur qui combine prix et "
-              "remplissage.",
-    'pickup': "Pickup : nuitées prises ces 7 derniers jours pour les 30 "
-              "prochains jours — la demande qui arrive en ce moment.",
-    'pace': "Pace : nuitées déjà réservées pour le mois en cours, "
-            "comparées à celles qui l'étaient à la même date l'an dernier.",
+    'adr': "Prix moyen par nuit (ADR) : ce que rapporte en moyenne une "
+           "chambre vendue par nuit, hors taxes et hors services.",
+    'revpar': "Revenu par chambre disponible (RevPAR) : ce que rapporte "
+              "chaque chambre disponible, vendue ou non — c'est "
+              "l'indicateur qui combine prix et remplissage.",
+    'pickup': "Réservations récentes (pickup) : nuitées prises ces 7 "
+              "derniers jours pour les 30 prochains jours — la demande qui "
+              "arrive en ce moment.",
+    'pace': "Rythme du mois (pace) : nuitées déjà réservées pour le mois "
+            "en cours, comparées à celles qui l'étaient à la même date l'an "
+            "dernier.",
     'last_year': "Écart en couleur : par rapport à la même période l'an "
                  "dernier (vert = mieux, rouge = moins bien).",
 }

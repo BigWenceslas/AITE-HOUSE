@@ -245,9 +245,24 @@
     .asd-search {
         border: 1px solid var(--asd-border);
         border-radius: 8px;
-        padding: 6px 10px;
+        padding: 6px 10px 6px 28px;
         font-size: 12px;
         min-width: 220px;
+    }
+    /* Loupe Font Awesome dans le champ (plus d'émoji, rendu variable
+       selon le poste — écart n° 68). */
+    .asd-search-wrap {
+        position: relative;
+        display: inline-block;
+    }
+    .asd-search-icon {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 12px;
+        color: #5f5e5a;
+        pointer-events: none;
     }
     .asd-tablewrap {
         max-height: 480px;

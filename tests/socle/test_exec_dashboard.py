@@ -7,8 +7,11 @@ Extraction du code réel : ``_mix_rows`` (répartition par pôle),
 la consolidation : sources par pôle, panier moyen, fenêtre de check-out
 hébergement, fidélité optionnelle.
 """
+import json
 import os
 import re
+import shutil
+import subprocess
 import textwrap
 import unittest
 from datetime import date, datetime
@@ -145,6 +148,113 @@ class TestConsolidation(unittest.TestCase):
         series = {'hotel': [0] * 6, 'pos': [0] * 6, 'slots': [0] * 6}
         self.assertTrue(all(len(s) == len(labels)
                             for s in series.values()))
+
+
+
+# ----------------------------------------------------------------------
+# Code JS du tableau de bord (écarts n° 2, 38, 41, 42, 70) : les fonctions
+# de ``static/src/js/services/utils.js`` sont extraites et exécutées par
+# Node, dans le fuseau de Douala (UTC+1), avec une horloge figée.
+# ----------------------------------------------------------------------
+
+JS_UTILS = os.path.join(ADDONS, 'aite_exec_dashboard', 'static', 'src',
+                        'js', 'services', 'utils.js')
+JS_XML = os.path.join(ADDONS, 'aite_exec_dashboard', 'static', 'src',
+                      'xml', 'dashboard.xml')
+NODE = shutil.which('node')
+
+
+def _js_functions(path, names):
+    src = open(path, encoding='utf-8').read()
+    out = []
+    for name in names:
+        m = re.search(r'^(?:export )?function %s\(.*?^}' % name, src,
+                      re.S | re.M)
+        assert m, "%s introuvable" % name
+        out.append(re.sub(r'^export ', '', m.group(0)))
+    return "\n".join(out)
+
+
+def _node(code, now=None, tz='Africa/Douala'):
+    """Exécute ``code`` (qui affiche un JSON) ; ``now`` = [a, m, j, h, mn]
+    fige l'horloge locale (mois de 1 à 12)."""
+    clock = ""
+    if now:
+        y, mo, d, h, mi = now
+        clock = (
+            "const _RD = Date;"
+            "class _FD extends _RD { constructor(...a) {"
+            " if (a.length) { super(...a); } else {"
+            " super(%d, %d, %d, %d, %d, 0); } }"
+            " static now() { return new _FD().getTime(); } }"
+            "globalThis.Date = _FD;" % (y, mo - 1, d, h, mi))
+    env = dict(os.environ, TZ=tz)
+    res = subprocess.run([NODE, '-e', clock + code], capture_output=True,
+                         text=True, env=env, timeout=60)
+    if res.returncode:
+        raise AssertionError(res.stderr)
+    return json.loads(res.stdout)
+
+
+@unittest.skipUnless(NODE, "node absent : code JS non exécuté")
+class TestJsPeriodeEtFormats(unittest.TestCase):
+
+    def _range(self, key, now):
+        code = _js_functions(JS_UTILS, ['localIsoDate', 'periodRange'])
+        return _node(code + "console.log(JSON.stringify(periodRange(%s)));"
+                     % json.dumps(key), now=now)
+
+    def test_ce_mois_commence_le_1er_a_douala(self):
+        """n° 38 : minuit local passé par toISOString() devenait la veille
+        en UTC (« Période 2026-09-30 → … »)."""
+        r = self._range('month', (2026, 10, 15, 10, 0))
+        self.assertEqual(r, {'date_from': '2026-10-01',
+                             'date_to': '2026-10-15'})
+
+    def test_aujourdhui_juste_apres_minuit(self):
+        r = self._range('month', (2026, 10, 1, 0, 30))
+        self.assertEqual(r, {'date_from': '2026-10-01',
+                             'date_to': '2026-10-01'})
+
+    def test_trimestre_et_annee(self):
+        self.assertEqual(self._range('quarter', (2026, 11, 3, 9, 0)),
+                         {'date_from': '2026-10-01',
+                          'date_to': '2026-11-03'})
+        self.assertEqual(self._range('year', (2026, 11, 3, 9, 0)),
+                         {'date_from': '2026-01-01',
+                          'date_to': '2026-11-03'})
+
+    def test_pourcentages_a_la_francaise(self):
+        """n° 41 : « 64 % » ici, « 64,0 % » au cockpit — une décimale
+        fixe, virgule, espace insécable avant %."""
+        code = _js_functions(JS_UTILS, ['fmtPct', 'fmtDelta'])
+        out = _node(code + "console.log(JSON.stringify([fmtPct(64),"
+                    " fmtPct(56.04), fmtPct(0), fmtDelta(12.5),"
+                    " fmtDelta(-3)]));")
+        self.assertEqual(out, ["64,0\u00a0%", "56,0\u00a0%", "0,0\u00a0%",
+                               "▲ +12,5\u00a0%", "▼ 3,0\u00a0%"])
+
+    def test_dates_affichees_jj_mm_aaaa(self):
+        """n° 2 : « Période 2026-10-01 → 2026-10-15 »."""
+        code = _js_functions(JS_UTILS, ['fmtDate'])
+        out = _node(code + "console.log(JSON.stringify([fmtDate("
+                    "'2026-10-01'), fmtDate(''), fmtDate(null),"
+                    " fmtDate('01/10/2026')]));")
+        self.assertEqual(out, ['01/10/2026', '', '', '01/10/2026'])
+
+    def test_plus_de_date_iso_ni_sigle_anglais_seul_a_l_ecran(self):
+        """n° 2 et 42 : la période s'écrit en dates françaises ; RevPAR,
+        pickup, pace et ADR portent leur nom français."""
+        with open(JS_XML, encoding='utf-8') as fh:
+            xml = fh.read()
+        with open(JS_UTILS, encoding='utf-8') as fh:
+            utils = fh.read()
+        self.assertFalse("state.dateFrom + ' → '" in xml,
+                         "période affichée en dates ISO")
+        for label in ("'RevPAR'", "'Pace du mois'", "'Pickup 7 j → 30 j'",
+                      "'ADR — prix moyen par nuit'"):
+            self.assertFalse(label in xml, label)
+        self.assertFalse(".toISOString(" in utils)
 
 
 if __name__ == '__main__':

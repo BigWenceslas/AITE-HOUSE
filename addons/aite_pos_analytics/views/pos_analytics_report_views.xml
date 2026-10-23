@@ -100,11 +100,14 @@
         <field name="context">{'group_by': ['categ_id']}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Aucune donnée POS disponible
+                Aucune vente du Point de Vente sur ces filtres
             </p>
             <p>
-                Cette analyse exploite l'ensemble des lignes de commande
-                des sessions POS clôturées avec marge brute et CMV.
+                Chaque commande payée en caisse apparaît ici avec son chiffre
+                d'affaires, son coût (CMV) et sa marge. Encaissez une vente
+                dans une session de caisse, ou élargissez la période dans les
+                filtres, puis regroupez par catégorie, caisse ou mois pour
+                comparer.
             </p>
         </field>
     </record>

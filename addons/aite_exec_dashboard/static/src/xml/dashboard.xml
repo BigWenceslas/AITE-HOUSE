@@ -26,7 +26,7 @@
 
             <div class="aed-topbar">
                 <div>
-                    <h2 class="aed-title">Direction — Vue consolidée</h2>
+                    <h2 class="aed-title">Direction — Activité par pôle</h2>
                     <div class="aed-sub">Hébergement · Restauration &amp; boutique · Prestations</div>
                 </div>
             </div>
@@ -58,11 +58,11 @@
                     <KpiCard mega="true" accent="'primary'"
                              label="'Chiffre d\'affaires total'"
                              value="money(state.kpis.total_ca)"
-                             sub="'Période ' + state.dateFrom + ' → ' + state.dateTo"/>
+                             sub="periodText"/>
                     <KpiCard mega="true" accent="'primary'"
                              label="'Hébergement'"
                              value="money(state.kpis.hotel_ca)"
-                             sub="'Nuitées HT, nuit par nuit · occupation ' + pct(state.kpis.occupancy) + ' · ADR ' + money(state.kpis.adr)"/>
+                             sub="'Nuitées HT, nuit par nuit · occupation ' + pct(state.kpis.occupancy) + ' · prix moyen ' + money(state.kpis.adr) + ' / nuit'"/>
                     <KpiCard mega="true" accent="'info'"
                              label="'Restauration &amp; boutique'"
                              value="money(state.kpis.pos_ca)"
@@ -82,21 +82,21 @@
                              hint="hint('occupancy')"
                              delta="state.kpis.deltas_ly.occupancy"
                              sub="num(state.kpis.nights_sold) + ' nuitée(s) vendue(s)'"/>
-                    <KpiCard label="'ADR — prix moyen par nuit'"
+                    <KpiCard label="'Prix moyen par nuit (ADR)'"
                              value="money(state.kpis.adr)"
                              hint="hint('adr')"
                              delta="state.kpis.deltas_ly.adr"
                              sub="'CA hébergement ÷ nuitées vendues'"/>
-                    <KpiCard label="'RevPAR'"
+                    <KpiCard label="'Revenu par chambre disponible (RevPAR)'"
                              value="money(state.kpis.revpar)"
                              hint="hint('revpar')"
                              delta="state.kpis.deltas_ly.revpar"
                              sub="'par chambre disponible, vendue ou non'"/>
-                    <KpiCard label="'Pickup 7 j → 30 j'"
+                    <KpiCard label="'Réservations récentes (pickup)'"
                              value="num(state.kpis.pickup.nights) + ' nuitée(s)'"
                              hint="hint('pickup')"
                              sub="pickupSub"/>
-                    <KpiCard label="'Pace du mois'"
+                    <KpiCard label="'Rythme du mois (pace)'"
                              value="num(state.kpis.pace.nights) + ' nuitée(s)'"
                              hint="hint('pace')"
                              delta="state.kpis.pace.delta"

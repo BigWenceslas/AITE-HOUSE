@@ -57,10 +57,36 @@ export function fmtQty(value) {
     return r.toLocaleString("fr-FR");
 }
 
+/**
+ * Pourcentage à la française, une décimale fixe, espace insécable avant
+ * « % » : 0.5 → « 0,5 % », 2 → « 2,0 % » (règle 6 ; écart n° 41 : un même
+ * taux ne s'écrit plus « 2 % » ici et « 2,0 % » ailleurs).
+ */
 export function fmtPct(value) {
+    const n = Number(value) || 0;
+    return n.toFixed(1).replace(".", ",") + "\u00a0%";
+}
+
+/** Forme accordée seule : « référence à zéro » / « références à zéro ». */
+export function pluralWord(n, singular, pluralForm) {
+    return (Number(n) || 0) > 1 ? pluralForm : singular;
+}
+
+/** Accord en nombre : « 1 rupture », « 0 rupture », « 2 ruptures ». */
+export function plural(n, singular, pluralForm) {
+    const count = Number(n) || 0;
+    return count + " " + pluralWord(count, singular, pluralForm);
+}
+
+/**
+ * Quantité accordée : « 1 unité », « 1,5 unité », « 24 unités ». Une
+ * quantité peut être décimale : règle française, pluriel à partir de 2,
+ * sur le nombre tel qu'il s'affiche (arrondi au dixième par ``fmtQty``).
+ */
+export function fmtUnits(value) {
     const n = value || 0;
-    const r = ((n * 10 + (n >= 0 ? 0.5 : -0.5)) | 0) / 10;
-    return ("" + r).replace(".", ",") + " %";
+    const shown = Math.abs(((n * 10 + (n >= 0 ? 0.5 : -0.5)) | 0) / 10);
+    return fmtQty(value) + " " + (shown >= 2 ? "unités" : "unité");
 }
 
 export function fmtDays(value) {
@@ -79,9 +105,18 @@ export const PERIOD_PRESETS = [
     { key: "quarter", label: "3 mois" },
 ];
 
-export function periodRange(key) {
-    const today = new Date();
-    const iso = (d) => d.toISOString().slice(0, 10);
+/**
+ * Date LOCALE au format AAAA-MM-JJ attendu par le serveur et les champs
+ * <input type="date">. ``toISOString()`` passe par UTC : à Douala (UTC+1),
+ * le minuit local du 1er devenait le 30 du mois précédent (écart n° 38).
+ */
+export function localIsoDate(d) {
+    const pad = (n) => (n < 10 ? "0" : "") + n;
+    return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+}
+
+export function periodRange(key, today = new Date()) {
+    const iso = localIsoDate;
     let from = new Date(today);
     const to = new Date(today);
     switch (key) {

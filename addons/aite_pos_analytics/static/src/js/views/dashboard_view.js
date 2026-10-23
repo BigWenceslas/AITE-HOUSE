@@ -5,7 +5,7 @@ import { useService } from "@web/core/utils/hooks";
 import { KpiCard } from "../components/kpi_card";
 import { RankRow } from "../components/rank_row";
 import { loadChart, destroyChart } from "../services/chartjs_loader";
-import { fmt, fmtMoney, fmtPct, fmtDelta, deltaClass, fmtSigned, COLORS, getCategoryColors } from "../services/utils";
+import { fmt, fmtMoney, fmtPct, fmtDelta, deltaClass, fmtSigned, fmtDate, fmtUnits, COLORS, getCategoryColors } from "../services/utils";
 
 /**
  * Vue "Tableau de bord" — la vue principale et la plus dense.
@@ -148,8 +148,8 @@ export class DashboardView extends Component {
                     responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        x: { ticks: { font: { size: 10 }, color: "#888780", maxRotation: 30 } },
-                        y: { ticks: { font: { size: 9 }, color: "#888780",
+                        x: { ticks: { font: { size: 10 }, color: COLORS.muted, maxRotation: 30 } },
+                        y: { ticks: { font: { size: 9 }, color: COLORS.muted,
                                       callback: v => v >= 1000 ? Math.round(v / 1000) + "k" : v } },
                     },
                 },
@@ -177,8 +177,8 @@ export class DashboardView extends Component {
                     responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        x: { ticks: { font: { size: 9 }, color: "#888780" } },
-                        y: { ticks: { font: { size: 9 }, color: "#888780",
+                        x: { ticks: { font: { size: 9 }, color: COLORS.muted } },
+                        y: { ticks: { font: { size: 9 }, color: COLORS.muted,
                                       callback: v => v >= 1000 ? Math.round(v / 1000) + "k" : v } },
                     },
                 },
@@ -204,7 +204,7 @@ export class DashboardView extends Component {
                     plugins: { legend: { position: "bottom", labels: { font: { size: 10 } } } },
                     scales: {
                         x: { ticks: { font: { size: 10 } } },
-                        y: { ticks: { font: { size: 9 }, color: "#888780",
+                        y: { ticks: { font: { size: 9 }, color: COLORS.muted,
                                       callback: v => v >= 1000 ? Math.round(v / 1000) + "k" : v } },
                     },
                 },
@@ -246,6 +246,8 @@ export class DashboardView extends Component {
     get fmtDelta() { return fmtDelta; }
     get deltaClass() { return deltaClass; }
     get fmtSigned() { return fmtSigned; }
+    get fmtDate() { return fmtDate; }
+    get fmtUnits() { return fmtUnits; }
     get COLORS() { return COLORS; }
 
     /**
@@ -257,10 +259,24 @@ export class DashboardView extends Component {
         const a = max > 0 ? value / max : 0;
         return `rgba(113, 75, 103, ${(0.06 + a * 0.85).toFixed(3)})`;
     }
+    /**
+     * Texte de case blanc ou noir selon le fond réellement obtenu (violet
+     * plus ou moins opaque sur blanc) : le plus contrasté des deux passe
+     * toujours le seuil AA de 4,5:1. Le gris sur les cases moyennes
+     * tombait sous ce seuil (écart n° 71).
+     */
     heatTextColor(value) {
         const max = (this.state.heatmap && this.state.heatmap.max) || 0;
         const a = max > 0 ? value / max : 0;
-        return a > 0.55 ? "#ffffff" : "#5f5e5a";
+        const alpha = 0.06 + a * 0.85;
+        const lin = (c) => {
+            const v = (255 - alpha * (255 - c)) / 255;   // composé sur blanc
+            return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+        };
+        const lum = 0.2126 * lin(113) + 0.7152 * lin(75) + 0.0722 * lin(103);
+        const onWhite = 1.05 / (lum + 0.05);
+        const onBlack = (lum + 0.05) / 0.05;
+        return onWhite >= onBlack ? "#ffffff" : "#000000";
     }
     /** Abrège un montant pour l'affichage compact dans la heatmap. */
     heatLabel(value) {
@@ -293,6 +309,14 @@ export class DashboardView extends Component {
     marginBadgeClass(rate) {
         if (rate >= 50) return "b-teal";
         if (rate >= 30) return "b-amb";
+        return "b-red";
+    }
+
+    /** Badge de taux d'une caisse — mêmes seuils que l'onglet « Par
+     *  caisse », ligne TOTAL comprise (toujours ambre auparavant). */
+    caisseBadgeClass(rate) {
+        if (rate >= 50) return "b-teal";
+        if (rate >= 40) return "b-amb";
         return "b-red";
     }
 

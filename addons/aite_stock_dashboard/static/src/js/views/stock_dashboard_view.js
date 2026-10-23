@@ -6,7 +6,7 @@ import { loadChart, destroyChart } from "../services/chartjs_loader";
 import { KpiCard } from "../components/kpi_card";
 import {
     COLORS, CATEG_PALETTE, BADGE_CLS,
-    fmtMoney, fmtCompact, fmtQty, fmtPct, fmtDays,
+    fmtMoney, fmtCompact, fmtQty, fmtPct, fmtDays, plural, pluralWord, fmtUnits,
     PERIOD_PRESETS, periodRange,
 } from "../services/utils";
 
@@ -303,6 +303,33 @@ export class StockDashboardView extends Component {
         return "" + (v === undefined || v === null ? 0 : v);
     }
 
+    /** Accord en nombre (« 1 rupture », « 2 ruptures ») — écart n° 44. */
+    plural(n, singular, pluralForm) {
+        return plural(n, singular, pluralForm);
+    }
+
+    /** Forme accordée sans le nombre (« référence à zéro »). */
+    pluralWord(n, singular, pluralForm) {
+        return pluralWord(n, singular, pluralForm);
+    }
+
+    /** Quantité accordée (« 1 unité », « 24 unités »). */
+    units(v) {
+        return fmtUnits(v);
+    }
+
+    refs(n) {
+        return plural(n, "réf", "réfs");
+    }
+
+    /** Sous-titre de la carte « Ruptures & critiques », accordé. */
+    ruptSub() {
+        const k = this.state.kpis;
+        return plural(k.rupt_count, "rupture", "ruptures") + " · " +
+            plural(k.crit_count, "critique", "critiques") +
+            " (sous " + this.num((k.cfg || {}).crit) + " j)";
+    }
+
     rotX(v) {
         const n = v || 0;
         const r = ((n * 10 + 0.5) | 0) / 10;
@@ -518,7 +545,8 @@ export class StockDashboardView extends Component {
                     x: {
                         ticks: {
                             font: { size: 9 },
-                            callback: (v) => v + " j",
+                            // Virgule décimale (« 2,5 j ») — règle 6.
+                            callback: (v) => fmtQty(v) + " j",
                         },
                     },
                     y: { ticks: { font: { size: 10 } } },
@@ -672,7 +700,8 @@ export class StockDashboardView extends Component {
                     y: {
                         ticks: {
                             font: { size: 9 },
-                            callback: (v) => v + " %",
+                            // « 0,5 % » et non « 0.5 % » (écart n° 41).
+                            callback: (v) => fmtPct(v),
                         },
                         suggestedMax: (serie.seuil || 2) + 1,
                     },

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
 from collections import defaultdict
+
+import pytz
 
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessError
@@ -166,13 +168,34 @@ class AitePurchaseDashboard(models.AbstractModel):
             dt_from, dt_to = dt_to, dt_from
         return dt_from, dt_to
 
+    def _local_date(self, value):
+        """Date et heure enregistrées (UTC) → date dans le fuseau de
+        l'utilisateur. Le journal prenait la date UTC : à Douala, une
+        commande passée à 0 h 30 était datée de la veille (écart n° 37)."""
+        if not value:
+            return None
+        return fields.Datetime.context_timestamp(self, value).date()
+
     def _dt_range(self, dt_from, dt_to):
-        return (
-            fields.Datetime.to_string(
-                datetime.combine(dt_from, datetime.min.time())),
-            fields.Datetime.to_string(
-                datetime.combine(dt_to, datetime.max.time())),
-        )
+        """Jours LOCAUX [dt_from, dt_to] → bornes UTC (naïves, comme les
+        champs Datetime enregistrés) pour filtrer ``date_order``.
+
+        Les bornes étaient minuit et 23 h 59 UTC : à Douala (UTC+1), une
+        commande du 01/10 à 0 h 30 tombait dans la période de septembre,
+        alors que le journal la date du 01/10 (``_local_date``) — écart
+        n° 37, reprise. Même fuseau que ``context_timestamp``."""
+        tz_name = self.env.context.get('tz') or self.env.user.tz or 'UTC'
+        try:
+            tz = pytz.timezone(tz_name)
+        except pytz.UnknownTimeZoneError:
+            tz = pytz.utc
+
+        def utc(day, moment):
+            local = tz.localize(datetime.combine(day, moment))
+            return fields.Datetime.to_string(
+                local.astimezone(pytz.utc).replace(tzinfo=None))
+
+        return utc(dt_from, time.min), utc(dt_to, time.max)
 
     def _supplier_universe(self):
         """Fournisseurs actifs : commandes confirmées sur 12 mois ou
@@ -290,7 +313,11 @@ class AitePurchaseDashboard(models.AbstractModel):
                 domain, order='date_order desc'):
             done_picks = po.picking_ids.filtered(
                 lambda p: p.state == 'done')
-            recv = max(done_picks.mapped('date_done')) if done_picks else None
+            # Dates du journal dans le fuseau de l'utilisateur (comparées
+            # à la date du jour, elle aussi locale).
+            recv = self._local_date(max(done_picks.mapped('date_done'))) \
+                if done_picks else None
+            ordered = self._local_date(po.date_order)
             status_field = getattr(po, 'receipt_status', None)
             if status_field:
                 pending = status_field == 'pending'
@@ -307,22 +334,22 @@ class AitePurchaseDashboard(models.AbstractModel):
                     is_full = all(
                         (l.qty_received or 0.0) >= (l.product_qty or 0.0)
                         - 0.001 for l in lines) if lines else True
-            planned = po.date_planned.date() if po.date_planned else None
+            planned = self._local_date(po.date_planned)
             if pending:
                 days_late = max(0, (today - planned).days) if planned else 0
             else:
-                rdate = recv.date() if recv else today
+                rdate = recv or today
                 days_late = max(0, (rdate - planned).days) if planned else 0
             delai = None
-            if recv and po.date_order:
-                delai = (recv.date() - po.date_order.date()).days
+            if recv and ordered:
+                delai = (recv - ordered).days
             m = self._order_metrics(pending, days_late, is_full, cfg['late'])
             rows.append({
                 'id': po.id,
                 'partner_id': po.partner_id.id,
                 'partner': po.partner_id.name or "",
                 'ref': po.name or "",
-                'date': fields.Date.to_string(po.date_order),
+                'date': fields.Date.to_string(ordered) if ordered else "",
                 'amount': po.amount_total or 0.0,
                 'planned': fields.Date.to_string(planned) if planned else "",
                 'recv': fields.Date.to_string(recv) if recv else "",

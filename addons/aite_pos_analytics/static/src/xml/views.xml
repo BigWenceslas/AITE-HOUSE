@@ -10,48 +10,54 @@
             <div class="o_aite_grid_4 mb-3">
                 <KpiCard label="'Chiffre d\'affaires'"
                          value="fmtMoney(state.kpis.ca)"
-                         subtitle="'HT · ' + fmtMoney(state.kpis.ca_per_day) + ' / jour · ' + state.kpis.days + 'j'"
+                         subtitle="'HT · ' + fmtMoney(state.kpis.ca_per_day) + ' / jour · ' + state.kpis.days + ' j'"
                          color="COLORS.info"/>
                 <KpiCard label="'Marge brute'"
                          value="fmtMoney(state.kpis.margin)"
-                         subtitle="'Taux: ' + fmtPct(state.kpis.margin_rate) + ' · ' + fmtMoney(state.kpis.margin_per_order) + '/tx'"
+                         subtitle="'Taux\u00a0: ' + fmtPct(state.kpis.margin_rate) + ' · ' + fmtMoney(state.kpis.margin_per_order) + ' / ticket'"
                          color="COLORS.success"/>
                 <KpiCard label="'CMV (coût marchandises)'"
                          value="fmtMoney(state.kpis.cost)"
-                         subtitle="fmtPct(state.kpis.cmv_rate) + ' du CA · ' + fmtMoney(state.kpis.cost_per_unit) + '/u'"
+                         subtitle="fmtPct(state.kpis.cmv_rate) + ' du CA · ' + fmtMoney(state.kpis.cost_per_unit) + ' / unité'"
                          color="COLORS.danger"/>
                 <KpiCard label="'Transactions'"
                          value="fmt(state.kpis.order_count)"
-                         subtitle="'Panier moy. ' + fmtMoney(state.kpis.average_basket) + ' · ' + fmt(state.kpis.qty) + ' u'"
+                         subtitle="'Panier moyen ' + fmtMoney(state.kpis.average_basket) + ' · ' + fmtUnits(state.kpis.qty)"
                          color="COLORS.primary"/>
             </div>
 
-            <!-- Bande de variation vs période précédente (même durée) -->
+            <!-- Bande de variation vs période précédente (même durée).
+                 Ce n'est PAS l'année précédente : « vs N-1 » trompait le
+                 lecteur (écart n° 62). Un coût qui monte s'affiche en rouge. -->
+            <div class="o_aite_delta_title mb-1"
+                 t-if="state.kpis.ca_delta !== null || state.kpis.margin_delta !== null">
+                Évolution par rapport à la période précédente de même durée<t t-if="state.kpis.prev_from"> (du <t t-esc="fmtDate(state.kpis.prev_from)"/> au <t t-esc="fmtDate(state.kpis.prev_to)"/>)</t>
+            </div>
             <div class="o_aite_delta_strip mb-3"
                  t-if="state.kpis.ca_delta !== null || state.kpis.margin_delta !== null">
                 <div class="o_aite_delta_cell">
-                    <span class="o_aite_delta_lbl">CA vs N-1</span>
+                    <span class="o_aite_delta_lbl">Chiffre d'affaires</span>
                     <span t-if="fmtDelta(state.kpis.ca_delta)"
                           t-attf-class="o_aite_delta_val o_aite_{{ deltaClass(state.kpis.ca_delta) }}"
                           t-esc="fmtDelta(state.kpis.ca_delta)"/>
                     <span t-else="" class="o_aite_delta_val text-muted">—</span>
                 </div>
                 <div class="o_aite_delta_cell">
-                    <span class="o_aite_delta_lbl">Marge vs N-1</span>
+                    <span class="o_aite_delta_lbl">Marge</span>
                     <span t-if="fmtDelta(state.kpis.margin_delta)"
                           t-attf-class="o_aite_delta_val o_aite_{{ deltaClass(state.kpis.margin_delta) }}"
                           t-esc="fmtDelta(state.kpis.margin_delta)"/>
                     <span t-else="" class="o_aite_delta_val text-muted">—</span>
                 </div>
                 <div class="o_aite_delta_cell">
-                    <span class="o_aite_delta_lbl">CMV vs N-1</span>
+                    <span class="o_aite_delta_lbl">CMV</span>
                     <span t-if="fmtDelta(state.kpis.cost_delta)"
-                          t-attf-class="o_aite_delta_val o_aite_{{ deltaClass(state.kpis.cost_delta) }}"
+                          t-attf-class="o_aite_delta_val o_aite_{{ deltaClass(state.kpis.cost_delta, false) }}"
                           t-esc="fmtDelta(state.kpis.cost_delta)"/>
                     <span t-else="" class="o_aite_delta_val text-muted">—</span>
                 </div>
                 <div class="o_aite_delta_cell">
-                    <span class="o_aite_delta_lbl">Commandes vs N-1</span>
+                    <span class="o_aite_delta_lbl">Commandes</span>
                     <span t-if="fmtDelta(state.kpis.order_count_delta)"
                           t-attf-class="o_aite_delta_val o_aite_{{ deltaClass(state.kpis.order_count_delta) }}"
                           t-esc="fmtDelta(state.kpis.order_count_delta)"/>
@@ -92,8 +98,12 @@
                 </div>
                 <div class="o_aite_kpi" t-if="bestProduct()">
                     <div class="o_aite_kpi_label">Meilleur article</div>
-                    <div class="o_aite_kpi_value" t-attf-style="font-size: 12px; color: {{ COLORS.primary }}">
-                        <t t-esc="bestProduct().name.slice(0, 18)"/>
+                    <!-- Nom complet, coupé par le CSS (points de suspension)
+                         et lisible en infobulle (écart n° 67). -->
+                    <div class="o_aite_kpi_value o_aite_ellipsis"
+                         t-att-title="bestProduct().name"
+                         t-attf-style="font-size: 12px; color: {{ COLORS.primary }}">
+                        <t t-esc="bestProduct().name"/>
                     </div>
                     <div class="o_aite_kpi_sub">
                         <t t-esc="fmtMoney(bestProduct().ca)"/> CA
@@ -106,7 +116,7 @@
                 <div class="o_aite_mod_hdr">
                     <div class="o_aite_mod_hdr_left">
                         <div class="o_aite_mod_icon" t-attf-style="background: {{ COLORS.primary }}">
-                            <i class="fa fa-line-chart text-white"/>
+                            <i class="fa fa-line-chart text-white" title="Ventes &amp; évolution"/>
                         </div>
                         <div>
                             <div class="o_aite_mod_title" t-attf-style="color: {{ COLORS.primary }}">
@@ -150,7 +160,7 @@
                 <div class="o_aite_mod_hdr">
                     <div class="o_aite_mod_hdr_left">
                         <div class="o_aite_mod_icon" t-attf-style="background: {{ COLORS.success }}">
-                            <i class="fa fa-pie-chart text-white"/>
+                            <i class="fa fa-pie-chart text-white" title="Marge &amp; CMV par catégorie"/>
                         </div>
                         <div>
                             <div class="o_aite_mod_title" t-attf-style="color: {{ COLORS.success }}">
@@ -171,7 +181,7 @@
                                             <span class="o_aite_cat_dot" t-attf-style="background: {{ catColors(c.name, c_index).col }}"/>
                                             <span class="fw-bold"><t t-esc="c.name"/></span>
                                             <span class="text-muted" style="font-size:9px">
-                                                tx <t t-esc="fmtPct(c.margin_rate)"/>
+                                                taux <t t-esc="fmtPct(c.margin_rate)"/>
                                             </span>
                                         </div>
                                         <div>
@@ -204,7 +214,7 @@
                 <div class="o_aite_mod_hdr">
                     <div class="o_aite_mod_hdr_left">
                         <div class="o_aite_mod_icon" t-attf-style="background: {{ COLORS.info }}">
-                            <i class="fa fa-cash-register text-white"/>
+                            <i class="fa fa-calculator text-white" title="Performance par caisse"/>
                         </div>
                         <div>
                             <div class="o_aite_mod_title" t-attf-style="color: {{ COLORS.info }}">
@@ -229,7 +239,7 @@
                                     <span class="o_aite_cat_dot" t-attf-style="background: {{ c.color }}"/>
                                     <span class="o_aite_caisse_name fw-bold"><t t-esc="c.name"/></span>
                                     <span class="o_aite_caisse_ca"><t t-esc="fmtMoney(c.ca)"/></span>
-                                    <span class="badge_pill" t-attf-class="badge_pill {{ c.margin_rate >= 50 ? 'b-teal' : (c.margin_rate >= 40 ? 'b-amb' : 'b-red') }}">
+                                    <span t-attf-class="badge_pill {{ caisseBadgeClass(c.margin_rate) }}">
                                         <t t-esc="fmtPct(c.margin_rate)"/>
                                     </span>
                                     <span class="o_aite_caisse_pct text-muted"><t t-esc="fmtPct(c.pct_ca)"/> du CA</span>
@@ -239,7 +249,7 @@
                                 <span class="o_aite_cat_dot" style="background:#888780"/>
                                 <span class="o_aite_caisse_name fw-bold">TOTAL</span>
                                 <span class="o_aite_caisse_ca fw-bold"><t t-esc="fmtMoney(state.caisseTotal.ca)"/></span>
-                                <span class="badge_pill b-amb"><t t-esc="fmtPct(state.caisseTotal.margin_rate)"/></span>
+                                <span t-attf-class="badge_pill {{ caisseBadgeClass(state.caisseTotal.margin_rate) }}"><t t-esc="fmtPct(state.caisseTotal.margin_rate)"/></span>
                                 <span class="o_aite_caisse_pct text-muted">marge <t t-esc="fmtMoney(state.caisseTotal.margin)"/></span>
                             </div>
                         </div>
@@ -252,13 +262,13 @@
                 <div class="o_aite_mod_hdr">
                     <div class="o_aite_mod_hdr_left">
                         <div class="o_aite_mod_icon" t-attf-style="background: {{ COLORS.primary }}">
-                            <i class="fa fa-th text-white"/>
+                            <i class="fa fa-th text-white" title="Répartition des ventes — heure × jour"/>
                         </div>
                         <div>
                             <div class="o_aite_mod_title" t-attf-style="color: {{ COLORS.primary }}">
                                 Répartition des ventes — heure × jour
                             </div>
-                            <div class="o_aite_mod_sub">intensité = chiffre d'affaires · pour caler plannings &amp; happy hours</div>
+                            <div class="o_aite_mod_sub">intensité = chiffre d'affaires · pour caler les plannings &amp; les heures de promotion</div>
                         </div>
                     </div>
                     <div class="o_aite_mod_hdr_right" t-if="state.insights">
@@ -310,7 +320,7 @@
                 <div class="o_aite_mod_hdr">
                     <div class="o_aite_mod_hdr_left">
                         <div class="o_aite_mod_icon" t-attf-style="background: {{ COLORS.warning }}">
-                            <i class="fa fa-trophy text-white"/>
+                            <i class="fa fa-trophy text-white" title="Classements produits"/>
                         </div>
                         <div>
                             <div class="o_aite_mod_title" t-attf-style="color: {{ COLORS.warning }}">
@@ -327,7 +337,7 @@
                             <t t-foreach="state.rankings.top_beers" t-as="p" t-key="p.product_id">
                                 <RankRow rank="p_index + 1" name="p.name"
                                          pct="p.qty / maxTopBeerQty() * 100"
-                                         value="fmt(p.qty) + ' u'"
+                                         value="fmtUnits(p.qty)"
                                          color="COLORS.primary"
                                          onClick="() => onProductClick(p.product_id)"/>
                             </t>
@@ -347,7 +357,7 @@
                             <t t-foreach="state.rankings.low_sellers" t-as="p" t-key="p.product_id">
                                 <RankRow rank="p_index + 1" name="p.name"
                                          pct="p.qty / maxLowSellerQty() * 100"
-                                         value="fmt(p.qty) + ' u'"
+                                         value="fmtUnits(p.qty)"
                                          color="COLORS.danger"
                                          onClick="() => onProductClick(p.product_id)"/>
                             </t>
@@ -361,7 +371,7 @@
                 <div class="o_aite_mod_hdr">
                     <div class="o_aite_mod_hdr_left">
                         <div class="o_aite_mod_icon" t-attf-style="background: {{ COLORS.info }}">
-                            <i class="fa fa-table text-white"/>
+                            <i class="fa fa-table text-white" title="Analyse détaillée"/>
                         </div>
                         <div>
                             <div class="o_aite_mod_title" t-attf-style="color: {{ COLORS.info }}">
@@ -468,7 +478,7 @@
                     <div class="o_aite_mod_hdr">
                         <div class="o_aite_mod_hdr_left">
                             <div class="o_aite_mod_icon" t-attf-style="background: {{ COLORS.primary }}">
-                                <i class="fa fa-table text-white"/>
+                                <i class="fa fa-table text-white" title="Comparatif des caisses"/>
                             </div>
                             <div>
                                 <div class="o_aite_mod_title" t-attf-style="color: {{ COLORS.primary }}">
@@ -488,8 +498,8 @@
                                     <th class="text-end">Marge</th>
                                     <th class="text-end">Taux</th>
                                     <th class="text-end">CMV</th>
-                                    <th class="text-end">Cmdes</th>
-                                    <th class="text-end">Panier moy.</th>
+                                    <th class="text-end">Commandes</th>
+                                    <th class="text-end">Panier moyen</th>
                                     <th class="text-end">Qté</th>
                                     <th class="text-end">Écart caisse</th>
                                 </tr>
@@ -527,10 +537,10 @@
                                 <tr class="o_aite_table_total">
                                     <td class="fw-bold">TOTAL</td>
                                     <td class="text-end fw-bold"><t t-esc="fmtMoney(state.total.ca)"/></td>
-                                    <td class="text-end">100%</td>
+                                    <td class="text-end"><t t-esc="fmtPct(100)"/></td>
                                     <td class="text-end fw-bold" t-attf-style="color: {{ COLORS.success }}"><t t-esc="fmtMoney(state.total.margin)"/></td>
                                     <td class="text-end">
-                                        <span class="badge_pill b-amb"><t t-esc="fmtPct(state.total.margin_rate)"/></span>
+                                        <span t-attf-class="badge_pill {{ marginBadgeClass(state.total.margin_rate) }}"><t t-esc="fmtPct(state.total.margin_rate)"/></span>
                                     </td>
                                     <td class="text-end fw-bold" t-attf-style="color: {{ COLORS.danger }}"><t t-esc="fmtMoney(state.total.cost)"/></td>
                                     <td class="text-end"><t t-esc="fmt(state.total.order_count)"/></td>
@@ -598,8 +608,8 @@
                                 <th>État</th>
                                 <th class="text-end">CA HT</th>
                                 <th class="text-end">Marge</th>
-                                <th class="text-end">Tx</th>
-                                <th class="text-end">Cmd.</th>
+                                <th class="text-end">Taux</th>
+                                <th class="text-end">Commandes</th>
                                 <th class="text-end">Panier</th>
                                 <th>Écart caisse</th>
                             </tr>
@@ -1008,27 +1018,27 @@
             <div class="o_aite_mod_body">
                 <div class="o_aite_config_grid">
                     <button class="o_aite_config_btn" t-on-click="openPosConfig">
-                        <i class="fa fa-cog fa-2x mb-2"/>
+                        <i class="fa fa-cog fa-2x mb-2" title="Points de vente"/>
                         <div class="fw-bold">Points de vente</div>
                         <div class="text-muted small">Caisses, sessions, modes</div>
                     </button>
                     <button class="o_aite_config_btn" t-on-click="openPosCategory">
-                        <i class="fa fa-th-large fa-2x mb-2"/>
+                        <i class="fa fa-th-large fa-2x mb-2" title="Catégories produit"/>
                         <div class="fw-bold">Catégories produit</div>
                         <div class="text-muted small">Bières, softs, vins…</div>
                     </button>
                     <button class="o_aite_config_btn" t-on-click="openPaymentMethods">
-                        <i class="fa fa-credit-card fa-2x mb-2"/>
+                        <i class="fa fa-credit-card fa-2x mb-2" title="Modes de paiement"/>
                         <div class="fw-bold">Modes de paiement</div>
                         <div class="text-muted small">Espèces, mobile money…</div>
                     </button>
                     <button class="o_aite_config_btn" t-on-click="openProducts">
-                        <i class="fa fa-cube fa-2x mb-2"/>
+                        <i class="fa fa-cube fa-2x mb-2" title="Articles"/>
                         <div class="fw-bold">Articles</div>
                         <div class="text-muted small">Prix, coûts, catégories</div>
                     </button>
                     <button class="o_aite_config_btn" t-on-click="openAnalyticsReport">
-                        <i class="fa fa-bar-chart fa-2x mb-2"/>
+                        <i class="fa fa-bar-chart fa-2x mb-2" title="Rapport pivot"/>
                         <div class="fw-bold">Rapport pivot</div>
                         <div class="text-muted small">Analyse multidimensionnelle</div>
                     </button>

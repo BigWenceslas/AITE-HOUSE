@@ -158,8 +158,13 @@ class PosDailyReport(models.Model):
         vue.
         """
         out = {}
+        # ``search_fetch`` sur les deux seuls champs utiles : lire
+        # ``company.partner_id`` après un simple ``search`` chargeait TOUTES
+        # les colonnes de la société, y compris celles qu'une mise à niveau
+        # de ce module ajoute (seuils d'écart de caisse) et qui n'existent
+        # pas encore quand la vue SQL est recréée — échec de la mise à niveau.
         companies = self.env['res.company'].sudo().with_context(
-            active_test=False).search([])
+            active_test=False).search_fetch([], ['partner_id', 'country_id'])
         for company in companies:
             tz = company.partner_id.tz
             if not tz and company.country_id:

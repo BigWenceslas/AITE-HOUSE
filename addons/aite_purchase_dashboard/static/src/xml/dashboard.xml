@@ -97,7 +97,7 @@
                                  value="money(state.kpis.soon)"
                                  sub="num(state.kpis.soon_count) + ' facture(s) · trésorerie à prévoir'"/>
                         <KpiCard mega="true" accent="'primary'"
-                                 label="'DPO — délai moyen de paiement'"
+                                 label="'Délai de paiement (DPO)'"
                                  value="days(state.kpis.dpo)"
                                  sub="'encours / factures période · tenir les délais négociés'"/>
                     </div>
@@ -110,11 +110,11 @@
                         <KpiCard label="'Créances fournisseurs (409)'"
                                  value="money(state.kpis.claims_total)"
                                  sub="'consignes + avoirs + acomptes'"/>
-                        <KpiCard label="'Taux de service (OTIF)'"
+                        <KpiCard label="'Livré à temps et complet (OTIF)'"
                                  value="pct(state.kpis.otif)"
-                                 sub="'livré à l\'heure et complet · cible ≥ 90 %'"/>
+                                 sub="'part des commandes reçues · cible ≥ 90 %'"/>
                         <KpiCard label="'Commandes en cours'"
-                                 value="num(state.kpis.pending_count) + ' cmd'"
+                                 value="count(state.kpis.pending_count, 'commande', 'commandes')"
                                  sub="money(state.kpis.pending_amount) + ' attendus · ' + num(state.kpis.pending_late) + ' en retard'"/>
                     </div>
 
@@ -157,9 +157,9 @@
                         <KpiCard label="'Délai moyen de livraison'"
                                  value="days(state.kpis.delai_moy)"
                                  sub="'commande → réception'"/>
-                        <KpiCard label="'OTIF moyen'"
+                        <KpiCard label="'Livré à temps et complet (OTIF)'"
                                  value="pct(state.kpis.otif)"
-                                 sub="'à l\'heure et complet'"/>
+                                 sub="'moyenne des fournisseurs'"/>
                     </div>
 
                     <div class="apd-card" style="margin-top:14px;">
@@ -207,7 +207,7 @@
                         </div>
                     </div>
                     <div class="apd-note">
-                        <b>Risque de concentration :</b> au-delà de
+                        <b>Risque de concentration :</b> dès
                         <b t-esc="pct(state.kpis.cfg.dep)"/> des achats chez un seul fournisseur,
                         une rupture ou une hausse de tarif vous expose fortement — négociez ou diversifiez.
                     </div>
@@ -228,7 +228,7 @@
                         <KpiCard label="'À payer sous ' + num(state.kpis.cfg.soon) + ' j'"
                                  value="money(state.kpis.soon)"
                                  sub="'échéances imminentes'"/>
-                        <KpiCard label="'À payer sous 8–30 j'"
+                        <KpiCard label="dueWindowLabel()"
                                  value="money(state.kpis.month)"
                                  sub="'à provisionner'"/>
                     </div>
@@ -262,7 +262,7 @@
                                     <tr t-foreach="state.invoices" t-as="i" t-key="i.id"
                                         t-on-click="() => this.openMove(i.id)"
                                         style="cursor:pointer">
-                                        <td t-esc="i.due"/>
+                                        <td t-esc="date(i.due)"/>
                                         <td>
                                             <span class="apd-dot" t-att-style="dotStyle(i.partner_id)"/>
                                             <t t-esc="i.partner"/>
@@ -337,7 +337,7 @@
                                             <td class="text-end" t-esc="num(d.qty)"/>
                                             <td class="text-end" t-esc="money(d.unit_value)"/>
                                             <td class="text-end"><strong t-esc="money(d.value)"/></td>
-                                            <td class="text-muted" t-esc="orDash(d.last)"/>
+                                            <td class="text-muted" t-esc="orDash(date(d.last))"/>
                                         </tr>
                                         <tr t-if="!state.claims.deposits.length">
                                             <td colspan="5" class="text-muted text-center">
@@ -364,7 +364,7 @@
                                         <tr t-foreach="state.claims.avoirs" t-as="a" t-key="a.id"
                                             t-on-click="() => this.openMove(a.id)"
                                             style="cursor:pointer">
-                                            <td class="text-muted" t-esc="a.date"/>
+                                            <td class="text-muted" t-esc="date(a.date)"/>
                                             <td>
                                                 <span class="apd-dot" t-att-style="dotStyle(a.partner_id)"/>
                                                 <t t-esc="a.partner"/>
@@ -400,9 +400,9 @@
                                  label="'En retard de livraison'"
                                  value="num(state.kpis.pending_late + state.kpis.recv_late)"
                                  sub="num(state.kpis.pending_late) + ' en attente · ' + num(state.kpis.recv_late) + ' reçues en retard'"/>
-                        <KpiCard label="'OTIF (période)'"
+                        <KpiCard label="'Livré à temps et complet (OTIF)'"
                                  value="pct(state.kpis.otif)"
-                                 sub="'à l\'heure et complètes'"/>
+                                 sub="'commandes reçues sur la période'"/>
                         <KpiCard label="'Délai moyen de réception'"
                                  value="days(state.kpis.delai_moy)"
                                  sub="'commande → réception'"/>
@@ -426,15 +426,15 @@
                                     <tr t-foreach="state.orders" t-as="o" t-key="o.id"
                                         t-on-click="() => this.openOrder(o.id)"
                                         style="cursor:pointer">
-                                        <td t-esc="o.date"/>
+                                        <td t-esc="date(o.date)"/>
                                         <td>
                                             <span class="apd-dot" t-att-style="dotStyle(o.partner_id)"/>
                                             <t t-esc="o.partner"/>
                                         </td>
                                         <td class="text-muted" t-esc="o.ref"/>
                                         <td class="text-end" t-esc="money(o.amount)"/>
-                                        <td t-esc="orDash(o.planned)"/>
-                                        <td t-esc="orDash(o.recv)"/>
+                                        <td t-esc="orDash(date(o.planned))"/>
+                                        <td t-esc="orDash(date(o.recv))"/>
                                         <td t-att-class="'text-end ' + valueClass(o.days_late)"
                                             t-esc="o.days_late ? o.days_late + ' j' : '—'"/>
                                         <td class="text-center" t-esc="fullMark(o)"/>
@@ -465,7 +465,7 @@
                                  label="'Plus forte hausse'"
                                  value="signedPct(state.kpis.top_hausse)"
                                  sub="state.kpis.top_hausse_name"/>
-                        <KpiCard label="'Hausses > ' + pct(state.kpis.cfg.price)"
+                        <KpiCard label="'Hausses ≥ ' + pct(state.kpis.cfg.price)"
                                  value="num(state.kpis.nb_hausses)"
                                  sub="'références concernées'"/>
                         <KpiCard label="'Impact annuel estimé'" accent="'danger'"
@@ -515,7 +515,7 @@
                     </div>
                     <div class="apd-note">
                         <b>Contrôle des prix facturés :</b> comparez chaque facture au prix négocié —
-                        les dérives passent par petites touches. Au-delà du seuil, renégociez ou mettez en concurrence.
+                        les dérives passent par petites touches. Dès le seuil, renégociez ou mettez en concurrence.
                     </div>
                 </div>
 
@@ -550,8 +550,8 @@
                         <div class="apd-mini" style="margin-top:8px;">
                             Échéance : factures dues sous ce délai → « À payer bientôt ».
                             Livraison : au-delà du seuil → « En retard » (l'OTIF reste strict).
-                            Dépendance : badge au-delà de cette part d'achats.
-                            Prix : « Hausse forte » au-delà du seuil.
+                            Dépendance : badge dès cette part d'achats.
+                            Prix : « Hausse forte » dès le seuil.
                         </div>
                         <div class="apd-modal-actions">
                             <button class="btn btn-primary" t-att-disabled="state.cfgSaving"

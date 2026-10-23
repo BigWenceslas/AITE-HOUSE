@@ -31,14 +31,14 @@
                         </setting>
                         <setting id="aite_pur_dep"
                                  string="Seuil de dépendance fournisseur"
-                                 help="Part des achats chez un fournisseur au-delà de laquelle le risque de concentration est signalé.">
+                                 help="Part des achats chez un fournisseur à partir de laquelle le risque de concentration est signalé.">
                             <field name="aite_purchase_dependency_pct"
                                    class="o_light_label"/>
                             <span class="o_form_label"> % des achats</span>
                         </setting>
                         <setting id="aite_pur_price"
                                  string="Seuil de hausse de prix"
-                                 help="Variation de prix d'achat au-delà de laquelle une référence est badgée « Hausse forte ».">
+                                 help="Variation de prix d'achat à partir de laquelle une référence est badgée « Hausse forte ».">
                             <field name="aite_purchase_price_increase_pct"
                                    class="o_light_label"/>
                             <span class="o_form_label"> %</span>

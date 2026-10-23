@@ -87,7 +87,7 @@
 
             <!-- Chargement -->
             <div t-if="state.loading" class="asd-loading">
-                <i class="fa fa-spinner fa-spin"/> Chargement…
+                <i class="fa fa-spinner fa-spin" title="Chargement"/> Chargement…
             </div>
 
             <div t-else="">
@@ -99,15 +99,15 @@
                         <KpiCard mega="true" accent="'info'"
                                  label="'Valeur stock — coût d\'achat'"
                                  value="money(state.kpis.total_value)"
-                                 sub="num(state.kpis.refs_count) + ' références · ' + qty(state.kpis.total_units) + ' unités'"/>
+                                 sub="plural(state.kpis.refs_count, 'référence', 'références') + ' · ' + units(state.kpis.total_units)"/>
                         <KpiCard mega="true" accent="'success'"
                                  label="'Valeur stock — prix de vente'"
                                  value="money(state.kpis.total_value_sale)"
                                  sub="marginSub()"/>
                         <KpiCard mega="true" accent="'danger'"
                                  label="'Ruptures &amp; critiques'"
-                                 value="num(state.kpis.rupt_count + state.kpis.crit_count) + ' réfs'"
-                                 sub="num(state.kpis.rupt_count) + ' rupture · ' + num(state.kpis.crit_count) + ' sous ' + num(state.kpis.cfg.crit) + ' j'"/>
+                                 value="refs((state.kpis.rupt_count || 0) + (state.kpis.crit_count || 0))"
+                                 sub="ruptSub()"/>
                         <KpiCard mega="true" accent="coulAccent()"
                                  label="'Coulage (période)'"
                                  value="money(state.kpis.pertes)"
@@ -121,13 +121,13 @@
                                  sub="rotSub()"/>
                         <KpiCard label="'Stock dormant'" accent="'danger'"
                                  value="money(state.kpis.dorm_value)"
-                                 sub="num(state.kpis.dorm_count) + ' réfs (+' + num(state.kpis.cfg.dorm) + ' j de couverture)'"/>
+                                 sub="refs(state.kpis.dorm_count) + ' (+' + num(state.kpis.cfg.dorm) + ' j de couverture)'"/>
                         <KpiCard label="'Sous seuil de commande'"
-                                 value="num(state.kpis.seuil_count) + ' réfs'"
+                                 value="refs(state.kpis.seuil_count)"
                                  sub="'valeur à commander ' + money(state.kpis.cmd_value)"/>
                         <KpiCard label="'Écarts d\'inventaire (période)'"
                                  value="money(state.kpis.gap_net)"
-                                 sub="num(state.kpis.gap_refs) + ' réfs concernées'"/>
+                                 sub="plural(state.kpis.gap_refs, 'réf concernée', 'réfs concernées')"/>
                     </div>
 
                     <div class="asd-section-title">Valorisation &amp; flux</div>
@@ -161,13 +161,15 @@
                         <KpiCard mega="true" accent="'danger'"
                                  label="'En rupture'"
                                  value="num(state.kpis.rupt_count)"
-                                 sub="'références à zéro'"/>
-                        <KpiCard mega="true" accent="'warning'"
+                                 sub="pluralWord(state.kpis.rupt_count, 'référence à zéro', 'références à zéro')"/>
+                        <!-- Liseré rouge, comme le badge « Critique » des lignes
+                             (écart n° 68) ; l'ambre reste « Sous seuil ». -->
+                        <KpiCard mega="true" accent="'danger'"
                                  label="'Critiques'"
                                  value="num(state.kpis.crit_count)"
-                                 sub="'couverture sous ' + num(state.kpis.cfg.crit) + ' jours'"/>
+                                 sub="'couverture sous ' + plural(state.kpis.cfg.crit, 'jour', 'jours')"/>
                         <KpiCard label="'Sous seuil de commande'"
-                                 value="num(state.kpis.seuil_count) + ' réfs'"
+                                 value="refs(state.kpis.seuil_count)"
                                  sub="'point de commande atteint'"/>
                         <KpiCard label="'Valeur à commander'"
                                  value="money(state.kpis.cmd_value)"
@@ -216,7 +218,7 @@
                     </div>
                     <div class="asd-note">
                         <b>Point de commande</b> = ventes moy./jour × (délai réappro + <b t-esc="num(state.kpis.cfg.sec)"/> j de sécurité).
-                        Quantité suggérée : <b t-esc="num(state.kpis.cfg.hor)"/> jours de couverture après livraison — à arrondir au casier.
+                        Quantité suggérée : <b t-esc="plural(state.kpis.cfg.hor, 'jour', 'jours')"/> de couverture après livraison — à arrondir au casier.
                     </div>
                 </div>
 
@@ -244,9 +246,13 @@
                     <div class="asd-card" style="margin-top:14px;">
                         <div class="asd-card-head">
                             <h3>Stock par référence</h3>
-                            <input type="text" class="asd-search" placeholder="🔍 Rechercher un produit…"
-                                   t-att-value="state.search"
-                                   t-on-input="(ev) => this.onSearch(ev)"/>
+                            <div class="asd-search-wrap">
+                                <i class="fa fa-search asd-search-icon" title="Rechercher" aria-hidden="true"/>
+                                <input type="text" class="asd-search" placeholder="Rechercher un produit…"
+                                       aria-label="Rechercher un produit"
+                                       t-att-value="state.search"
+                                       t-on-input="(ev) => this.onSearch(ev)"/>
+                            </div>
                         </div>
                         <div class="asd-tablewrap">
                             <table class="table table-sm table-hover">
@@ -307,7 +313,7 @@
                         <KpiCard mega="true" accent="'danger'"
                                  label="'Stock dormant'"
                                  value="money(state.kpis.dorm_value)"
-                                 sub="num(state.kpis.dorm_count) + ' réfs (+' + num(state.kpis.cfg.dorm) + ' j)'"/>
+                                 sub="refs(state.kpis.dorm_count) + ' (+' + num(state.kpis.cfg.dorm) + ' j)'"/>
                         <KpiCard label="'Références suivies'"
                                  value="num(state.kpis.refs_count)"
                                  sub="'stock ou ventes sur 30 j'"/>
@@ -371,9 +377,9 @@
                         <KpiCard mega="true" accent="'warning'"
                                  label="'Écart net (période)'"
                                  value="money(state.kpis.gap_net)"
-                                 sub="num(state.kpis.gap_refs) + ' réfs concernées'"/>
+                                 sub="plural(state.kpis.gap_refs, 'réf concernée', 'réfs concernées')"/>
                         <KpiCard mega="true" accent="coulAccent()"
-                                 label="'Pertes (écarts − + casse)'"
+                                 label="'Pertes (écarts négatifs + casse)'"
                                  value="money(state.kpis.pertes)"
                                  sub="coulSub()"/>
                         <KpiCard label="'CA estimé (période)'"
@@ -444,7 +450,7 @@
                                  value="money(state.moves.totals.out)"
                                  sub="'valeur au coût (CMV)'"/>
                         <KpiCard label="'Transferts internes'"
-                                 value="qty(state.moves.totals.tr) + ' unités'"
+                                 value="units(state.moves.totals.tr)"
                                  sub="'réassort entre emplacements'"/>
                         <KpiCard label="'Ajustements &amp; casse'"
                                  value="money(state.moves.totals.adj)"
@@ -550,7 +556,7 @@
                         <div class="asd-modal-actions">
                             <button class="btn btn-primary" t-att-disabled="state.cfgSaving"
                                     t-on-click="() => this.saveCfg()">
-                                <t t-if="state.cfgSaving"><i class="fa fa-spinner fa-spin"/> Enregistrement…</t>
+                                <t t-if="state.cfgSaving"><i class="fa fa-spinner fa-spin" title="Enregistrement"/> Enregistrement…</t>
                                 <t t-else="">Enregistrer la configuration</t>
                             </button>
                             <button class="btn btn-secondary" t-on-click="() => this.closeCfg()">Annuler</button>

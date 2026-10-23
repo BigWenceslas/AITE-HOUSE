@@ -6,7 +6,11 @@ dans les deux sens — les **dettes (401)** et les **créances (409)**.
 ## Accès
 
 Menu **Achats → Tableau de bord AITE** (groupe *Utilisateur* des achats).
-Registre des consignes : **Achats → Configuration → Consignes fournisseurs**.
+Registre des consignes : bouton **Gérer les consignes** de l'onglet
+*Avoirs & consignes* (tous les acheteurs, en lecture) ; menu
+**Achats → Configuration → Consignes fournisseurs** pour les *Responsables
+Achats*, seuls à pouvoir le modifier (le menu Configuration d'Odoo leur est
+réservé).
 Réservé aux *Responsables Achats* : bouton **⚙** et bloc de Réglages.
 
 ## Onglets
@@ -24,7 +28,10 @@ Réservé aux *Responsables Achats* : bouton **⚙** et bloc de Réglages.
 
 Réglages → **AITE Achats**, ou modal **⚙** : fenêtre d'alerte avant
 échéance (7 j), tolérance de retard de livraison (2 j), seuil de
-dépendance fournisseur (40 %), seuil de hausse de prix (5 %).
+dépendance fournisseur (40 %), seuil de hausse de prix (5 %). Les seuils
+de dépendance et de hausse de prix s'appliquent **dès** la valeur atteinte
+(≥) ; le retard de livraison, **au-delà** de la tolérance (>). La carte
+« À payer sous N–30 j » suit la fenêtre d'alerte.
 
 ## Définitions & sources de données
 

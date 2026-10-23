@@ -10,10 +10,14 @@ class ResCompany(models.Model):
       « À payer bientôt » (échéancier / trésorerie).
     * ``late_days``        — tolérance de retard de livraison avant badge
       « En retard » (l'OTIF, lui, reste strict).
-    * ``dependency_pct``   — au-delà de cette part des achats chez un seul
+    * ``dependency_pct``   — dès cette part des achats chez un seul
       fournisseur, badge « Dépendance » (risque de concentration).
-    * ``price_increase_pct`` — hausse de prix d'achat au-delà de laquelle
+    * ``price_increase_pct`` — hausse de prix d'achat à partir de laquelle
       la référence est badgée « Hausse forte ».
+
+    Les deux seuils se déclenchent DÈS la valeur atteinte (``>=`` dans
+    ``_supplier_badge`` et ``_price_metrics``) : les textes disent « dès »
+    / « à partir de », pas « au-delà » (écart n° 69).
     """
     _inherit = 'res.company'
 
@@ -28,13 +32,13 @@ class ResCompany(models.Model):
     aite_purchase_dependency_pct = fields.Float(
         string="Seuil de dépendance fournisseur (%)", default=40.0,
         digits=(5, 1),
-        help="Part des achats chez un fournisseur au-delà de laquelle le "
+        help="Part des achats chez un fournisseur à partir de laquelle le "
              "risque de concentration est signalé.",
     )
     aite_purchase_price_increase_pct = fields.Float(
         string="Seuil de hausse de prix (%)", default=5.0, digits=(5, 1),
-        help="Variation de prix d'achat au-delà de laquelle une référence "
-             "est signalée en hausse forte.",
+        help="Variation de prix d'achat à partir de laquelle une "
+             "référence est signalée en hausse forte.",
     )
 
 

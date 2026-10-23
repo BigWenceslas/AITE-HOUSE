@@ -1,13 +1,13 @@
 /** @odoo-module **/
 
-import { Component, useState, useRef, onWillStart, onMounted, onWillUnmount } from "@odoo/owl";
+import { Component, useState, useRef, onWillStart, onMounted, onPatched, onWillUnmount } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { loadChart, destroyChart } from "../services/chartjs_loader";
 import { KpiCard } from "../components/kpi_card";
 import {
     COLORS, AGING_COLORS, BADGE_CLS,
-    fmtMoney, fmtCompact, fmtQty, fmtPct, fmtDays,
-    PERIOD_PRESETS, periodRange,
+    fmtMoney, fmtNegMoney, fmtCompact, fmtQty, fmtPct, fmtDays, fmtDate,
+    fmtCount, scheduleLabels, dueWindowLabel, PERIOD_PRESETS, periodRange,
 } from "../services/utils";
 
 /**
@@ -73,6 +73,14 @@ export class PurchaseDashboardView extends Component {
             await this.loadAll();
         });
         onMounted(() => this.renderTabCharts());
+        // Les canevas d'un onglet n'existent qu'une fois l'onglet rendu par
+        // OWL : on dessine ses graphiques APRÈS ce rendu (voir ``setTab``).
+        onPatched(() => {
+            if (this._tabChartsPending) {
+                this._tabChartsPending = false;
+                this.renderTabCharts();
+            }
+        });
         onWillUnmount(() => this.destroyAllCharts());
     }
 
@@ -114,8 +122,15 @@ export class PurchaseDashboardView extends Component {
     }
 
     setTab(tab) {
+        // Dessiner tout de suite passait AVANT le rendu de l'onglet (le
+        // requestAnimationFrame précède celui d'OWL) : les graphiques des
+        // onglets « Dettes & échéancier » et « Prix & variations » restaient
+        // vides à la première ouverture. Ils sont dessinés par ``onPatched``.
+        if (tab === this.state.tab) {
+            return;
+        }
+        this._tabChartsPending = true;
         this.state.tab = tab;
-        this.renderTabCharts();
     }
 
     async setPeriod(key) {
@@ -205,7 +220,18 @@ export class PurchaseDashboardView extends Component {
     }
 
     negMoney(v) {
-        return "−" + fmtMoney(v, this.state.meta.currency_symbol);
+        // « − » seulement si le montant est non nul (pas de « −0 FCFA »).
+        return fmtNegMoney(v, this.state.meta.currency_symbol);
+    }
+
+    /** « 2026-10-14 » → « 14/10/2026 » (règle 6). */
+    date(v) {
+        return fmtDate(v);
+    }
+
+    /** Libellé de la carte « entre l'alerte et 30 j » : suit le réglage. */
+    dueWindowLabel() {
+        return dueWindowLabel((this.state.kpis.cfg || {}).soon);
     }
 
     qty(v) {
@@ -223,6 +249,11 @@ export class PurchaseDashboardView extends Component {
 
     days(v) {
         return fmtDays(v);
+    }
+
+    /** « 1 commande », « 3 commandes » (pas d'abréviation). */
+    count(n, one, many) {
+        return fmtCount(n, one, many);
     }
 
     num(v) {
@@ -244,7 +275,7 @@ export class PurchaseDashboardView extends Component {
         if (inv.days_to_due > 0) {
             return "dans " + inv.days_to_due + " j";
         }
-        return "auj.";
+        return "aujourd'hui";
     }
 
     fullMark(o) {
@@ -274,7 +305,9 @@ export class PurchaseDashboardView extends Component {
     }
 
     impactClass(p) {
-        return (p.impact || 0) > 0 ? "text-danger" : "text-success";
+        // Impact nul (« — ») : couleur neutre, ni hausse ni baisse.
+        const n = p.impact || 0;
+        return n > 0 ? "text-danger" : n < 0 ? "text-success" : "";
     }
 
     valueClass(v) {
@@ -283,9 +316,10 @@ export class PurchaseDashboardView extends Component {
 
     depSub() {
         const k = this.state.kpis;
+        // Même règle que le badge « Dépendance » : dès le seuil (≥).
         const over = (k.top_sup_part || 0) >= (k.cfg.dep || 40);
         return this.pct(k.top_sup_part) + " des achats" +
-            (over ? " · seuil de dépendance dépassé" : "");
+            (over ? " · seuil de dépendance atteint" : "");
     }
 
     // ------------------------------------------------------------------
@@ -456,7 +490,7 @@ export class PurchaseDashboardView extends Component {
         this._mk("ech", this.echRef.el, {
             type: "bar",
             data: {
-                labels: ["Échu / S0", "S1", "S2", "S3", "S4", "S5+"],
+                labels: scheduleLabels(),
                 datasets: [{
                     label: "À décaisser",
                     data: this.scheduleWeeks(),

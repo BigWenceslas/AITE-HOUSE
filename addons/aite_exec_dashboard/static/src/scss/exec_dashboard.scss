@@ -15,6 +15,7 @@
     --aed-info: #185FA5;
     --aed-danger: #A32D2D;
     --aed-warning: #854F0B;
+    --aed-teal: #0F6E56;      /* couleur du pôle Prestations */
     --aed-muted: #888780;
     --aed-border: rgba(0, 0, 0, .08);
     --aed-bg-soft: #f5f5f4;
@@ -197,6 +198,9 @@
     .aed-accent-danger { border-left-color: var(--aed-danger); }
     .aed-accent-warning { border-left-color: var(--aed-warning); }
     .aed-accent-info { border-left-color: var(--aed-info); }
+    /* Carte « Prestations » : l'accent teal n'existait pas, la carte
+       prenait le liseré violet de l'hébergement (écart n° 70). */
+    .aed-accent-teal { border-left-color: var(--aed-teal); }
 
     .aed-kpi-label {
         font-size: 11px;

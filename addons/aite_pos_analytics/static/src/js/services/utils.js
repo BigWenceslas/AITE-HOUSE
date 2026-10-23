@@ -15,6 +15,10 @@ export const COLORS = {
     warning: "#854F0B",   // ambre
     danger: "#A32D2D",    // rouge CMV / écart
     teal: "#0F6E56",      // catégorie soft
+    // Texte secondaire (graduations, légendes) : #888780 n'offrait que
+    // 3,6:1 sur fond blanc ; ce gris passe le seuil AA de 4,5:1 sur les
+    // fonds du tableau de bord (écart n° 71).
+    muted: "#66655f",
 };
 
 export const CATEGORY_PALETTE = {
@@ -61,6 +65,16 @@ export function fmt(n) {
 }
 
 /**
+ * Quantité vendue, en toutes lettres et accordée : « 1 unité »,
+ * « 926 unités » (plus de « 926 u » dans les classements). Accord sur le
+ * nombre affiché (arrondi), règle française : pluriel à partir de 2.
+ */
+export function fmtUnits(n) {
+    const shown = Math.abs(Math.round(Number(n) || 0));
+    return `${fmt(n)} ${shown >= 2 ? "unités" : "unité"}`;
+}
+
+/**
  * Format un montant avec symbole de devise (suffixe par défaut).
  * On utilise "F" pour FCFA car le symbole "FCFA" est trop long pour les KPIs.
  */
@@ -68,29 +82,45 @@ export function fmtMoney(n, symbol = "F") {
     return `${fmt(n)} ${symbol}`;
 }
 
-/** Format un pourcentage avec 1 décimale. */
-export function fmtPct(n) {
-    if (n === null || n === undefined || isNaN(n)) return "0%";
-    return `${Number(n).toFixed(1)}%`;
+/** Nombre à une décimale, virgule française : 56 → « 56,0 ». */
+function fmtDecimal1(v) {
+    return Number(v).toFixed(1).replace(".", ",");
 }
 
 /**
- * Formate une variation (delta %) avec signe et flèche.
- * Retourne null si la valeur n'est pas comparable (pas de base N-1).
+ * Pourcentage à la française : une décimale, virgule, espace insécable
+ * avant « % » — « 56,0 % » et non « 56.0% » (règle 6 ; écarts n° 5, 41).
+ */
+export function fmtPct(n) {
+    if (n === null || n === undefined || isNaN(n)) return "0,0\u00a0%";
+    return `${fmtDecimal1(n)}\u00a0%`;
+}
+
+/**
+ * Formate une variation (delta %) avec signe et flèche :
+ * « ▲ +12,5 % », « ▼ −3,0 % », « ■ 0,0 % ».
+ * Retourne null si la valeur n'est pas comparable (pas de base de
+ * comparaison sur la période précédente).
  */
 export function fmtDelta(n) {
     if (n === null || n === undefined || isNaN(n)) return null;
     const v = Number(n);
     const arrow = v > 0 ? "▲" : (v < 0 ? "▼" : "■");
-    const sign = v > 0 ? "+" : "";
-    return `${arrow} ${sign}${v.toFixed(1)}%`;
+    const sign = v > 0 ? "+" : (v < 0 ? "−" : "");
+    return `${arrow} ${sign}${fmtDecimal1(Math.abs(v))}\u00a0%`;
 }
 
-/** Classe CSS (up/down/flat) selon le signe d'une variation. */
-export function deltaClass(n) {
+/**
+ * Classe CSS (up = vert / down = rouge / flat) d'une variation.
+ * ``higherIsBetter`` à false pour un coût : un CMV qui monte est une
+ * mauvaise nouvelle et s'affiche en rouge (écart n° 62).
+ */
+export function deltaClass(n, higherIsBetter = true) {
     if (n === null || n === undefined || isNaN(n)) return "flat";
-    if (n > 0) return "up";
-    if (n < 0) return "down";
+    const good = higherIsBetter ? n > 0 : n < 0;
+    const bad = higherIsBetter ? n < 0 : n > 0;
+    if (good) return "up";
+    if (bad) return "down";
     return "flat";
 }
 
@@ -106,11 +136,37 @@ export function fmtSigned(n, symbol = "F") {
     return `${sign}${Math.abs(v).toLocaleString("fr-FR")} ${symbol}`;
 }
 
-/** Format une date ISO → fr-FR (DD/MM/YYYY). */
+/**
+ * Lit une date rendue par le serveur.
+ *
+ * - « AAAA-MM-JJ » (borne de période) : la date telle quelle, à minuit
+ *   local. ``new Date("2026-10-01")`` la lisait comme minuit UTC, soit le
+ *   30/09 sur un poste à l'ouest de Greenwich.
+ * - « AAAA-MM-JJ HH:MM:SS » (date-heure du serveur, toujours en UTC) :
+ *   ramenée dans le fuseau du poste — une session ouverte à 23 h 30 UTC
+ *   le 30/09 l'a été le 01/10 à Douala.
+ *
+ * @returns {Date|null} null si la valeur est illisible.
+ */
+export function parseServerDate(s) {
+    if (!s) return null;
+    const m = /^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?/.exec(s);
+    let d;
+    if (m && m[4] === undefined) {
+        d = new Date(+m[1], +m[2] - 1, +m[3]);
+    } else if (m) {
+        d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +(m[6] || 0)));
+    } else {
+        d = new Date(s);
+    }
+    return isNaN(d.getTime()) ? null : d;
+}
+
+/** Date à afficher en JJ/MM/AAAA (voir :func:`parseServerDate`). */
 export function fmtDate(s) {
     if (!s) return "";
-    const d = new Date(s);
-    if (isNaN(d.getTime())) return s;
+    const d = parseServerDate(s);
+    if (!d) return s;
     return d.toLocaleDateString("fr-FR", {
         day: "2-digit", month: "2-digit", year: "numeric",
     });
@@ -123,13 +179,42 @@ export function daysBetween(from, to) {
 }
 
 /**
+ * Date LOCALE au format AAAA-MM-JJ (paramètres de période, champs
+ * <input type="date">). ``toISOString()`` passe par UTC : à Douala
+ * (UTC+1), le minuit local du 1er devenait le 30 du mois précédent et
+ * « Ce mois » démarrait la veille (écart n° 38).
+ */
+export function localIsoDate(d) {
+    const pad = (n) => (n < 10 ? "0" : "") + n;
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+/**
+ * Jour LOCAL (AAAA-MM-JJ) d'une valeur date / date-heure lue sur le
+ * serveur : chaîne, DateTime luxon ou Date. Le serveur filtre la période
+ * sur des jours locaux : couper « 2026-10-22 23:30:00 » (UTC) à ses dix
+ * premiers caractères donnait le 22/10 pour une session ouverte le 23/10
+ * à 0 h 30 à Douala, et « Toute la période » la laissait dehors.
+ */
+export function toLocalDay(val) {
+    if (!val) return null;
+    if (typeof val === "string") {
+        const d = parseServerDate(val);
+        return d ? localIsoDate(d) : val.slice(0, 10);
+    }
+    if (typeof val.toFormat === "function") return val.toFormat("yyyy-MM-dd");
+    if (val instanceof Date) return localIsoDate(val);
+    return String(val).slice(0, 10);
+}
+
+/**
  * Génère la liste des périodes rapides. La période "Toute la période"
  * est calibrée sur la maquette LAVERANDAH (oct 2025 → mai 2026), mais
  * la première charge du dashboard remplace ces valeurs par les bornes
  * réelles trouvées dans pos.session.
  */
 export function getQuickPeriods(today = new Date()) {
-    const iso = (d) => d.toISOString().slice(0, 10);
+    const iso = localIsoDate;
 
     // Aujourd'hui
     const todayStr = iso(today);
@@ -187,7 +272,9 @@ export const WEEKDAY_PRESETS = {
 };
 export const TABS = [
     { key: "dashboard",     label: "Tableau de bord", icon: "fa-tachometer" },
-    { key: "bycaisse",      label: "Par caisse",      icon: "fa-cash-register" },
+    // « fa-cash-register » n'existe pas dans le Font Awesome 4.7 d'Odoo 18
+    // (onglet sans icône) : calculatrice (écart n° 64).
+    { key: "bycaisse",      label: "Par caisse",      icon: "fa-calculator" },
     { key: "sessions",      label: "Sessions POS",    icon: "fa-list" },
     { key: "products",      label: "Articles",        icon: "fa-cube" },
     { key: "margins",       label: "Marges & CMV",    icon: "fa-line-chart" },

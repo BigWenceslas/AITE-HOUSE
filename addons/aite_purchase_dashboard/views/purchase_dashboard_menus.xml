@@ -12,11 +12,22 @@
               sequence="2"
               groups="purchase.group_purchase_user"/>
 
+    <!--
+        Registre des consignes : sous Achats → Configuration, menu que le
+        standard réserve aux Responsables Achats (seuls à pouvoir modifier
+        le registre). Les acheteurs le consultent par le bouton « Gérer les
+        consignes » de l'onglet Avoirs & consignes du tableau de bord.
+        Le groupe déclaré ici dit ce qui est réellement appliqué : il
+        annonçait les acheteurs, que le menu parent écarte (écart n° 50).
+        « -purchase.group_purchase_user » retire l'ancien groupe lors de la
+        mise à niveau d'une base existante (un menuitem ne fait qu'ajouter
+        les groupes cités).
+    -->
     <menuitem id="menu_aite_purchase_deposit"
               name="Consignes fournisseurs"
               parent="purchase.menu_purchase_config"
               action="action_aite_purchase_deposit"
               sequence="90"
-              groups="purchase.group_purchase_user"/>
+              groups="-purchase.group_purchase_user,purchase.group_purchase_manager"/>
 
 </odoo>

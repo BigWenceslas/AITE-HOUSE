@@ -78,19 +78,43 @@ Ajouts à la version `18.0.2.0.0` :
   taux, CMV, panier moyen, qté, écart de caisse) avec ligne de total —
   répond au besoin « marge totale ET par caisse sur une période ».
 - **Comparaison vs période précédente** : variations CA / marge / CMV /
-  commandes affichées sur le dashboard (période N-1 de même durée).
+  commandes affichées sur le dashboard, par rapport à la période
+  **précédente de même durée** (ce n'est pas l'année précédente). Un CMV
+  en hausse s'affiche en rouge.
 - **Heatmap heure × jour** : intensité = CA, pour caler les plannings et
-  les happy hours, avec insights (meilleur créneau, jour le plus fort).
+  les heures de promotion, avec insights (meilleur créneau, jour le plus
+  fort).
+
+## Menus et réglages
+
+- **Point de Vente → Analyse → section « Analyse AITE »** : tableau de
+  bord, par caisse, sessions, par catégorie, écarts de caisse, tableau
+  croisé & graphique. Un seul menu « Analyse » dans la barre du Point de
+  Vente (la section AITE s'ajoute aux analyses standard d'Odoo).
+- **Point de Vente → Configuration → Paramètres → « Analyse AITE —
+  écarts de caisse »** : montants à partir desquels un manquant de caisse
+  est classé « Élevé » (100 000 F par défaut) ou « Critique » (200 000 F).
+  Réglage de la société ; le modifier reclasse les sessions déjà comptées.
+- Chaque caisse garde la même couleur sur tous les onglets (couleur fixée
+  par son ordre de création).
 
 ### Note technique — fuseau horaire du filtre heure
 
 Le filtre par heure et la heatmap convertissent `pos_order.date_order`
-(stocké en UTC) vers le fuseau de l'utilisateur courant
-(`self.env.user.tz`, repli `UTC`) avant d'extraire l'heure et le jour. Les
+(stocké en UTC) vers le fuseau de la **société** de la commande (fiche
+société, sinon fuseau unique du pays, repli `UTC`) avant d'extraire
+l'heure et le jour. Les
 créneaux (« soir 18–23h ») correspondent donc à l'heure **locale**
 d'exploitation. Le fuseau est figé à l'installation/mise à jour du module :
 si le fuseau du parc change, relancer une mise à jour du module pour
 recréer la vue SQL.
+
+Les **jours de la période** (du … au …) sont des jours locaux, dans le
+fuseau de l'utilisateur (celui qu'Odoo utilise pour « aujourd'hui » et
+pour afficher les dates) : une session ouverte à 0 h 30 le 01/10 à Douala
+(23 h 30 UTC le 30/09) est affichée « 01/10/2026 » et comptée dans
+octobre. Les deux fuseaux coïncident dès que l'utilisateur est réglé sur
+le fuseau de l'établissement.
 
 ## Auteur
 

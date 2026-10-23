@@ -35,6 +35,16 @@ export function fmtMoney(value, symbol = "F") {
     return rounded.toLocaleString("fr-FR") + " " + symbol;
 }
 
+/**
+ * Montant à retrancher, précédé de « − » seulement s'il est non nul :
+ * « −0 FCFA » s'affichait quand rien n'était en retard (écarts n° 6, 69).
+ */
+export function fmtNegMoney(value, symbol = "F") {
+    const n = value || 0;
+    const rounded = n >= 0 ? (n + 0.5) | 0 : -((-n + 0.5) | 0);
+    return (rounded > 0 ? "−" : "") + fmtMoney(rounded, symbol);
+}
+
 export function fmtCompact(value) {
     const n = value || 0;
     const abs = n < 0 ? -n : n;
@@ -54,16 +64,68 @@ export function fmtQty(value) {
     return r.toLocaleString("fr-FR");
 }
 
-export function fmtPct(value) {
+/**
+ * Pourcentage à la française, une décimale FIXE : « 40,0 % » (virgule,
+ * espace insécable avant %), comme les autres tableaux de bord AITE
+ * (écart n° 41 : « 40 % » ici, « 40,5 % » là).
+ */
+export function fmtPct(value, digits = 1) {
     const n = value || 0;
-    const r = ((n * 10 + (n >= 0 ? 0.5 : -0.5)) | 0) / 10;
-    return ("" + r).replace(".", ",") + " %";
+    return n.toFixed(digits).replace(".", ",") + "\u00a0%";
 }
 
+/** « 2026-10-14 » → « 14/10/2026 » (règle 6, écart n° 37). */
+export function fmtDate(value) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(value || "");
+    return m ? m[3] + "/" + m[2] + "/" + m[1] : (value || "");
+}
+
+/**
+ * Libellé de la carte des échéances situées entre la fenêtre d'alerte
+ * (réglable, 7 j par défaut) et 30 j — même borne que le calcul du
+ * serveur (``soon < jours avant échéance <= 30``). Le libellé était figé
+ * à « 8–30 j » (écart n° 69).
+ */
+export function dueWindowLabel(soon) {
+    const lo = (soon || 0) + 1;
+    if (lo < 30) {
+        return "À payer sous " + lo + "–30 j";
+    }
+    if (lo === 30) {
+        return "À payer à 30 j";
+    }
+    return "Au-delà de l'alerte, jusqu'à 30 j";
+}
+
+/**
+ * Nombre suivi du mot accordé : « 1 commande », « 3 commandes » — en
+ * toutes lettres (« 3 cmd » — reprise de l'écart n° 42).
+ */
+export function fmtCount(n, one, many) {
+    const k = n || 0;
+    return k + " " + (k > 1 ? many : one);
+}
+
+/**
+ * Libellés de l'axe de l'échéancier, calculés depuis les tranches de
+ * ``scheduleWeeks`` (tranche k = 7k à 7k + 6 jours avant l'échéance, la
+ * première avec les factures échues, la dernière ouverte). L'axe disait
+ * « S1 … S5+ » (reprise de l'écart n° 42).
+ */
+export function scheduleLabels() {
+    const out = ["Échu ou sous 7 j"];
+    for (let k = 1; k < 5; k++) {
+        out.push((7 * k) + " à " + (7 * k + 6) + " j");
+    }
+    out.push("35 j et +");
+    return out;
+}
+
+/** Durée en jours, une décimale fixe : « 23,0 j » — même rendu que le
+ *  cockpit Direction pour le même délai (écart n° 41). */
 export function fmtDays(value) {
     const n = value || 0;
-    const r = ((n * 10 + 0.5) | 0) / 10;
-    return ("" + r).replace(".", ",") + " j";
+    return n.toFixed(1).replace(".", ",") + " j";
 }
 
 export const PERIOD_PRESETS = [
@@ -73,9 +135,20 @@ export const PERIOD_PRESETS = [
     { key: "quarter", label: "3 mois" },
 ];
 
+/**
+ * Date LOCALE au format AAAA-MM-JJ (paramètre de période envoyé au
+ * serveur). ``toISOString()`` passe par l'UTC : à Douala (UTC+1), minuit
+ * le 1er devenait le 30 du mois précédent (écart n° 38).
+ */
+export function localIsoDate(d) {
+    const pad = (n) => (n < 10 ? "0" : "") + n;
+    return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-"
+        + pad(d.getDate());
+}
+
 export function periodRange(key) {
     const today = new Date();
-    const iso = (d) => d.toISOString().slice(0, 10);
+    const iso = localIsoDate;
     let from = new Date(today);
     const to = new Date(today);
     switch (key) {

@@ -257,18 +257,22 @@
                             label="'Dettes fournisseurs'"
                             value="money(o.purchase.encours)"
                             sub="moneyShort(o.purchase.retard) + ' échues · '
-                                 + moneyShort(o.purchase.soon) + ' sous 7 j'"
+                                 + moneyShort(o.purchase.soon) + ' sous '
+                                 + soonDays(o.purchase) + ' j'"
                             onClick="() => this.setTab('achat')"/>
                         <KpiCard badge="'photo'"
                             label="'Stock — valeur / alertes'"
                             value="money(o.stock.total_value)"
-                            sub="(o.stock.rupt_count + o.stock.crit_count)
-                                 + ' réfs en alerte · coulage ' + pct(o.stock.coul_pct)"
+                            sub="count(o.stock.rupt_count + o.stock.crit_count,
+                                       'référence en alerte',
+                                       'références en alerte')
+                                 + ' · coulage ' + pct(o.stock.coul_pct)"
                             onClick="() => this.setTab('stock')"/>
                     </div>
                     <t t-if="o.hotel">
                         <div class="add-sect">HÉBERGEMENT — écarts vs même période
-                            N-1 ; cliquer une carte ouvre le tableau de bord exécutif</div>
+                            N-1 ; cliquer une carte ouvre « Direction — Activité
+                            par pôle »</div>
                         <div class="add-row">
                             <KpiCard accent="'vert'" badge="'per'"
                                 label="'CA des nuitées (HT)'"
@@ -285,14 +289,14 @@
                                 sub="hotelPickupSub"
                                 onClick="() => this.openExec()"/>
                             <KpiCard badge="'per'"
-                                label="'ADR — prix moyen par nuit'"
+                                label="'Prix moyen par nuit (ADR)'"
                                 value="money(o.hotel.adr)"
                                 delta="o.hotel.deltas_ly.adr"
                                 hint="hotelHint('adr')"
                                 sub="'CA hébergement ÷ nuitées vendues'"
                                 onClick="() => this.openExec()"/>
                             <KpiCard accent="'teal'" badge="'per'"
-                                label="'RevPAR'"
+                                label="'Revenu par chambre disponible (RevPAR)'"
                                 value="money(o.hotel.revpar)"
                                 delta="o.hotel.deltas_ly.revpar"
                                 hint="hotelHint('revpar')"
@@ -383,7 +387,7 @@
                                         <td class="add-r"
                                             t-esc="money(r.ca)"/>
                                         <td class="add-age"
-                                            t-esc="pct(r.margin_rate, 0)"/>
+                                            t-esc="pct(r.margin_rate)"/>
                                     </tr>
                                 </t>
                             </table>
@@ -392,7 +396,7 @@
                                t-key="c_index">
                                 <HBar label="c.name" pct="c.pct"
                                     color="c.color"
-                                    value="pct(c.pct, 0)"/>
+                                    value="pct(c.pct)"/>
                             </t>
                             <h3 class="add-mt">Encaissements</h3>
                             <t t-foreach="posPayments" t-as="p"
@@ -400,7 +404,7 @@
                                 <HBar label="p.name" pct="p.pct"
                                     color="p.color"
                                     value="money(p.amount)"
-                                    hint="pct(p.pct, 0)"/>
+                                    hint="pct(p.pct)"/>
                             </t>
                         </div>
                     </div>
@@ -444,7 +448,7 @@
                                  + money(d.kpis.oldest_amount)"/>
                         <KpiCard badge="'photo'"
                             label="'Délai moyen de remboursement'"
-                            value="(d.kpis.avg_settle_days || 0) + ' j'"
+                            value="days(d.kpis.avg_settle_days)"
                             sub="d.kpis.settled_count + ' ardoises soldées'"/>
                     </div>
                     <div class="add-row">
@@ -464,7 +468,7 @@
                             sub="d.net_flow_text"/>
                         <KpiCard badge="'per'"
                             label="'Taux de recouvrement'"
-                            value="pct(d.kpis.recovery_rate, 0)"
+                            value="pct(d.kpis.recovery_rate)"
                             sub="'ardoise moyenne '
                                  + money(d.kpis.avg_ardoise)"/>
                     </div>
@@ -477,7 +481,7 @@
                                 <HBar label="a.label" pct="a.pct"
                                     color="a.color"
                                     value="moneyShort(a.amount)"
-                                    hint="a.count + ' cl.'"/>
+                                    hint="a.count + ' ardoise(s)'"/>
                             </t>
                             <h3 class="add-mt">Encours — 6 mois
                                 (fin de mois)</h3>
@@ -520,7 +524,7 @@
                                             t-esc="money(r.amount)"/>
                                         <td class="add-age"
                                             t-esc="(r.method_label || r.method || '')
-                                                   + ' · ' + (r.date || '')"/>
+                                                   + ' · ' + date(r.date)"/>
                                     </tr>
                                 </t>
                             </table>
@@ -556,7 +560,8 @@
                         <KpiCard mega="true" badge="'photo'"
                             label="'Valeur — coût d\'achat'"
                             value="money(d.kpis.total_value)"
-                            sub="d.kpis.refs_count + ' réfs · '
+                            sub="count(d.kpis.refs_count, 'référence',
+                                       'références') + ' · '
                                  + stockUnits + ' unités'"/>
                         <KpiCard mega="true" accent="'teal'"
                             badge="'photo'"
@@ -567,37 +572,41 @@
                                  + pct(d.kpis.margin_pct) + ')'"/>
                         <KpiCard accent="'rouge'" badge="'photo'"
                             label="'Ruptures &amp; critiques'"
-                            value="(d.kpis.rupt_count + d.kpis.crit_count)
-                                   + ' réfs'"
+                            value="count(d.kpis.rupt_count
+                                         + d.kpis.crit_count,
+                                         'référence', 'références')"
                             sub="d.kpis.rupt_count + ' ruptures · '
                                  + d.kpis.crit_count + ' critiques'"/>
                         <KpiCard accent="'ambre'" badge="'photo'"
                             label="'À commander'"
                             value="money(d.kpis.cmd_value)"
-                            sub="d.kpis.seuil_count
-                                 + ' réfs sous seuil'"/>
+                            sub="count(d.kpis.seuil_count,
+                                       'référence sous le seuil',
+                                       'références sous le seuil')"/>
                     </div>
                     <div class="add-row">
                         <KpiCard badge="'photo'"
                             label="'Couverture moyenne'"
-                            value="(d.kpis.couv_moy || 0).toFixed(1)
-                                   .replace('.', ',') + ' j'"
+                            value="days(d.kpis.couv_moy)"
                             sub="'rotation ' + (d.kpis.rot_moy || 0)
                                  .toFixed(1).replace('.', ',')
                                  + '× / mois'"/>
                         <KpiCard accent="'ambre'" badge="'photo'"
                             label="'Stock dormant'"
                             value="money(d.kpis.dorm_value)"
-                            sub="d.kpis.dorm_count + ' réfs'"/>
+                            sub="count(d.kpis.dorm_count, 'référence',
+                                       'références')"/>
                         <KpiCard accent="'rouge'" badge="'per'"
                             label="'Coulage'"
                             value="money(d.kpis.pertes)"
                             sub="pct(d.kpis.coul_pct) + ' du CA estimé — seuil '
-                                 + pct(d.kpis.coul_seuil, 0)"/>
+                                 + pct(d.kpis.coul_seuil)"/>
                         <KpiCard accent="'rouge'" badge="'per'"
                             label="'Écarts d\'inventaire'"
                             value="money(d.kpis.gap_net)"
-                            sub="d.kpis.gap_refs + ' réfs concernées'"/>
+                            sub="count(d.kpis.gap_refs,
+                                       'référence concernée',
+                                       'références concernées')"/>
                     </div>
                     <div class="add-row">
                         <div class="add-panel">
@@ -685,9 +694,9 @@
                             label="'Échues'"
                             value="money(d.kpis.retard)"
                             sub="d.kpis.retard_count + ' factures ('
-                                 + pct(d.kpis.retard_pct, 0) + ')'"/>
+                                 + pct(d.kpis.retard_pct) + ')'"/>
                         <KpiCard accent="'rouge'" badge="'photo'"
-                            label="'À payer sous 7 j'"
+                            label="soonLabel(d.kpis)"
                             value="money(d.kpis.soon)"
                             sub="d.kpis.soon_count + ' échéances'"/>
                         <KpiCard badge="'photo'"
@@ -704,17 +713,16 @@
                             value="money(d.kpis.achats)"
                             sub="d.kpis.recus_count + ' réceptions'"/>
                         <KpiCard accent="'vert'" badge="'per'"
-                            label="'OTIF'"
-                            value="pct(d.kpis.otif, 0)"
+                            label="'Livré à temps et complet (OTIF)'"
+                            value="pct(d.kpis.otif)"
                             sub="'livraisons complètes et à l\'heure'"/>
                         <KpiCard badge="'per'"
                             label="'Délai moyen de livraison'"
-                            value="(d.kpis.delai_moy || 0).toFixed(1)
-                                   .replace('.', ',') + ' j'"
-                            sub="'DPO ' + dpoText + ' j (délai de paiement)'"/>
+                            value="days(d.kpis.delai_moy)"
+                            sub="'délai de paiement (DPO) : ' + dpoText"/>
                         <KpiCard accent="'ambre'" badge="'per'"
                             label="'Prix en hausse'"
-                            value="priceUpCount + ' réfs'"
+                            value="priceUpCount"
                             sub="'vs dernier achat'"/>
                     </div>
                     <div class="add-row">
@@ -726,7 +734,8 @@
                                 <HBar label="b.label" pct="b.pct"
                                     color="b.color"
                                     value="moneyShort(b.amount)"
-                                    hint="b.count + ' fact.'"/>
+                                    hint="count(b.count, 'facture',
+                                               'factures')"/>
                             </t>
                             <h3 class="add-mt">Hausses de prix récentes</h3>
                             <table class="add-mini">
@@ -753,7 +762,7 @@
                                         <td class="add-r"
                                             t-esc="money(r.achats)"/>
                                         <td class="add-age"
-                                            t-esc="pct(r.otif, 0)"/>
+                                            t-esc="pct(r.otif)"/>
                                     </tr>
                                 </t>
                             </table>
@@ -766,7 +775,7 @@
                                         <td class="add-r"
                                             t-esc="money(r.amount)"/>
                                         <td class="add-age"
-                                            t-esc="r.planned"/>
+                                            t-esc="date(r.planned)"/>
                                     </tr>
                                 </t>
                             </table>

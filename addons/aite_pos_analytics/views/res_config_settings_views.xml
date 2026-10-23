@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Seuils d'écart de caisse dans Point de Vente → Configuration →
+        Paramètres (écart n° 67 : réglables sans code). Réglage de la
+        SOCIÉTÉ, commun à toutes les caisses : posé à la fin de l'app, hors
+        du bloc qui dépend de la caisse sélectionnée en tête de page.
+    -->
+    <record id="res_config_settings_view_form_aite_pos_analytics" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.aite.pos.analytics</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="point_of_sale.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='point_of_sale']" position="inside">
+                <block title="Analyse AITE — écarts de caisse"
+                       name="aite_pos_analytics_gap_block"
+                       help="Commun à toutes les caisses de la société.">
+                    <setting id="aite_pos_gap_med"
+                             string="Écart « Élevé » à partir de"
+                             help="À la clôture, un manquant de caisse égal ou supérieur à ce montant classe la session « Élevé » dans Point de Vente → Analyse → Écarts de caisse (section Analyse AITE) ; en dessous, il reste « Modéré ».">
+                        <field name="aite_pos_gap_med"/>
+                    </setting>
+                    <setting id="aite_pos_gap_high"
+                             string="Écart « Critique » à partir de"
+                             help="À la clôture, un manquant de caisse égal ou supérieur à ce montant classe la session « Critique » (rouge) : elle passe en tête de la liste des écarts, à traiter en priorité. Changer un seuil reclasse aussi les sessions déjà comptées.">
+                        <field name="aite_pos_gap_high"/>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

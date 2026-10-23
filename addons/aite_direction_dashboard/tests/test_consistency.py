@@ -100,6 +100,47 @@ class TestDirectionConsistency(PosAnalyticsCommon):
                   for r in s['rows']]
         self.assertIn("Payer Grossiste Cockpit", labels)
 
+    def test_actions_write_dates_and_rates_in_french(self):
+        """Écarts n° 37 et 41 (règle 6) : la liste « À traiter » écrivait
+        l'échéance en AAAA-MM-JJ et les taux au point décimal (« 7.9 % »)."""
+        self._bill(60000.0, due_in_days=2)
+        actions = self.direction.get_actions(self.d_from, self.d_to)
+        row = next(r for s in actions['sections'] for r in s['rows']
+                   if r['label'] == "Payer Grossiste Cockpit")
+        due = self.today + timedelta(days=2)
+        self.assertEqual(row['hint'], due.strftime('%d/%m/%Y'))
+
+        D = type(self.direction)
+        out = D._build_actions({
+            'coul_pct': 7.9, 'coul_seuil': 2.0, 'coul_amount': 1000.0,
+            'rem_pct': 3.5, 'rem_amount': 500.0,
+        })
+        labels = [r['label'] for s in out['sections'] for r in s['rows']]
+        # Une décimale fixe, comme le tableau de bord Stock affiche le
+        # même seuil (« 2,0 % ») — reprise de l'écart n° 41.
+        self.assertIn(
+            "Coulage au-dessus du seuil (7,9\u00a0% > 2,0\u00a0%)", labels)
+        self.assertIn("Remises élevées (3,5\u00a0% du CA)", labels)
+
+    def test_actions_write_rates_and_words_like_the_source_screens(self):
+        """Reprise des écarts n° 41 et 42 : la hausse de prix s'écrivait
+        « +13 % » ici et « +12,5 % » dans les Achats ; « (3 réfs) » était
+        abrégé."""
+        D = type(self.direction)
+        out = D._build_actions({
+            'cmd_value': 45000.0, 'cmd_refs': 3,
+            'price_up': [{'name': "Casier 65 cl", 'partner': "Brasseries",
+                          'delta_pct': 12.5}],
+        })
+        rows = {r['label']: r for s in out['sections'] for r in s['rows']}
+        self.assertIn("Lancer la commande suggérée (3 références)", rows)
+        self.assertEqual(rows["Renégocier Casier 65 cl"]['hint'],
+                         "+12,5\u00a0% · Brasseries")
+        one = D._build_actions({'cmd_value': 9000.0, 'cmd_refs': 1})
+        self.assertIn("Lancer la commande suggérée (1 référence)",
+                      [r['label'] for s in one['sections']
+                       for r in s['rows']])
+
     # ------------------------------------------------------------------
     # n° 24 — phrases d'état justes
     # ------------------------------------------------------------------

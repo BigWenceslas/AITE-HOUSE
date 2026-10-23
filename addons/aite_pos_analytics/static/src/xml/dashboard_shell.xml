@@ -107,7 +107,7 @@
             <button
                 t-attf-class="o_aite_tab {{ props.currentTab === t.key ? 'o_aite_tab_active' : '' }}"
                 t-on-click="() => this.select(t.key)">
-                <i t-attf-class="fa {{ t.icon }} me-1"/>
+                <i t-attf-class="fa {{ t.icon }} me-1" t-att-title="t.label"/>
                 <span t-esc="t.label"/>
             </button>
         </t>

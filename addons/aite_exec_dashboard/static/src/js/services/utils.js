@@ -8,10 +8,14 @@ export function fmtMoney(value, symbol = "F") {
     return rounded.toLocaleString("fr-FR") + " " + symbol;
 }
 
-export function fmtPct(value) {
+/**
+ * Pourcentage à la française, une décimale FIXE : « 64,0 % » (virgule,
+ * espace insécable avant %) — le même rendu que le cockpit Direction
+ * (écart n° 41 : « 64 % » ici, « 64,0 % » là-bas).
+ */
+export function fmtPct(value, digits = 1) {
     const n = value || 0;
-    const r = ((n * 10 + (n >= 0 ? 0.5 : -0.5)) | 0) / 10;
-    return ("" + r).replace(".", ",") + " %";
+    return n.toFixed(digits).replace(".", ",") + "\u00a0%";
 }
 
 export function fmtInt(value) {
@@ -33,9 +37,26 @@ export const PERIOD_PRESETS = [
     { key: "year", label: "Cette année" },
 ];
 
+/**
+ * Date LOCALE au format AAAA-MM-JJ (paramètre de période envoyé au
+ * serveur). ``toISOString()`` passe par l'UTC : à Douala (UTC+1), minuit
+ * le 1er devenait le 30 du mois précédent (écart n° 38).
+ */
+export function localIsoDate(d) {
+    const pad = (n) => (n < 10 ? "0" : "") + n;
+    return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-"
+        + pad(d.getDate());
+}
+
+/** « 2026-10-01 » → « 01/10/2026 » (règle 6) ; tout autre texte inchangé. */
+export function fmtDate(value) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(value || "");
+    return m ? m[3] + "/" + m[2] + "/" + m[1] : (value || "");
+}
+
 export function periodRange(key) {
     const today = new Date();
-    const iso = (d) => d.toISOString().slice(0, 10);
+    const iso = localIsoDate;
     let from;
     if (key === "quarter") {
         const q = (today.getMonth() / 3) | 0;

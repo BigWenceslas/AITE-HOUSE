@@ -98,6 +98,40 @@ class TestExecDashboard(TransactionCase):
         self.assertTrue(all(
             {'key', 'label', 'color'} <= set(p) for p in meta['poles']))
 
+    def test_indicators_are_named_in_french_first(self):
+        """Écart n° 42 (règle 6) : « RevPAR », « Pickup », « Pace » seuls
+        à l'écran. Chaque phrase d'explication commence par le nom
+        français, le sigle entre parenthèses."""
+        hints = self.dashboard.get_meta()['hints']
+        expected = {
+            'adr': "Prix moyen par nuit (ADR)",
+            'revpar': "Revenu par chambre disponible (RevPAR)",
+            'pickup': "Réservations récentes (pickup)",
+            'pace': "Rythme du mois (pace)",
+        }
+        for key, name in expected.items():
+            self.assertTrue(hints[key].startswith(name + " : "), key)
+
+    def test_title_differs_from_the_direction_cockpit(self):
+        """Écart n° 70 : le cockpit Direction et ce tableau de bord
+        portaient le même titre « Direction — Vue consolidée »."""
+        action = self.env.ref('aite_exec_dashboard.action_aite_exec_dashboard')
+        self.assertNotEqual(action.name, "Direction — Vue consolidée")
+        cockpit = self.env.ref(
+            'aite_direction_dashboard.action_direction_dashboard',
+            raise_if_not_found=False)
+        if cockpit:
+            self.assertNotEqual(action.name, cockpit.name)
+        # Reprise : le module, dans Apps, se présentait encore comme
+        # « Vue consolidée du complexe » — le résumé du cockpit.
+        module = self.env['ir.module.module'].search(
+            [('name', '=', 'aite_exec_dashboard')])
+        self.assertFalse(module.summary.startswith("Vue consolidée"))
+        other = self.env['ir.module.module'].search(
+            [('name', '=', 'aite_direction_dashboard')])
+        if other:
+            self.assertNotEqual(module.shortdesc, other.shortdesc)
+
     def test_meta_carries_the_company_identity(self):
         meta = self.dashboard.get_meta()
         self.assertEqual(meta['company_name'], self.company.name)
