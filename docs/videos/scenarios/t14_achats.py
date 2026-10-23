@@ -10,116 +10,142 @@ livraisons, la dépendance à un fournisseur et ses seuils, enfin la dérive des
 prix d'achat.
 
 Profil rejoué : celui du compte demo.direction (Responsable Achats :
-addons/aite_demo_data/models/demo_generator.py:74-83), qui voit le bouton
+addons/aite_demo_data/models/demo_generator.py:83-92), qui voit le bouton
 « ⚙ Configurer les alertes » (réservé à purchase.group_purchase_manager :
-static/src/xml/dashboard.xml:168-170, models/purchase_dashboard.py:206-208)
+static/src/xml/dashboard.xml:171-173, models/purchase_dashboard.py:230-231)
 et tient le registre des consignes. Le droit Facturation n'est plus requis
 pour ouvrir le tableau de bord (écart 8, corrigé) : Danielle est gardée
 pour la continuité avec le cockpit de t15, pas pour contourner un droit.
 Applications de la barre : ecrans.APPS_PROFIL['direction'] ; menus de
-l'application Achats relevés sur ../aite-videos/ref_muk/014-achats-tableau-
-de-bord-aite.png (« Commandes », « Tableau de bord AITE », « Produits »,
-« Analyse », « Configuration » : odoo18/addons/purchase/views/
-purchase_views.xml:5-19 et :54, report/purchase_report_views.xml:103,
-i18n/fr.po « Purchase » → Achats, « Orders » → Commandes, « Products » →
-Produits, « Reporting » → Analyse ; menu AITE : addons/
-aite_purchase_dashboard/views/purchase_dashboard_menus.xml:8-13).
+l'application Achats : ecrans.MENUS_MUK['achats'] (« Commandes », « Tableau
+de bord AITE », « Produits », « Analyse », « Configuration » : odoo18/addons/
+purchase/views/purchase_views.xml:5-19 et :54, report/purchase_report_views.
+xml:103, i18n/fr.po « Purchase » → Achats, « Orders » → Commandes,
+« Products » → Produits, « Reporting » → Analyse ; menu AITE : addons/
+aite_purchase_dashboard/views/purchase_dashboard_menus.xml:8-13 ; « Analyse »
+et « Configuration » sont ceux d'un Responsable Achats).
 
 Sources des libellés (tous relevés mot pour mot dans addons/
 aite_purchase_dashboard, sauf mention) :
 
 - titre et sous-titre : static/src/xml/dashboard.xml:29-30 ; filtres
   « Période », « Appliquer », « Fournisseur », « Tous », « → » :35-66 ;
-  pastilles de période : static/src/js/services/utils.js:69-74 ; onglets :
-  static/src/js/views/purchase_dashboard_view.js:154-163 ;
-- onglet Tableau de bord : dashboard.xml:85-142 (« Vue d'ensemble »,
-  « Indicateurs », « Répartition & flux », cartes et sous-titres, titres des
-  graphiques, phrase « Un glissement vers +30/+60 j annonce une tension de
-  trésorerie. » :136) ; séries « Factures fournisseurs » / « Paiements » :
-  purchase_dashboard_view.js:380-386 ; mois « Mai … Oct » :
-  models/purchase_dashboard.py:427-428 ; tranches « Non échu », « 1–30 j »,
-  « 31–60 j », « 61–90 j », « +90 j » : purchase_dashboard_view.js:411 ;
-- onglet Dettes & échéancier : dashboard.xml:217-288 ; « Échu / S0 », « S1 »
-  … « S5+ » : purchase_dashboard_view.js:459 ; « dans N j », « auj. », « N j » :
-  :240-248 ; tri par urgence : purchase_dashboard.py:262-267 ;
-- onglet Avoirs & consignes : dashboard.xml:291-389 (« Gérer les consignes »
-  :315-316, phrase du 4096 :350, « Réflexe : … » :384-388) ;
-- onglet Commandes & réceptions : dashboard.xml:392-454 ; ✓ / ✗ / — :
-  purchase_dashboard_view.js:250-255 ;
-- onglet Fournisseurs : dashboard.xml:146-214 ; « … des achats · seuil de
-  dépendance dépassé » : purchase_dashboard_view.js:284-289 ; fenêtre
-  « ⚙ Alertes achats & fournisseurs » : dashboard.xml:525-566 (le glyphe ⚙,
-  absent de la police Inter, est redessiné en SVG) ;
-- onglet Prix & variations : dashboard.xml:457-520 ; « Δ » positif en rouge,
-  négatif en vert :501-502 ; impact « −… » / « +… » / « — » :
-  purchase_dashboard_view.js:265-278 ;
-- statuts et badges : purchase_dashboard.py:63-135 (« En retard », « À payer
+  pastilles de période : static/src/js/services/utils.js:136-141 ; onglets :
+  static/src/js/views/purchase_dashboard_view.js:170-179 ;
+- onglet Tableau de bord : dashboard.xml:84-146 (« Vue d'ensemble »,
+  « Indicateurs », « Répartition & flux », cartes et sous-titres accordés
+  par count() — « 8 commandes · 6 réceptions », « 4 factures ouvertes »,
+  « 1 facture · trésorerie à prévoir », « 2 commandes » —, « Délai de
+  paiement (DPO) » :100, « Factures échues » en montant positif :110-112,
+  « Livré à temps et complet (OTIF) » / « part des commandes reçues · cible
+  ≥ 90 % » :116-118, titres des graphiques, phrase « Un glissement vers
+  +30/+60 j annonce une tension de trésorerie. » :139) ; séries « Factures
+  fournisseurs » / « Paiements » : purchase_dashboard_view.js:415-421 ; mois
+  « mai … oct. » : models/purchase_dashboard.py:462-463 (ecrans.mois_abrege) ;
+  tranches « Non échu », « 1–30 j », « 31–60 j », « 61–90 j », « +90 j » :
+  purchase_dashboard_view.js:446 ;
+- onglet Dettes & échéancier : dashboard.xml:220-291 (« Factures échues » /
+  « 1 facture échue » :227-230, carte « À payer sous 8–30 j » calculée
+  depuis le réglage :234, dueWindowLabel de utils.js:89-98) ; axe « Échu ou
+  sous 7 j », « 7 à 13 j » … « 35 j et + » : utils.js:120-127
+  (scheduleLabels) ; « dans N j », « aujourd'hui », « N j » :
+  purchase_dashboard_view.js:272-280 ; tri par urgence :
+  purchase_dashboard.py:289-294 ;
+- onglet Avoirs & consignes : dashboard.xml:294-392 (« 90 casiers chez les
+  fournisseurs », « 3 avoirs ouverts » :304, :308 ; « Gérer les consignes »
+  :318-319, phrase du 4096 :353, « Réflexe : … » :387-391) ;
+- onglet Commandes & réceptions : dashboard.xml:395-457 (« 1 en attente ·
+  0 reçue en retard » :405, « Livré à temps et complet (OTIF) » /
+  « commandes reçues sur la période » :406-408) ; ✓ / ✗ / — :
+  purchase_dashboard_view.js:282-287, sans couleur (dashboard.xml:443) ;
+- onglet Fournisseurs : dashboard.xml:149-217 (« Livré à temps et complet
+  (OTIF) » / « moyenne des fournisseurs » :163-165, « Risque de
+  concentration : dès … » :212-216) ; « … des achats · seuil de dépendance
+  atteint » : purchase_dashboard_view.js:318-324 ; fenêtre « ⚙ Alertes achats
+  & fournisseurs » : dashboard.xml:528-569 (« Dépendance : badge dès cette
+  part d'achats. Prix : « Hausse forte » dès le seuil. » :556-557 ; le glyphe
+  ⚙, absent de la police Inter, est redessiné en SVG) ;
+- onglet Prix & variations : dashboard.xml:460-523 (« Hausses ≥ 5,0 % »
+  :471, « Dès le seuil, renégociez… » :521) ; « Δ » positif en rouge,
+  négatif en vert :504-505 ; impact « −… » / « +… » / « — » (sans couleur
+  pour un impact nul) : purchase_dashboard_view.js:297-312 ;
+- statuts et badges : purchase_dashboard.py:52-137 (« En retard », « À payer
   bientôt », « À échoir », « En attente », « Reçue en retard », « Reçue
   incomplète », « Reçue conforme », « Hausse forte », « Hausse », « Baisse »,
   « Stable », « Dépendance », « Retards », « OK ») ; couleurs : utils.js:9-30
   (palette des graphiques, AGING_COLORS, BADGE_CLS) et purchase_dashboard.py:
-  40-44 (une couleur par fournisseur, dans l'ordre alphabétique de
-  _supplier_universe :177-194 — en Python, « É » se range après « Z ») ;
+  42-46 (une couleur par fournisseur, dans l'ordre alphabétique de
+  _supplier_universe :200-217 — en Python, « É » se range après « Z ») ;
   badges foncés pour le contraste, comme scenarios/t13_stock.py ;
 - registre « Consignes fournisseurs » : views/purchase_dashboard_actions.xml:
   9-11 (titre), views/purchase_deposit_views.xml:4-17 (liste éditable en bas,
-  colonnes, somme de la valeur), models/purchase_deposit.py:20-57 (libellés
+  colonnes, somme de la valeur), models/purchase_deposit.py:18-58 (libellés
   « Fournisseur », « Casiers consignés », « Consigne / casier », « Valeur
   immobilisée », « Dernière déconsignation », « Note » ; valeur = casiers ×
-  consigne ; tri « value desc ») ; boutons natifs d'une liste éditable :
-  odoo18/addons/web/static/src/views/list/list_controller.xml:7-11 et
-  :106-114 (« New » → Nouveau, « Save » → Enregistrer, « Discard » → Ignorer,
-  web/i18n/fr.po) ; fil d'Ariane : le nom de l'action cliente
-  « Achats & Fournisseurs — Tableau de bord » (purchase_dashboard_actions.xml:
-  5) puis « Consignes fournisseurs ».
+  consigne ; tri « value desc ») ; montants et dates des champs d'Odoo
+  (ecrans.fcfa, espace insécable de fr_FR ; ecrans.date_fr) ; boutons natifs
+  d'une liste éditable : odoo18/addons/web/static/src/views/list/
+  list_controller.xml:7-11 et :106-114 (« New » → Nouveau, « Save » →
+  Enregistrer, « Discard » → Ignorer, web/i18n/fr.po) ; fil d'Ariane : le nom
+  de l'action cliente « Achats & Fournisseurs — Tableau de bord »
+  (purchase_dashboard_actions.xml:5) puis « Consignes fournisseurs ».
 
 Les chiffres de l'écran sont calculés : statuts, tranches, urgences, OTIF,
 variations de prix, impacts et badges sortent du VRAI code des six fonctions
 pures de models/purchase_dashboard.py (_bucket, _invoice_metrics,
 _order_metrics, _price_metrics, _supplier_badge, _dpo), extrait à l'import
 comme le font tests/socle/test_purchase_logic.py:21-42 ; les agrégats
-reprennent _open_bill_rows / get_open_invoices :225-267, _order_rows
-:273-331, get_claims :343-410, get_price_moves :472-514, get_supplier_rows
-:562-608 et get_kpis :610-721 ; les formats, ceux de utils.js:32-67 (montant
-arrondi au franc, « 62,5 % », « 18,7 j ») et de purchase_dashboard_view.js:
-203-289. Réglages par défaut : 7 j, 2 j, 40 %, 5 % (models/
-res_config_settings.py:20-38). Le jeu est fictif : un bar-hôtel de Douala
-et ses quatre fournisseurs (Boissons du Wouri SARL, Dépôt Akwa Distribution,
-Épicerie Fine Bonapriso, Hygiène Pro Littoral — repris de scenarios/
-c6_direction.py), huit commandes du mois, quatre factures ouvertes, trois
-avoirs, trois lignes de consignes ; articles et coûts repris
-de scenarios/t13_stock.py. Aujourd'hui : vendredi 16/10/2026, période « Ce
-mois ». Références : commandes « P00151 », factures « BILL/2026/10/0001 »,
-avoirs « RBILL/2026/10/0001 », au format relevé sur la base de démonstration
-MuK (séquences d'odoo18/addons/account/models/account_move.py:3795-3798) ;
-le motif d'un avoir est sa référence saisie (mv.ref, purchase_dashboard.py:
-381) ; devise XAF, symbole « FCFA », sans décimale
-(odoo18/odoo/addons/base/data/res_currency_data.xml:476-483).
+reprennent _open_bill_rows / get_open_invoices :248-294, _order_rows
+:300-362, get_claims :375-443, get_price_moves :517-558, get_supplier_rows
+:609-654 et get_kpis :657-767. Les formats sont ceux du tableau de bord
+(utils.js:32-134, purchase_dashboard_view.js:219-324) : fmtMoney
+(toLocaleString fr-FR, espace fine U+202F : ecrans.fcfa(tdb=True)),
+fmtNegMoney (« − » seulement si le montant est non nul), fmtDays (« 13,9 j » :
+ecrans.jours), fmtCount (« 2 commandes » : ecrans.compte), fmtInt
+(ecrans.entier(tdb=True)), fmtDate (« 16/10/2026 » : ecrans.date_fr) ;
+fmtPct est ici un toFixed(1) brut, qui arrondit un demi exact en s'éloignant
+de zéro (Cola : −6,25 → « -6,3 % ») là où ecrans.pct (round1) donnerait
+« -6,2 % » : _pct() le rejoue localement. Réglages par défaut : 7 j, 2 j,
+40 %, 5 % (models/res_config_settings.py:24-42). Le jeu est fictif : un
+bar-hôtel de Douala et ses quatre fournisseurs (Boissons du Wouri SARL,
+Dépôt Akwa Distribution, Épicerie Fine Bonapriso, Hygiène Pro Littoral —
+repris de scenarios/c6_direction.py), huit commandes du mois, quatre
+factures ouvertes, trois avoirs, trois lignes de consignes ; articles et
+coûts repris de scenarios/t13_stock.py. Aujourd'hui : vendredi 16/10/2026,
+période « Ce mois » du 01/10 au 16/10/2026, seize jours (periodRange et
+localIsoDate, utils.js:148-175). Références : commandes « P00151 », factures
+« BILL/2026/10/0001 », avoirs « RBILL/2026/10/0001 », au format relevé sur la
+base de démonstration MuK (séquences d'odoo18/addons/account/models/
+account_move.py:3795-3798) ; le motif d'un avoir est sa référence saisie
+(mv.ref, purchase_dashboard.py:412) ; devise XAF, symbole « FCFA », sans
+décimale (odoo18/odoo/addons/base/data/res_currency_data.xml:476-483).
 
 Sources des affirmations : douleurs — models/purchase_deposit.py:7-14
 (« Odoo ne suit pas nativement les casiers/bouteilles consignés », « le 4096
-ne se solde jamais sans suivi à l'unité ») et dashboard.xml:350 ; « Un avoir
-oublié est une perte sèche » :384-388 ; « les dérives passent par petites
-touches » :516-519 ; « Un glissement vers +30/+60 j » :136 ; « ponctuel mais
-livrer incomplet » :450-453 ; « Risque de concentration » :209-213 ;
-« l'argent qui dort chez vos fournisseurs » :292. Promesse : le manifeste,
+ne se solde jamais sans suivi à l'unité ») et dashboard.xml:353 ; « Un avoir
+oublié est une perte sèche » :387-391 ; « les dérives passent par petites
+touches » :519-522 ; « Un glissement vers +30/+60 j » :139 ; « ponctuel mais
+livrer incomplet » :453-456 ; « Risque de concentration » :212-216 ;
+« l'argent qui dort chez vos fournisseurs » :295. Promesse : le manifeste,
 « piloter la relation fournisseurs dans les deux sens — ce que vous devez
 (401) et ce qu'on vous doit (409) » (__manifest__.py:13-16). Résultats :
-échéancier sur 6 semaines (purchase_dashboard_view.js:179-188, :459), balance
-âgée en 5 tranches (purchase_dashboard.py:50-61), 4 seuils réglables
-(res_config_settings.py:20-38, dashboard.xml:536-555). Fenêtres de prix
-(45 jours contre 120 à 210 jours) : purchase_dashboard.py:476-479 ; impact
-annuel = Δ prix × volume mensuel × 12 :114 et :502.
+échéancier sur 6 semaines (purchase_dashboard_view.js:195-204, utils.js:
+120-127), balance âgée en 5 tranches (purchase_dashboard.py:52-63), 4 seuils
+réglables (res_config_settings.py:24-42, dashboard.xml:539-552). Fenêtres de
+prix (45 jours contre 120 à 210 jours) : purchase_dashboard.py:520-523 ;
+impact annuel = Δ prix × volume mensuel × 12 :116 et :546.
 
 Captures de référence (modèle visuel, jamais incrustées) :
 ../aite-videos/ref_muk/014-achats-tableau-de-bord-aite.png, -pleine.png et
 013-achats-configuration-consignes-fournisseurs.png ; docs/captures_uat/
-r4-direction-04-ouvrir-achats-fournisseurs.png. Chapitre déjà rejoué dans
-la présentation : scenarios/c6_direction.py (vue « Achats »).
+r4-direction-04-ouvrir-achats-fournisseurs.png (antérieures à la livraison
+4 : libellés et formats lus dans le code). Chapitre déjà rejoué dans la
+présentation : scenarios/c6_direction.py (vue « Achats »).
 
-Écarts rejoués tels quels (à reporter dans docs/videos/ECARTS.md, mention
-« Rejoué tel quel (t14) » ; ce scénario ne modifie aucun fichier partagé) :
-1. CORRIGÉ (aite_purchase_dashboard 18.0.1.0.3) — « Créances totales (409) »,
+Écarts (docs/videos/ECARTS.md) — tous corrigés à ce jour dans
+aite_purchase_dashboard ; la vidéo montre le produit corrigé (18.0.1.0.5,
+livraison 4) :
+1. CORRIGÉ (18.0.1.0.3, ECARTS.md n° 22) — « Créances totales (409) »,
    « Créances fournisseurs (409) » et « Acomptes / soldes débiteurs (4091) »
    additionnaient le reste dû des factures ouvertes : le domaine de get_claims
    retenait amount_residual < −0,005, les lignes CRÉDITRICES du 401. Le
@@ -127,41 +153,54 @@ la présentation : scenarios/c6_direction.py (vue « Achats »).
    _domaine_409() lit le domaine dans le module : la vidéo montre les chiffres
    justes (409 = 319 200 puis 247 200 FCFA, 4091 = 0 FCFA) ; produire.py
    avertirait si l'ancien domaine revenait.
-2. Dates ISO dans toutes les colonnes de date du tableau de bord
-   (purchase_dashboard.py:251, 321-324, 356-357, 379-380) — « 2026-09-08 »
-   — alors que le registre natif affiche 08/10/2026 (CLAUDE.md règle 6).
-3. « Ce mois » démarre le 30/09/2026 à Douala : periodRange passe par
-   toISOString, en UTC (utils.js:76-97, l. 78 et 94).
-4. Sigles anglais « DPO » et « OTIF » dans les titres de cartes
-   (dashboard.xml:100, :113, :160, :403).
-5. « Hausses > 5 % » alors que le code compte Δ ≥ seuil (dashboard.xml:468,
-   purchase_dashboard.py:115, :658) ; de même « au-delà de » pour la
-   dépendance (dashboard.xml:210, :553) alors que _supplier_badge allume le
-   badge dès part ≥ seuil (purchase_dashboard.py:124) et « au-delà du
-   seuil » pour la hausse forte (:554). Les bulles et la voix disent « dès ».
-6. « — » en vert pour un impact nul : impactClass renvoie text-success dès
-   que l'impact vaut 0 ou moins (purchase_dashboard_view.js:265-278) ;
-   visible sur les lignes « Stable ».
-7. « À payer sous 8–30 j » figé alors que la fenêtre d'alerte se règle
-   (dashboard.xml:231 ; purchase_dashboard.py:635-637) — sans effet visible
-   ici, l'alerte restant à 7 jours.
-8. CORRIGÉ dans aite_purchase_dashboard 18.0.1.0.4 (ECARTS.md n° 13) — seul
-   un profil Achats doté d'un droit Facturation ouvrait le tableau de bord
-   (get_flux_months lisait account.payment) ; l'agrégat mensuel des paiements
-   se lit désormais en sudo() (purchase_dashboard.py:436-441,
-   tests/test_access.py) : un acheteur sans Facturation l'ouvre. Rien ne
-   change à l'écran.
-9. Le menu « Consignes fournisseurs » est sous Achats → Configuration,
-   réservé aux responsables (purchase_dashboard_menus.xml:15-20 ;
-   odoo18/addons/purchase/views/purchase_views.xml:19), alors que le README
-   :9 le présente comme l'accès de l'utilisateur ; la vidéo passe par le
-   bouton « Gérer les consignes ».
-10. negMoney préfixe toujours « − » : « −0 FCFA » sur trois cartes quand il
-   n'y a rien (purchase_dashboard_view.js:207-209 ; dashboard.xml:108, :226,
-   :472) ; ECARTS.md n° 6 n'en relève qu'une. Non visible ici.
+2. CORRIGÉ (livraison 4, n° 37) — les colonnes de date du tableau de bord
+   étaient en ISO (« 2026-09-08 ») : fmtDate les écrit « 08/09/2026 »
+   (dashboard.xml:268, :343, :370, :432, :439-440), et le journal date les
+   commandes et réceptions dans le fuseau de l'utilisateur (_local_date,
+   _dt_range : purchase_dashboard.py:171-198).
+3. CORRIGÉ (livraison 4, n° 38) — « Ce mois » démarrait le 30/09/2026 à
+   Douala (toISOString, en UTC) ; localIsoDate le fait partir du 01/10. La
+   période passe de 17 à 16 jours : le DPO devient 13,9 j (14,7 j avant).
+4. CORRIGÉ (livraison 4, n° 42) — sigles anglais : « DPO — délai moyen de
+   paiement » → « Délai de paiement (DPO) » ; « Taux de service (OTIF) »,
+   « OTIF moyen », « OTIF (période) » → « Livré à temps et complet (OTIF) »,
+   avec des sous-titres propres à chaque onglet. Reprise : « 2 cmd » →
+   « 2 commandes », « auj. » → « aujourd'hui », axe de l'échéancier « Échu /
+   S0, S1 … S5+ » → « Échu ou sous 7 j, 7 à 13 j … 35 j et + ».
+5. CORRIGÉ (livraison 4, n° 69) — « Hausses > 5 % » → « Hausses ≥ 5,0 % » ;
+   « au-delà de » → « dès » pour la dépendance (note de l'onglet
+   Fournisseurs, fenêtre des alertes) et la hausse forte ; « seuil de
+   dépendance dépassé » → « atteint ».
+6. CORRIGÉ (livraison 4, n° 69) — un impact nul « — » était vert : il n'a
+   plus de couleur (impactClass) ; visible sur les lignes « Stable ».
+7. CORRIGÉ (livraison 4, n° 69) — « À payer sous 8–30 j » était figé : le
+   libellé suit la fenêtre d'alerte (dueWindowLabel) ; à 7 jours, le texte
+   reste « À payer sous 8–30 j ».
+8. CORRIGÉ (18.0.1.0.4, ECARTS.md n° 13) — seul un profil Achats doté d'un
+   droit Facturation ouvrait le tableau de bord (get_flux_months lisait
+   account.payment) ; l'agrégat mensuel des paiements se lit désormais en
+   sudo() (purchase_dashboard.py:465-470, tests/test_access.py) : un acheteur
+   sans Facturation l'ouvre. Rien ne change à l'écran.
+9. CORRIGÉ (livraison 4, n° 50) — le README présentait le menu « Consignes
+   fournisseurs » comme l'accès de l'utilisateur ; il dit maintenant que le
+   menu (Achats → Configuration) est réservé aux responsables
+   (purchase_dashboard_menus.xml:31-36) et que les acheteurs passent par
+   « Gérer les consignes », le chemin que suit la vidéo.
+10. CORRIGÉ (livraison 4, n° 6 et 69) — « −0 FCFA » quand rien n'était en
+   retard : fmtNegMoney ne met « − » que devant un montant non nul ; les
+   cartes « En retard de paiement » et « En retard » deviennent « Factures
+   échues », en montant positif (« 180 000 FCFA », comme sur le cockpit).
+11. Livraison 4, n° 41 — pourcentages et jours à une décimale fixe :
+   « 40,0 % », « 83,3 % », « 52,1 % », « 13,9 j », « 1,5 j » ; mois en
+   abréviations françaises (« sept. », « oct. ») dans les deux graphiques
+   mensuels ; nombres et montants à l'espace fine (toLocaleString fr-FR).
+Reste dans la vidéo, hors produit : le geste compter du moteur
+(shared/aite-motion.js, nombre()) écrit les milliers avec une espace
+insécable, pas l'espace fine du tableau de bord ; chaque compteur est suivi
+d'un texte() qui pose la valeur exacte.
 
 Prix de la bière blonde : la fenêtre « 45 derniers jours » (16/10 − 45 j =
-01/09, purchase_dashboard.py:476-479) couvre septembre ; septembre est donc au
+01/09, purchase_dashboard.py:520-521) couvre septembre ; septembre est donc au
 prix d'octobre (650 FCFA) pour que le prix actuel affiché (650) soit la vraie
 moyenne pondérée des achats de la fenêtre ; de même pour les sept autres
 articles. Le prix ancien (fenêtre 120 à 210 jours : 20/03 → 18/06) est celui
@@ -173,11 +212,11 @@ suivant, lu le 14/10), contrôlés par assert : achats de la période
 1 850 000 FCFA (Wouri 52 %, Akwa 26 %, Bonapriso 14 %, Hygiène 8 %), dette
 fournisseurs 1 280 000 FCFA sur 4 factures, dont 180 000 FCFA échus (1
 facture) et 420 000 FCFA à payer sous 7 jours (1 facture), 4 fournisseurs
-actifs, OTIF 83,3 %. Aucune facture ne change de statut entre le 14 et le
-16/10 (contrôlé). Restent propres à ce tutoriel, calculés par le code et
-différents de c6 : « 8 commandes · 6 réceptions » (c6 : 6 · 5), 224 000 FCFA
-de commandes en cours (c6 : 640 000), DPO 14,7 j (c6 : 24 j) et la créance
-409 (c6 : 95 000 FCFA).
+actifs. Aucune facture ne change de statut entre le 14 et le 16/10
+(contrôlé). Restent propres à ce tutoriel, calculés par le code et
+différents de c6 : « 8 commandes · 6 réceptions » (c6 : 6 · 5), OTIF 83,3 %,
+224 000 FCFA de commandes en cours (c6 : 640 000), DPO 13,9 j (c6 : 24 j) et
+la créance 409 (c6 : 95 000 FCFA).
 """
 
 import math
@@ -186,9 +225,11 @@ import re
 import sys
 import textwrap
 from datetime import date, timedelta
+from decimal import ROUND_HALF_UP, Decimal
 
 import demo
-from ecrans import APPS_PROFIL, ICONES, e, fenetre_muk, navigateur, recherche, tdb_entete, vue_libre, vue_tdb
+from ecrans import (APPS_PROFIL, ICONES, MENUS_MUK, NBSP, compte, date_fr, e, entier, fcfa, fenetre_muk, jours,
+                    mois_abrege, navigateur, recherche, tdb_entete, vue_libre, vue_tdb)
 from marketing import bulle, dezoom, reaction, zoom
 from moteur import anneau, animer, cacher, clic, classe, compter, curseur, defiler, fermer, montrer, ouvrir, pause, saisir, texte, vue
 
@@ -212,16 +253,17 @@ def _fonctions_du_module(noms):
 
 
 _F = _fonctions_du_module(['_bucket', '_invoice_metrics', '_order_metrics', '_price_metrics', '_supplier_badge', '_dpo'])
-# Réglages par défaut de la société (res_config_settings.py:20-38).
+# Réglages par défaut de la société (res_config_settings.py:24-42).
 CFG = {'soon': 7, 'late': 2, 'dep': 40.0, 'price': 5.0}
 AUJ = date(2026, 10, 16)
-# « Ce mois » vu d'un poste à Douala : le 1er octobre à minuit local, passé en
-# UTC par toISOString, devient le 30 septembre (utils.js:78, :94 — écart 3).
-DU = date(2026, 9, 30)
+# « Ce mois » : du 1er du mois à aujourd'hui, en dates locales (periodRange et
+# localIsoDate, utils.js:148-175 — l'ancien toISOString faisait partir la
+# période du 30/09 à Douala, écart 3 corrigé).
+DU = AUJ.replace(day=1)
 JOURS = (AUJ - DU).days + 1
 
 # Les fournisseurs, rangés comme _supplier_universe (nom en minuscules) ; la
-# palette suit cet ordre (purchase_dashboard.py:40-44, :211-219).
+# palette suit cet ordre (purchase_dashboard.py:42-46, :200-217).
 PALETTE = ['#714B67', '#185FA5', '#3B6D11', '#0F6E56', '#854F0B', '#A32D2D', '#5B4B8A', '#B0655A']
 WOURI, AKWA, BONA = 'Boissons du Wouri SARL', 'Dépôt Akwa Distribution', 'Épicerie Fine Bonapriso'
 HYG = 'Hygiène Pro Littoral'
@@ -324,7 +366,9 @@ PRIX = [
     ('Vin rouge 75 cl', BONA, 4200, 4500, 42, [4200, 4200, 4350, 4350, 4500, 4500]),
     ('Bière sans alcool 33 cl', WOURI, 450, 450, 408, [450] * 6),
 ]
-MOIS = ['Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct']
+# Les six derniers mois, en abréviations françaises (MONTHS_FR de get_flux_months
+# et get_price_index, purchase_dashboard.py:462-463, :576-577).
+MOIS = [mois_abrege(m) for m in range(5, 11)]
 
 
 def _prix():
@@ -341,34 +385,38 @@ PX = _prix()
 
 
 # --------------------------------------------- les formats de utils.js --
-
-def _milliers(n):
-    return ('-' if n < 0 else '') + '{:,}'.format(abs(n)).replace(',', ' ')
-
+# Les helpers partagés d'ecrans.py rejouent fmtMoney / fmtInt / fmtCount /
+# fmtDays / fmtDate (utils.js:32-134) ; seul fmtPct est composé ici (voir pct).
 
 def _arrondi(v):
     return int(math.floor(v + 0.5)) if v >= 0 else -int(math.floor(-v + 0.5))
 
 
 def money(v):
-    return _milliers(_arrondi(v)) + ' FCFA'
+    """fmtMoney : « 1 280 000 FCFA » (espace fine entre les milliers)."""
+    return fcfa(v, tdb=True)
 
 
 def neg_money(v):
-    return '−' + money(v)
+    """fmtNegMoney (utils.js:42-46) : « − » seulement devant un montant non nul."""
+    return ('−' if _arrondi(v) > 0 else '') + money(v)
 
 
 def money_or_dash(v):
     return money(v) if v else '—'
 
 
-def _dixieme(v):
-    r = int(v * 10 + (0.5 if v >= 0 else -0.5)) / 10.0
-    return ('%.1f' % r).rstrip('0').rstrip('.')
+def num(v):
+    """fmtInt (utils.js:110-112)."""
+    return entier(v, tdb=True)
 
 
 def pct(v):
-    return _dixieme(v).replace('.', ',') + ' %'
+    """fmtPct des Achats (utils.js:72-75) : un toFixed(1) brut — sur un demi
+    exact, il s'éloigne de zéro (−6,25 → « -6,3 % »), là où ecrans.pct
+    (round1, autres tableaux de bord) donnerait « -6,2 % ». Decimal(v) est la
+    valeur binaire exacte, comme pour toFixed."""
+    return str(Decimal(v or 0).quantize(Decimal('0.1'), ROUND_HALF_UP)).replace('.', ',') + NBSP + '%'
 
 
 def signed_pct(v):
@@ -376,28 +424,54 @@ def signed_pct(v):
 
 
 def days(v):
-    return _dixieme(v).replace('.', ',') + ' j'
+    """fmtDays (utils.js:131-134) : « 13,9 j »."""
+    return jours(v)
 
 
-def iso(d):
-    return d.strftime('%Y-%m-%d') if d else '—'
+def date_tdb(d):
+    """orDash(date(…)) du tableau de bord : « 08/10/2026 », « — » sans date."""
+    return date_fr(d) if d else '—'
 
 
 def fr(d):
-    return d.strftime('%d/%m/%Y') if d else ''
+    """Une date de champ d'Odoo (fr_FR, %d/%m/%Y) ; vide sans date."""
+    return date_fr(d) if d else ''
 
 
 def late_text(f):
+    """lateText (purchase_dashboard_view.js:272-280)."""
     if f['days_late'] > 0:
         return '%d j' % f['days_late']
     if f['days_to_due'] > 0:
         return 'dans %d j' % f['days_to_due']
-    return 'auj.'
+    return "aujourd'hui"
+
+
+def due_window_label(soon):
+    """dueWindowLabel (utils.js:89-98) : la carte des échéances entre la fenêtre
+    d'alerte et 30 jours."""
+    lo = (soon or 0) + 1
+    if lo < 30:
+        return 'À payer sous %d–30 j' % lo
+    if lo == 30:
+        return 'À payer à 30 j'
+    return "Au-delà de l'alerte, jusqu'à 30 j"
+
+
+def schedule_labels():
+    """scheduleLabels (utils.js:120-127) : l'axe de l'échéancier."""
+    return ['Échu ou sous 7 j'] + ['%d à %d j' % (7 * k, 7 * k + 6) for k in range(1, 5)] + ['35 j et +']
 
 
 def impact_text(p):
+    """impactText (purchase_dashboard_view.js:297-306)."""
     n = p['impact']
     return '−' + money(n) if n > 0 else ('+' + money(-n) if n < 0 else '—')
+
+
+def impact_cls(p):
+    """impactClass (purchase_dashboard_view.js:308-312) : sans couleur pour un impact nul."""
+    return 't14-neg' if p['impact'] > 0 else ('t14-pos' if p['impact'] < 0 else '')
 
 
 # ------------------------------------------------------- les agrégats --
@@ -423,11 +497,11 @@ for _f in FAC:
 
 
 def _domaine_409():
-    """Le signe du domaine de get_claims, lu dans le module : « < -0.005 » (la
-    version actuelle, défaut — écart 1) retient les lignes CRÉDITRICES du 401,
-    soit le reste dû des factures ouvertes ; « > 0.005 » (la correction
-    attendue) retient les lignes DÉBITRICES : avoirs et paiements non lettrés.
-    La vidéo suit d'elle-même le code le jour où il est corrigé."""
+    """Le signe du domaine de get_claims, lu dans le module : « > 0.005 » (le
+    domaine corrigé, purchase_dashboard.py:425 — écart 1) retient les lignes
+    DÉBITRICES du 401 : avoirs et paiements non lettrés. L'ancien « < -0.005 »
+    retenait les lignes CRÉDITRICES, soit le reste dû des factures ouvertes :
+    s'il revenait, produire.py l'afficherait en avertissement."""
     with open(MODULE, encoding='utf-8') as f:
         src = f.read()
     if re.search(r"\('amount_residual',\s*'<',\s*-0\.005\)", src):
@@ -445,11 +519,11 @@ DOMAINE_409 = _domaine_409()
 
 def _creances(consignes):
     """get_claims : consignes + avoirs + « acomptes » (= soldes débiteurs −
-    avoirs). Tant que le domaine est inversé (écart 1), les « soldes » sont le
-    reste dû des factures ouvertes ; une fois corrigé, ce sont les lignes
-    débitrices du 401 : ici les seuls avoirs (aucun paiement non lettré dans le
-    jeu, le paiement partiel de BILL/2026/09/0003 est lettré), d'où 0 FCFA
-    d'acomptes."""
+    avoirs). Avec le domaine corrigé, les soldes débiteurs sont les lignes
+    débitrices du 401 : ici les seuls avoirs (aucune facture du jeu n'a de
+    paiement, aucun paiement n'est en attente de lettrage), d'où 0 FCFA
+    d'acomptes. Avec l'ancien domaine (écart 1), les « soldes » seraient le
+    reste dû des factures ouvertes."""
     depots = sum(q * u for _, q, u, _, _ in consignes)
     avoirs = sum(a[4] for a in AVOIRS)
     if DOMAINE_409 == 'credit':
@@ -502,8 +576,8 @@ TOP_ARTICLES = sorted(_PAR_ARTICLE.items(), key=lambda kv: -kv[1])[:8]
 
 # Les flux des six derniers mois (factures fournisseurs / paiements) ; octobre
 # reprend les factures de la période.
-FLUX = [('Mai', 3980000, 3760000), ('Juin', 3620000, 3900000), ('Juil', 4310000, 4050000),
-        ('Août', 3870000, 3640000), ('Sep', 4420000, 4180000), ('Oct', FAC_PERIODE, 1214000)]
+FLUX = list(zip(MOIS, [3980000, 3620000, 4310000, 3870000, 4420000, FAC_PERIODE],
+                [3760000, 3900000, 4050000, 3640000, 4180000, 1214000]))
 
 assert (len(CMD), len(RECUS), len(FAC)) == (8, 6, 4)
 assert [f['status'] for f in FAC] == ['En retard', 'À payer bientôt', 'À échoir', 'À échoir']
@@ -511,7 +585,10 @@ assert [f['status'] for f in FAC] == ['En retard', 'À payer bientôt', 'À éch
 # période, dette sur 4 factures, 1 échue, à payer sous 7 j, 4 fournisseurs actifs (52 / 26 / 14 / 8 %), OTIF.
 assert (ACHATS, ENCOURS, sum(f['residual'] for f in RETARD), len(RETARD), sum(f['residual'] for f in SOON), len(SOON)) == (
     1850000, 1280000, 180000, 1, 420000, 1)
-assert [round(r['part']) for r in FOUR] == [52, 26, 14, 8] and pct(OTIF) == '83,3 %'
+assert [round(r['part']) for r in FOUR] == [52, 26, 14, 8] and pct(OTIF) == '83,3' + NBSP + '%'
+# « Ce mois » du 01/10 au 16/10 : seize jours, toutes les commandes et factures du jeu y tombent.
+assert (DU, JOURS) == (date(2026, 10, 1), 16) and all(DU <= c['date'] <= AUJ for c in CMD)
+assert schedule_labels() == ['Échu ou sous 7 j', '7 à 13 j', '14 à 20 j', '21 à 27 j', '28 à 34 j', '35 j et +']
 # Le cockpit de t15 lit ces dettes le 14/10 : aucune facture n'a changé de statut entre le 14 et le 16/10.
 for _f in FAC:
     _le14 = _F['_invoice_metrics'](_f['residual'], max(0, (date(2026, 10, 14) - _f['due']).days),
@@ -613,7 +690,7 @@ def _g(ident, titre, corps, pied=''):
 
 
 def _compact(v):
-    """fmtCompact (utils.js:38-49), pour les graduations des axes."""
+    """fmtCompact (utils.js:48-59), pour les graduations des axes."""
     if v >= 1e6:
         return ('%.1f' % (v / 1e6)).replace('.', ',') + ' M'
     if v >= 1e3:
@@ -706,22 +783,28 @@ def _vue(ident, v, actif, contenu, initiale=False):
 
 def _vue_tableau():
     cartes1 = [
-        _kpi('t14-k-achats', 'Achats (période)', money(ACHATS), '%d commandes · %d réceptions' % (len(CMD), len(RECUS)),
-             'bleu'),
-        _kpi('t14-k-dette', 'Dette fournisseurs (401)', money(ENCOURS), '%d factures ouvertes' % len(FAC), 'rouge'),
-        _kpi('t14-k-soon', 'À payer sous %d j' % CFG['soon'], money(sum(f['residual'] for f in SOON)),
-             '%d facture(s) · trésorerie à prévoir' % len(SOON), 'ambre'),
-        _kpi('t14-k-dpo', 'DPO — délai moyen de paiement', days(DPO),
+        _kpi('t14-k-achats', 'Achats (période)', money(ACHATS),
+             compte(len(CMD), 'commande', 'commandes') + ' · ' + compte(len(RECUS), 'réception', 'réceptions'), 'bleu'),
+        # La valeur part de « 0 FCFA » : le compteur de l'étape 1 la monte jusqu'à money(ENCOURS).
+        _kpi('t14-k-dette', 'Dette fournisseurs (401)', money(0),
+             compte(len(FAC), 'facture ouverte', 'factures ouvertes'), 'rouge'),
+        _kpi('t14-k-soon', 'À payer sous %s j' % num(CFG['soon']), money(sum(f['residual'] for f in SOON)),
+             compte(len(SOON), 'facture', 'factures') + ' · trésorerie à prévoir', 'ambre'),
+        _kpi('t14-k-dpo', 'Délai de paiement (DPO)', days(DPO),
              'encours / factures période · tenir les délais négociés', 'violet'),
     ]
     retard = sum(f['residual'] for f in RETARD)
+    # « Factures échues » : une dette en montant positif (dashboard.xml:110-112), sans liseré (carte non « mega »).
     cartes2 = [
-        _kpi('t14-k-retard', 'En retard de paiement', neg_money(retard),
-             "%d facture(s) · %s de l'encours" % (len(RETARD), pct(retard / ENCOURS * 100))),
+        _kpi('t14-k-retard', 'Factures échues', money(retard),
+             compte(len(RETARD), 'facture', 'factures') + " · %s de l'encours" % pct(retard / ENCOURS * 100)),
         _kpi('t14-k-409', 'Créances fournisseurs (409)', money(CREANCES['total']), 'consignes + avoirs + acomptes'),
-        _kpi('t14-k-otif', 'Taux de service (OTIF)', pct(OTIF), "livré à l'heure et complet · cible ≥ 90 %"),
-        _kpi('t14-k-cours', 'Commandes en cours', '%d cmd' % len(EN_COURS),
-             '%s attendus · %d en retard' % (money(sum(c['montant'] for c in EN_COURS)), PENDING_LATE)),
+        # « cible ≥ 90 % » : espaces insécables à l'écran, pour que la cible passe d'un bloc à la ligne (même texte
+        # que dashboard.xml:118).
+        _kpi('t14-k-otif', 'Livré à temps et complet (OTIF)', pct(OTIF),
+             'part des commandes reçues · ' + NBSP.join(['cible', '≥', '90', '%'])),
+        _kpi('t14-k-cours', 'Commandes en cours', compte(len(EN_COURS), 'commande', 'commandes'),
+             '%s attendus · %s en retard' % (money(sum(c['montant'] for c in EN_COURS)), num(PENDING_LATE))),
     ]
     parts = [(r['nom'], r['achats'], COULEUR[r['nom']]) for r in FOUR if r['achats'] > 0]
     flux = _barres_v([(m, [b, p]) for m, b, p in FLUX], 5000000,
@@ -751,14 +834,16 @@ COLS_DT = [('Échéance', '140px'), ('Fournisseur', '1fr'), ('Réf.', '230px'), 
 def _vue_dettes():
     retard = sum(f['residual'] for f in RETARD)
     cartes = [
-        _kpi('t14-d-enc', 'Encours total dû', money(ENCOURS), '%d factures ouvertes' % len(FAC), 'rouge'),
-        _kpi('t14-d-ret', 'En retard', neg_money(retard), '%d facture(s) échue(s)' % len(RETARD), 'ambre'),
-        _kpi('t14-d-soon', 'À payer sous %d j' % CFG['soon'], money(sum(f['residual'] for f in SOON)),
+        _kpi('t14-d-enc', 'Encours total dû', money(ENCOURS), compte(len(FAC), 'facture ouverte', 'factures ouvertes'),
+             'rouge'),
+        _kpi('t14-d-ret', 'Factures échues', money(retard), compte(len(RETARD), 'facture échue', 'factures échues'),
+             'ambre'),
+        _kpi('t14-d-soon', 'À payer sous %s j' % num(CFG['soon']), money(sum(f['residual'] for f in SOON)),
              'échéances imminentes'),
-        _kpi('t14-d-mois', 'À payer sous 8–30 j', money(MONTH), 'à provisionner'),
+        _kpi('t14-d-mois', due_window_label(CFG['soon']), money(MONTH), 'à provisionner'),
     ]
     aging = _balance_agee()
-    ech = _barres_v([(lib, [v]) for lib, v in zip(['Échu / S0', 'S1', 'S2', 'S3', 'S4', 'S5+'], SEMAINES)], 800000,
+    ech = _barres_v([(lib, [v]) for lib, v in zip(schedule_labels(), SEMAINES)], 800000,
                     [(v, _compact(v) if v else '0') for v in range(0, 800001, 100000)], ['#185FA5'])
     graphes = '<div class="tdb-grille c2 t14-gg">%s%s</div>' % (
         _g('t14-g-aging2', 'Balance âgée (retard de paiement)', aging),
@@ -766,7 +851,7 @@ def _vue_dettes():
     lignes = []
     for n, f in enumerate(FAC, 1):
         i = 't14-dt-r%d' % n
-        lignes.append((i, [_c(iso(f['due'])), _four(f['four']), _c(f['ref'], cls='t14-mu'), _c(money(f['total']), 'd'),
+        lignes.append((i, [_c(date_tdb(f['due'])), _four(f['four']), _c(f['ref'], cls='t14-mu'), _c(money(f['total']), 'd'),
                            _c(money_or_dash(f['paid']), 'd'), _c(money(f['residual']), 'd', 't14-b'),
                            _c(late_text(f), 'd', 't14-neg' if f['days_late'] > 0 else '', ident=i + '-ret'),
                            _badge(f['status'], f['status_cls'], i + '-st')]))
@@ -784,21 +869,21 @@ def _vue_avoirs():
     c = CREANCES
     cartes = [
         _kpi('t14-c-tot', 'Créances totales (409)', money(c['total']), 'consignes + avoirs + acomptes', 'violet'),
-        _kpi('t14-c-dep', 'Consignes en cours (4096)', money(c['depots']), '%d casiers chez les fournisseurs' % c['qty'],
-             'bleu'),
-        _kpi('t14-c-avr', 'Avoirs à déduire (4097/4098)', money(c['avoirs']), '%d avoir(s) ouvert(s)' % len(AVOIRS),
-             'ambre'),
+        _kpi('t14-c-dep', 'Consignes en cours (4096)', money(c['depots']),
+             compte(c['qty'], 'casier', 'casiers') + ' chez les fournisseurs', 'bleu'),
+        _kpi('t14-c-avr', 'Avoirs à déduire (4097/4098)', money(c['avoirs']),
+             compte(len(AVOIRS), 'avoir ouvert', 'avoirs ouverts'), 'ambre'),
         _kpi('t14-c-acp', 'Acomptes / soldes débiteurs (4091)', money(c['acomptes']),
              'paiements non lettrés (estimation)'),
     ]
     cs = _table('t14-cs-tab', [('Fournisseur', '1fr'), ('Casiers', '70px', 'd'), ('Consigne/casier', '108px', 'd'),
                                ('Valeur', '116px', 'd'), ('Dernière déconsignation', '140px')],
-                [('t14-ac-r%d' % n, [_four(f), _c(str(q), 'd'), _c(money(u), 'd'), _c(money(q * u), 'd', 't14-b'),
-                                     _c(iso(d), cls='t14-mu')]) for n, (f, q, u, d, _) in enumerate(CONSIGNES, 1)],
+                [('t14-ac-r%d' % n, [_four(f), _c(num(q), 'd'), _c(money(u), 'd'), _c(money(q * u), 'd', 't14-b'),
+                                     _c(date_tdb(d), cls='t14-mu')]) for n, (f, q, u, d, _) in enumerate(CONSIGNES, 1)],
                 't14-serre')
     av = _table('t14-av-tab', [('Date', '98px'), ('Fournisseur', '150px'), ('Réf.', '160px'), ('Motif', '1fr'),
                                ('Montant', '100px', 'd')],
-                [('t14-av-r%d' % n, [_c(iso(d), cls='t14-mu'), _four(f, wrap=True), _c(r, cls='t14-mu'),
+                [('t14-av-r%d' % n, [_c(date_tdb(d), cls='t14-mu'), _four(f, wrap=True), _c(r, cls='t14-mu'),
                                      _c(m, cls='t14-mu t14-wrap'), _c(money(a), 'd', 't14-b')])
                  for n, (d, f, r, m, a) in enumerate(AVOIRS, 1)], 't14-serre')
     gerer = _bt_contour('t14-gerer', 'Gérer les consignes')
@@ -839,13 +924,13 @@ def _vue_consignes():
         else:
             qty, dte = _c(str(q), 'd'), _c(fr(d))
         cells = ['<span><i class="t14-cb"></i></span>', '<span class="t14-cel t14-m2o">%s</span>' % e(f), qty,
-                 '<span class="t14-d t14-cel t14-mon">%s</span>' % e(money(u)),
-                 '<span class="t14-d" id="%s-val">%s</span>' % (i, e(money(q * u))), dte,
+                 '<span class="t14-d t14-cel t14-mon">%s</span>' % e(fcfa(u)),
+                 '<span class="t14-d" id="%s-val">%s</span>' % (i, e(fcfa(q * u))), dte,
                  '<span class="t14-cel">%s</span>' % e(note), '<span></span>']
         rangs.append('<div class="t14-lr" id="%s" style="grid-template-columns:%s">%s</div>' % (i, gab, ''.join(cells)))
     total = ('<div class="t14-ltot" style="grid-template-columns:%s"><span></span><span></span><span></span><span></span>'
              '<span class="t14-d" id="t14-cs-tot">%s</span><span></span><span></span><span></span></div>'
-             % (gab, e(money(CREANCES['depots']))))
+             % (gab, e(fcfa(CREANCES['depots']))))
     boutons = ('<span class="pile t14-cs-bts"><span class="bt primaire" id="t14-cs-new">Nouveau</span>'
                '<span class="t14-cs-save masque" id="t14-cs-save"><span class="bt primaire" id="t14-cs-save-bt">Enregistrer'
                '</span><span class="bt gris">Ignorer</span></span></span>')
@@ -864,22 +949,22 @@ COLS_OD = [('Date', '130px'), ('Fournisseur', '1fr'), ('Réf.', '100px'), ('Mont
 
 def _vue_commandes():
     cartes = [
-        _kpi('t14-o-nb', 'Commandes (période)', str(len(CMD)), '%s engagés' % money(ACHATS), 'bleu'),
-        _kpi('t14-o-ret', 'En retard de livraison', str(PENDING_LATE + RECV_LATE),
-             '%d en attente · %d reçues en retard' % (PENDING_LATE, RECV_LATE), 'ambre'),
-        _kpi('t14-o-otif', 'OTIF (période)', pct(OTIF), "à l'heure et complètes"),
+        _kpi('t14-o-nb', 'Commandes (période)', num(len(CMD)), '%s engagés' % money(ACHATS), 'bleu'),
+        _kpi('t14-o-ret', 'En retard de livraison', num(PENDING_LATE + RECV_LATE),
+             '%s en attente · ' % num(PENDING_LATE) + compte(RECV_LATE, 'reçue en retard', 'reçues en retard'), 'ambre'),
+        _kpi('t14-o-otif', 'Livré à temps et complet (OTIF)', pct(OTIF), 'commandes reçues sur la période'),
         _kpi('t14-o-delai', 'Délai moyen de réception', days(DELAI), 'commande → réception'),
     ]
     lignes = []
     for n, c in enumerate(CMD, 1):
         i = 't14-od-r%d' % n
         complet = '—' if c['is_full'] is None else ('✓' if c['is_full'] else '✗')
-        lignes.append((i, [_c(iso(c['date'])), _four(c['four']), _c(c['ref'], cls='t14-mu'), _c(money(c['montant']), 'd'),
-                           _c(iso(c['prevue'])), _c(iso(c['recue'])),
+        lignes.append((i, [_c(date_tdb(c['date'])), _four(c['four']), _c(c['ref'], cls='t14-mu'),
+                           _c(money(c['montant']), 'd'), _c(date_tdb(c['prevue'])), _c(date_tdb(c['recue'])),
                            _c('%d j' % c['days_late'] if c['days_late'] else '—', 'd',
                               't14-neg' if c['days_late'] > 0 else ''),
-                           _c(complet, 'c', 't14-ok' if complet == '✓' else ('t14-ko' if complet == '✗' else ''),
-                              ident=i + '-full'),
+                           # ✓ / ✗ / — sans couleur : <td class="text-center" t-esc="fullMark(o)"/> (dashboard.xml:443).
+                           _c(complet, 'c', ident=i + '-full'),
                            _badge(c['status'], c['status_cls'], i + '-st')]))
     note = _note('t14-od-note', "<b>OTIF</b> = livré <b>à l'heure ET complet</b>. Un fournisseur peut être ponctuel mais "
                  "livrer incomplet — c'est l'OTIF qui révèle l'écart. Cible PME : ≥ 90 %.")
@@ -897,12 +982,12 @@ COLS_FR = [('Fournisseur', '1fr'), ('Achats période', '180px', 'd'), ('Part', '
 def _vue_fournisseurs():
     over = TOP['part'] >= CFG['dep']
     cartes = [
-        _kpi('t14-f-nb', 'Fournisseurs actifs', str(len([r for r in FOUR if r['achats'] > 0])), 'avec achats sur la période',
-             'bleu'),
+        _kpi('t14-f-nb', 'Fournisseurs actifs', num(len([r for r in FOUR if r['achats'] > 0])),
+             'avec achats sur la période', 'bleu'),
         _kpi('t14-f-top', 'Top fournisseur', TOP['nom'],
-             pct(TOP['part']) + ' des achats' + (' · seuil de dépendance dépassé' if over else ''), 'ambre'),
+             pct(TOP['part']) + ' des achats' + (' · seuil de dépendance atteint' if over else ''), 'ambre'),
         _kpi('t14-f-delai', 'Délai moyen de livraison', days(DELAI), 'commande → réception'),
-        _kpi('t14-f-otif', 'OTIF moyen', pct(OTIF), "à l'heure et complet"),
+        _kpi('t14-f-otif', 'Livré à temps et complet (OTIF)', pct(OTIF), 'moyenne des fournisseurs'),
     ]
     lignes = []
     for n, r in enumerate(FOUR, 1):
@@ -913,7 +998,7 @@ def _vue_fournisseurs():
                            _c(days(r['delai']) if r['delai'] else '—', 'd'), _c(pct(r['otif']) if r['achats'] else '—', 'd'),
                            _badge(r['badge'], r['badge_cls'], i + '-st')]))
     cfg = _bt_contour('t14-cfg', 'Configurer les alertes', ENGRENAGE)
-    note = _note('t14-fr-note', '<b>Risque de concentration :</b> au-delà de <b>%s</b> des achats chez un seul fournisseur, '
+    note = _note('t14-fr-note', '<b>Risque de concentration :</b> dès <b>%s</b> des achats chez un seul fournisseur, '
                  'une rupture ou une hausse de tarif vous expose fortement — négociez ou diversifiez.' % pct(CFG['dep']))
     contenu = (_section('Performance fournisseurs', cartes)
                + _carte('Détail par fournisseur', _table('t14-fr', COLS_FR, lignes), 't14-fr-carte', cfg) + note)
@@ -930,8 +1015,9 @@ def _vue_prix():
     cartes = [
         _kpi('t14-p-var', 'Variation moyenne pondérée', signed_pct(VAR_MOY), "sur le panier d'achats récent", 'ambre'),
         _kpi('t14-p-top', 'Plus forte hausse', signed_pct(TOP_HAUSSE['delta']), TOP_HAUSSE['nom'], 'rouge'),
-        _kpi('t14-p-nb', 'Hausses > %s' % pct(CFG['price']), str(NB_HAUSSES), 'références concernées'),
-        _kpi('t14-p-imp', 'Impact annuel estimé', neg_money(IMPACT), 'Δ prix × volumes annuels'),
+        _kpi('t14-p-nb', 'Hausses ≥ %s' % pct(CFG['price']), num(NB_HAUSSES), 'références concernées'),
+        # « 0 FCFA » (fmtNegMoney(0), sans « − ») : le compteur de l'étape 7 la monte jusqu'à neg_money(IMPACT).
+        _kpi('t14-p-imp', 'Impact annuel estimé', neg_money(0), 'Δ prix × volumes annuels'),
     ]
     series = []
     for k, p in enumerate(PX[:5]):
@@ -946,11 +1032,11 @@ def _vue_prix():
                            '<span class="t14-mu t14-wrap">%s</span>' % e(p['four']),
                            _c(money(p['p0']), 'd'), _c(money(p['p1']), 'd'),
                            _c(signed_pct(p['delta']), 'd', 't14-neg' if p['delta'] > 0 else ('t14-pos' if p['delta'] < 0 else '')),
-                           _c(impact_text(p), 'd', 't14-neg' if p['impact'] > 0 else 't14-pos', ident=i + '-imp'),
+                           _c(impact_text(p), 'd', impact_cls(p), ident=i + '-imp'),
                            _badge(p['badge'], p['badge_cls'], i + '-st')]))
     table = _carte('Variations par produit', _table('t14-pr', COLS_PX, lignes, 't14-serre t14-px-tab'), 't14-pr-carte')
     note = _note('t14-px-note', '<b>Contrôle des prix facturés :</b> comparez chaque facture au prix négocié — les dérives '
-                 'passent par petites touches. Au-delà du seuil, renégociez ou mettez en concurrence.')
+                 'passent par petites touches. Dès le seuil, renégociez ou mettez en concurrence.')
     contenu = (_section("Prix d'achat — variations", cartes)
                + '<div class="tdb-grille c2 t14-gg t14-px">%s%s</div>' % (idx, table) + note)
     return _vue('t14-prix', 'prix', 5, contenu)
@@ -968,14 +1054,13 @@ def _modale():
             '<div class="t14-ms">Valeurs globales de la société</div></div><span class="t14-mx">×</span></div>'
             '<div class="t14-mb"><div class="t14-cfg">%s</div>'
             '<div class="t14-mini" id="t14-m-aide">Échéance : factures dues sous ce délai → « À payer bientôt ». '
-            'Livraison : au-delà du seuil → « En retard » (l\'OTIF reste strict). Dépendance : badge au-delà de cette '
-            'part d\'achats. Prix : « Hausse forte » au-delà du seuil.</div>'
+            'Livraison : au-delà du seuil → « En retard » (l\'OTIF reste strict). Dépendance : badge dès cette '
+            'part d\'achats. Prix : « Hausse forte » dès le seuil.</div>'
             '<div class="t14-ma"><span class="t14-mbt prim">Enregistrer la configuration</span>'
             '<span class="t14-mbt sec" id="t14-m-annuler">Annuler</span></div></div></div>' % (ENGRENAGE, grille))
 
 
-MENUS = ['Commandes', 'Tableau de bord AITE', 'Produits', 'Analyse', 'Configuration']
-ECRAN = navigateur(fenetre_muk('app-t14', 'Achats', MENUS,
+ECRAN = navigateur(fenetre_muk('app-t14', 'Achats', MENUS_MUK['achats'],
                                [_vue_tableau(), _vue_dettes(), _vue_avoirs(), _vue_consignes(), _vue_commandes(),
                                 _vue_fournisseurs(), _vue_prix()],
                                actif='Tableau de bord AITE', societe=demo.SOCIETE, initiale=NOM[0], avatar='#854F0B',
@@ -1019,8 +1104,6 @@ CSS = """
 .t14-wrap { white-space: normal; line-height: 1.2; }
 .t14-neg { color: #C82333; }
 .t14-pos { color: #1E7B34; }
-.t14-ok { color: #1E7B34; font-weight: 700; }
-.t14-ko { color: #C82333; font-weight: 700; }
 .t14-nom { display: inline-flex; align-items: center; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .t14-badge { display: inline-flex; align-items: center; height: 26px; padding: 0 9px; border-radius: 6px; font-size: 14px; font-weight: 700; }
 .t14-badge.rouge { background: #C82333; color: #fff; }
@@ -1167,7 +1250,7 @@ TUTORIEL = {
         'b-urgence': "Triées par urgence : les retards d'abord, puis les échéances les plus proches.",
         'b-consigne': 'Valeur immobilisée = casiers × consigne : calculée toute seule.',
         'b-otif': "À l'heure ET complète : qu'une condition manque, et la commande sort de l'OTIF.",
-        'b-dep': "Dès 40 % des achats chez un seul fournisseur : badge Dépendance.",
+        'b-dep': 'Dès %s des achats chez un seul fournisseur : badge Dépendance.' % pct(CFG['dep']),
         'b-prix': 'Impact sur un an = écart de prix × volume mensuel × 12.',
     },
     'reactions': {
@@ -1181,17 +1264,19 @@ TUTORIEL = {
                  "sept jours. Tout vient des commandes et des factures déjà saisies.",
          'gestes': [curseur('#app-t14 .o-haut .menu.actif', d=0.6), anneau('#app-t14 .o-haut .menu.actif', d=1.1),
                     compter('#t14-k-dette-v', 0, ENCOURS, d=1.2, apres=' FCFA', avec=True),
+                    texte('#t14-k-dette-v', money(ENCOURS), avec=True, decale=1.25),
                     anneau('#t14-k-dette', d=1.2), anneau('#t14-k-soon', d=1.4),
-                    defiler('#t14-in-dash', -300, d=0.9), anneau('#t14-g-sup', d=1.4), anneau('#t14-g-flux', d=1.2)]},
+                    defiler('#t14-in-dash', -270, d=0.9), anneau('#t14-g-sup', d=1.4), anneau('#t14-g-flux', d=1.2)]},
         {'temps': 0, 'titre': 'Dettes & échéancier',
          'texte': 'Balance âgée, décaissements des 6 prochaines semaines, factures triées par urgence.',
          'voix': "Dettes et échéancier : la balance âgée montre ce qui glisse en retard, l'échéancier ce qu'il faudra "
                  "payer semaine après semaine. Les factures se trient seules : les retards d'abord, puis les échéances "
                  "proches.",
          'gestes': [defiler('#t14-in-dash', 0, d=0.5), clic('#t14-tab-dash-2', d=0.6), vue('t14-dettes'),
+                    defiler('#t14-in-dettes', -405, d=0.9),
                     anneau('#t14-g-aging2', d=1.1), anneau('#t14-g-ech', d=1.1),
-                    defiler('#t14-in-dettes', -519, d=0.9), curseur('#t14-dt-r1-st', fx=1.45, fy=0.9, d=0.5),
-                    zoom('#t14-dt-r2', s=1.2, fx=0.5, d=0.8, avec=True),
+                    curseur('#t14-dt-r1-st', fx=1.45, fy=0.9, d=0.5),
+                    zoom('#t14-dt-r2', s=1.3, fx=0.5, d=0.8, avec=True),
                     bulle('b-urgence', '#t14-dt-carte h3', cote='droite', d=2.4), anneau('#t14-dt-r1-st', d=0.8),
                     anneau('#t14-dt-r2-st', d=0.8), anneau('#t14-dt-r3-st', d=0.8), dezoom(d=0.6)]},
         {'temps': 1, 'titre': 'Avoirs & consignes',
@@ -1212,8 +1297,8 @@ TUTORIEL = {
                     clic('#t14-cs-r1-qty', fx=0.85, d=0.5), classe('#t14-cs-r1', ajouter=['t14-edit']),
                     cacher('#t14-cs-new', d=0.15), montrer('#t14-cs-save', d=0.2, y=0, avec=True),
                     saisir('t14-cs-qty', str(CONSIGNES[0][1] - RENDUS)),
-                    texte('#t14-cs-r1-val', money((CONSIGNES[0][1] - RENDUS) * CONSIGNES[0][2])),
-                    texte('#t14-cs-tot', money(CREANCES_APRES['depots'])),
+                    texte('#t14-cs-r1-val', fcfa((CONSIGNES[0][1] - RENDUS) * CONSIGNES[0][2])),
+                    texte('#t14-cs-tot', fcfa(CREANCES_APRES['depots'])),
                     clic('#t14-cs-r1-date', fx=0.3, d=0.4), saisir('t14-cs-date', fr(AUJ)),
                     bulle('b-consigne', '#t14-cs-r1-val', cote='bas', d=2.6), pause(1.8),
                     clic('#t14-cs-save-bt', d=0.6), classe('#t14-cs-r1', retirer=['t14-edit']),
@@ -1229,10 +1314,10 @@ TUTORIEL = {
                     vue('t14-dash'), pause(0.2), clic('#t14-tab-dash-4', d=0.6), vue('t14-cmd'),
                     anneau('#t14-o-otif', d=1.1), defiler('#t14-in-cmd', -323, d=0.8),
                     curseur(OD_EPI + '-st', fx=1.25, fy=0.8, d=0.5),
-                    zoom(OD_EPI, s=1.35, fx=0.62, d=0.8, avec=True), anneau(OD_EPI + '-full', d=1.0),
+                    zoom(OD_EPI, s=1.4, fx=0.62, d=0.8, avec=True), anneau(OD_EPI + '-full', d=1.0),
                     bulle('b-otif', OD_EPI + '-full', cote='haut', d=2.8), pause(2.0), dezoom(d=0.6)]},
         {'temps': 2, 'titre': 'Fournisseurs',
-         'texte': 'Part des achats, encours, retards, OTIF ; dès 40 %, le badge Dépendance.',
+         'texte': 'Part des achats, encours, retards, OTIF ; dès %s, le badge Dépendance.' % pct(CFG['dep']),
          'voix': "Côté fournisseurs, Boissons du Wouri pèse plus de la moitié des achats du mois : dès quarante pour "
                  "cent, le badge Dépendance s'allume. Les quatre seuils se règlent ici, chacun avec sa phrase "
                  "d'explication.",
@@ -1247,8 +1332,9 @@ TUTORIEL = {
                  "à sept mois. La bière blonde a pris plus de huit pour cent : hausse forte, et l'impact sur un an est "
                  "chiffré.",
          'gestes': [defiler('#t14-in-four', 0, d=0.5), clic('#t14-tab-four-5', d=0.6), vue('t14-prix'),
-                    compter('#t14-p-imp-v', 0, IMPACT, d=1.2, avant='−', apres=' FCFA'), anneau('#t14-p-top', d=1.1),
-                    defiler('#t14-in-prix', -293, d=0.8), curseur('#t14-g-idx', fx=0.91, fy=0.17, d=0.5),
+                    compter('#t14-p-imp-v', 0, IMPACT, d=1.2, avant='−', apres=' FCFA'),
+                    texte('#t14-p-imp-v', neg_money(IMPACT), avec=True, decale=1.25), anneau('#t14-p-top', d=1.1),
+                    defiler('#t14-in-prix', -335, d=0.8), curseur('#t14-g-idx', fx=0.91, fy=0.17, d=0.5),
                     anneau('#t14-g-idx', d=1.1, avec=True), zoom('#t14-pr-r1', s=1.4, d=0.8), bulle('b-prix', '#t14-pr-r1-imp', cote='bas', d=2.6), pause(2.0),
                     dezoom(d=0.6), reaction('r-prix', d=2.8, avec=True), pause(1.8)]},
     ],

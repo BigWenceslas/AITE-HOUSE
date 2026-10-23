@@ -6,47 +6,60 @@ tableau de bord Stock & Inventaire d'aite_stock_dashboard et le parcourt
 onglet par onglet : la photo du stock, les alertes triées par urgence, la
 quantité à commander, le stock par emplacement, les dormants, le coulage.
 
-Sources des libellés (tous relevés mot pour mot) :
+Sources des libellés (tous relevés mot pour mot, produit de la livraison 4,
+aite_stock_dashboard 18.0.1.1.3) :
 
 - menu « Tableau de bord AITE » : addons/aite_stock_dashboard/views/
   stock_dashboard_menus.xml:9-14 (groupe stock.group_stock_user) ; menus
   natifs « Vue d'ensemble », « Opérations », « Produits », application
   « Inventaire » : odoo18/addons/stock/i18n/fr.po (Overview, Operations,
-  Products, Inventory) ; menus du profil Magasin repris de
-  scenarios/c5_magasin.py, applications de ecrans.APPS_PROFIL['magasin'] ;
+  Products, Inventory) ; barre du profil Magasin : ecrans.MENUS_MUK
+  ['inventaire'], applications de ecrans.APPS_PROFIL['magasin'] ;
 - gabarit OWL static/src/xml/dashboard.xml : titre et sous-titre :30-31 ;
   filtres « Période », « Appliquer », « Emplacement », « Tous »,
-  « Catégorie », « Toutes » :38-70 ; cartes du Tableau de bord :97-131 ;
-  « Valorisation & flux » et titres des graphiques :133-140 ; onglet
-  Alertes : section et cartes :159-175, « Références à traiter (triées par
-  urgence) » :179, colonnes :188-194, « — » :207, note :218-219 ; le bouton
-  « ⚙ Configurer les alertes » :180-182 n'est rendu que pour un responsable
-  (is_manager), il n'apparaît donc pas chez le magasinier ; onglet Stock
-  complet :225-264, note « Bonne pratique » :293-295, recherche « 🔍
-  Rechercher un produit… » :247 (la loupe est redessinée en SVG) ; onglet
-  Rotation :301-342 ; onglet Inventaires & écarts :369-407, note :426-430 ;
-- static/src/js/views/stock_dashboard_view.js : onglets :170-175 ; tri des
-  alertes par urgence puis couverture :183-186 ; recherche insensible à la
-  casse :192-199 ; barre de valeur rapportée à la plus forte ligne :214-222 ;
-  coulAccent (carte rouge au-delà du seuil), coulSub, marginSub,
-  listMarginSub, rotSub :330-360 ; badges :BADGE_CLS ; séries
-  « Entrées (réceptions) » / « Sorties (ventes) » :458-464, « Valeur
-  dormante » :594, « Coulage (% CA estimé) » / « Seuil » :648-656, axe du
-  coulage « v + " %" » :675 ;
+  « Catégorie », « Toutes » :38-77 ; cartes du Tableau de bord :97-131
+  (« N références · N unités », « N rupture · N critique (sous 3 j) »,
+  « N références (+60 j de couverture) », « N références concernées ») ;
+  « Valorisation & flux » et titres des graphiques :133-142 ; onglet
+  Alertes : section et cartes :159-178 (« référence à zéro » accordé,
+  « couverture sous 3 jours », carte « Critiques » à liseré rouge comme son
+  badge :165-171), « Références à traiter (triées par urgence) » :181,
+  colonnes :190-198, « — » :209, note « Quantité suggérée : 7 jours de
+  couverture… » :219-222 ; le bouton « ⚙ Configurer les alertes » :182-184
+  n'est rendu que pour un responsable (is_manager), il n'apparaît donc pas
+  chez le magasinier ; onglet Stock complet :225-303, recherche « Rechercher
+  un produit… » précédée d'une loupe Font Awesome qui reste dans le champ
+  :249-255 (redessinée en SVG), note « Bonne pratique » :299-302 ; onglet
+  Rotation :305-371 ; onglet Inventaires & écarts :373-438 (carte « Pertes
+  (écarts négatifs + casse) » :381-384), note :432-437 ;
+- static/src/js/views/stock_dashboard_view.js : onglets :169-178 ; tri des
+  alertes par urgence puis couverture :184-187 ; recherche insensible à la
+  casse :193-200 ; barre de valeur rapportée à la plus forte ligne :215-223 ;
+  days (fmtCoverage), num (fmtInt), plural, pluralWord, units, refs,
+  ruptSub :299-335 ; coulAccent (carte rouge au-delà du seuil), coulSub,
+  marginSub, listMarginSub, rotSub :361-392 ; badges : BADGE_CLS ; séries
+  « Entrées (réceptions) » / « Sorties (ventes) » :489-495, axes
+  fmtCompact ; « Valeur dormante » :626 ; « Coulage (% CA estimé) » /
+  « Seuil » :680-688, axe du coulage fmtPct (« 0,5 % ») :708 ;
 - static/src/js/services/utils.js : formats fmtMoney, fmtCompact, fmtQty,
-  fmtPct, fmtDays :35-73 (rejoués à l'identique ci-dessous) ; périodes
-  :75-103 ;
-- models/stock_dashboard.py : calcul par référence _metrics :47-103 (point de
-  commande, quantité suggérée, statuts Rupture / Critique / Sous seuil / OK,
-  classes Rapide / Normale / Lente / Dormant) ; réglages par défaut :130-139
-  et models/res_config_settings.py:20-48 (sécurité 2 j, horizon 7 j,
-  critique 3 j, dormant 60 j, délai 3 j, coulage 2 %) ; ventes moyennes sur
-  30 jours glissants :28-33 et :147 ; agrégats get_kpis :301-352 ; nom
-  d'emplacement = dernier segment :283 ; tri du Stock complet :363 ; journal
-  des écarts trié par valeur signée :459, date ISO :656 ; types « Ajustement
-  inv. » et « Casse / rebut » :670, :675 ; référence d'un rebut « SP/00007 » :
-  odoo18/addons/stock/models/res_company.py:102-112 (préfixe SP/, 5
-  chiffres) ; symbole « FCFA » de la devise XAF :
+  fmtPct (une décimale fixe), pluralWord, fmtInt, plural, fmtUnits, fmtDays
+  (une décimale fixe), fmtCoverage :35-118, rejoués par les helpers
+  d'ecrans.py (entier et fcfa en espace fine, pct, jours, compte) ;
+  périodes en dates locales (localIsoDate, periodRange) :120-153 ;
+- models/stock_dashboard.py : calcul par référence _metrics :50-105 (point
+  de commande, quantité suggérée, statuts Rupture / Critique / Sous seuil /
+  OK, classes Rapide / Normale / Lente / Dormant) ; réglages par défaut
+  _company_cfg :193-202 et models/res_config_settings.py:20-48 (sécurité
+  2 j, horizon 7 j, critique 3 j, dormant 60 j, délai 3 j, coulage 2 %) ;
+  ventes moyennes sur 30 jours glissants _vday_map :210-232 ; agrégats
+  get_kpis :368-418 ; jours locaux de la période _date_domain :146-165 ;
+  emplacements au nom complet get_locations :341-352 ; tri du Stock
+  complet :430 ; mois abrégés en français des graphiques MONTHS_FR :482,
+  :510 ; journal des écarts trié par valeur signée :530, date au jour local
+  et au format de la langue (« 13/10/2026 ») _display_date :166-176 ; types
+  « Ajustement inv. » et « Casse / rebut » :733, :738 ; référence d'un
+  rebut « SP/00007 » : odoo18/addons/stock/models/res_company.py:102-112
+  (préfixe SP/, 5 chiffres) ; symbole « FCFA » de la devise XAF :
   odoo18/odoo/addons/base/data/res_currency_data.xml:476-483.
 
 Les chiffres de l'écran sont calculés : les statuts, points de commande,
@@ -55,24 +68,28 @@ code de _metrics, extrait de addons/ à l'import (comme tests/socle/
 test_stock_logic.py), appliqué à un jeu fictif de 58 références d'un bar et
 d'une cave, avec les réglages par défaut ; les cartes reprennent les
 agrégats de get_kpis et les formats de utils.js. Emplacements : l'entrepôt
-crée toujours WH/Stock ; ici il est renommé WH/Cave et WH/Bar est créé à
-côté, seuls emplacements internes (_internal_locations, triés par nom
-complet) : get_locations n'en garde que le dernier segment, « Bar » et
-« Cave » (stock_dashboard.py:141-145 et :283). Aujourd'hui : mercredi
-14/10/2026, le jour de toute la série (demo.ARRIVEE).
+crée toujours WH/Stock ; ici il est renommé Cave et un emplacement Bar est
+créé à côté, seuls emplacements internes (_internal_locations, triés par
+nom complet) : le filtre et les colonnes du Stock complet portent leur nom
+complet, « WH/Bar » et « WH/Cave ». Aujourd'hui : mercredi 14/10/2026, le
+jour de toute la série (demo.ARRIVEE) ; « Ce mois » va du 01/10/2026 au
+14/10/2026 (quatorze jours de Douala).
 
 Une seule source pour ce stock dans toute la série : la vidéo de
-présentation, déjà livrée (docs/guides/videos/01-presentation.mp4), le
-montre dans scenarios/c5_magasin.py:44-92 et c6_direction.py:70, :77. Le jeu
-ci-dessous a été calibré pour que le vrai calcul retrouve ses chiffres
-(contrôlés par des assert) : 3 185 000 FCFA au coût, 6 950 000 FCFA au
-prix de vente (marge +3 765 000 FCFA, 54,2 %), 58 références, 1 940
-unités, « 1 rupture · 1 sous 3 j » (Eau minérale 1,5 L, Bière blonde
-65 cl), coulage 41 500 FCFA soit 0,6 % du CA estimé (carte verte),
-couverture 18,4 j, rotation 1,6×, 212 000 FCFA dormants sur 4 réfs, 2 réfs
-sous seuil, et les cinq lignes de son tableau d'alertes (Eau minérale 1,5 L
+présentation (docs/guides/videos/01-presentation.mp4) le montre dans
+scenarios/c5_magasin.py et c6_direction.py. Le jeu ci-dessous a été calibré
+pour que le vrai calcul retrouve ses chiffres (contrôlés par des assert) :
+3 185 000 FCFA au coût, 6 950 000 FCFA au prix de vente (marge
++3 765 000 FCFA, 54,2 %), 58 références, 1 940 unités, « 1 rupture ·
+1 critique (sous 3 j) » (Eau minérale 1,5 L, Bière blonde 65 cl), coulage
+41 500 FCFA soit 0,6 % du CA estimé (carte verte), couverture 18,4 j,
+rotation 1,6×, 212 000 FCFA dormants sur 4 références, 2 références sous
+seuil, et les cinq lignes de son tableau d'alertes (Eau minérale 1,5 L
 0 / 12 → 120, Bière blonde 65 cl 30 / 14 → 110, Jus d'ananas 1 L 18 / 4 → 22,
-Arachides grillées 25 / 6 → 35, Vin rouge 75 cl 40 / 2 → —). Coûts repris
+Arachides grillées 25 / 6 → 35, Vin rouge 75 cl 40 / 2 → —). La période
+passée de quinze à quatorze jours (« Ce mois » part du 01), les ventes de la
+première quinzaine d'octobre sont prises à 15/14 du rythme des 30 derniers
+jours (RYTHME) : le CA estimé et le coulage ne bougent pas. Coûts repris
 de scenarios/t14_achats.py (COMMANDES, PRIX) ; Bière blonde 65 cl à 1 500
 FCFA comme t04 et t10 ; prix de vente communs avec t12_ventes.py (ARTICLES),
 vins 75 cl compris (rouge 12 000, blanc et rosé 11 000 FCFA ; les prix des
@@ -84,12 +101,12 @@ _build_actions en tirent.
 Sources des affirmations : douleurs — docs/guides/
 AITE_HOUSE_plaquette_commerciale.pdf p. 12 (« Une rupture de bière un samedi
 soir, c'est du CA perdu chaque heure », « la marge qui dort en cave », « vous
-savez où est chaque casier »), dashboard.xml:427-429 (« offert non tracé »,
+savez où est chaque casier »), dashboard.xml:433-436 (« offert non tracé »,
 « ajuster pour que ça tombe juste »), __manifest__.py:13 (« piloter le stock
 au lieu de le subir ») ; bénéfices et résultats — _metrics, get_kpis,
-res_config_settings.py, stock_dashboard_view.js:170-175 (6 onglets) ; carte
+res_config_settings.py, stock_dashboard_view.js:169-178 (6 onglets) ; carte
 verte sous le seuil, rouge au-delà — coulAccent, stock_dashboard_view.js:
-330-333 ; « à arrondir au casier » — dashboard.xml:219 ; le profil Magasin
+361-364 ; « à arrondir au casier » — dashboard.xml:221 ; le profil Magasin
 n'a pas l'application Achats (ecrans.APPS_PROFIL['magasin']), d'où la
 réaction « je la transmets aux achats ».
 
@@ -97,14 +114,21 @@ Captures de référence (modèle visuel, jamais incrustées) :
 ../aite-videos/ref_muk/012-inventaire-tableau-de-bord-aite.png et
 -pleine.png ; docs/captures_uat/r6-magasin-01-ouvrir-le-tableau-de-bord-stock.png.
 
-Écarts rejoués tels quels (voir le rapport) : « Ce mois » démarre la veille
-du 1er à Douala (utils.js:84,100, toISOString en UTC) d'où « 30/09/2026 » ;
-dates ISO du journal (stock_dashboard.py:656), montrées sans zoom ; pluriel
-non géré dans « N rupture · N sous 3 j » (dashboard.xml:110), invisible ici
-(une seule rupture) ; carte « Critiques » ambre et badge « Critique » rouge
-(dashboard.xml:165, stock_dashboard.py:82) ; graduations « 0.5 % » à point
-décimal (stock_dashboard_view.js:675) ; libellé « Pertes (écarts − + casse) »
-(dashboard.xml:376).
+Écarts du rendu précédent, corrigés dans la livraison 4 et rejoués corrigés
+(docs/videos/ECARTS.md, écarts n° 37-77) : « Ce mois » ne démarre plus la
+veille du 1er à Douala (n° 38, localIsoDate) — « 01/10/2026 » au lieu de
+« 30/09/2026 » ; dates du journal au format jj/mm/aaaa et au jour local
+(n° 37, _display_date) au lieu de l'ISO ; accords « 1 rupture ·
+1 critique (sous 3 j) », « 2 références », « 1 940 unités », « référence à
+zéro » au lieu de « réfs » et de « 1 sous 3 j » (n° 42, n° 44) ; carte
+« Critiques » rouge comme son badge, au lieu d'ambre (n° 68) ; emplacements
+au nom complet « WH/Bar », « WH/Cave » au lieu de « Bar », « Cave »
+(n° 68) ; loupe Font Awesome au lieu de l'émoji 🔍 (n° 68) ; pourcentages et
+jours à une décimale fixe (« 2,0 % », « 0,0 j ») et graduations
+« 0,5 % » au lieu de « 2 % », « 0 j », « 0.5 % » (n° 41) ; mois des
+graphiques en abréviations françaises « sept. », « oct. » au lieu de
+« Sep », « Oct » ; libellé « Pertes (écarts négatifs + casse) » au lieu de
+« Pertes (écarts − + casse) » ; milliers en espace fine (toLocaleString).
 """
 
 import math
@@ -112,8 +136,11 @@ import os
 import re
 import textwrap
 
+import datetime
+
 import demo
-from ecrans import APPS_PROFIL, ICONES, e, fenetre_muk, graphe_anneau, navigateur, tdb_entete, vue_tdb
+from ecrans import (APPS_PROFIL, ICONES, MENUS_MUK, NBSP, NNBSP, compte, date_fr, e, entier, fcfa, fenetre_muk,
+                   graphe_anneau, jours, mois_abrege, navigateur, pct, tdb_entete, vue_tdb)
 from marketing import bulle, dezoom, reaction, zoom
 from moteur import anneau, classe, clic, compter, curseur, defiler, pause, saisir, texte, vue
 
@@ -221,18 +248,19 @@ PAR_NOM = {r['nom']: r for r in LIGNES}
 
 
 # --------------------------------------------- les formats de utils.js --
-
-def _milliers(n):
-    s = '{:,}'.format(abs(n)).replace(',', ' ')
-    return ('-' if n < 0 else '') + s
-
+# Les tableaux de bord OWL écrivent les nombres avec toLocaleString("fr-FR") :
+# espace FINE insécable entre les milliers (ecrans.entier / fcfa avec tdb=True),
+# trait d'union pour les négatifs ; fmtPct à une décimale fixe et espace
+# insécable (ecrans.pct) ; fmtDays à une décimale fixe (ecrans.jours) ; accords
+# sans « (s) » (ecrans.compte, plural / pluralWord de utils.js).
 
 def _arrondi(v):
     return int(math.floor(v + 0.5)) if v >= 0 else -int(math.floor(-v + 0.5))
 
 
 def money(v):
-    return _milliers(_arrondi(v)) + ' FCFA'
+    """fmtMoney (utils.js:35-39), symbole de la société : « 3 185 000 FCFA »."""
+    return fcfa(_arrondi(v), tdb=True)
 
 
 def signe_money(v):
@@ -245,25 +273,35 @@ def _dixieme(v):
 
 
 def qty(v):
+    """fmtQty (utils.js:54-58) : arrondi au dixième, « 1 940 », « 14,5 »."""
     s = _dixieme(v)
-    entier, _, dec = s.partition('.')
-    return _milliers(int(entier)) + (',' + dec if dec else '') if abs(v) >= 1000 else s.replace('.', ',')
+    neg = s.startswith('-')
+    ent, _, dec = s.lstrip('-').partition('.')
+    return ('-' if neg else '') + entier(int(ent), tdb=True) + (',' + dec if dec else '')
 
 
 def signe_qty(v):
     return ('+' if v > 0 else '') + qty(v)
 
 
+def unites(v):
+    """fmtUnits (utils.js:87-96) : « 1 unité », « 1 940 unités » (pluriel dès 2)."""
+    return qty(v) + (' unités' if abs(float(_dixieme(v))) >= 2 else ' unité')
+
+
+def refs(n):
+    """refs() du composant (stock_dashboard_view.js) : « 1 référence », « 2 références »."""
+    return compte(n, 'référence', 'références')
+
+
 def days(v):
-    return '∞' if v >= 365 else _dixieme(v).replace('.', ',') + ' j'
+    """fmtCoverage (utils.js:110-118) : « ∞ » dès un an, sinon fmtDays : « 18,4 j »."""
+    return '∞' if v >= 365 else jours(v)
 
 
 def rotx(v):
+    """rotX du composant (inchangé) : « 1,6× », « 2× »."""
     return _dixieme(v).replace('.', ',') + '×'
-
-
-def pct(v):
-    return _dixieme(v).replace('.', ',') + ' %'
 
 
 # ------------------------------------------------------- les agrégats --
@@ -281,12 +319,21 @@ VAL_CMD = sum(r['cmd'] * r['cout'] for r in LIGNES)
 VAL_DORM = sum(r['value'] for r in DORMANTS)
 
 # La période « Ce mois », vue d'un poste à Douala le mercredi 14/10/2026 (le jour
-# de toute la série, demo.ARRIVEE) : periodRange convertit le 1er octobre à minuit
-# local en UTC (toISOString), d'où le 30/09 ; quinze jours, du 30/09 au 14/10 inclus.
-DU, AU, JOURS = '30/09/2026', '14/10/2026', 15
-CA_EST = sum(r['vday'] * JOURS * r['prix'] for r in LIGNES)        # sorties clients × prix de vente
-SORTIES = sum(r['vday'] * JOURS * r['cout'] for r in LIGNES)       # valorisées au coût (CMV)
-# Le journal des écarts et casses de la période : (date ISO, type, article, quantité signée, référence).
+# de toute la série, demo.ARRIVEE) : periodRange prend le 1er du mois en date
+# LOCALE (localIsoDate, utils.js:124-133, écart n° 38 corrigé) ; quatorze jours,
+# du 01/10 au 14/10 inclus, comptés en jours de Douala (_date_domain).
+AUJOURDHUI = datetime.date(2026, 10, 14)
+assert date_fr(AUJOURDHUI) == demo.ARRIVEE[:10]
+DU, AU, JOURS = date_fr(AUJOURDHUI.replace(day=1)), date_fr(AUJOURDHUI), AUJOURDHUI.day
+# Les sorties de la période (_estimated_revenue, _flux_period) ne sont pas les ventes
+# moyennes des 30 derniers jours (_vday_map, colonne « Ventes/j ») : la première
+# quinzaine d'octobre a vendu à 15/14 de cette moyenne (la fin de septembre, plus
+# calme, à 15/16). Le CA estimé et le coulage (0,6 %) restent ceux de toute la série.
+RYTHME = 15 / 14.0
+CA_EST = sum(r['vday'] * RYTHME * JOURS * r['prix'] for r in LIGNES)     # sorties clients × prix de vente
+SORTIES = sum(r['vday'] * RYTHME * JOURS * r['cout'] for r in LIGNES)    # valorisées au coût (CMV)
+# Le journal des écarts et casses de la période : (date ISO, type, article, quantité signée, référence) ;
+# la date s'affiche au jour local, au format de la langue (_display_date, « 13/10/2026 »).
 ECARTS = [
     ('2026-10-13', 'Casse / rebut', 'Champagne brut 75 cl', -1, 'SP/00007'),
     ('2026-10-09', 'Ajustement inv.', 'Whisky 12 ans 70 cl', -1, 'Offert non tracé'),
@@ -300,14 +347,14 @@ COUL = PERTES / CA_EST * 100.0
 assert (len(RUPT), len(CRITQ), len(SOUS), len(DORMANTS)) == (1, 1, 2, 4)
 assert COUL <= SEUIL_COUL     # la carte « Coulage » reste verte (coulAccent)
 
-# Les chiffres que la vidéo de présentation, déjà livrée, montre pour ce même stock
-# (scenarios/c5_magasin.py:47-56, c6_direction.py:70 et :77) : le jeu ci-dessus les
-# retrouve par le vrai calcul. Deux chiffres de c5 ne se retrouvent pas, parce qu'ils
-# sont impossibles avec ses propres lignes : « valeur à commander 126 300 FCFA »
-# (les quatre lignes en alerte de c5 font déjà 136 050 FCFA aux coûts de t14) et
-# « Écarts d'inventaire 41 500 FCFA » sans signe (le code affiche gap_net, négatif).
+# Les chiffres que la vidéo de présentation montre pour ce même stock (scenarios/
+# c5_magasin.py, cartes du tableau de bord et tableau d'alertes ; c6_direction.py,
+# carte « Stock — valeur / alertes » et coulage) : le jeu ci-dessus les retrouve par
+# le vrai calcul, et c5 et c6 les reprennent désormais tous, sans exception — valeur
+# à commander 303 050 FCFA (VAL_CMD) et écart d'inventaire net « -41 500 FCFA », avec
+# son signe (gap_net, ECART_NET).
 def _sp(*v):
-    return tuple(x.replace('\xa0', ' ') if isinstance(x, str) else x for x in v)
+    return tuple(x.replace(NBSP, ' ').replace(NNBSP, ' ') if isinstance(x, str) else x for x in v)
 
 
 assert _sp(len(LIGNES), int(UNITES), money(TOT_VAL), money(TOT_VENTE)) == (58, 1940, '3 185 000 FCFA', '6 950 000 FCFA')
@@ -319,13 +366,21 @@ assert (len(set(a for _, _, a, _, _ in ECARTS)), ECART_NET) == (3, -41500)
 
 # Les agrégats de ce stock, pour les vidéos qui le citent (le cockpit de direction,
 # t15) : get_kpis, puis _penalty_rows et _build_actions de aite_direction_dashboard
-# (models/direction_dashboard.py:194-217 et :265-290) appliqués à ces lignes.
+# (models/direction_dashboard.py:303-326 et :329-450 ; « N références » de la commande
+# suggérée = seuil_count de get_kpis, :762) appliqués à ces lignes. Les
+# montants y gardent le format d'avant la livraison 4 (milliers et symbole séparés
+# par l'espace insécable) : t15 les normalise avant de les remettre au format de
+# son écran.
+def _agr(v):
+    return fcfa(_arrondi(v))
+
+
 PENALITES = sorted([(r['nom'], r['vday'] * r['prix']) for r in RUPT + CRITQ], key=lambda x: -x[1])
 AGREGATS = {
-    'valeur': money(TOT_VAL), 'alertes': len(RUPT) + len(CRITQ), 'coulage_pct': pct(COUL), 'pertes': money(PERTES),
-    'commander': [(n, money(v)) for n, v in PENALITES],          # « Commander … — … perd / jour »
-    'commande_suggeree': (len(SOUS), money(VAL_CMD)),            # « Lancer la commande suggérée (N réfs) »
-    'ecarts_negatifs': money(-ECART_NET),                        # « Écarts d'inventaire négatifs »
+    'valeur': _agr(TOT_VAL), 'alertes': len(RUPT) + len(CRITQ), 'coulage_pct': pct(COUL), 'pertes': _agr(PERTES),
+    'commander': [(n, _agr(v)) for n, v in PENALITES],           # « Commander … — … perd / jour »
+    'commande_suggeree': (len(SOUS), _agr(VAL_CMD)),             # « Lancer la commande suggérée (N références) »
+    'ecarts_negatifs': _agr(-ECART_NET),                         # « Écarts d'inventaire négatifs »
 }
 assert [_sp(*c) for c in AGREGATS['commander']] == [('Bière blonde 65 cl', '21 000 FCFA'), ('Eau minérale 1,5 L', '12 000 FCFA')]
 
@@ -338,7 +393,13 @@ ONGLETS = ['Tableau de bord', 'Alertes & réappro', 'Stock complet', 'Rotation &
            'Mouvements']
 # get_categories : triées par nom (« Épicerie… » passe après « Vins… »).
 CATEGORIES = ['Bières', 'Eaux', 'Jus & softs', 'Snacks & confiseries', 'Vins & spiritueux', 'Épicerie fine locale']
-LIEUX = [('Bar', '#714B67'), ('Cave', '#185FA5')]
+# get_locations : nom COMPLET de l'emplacement (complete_name, stock_dashboard.py:341-352,
+# écart n° 68), trié par nom complet (_internal_locations).
+LIEUX = [('WH/Bar', '#714B67'), ('WH/Cave', '#185FA5')]
+# Les six mois des graphiques mensuels, de mai à octobre (get_flux_months, get_coulage_series).
+MOIS_FLUX = [mois_abrege(m) for m in range(AUJOURDHUI.month - 5, AUJOURDHUI.month + 1)]
+# « N références concernées » : produits distincts du journal des écarts (gap_refs), accordé.
+GAP_REFS = compte(len(set(a for _, _, a, _, _ in ECARTS)), 'référence concernée', 'références concernées')
 BADGE = {'red': 'rouge', 'amber': 'ambre', 'teal': 'vert', 'blue': 'bleu', 'gray': 'gris'}
 
 
@@ -471,28 +532,31 @@ def _courbe(mois, valeurs, seuil, ymax, ticks):
 def _vue_tableau():
     sous_marge = 'marge potentielle +%s (%s du PV)' % (money(MARGE), pct(MARGE / TOT_VENTE * 100))
     cartes1 = [
-        _kpi('t13-k-cout', "Valeur stock — coût d'achat", '0 FCFA',
-             '%d références · %s unités' % (len(LIGNES), qty(UNITES)), 'bleu'),
+        _kpi('t13-k-cout', "Valeur stock — coût d'achat", '0 FCFA', '%s · %s' % (refs(len(LIGNES)), unites(UNITES)),
+             'bleu'),
         _kpi('t13-k-pv', 'Valeur stock — prix de vente', money(TOT_VENTE), sous_marge, 'vert'),
-        _kpi('t13-k-rupt', 'Ruptures & critiques', '%d réfs' % (len(RUPT) + len(CRITQ)),
-             '%d rupture · %d sous %d j' % (len(RUPT), len(CRITQ), CRIT), 'rouge'),            # dashboard.xml:110
+        _kpi('t13-k-rupt', 'Ruptures & critiques', refs(len(RUPT) + len(CRITQ)),                  # ruptSub()
+             '%s · %s (sous %s j)' % (compte(len(RUPT), 'rupture', 'ruptures'),
+                                      compte(len(CRITQ), 'critique', 'critiques'), entier(CRIT, tdb=True)), 'rouge'),
         _kpi('t13-k-coul', 'Coulage (période)', money(PERTES),
              '%s du CA estimé · seuil %s' % (pct(COUL), pct(SEUIL_COUL)), 'rouge' if COUL > SEUIL_COUL else 'vert'),
     ]
     cartes2 = [
         _kpi('t13-k-couv', 'Couverture moyenne', days(UNITES / VDAY), 'rotation moyenne %s / mois' % rotx(VDAY * 30 / UNITES)),
-        _kpi('t13-k-dorm', 'Stock dormant', money(VAL_DORM), '%d réfs (+%d j de couverture)' % (len(DORMANTS), DORM)),
-        _kpi('t13-k-seuil', 'Sous seuil de commande', '%d réfs' % len(SOUS), 'valeur à commander %s' % money(VAL_CMD)),
-        _kpi('t13-k-ecart', "Écarts d'inventaire (période)", money(ECART_NET), '%d réfs concernées' % len(ECARTS)),
+        _kpi('t13-k-dorm', 'Stock dormant', money(VAL_DORM),
+             '%s (+%s j de couverture)' % (refs(len(DORMANTS)), entier(DORM, tdb=True))),
+        _kpi('t13-k-seuil', 'Sous seuil de commande', refs(len(SOUS)), 'valeur à commander %s' % money(VAL_CMD)),
+        _kpi('t13-k-ecart', "Écarts d'inventaire (période)", money(ECART_NET), GAP_REFS),
     ]
     par_cat = {}
     for r in LIGNES:
         par_cat[r['cat']] = par_cat.get(r['cat'], 0) + r['value']
     palette = ['#714B67', '#185FA5', '#3B6D11', '#854F0B', '#A32D2D', '#0F6E56']       # CATEG_PALETTE (utils.js:19-23)
     parts = [(c, v, palette[i]) for i, (c, v) in enumerate(sorted(par_cat.items(), key=lambda kv: -kv[1]))]
-    # entrées (réceptions) et sorties (ventes) au coût, de mai à octobre (du 1er au 14) : get_flux_months
-    flux = [('Mai', [5820000, 5760000]), ('Juin', [5640000, 5710000]), ('Juil', [6150000, 6020000]),
-            ('Août', [5890000, 5950000]), ('Sep', [6080000, 5990000]), ('Oct', [2650000, _arrondi(SORTIES * 14 / 15)])]
+    # entrées (réceptions) et sorties (ventes) au coût, de mai à octobre (du 1er au 14, la période
+    # elle-même) : get_flux_months, mois abrégés en français (MONTHS_FR, stock_dashboard.py:480-483)
+    flux = list(zip(MOIS_FLUX, [[5820000, 5760000], [5640000, 5710000], [6150000, 6020000], [5890000, 5950000],
+                                [6080000, 5990000], [2650000, _arrondi(SORTIES)]]))
     graphes = ('<div class="tdb-grille c2">%s%s</div>' % (
         graphe_anneau('t13-g-cat', 'Valeur du stock par catégorie', parts),
         _g('t13-g-flux', 'Entrées vs Sorties — 6 mois (au coût)',
@@ -516,7 +580,8 @@ ALERTES = sorted(LIGNES, key=lambda r: (r['urgency'], r['couv']))
 def _ligne_alerte(n, r):
     ident = 't13-al-r%d' % n
     return (ident, ['<span class="t13-b" id="%s-nom">%s</span>' % (ident, e(r['nom'])), _c(r['cat'], cls='t13-mu'),
-                    _c(qty(r['stock']), True), _c(qty(r['vday']), True), _c(days(r['couv']), True),
+                    _c(qty(r['stock']), True), '<span class="t13-d" id="%s-vj">%s</span>' % (ident, e(qty(r['vday']))),
+                    _c(days(r['couv']), True),
                     _c(qty(r['seuil']), True),
                     '<span class="t13-d t13-b" id="%s-cmd">%s</span>' % (ident, e(qty(r['cmd']) if r['cmd'] else '—')),
                     _badge(r['status'], r['status_cls'], ident + '-st')])
@@ -524,14 +589,18 @@ def _ligne_alerte(n, r):
 
 def _vue_alertes():
     cartes = [
-        _kpi('t13-a-rupt', 'En rupture', str(len(RUPT)), 'références à zéro', 'rouge'),
-        _kpi('t13-a-crit', 'Critiques', str(len(CRITQ)), 'couverture sous %d jours' % CRIT, 'ambre'),
-        _kpi('t13-a-seuil', 'Sous seuil de commande', '%d réfs' % len(SOUS), 'point de commande atteint'),
+        _kpi('t13-a-rupt', 'En rupture', entier(len(RUPT), tdb=True),
+             'références à zéro' if len(RUPT) > 1 else 'référence à zéro', 'rouge'),                   # pluralWord
+        # liseré rouge comme le badge « Critique » (dashboard.xml:165-170, écart n° 68)
+        _kpi('t13-a-crit', 'Critiques', entier(len(CRITQ), tdb=True), 'couverture sous %s' % compte(CRIT, 'jour', 'jours'),
+             'rouge'),
+        _kpi('t13-a-seuil', 'Sous seuil de commande', refs(len(SOUS)), 'point de commande atteint'),
         _kpi('t13-a-cmd', 'Valeur à commander', money(VAL_CMD), 'suggestion de réappro'),
     ]
     table = _table('t13-al', COLS_AL, [_ligne_alerte(n, r) for n, r in enumerate(ALERTES[:10], 1)])
-    note = _note('t13-al-note', '<b>Point de commande</b> = ventes moy./jour × (délai réappro + <b>%d</b> j de sécurité). '
-                 'Quantité suggérée : <b>%d</b> jours de couverture après livraison — à arrondir au casier.' % (SEC, HOR))
+    note = _note('t13-al-note', '<b>Point de commande</b> = ventes moy./jour × (délai réappro + <b>%s</b> j de sécurité). '
+                 'Quantité suggérée : <b>%s</b> de couverture après livraison — à arrondir au casier.'
+                 % (entier(SEC, tdb=True), compte(HOR, 'jour', 'jours')))
     contenu = (_tete('al', 1) + _section('Alertes de réapprovisionnement', cartes)
                + _carte('Références à traiter (triées par urgence)', '<div class="t13-wrap">%s</div>' % table) + note)
     return vue_tdb('t13-alertes', '<div class="t13" data-layout-allow-overflow id="t13-in-al">%s</div>' % contenu)
@@ -539,7 +608,7 @@ def _vue_alertes():
 
 # -- l'onglet Stock complet
 
-COLS_ST = [('Produit', '1fr'), ('Catégorie', '200px'), ('Bar', '62px', 'd'), ('Cave', '66px', 'd'),
+COLS_ST = [('Produit', '1fr'), ('Catégorie', '200px'), (LIEUX[0][0], '84px', 'd'), (LIEUX[1][0], '90px', 'd'),
            ('Total', '66px', 'd'), ('Coût unit.', '124px', 'd'), ('Valeur', '170px', 'd'), ('Ventes/j', '96px', 'd'),
            ('Couverture', '116px', 'd'), ('Statut', '116px')]
 MAXI = max(r['value'] for r in LIGNES)
@@ -578,8 +647,10 @@ def _vue_stock():
     ]
     bieres = [_ligne_stock(n, r) for n, r in enumerate(BIERES, 1)]
     autres = [_ligne_stock(n, r) for n, r in enumerate([r for r in LIGNES if r not in BIERES][:6], len(BIERES) + 1)]
-    recherche = ('<div class="entree t13-search" id="t13-rech"><span class="ph" id="t13-rech-ph">%s'
-                 'Rechercher un produit…</span><span class="val" id="t13-rech-val"></span></div>' % ICONES['loupe'])
+    # la loupe Font Awesome reste dans le champ pendant la saisie (asd-search-wrap, dashboard.xml:249-255)
+    recherche = ('<div class="entree t13-search" id="t13-rech"><span class="t13-loupe">%s</span>'
+                 '<span class="ph" id="t13-rech-ph">Rechercher un produit…</span>'
+                 '<span class="val" id="t13-rech-val"></span></div>' % ICONES['loupe'])
     note = _note('t13-st-note', "<b>Bonne pratique :</b> base de l'<b>inventaire tournant</b> — filtrez une catégorie, "
                  "comptez, puis saisissez les écarts avec un motif dans Odoo (ajustement d'inventaire).")
     contenu = (_tete('st', 2) + _section('Inventaire complet — toutes les références', cartes)
@@ -598,8 +669,8 @@ def _vue_rotation():
     sorties = money(SORTIES)
     cartes = [
         _kpi('t13-r-rot', 'Rotation moyenne', rotx(VDAY * 30 / UNITES), 'renouvellements / mois', 'violet'),
-        _kpi('t13-r-dorm', 'Stock dormant', '0 FCFA', '%d réfs (+%d j)' % (len(DORMANTS), DORM), 'rouge'),
-        _kpi('t13-r-ref', 'Références suivies', str(len(LIGNES)), 'stock ou ventes sur 30 j'),
+        _kpi('t13-r-dorm', 'Stock dormant', '0 FCFA', '%s (+%s j)' % (refs(len(DORMANTS)), entier(DORM, tdb=True)), 'rouge'),
+        _kpi('t13-r-ref', 'Références suivies', entier(len(LIGNES), tdb=True), 'stock ou ventes sur 30 j'),
         _kpi('t13-r-sort', 'Sorties (période)', sorties, 'valorisées au coût (CMV)'),
     ]
     top = sorted([r for r in LIGNES if r['rot'] > 0], key=lambda r: -r['rot'])[:8]
@@ -629,8 +700,8 @@ COLS_EC = [('Date', '140px'), ('Type', '180px'), ('Produit', '1fr'), ('Qté ±',
 
 def _vue_ecarts():
     cartes = [
-        _kpi('t13-e-net', 'Écart net (période)', money(ECART_NET), '%d réfs concernées' % len(ECARTS), 'ambre'),
-        _kpi('t13-e-pertes', 'Pertes (écarts − + casse)', money(PERTES),
+        _kpi('t13-e-net', 'Écart net (période)', money(ECART_NET), GAP_REFS, 'ambre'),
+        _kpi('t13-e-pertes', 'Pertes (écarts négatifs + casse)', money(PERTES),
              '%s du CA estimé · seuil %s' % (pct(COUL), pct(SEUIL_COUL)), 'rouge' if COUL > SEUIL_COUL else 'vert'),
         _kpi('t13-e-ca', 'CA estimé (période)', money(CA_EST), 'sorties clients × prix de vente'),
         _kpi('t13-e-seuil', 'Seuil de coulage', pct(SEUIL_COUL), 'paramétrable dans les Réglages'),
@@ -644,14 +715,14 @@ def _vue_ecarts():
                            [(v, '0' if v == 0 else '%d k' % (v // 1000)) for v in range(-40000, 1, 10000)],
                            [lambda v: '#A32D2D' if v < 0 else '#3B6D11']))
     g_coul = _g('t13-g-coul', 'Coulage mensuel vs seuil (6 mois)',
-                _courbe(['Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct'], [1.2, 0.9, 2.4, 1.1, 1.4, round(COUL * JOURS / 14, 2)],
-                        SEUIL_COUL, 3.0, [(x / 2.0, ('%g' % (x / 2.0)) + ' %') for x in range(0, 7)]))
+                _courbe(MOIS_FLUX, [1.2, 0.9, 2.4, 1.1, 1.4, round(COUL, 2)],
+                        SEUIL_COUL, 3.0, [(x / 2.0, pct(x / 2.0)) for x in range(0, 7)]))      # axe : fmtPct
     lignes = []
     for n, (date, typ, art, q, ref) in enumerate(ECARTS, 1):
         valeur = q * PAR_NOM[art]['cout']
         sens = 't13-neg' if q < 0 else 't13-pos'
         ident = 't13-j-r%d' % n
-        lignes.append((ident, [_c(date, cls='t13-mu'), _badge(typ, 'red' if typ.startswith('Casse') else 'amber'),
+        lignes.append((ident, [_c(date_fr(date), cls='t13-mu'), _badge(typ, 'red' if typ.startswith('Casse') else 'amber'),
                                '<span><span class="t13-b" id="%s-nom">%s</span></span>' % (ident, e(art)),
                                _c(signe_qty(q), True, sens), _c(signe_money(valeur), True, sens + ' t13-b'),
                                '<span><span class="t13-mu" id="%s-ref">%s</span></span>' % (ident, e(ref))]))
@@ -664,7 +735,7 @@ def _vue_ecarts():
     return vue_tdb('t13-ecarts', '<div class="t13" data-layout-allow-overflow id="t13-in-ec">%s</div>' % contenu)
 
 
-ECRAN = navigateur(fenetre_muk('app-t13', 'Inventaire', ["Vue d'ensemble", 'Opérations', 'Tableau de bord AITE', 'Produits'],
+ECRAN = navigateur(fenetre_muk('app-t13', 'Inventaire', MENUS_MUK['inventaire'],
                                [_vue_tableau(), _vue_alertes(), _vue_stock(), _vue_rotation(), _vue_ecarts()],
                                actif='Tableau de bord AITE', societe=demo.SOCIETE, initiale=NOM[0], avatar='#0F6E56',
                                apps=APPS_PROFIL['magasin'], app_active='Inventaire'))
@@ -716,9 +787,10 @@ CSS = """
 .t13-note { margin-top: 12px; background: #FAF6E9; border: 1px solid #E8DFB8; border-radius: 10px; padding: 11px 16px; font-size: 17px;
   color: #6B5D20; line-height: 1.45; }
 .entree.t13-search { margin-top: 0; width: 340px; height: 42px; border: 1px solid #DEE2E6; border-radius: 8px; font-size: 17px; }
-.entree.t13-search .ph { left: 12px; display: inline-flex; align-items: center; gap: 8px; }
-.entree.t13-search .ph svg { width: 18px; height: 18px; }
-.entree.t13-search .val { left: 12px; }
+.entree.t13-search .t13-loupe { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); display: flex; }
+.entree.t13-search .t13-loupe svg { width: 17px; height: 17px; }
+.entree.t13-search .t13-loupe svg * { stroke: #5F5E5A; }
+.entree.t13-search .ph, .entree.t13-search .val { left: 40px; }
 .t13-gg { margin-top: 14px; }
 .t13-g { position: relative; background: #fff; border-radius: 12px; padding: 14px 18px; height: 300px; }
 .t13-hbs { position: absolute; left: 18px; right: 22px; top: 54px; bottom: 12px; display: flex; flex-direction: column; }
@@ -783,7 +855,7 @@ TUTORIEL = {
         'b-urgence': "Trié par urgence : la rupture d'abord, puis le critique, puis le sous seuil.",
         'b-calcul': 'Calculé sur les ventes des 30 derniers jours : rien à saisir.',
         'b-dormant': 'Dormant : 60 jours de couverture ou plus.',
-        'b-coulage': 'Sous le seuil de 2 % : la carte reste verte. Au-delà, elle passe au rouge.',
+        'b-coulage': 'Sous le seuil de %s : la carte reste verte. Au-delà, elle passe au rouge.' % pct(SEUIL_COUL),
     },
     'reactions': {
         'r-cmd': "La quantité est calculée : je l'arrondis au casier et je la transmets aux achats.",
@@ -797,6 +869,8 @@ TUTORIEL = {
                  "les ruptures et le coulage du mois.",
          'gestes': [compter('#t13-k-cout-v', 0, TOT_VAL, d=1.2, apres=' FCFA'),
                     anneau('#app-t13 .o-haut .menu.actif', d=1.1, avec=True),
+                    texte('#t13-k-cout-v', money(TOT_VAL), avec=True, decale=1.22),       # le compteur écrit
+                    # ses milliers en espace insécable (aite-motion.js) ; l'écran, en espace fine (fmtMoney)
                     curseur('#t13-k-pv', fx=0.93, fy=0.3, d=0.6),
                     zoom('#t13-k-pv', s=1.6, fx=0.0, d=0.8), bulle('b-marge', '#t13-k-pv', cote='haut', d=3.0), pause(2.6),
                     dezoom(d=0.6), anneau('#t13-k-rupt', d=1.3), anneau('#t13-k-coul', d=1.6)]},
@@ -813,7 +887,9 @@ TUTORIEL = {
          'voix': "Le point de commande et la quantité à commander se calculent sur les ventes des trente derniers jours "
                  "et le délai de livraison. Pour la bière blonde en soixante-cinq centilitres, en critique : cent dix "
                  "à commander, sans rien calculer.",
-         'gestes': [zoom(AL_B65, s=1.3, fx=0.45, d=0.8), bulle('b-calcul', AL_B65 + '-cmd', cote='bas', d=3.2), pause(3.4),
+         # zoom centré : la ligne tient entière (Statut compris) ; la bulle sous la case Ventes/j
+         # (les ventes des 30 derniers jours) laisse lisibles la couverture et le point de commande.
+         'gestes': [zoom(AL_B65, s=1.3, fx=0.5, d=0.8), bulle('b-calcul', AL_B65 + '-vj', cote='bas', d=3.2), pause(3.4),
                     anneau(AL_B65 + '-nom', d=1.0), anneau(AL_B65 + '-cmd', d=1.4), dezoom(d=0.6),
                     reaction('r-cmd', d=3.2), pause(2.8), defiler('#t13-in-al', -399, d=0.7),
                     anneau('#t13-al-note', d=1.6)]},
@@ -837,7 +913,8 @@ TUTORIEL = {
                  "référence est dormante : ici, quatre références, du cognac au poivre de Penja, immobilisent deux "
                  "cent douze mille francs.",
          'gestes': [defiler('#t13-in-st', 0, d=0.7), clic('#t13-tab-st-3'), vue('t13-rotation'),
-                    compter('#t13-r-dorm-v', 0, VAL_DORM, d=1.2, apres=' FCFA'), anneau('#t13-r-dorm', d=1.2),
+                    compter('#t13-r-dorm-v', 0, VAL_DORM, d=1.2, apres=' FCFA'),
+                    texte('#t13-r-dorm-v', money(VAL_DORM), avec=True, decale=1.22), anneau('#t13-r-dorm', d=1.2),
                     defiler('#t13-in-rot', -330, d=0.8), anneau('#t13-g-rot', d=1.2),
                     curseur('#t13-g-dorm', fx=0.62, fy=0.32, d=0.6), zoom('#t13-g-dorm', s=1.4, fx=0.75, d=0.8),
                     bulle('b-dormant', '#t13-g-dorm', cote='bas', d=3.0), pause(2.8), dezoom(d=0.6)]},
@@ -852,7 +929,8 @@ TUTORIEL = {
                     bulle('b-coulage', '#t13-e-pertes', cote='bas', d=2.6), pause(2.2),
                     defiler('#t13-in-ec', -200, d=0.8), curseur('#t13-g-coul', fx=0.86, fy=0.38, d=0.6),
                     anneau('#t13-g-coul', d=1.3, avec=True),
-                    defiler('#t13-in-ec', -562, d=0.8), zoom('#t13-j', s=1.45, fx=1.0, fy=0.9, d=0.8),
+                    # le journal entier, Date comprise (13/10/2026, _display_date) et badges Type lisibles
+                    defiler('#t13-in-ec', -562, d=0.8), zoom('#t13-j', s=1.25, fx=0.5, fy=0.9, d=0.8),
                     anneau('#t13-j-r1-nom', d=1.1), anneau('#t13-j-r2-ref', d=1.1), dezoom(d=0.6),
                     reaction('r-fin', d=2.6), pause(1.6)]},
     ],
@@ -863,7 +941,7 @@ TUTORIEL = {
              'texte': 'de ventes glissantes pour calculer chaque quantité à commander'},
             {'valeur': '6', 'compter': 6, 'unite': 'onglets', 'icone': 'graphe',
              'texte': 'de la photo du stock au journal des mouvements, sur un seul écran'},
-            {'valeur': '2', 'compter': 2, 'unite': '%', 'icone': 'alerte',
+            {'valeur': '2,0', 'compter': 2.0, 'decimales': 1, 'unite': '%', 'icone': 'alerte',    # fmtPct : « 2,0 % »
              'texte': 'seuil de coulage par défaut : au-delà, la carte passe au rouge'},
         ],
         'voix': "Trente jours de ventes derrière chaque commande, six onglets, un seuil de coulage qui alerte : le stock "
