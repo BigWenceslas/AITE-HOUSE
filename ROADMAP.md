@@ -24,21 +24,21 @@ Légende des statuts : ✅ **Fait** (livré et testé) · 🟡 **Partiel** (une 
 
 | # | Module | Version | Rôle | Fichiers | État |
 |---|---|---|---|---|---|
-| 1 | `aite_hotel_management` | **18.0.1.0.6** | **Socle PMS** : hôtels, étages, chambres, types, équipements, réservations multi-chambres, check-in/out, folios (lignes hébergement/services, paiements, facture unique), main courante, tarifs saisonniers, commissions d'agents, planning Gantt, ménage de base, tableau de bord, cron quotidien (no-show, ménage) | 51 | ✅ corrigé le 11/10 |
-| 2 | `aite_slot_booking` | **18.0.1.0.4** | Espaces & prestations au créneau (salles VIP/VVIP, SPA, coiffure, pressing), conflits, no-show, report au folio | 25 | ✅ |
-| 3 | `aite_website_booking` | **18.0.1.0.1** | Réservation en ligne (site web) : espaces, prestations, demandes de séjour, acompte | 8 | ✅ |
-| 4 | `aite_hotel_pos_link` | **18.0.1.0.1** | **Note de chambre** : moyen de paiement POS → folio du séjour, file de rattachement | 13 | ✅ |
-| 5 | `aite_pos_credit` | **18.0.2.0.4** | Crédit clients (ardoises) POS + Ventes : encours et sévérité par âge (pas de plafond par client), remboursements, écritures 411, recouvrement | 38 | ✅ |
-| 6 | `aite_loyalty` | **18.0.1.0.2** | Fidélité unifiée : points, historisation, statut Standard/VIP/VVIP automatique | 16 | ✅ |
-| 7 | `aite_pos_analytics` | **18.0.2.1.2** | Analyses ventes POS : CA, marge, CMV, écarts de caisse, heures de pointe, produits | 36 | ✅ |
-| 8 | `aite_stock_dashboard` | **18.0.1.1.2** | Stock : valorisation, couverture, ruptures, rotation, coulage, inventaires, dépôts | 19 | ✅ |
-| 9 | `aite_purchase_dashboard` | **18.0.1.0.4** | Achats : dettes 401 / balance âgée / échéancier, créances 409, OTIF, hausses de prix | 19 | ✅ |
-| 10 | `aite_direction_dashboard` | **18.0.1.1.1** | **Cockpit Direction** consolidé : POS + crédit + stock + achats + **hébergement (TO, ADR, RevPAR, N-1)**, cash à risque, actions | 9 | ✅ |
-| 11 | `aite_exec_dashboard` | **18.0.1.1.1** | Tableau de bord exécutif du complexe : hébergement (CA, **TO, ADR, RevPAR, pickup, pace, écarts N-1**), POS, prestations, fidélité | 14 | ✅ |
-| 12 | `aite_demo_data` | **18.0.1.2.3** | Jeu de démonstration complet (base de démo uniquement) | 17 | ✅ |
-| 13 | `aite_city_tax` | **18.0.1.0.1** | **Taxe de séjour** automatique (barèmes CM/CI/SN/GN par étoiles), ligne auto sur folio hors TVA, état mensuel | 16 | ✅ **nouveau** |
-| 14 | `aite_guest_registry` | **18.0.1.0.2** | **Registre des clients** : fiche d'enregistrement au check-in, registre de police, statistiques d'hébergement | 20 | ✅ **nouveau** |
-| 15 | `aite_housekeeping` | **18.0.1.0.5** | **Gouvernante & maintenance** : tableau des chambres, « Ma journée » mobile, répartition, inspections, pannes → app Maintenance, hors service auto, objets trouvés | 21 | ✅ **nouveau** |
+| 1 | `aite_hotel_management` | **18.0.1.0.7** | **Socle PMS** : hôtels, étages, chambres, types, équipements, réservations multi-chambres, check-in/out, folios (lignes hébergement/services, paiements, facture unique), main courante, tarifs saisonniers, commissions d'agents, planning Gantt, ménage de base, tableau de bord, cron quotidien (no-show, ménage) | 51 | ✅ corrigé le 11/10 |
+| 2 | `aite_slot_booking` | **18.0.1.0.5** | Espaces & prestations au créneau (salles VIP/VVIP, SPA, coiffure, pressing), conflits, no-show, report au folio | 25 | ✅ |
+| 3 | `aite_website_booking` | **18.0.1.0.2** | Réservation en ligne (site web) : espaces, prestations, demandes de séjour, acompte | 8 | ✅ |
+| 4 | `aite_hotel_pos_link` | **18.0.1.0.2** | **Note de chambre** : moyen de paiement POS → folio du séjour, file de rattachement | 13 | ✅ |
+| 5 | `aite_pos_credit` | **18.0.2.0.5** | Crédit clients (ardoises) POS + Ventes : encours et sévérité par âge (pas de plafond par client), remboursements, écritures 411, recouvrement | 38 | ✅ |
+| 6 | `aite_loyalty` | **18.0.1.0.3** | Fidélité unifiée : points, historisation, statut Standard/VIP/VVIP automatique | 16 | ✅ |
+| 7 | `aite_pos_analytics` | **18.0.2.1.3** | Analyses ventes POS : CA, marge, CMV, écarts de caisse, heures de pointe, produits | 36 | ✅ |
+| 8 | `aite_stock_dashboard` | **18.0.1.1.3** | Stock : valorisation, couverture, ruptures, rotation, coulage, inventaires, dépôts | 19 | ✅ |
+| 9 | `aite_purchase_dashboard` | **18.0.1.0.5** | Achats : dettes 401 / balance âgée / échéancier, créances 409, OTIF, hausses de prix | 19 | ✅ |
+| 10 | `aite_direction_dashboard` | **18.0.1.1.2** | **Cockpit Direction** consolidé : POS + crédit + stock + achats + **hébergement (TO, ADR, RevPAR, N-1)**, cash à risque, actions | 9 | ✅ |
+| 11 | `aite_exec_dashboard` | **18.0.1.1.2** | Tableau de bord exécutif du complexe : hébergement (CA, **TO, ADR, RevPAR, pickup, pace, écarts N-1**), POS, prestations, fidélité | 14 | ✅ |
+| 12 | `aite_demo_data` | **18.0.1.2.4** | Jeu de démonstration complet (base de démo uniquement) | 17 | ✅ |
+| 13 | `aite_city_tax` | **18.0.1.0.2** | **Taxe de séjour** automatique (barèmes CM/CI/SN/GN par étoiles), ligne auto sur folio hors TVA, état mensuel | 16 | ✅ **nouveau** |
+| 14 | `aite_guest_registry` | **18.0.1.0.3** | **Registre des clients** : fiche d'enregistrement au check-in, registre de police, statistiques d'hébergement | 20 | ✅ **nouveau** |
+| 15 | `aite_housekeeping` | **18.0.1.0.6** | **Gouvernante & maintenance** : tableau des chambres, « Ma journée » mobile, répartition, inspections, pannes → app Maintenance, hors service auto, objets trouvés | 21 | ✅ **nouveau** |
 
 Dépendances Odoo standard : `point_of_sale`, `sale`, `account`, `purchase`, `stock`, `website`, `portal`, `mail`, `product`, `web`, `maintenance` (Community) et `web_gantt` (**Enterprise**, module passerelle `aite_hotel_gantt` uniquement, auto-installé : le socle s'installe tel quel sur Community, planning en calendrier).
 

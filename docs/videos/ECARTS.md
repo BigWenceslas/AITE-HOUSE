@@ -106,6 +106,51 @@ ou phrases fausses.
 | 35 | `aite_website_booking` — `models/website_booking.py:21-31, 74-91` ; `controllers/main.py:190-213` | Doublons de contacts : la recherche par téléphone est une égalité stricte sur le numéro normalisé, alors qu'un contact saisi au comptoir garde ses espaces (« +33 6 12 48 90 31 ») : sans e-mail, chaque réservation en ligne crée un contact. Une tentative refusée laisse aussi le contact créé (avant le point de sauvegarde) et consomme un numéro. | « Une fiche unique par client » (docstring de `find_or_create_partner`) | t08 | Non montré. | Comparer des numéros normalisés des deux côtés ; créer le contact dans le point de sauvegarde. |
 | 36 | `aite_slot_booking` — `models/booking_booking.py:432-450` | Un dépôt pressing laissé « Confirmé » passe « No-show » 6 h après son créneau de 30 min, même si le linge attend son retrait : la tâche ignore `pickup_date`. | Recette B (espaces et prestations, pressing) | t09 | Non montré. | Exclure le pressing de la tâche, ou attendre la date de retrait. |
 
+> **État au 23/10/2026 : les écarts n° 37 à 77 (sections B, C, D) sont
+> traités** (le tableau garde le constat d'origine). Six lots de modules,
+> chacun corrigé avec un test qui reproduisait le défaut, relu de façon
+> adverse puis repris ; une intégration a ensuite vérifié l'ensemble
+> (campagne à froid : 873 tests, 0 échec ; `dev/run_tests.sh` vert ; mise à
+> niveau réelle depuis la livraison 2 avec cinq migrations) et une relecture
+> croisée a aligné les formats et les définitions d'un écran à l'autre.
+> Versions et procédure : `docs/NOTES_DE_VERSION_vague1.md` (livraison 4)
+> et `docs/INSTALLATION.md` §5. Le n° 75 était déjà réglé (tests des
+> modules de la vague 1), le n° 76 étend l'audit à tous les écrans AITE, le
+> n° 77 réécrit la recette (C02, E01, E03, F01, F03, G03, G04, A11, Q04,
+> Q05).
+>
+> **Restent à trancher par l'équipe** (corrigés selon un choix provisoire,
+> ou documentés sans correction) :
+> - ardoises après la mise à niveau : seul le mode coché « Vente à crédit »
+>   ouvre désormais une ardoise ; la caisse de production doit n'en garder
+>   qu'un (voir les notes de version) ; ardoises ouvertes en livraison 2 par
+>   des tickets « Note de chambre » : annulation automatique ou liste pour
+>   la comptable ;
+> - « Ventes à crédit … % du CA » : ardoises TTC rapportées à un CA HT
+>   (HT sur HT ou TTC sur TTC) ; base HT ou TTC des achats dans « CA vs
+>   Achats » ;
+> - migration de la taxe de séjour : elle ajoute la taxe aux folios restés
+>   ouverts d'un client déjà parti (limiter aux séjours en cours ?) ;
+> - données antérieures non rattrapées : « Prix fixé » des surclassements
+>   déjà faits, pressing déjà passé « Non présenté » ;
+> - « Check-in » / « Check-out » gardés tels quels ; un seul mot pour une
+>   vente en caisse (ticket, commande, transaction) ;
+> - balance âgée fournisseurs : âge depuis la facture (cockpit) ou retard
+>   après échéance (Achats) ; seuils « Prix en hausse » et « Renégocier » ;
+> - créneaux : préfixe « CRN/ » à valider ; règle de capacité d'une
+>   prestation de plusieurs créneaux (présences simultanées ou chevauchements) ;
+>   activité « À confirmer » sur les demandes de séjour du site (qui la reçoit) ;
+> - note de chambre : le report automatique vise tout folio ouvert du client,
+>   séjour à venir compris, la file d'attente seulement les séjours commencés ;
+> - gouvernante : type de tâche quand on met « À nettoyer » une chambre
+>   libre ; renommer le groupe « Gouvernante » du socle en « Équipe d'étage » ;
+> - prénom non pré-rempli sur la fiche (`partner_firstname`) ; heure fixe de
+>   nuit pour le recalcul des statuts de fidélité ;
+> - « Quantity Updated » : valeur par défaut de l'assistant standard
+>   d'inventaire (seul l'affichage du tableau de bord est traduit) ;
+>   chaînes du point de vente standard (« soldes dûs », texte indicatif du
+>   reçu) non surchargées pour ne pas risquer de bloquer la caisse.
+
 ### B. Règle 6 — formats et langue
 
 | # | Module et fichier:ligne | Constat | Règle ou source contredite | Tutoriels | Dans la vidéo | Correction proposée |
