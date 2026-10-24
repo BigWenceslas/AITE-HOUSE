@@ -118,6 +118,8 @@
       if (p === ':' && ap === '/') return p; // adresse web
       return '\u202F' + p;
     });
+    // pas de « 4 » ni de « à » en fin de ligne, séparés de leur mot
+    s = s.replace(/(^|[\s(])(\d+) (?=[\p{L}*])/gu, '$1$2\u00A0').replace(/(^|[\s*])([àÀ]) /g, '$1$2\u00A0');
     return s.replace(/«[ \u00A0\u202F]*/g, '«\u202F');
   }
 
@@ -133,7 +135,11 @@
       for (const b of bouts) {
         if (b === ' ') { pousser(); continue; }
         if (b === '\n') { pousser(); out.push({ saut: true }); continue; }
-        if (b) cur.morceaux.push({ t: b, relief });
+        if (!b) continue;
+        b.split(/(?<=[\p{L}’]{4}-)(?=\p{L}{2})/u).forEach((seg, k) => {
+          if (k) { pousser(); cur.colle = true; }
+          cur.morceaux.push({ t: seg, relief });
+        });
       }
     });
     pousser();
@@ -154,9 +160,9 @@
     let ligne = [], l = 0;
     for (const m of ms) {
       if (m.saut) { lignes.push(ligne); ligne = []; l = 0; continue; }
-      const lm = mesurerMot(ctx, m);
-      if (ligne.length && l + espace + lm > largeur) { lignes.push(ligne); ligne = [m]; l = lm; }
-      else { l += (ligne.length ? espace : 0) + lm; ligne.push(m); }
+      const lm = mesurerMot(ctx, m), sep = m.colle ? 0 : espace;
+      if (ligne.length && l + sep + lm > largeur) { lignes.push(ligne); ligne = [m]; l = lm; }
+      else { l += (ligne.length ? sep : 0) + lm; ligne.push(m); }
     }
     if (ligne.length) lignes.push(ligne);
     return lignes;
@@ -181,19 +187,30 @@
       if (r) { ok = r; taille = mil; bas = mil; } else haut = mil;
     }
     if (!ok) { taille = o.min; ctx.font = police(o.poids, taille, o.famille); ok = couper(ctx, ms, boite.l); }
-    taille = Math.floor(taille);
-    ctx.font = police(o.poids, taille, o.famille);
-    let lignes = couper(ctx, ms, boite.l);
-    if (o.equilibrer !== false && lignes.length > 1) {
-      let b = boite.l * 0.45, h = boite.l;
-      while (h - b > 2) {
-        const mil = (b + h) / 2;
-        if (couper(ctx, ms, mil).length <= lignes.length && !ms.some(m => !m.saut && mesurerMot(ctx, m) > mil)) h = mil; else b = mil;
+    const disposer = t => {
+      ctx.font = police(o.poids, t, o.famille);
+      let lignes = couper(ctx, ms, boite.l);
+      if (o.equilibrer !== false && lignes.length > 1) {
+        let b = boite.l * 0.45, h = boite.l;
+        while (h - b > 2) {
+          const mil = (b + h) / 2;
+          if (couper(ctx, ms, mil).length <= lignes.length && !ms.some(m => !m.saut && mesurerMot(ctx, m) > mil)) h = mil; else b = mil;
+        }
+        lignes = couper(ctx, ms, h);
       }
-      lignes = couper(ctx, ms, h);
+      return lignes;
+    };
+    // un mot seul en dernière ligne : on réduit un peu la taille pour le raccrocher
+    const orphelin = li => li.length >= 3 && li[li.length - 1].length === 1;
+    taille = Math.floor(taille);
+    let lignes = disposer(taille);
+    for (let t = taille - 1; orphelin(lignes) && t >= Math.max(o.min, taille * 0.9); t--) {
+      const autre = disposer(t);
+      if (!orphelin(autre) && autre.length * t * o.interligne <= boite.h) { taille = t; lignes = autre; }
     }
+    ctx.font = police(o.poids, taille, o.famille);
     const espace = ctx.measureText(' ').width;
-    const largeurs = lignes.map(li => li.reduce((s, m, i) => s + mesurerMot(ctx, m) + (i ? espace : 0), 0));
+    const largeurs = lignes.map(li => li.reduce((s, m, i) => s + mesurerMot(ctx, m) + (i && !m.colle ? espace : 0), 0));
     return { taille, lignes, largeurs, hauteur: lignes.length * taille * o.interligne, interligne: o.interligne, o };
   }
 
@@ -212,11 +229,11 @@
       if (o.relief === 'surligne') {
         let xx = cx;
         ligne.forEach((m, j) => {
-          if (j) xx += espace;
+          if (j && !m.colle) xx += espace;
           for (const p of m.morceaux) {
             const lp = ctx.measureText(p.t).width;
             if (p.relief) {
-              const suite = j < ligne.length - 1 && ligne[j + 1].morceaux[0].relief && p === m.morceaux[m.morceaux.length - 1];
+              const suite = j < ligne.length - 1 && ligne[j + 1].morceaux[0].relief && !ligne[j + 1].colle && p === m.morceaux[m.morceaux.length - 1];
               ctx.fillStyle = o.couleurSurligne || 'rgba(240,146,31,.38)';
               ctx.fillRect(xx - 2, by - taille * 0.30, lp + 4 + (suite ? espace : 0), taille * 0.36);
             }
@@ -225,7 +242,7 @@
         });
       }
       ligne.forEach((m, j) => {
-        if (j) cx += espace;
+        if (j && !m.colle) cx += espace;
         for (const p of m.morceaux) {
           ctx.fillStyle = p.relief ? o.couleurRelief : o.couleur;
           ctx.fillText(p.t, cx, by);
