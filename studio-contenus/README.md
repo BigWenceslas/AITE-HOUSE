@@ -66,7 +66,7 @@ npx playwright install chromium # une fois
 node generer.js                 # reconstruit studio.html et génère tous les visuels carrés (JPEG)
 node generer.js visuels --format tous          # carré, portrait et story
 node generer.js visuels --id S03-mercredi      # une seule publication
-node generer.js visuels --png --echelle 2      # PNG en 2160 px
+node generer.js visuels --png --echelle 2 --dossier ../visuels-hd   # PNG 2160 px, hors du dépôt
 node generer.js studio                         # seulement studio.html
 ```
 
@@ -90,7 +90,9 @@ fichier de `assets/photos/` sans extension (`boubou`, `blazer`, `tunique`), ou
 
 ## Ajouter une photo
 
-1. Détourer la photo (fond transparent) : remove.bg, Canva, ou
+1. Partir de la photo originale du photographe, pas d'une copie passée par
+   WhatsApp ou une capture d'écran : le visage doit rester net une fois agrandi.
+   Détourer la photo (fond transparent) : remove.bg, Canva, ou
    `rembg` (`pip install rembg`, modèle `birefnet-portrait`).
 2. L'enregistrer en WebP ou PNG dans `assets/photos/` (`costume.webp`), recadrée
    au plus près de la silhouette, la tête en haut.

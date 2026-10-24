@@ -7,14 +7,14 @@
   },
   "blazer": {
     "nom": "Veste grise",
-    "teteHaut": 5,
-    "menton": 167,
-    "visageX": 206
+    "teteHaut": 10,
+    "menton": 336,
+    "visageX": 411
   },
   "tunique": {
     "nom": "Tunique à motifs",
-    "teteHaut": 6,
-    "menton": 191,
-    "visageX": 262
+    "teteHaut": 12,
+    "menton": 384,
+    "visageX": 525
   }
 }

@@ -119,7 +119,9 @@
       return '\u202F' + p;
     });
     // pas de « 4 » ni de « à » en fin de ligne, séparés de leur mot
-    s = s.replace(/(^|[\s(])(\d+) (?=[\p{L}*])/gu, '$1$2\u00A0').replace(/(^|[\s*])([àÀ]) /g, '$1$2\u00A0');
+    s = s.replace(/(^|[\s(])(\d+) (?=[\p{L}*])/gu, '$1$2\u00A0');
+    // mots d'une ou deux lettres (à, le, de, un, Si…) gardés avec le mot qui suit
+    s = s.replace(/(?<=^|[\s*«(])([\p{L}’]{1,2}) (?=[\p{L}\d*«])/gu, '$1\u00A0');
     return s.replace(/«[ \u00A0\u202F]*/g, '«\u202F');
   }
 
@@ -131,12 +133,13 @@
     const parties = typo(texte).split('*');
     parties.forEach((partie, i) => {
       relief = i % 2 === 1;
+      if (relief) partie = partie.replace(/(?<=^|\s)(\S{1,3}) (?=\S)/g, '$1\u00A0');
       const bouts = partie.split(/( |\n)/);
       for (const b of bouts) {
         if (b === ' ') { pousser(); continue; }
         if (b === '\n') { pousser(); out.push({ saut: true }); continue; }
         if (!b) continue;
-        b.split(/(?<=[\p{L}’]{4}-)(?=\p{L}{2})/u).forEach((seg, k) => {
+        (relief ? [b] : b.split(/(?<=[\p{L}’]{4}-)(?=\p{L}{2})/u)).forEach((seg, k) => {
           if (k) { pousser(); cur.colle = true; }
           cur.morceaux.push({ t: seg, relief });
         });
@@ -171,27 +174,34 @@
   // Taille la plus grande qui tient dans la boîte, puis lignes équilibrées.
   function ajuster(ctx, texte, boite, o) {
     const ms = mots(texte);
-    const nbMots = ms.filter(m => !m.saut).length;
+    // les mots soudés par une insécable comptent chacun pour un mot
+    const nbMots = ms.filter(m => !m.saut).reduce((n, m) => n + m.morceaux.map(p => p.t).join('').split('\u00A0').length, 0);
     const maxLignes = o.motsParLigne ? Math.max(1, Math.ceil(nbMots / o.motsParLigne)) : Infinity;
-    const essai = taille => {
+    const essai = (taille, limite) => {
       ctx.font = police(o.poids, taille, o.famille);
-      if (ms.some(m => !m.saut && mesurerMot(ctx, m) > boite.l)) return null;
+      if (ms.some(m => !m.saut && mesurerMot(ctx, m) > boite.l)) return false;
       const lignes = couper(ctx, ms, boite.l);
-      if (lignes.length > maxLignes && taille > o.min) return null;
-      return lignes.length * taille * o.interligne <= boite.h ? lignes : null;
+      if (lignes.length > limite && taille > o.min) return false;
+      return lignes.length * taille * o.interligne <= boite.h;
     };
-    let bas = o.min, haut = o.max, ok = null, taille = o.min;
-    while (haut - bas > 0.5) {
-      const mil = (bas + haut) / 2;
-      const r = essai(mil);
-      if (r) { ok = r; taille = mil; bas = mil; } else haut = mil;
-    }
-    if (!ok) { taille = o.min; ctx.font = police(o.poids, taille, o.famille); ok = couper(ctx, ms, boite.l); }
+    const chercher = limite => {
+      let bas = o.min, haut = o.max, t = o.min;
+      while (haut - bas > 0.5) {
+        const mil = (bas + haut) / 2;
+        if (essai(mil, limite)) { t = mil; bas = mil; } else haut = mil;
+      }
+      return t;
+    };
+    // Le minimum de mots par ligne est une préférence : on y renonce s'il
+    // coûte plus d'un cinquième de la taille (mot long dans une colonne étroite).
+    const libre = chercher(Infinity);
+    const contraint = maxLignes < Infinity ? chercher(maxLignes) : libre;
+    let taille = contraint >= libre * 0.8 ? contraint : libre;
     const disposer = t => {
       ctx.font = police(o.poids, t, o.famille);
       let lignes = couper(ctx, ms, boite.l);
       if (o.equilibrer !== false && lignes.length > 1) {
-        let b = boite.l * 0.45, h = boite.l;
+        let b = boite.l * (o.equilibreMin || 0.45), h = boite.l;
         while (h - b > 2) {
           const mil = (b + h) / 2;
           if (couper(ctx, ms, mil).length <= lignes.length && !ms.some(m => !m.saut && mesurerMot(ctx, m) > mil)) h = mil; else b = mil;
@@ -234,7 +244,7 @@
             const lp = ctx.measureText(p.t).width;
             if (p.relief) {
               const suite = j < ligne.length - 1 && ligne[j + 1].morceaux[0].relief && !ligne[j + 1].colle && p === m.morceaux[m.morceaux.length - 1];
-              ctx.fillStyle = o.couleurSurligne || 'rgba(240,146,31,.38)';
+              ctx.fillStyle = o.couleurSurligne || '#F6CD9F';
               ctx.fillRect(xx - 2, by - taille * 0.30, lp + 4 + (suite ? espace : 0), taille * 0.36);
             }
             xx += lp;
@@ -396,6 +406,24 @@
     return min === Infinity ? Infinity : pl.x + min * pl.e;
   }
 
+  function bordDroit(ph, pl, y1, y2) {
+    let max = -Infinity;
+    const a = Math.max(0, Math.floor((y1 - pl.y) / pl.e)), b = Math.min(ph.h - 1, Math.ceil((y2 - pl.y) / pl.e));
+    for (let y = a; y <= b; y++) if (ph.droite[y] >= 0) max = Math.max(max, ph.droite[y]);
+    return max === -Infinity ? -Infinity : pl.x + max * pl.e;
+  }
+
+  // Décale la personne vers la gauche si ses mains touchent le bord droit du
+  // cadre (le bras gauche, lui, peut sortir du cadre), sans trop excentrer le visage.
+  function degagerMains(ph, pl, cadre, visageX) {
+    if (!ph.detouree) return pl;
+    const limite = cadre.x + cadre.l - 12;
+    const dr = bordDroit(ph, pl, cadre.y, cadre.y + cadre.h);
+    const dx = Math.min(dr - limite, visageX - (cadre.x + cadre.l * 0.36));
+    if (dx > 0) pl.x -= dx;
+    return pl;
+  }
+
   // Dessine la personne dans un cadre arrondi ; la tête peut dépasser au-dessus du cadre.
   function personne(ctx, ph, cadre, pl, o) {
     o = o || {};
@@ -462,9 +490,9 @@
     let panneau, carte, regle, sigPos, sitePos, logoPos, cadreLigne;
     if (!story) {
       panneau = ph ? { x: 40, y: 170 + 40 * (k - 1), l: 600, h: H - 170 - 40 * (k - 1) - 210 } : { x: 40, y: 170, l: W - 80, h: H - 170 - 190 };
-      carte = { x: 585, y: 250 + 60 * (k - 1), l: 455, h: H - 250 - 60 * (k - 1) - 180, r: 40 };
-      regle = { visageX: 812, teteHaut: carte.y - 62, teteH: 205 + 45 * (k - 1) };
-      sigPos = { x: carte.x + 8, y: carte.y + carte.h + 30, largeur: W - carte.x - 48 };
+      carte = { x: 600, y: 250 + 60 * (k - 1), l: 440, h: H - 250 - 60 * (k - 1) - 180, r: 40 };
+      regle = { visageX: 832, teteHaut: carte.y - 62, teteH: 205 + 45 * (k - 1) };
+      sigPos = { x: carte.x + 8, y: carte.y + carte.h + 34, largeur: W - carte.x - 48 };
       sitePos = { x: 64, y: H - 50 };
       logoPos = { x: W - 48, y: 26, h: 80 };
       const bas = Math.min(panneau.y + panneau.h, carte.y + carte.h) - 60;
@@ -492,13 +520,7 @@
       g.addColorStop(0, '#F3EAF4'); g.addColorStop(1, '#DCC8E0');
       remplirRect(ctx, carte.x, carte.y, carte.l, carte.h, carte.r, g);
       ctx.restore();
-      ctx.save();
-      ctx.beginPath(); rect(ctx, carte.x, carte.y, carte.l, carte.h, carte.r); ctx.clip();
-      const cxr = carte.x + carte.l * 0.62, cyr = carte.y + carte.h * 0.36;
-      croissant(ctx, cxr, cyr, carte.l * 0.62, carte.l * 0.07, -0.7, 'rgba(46,140,178,.30)');
-      croissant(ctx, cxr, cyr, carte.l * 0.50, carte.l * 0.05, -0.7, 'rgba(240,146,31,.40)');
-      ctx.restore();
-      const pl = placer(ph, regle, carte.y + carte.h);
+      const pl = degagerMains(ph, placer(ph, regle, carte.y + carte.h), carte, regle.visageX);
       personne(ctx, ph, carte, pl, { marge: 0 });
     }
 
@@ -519,11 +541,11 @@
     // guillemets
     const tg = story ? 150 : 128;
     guillemets(ctx, panneau.x + 34, panneau.y - 6, tg, C.orange, true);
-    guillemets(ctx, panneau.x + panneau.l - tg * 0.98, panneau.y + panneau.h - tg * 0.40, tg, C.orange, false);
+    guillemets(ctx, panneau.x + panneau.l - tg * (ph && !story ? 1.05 : 0.98), panneau.y + panneau.h - tg * (ph && !story ? 0.45 : 0.40), tg, C.orange, false);
 
     // texte
     const marge = story ? 76 : 58;
-    const boite = { x: panneau.x + marge, y: panneau.y + (story ? 120 : 96), l: panneau.l - marge * 2, h: panneau.h - (story ? 230 : 190) };
+    const boite = { x: panneau.x + marge, y: panneau.y + (story ? 120 : 96), l: panneau.l - marge * 2, h: panneau.h - (story ? 230 : 200) };
     if (pub.etiquette) {
       ctx.font = police(700, story ? 24 : 19, TITRE); ctx.fillStyle = C.mauveTexte;
       espace(ctx, typo(pub.etiquette).toUpperCase(), boite.x, boite.y - (story ? 30 : 22), (story ? 24 : 19) * 0.16);
@@ -589,13 +611,17 @@
         boite.l = Math.max(400, Math.min(boite.l, bg - ecart - boite.x));
       }
       const cx = regle.visageX + 10, cy = regle.teteHaut + tete * 0.75;
-      const rr = story ? 430 : 360 * Math.min(k, 1.15);
+      const rr = story ? 430 : 340 * Math.min(k, 1.15);
       const halo = ctx.createRadialGradient(cx, cy, 10, cx, cy, rr * 1.25);
       halo.addColorStop(0, 'rgba(255,255,255,.20)'); halo.addColorStop(1, 'rgba(255,255,255,0)');
       ctx.fillStyle = halo; ctx.fillRect(0, 0, W, H);
+      // la pointe basse des croissants dépasserait en traits fins à droite de la silhouette
+      ctx.save();
+      ctx.beginPath(); ctx.rect(0, 0, cx + rr * 0.3, H); ctx.clip();
       croissant(ctx, cx, cy, rr, rr * 0.11, -0.75, 'rgba(255,255,255,.12)');
       croissant(ctx, cx, cy, rr * 0.86, rr * 0.075, -0.75, C.bleu);
       croissant(ctx, cx, cy, rr * 0.72, rr * 0.06, -0.75, C.orange);
+      ctx.restore();
       personne(ctx, ph, { x: 0, y: 0, l: W, h: H, r: 0 }, pl, { depasse: false, ombre: 'rgba(30,6,34,.35)' });
       const hf = story ? 300 : 260;
       const f = ctx.createLinearGradient(0, H - hf, 0, H);
@@ -667,7 +693,7 @@
         const cadre = story ? { x: zone.x - 40, y: bloc.y, l: zone.l + 40 + (bloc.x + bloc.l - zone.x - zone.l), h: bloc.h, r: bloc.r } : bloc;
         ctx.save();
         ctx.beginPath(); rect(ctx, bloc.x, 0, bloc.l, bloc.y + bloc.h, story ? 0 : bloc.r); ctx.clip();
-        personne(ctx, ph, cadre, placer(ph, regle, bloc.y + bloc.h), { marge: 0 });
+        personne(ctx, ph, cadre, degagerMains(ph, placer(ph, regle, bloc.y + bloc.h), cadre, regle.visageX), { marge: 0 });
         ctx.restore();
       }
     }
@@ -689,7 +715,7 @@
     const colonne = ph && !story ? 620 : W - mx * 2;
     const tBoite = { x: mx, y: hy + pst.h + (story ? 50 : 34), l: colonne, h: story ? 330 : 200 + 60 * (k - 1) };
     const bt = ajuster(ctx, pub.titre || '', tBoite, { poids: 700, famille: TITRE, min: 34, max: story ? 84 : 62 + 8 * (k - 1) * 4, interligne: 1.1 });
-    ecrire(ctx, bt, tBoite.x, tBoite.y, { couleur: C.encre, couleurRelief: C.encre, relief: 'surligne', couleurSurligne: 'rgba(240,146,31,.42)', largeur: tBoite.l });
+    ecrire(ctx, bt, tBoite.x, tBoite.y, { couleur: C.encre, couleurRelief: C.encre, relief: 'surligne', couleurSurligne: '#F6CD9F', largeur: tBoite.l });
 
     // points, tous à la même taille ; l'espace restant aère la liste
     const points = (pub.points || []).filter(p => String(p).trim()).slice(0, 5);
@@ -703,7 +729,7 @@
     const dispo = basPoints - py - ecartMin * (n - 1);
     let blocs = [];
     for (let taille = story ? 42 : 34 + 4 * (k - 1) * 4; taille >= 20; taille -= 0.5) {
-      blocs = points.map(p => ajuster(ctx, p, { l: largeurTexte, h: 9999 }, { poids: 500, famille: TEXTE, min: taille, max: taille, interligne: 1.32 }));
+      blocs = points.map(p => ajuster(ctx, p, { l: largeurTexte, h: 9999 }, { poids: 500, famille: TEXTE, min: taille, max: taille, interligne: 1.32, equilibreMin: 0.8 }));
       if (blocs.reduce((s, b) => s + Math.max(b.hauteur, badge), 0) <= dispo) break;
     }
     const hauteurs = blocs.map(b => Math.max(b.hauteur, badge));

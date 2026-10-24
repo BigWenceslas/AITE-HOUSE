@@ -9,6 +9,7 @@
  *        --id S01-lundi[,S02-mercredi]        (défaut : toutes les publications)
  *        --echelle 2                          (défaut : 1, soit 1080 px de large)
  *        --png                                PNG au lieu de JPEG (fichiers 4 à 6 fois plus lourds)
+ *        --dossier chemin                     ailleurs que dans sortie/ (sans CALENDRIER.md)
  *
  * studio.html est autonome : polices, logo, photos et publications y sont
  * intégrés. Il s'ouvre d'un double-clic, sans serveur ni connexion.
@@ -90,12 +91,13 @@ function construireStudio() {
 }
 
 function options(argv) {
-  const o = { format: 'carre', id: null, echelle: 1, png: false };
+  const o = { format: 'carre', id: null, echelle: 1, png: false, dossier: p('sortie') };
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === '--format') o.format = argv[++i];
     else if (argv[i] === '--id') o.id = argv[++i].split(',');
     else if (argv[i] === '--echelle') o.echelle = Number(argv[++i]);
     else if (argv[i] === '--png') o.png = true;
+    else if (argv[i] === '--dossier') o.dossier = path.resolve(argv[++i]);
   }
   return o;
 }
@@ -114,7 +116,7 @@ async function genererVisuels(o) {
   }
   if (!liste.length) { console.error('Aucune publication ne correspond.'); process.exit(1); }
   const formats = o.format === 'tous' ? ['carre', 'portrait', 'story'] : [o.format];
-  fs.mkdirSync(p('sortie'), { recursive: true });
+  fs.mkdirSync(o.dossier, { recursive: true });
 
   const navigateur = await chromium.launch();
   const page = await navigateur.newPage();
@@ -130,13 +132,13 @@ async function genererVisuels(o) {
       const type = o.png ? 'image/png' : 'image/jpeg';
       const url = await page.evaluate(([pub, format, echelle, type]) => window.AITE_STUDIO.exporter(pub, format, echelle, type), [pub, format, o.echelle, type]);
       const nom = nomFichier(pub, format, o.png ? 'png' : 'jpg');
-      fs.writeFileSync(p('sortie', nom), Buffer.from(url.split(',')[1], 'base64'));
+      fs.writeFileSync(path.join(o.dossier, nom), Buffer.from(url.split(',')[1], 'base64'));
       console.log('  ' + nom);
     }
   }
   await navigateur.close();
-  ecrireCalendrier(publications, o.png ? 'png' : 'jpg');
-  console.log(liste.length * formats.length + ' visuel(s) dans sortie/');
+  if (o.dossier === p('sortie')) ecrireCalendrier(publications, o.png ? 'png' : 'jpg');
+  console.log(liste.length * formats.length + ' visuel(s) dans ' + path.relative(process.cwd(), o.dossier) + '/');
 }
 
 function nomFichier(pub, format, ext) {
