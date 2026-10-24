@@ -683,6 +683,110 @@
         "#Cameroun",
         "#AITEConsulting"
       ]
+    },
+    {
+      "id": "WE-samedi-1",
+      "serie": "Week-end",
+      "semaine": null,
+      "jour": "samedi",
+      "moment": "samedi 10h",
+      "modele": "affiche",
+      "theme": "Les fichiers Excel au repos",
+      "etiquette": "Samedi détente",
+      "texte": "Samedi : pas de tableau croisé dynamique, juste *les jambes croisées*.",
+      "titre": "",
+      "points": [],
+      "numero": null,
+      "photo": "tunique",
+      "legende": "Toute la semaine, on croise des données, des colonnes et des onglets. On fusionne des cellules, on cherche la bonne version du fichier, on recalcule le total une dernière fois.\n\nCe samedi, le seul croisement autorisé se fait dans un bon fauteuil, avec un jus de fruits à portée de main. 😄 Le fichier sera toujours là lundi, et il n’aura pas bougé d’une cellule.\n\nEt vous, quel est le premier fichier que vous oubliez avec plaisir le week-end ?",
+      "hashtags": [
+        "#Samedi",
+        "#Detente",
+        "#Excel",
+        "#Gestion",
+        "#AITEConsulting"
+      ]
+    },
+    {
+      "id": "WE-samedi-2",
+      "serie": "Week-end",
+      "semaine": null,
+      "jour": "samedi",
+      "moment": "samedi 17h",
+      "modele": "conseil",
+      "theme": "Les réflexes de caisse et de stock qui suivent le gérant à la maison",
+      "etiquette": "Sourire du samedi",
+      "texte": "",
+      "titre": "4 signes que votre tête est *restée au bureau*",
+      "points": [
+        "Au marché, vous faites de tête le rapprochement de caisse.",
+        "Avant même le petit-déjeuner, le frigo a eu droit à son inventaire.",
+        "Pour annoncer la fin du repas, vous dites « on clôture ».",
+        "Quand quelqu’un se sert à boire, vous pensez au bon de sortie."
+      ],
+      "numero": null,
+      "photo": "boubou",
+      "legende": "La semaine se termine, mais certains réflexes restent. On compte, on vérifie, on rapproche, on clôture… même à la maison, même au marché, même autour d’un bon plat.\n\nC’est la marque de ceux qui prennent leur gestion à cœur. Ce week-end, laissez la calculatrice au repos et profitez du moment. 😊\n\nAvouez : combien de ces signes avez-vous cochés ?",
+      "hashtags": [
+        "#Samedi",
+        "#Gestion",
+        "#PME",
+        "#Sourire",
+        "#AITEConsulting"
+      ]
+    },
+    {
+      "id": "WE-dimanche-1",
+      "serie": "Week-end",
+      "semaine": null,
+      "jour": "dimanche",
+      "moment": "dimanche 10h",
+      "modele": "conseil",
+      "theme": "Les réglages qui font taire les outils de travail le dimanche",
+      "etiquette": "Dimanche déconnexion",
+      "texte": "",
+      "titre": "4 réglages pour un dimanche *vraiment tranquille*",
+      "points": [
+        "Mettez en sourdine les groupes WhatsApp de travail pour la journée.",
+        "Coupez sur votre téléphone les notifications des e-mails professionnels.",
+        "Programmez une réponse automatique : « De retour lundi matin. »",
+        "Activez le mode « Ne pas déranger » en laissant passer les appels de vos proches."
+      ],
+      "numero": null,
+      "photo": "tunique",
+      "legende": "Le dimanche, le téléphone a une fâcheuse tendance à rester au travail. Une notification du groupe de l’équipe, un e-mail « juste pour info », et la pause s’envole.\n\nBonne nouvelle : la plupart de nos outils savent se taire, il suffit de le leur demander. Chez AITE, on aime les outils qui travaillent bien… et qui savent aussi se faire oublier le dimanche.\n\nQuel réglage utilisez-vous déjà pour protéger votre dimanche ? Partagez-le en commentaire, il servira à d’autres.",
+      "hashtags": [
+        "#Dimanche",
+        "#Deconnexion",
+        "#Weekend",
+        "#BienEtreAuTravail",
+        "#ConseilPratique",
+        "#AITEConsulting"
+      ]
+    },
+    {
+      "id": "WE-dimanche-2",
+      "serie": "Week-end",
+      "semaine": null,
+      "jour": "dimanche",
+      "moment": "dimanche 18h",
+      "modele": "citation",
+      "theme": "Le repos de l’équipe, que le dirigeant protège",
+      "etiquette": "Pensée du dimanche",
+      "texte": "Cette semaine, l’équipe a tout donné. Aujourd’hui, mon seul travail de dirigeant : *ne pas la déranger*.",
+      "titre": "",
+      "points": [],
+      "numero": null,
+      "photo": "boubou",
+      "legende": "Le dimanche, il m’arrive d’avoir une idée pour l’équipe. Une amélioration, une relance, un dossier à reprendre. La tentation est forte de l’envoyer tout de suite dans le groupe WhatsApp.\n\nJe la note et j’attends lundi. Un message du patron le dimanche, même anodin, fait vibrer un téléphone dans un salon où quelqu’un se reposait enfin. L’idée sera tout aussi bonne demain, et l’équipe l’accueillera l’esprit frais.\n\nEt vous, comment gardez-vous vos idées du dimanche pour lundi ?",
+      "hashtags": [
+        "#Dimanche",
+        "#Repos",
+        "#Management",
+        "#EquilibreViePro",
+        "#PME",
+        "#AITEConsulting"
+      ]
     }
   ]
 }

@@ -614,3 +614,87 @@ Quelle contrainte locale a le plus renforcé votre entreprise ?
 
 #EntrepreneuriatAfricain #Entrepreneuriat #Afrique #Cameroun #AITEConsulting
 ```
+
+## Week-end
+
+### Samedi 10h — Affiche · Les fichiers Excel au repos
+
+![WE-samedi-1](WE-samedi-1-affiche.jpg)
+
+**Visuel :** Samedi : pas de tableau croisé dynamique, juste les jambes croisées.
+
+**Légende à publier :**
+
+```text
+Toute la semaine, on croise des données, des colonnes et des onglets. On fusionne des cellules, on cherche la bonne version du fichier, on recalcule le total une dernière fois.
+
+Ce samedi, le seul croisement autorisé se fait dans un bon fauteuil, avec un jus de fruits à portée de main. 😄 Le fichier sera toujours là lundi, et il n’aura pas bougé d’une cellule.
+
+Et vous, quel est le premier fichier que vous oubliez avec plaisir le week-end ?
+
+#Samedi #Detente #Excel #Gestion #AITEConsulting
+```
+
+### Samedi 17h — Conseil · Les réflexes de caisse et de stock qui suivent le gérant à la maison
+
+![WE-samedi-2](WE-samedi-2-conseil.jpg)
+
+**Visuel :** 4 signes que votre tête est restée au bureau
+
+1. Au marché, vous faites de tête le rapprochement de caisse.
+2. Avant même le petit-déjeuner, le frigo a eu droit à son inventaire.
+3. Pour annoncer la fin du repas, vous dites « on clôture ».
+4. Quand quelqu’un se sert à boire, vous pensez au bon de sortie.
+
+**Légende à publier :**
+
+```text
+La semaine se termine, mais certains réflexes restent. On compte, on vérifie, on rapproche, on clôture… même à la maison, même au marché, même autour d’un bon plat.
+
+C’est la marque de ceux qui prennent leur gestion à cœur. Ce week-end, laissez la calculatrice au repos et profitez du moment. 😊
+
+Avouez : combien de ces signes avez-vous cochés ?
+
+#Samedi #Gestion #PME #Sourire #AITEConsulting
+```
+
+### Dimanche 10h — Conseil · Les réglages qui font taire les outils de travail le dimanche
+
+![WE-dimanche-1](WE-dimanche-1-conseil.jpg)
+
+**Visuel :** 4 réglages pour un dimanche vraiment tranquille
+
+1. Mettez en sourdine les groupes WhatsApp de travail pour la journée.
+2. Coupez sur votre téléphone les notifications des e-mails professionnels.
+3. Programmez une réponse automatique : « De retour lundi matin. »
+4. Activez le mode « Ne pas déranger » en laissant passer les appels de vos proches.
+
+**Légende à publier :**
+
+```text
+Le dimanche, le téléphone a une fâcheuse tendance à rester au travail. Une notification du groupe de l’équipe, un e-mail « juste pour info », et la pause s’envole.
+
+Bonne nouvelle : la plupart de nos outils savent se taire, il suffit de le leur demander. Chez AITE, on aime les outils qui travaillent bien… et qui savent aussi se faire oublier le dimanche.
+
+Quel réglage utilisez-vous déjà pour protéger votre dimanche ? Partagez-le en commentaire, il servira à d’autres.
+
+#Dimanche #Deconnexion #Weekend #BienEtreAuTravail #ConseilPratique #AITEConsulting
+```
+
+### Dimanche 18h — Citation · Le repos de l’équipe, que le dirigeant protège
+
+![WE-dimanche-2](WE-dimanche-2-citation.jpg)
+
+**Visuel :** Cette semaine, l’équipe a tout donné. Aujourd’hui, mon seul travail de dirigeant : ne pas la déranger.
+
+**Légende à publier :**
+
+```text
+Le dimanche, il m’arrive d’avoir une idée pour l’équipe. Une amélioration, une relance, un dossier à reprendre. La tentation est forte de l’envoyer tout de suite dans le groupe WhatsApp.
+
+Je la note et j’attends lundi. Un message du patron le dimanche, même anodin, fait vibrer un téléphone dans un salon où quelqu’un se reposait enfin. L’idée sera tout aussi bonne demain, et l’équipe l’accueillera l’esprit frais.
+
+Et vous, comment gardez-vous vos idées du dimanche pour lundi ?
+
+#Dimanche #Repos #Management #EquilibreViePro #PME #AITEConsulting
+```

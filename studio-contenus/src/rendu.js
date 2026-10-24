@@ -218,6 +218,19 @@
       const autre = disposer(t);
       if (!orphelin(autre) && autre.length * t * o.interligne <= boite.h) { taille = t; lignes = autre; }
     }
+    // Affiches : une ligne réduite à un petit mot (« pas », « juste ») hache la
+    // lecture ; on accepte jusqu'à un cinquième de taille en moins pour l'éviter.
+    if (o.eviterMotsSeuls) {
+      const seuls = li => li.slice(0, -1).filter(l => l.length === 1 && l[0].morceaux.map(m => m.t).join('').length <= 6).length;
+      let meilleur = { t: taille, lignes, n: seuls(lignes) };
+      for (let t = taille - 1; meilleur.n > 0 && t >= taille * 0.8; t--) {
+        const autre = disposer(t);
+        if (autre.length * t * o.interligne > boite.h) continue;
+        const n = seuls(autre);
+        if (n < meilleur.n) meilleur = { t, lignes: autre, n };
+      }
+      taille = meilleur.t; lignes = meilleur.lignes;
+    }
     ctx.font = police(o.poids, taille, o.famille);
     const espace = ctx.measureText(' ').width;
     const largeurs = lignes.map(li => li.reduce((s, m, i) => s + mesurerMot(ctx, m) + (i && !m.colle ? espace : 0), 0));
@@ -663,7 +676,7 @@
     logo(ctx, W - mx - lw - lh * 0.29, ey + pst.h / 2 - lh / 2, lh, true);
 
     // texte
-    const bloc = ajuster(ctx, pub.texte, boite, { poids: 700, famille: TITRE, min: 40, max: story ? 112 : ph ? 96 : 120, interligne: 1.08, motsParLigne: 1.8 });
+    const bloc = ajuster(ctx, pub.texte, boite, { poids: 700, famille: TITRE, min: 40, max: story ? 112 : ph ? 96 : 120, interligne: 1.08, motsParLigne: 1.8, eviterMotsSeuls: true });
     const ty = story ? boite.y : boite.y + (boite.h - bloc.hauteur) / 2;
     ctx.save();
     ctx.shadowColor = 'rgba(30,6,34,.35)'; ctx.shadowBlur = 16; ctx.shadowOffsetY = 3;
