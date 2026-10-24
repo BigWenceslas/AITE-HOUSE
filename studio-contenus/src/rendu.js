@@ -406,22 +406,39 @@
     return min === Infinity ? Infinity : pl.x + min * pl.e;
   }
 
-  function bordDroit(ph, pl, y1, y2) {
-    let max = -Infinity;
-    const a = Math.max(0, Math.floor((y1 - pl.y) / pl.e)), b = Math.min(ph.h - 1, Math.ceil((y2 - pl.y) / pl.e));
-    for (let y = a; y <= b; y++) if (ph.droite[y] >= 0) max = Math.max(max, ph.droite[y]);
-    return max === -Infinity ? -Infinity : pl.x + max * pl.e;
+  // Cadre la personne entière dans la bande [x1, x2] : jamais coupée sur les
+  // côtés, seulement en bas (bord du visuel ou du cadre, à la hauteur bas).
+  // La tête mesure au plus teteH ; si la silhouette est trop large, la personne
+  // est réduite, et descend pour que le bas de la photo tombe sur le bas de la zone
+  // (sans remonter au-dessus de hautMin).
+  function cadrer(ph, z) {
+    const tete = Math.max(1, ph.menton - ph.teteHaut);
+    const emax = z.teteH / tete;
+    const mesurer = e => {
+      const haut = Math.max(z.hautMin, z.bas - e * (ph.h - ph.teteHaut));
+      const y = haut - ph.teteHaut * e;
+      const derniere = Math.min(ph.h - 1, Math.floor((z.bas - y) / e));
+      let g = Infinity, d = -Infinity;
+      for (let r = 0; r <= derniere; r++) if (ph.gauche[r] >= 0) { g = Math.min(g, ph.gauche[r]); d = Math.max(d, ph.droite[r]); }
+      return { haut, y, g, d };
+    };
+    let e = emax;
+    for (let i = 0; i < 6; i++) {
+      const m = mesurer(e);
+      const e2 = Math.min(emax, (z.x2 - z.x1) / Math.max(1, m.d - m.g));
+      if (Math.abs(e2 - e) < 1e-4) break;
+      e = e2;
+    }
+    const m = mesurer(e);
+    return { e, y: m.y, x: (z.x1 + z.x2) / 2 - (m.g + m.d) / 2 * e, haut: m.haut, tete: tete * e };
   }
 
-  // Décale la personne vers la gauche si ses mains touchent le bord droit du
-  // cadre (le bras gauche, lui, peut sortir du cadre), sans trop excentrer le visage.
-  function degagerMains(ph, pl, cadre, visageX) {
-    if (!ph.detouree) return pl;
-    const limite = cadre.x + cadre.l - 12;
-    const dr = bordDroit(ph, pl, cadre.y, cadre.y + cadre.h);
-    const dx = Math.min(dr - limite, visageX - (cadre.x + cadre.l * 0.36));
-    if (dx > 0) pl.x -= dx;
-    return pl;
+  function silhouette(ctx, ph, pl, bas, ombre) {
+    ctx.save();
+    ctx.beginPath(); ctx.rect(-50, -50, 99999, bas + 50); ctx.clip();
+    if (ombre) { ctx.shadowColor = ombre; ctx.shadowBlur = 36; ctx.shadowOffsetY = 10; }
+    ctx.drawImage(ph.img, pl.x, pl.y, ph.l * pl.e, ph.h * pl.e);
+    ctx.restore();
   }
 
   // Dessine la personne dans un cadre arrondi ; la tête peut dépasser au-dessus du cadre.
@@ -491,7 +508,7 @@
     if (!story) {
       panneau = ph ? { x: 40, y: 170 + 40 * (k - 1), l: 600, h: H - 170 - 40 * (k - 1) - 210 } : { x: 40, y: 170, l: W - 80, h: H - 170 - 190 };
       carte = { x: 600, y: 250 + 60 * (k - 1), l: 440, h: H - 250 - 60 * (k - 1) - 180, r: 40 };
-      regle = { visageX: 832, teteHaut: carte.y - 62, teteH: 205 + 45 * (k - 1) };
+      regle = { teteH: 205 + 45 * (k - 1) };
       sigPos = { x: carte.x + 8, y: carte.y + carte.h + 34, largeur: W - carte.x - 48 };
       sitePos = { x: 64, y: H - 50 };
       logoPos = { x: W - 48, y: 26, h: 80 };
@@ -499,12 +516,14 @@
       cadreLigne = ph ? { x: 250, y: 128, l: 740, h: bas - 128 } : { x: 250, y: 128, l: 740, h: panneau.h - 60 };
     } else {
       panneau = { x: 56, y: 280, l: W - 112, h: ph ? 790 : 1000 };
-      carte = { x: 110, y: 1185, l: W - 220, h: 430, r: 44 };
-      regle = { visageX: W / 2 + 40, teteHaut: 1100, teteH: 250 };
-      sigPos = { x: 130, y: 1645, largeur: W - 260 };
-      sitePos = { x: W / 2, y: 1785, centre: true };
+      // la carte descend jusqu'au bas du visuel : la personne y tient debout,
+      // la signature à sa gauche
+      carte = { x: 70, y: 1170, l: W - 140, h: H - 1170 + 60, r: 44 };
+      regle = { teteH: 250 };
+      sigPos = { x: 110, y: 1330, largeur: 400 };
+      sitePos = ph ? { x: 110, y: 1475 } : { x: W / 2, y: 1785, centre: true };
       logoPos = { x: W - 64, y: 118, h: 92 };
-      cadreLigne = { x: 150, y: 235, l: W - 300, h: ph ? 1250 : 800 };
+      cadreLigne = { x: 150, y: 235, l: W - 300, h: ph ? 1065 : 800 };
     }
 
     ctx.save();
@@ -520,8 +539,14 @@
       g.addColorStop(0, '#F3EAF4'); g.addColorStop(1, '#DCC8E0');
       remplirRect(ctx, carte.x, carte.y, carte.l, carte.h, carte.r, g);
       ctx.restore();
-      const pl = degagerMains(ph, placer(ph, regle, carte.y + carte.h), carte, regle.visageX);
-      personne(ctx, ph, carte, pl, { marge: 0 });
+      if (ph.detouree) {
+        const z = story
+          ? { x1: 530, x2: W - 80, bas: H, hautMin: panneau.y + panneau.h + 24, teteH: regle.teteH }
+          : { x1: panneau.x + panneau.l + 14, x2: carte.x + carte.l - 14, bas: carte.y + carte.h, hautMin: 150, teteH: regle.teteH };
+        silhouette(ctx, ph, cadrer(ph, z), z.bas);
+      } else {
+        personne(ctx, ph, carte, null, {});
+      }
     }
 
     // panneau violet
@@ -671,9 +696,17 @@
 
     // Bloc violet et personne. En story, le bloc occupe toute la largeur du
     // bas et porte aussi la signature ; sinon il tient la colonne de droite.
-    let bloc = null;
+    let bloc = null, pl = null, zp = null;
     if (ph || story) {
-      bloc = story ? { x: 50, y: 1290, l: W - 100, h: 470, r: 44 } : { x: 710, y: 430 + 120 * (k - 1), l: W - 710 - 40, h: H - 430 - 120 * (k - 1) - 40, r: 40 };
+      if (ph && ph.detouree) {
+        zp = story ? { x1: 600, x2: W - 30, bas: H, hautMin: 1150, teteH: 215 } : { x1: 672, x2: W - 14, bas: H, hautMin: 170, teteH: 172 + 40 * (k - 1) };
+        pl = cadrer(ph, zp);
+      }
+      // le bloc commence sous le menton (la tête dépasse) et descend jusqu'au bas du visuel
+      const haut = pl && !story ? Math.max(300, Math.min(560, pl.haut + pl.tete * 0.62)) : 430 + 120 * (k - 1);
+      bloc = story ? { x: 50, y: 1290, l: W - 100, h: H - 1290 + 60, r: 44 }
+        : pl ? { x: 700, y: haut, l: W - 700 - 40, h: H - haut + 60, r: 40 }
+        : { x: 710, y: haut, l: W - 710 - 40, h: H - haut - 40, r: 40 };
       ctx.save();
       ctx.shadowColor = 'rgba(67,18,74,.28)'; ctx.shadowBlur = 34; ctx.shadowOffsetY = 12;
       const gb = ctx.createLinearGradient(bloc.x, bloc.y, bloc.x + bloc.l * 0.4, bloc.y + bloc.h);
@@ -683,19 +716,13 @@
       ctx.save();
       ctx.beginPath(); rect(ctx, bloc.x, bloc.y, bloc.l, bloc.h, bloc.r); ctx.clip();
       const zone = story ? { x: bloc.x + bloc.l - 420, l: 420 } : { x: bloc.x, l: bloc.l };
-      const cxr = zone.x + zone.l * 0.55, cyr = bloc.y + (story ? bloc.h * 0.22 : bloc.h * 0.12);
+      const cxr = zone.x + zone.l * 0.55, cyr = bloc.y + (story ? 150 : 80);
       croissant(ctx, cxr, cyr, zone.l * 0.62, zone.l * 0.07, -0.7, 'rgba(46,140,178,.85)');
       croissant(ctx, cxr, cyr, zone.l * 0.50, zone.l * 0.055, -0.7, 'rgba(240,146,31,.95)');
       trame(ctx, bloc, [bloc.x, bloc.y + bloc.h], bloc.l * 0.6, { couleur: 'rgba(255,255,255,.09)', pas: 22, rMax: 3 });
       ctx.restore();
-      if (ph) {
-        const regle = story ? { visageX: zone.x + zone.l * 0.52, teteHaut: bloc.y - 125, teteH: 215 } : { visageX: bloc.x + bloc.l * 0.52, teteHaut: bloc.y - 105, teteH: 172 };
-        const cadre = story ? { x: zone.x - 40, y: bloc.y, l: zone.l + 40 + (bloc.x + bloc.l - zone.x - zone.l), h: bloc.h, r: bloc.r } : bloc;
-        ctx.save();
-        ctx.beginPath(); rect(ctx, bloc.x, 0, bloc.l, bloc.y + bloc.h, story ? 0 : bloc.r); ctx.clip();
-        personne(ctx, ph, cadre, degagerMains(ph, placer(ph, regle, bloc.y + bloc.h), cadre, regle.visageX), { marge: 0 });
-        ctx.restore();
-      }
+      if (pl) silhouette(ctx, ph, pl, H, 'rgba(40,10,45,.30)');
+      else if (ph) personne(ctx, ph, bloc, null, {});
     }
 
     // en-tête : étiquette, numéro, logo
@@ -755,7 +782,7 @@
     // pied : signature et site
     const site = pub.site || SITE;
     if (story) {
-      const sx = bloc.x + 44, sy = bloc.y + bloc.h - 190;
+      const sx = bloc.x + 44, sy = 1560;
       signature(ctx, sig, sx, sy, { hauteur: 84, retrait: 18, largeur: ph ? 470 : bloc.l - 88, tailleNom: 31, tailleFonction: 23, couleurNom: C.blanc, couleurFonction: C.mauveTexte });
       ctx.font = police(500, 24, TEXTE); ctx.fillStyle = C.mauveTexte; ctx.textBaseline = 'middle';
       globe(ctx, sx + 12, sy + 132, 12, C.mauveTexte);
