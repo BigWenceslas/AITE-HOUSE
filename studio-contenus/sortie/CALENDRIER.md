@@ -617,84 +617,72 @@ Quelle contrainte locale a le plus renforcé votre entreprise ?
 
 ## Week-end
 
-### Samedi 10h — Affiche · Les fichiers Excel au repos
+### Samedi 13h — Affiche · bon week-end
 
-![WE-samedi-1](WE-samedi-1-affiche.jpg)
+![WE-1](WE-1-affiche.jpg)
 
-**Visuel :** Samedi : pas de tableau croisé dynamique, juste les jambes croisées.
+**Visuel :** Que ces deux jours soient l'occasion de te reposer, de te recentrer et de revenir encore plus fort. Chaque nouveau jour est une nouvelle opportunité de réussir.
 
 **Légende à publier :**
 
 ```text
-Toute la semaine, on croise des données, des colonnes et des onglets. On fusionne des cellules, on cherche la bonne version du fichier, on recalcule le total une dernière fois.
+Bon week-end ! Que ces deux jours soient l'occasion de te reposer, de te recentrer et de revenir encore plus fort. Chaque nouveau jour est une nouvelle opportunité de réussir.
 
-Ce samedi, le seul croisement autorisé se fait dans un bon fauteuil, avec un jus de fruits à portée de main. 😄 Le fichier sera toujours là lundi, et il n’aura pas bougé d’une cellule.
-
-Et vous, quel est le premier fichier que vous oubliez avec plaisir le week-end ?
-
-#Samedi #Detente #Excel #Gestion #AITEConsulting
+#BonWeekEnd #Motivation #Repos #AITEConsulting
 ```
 
-### Samedi 17h — Conseil · Les réflexes de caisse et de stock qui suivent le gérant à la maison
+### Dimanche 10h — Affiche · énergie du week-end
 
-![WE-samedi-2](WE-samedi-2-conseil.jpg)
+![WE-2](WE-2-affiche.jpg)
 
-**Visuel :** 4 signes que votre tête est restée au bureau
-
-1. Au marché, vous faites de tête le rapprochement de caisse.
-2. Avant même le petit-déjeuner, le frigo a eu droit à son inventaire.
-3. Pour annoncer la fin du repas, vous dites « on clôture ».
-4. Quand quelqu’un se sert à boire, vous pensez au bon de sortie.
+**Visuel :** C'est le moment de recharger ton énergie pour les accomplir. Profite de chaque instant.
 
 **Légende à publier :**
 
 ```text
-La semaine se termine, mais certains réflexes restent. On compte, on vérifie, on rapproche, on clôture… même à la maison, même au marché, même autour d’un bon plat.
+Le week-end n'est pas une pause dans tes rêves, c'est le moment de recharger ton énergie pour les accomplir. Profite de chaque instant.
 
-C’est la marque de ceux qui prennent leur gestion à cœur. Ce week-end, laissez la calculatrice au repos et profitez du moment. 😊
-
-Avouez : combien de ces signes avez-vous cochés ?
-
-#Samedi #Gestion #PME #Sourire #AITEConsulting
+#BonWeekEnd #Motivation #Energie #AITEConsulting
 ```
 
-### Dimanche 10h — Conseil · Les réglages qui font taire les outils de travail le dimanche
+### Samedi 18h — Affiche · motivation
 
-![WE-dimanche-1](WE-dimanche-1-conseil.jpg)
+![WE-3](WE-3-affiche.jpg)
 
-**Visuel :** 4 réglages pour un dimanche vraiment tranquille
-
-1. Mettez en sourdine les groupes WhatsApp de travail pour la journée.
-2. Coupez sur votre téléphone les notifications des e-mails professionnels.
-3. Programmez une réponse automatique : « De retour lundi matin. »
-4. Activez le mode « Ne pas déranger » en laissant passer les appels de vos proches.
+**Visuel :** Le succès récompense ceux qui persévèrent. Excellent week-end !
 
 **Légende à publier :**
 
 ```text
-Le dimanche, le téléphone a une fâcheuse tendance à rester au travail. Une notification du groupe de l’équipe, un e-mail « juste pour info », et la pause s’envole.
+N'abandonne jamais une vision simplement parce qu'elle prend du temps. Le succès récompense ceux qui persévèrent. Excellent week-end !
 
-Bonne nouvelle : la plupart de nos outils savent se taire, il suffit de le leur demander. Chez AITE, on aime les outils qui travaillent bien… et qui savent aussi se faire oublier le dimanche.
-
-Quel réglage utilisez-vous déjà pour protéger votre dimanche ? Partagez-le en commentaire, il servira à d’autres.
-
-#Dimanche #Deconnexion #Weekend #BienEtreAuTravail #ConseilPratique #AITEConsulting
+#Motivation #Perseverance #Vision #AITEConsulting
 ```
 
-### Dimanche 18h — Citation · Le repos de l’équipe, que le dirigeant protège
+### Samedi 9h — Affiche · fin de semaine
 
-![WE-dimanche-2](WE-dimanche-2-citation.jpg)
+![WE-4](WE-4-affiche.jpg)
 
-**Visuel :** Cette semaine, l’équipe a tout donné. Aujourd’hui, mon seul travail de dirigeant : ne pas la déranger.
+**Visuel :** Mais chaque effort accompli aujourd'hui prépare les résultats de demain. Repose-toi, recharge tes batteries et reviens prêt à conquérir de nouveaux défis.
 
 **Légende à publier :**
 
 ```text
-Le dimanche, il m’arrive d’avoir une idée pour l’équipe. Une amélioration, une relance, un dossier à reprendre. La tentation est forte de l’envoyer tout de suite dans le groupe WhatsApp.
+Une semaine de travail s'achève, mais chaque effort accompli aujourd'hui prépare les résultats de demain. Repose-toi, recharge tes batteries et reviens prêt à conquérir de nouveaux défis.
 
-Je la note et j’attends lundi. Un message du patron le dimanche, même anodin, fait vibrer un téléphone dans un salon où quelqu’un se reposait enfin. L’idée sera tout aussi bonne demain, et l’équipe l’accueillera l’esprit frais.
+#BonWeekEnd #Motivation #Travail #AITEConsulting
+```
 
-Et vous, comment gardez-vous vos idées du dimanche pour lundi ?
+### Dimanche 17h — Affiche · leadership
 
-#Dimanche #Repos #Management #EquilibreViePro #PME #AITEConsulting
+![WE-5](WE-5-affiche.jpg)
+
+**Visuel :** Fais de ce week-end un investissement dans ton énergie et ta créativité.
+
+**Légende à publier :**
+
+```text
+Les grands leaders savent quand travailler et quand se ressourcer. Fais de ce week-end un investissement dans ton énergie et ta créativité.
+
+#Leadership #BonWeekEnd #Ressourcement #AITEConsulting
 ```

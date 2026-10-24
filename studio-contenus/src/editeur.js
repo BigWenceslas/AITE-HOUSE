@@ -8,7 +8,7 @@
   const BIBLIO = window.AITE_PUBLICATIONS || { publications: [] };
   const SIG = Object.assign({}, window.AITE.SIGNATURE, BIBLIO.signature || {});
   const CLE_BROUILLON = 'studio-aite-brouillon';
-  const LIMITES = { citation: 190, affiche: 75, titre: 58, legende: 750 };
+  const LIMITES = { citation: 190, affiche: 75, titre: 58, accroche: 70, paragraphe: 200, legende: 750 };
 
   const $ = id => document.getElementById(id);
 
@@ -225,6 +225,9 @@
     $('hashtags').value = (p.hashtags || []).join(' ');
     $('zone-texte').style.display = p.modele === 'conseil' ? 'none' : '';
     $('zone-conseil').style.display = p.modele === 'conseil' ? '' : 'none';
+    $('zone-titre').style.display = p.modele === 'citation' ? 'none' : '';
+    $('libelle-titre').textContent = p.modele === 'affiche' ? 'Accroche (facultative)' : 'Titre';
+    $('aide-titre').style.display = p.modele === 'affiche' ? '' : 'none';
     if (p.photo && !window.AITE.photos[p.photo]) p.photo = premierePhoto();
     majSegments(); majPhotos(); compteurs();
   }
@@ -237,8 +240,9 @@
       el.textContent = val + ' / ' + max;
       el.classList.toggle('trop', val > max);
     };
-    c('c-texte', n(p.texte), p.modele === 'affiche' ? LIMITES.affiche : LIMITES.citation);
-    c('c-titre', n(p.titre), LIMITES.titre);
+    const paragraphe = p.modele === 'affiche' && (p.titre || '').trim();
+    c('c-texte', n(p.texte), paragraphe ? LIMITES.paragraphe : p.modele === 'affiche' ? LIMITES.affiche : LIMITES.citation);
+    c('c-titre', n(p.titre), p.modele === 'affiche' ? LIMITES.accroche : LIMITES.titre);
     c('c-legende', (p.legende || '').length, LIMITES.legende);
   }
 

@@ -139,7 +139,7 @@
         if (b === ' ') { pousser(); continue; }
         if (b === '\n') { pousser(); out.push({ saut: true }); continue; }
         if (!b) continue;
-        (relief ? [b] : b.split(/(?<=[\p{L}’]{4}-)(?=\p{L}{2})/u)).forEach((seg, k) => {
+        (relief ? [b] : b.split(/(?<=[\p{L}’]{4}-)(?=\p{L}{4})/u)).forEach((seg, k) => {
           if (k) { pousser(); cur.colle = true; }
           cur.morceaux.push({ t: seg, relief });
         });
@@ -675,14 +675,28 @@
     const lw = lh * R.logo.naturalWidth / R.logo.naturalHeight;
     logo(ctx, W - mx - lw - lh * 0.29, ey + pst.h / 2 - lh / 2, lh, true);
 
-    // texte
-    const bloc = ajuster(ctx, pub.texte, boite, { poids: 700, famille: TITRE, min: 40, max: story ? 112 : ph ? 96 : 120, interligne: 1.08, motsParLigne: 1.8, eviterMotsSeuls: true });
-    const ty = story ? boite.y : boite.y + (boite.h - bloc.hauteur) / 2;
+    // texte : une phrase seule en grand, ou une accroche (titre) en grand suivie
+    // du texte en paragraphe, pour les messages plus longs
+    const accroche = (pub.titre || '').trim();
+    let ty, hauteur;
     ctx.save();
     ctx.shadowColor = 'rgba(30,6,34,.35)'; ctx.shadowBlur = 16; ctx.shadowOffsetY = 3;
-    ecrire(ctx, bloc, boite.x, ty, { couleur: C.blanc, couleurRelief: C.orangeTexte, largeur: boite.l });
+    if (accroche) {
+      const bt = ajuster(ctx, accroche, { l: boite.l, h: boite.h * 0.58 }, { poids: 700, famille: TITRE, min: 36, max: story ? 96 : ph ? 76 : 96, interligne: 1.08, eviterMotsSeuls: true });
+      const ecart = story ? 34 : 26;
+      const bp = ajuster(ctx, pub.texte || '', { l: boite.l, h: boite.h - bt.hauteur - ecart }, { poids: 500, famille: TEXTE, min: 20, max: story ? 40 : 34, interligne: 1.4 });
+      hauteur = bt.hauteur + ecart + bp.hauteur;
+      ty = story ? boite.y : boite.y + (boite.h - hauteur) / 2;
+      ecrire(ctx, bt, boite.x, ty, { couleur: C.blanc, couleurRelief: C.orangeTexte, largeur: boite.l });
+      ecrire(ctx, bp, boite.x, ty + bt.hauteur + ecart, { couleur: '#F3E6F4', couleurRelief: C.orangeTexte, largeur: boite.l });
+    } else {
+      const bloc = ajuster(ctx, pub.texte, boite, { poids: 700, famille: TITRE, min: 40, max: story ? 112 : ph ? 96 : 120, interligne: 1.08, motsParLigne: 1.8, eviterMotsSeuls: true });
+      hauteur = bloc.hauteur;
+      ty = story ? boite.y : boite.y + (boite.h - hauteur) / 2;
+      ecrire(ctx, bloc, boite.x, ty, { couleur: C.blanc, couleurRelief: C.orangeTexte, largeur: boite.l });
+    }
     ctx.restore();
-    const barreY = ty + bloc.hauteur + (story ? 34 : 26);
+    const barreY = ty + hauteur + (story ? 34 : 26);
     ctx.fillStyle = C.orange;
     ctx.fillRect(boite.x, barreY, story ? 110 : 90, story ? 10 : 8);
 

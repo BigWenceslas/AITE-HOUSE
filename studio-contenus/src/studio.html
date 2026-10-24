@@ -135,13 +135,16 @@
       <h2>Texte</h2>
       <label for="etiquette">Étiquette <span class="aide" style="display:inline">(facultative)</span></label>
       <input type="text" id="etiquette" placeholder="Ex. Motivation du lundi" />
+      <div id="zone-titre">
+        <label for="titre"><span id="libelle-titre">Titre</span> <span class="compteur" id="c-titre"></span></label>
+        <input type="text" id="titre" />
+        <p class="aide" id="aide-titre">Affiche : l'accroche s'écrit en grand, le texte en dessous devient un paragraphe. Laisser vide pour une phrase seule.</p>
+      </div>
       <div id="zone-texte">
         <label for="texte">Texte affiché <span class="compteur" id="c-texte"></span></label>
         <textarea id="texte" rows="5"></textarea>
       </div>
       <div id="zone-conseil">
-        <label for="titre">Titre <span class="compteur" id="c-titre"></span></label>
-        <input type="text" id="titre" />
         <label for="points">Points (un par ligne, 3 ou 4)</label>
         <textarea id="points" rows="6"></textarea>
         <label for="puces">Puces</label>
