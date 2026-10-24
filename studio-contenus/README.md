@@ -93,7 +93,8 @@ numérotées (ex. `"serie": "Week-end"`), `moment` indique l'heure conseillée
 `modele` vaut `citation`, `affiche` ou `conseil` ; `photo` est le nom d'un
 fichier de `assets/photos/` sans extension (`boubou`, `blazer`, `tunique`), ou
 `null`. Pour un conseil, remplir `titre`, `points` et `numero`, et laisser
-`texte` vide. Le bouton « Copier la fiche (JSON) » du studio produit ce bloc.
+`texte` vide ; `"puces": "lettres"` affiche A, B, C, D au lieu de 01, 02, 03
+(sondage, quiz). Le bouton « Copier la fiche (JSON) » du studio produit ce bloc.
 
 ## Ajouter une photo
 

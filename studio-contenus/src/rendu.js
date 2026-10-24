@@ -780,7 +780,8 @@
     blocs.forEach((b, i) => {
       remplirRect(ctx, mx, y, badge, badge, badge * 0.28, couleurs[i % 3]);
       ctx.font = police(700, badge * 0.42, TITRE); ctx.fillStyle = C.blanc; ctx.textBaseline = 'middle';
-      const num = String(i + 1).padStart(2, '0');
+      // puces « lettres » pour un sondage ou un quiz : A, B, C, D
+      const num = pub.puces === 'lettres' ? 'ABCDE'[i] : String(i + 1).padStart(2, '0');
       ctx.fillText(num, mx + (badge - ctx.measureText(num).width) / 2, y + badge / 2 + 1);
       ctx.textBaseline = 'alphabetic';
       const ty = y + (b.lignes.length === 1 ? (badge - b.hauteur) / 2 : -b.taille * 0.12);

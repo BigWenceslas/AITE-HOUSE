@@ -134,6 +134,7 @@
     lier('titre', v => { etat.pub.titre = v; });
     lier('points', v => { etat.pub.points = v.split('\n').map(s => s.trim()).filter(Boolean); });
     lier('numero', v => { etat.pub.numero = v ? Number(v) : null; });
+    lier('puces', v => { etat.pub.puces = v; });
     lier('nom', v => { etat.pub.signature.nom = v; });
     lier('fonction', v => { etat.pub.signature.fonction = v; });
     lier('site', v => { etat.pub.site = v; });
@@ -216,6 +217,7 @@
     $('titre').value = p.titre || '';
     $('points').value = (p.points || []).join('\n');
     $('numero').value = p.numero || '';
+    $('puces').value = p.puces || 'chiffres';
     $('nom').value = p.signature.nom || '';
     $('fonction').value = p.signature.fonction || '';
     $('site').value = p.site || '';

@@ -144,6 +144,11 @@
         <input type="text" id="titre" />
         <label for="points">Points (un par ligne, 3 ou 4)</label>
         <textarea id="points" rows="6"></textarea>
+        <label for="puces">Puces</label>
+        <select id="puces">
+          <option value="chiffres">01, 02, 03 : liste, conseils</option>
+          <option value="lettres">A, B, C : sondage, quiz</option>
+        </select>
         <label for="numero">Numéro du conseil</label>
         <input type="number" id="numero" min="1" max="999" />
       </div>
@@ -984,7 +989,8 @@
     blocs.forEach((b, i) => {
       remplirRect(ctx, mx, y, badge, badge, badge * 0.28, couleurs[i % 3]);
       ctx.font = police(700, badge * 0.42, TITRE); ctx.fillStyle = C.blanc; ctx.textBaseline = 'middle';
-      const num = String(i + 1).padStart(2, '0');
+      // puces « lettres » pour un sondage ou un quiz : A, B, C, D
+      const num = pub.puces === 'lettres' ? 'ABCDE'[i] : String(i + 1).padStart(2, '0');
       ctx.fillText(num, mx + (badge - ctx.measureText(num).width) / 2, y + badge / 2 + 1);
       ctx.textBaseline = 'alphabetic';
       const ty = y + (b.lignes.length === 1 ? (badge - b.hauteur) / 2 : -b.taille * 0.12);
@@ -1169,6 +1175,7 @@
     lier('titre', v => { etat.pub.titre = v; });
     lier('points', v => { etat.pub.points = v.split('\n').map(s => s.trim()).filter(Boolean); });
     lier('numero', v => { etat.pub.numero = v ? Number(v) : null; });
+    lier('puces', v => { etat.pub.puces = v; });
     lier('nom', v => { etat.pub.signature.nom = v; });
     lier('fonction', v => { etat.pub.signature.fonction = v; });
     lier('site', v => { etat.pub.site = v; });
@@ -1251,6 +1258,7 @@
     $('titre').value = p.titre || '';
     $('points').value = (p.points || []).join('\n');
     $('numero').value = p.numero || '';
+    $('puces').value = p.puces || 'chiffres';
     $('nom').value = p.signature.nom || '';
     $('fonction').value = p.signature.fonction || '';
     $('site').value = p.site || '';
