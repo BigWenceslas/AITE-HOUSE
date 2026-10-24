@@ -1,0 +1,747 @@
+/*
+ * Moteur de rendu des visuels AITE Consulting.
+ * Dessine une publication (citation, affiche, conseil) sur un <canvas>, aux
+ * couleurs et polices de la charte AITE. Utilisé par l'éditeur (studio.html)
+ * et par la génération en lot (generer.js).
+ */
+(function (global) {
+  'use strict';
+
+  const C = {
+    violet: '#8E2A8E',
+    violetFonce: '#6A1E6C',
+    violetNuit: '#43124A',
+    orange: '#F0921F',
+    orangeTexte: '#F8A63E', // orange de la charte, à peine éclairci pour la lisibilité sur violet
+    bleu: '#2E8CB2',
+    encre: '#1C1620',
+    gris: '#6E6675',
+    grisClair: '#9A93A0',
+    creme: '#FAF8FB',
+    mauve: '#F6ECF6',
+    mauveTexte: '#E9D3EA',
+    blanc: '#FFFFFF',
+    bordure: '#E7E3EC',
+  };
+  const TITRE = "'Space Grotesk', 'Segoe UI', sans-serif";
+  const TEXTE = "'IBM Plex Sans', 'Segoe UI', sans-serif";
+
+  const FORMATS = {
+    carre: { l: 1080, h: 1080, nom: 'Carré 1:1' },
+    portrait: { l: 1080, h: 1350, nom: 'Portrait 4:5' },
+    story: { l: 1080, h: 1920, nom: 'Story 9:16' },
+  };
+
+  const MODELES = {
+    citation: { nom: 'Citation', etiquette: '' },
+    affiche: { nom: 'Affiche motivation', etiquette: 'Motivation du lundi' },
+    conseil: { nom: 'Conseil pratique', etiquette: 'Conseil pratique' },
+  };
+
+  const SIGNATURE = { nom: 'Cyrille Donald ABOLO', fonction: 'Directeur Général, AITE Consulting' };
+  const SITE = 'www.aite-consulting.com';
+
+  const R = { logo: null, photos: {} };
+
+  // ───────────────────────── chargement ─────────────────────────
+
+  function image(src) {
+    return new Promise((ok, ko) => {
+      const i = new Image();
+      i.onload = () => ok(i);
+      i.onerror = () => ko(new Error('Image illisible'));
+      i.src = src;
+    });
+  }
+
+  async function charger(res) {
+    const polices = (res.polices || []).map(p => {
+      const ff = new FontFace(p.famille, 'url(' + p.src + ')', {
+        weight: String(p.poids), style: p.style || 'normal', unicodeRange: p.plage || 'U+0-10FFFF',
+      });
+      document.fonts.add(ff);
+      return ff.load();
+    });
+    R.logo = await image(res.logo);
+    for (const [cle, ph] of Object.entries(res.photos || {})) {
+      R.photos[cle] = await preparerPhoto(await image(ph.src), ph.reperes, ph.nom);
+    }
+    await Promise.all(polices);
+  }
+
+  // Repères d'une photo détourée : haut du crâne, base de la tête (cou),
+  // axe du visage, et bords gauche/droit de la silhouette ligne par ligne.
+  async function preparerPhoto(img, reperes, nom) {
+    const l = img.naturalWidth, h = img.naturalHeight;
+    const cv = document.createElement('canvas');
+    cv.width = l; cv.height = h;
+    const cx = cv.getContext('2d');
+    cx.drawImage(img, 0, 0);
+    const px = cx.getImageData(0, 0, l, h).data;
+    const gauche = new Int32Array(h).fill(-1), droite = new Int32Array(h).fill(-1);
+    for (let y = 0; y < h; y++) {
+      const o = y * l * 4;
+      for (let x = 0; x < l; x++) if (px[o + x * 4 + 3] > 128) { gauche[y] = x; break; }
+      for (let x = l - 1; x >= 0; x--) if (px[o + x * 4 + 3] > 128) { droite[y] = x; break; }
+    }
+    const coins = [0, l - 1, (h - 1) * l, h * l - 1].map(i => px[i * 4 + 3]);
+    const detouree = coins.filter(a => a < 50).length >= 2;
+    let rep = reperes;
+    if (!rep && detouree) rep = reperesAuto(gauche, droite, l, h);
+    return { img, l, h, gauche, droite, detouree, nom: nom || 'Photo', ...(rep || {}) };
+  }
+
+  function reperesAuto(gauche, droite, l, h) {
+    const larg = y => (gauche[y] < 0 ? 0 : droite[y] - gauche[y]);
+    let haut = 0;
+    while (haut < h && larg(haut) === 0) haut++;
+    const bande = Math.floor(h * 0.25);
+    let maxI = haut, maxL = 0;
+    for (let y = haut; y < Math.min(h, haut + Math.floor(bande * 0.6)); y++) if (larg(y) > maxL) { maxL = larg(y); maxI = y; }
+    let cou = maxI, minL = Infinity;
+    for (let y = maxI; y < Math.min(h, maxI + Math.floor((maxI - haut) * 1.6) + 20); y++) if (larg(y) < minL) { minL = larg(y); cou = y; }
+    let s = 0, n = 0;
+    for (let y = haut + 5; y <= maxI; y++) if (gauche[y] >= 0) { s += (gauche[y] + droite[y]) / 2; n++; }
+    return { teteHaut: haut, menton: cou, visageX: n ? Math.round(s / n) : l / 2 };
+  }
+
+  // ───────────────────────── typographie ─────────────────────────
+
+  // Espaces fines insécables à la française, apostrophe typographique, points de suspension.
+  function typo(s) {
+    s = String(s || '').replace(/\.\.\./g, '…').replace(/([\p{L}\d])'(?=[\p{L}\d*])/gu, '$1’');
+    s = s.replace(/(\d)[ \u00A0](?=\d{3}(?!\d))/g, '$1\u202F').replace(/(\d)[ \u00A0]?%/g, '$1\u202F%');
+    s = s.replace(/[ \u00A0\u202F]*([;:!?»])/g, (m, p, i, t) => {
+      const av = t[i - 1], ap = t[i + m.length];
+      if (i === 0 || /[;:!?]/.test(av)) return p;
+      if (p === ':' && /\d/.test(av || '') && /\d/.test(ap || '')) return p; // heure 10:30
+      if (p === ':' && ap === '/') return p; // adresse web
+      return '\u202F' + p;
+    });
+    return s.replace(/«[ \u00A0\u202F]*/g, '«\u202F');
+  }
+
+  // Découpe un texte « avec *mise en relief* » en mots composés de morceaux stylés.
+  function mots(texte) {
+    const out = [];
+    let cur = { morceaux: [] }, relief = false;
+    const pousser = () => { if (cur.morceaux.length) out.push(cur); cur = { morceaux: [] }; };
+    const parties = typo(texte).split('*');
+    parties.forEach((partie, i) => {
+      relief = i % 2 === 1;
+      const bouts = partie.split(/( |\n)/);
+      for (const b of bouts) {
+        if (b === ' ') { pousser(); continue; }
+        if (b === '\n') { pousser(); out.push({ saut: true }); continue; }
+        if (b) cur.morceaux.push({ t: b, relief });
+      }
+    });
+    pousser();
+    return out;
+  }
+
+  function police(poids, taille, famille) { return poids + ' ' + taille + 'px ' + famille; }
+
+  function mesurerMot(ctx, mot) {
+    let l = 0;
+    for (const m of mot.morceaux) l += ctx.measureText(m.t).width;
+    return l;
+  }
+
+  function couper(ctx, ms, largeur) {
+    const espace = ctx.measureText(' ').width;
+    const lignes = [];
+    let ligne = [], l = 0;
+    for (const m of ms) {
+      if (m.saut) { lignes.push(ligne); ligne = []; l = 0; continue; }
+      const lm = mesurerMot(ctx, m);
+      if (ligne.length && l + espace + lm > largeur) { lignes.push(ligne); ligne = [m]; l = lm; }
+      else { l += (ligne.length ? espace : 0) + lm; ligne.push(m); }
+    }
+    if (ligne.length) lignes.push(ligne);
+    return lignes;
+  }
+
+  // Taille la plus grande qui tient dans la boîte, puis lignes équilibrées.
+  function ajuster(ctx, texte, boite, o) {
+    const ms = mots(texte);
+    const nbMots = ms.filter(m => !m.saut).length;
+    const maxLignes = o.motsParLigne ? Math.max(1, Math.ceil(nbMots / o.motsParLigne)) : Infinity;
+    const essai = taille => {
+      ctx.font = police(o.poids, taille, o.famille);
+      if (ms.some(m => !m.saut && mesurerMot(ctx, m) > boite.l)) return null;
+      const lignes = couper(ctx, ms, boite.l);
+      if (lignes.length > maxLignes && taille > o.min) return null;
+      return lignes.length * taille * o.interligne <= boite.h ? lignes : null;
+    };
+    let bas = o.min, haut = o.max, ok = null, taille = o.min;
+    while (haut - bas > 0.5) {
+      const mil = (bas + haut) / 2;
+      const r = essai(mil);
+      if (r) { ok = r; taille = mil; bas = mil; } else haut = mil;
+    }
+    if (!ok) { taille = o.min; ctx.font = police(o.poids, taille, o.famille); ok = couper(ctx, ms, boite.l); }
+    taille = Math.floor(taille);
+    ctx.font = police(o.poids, taille, o.famille);
+    let lignes = couper(ctx, ms, boite.l);
+    if (o.equilibrer !== false && lignes.length > 1) {
+      let b = boite.l * 0.45, h = boite.l;
+      while (h - b > 2) {
+        const mil = (b + h) / 2;
+        if (couper(ctx, ms, mil).length <= lignes.length && !ms.some(m => !m.saut && mesurerMot(ctx, m) > mil)) h = mil; else b = mil;
+      }
+      lignes = couper(ctx, ms, h);
+    }
+    const espace = ctx.measureText(' ').width;
+    const largeurs = lignes.map(li => li.reduce((s, m, i) => s + mesurerMot(ctx, m) + (i ? espace : 0), 0));
+    return { taille, lignes, largeurs, hauteur: lignes.length * taille * o.interligne, interligne: o.interligne, o };
+  }
+
+  // Dessine un bloc ajusté. Relief : 'couleur' (texte orange) ou 'surligne' (bande orange sous le texte).
+  function ecrire(ctx, bloc, x, y, o) {
+    const { taille, lignes, largeurs, interligne } = bloc;
+    ctx.font = police(bloc.o.poids, taille, bloc.o.famille);
+    ctx.textBaseline = 'alphabetic';
+    const espace = ctx.measureText(' ').width;
+    const pas = taille * interligne;
+    const asc = taille * (interligne - 1) / 2 + taille * 0.8;
+    lignes.forEach((ligne, i) => {
+      let cx = x;
+      if (o.aligner === 'centre') cx = x + (o.largeur - largeurs[i]) / 2;
+      const by = y + i * pas + asc;
+      if (o.relief === 'surligne') {
+        let xx = cx;
+        ligne.forEach((m, j) => {
+          if (j) xx += espace;
+          for (const p of m.morceaux) {
+            const lp = ctx.measureText(p.t).width;
+            if (p.relief) {
+              const suite = j < ligne.length - 1 && ligne[j + 1].morceaux[0].relief && p === m.morceaux[m.morceaux.length - 1];
+              ctx.fillStyle = o.couleurSurligne || 'rgba(240,146,31,.38)';
+              ctx.fillRect(xx - 2, by - taille * 0.30, lp + 4 + (suite ? espace : 0), taille * 0.36);
+            }
+            xx += lp;
+          }
+        });
+      }
+      ligne.forEach((m, j) => {
+        if (j) cx += espace;
+        for (const p of m.morceaux) {
+          ctx.fillStyle = p.relief ? o.couleurRelief : o.couleur;
+          ctx.fillText(p.t, cx, by);
+          cx += ctx.measureText(p.t).width;
+        }
+      });
+    });
+  }
+
+  function espace(ctx, texte, x, y, espacement, aligner) {
+    const lettres = [...texte];
+    const larg = lettres.reduce((s, c) => s + ctx.measureText(c).width, 0) + espacement * (lettres.length - 1);
+    let cx = aligner === 'droite' ? x - larg : aligner === 'centre' ? x - larg / 2 : x;
+    for (const c of lettres) { ctx.fillText(c, cx, y); cx += ctx.measureText(c).width + espacement; }
+    return larg;
+  }
+
+  function largeurEspacee(ctx, texte, espacement) {
+    const lettres = [...texte];
+    return lettres.reduce((s, c) => s + ctx.measureText(c).width, 0) + espacement * (lettres.length - 1);
+  }
+
+  // Réduit la taille d'une ligne de texte jusqu'à ce qu'elle tienne dans la largeur.
+  function tailleLigne(ctx, texte, poids, famille, taille, largeur, espacement) {
+    for (let t = taille; t > 10; t -= 0.5) {
+      ctx.font = police(poids, t, famille);
+      if (largeurEspacee(ctx, texte, (espacement || 0) * t) <= largeur) return t;
+    }
+    return 10;
+  }
+
+  // ───────────────────────── formes ─────────────────────────
+
+  function rect(ctx, x, y, l, h, r) {
+    r = Math.min(r, l / 2, h / 2);
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + l, y, x + l, y + h, r);
+    ctx.arcTo(x + l, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + l, y, r);
+    ctx.closePath();
+  }
+
+  function remplirRect(ctx, x, y, l, h, r, style) {
+    ctx.beginPath(); rect(ctx, x, y, l, h, r); ctx.fillStyle = style; ctx.fill();
+  }
+
+  // Trame de points qui s'estompe à partir d'un foyer.
+  function trame(ctx, zone, foyer, portee, o) {
+    const pas = o.pas || 24, rMax = o.rMax || 3.4;
+    ctx.fillStyle = o.couleur;
+    for (let y = zone.y + pas / 2; y < zone.y + zone.h; y += pas) {
+      for (let x = zone.x + pas / 2; x < zone.x + zone.l; x += pas) {
+        const d = Math.hypot(x - foyer[0], y - foyer[1]);
+        const r = rMax * (1 - d / portee);
+        if (r < 0.6) continue;
+        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+  }
+
+  // Croissant, motif repris des arcs du logo AITE.
+  function croissant(ctx, cx, cy, rayon, epaisseur, angle, couleur) {
+    const d = epaisseur * 1.35;
+    const r2 = rayon - epaisseur + d;
+    const t = Math.ceil(rayon * 2 + 8);
+    const off = document.createElement('canvas');
+    off.width = t; off.height = t;
+    const o = off.getContext('2d');
+    const c = t / 2;
+    o.fillStyle = couleur;
+    o.beginPath(); o.arc(c, c, rayon, 0, Math.PI * 2); o.fill();
+    // gomme opaque : avec une couleur translucide, destination-out n'effacerait qu'en partie
+    o.globalCompositeOperation = 'destination-out';
+    o.fillStyle = '#000';
+    o.beginPath(); o.arc(c + d * Math.cos(angle), c + d * Math.sin(angle), r2, 0, Math.PI * 2); o.fill();
+    ctx.drawImage(off, cx - c, cy - c);
+  }
+
+  // Guillemets dessinés (forme « 99 »), pleins, cerclés de blanc.
+  function guillemets(ctx, x, y, taille, couleur, ouvrant) {
+    const r = taille * 0.30;
+    const forme = (cx, cy) => {
+      ctx.save();
+      ctx.translate(cx, cy);
+      if (ouvrant) ctx.rotate(Math.PI);
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.moveTo(r * 0.98, r * 0.1);
+      ctx.bezierCurveTo(r * 1.05, r * 1.25, r * 0.35, r * 2.15, -r * 0.85, r * 2.45);
+      ctx.bezierCurveTo(-r * 0.2, r * 1.85, r * 0.05, r * 1.35, -r * 0.1, r * 0.98);
+      ctx.closePath();
+      ctx.restore();
+    };
+    ctx.save();
+    ctx.lineJoin = 'round';
+    ctx.shadowColor = 'rgba(28,22,32,.22)'; ctx.shadowBlur = taille * 0.18; ctx.shadowOffsetY = taille * 0.05;
+    ctx.lineWidth = taille * 0.11; ctx.strokeStyle = C.blanc;
+    for (const dx of [0, r * 2.55]) { ctx.beginPath(); forme(x + dx, y); ctx.stroke(); }
+    ctx.shadowColor = 'transparent';
+    ctx.fillStyle = couleur;
+    for (const dx of [0, r * 2.55]) { ctx.beginPath(); forme(x + dx, y); ctx.fill(); }
+    ctx.restore();
+  }
+
+  function globe(ctx, x, y, r, couleur) {
+    ctx.save();
+    ctx.strokeStyle = couleur; ctx.lineWidth = Math.max(1.5, r * 0.16);
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(x, y, r * 0.45, r, 0, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x - r, y); ctx.lineTo(x + r, y); ctx.stroke();
+    ctx.restore();
+  }
+
+  // ───────────────────────── logo, photo, signature ─────────────────────────
+
+  function logo(ctx, x, y, hauteur, pastille) {
+    if (!R.logo) return 0;
+    const l = hauteur * R.logo.naturalWidth / R.logo.naturalHeight;
+    if (pastille) {
+      const p = hauteur * 0.22;
+      ctx.save();
+      ctx.shadowColor = 'rgba(20,6,24,.25)'; ctx.shadowBlur = 18; ctx.shadowOffsetY = 4;
+      remplirRect(ctx, x - p * 1.3, y - p, l + p * 2.6, hauteur + p * 2, hauteur * 0.24, C.blanc);
+      ctx.restore();
+    }
+    ctx.drawImage(R.logo, x, y, l, hauteur);
+    return l;
+  }
+
+  function photo(cle) {
+    if (!cle) return null;
+    if (typeof cle === 'object') return cle;
+    return R.photos[cle] || null;
+  }
+
+  // Place la personne : haut du crâne en (visageX, teteHaut), tête de hauteur teteH,
+  // agrandie si besoin pour que le buste descende jusqu'au bas du cadre.
+  function placer(ph, regle, basCadre) {
+    const tete = Math.max(1, ph.menton - ph.teteHaut);
+    let e = regle.teteH / tete;
+    e = Math.max(e, (basCadre - regle.teteHaut) / (ph.h - ph.teteHaut));
+    return { e, x: regle.visageX - ph.visageX * e, y: regle.teteHaut - ph.teteHaut * e };
+  }
+
+  // Bord gauche de la silhouette (coordonnées du visuel) entre deux hauteurs.
+  function bordGauche(ph, pl, y1, y2) {
+    let min = Infinity;
+    const a = Math.max(0, Math.floor((y1 - pl.y) / pl.e)), b = Math.min(ph.h - 1, Math.ceil((y2 - pl.y) / pl.e));
+    for (let y = a; y <= b; y++) if (ph.gauche[y] >= 0) min = Math.min(min, ph.gauche[y]);
+    return min === Infinity ? Infinity : pl.x + min * pl.e;
+  }
+
+  // Dessine la personne dans un cadre arrondi ; la tête peut dépasser au-dessus du cadre.
+  function personne(ctx, ph, cadre, pl, o) {
+    o = o || {};
+    ctx.save();
+    ctx.beginPath();
+    rect(ctx, cadre.x, cadre.y, cadre.l, cadre.h, cadre.r || 0);
+    if (o.depasse !== false && ph.detouree) {
+      const marge = o.marge || 0;
+      ctx.rect(cadre.x - marge, 0, cadre.l + marge * 2, cadre.y + (cadre.r || 0));
+    }
+    ctx.clip();
+    if (o.ombre) { ctx.shadowColor = o.ombre; ctx.shadowBlur = 40; ctx.shadowOffsetY = 12; }
+    if (ph.detouree) {
+      ctx.drawImage(ph.img, pl.x, pl.y, ph.l * pl.e, ph.h * pl.e);
+    } else {
+      // photo non détourée : remplissage du cadre, visage centré
+      const e = Math.max(cadre.l / ph.l, cadre.h / ph.h);
+      ctx.drawImage(ph.img, cadre.x + (cadre.l - ph.l * e) / 2, cadre.y + (cadre.h - ph.h * e) * 0.15, ph.l * e, ph.h * e);
+    }
+    ctx.restore();
+  }
+
+  function signature(ctx, sig, x, y, o) {
+    const nom = (sig.nom || '').toUpperCase(), fonction = sig.fonction || '';
+    const barre = o.barre || 7;
+    ctx.fillStyle = C.orange;
+    ctx.fillRect(x, y, barre, o.hauteur);
+    const tx = x + barre + o.retrait;
+    const tn = tailleLigne(ctx, nom, 700, TITRE, o.tailleNom, o.largeur - barre - o.retrait, 0.04);
+    ctx.fillStyle = o.couleurNom; ctx.textBaseline = 'alphabetic';
+    espace(ctx, nom, tx, y + tn * 0.95, tn * 0.04);
+    const tf = tailleLigne(ctx, fonction, 500, TEXTE, o.tailleFonction, o.largeur - barre - o.retrait, 0);
+    ctx.fillStyle = o.couleurFonction;
+    ctx.fillText(fonction, tx, y + tn * 0.95 + tf * 1.45);
+  }
+
+  function pastille(ctx, texte, x, y, o) {
+    ctx.font = police(700, o.taille, TITRE);
+    const esp = o.taille * 0.14;
+    const l = largeurEspacee(ctx, texte, esp);
+    const h = o.taille * 2.1, p = o.taille * 0.95;
+    remplirRect(ctx, x, y, l + p * 2, h, h / 2, o.fond);
+    ctx.fillStyle = o.couleur; ctx.textBaseline = 'middle';
+    espace(ctx, texte, x + p, y + h / 2 + o.taille * 0.04, esp);
+    ctx.textBaseline = 'alphabetic';
+    return { l: l + p * 2, h };
+  }
+
+  // ───────────────────────── modèle « citation » ─────────────────────────
+
+  function citation(ctx, W, H, pub, fmt) {
+    const ph = photo(pub.photo);
+    const story = fmt === 'story';
+    const k = H / 1080;
+    const sig = pub.signature || SIGNATURE;
+
+    ctx.fillStyle = C.creme; ctx.fillRect(0, 0, W, H);
+    trame(ctx, { x: 0, y: 0, l: W, h: H }, [0, 0], 560, { couleur: 'rgba(142,42,142,.20)' });
+    trame(ctx, { x: 0, y: 0, l: W, h: H }, [W, H], 620, { couleur: 'rgba(142,42,142,.20)' });
+
+    // géométrie
+    // Le filet d'encadrement passe derrière le panneau et la carte photo :
+    // seuls dépassent son bord haut et l'amorce de ses côtés.
+    let panneau, carte, regle, sigPos, sitePos, logoPos, cadreLigne;
+    if (!story) {
+      panneau = ph ? { x: 40, y: 170 + 40 * (k - 1), l: 600, h: H - 170 - 40 * (k - 1) - 210 } : { x: 40, y: 170, l: W - 80, h: H - 170 - 190 };
+      carte = { x: 585, y: 250 + 60 * (k - 1), l: 455, h: H - 250 - 60 * (k - 1) - 180, r: 40 };
+      regle = { visageX: 812, teteHaut: carte.y - 62, teteH: 205 + 45 * (k - 1) };
+      sigPos = { x: carte.x + 8, y: carte.y + carte.h + 30, largeur: W - carte.x - 48 };
+      sitePos = { x: 64, y: H - 50 };
+      logoPos = { x: W - 48, y: 26, h: 80 };
+      const bas = Math.min(panneau.y + panneau.h, carte.y + carte.h) - 60;
+      cadreLigne = ph ? { x: 250, y: 128, l: 740, h: bas - 128 } : { x: 250, y: 128, l: 740, h: panneau.h - 60 };
+    } else {
+      panneau = { x: 56, y: 280, l: W - 112, h: ph ? 790 : 1000 };
+      carte = { x: 110, y: 1185, l: W - 220, h: 430, r: 44 };
+      regle = { visageX: W / 2 + 40, teteHaut: 1100, teteH: 250 };
+      sigPos = { x: 130, y: 1645, largeur: W - 260 };
+      sitePos = { x: W / 2, y: 1785, centre: true };
+      logoPos = { x: W - 64, y: 118, h: 92 };
+      cadreLigne = { x: 150, y: 235, l: W - 300, h: ph ? 1250 : 800 };
+    }
+
+    ctx.save();
+    ctx.strokeStyle = C.violet; ctx.lineWidth = 9;
+    ctx.beginPath(); ctx.rect(cadreLigne.x, cadreLigne.y, cadreLigne.l, cadreLigne.h); ctx.stroke();
+    ctx.restore();
+
+    // carte photo
+    if (ph) {
+      ctx.save();
+      ctx.shadowColor = 'rgba(28,22,32,.16)'; ctx.shadowBlur = 30; ctx.shadowOffsetY = 10;
+      const g = ctx.createLinearGradient(0, carte.y, 0, carte.y + carte.h);
+      g.addColorStop(0, '#F3EAF4'); g.addColorStop(1, '#DCC8E0');
+      remplirRect(ctx, carte.x, carte.y, carte.l, carte.h, carte.r, g);
+      ctx.restore();
+      ctx.save();
+      ctx.beginPath(); rect(ctx, carte.x, carte.y, carte.l, carte.h, carte.r); ctx.clip();
+      const cxr = carte.x + carte.l * 0.62, cyr = carte.y + carte.h * 0.36;
+      croissant(ctx, cxr, cyr, carte.l * 0.62, carte.l * 0.07, -0.7, 'rgba(46,140,178,.30)');
+      croissant(ctx, cxr, cyr, carte.l * 0.50, carte.l * 0.05, -0.7, 'rgba(240,146,31,.40)');
+      ctx.restore();
+      const pl = placer(ph, regle, carte.y + carte.h);
+      personne(ctx, ph, carte, pl, { marge: 0 });
+    }
+
+    // panneau violet
+    ctx.save();
+    ctx.shadowColor = 'rgba(67,18,74,.30)'; ctx.shadowBlur = 40; ctx.shadowOffsetY = 14;
+    const gp = ctx.createLinearGradient(panneau.x, panneau.y, panneau.x + panneau.l, panneau.y + panneau.h);
+    gp.addColorStop(0, '#9A309A'); gp.addColorStop(1, '#7A2179');
+    remplirRect(ctx, panneau.x, panneau.y, panneau.l, panneau.h, 52, gp);
+    ctx.restore();
+    ctx.save();
+    ctx.beginPath(); rect(ctx, panneau.x, panneau.y, panneau.l, panneau.h, 52); ctx.clip();
+    ctx.fillStyle = 'rgba(255,255,255,.07)';
+    ctx.beginPath(); ctx.arc(panneau.x + panneau.l * 0.95, panneau.y + panneau.h * 1.02, panneau.l * 0.78, 0, Math.PI * 2); ctx.fill();
+    trame(ctx, panneau, [panneau.x + panneau.l, panneau.y], panneau.l * 0.6, { couleur: 'rgba(255,255,255,.10)', pas: 22, rMax: 3 });
+    ctx.restore();
+
+    // guillemets
+    const tg = story ? 150 : 128;
+    guillemets(ctx, panneau.x + 34, panneau.y - 6, tg, C.orange, true);
+    guillemets(ctx, panneau.x + panneau.l - tg * 0.98, panneau.y + panneau.h - tg * 0.40, tg, C.orange, false);
+
+    // texte
+    const marge = story ? 76 : 58;
+    const boite = { x: panneau.x + marge, y: panneau.y + (story ? 120 : 96), l: panneau.l - marge * 2, h: panneau.h - (story ? 230 : 190) };
+    if (pub.etiquette) {
+      ctx.font = police(700, story ? 24 : 19, TITRE); ctx.fillStyle = C.mauveTexte;
+      espace(ctx, typo(pub.etiquette).toUpperCase(), boite.x, boite.y - (story ? 30 : 22), (story ? 24 : 19) * 0.16);
+    }
+    const bloc = ajuster(ctx, pub.texte, boite, { poids: 600, famille: TITRE, min: 30, max: story ? 84 : 70 * Math.min(k, 1.15), interligne: 1.2, motsParLigne: 2.4 });
+    ecrire(ctx, bloc, boite.x, boite.y + (boite.h - bloc.hauteur) / 2, { couleur: C.blanc, couleurRelief: C.orangeTexte, largeur: boite.l });
+
+    // signature
+    {
+      const sp = ph ? sigPos : { x: story ? 130 : 64, y: panneau.y + panneau.h + (story ? 80 : 34), largeur: story ? W - 260 : 600 };
+      signature(ctx, sig, sp.x, sp.y, {
+        hauteur: story ? 82 : 66, retrait: 18, largeur: sp.largeur, tailleNom: story ? 34 : 27, tailleFonction: story ? 25 : 20,
+        couleurNom: C.violet, couleurFonction: C.gris,
+      });
+    }
+    // logo
+    ctx.save();
+    const lw = logoPos.h * R.logo.naturalWidth / R.logo.naturalHeight;
+    logo(ctx, logoPos.x - lw, logoPos.y, logoPos.h, false);
+    ctx.restore();
+    // site
+    ctx.font = police(500, story ? 28 : 21, TEXTE);
+    ctx.fillStyle = C.gris; ctx.textBaseline = 'middle';
+    const site = pub.site || SITE;
+    const ls = ctx.measureText(site).width;
+    const sx = sitePos.centre ? sitePos.x - (ls + 34) / 2 : sitePos.x;
+    globe(ctx, sx + 11, sitePos.y, 11, C.violet);
+    ctx.fillText(site, sx + 32, sitePos.y + 1);
+    ctx.textBaseline = 'alphabetic';
+  }
+
+  // ───────────────────────── modèle « affiche » ─────────────────────────
+
+  function affiche(ctx, W, H, pub, fmt) {
+    const ph = photo(pub.photo);
+    const story = fmt === 'story';
+    const k = H / 1080;
+    const sig = pub.signature || SIGNATURE;
+    const mx = story ? 70 : 60;
+
+    const g = ctx.createLinearGradient(0, 0, W * 0.7, H);
+    g.addColorStop(0, '#9C319C'); g.addColorStop(0.55, '#7A2179'); g.addColorStop(1, '#4A134F');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    trame(ctx, { x: 0, y: 0, l: W, h: H }, [0, H], 640, { couleur: 'rgba(255,255,255,.08)' });
+    trame(ctx, { x: 0, y: 0, l: W, h: H }, [W * 0.35, 0], 420, { couleur: 'rgba(255,255,255,.06)' });
+
+    const boite = story ? { x: mx, y: 290, l: W - mx * 2, h: 560 }
+      : ph ? { x: mx, y: 160 * k, l: 520, h: H - 160 * k - 250 } : { x: mx, y: 170, l: W - mx * 2, h: H - 170 - 260 };
+
+    if (ph) {
+      let regle = story ? { visageX: W * 0.62, teteHaut: 1060, teteH: 330 } : { visageX: 805, teteHaut: 205 + 140 * (k - 1), teteH: 225 };
+      const pl = placer(ph, regle, H);
+      const tete = pl.e * (ph.menton - ph.teteHaut);
+      if (!story) {
+        // La colonne de texte s'arrête avant la silhouette ; si elle devient
+        // trop étroite, la personne glisse vers la droite, tête toujours entière.
+        const ecart = 30, minimum = 450;
+        let bg = bordGauche(ph, pl, boite.y, boite.y + boite.h);
+        if (bg - ecart - boite.x < minimum) {
+          const dx = Math.max(0, Math.min(W - tete * 0.55 - regle.visageX, boite.x + minimum + ecart - bg));
+          pl.x += dx; regle = Object.assign({}, regle, { visageX: regle.visageX + dx }); bg += dx;
+        }
+        boite.l = Math.max(400, Math.min(boite.l, bg - ecart - boite.x));
+      }
+      const cx = regle.visageX + 10, cy = regle.teteHaut + tete * 0.75;
+      const rr = story ? 430 : 360 * Math.min(k, 1.15);
+      const halo = ctx.createRadialGradient(cx, cy, 10, cx, cy, rr * 1.25);
+      halo.addColorStop(0, 'rgba(255,255,255,.20)'); halo.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = halo; ctx.fillRect(0, 0, W, H);
+      croissant(ctx, cx, cy, rr, rr * 0.11, -0.75, 'rgba(255,255,255,.12)');
+      croissant(ctx, cx, cy, rr * 0.86, rr * 0.075, -0.75, C.bleu);
+      croissant(ctx, cx, cy, rr * 0.72, rr * 0.06, -0.75, C.orange);
+      personne(ctx, ph, { x: 0, y: 0, l: W, h: H, r: 0 }, pl, { depasse: false, ombre: 'rgba(30,6,34,.35)' });
+      const hf = story ? 300 : 260;
+      const f = ctx.createLinearGradient(0, H - hf, 0, H);
+      f.addColorStop(0, 'rgba(67,18,74,0)'); f.addColorStop(1, 'rgba(52,12,58,.55)');
+      ctx.fillStyle = f; ctx.fillRect(0, H - hf, W, hf);
+    }
+
+    // étiquette et logo (dans sa pastille blanche, comme le veut la charte sur fond violet)
+    const etiquette = typo(pub.etiquette ? pub.etiquette : MODELES.affiche.etiquette).toUpperCase();
+    const ey = story ? 170 : 62;
+    const pst = etiquette ? pastille(ctx, etiquette, mx, ey, { taille: story ? 24 : 19, fond: C.orange, couleur: C.blanc }) : { h: 40 };
+    const lh = story ? 74 : 60;
+    const lw = lh * R.logo.naturalWidth / R.logo.naturalHeight;
+    logo(ctx, W - mx - lw - lh * 0.29, ey + pst.h / 2 - lh / 2, lh, true);
+
+    // texte
+    const bloc = ajuster(ctx, pub.texte, boite, { poids: 700, famille: TITRE, min: 40, max: story ? 112 : ph ? 96 : 120, interligne: 1.08, motsParLigne: 1.8 });
+    const ty = story ? boite.y : boite.y + (boite.h - bloc.hauteur) / 2;
+    ctx.save();
+    ctx.shadowColor = 'rgba(30,6,34,.35)'; ctx.shadowBlur = 16; ctx.shadowOffsetY = 3;
+    ecrire(ctx, bloc, boite.x, ty, { couleur: C.blanc, couleurRelief: C.orangeTexte, largeur: boite.l });
+    ctx.restore();
+    const barreY = ty + bloc.hauteur + (story ? 34 : 26);
+    ctx.fillStyle = C.orange;
+    ctx.fillRect(boite.x, barreY, story ? 110 : 90, story ? 10 : 8);
+
+    // signature : sous le texte en story, en pied sinon
+    const sy = story ? barreY + 60 : H - 130;
+    signature(ctx, sig, mx, sy, {
+      hauteur: story ? 84 : 68, retrait: 18, largeur: story ? 520 : boite.l, tailleNom: story ? 34 : 27, tailleFonction: story ? 25 : 20,
+      couleurNom: C.blanc, couleurFonction: C.mauveTexte,
+    });
+  }
+
+  // ───────────────────────── modèle « conseil » ─────────────────────────
+
+  function conseil(ctx, W, H, pub, fmt) {
+    const ph = photo(pub.photo);
+    const story = fmt === 'story';
+    const k = H / 1080;
+    const sig = pub.signature || SIGNATURE;
+    const mx = story ? 70 : 60;
+
+    ctx.fillStyle = C.creme; ctx.fillRect(0, 0, W, H);
+    trame(ctx, { x: 0, y: 0, l: W, h: H }, [W, 0], 520, { couleur: 'rgba(142,42,142,.18)' });
+    trame(ctx, { x: 0, y: 0, l: W, h: H }, [0, H], 520, { couleur: 'rgba(142,42,142,.14)' });
+
+    // Bloc violet et personne. En story, le bloc occupe toute la largeur du
+    // bas et porte aussi la signature ; sinon il tient la colonne de droite.
+    let bloc = null;
+    if (ph || story) {
+      bloc = story ? { x: 50, y: 1290, l: W - 100, h: 470, r: 44 } : { x: 710, y: 430 + 120 * (k - 1), l: W - 710 - 40, h: H - 430 - 120 * (k - 1) - 40, r: 40 };
+      ctx.save();
+      ctx.shadowColor = 'rgba(67,18,74,.28)'; ctx.shadowBlur = 34; ctx.shadowOffsetY = 12;
+      const gb = ctx.createLinearGradient(bloc.x, bloc.y, bloc.x + bloc.l * 0.4, bloc.y + bloc.h);
+      gb.addColorStop(0, '#9A309A'); gb.addColorStop(1, '#6A1E6C');
+      remplirRect(ctx, bloc.x, bloc.y, bloc.l, bloc.h, bloc.r, gb);
+      ctx.restore();
+      ctx.save();
+      ctx.beginPath(); rect(ctx, bloc.x, bloc.y, bloc.l, bloc.h, bloc.r); ctx.clip();
+      const zone = story ? { x: bloc.x + bloc.l - 420, l: 420 } : { x: bloc.x, l: bloc.l };
+      const cxr = zone.x + zone.l * 0.55, cyr = bloc.y + (story ? bloc.h * 0.22 : bloc.h * 0.12);
+      croissant(ctx, cxr, cyr, zone.l * 0.62, zone.l * 0.07, -0.7, 'rgba(46,140,178,.85)');
+      croissant(ctx, cxr, cyr, zone.l * 0.50, zone.l * 0.055, -0.7, 'rgba(240,146,31,.95)');
+      trame(ctx, bloc, [bloc.x, bloc.y + bloc.h], bloc.l * 0.6, { couleur: 'rgba(255,255,255,.09)', pas: 22, rMax: 3 });
+      ctx.restore();
+      if (ph) {
+        const regle = story ? { visageX: zone.x + zone.l * 0.52, teteHaut: bloc.y - 125, teteH: 215 } : { visageX: bloc.x + bloc.l * 0.52, teteHaut: bloc.y - 105, teteH: 172 };
+        const cadre = story ? { x: zone.x - 40, y: bloc.y, l: zone.l + 40 + (bloc.x + bloc.l - zone.x - zone.l), h: bloc.h, r: bloc.r } : bloc;
+        ctx.save();
+        ctx.beginPath(); rect(ctx, bloc.x, 0, bloc.l, bloc.y + bloc.h, story ? 0 : bloc.r); ctx.clip();
+        personne(ctx, ph, cadre, placer(ph, regle, bloc.y + bloc.h), { marge: 0 });
+        ctx.restore();
+      }
+    }
+
+    // en-tête : étiquette, numéro, logo
+    const hy = story ? 170 : 58;
+    const etiquette = typo(pub.etiquette || MODELES.conseil.etiquette).toUpperCase();
+    const pst = pastille(ctx, etiquette, mx, hy, { taille: story ? 23 : 18, fond: C.violet, couleur: C.blanc });
+    if (pub.numero) {
+      ctx.font = police(700, story ? 26 : 21, TITRE); ctx.fillStyle = C.orange; ctx.textBaseline = 'middle';
+      espace(ctx, 'N° ' + String(pub.numero).padStart(2, '0'), mx + pst.l + 18, hy + pst.h / 2 + 1, 1.5);
+      ctx.textBaseline = 'alphabetic';
+    }
+    const lh = story ? 84 : 72;
+    const lw = lh * R.logo.naturalWidth / R.logo.naturalHeight;
+    logo(ctx, W - mx - lw, hy + pst.h / 2 - lh / 2 - 4, lh, false);
+
+    // titre
+    const colonne = ph && !story ? 620 : W - mx * 2;
+    const tBoite = { x: mx, y: hy + pst.h + (story ? 50 : 34), l: colonne, h: story ? 330 : 200 + 60 * (k - 1) };
+    const bt = ajuster(ctx, pub.titre || '', tBoite, { poids: 700, famille: TITRE, min: 34, max: story ? 84 : 62 + 8 * (k - 1) * 4, interligne: 1.1 });
+    ecrire(ctx, bt, tBoite.x, tBoite.y, { couleur: C.encre, couleurRelief: C.encre, relief: 'surligne', couleurSurligne: 'rgba(240,146,31,.42)', largeur: tBoite.l });
+
+    // points, tous à la même taille ; l'espace restant aère la liste
+    const points = (pub.points || []).filter(p => String(p).trim()).slice(0, 5);
+    const n = Math.max(1, points.length);
+    const py = tBoite.y + bt.hauteur + (story ? 60 : 40);
+    const basPoints = story ? bloc.y - 170 : H - 185;
+    const badge = story ? 64 : 52;
+    const ecartMin = story ? 30 : 20;
+    const textX = mx + badge + (story ? 28 : 22);
+    const largeurTexte = (ph && !story ? 655 : W - mx) - textX;
+    const dispo = basPoints - py - ecartMin * (n - 1);
+    let blocs = [];
+    for (let taille = story ? 42 : 34 + 4 * (k - 1) * 4; taille >= 20; taille -= 0.5) {
+      blocs = points.map(p => ajuster(ctx, p, { l: largeurTexte, h: 9999 }, { poids: 500, famille: TEXTE, min: taille, max: taille, interligne: 1.32 }));
+      if (blocs.reduce((s, b) => s + Math.max(b.hauteur, badge), 0) <= dispo) break;
+    }
+    const hauteurs = blocs.map(b => Math.max(b.hauteur, badge));
+    const reste = dispo - hauteurs.reduce((s, h) => s + h, 0);
+    const ecart = n > 1 ? ecartMin + Math.min(Math.max(0, reste) / (n - 1), ecartMin * 1.6) : 0;
+    const couleurs = [C.violet, C.bleu, C.orange];
+    let y = py;
+    blocs.forEach((b, i) => {
+      remplirRect(ctx, mx, y, badge, badge, badge * 0.28, couleurs[i % 3]);
+      ctx.font = police(700, badge * 0.42, TITRE); ctx.fillStyle = C.blanc; ctx.textBaseline = 'middle';
+      const num = String(i + 1).padStart(2, '0');
+      ctx.fillText(num, mx + (badge - ctx.measureText(num).width) / 2, y + badge / 2 + 1);
+      ctx.textBaseline = 'alphabetic';
+      const ty = y + (b.lignes.length === 1 ? (badge - b.hauteur) / 2 : -b.taille * 0.12);
+      ecrire(ctx, b, textX, ty, { couleur: C.encre, couleurRelief: C.violet, largeur: largeurTexte });
+      y += hauteurs[i] + ecart;
+      if (i < blocs.length - 1) {
+        ctx.fillStyle = C.bordure;
+        ctx.fillRect(textX, y - ecart / 2 - 1, largeurTexte, 2);
+      }
+    });
+
+    // pied : signature et site
+    const site = pub.site || SITE;
+    if (story) {
+      const sx = bloc.x + 44, sy = bloc.y + bloc.h - 190;
+      signature(ctx, sig, sx, sy, { hauteur: 84, retrait: 18, largeur: ph ? 470 : bloc.l - 88, tailleNom: 31, tailleFonction: 23, couleurNom: C.blanc, couleurFonction: C.mauveTexte });
+      ctx.font = police(500, 24, TEXTE); ctx.fillStyle = C.mauveTexte; ctx.textBaseline = 'middle';
+      globe(ctx, sx + 12, sy + 132, 12, C.mauveTexte);
+      ctx.fillText(site, sx + 36, sy + 133);
+    } else {
+      const sy = H - 150;
+      signature(ctx, sig, mx, sy, { hauteur: 66, retrait: 18, largeur: ph ? 600 : W - mx * 2, tailleNom: 25, tailleFonction: 19, couleurNom: C.violet, couleurFonction: C.gris });
+      ctx.font = police(500, 19, TEXTE); ctx.fillStyle = C.gris; ctx.textBaseline = 'middle';
+      globe(ctx, mx + 10, sy + 100, 10, C.violet);
+      ctx.fillText(site, mx + 30, sy + 101);
+    }
+    ctx.textBaseline = 'alphabetic';
+  }
+
+  // ───────────────────────── point d'entrée ─────────────────────────
+
+  function dessiner(canvas, pub, o) {
+    o = o || {};
+    const fmt = FORMATS[o.format || pub.format] ? (o.format || pub.format) : 'carre';
+    const { l: W, h: H } = FORMATS[fmt];
+    const echelle = o.echelle || 1;
+    canvas.width = W * echelle; canvas.height = H * echelle;
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(echelle, 0, 0, echelle, 0, 0);
+    ctx.imageSmoothingQuality = 'high';
+    const modele = { citation, affiche, conseil }[pub.modele] || citation;
+    modele(ctx, W, H, pub, fmt);
+    return canvas;
+  }
+
+  global.AITE = { C, FORMATS, MODELES, SIGNATURE, SITE, charger, preparerPhoto, dessiner, typo, photos: R.photos };
+})(window);

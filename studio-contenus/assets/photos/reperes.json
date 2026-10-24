@@ -1,0 +1,20 @@
+{
+  "boubou": {
+    "nom": "Tenue bleu roi",
+    "teteHaut": 5,
+    "menton": 407,
+    "visageX": 513
+  },
+  "blazer": {
+    "nom": "Veste grise",
+    "teteHaut": 5,
+    "menton": 167,
+    "visageX": 206
+  },
+  "tunique": {
+    "nom": "Tunique à motifs",
+    "teteHaut": 6,
+    "menton": 191,
+    "visageX": 262
+  }
+}

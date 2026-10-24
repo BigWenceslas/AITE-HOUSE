@@ -1,0 +1,14 @@
+{
+  "name": "studio-contenus-aite",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Visuels réseaux sociaux d'AITE Consulting : citations, affiches de motivation et conseils pratiques",
+  "scripts": {
+    "generer": "node generer.js",
+    "studio": "node generer.js studio",
+    "visuels": "node generer.js visuels"
+  },
+  "devDependencies": {
+    "playwright": "^1.49.0"
+  }
+}

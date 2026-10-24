@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Studio AITE</title>
+<style>
+  :root {
+    --violet: #8E2A8E; --violet-fonce: #6A1E6C; --orange: #F0921F; --bleu: #2E8CB2;
+    --encre: #1C1620; --gris: #6E6675; --gris-clair: #9A93A0; --creme: #FAF8FB;
+    --mauve: #F6ECF6; --mauve2: #F1ECF3; --bordure: #E7E3EC; --blanc: #FFFFFF;
+    --titre: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+    --texte: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--creme); color: var(--encre); font: 15px/1.5 var(--texte); }
+  button, input, select, textarea { font: inherit; color: inherit; }
+
+  header { display: flex; align-items: center; gap: 16px; padding: 14px 24px; background: var(--blanc); border-bottom: 1px solid var(--bordure); position: sticky; top: 0; z-index: 5; }
+  header img { height: 40px; width: auto; }
+  header h1 { margin: 0; font: 700 20px/1.2 var(--titre); letter-spacing: -.01em; }
+  header p { margin: 2px 0 0; font-size: 13px; color: var(--gris); }
+
+  main { display: grid; grid-template-columns: minmax(340px, 420px) 1fr; gap: 24px; padding: 24px; max-width: 1400px; margin: 0 auto; align-items: start; }
+  .colonne { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .carte { background: var(--blanc); border: 1px solid #EEE9F1; border-radius: 16px; padding: 16px 18px; box-shadow: 0 5px 16px rgba(28,22,32,.05); }
+  .carte h2 { margin: 0 0 12px; display: flex; align-items: center; gap: 8px; font: 600 11px/1 var(--texte); letter-spacing: .16em; text-transform: uppercase; color: var(--gris-clair); }
+  .carte h2::before { content: ''; width: 10px; height: 10px; border-radius: 99px; background: var(--violet); }
+  .carte.bleu h2::before { background: var(--bleu); }
+  .carte.orange h2::before { background: var(--orange); }
+
+  label { display: block; font-size: 13px; font-weight: 500; color: var(--gris); margin: 10px 0 5px; }
+  label:first-of-type { margin-top: 0; }
+  input[type=text], input[type=number], select, textarea {
+    width: 100%; border: 1px solid var(--bordure); border-radius: 10px; padding: 9px 12px; background: var(--blanc);
+    outline: none; transition: border-color .15s, box-shadow .15s;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--violet); box-shadow: 0 0 0 3px rgba(142,42,142,.14); }
+  textarea { resize: vertical; min-height: 88px; }
+  .aide { margin: 6px 0 0; font-size: 12.5px; color: var(--gris-clair); }
+  .aide code { background: var(--mauve2); color: var(--violet); padding: 1px 5px; border-radius: 5px; font-size: 12px; }
+  .compteur { float: right; font-size: 12px; color: var(--gris-clair); font-weight: 400; }
+  .compteur.trop { color: #B5651A; font-weight: 600; }
+
+  .segments { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; background: var(--mauve2); padding: 4px; border-radius: 12px; }
+  .segments button { border: 0; background: transparent; padding: 8px 6px; border-radius: 9px; cursor: pointer; font-weight: 500; font-size: 14px; color: #5A3A5A; }
+  .segments button[aria-pressed=true] { background: var(--blanc); color: var(--violet); font-weight: 600; box-shadow: 0 2px 6px rgba(28,22,32,.10); }
+
+  .photos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .photos button { border: 2px solid transparent; background: var(--mauve); border-radius: 12px; padding: 4px; cursor: pointer; aspect-ratio: 3 / 4; overflow: hidden; display: flex; align-items: flex-end; justify-content: center; position: relative; }
+  .photos button img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .photos button span { font-size: 12px; color: var(--gris); align-self: center; text-align: center; }
+  .photos button[aria-pressed=true] { border-color: var(--violet); box-shadow: 0 0 0 3px rgba(142,42,142,.14); }
+  .import { margin-top: 10px; font-size: 13px; }
+  .import input { font-size: 13px; max-width: 100%; }
+
+  .boutons { display: flex; flex-wrap: wrap; gap: 8px; }
+  .bouton { border: 0; border-radius: 999px; padding: 10px 18px; cursor: pointer; font-weight: 600; font-family: var(--titre); font-size: 15px; display: inline-flex; align-items: center; gap: 8px; }
+  .bouton.primaire { background: var(--violet); color: var(--blanc); }
+  .bouton.primaire:hover { background: var(--violet-fonce); }
+  .bouton.secondaire { background: var(--mauve2); color: #5A3A5A; }
+  .bouton.secondaire:hover { background: #E8DDEB; }
+  .bouton.petit { padding: 7px 14px; font-size: 13.5px; }
+
+  .apercu { position: sticky; top: 92px; }
+  .apercu .scene { background: repeating-conic-gradient(#F1ECF3 0% 25%, #FBF9FC 0% 50%) 50% / 24px 24px; border-radius: 16px; border: 1px solid #EEE9F1; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 300px; }
+  .apercu canvas { display: block; max-width: 100%; max-height: calc(100vh - 290px); height: auto; width: auto; border-radius: 6px; box-shadow: 0 12px 34px rgba(28,22,32,.18); }
+  .apercu .barre { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .apercu .barre .segments { min-width: 300px; }
+  .apercu .actions { margin-top: 14px; display: flex; justify-content: center; }
+  .dimensions { font-size: 12.5px; color: var(--gris-clair); }
+
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); background: var(--encre); color: var(--blanc); padding: 10px 18px; border-radius: 999px; font-size: 14px; opacity: 0; transition: opacity .2s, transform .2s; pointer-events: none; z-index: 20; }
+  .toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .modale { position: fixed; inset: 0; background: rgba(28,22,32,.82); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 16px; z-index: 30; gap: 12px; }
+  .modale.ouverte { display: flex; }
+  .modale img { max-width: 100%; max-height: calc(100vh - 120px); border-radius: 8px; }
+  .modale p { color: #fff; margin: 0; font-size: 14px; text-align: center; }
+
+  .chargement { padding: 60px 20px; text-align: center; color: var(--gris); }
+
+  @media (max-width: 900px) {
+    header { padding: 12px 16px; }
+    header img { height: 32px; }
+    main { grid-template-columns: 1fr; padding: 16px; gap: 16px; }
+    .apercu { position: static; order: -1; }
+    .apercu .scene { padding: 12px; }
+    .apercu canvas { max-height: 70vh; }
+    .apercu .barre .segments { min-width: 0; width: 100%; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <img id="logo" alt="AITE Consulting" />
+  <div>
+    <h1>Studio de contenus</h1>
+    <p>Citations, affiches et conseils pratiques au format réseaux sociaux</p>
+  </div>
+</header>
+
+<main id="app">
+  <div class="chargement" id="chargement">Chargement des polices et des photos…</div>
+</main>
+
+<div class="toast" id="toast"></div>
+<div class="modale" id="modale">
+  <img id="modale-img" alt="Visuel en grand" />
+  <p>Sur téléphone : appui long sur l'image pour l'enregistrer. Touchez à côté pour fermer.</p>
+</div>
+
+<template id="gabarit">
+  <div class="colonne">
+    <section class="carte">
+      <h2>Calendrier</h2>
+      <label for="biblio">Publications prêtes</label>
+      <select id="biblio"></select>
+      <div class="boutons" style="margin-top:10px">
+        <button class="bouton secondaire petit" id="nouveau" type="button">Nouvelle publication</button>
+      </div>
+    </section>
+
+    <section class="carte">
+      <h2>Modèle</h2>
+      <div class="segments" id="modeles" role="group" aria-label="Modèle">
+        <button type="button" data-v="citation">Citation</button>
+        <button type="button" data-v="affiche">Affiche</button>
+        <button type="button" data-v="conseil">Conseil</button>
+      </div>
+    </section>
+
+    <section class="carte orange">
+      <h2>Texte</h2>
+      <label for="etiquette">Étiquette <span class="aide" style="display:inline">(facultative)</span></label>
+      <input type="text" id="etiquette" placeholder="Ex. Motivation du lundi" />
+      <div id="zone-texte">
+        <label for="texte">Texte affiché <span class="compteur" id="c-texte"></span></label>
+        <textarea id="texte" rows="5"></textarea>
+      </div>
+      <div id="zone-conseil">
+        <label for="titre">Titre <span class="compteur" id="c-titre"></span></label>
+        <input type="text" id="titre" />
+        <label for="points">Points (un par ligne, 3 ou 4)</label>
+        <textarea id="points" rows="6"></textarea>
+        <label for="numero">Numéro du conseil</label>
+        <input type="number" id="numero" min="1" max="999" />
+      </div>
+      <p class="aide">Entourez d'astérisques les mots à mettre en relief : <code>*fin d'un problème*</code>.</p>
+    </section>
+
+    <section class="carte bleu">
+      <h2>Photo</h2>
+      <div class="photos" id="photos"></div>
+      <div class="import">
+        <label for="fichier">Importer une photo (PNG détouré de préférence)</label>
+        <input type="file" id="fichier" accept="image/png,image/webp,image/jpeg" />
+      </div>
+    </section>
+
+    <section class="carte">
+      <h2>Signature</h2>
+      <label for="nom">Nom</label>
+      <input type="text" id="nom" />
+      <label for="fonction">Fonction</label>
+      <input type="text" id="fonction" />
+      <label for="site">Site</label>
+      <input type="text" id="site" />
+    </section>
+
+    <section class="carte orange">
+      <h2>Légende du post</h2>
+      <label for="legende">Texte à publier avec le visuel <span class="compteur" id="c-legende"></span></label>
+      <textarea id="legende" rows="8"></textarea>
+      <label for="hashtags">Hashtags</label>
+      <input type="text" id="hashtags" placeholder="#AITEConsulting #TransformationDigitale" />
+      <div class="boutons" style="margin-top:10px">
+        <button class="bouton secondaire petit" id="copier-legende" type="button">Copier la légende</button>
+        <button class="bouton secondaire petit" id="copier-json" type="button">Copier la fiche (JSON)</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="apercu">
+    <div class="barre">
+      <div class="segments" id="formats" role="group" aria-label="Format">
+        <button type="button" data-v="carre">Carré</button>
+        <button type="button" data-v="portrait">Portrait</button>
+        <button type="button" data-v="story">Story</button>
+      </div>
+      <span class="dimensions" id="dimensions"></span>
+    </div>
+    <div class="scene"><canvas id="toile"></canvas></div>
+    <div class="actions boutons">
+      <button class="bouton primaire" id="telecharger" type="button">Télécharger en PNG</button>
+      <button class="bouton secondaire" id="grand" type="button">Voir en grand</button>
+      <button class="bouton secondaire" id="trois" type="button">Les 3 formats</button>
+    </div>
+  </div>
+</template>
+
+<script>/*RESSOURCES*/</script>
+<script>/*PUBLICATIONS*/</script>
+<script>/*RENDU*/</script>
+<script>/*EDITEUR*/</script>
+</body>
+</html>

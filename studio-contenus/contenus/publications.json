@@ -1,0 +1,8 @@
+{
+  "signature": { "nom": "Cyrille Donald ABOLO", "fonction": "Directeur Général, AITE Consulting" },
+  "publications": [
+    { "id": "T01-lundi", "semaine": 1, "jour": "lundi", "modele": "affiche", "theme": "action", "etiquette": "", "texte": "Une décision prise lundi vaut mieux que *dix réunions* vendredi.", "titre": "", "points": [], "numero": null, "photo": "boubou", "legende": "Test", "hashtags": ["#AITEConsulting"] },
+    { "id": "T01-mercredi", "semaine": 1, "jour": "mercredi", "modele": "conseil", "theme": "caisse", "etiquette": "", "texte": "", "titre": "4 réflexes pour *fiabiliser* votre caisse", "points": ["Clôturez la caisse chaque soir, même quand la journée a été calme.", "Comptez les espèces à deux et signez le procès-verbal de clôture.", "Justifiez chaque écart le jour même, sans attendre la fin du mois.", "Séparez la personne qui encaisse de celle qui contrôle."], "numero": 1, "photo": "blazer", "legende": "Test", "hashtags": ["#AITEConsulting"] },
+    { "id": "T01-vendredi", "semaine": 1, "jour": "vendredi", "modele": "citation", "theme": "devise", "etiquette": "", "texte": "On ne vend pas de la technologie. On vend *la fin d'un problème de gestion*. C'est la seule promesse qui compte pour un dirigeant.", "titre": "", "points": [], "numero": null, "photo": "tunique", "legende": "Test", "hashtags": ["#AITEConsulting"] }
+  ]
+}
