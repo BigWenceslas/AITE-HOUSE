@@ -145,16 +145,18 @@ function nomFichier(pub, format, ext) {
   return pub.id + '-' + pub.modele + (format === 'carre' ? '' : '-' + format) + '.' + ext;
 }
 
-// Récapitulatif lisible : visuel, texte et légende prête à copier, semaine par semaine.
+// Récapitulatif lisible : visuel, texte et légende prête à copier, semaine par
+// semaine (ou par série : une publication peut porter « serie », ex. « Week-end »).
 function ecrireCalendrier(publications, ext) {
   const lignes = ['# Calendrier de publication', '',
     'Généré par `node generer.js` à partir de `contenus/publications.json`. Ne pas modifier à la main.', '',
-    'Rythme proposé : lundi, une affiche de motivation ; mercredi, un conseil pratique ; vendredi, une citation.', ''];
-  let semaine = null;
+    'Rythme proposé : lundi, une affiche de motivation ; mercredi, un conseil pratique ; vendredi, une citation.',
+    'Le week-end : détente et sourire le samedi, repos le dimanche.', ''];
+  let groupe = null;
   for (const x of publications) {
-    if (x.semaine !== semaine) { semaine = x.semaine; lignes.push('## Semaine ' + semaine, ''); }
+    if (groupeDe(x) !== groupe) { groupe = groupeDe(x); lignes.push('## ' + groupe, ''); }
     const titre = x.modele === 'conseil' ? x.titre : x.texte;
-    lignes.push('### ' + cap(x.jour) + ' — ' + (x.modele === 'conseil' ? 'Conseil' : x.modele === 'affiche' ? 'Affiche' : 'Citation') + ' · ' + x.theme, '');
+    lignes.push('### ' + cap(x.moment || x.jour) + ' — ' + (x.modele === 'conseil' ? 'Conseil' : x.modele === 'affiche' ? 'Affiche' : 'Citation') + ' · ' + x.theme, '');
     lignes.push('![' + x.id + '](' + nomFichier(x, 'carre', ext) + ')', '');
     lignes.push('**Visuel :** ' + titre.replace(/\*/g, ''), '');
     if (x.modele === 'conseil') { x.points.forEach((pt, i) => lignes.push((i + 1) + '. ' + pt.replace(/\*/g, ''))); lignes.push(''); }
@@ -164,6 +166,7 @@ function ecrireCalendrier(publications, ext) {
 }
 
 const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+const groupeDe = x => x.serie || 'Semaine ' + x.semaine;
 
 (async () => {
   const [cmd, ...reste] = process.argv.slice(2);

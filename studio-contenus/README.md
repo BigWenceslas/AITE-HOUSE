@@ -11,6 +11,9 @@ motivation** et **conseils pratiques**, aux couleurs de la charte AITE (violet
 | **Conseil** | un titre et 3 ou 4 conseils numérotés, applicables dès demain | mercredi |
 | **Citation** | une pensée du DG, entre guillemets, dans le panneau violet | vendredi |
 
+Le week-end, le ton change (détente et sourire le samedi, repos le dimanche) avec
+les mêmes modèles et une étiquette adaptée : « Samedi détente », « Dimanche repos »…
+
 Chaque modèle existe en trois formats : **carré** 1080 × 1080 (fil LinkedIn,
 Facebook, Instagram), **portrait** 1080 × 1350 (le plus visible sur Instagram
 et LinkedIn mobile) et **story** 1080 × 1920.
@@ -82,6 +85,10 @@ Une publication dans `contenus/publications.json` :
   "legende": "Texte du post…", "hashtags": ["#AITEConsulting", "#Gestion"]
 }
 ```
+
+Champs facultatifs : `serie` range la publication hors des semaines
+numérotées (ex. `"serie": "Week-end"`), `moment` indique l'heure conseillée
+(`"samedi 10h"`) ; tous deux apparaissent dans le studio et dans `CALENDRIER.md`.
 
 `modele` vaut `citation`, `affiche` ou `conseil` ; `photo` est le nom d'un
 fichier de `assets/photos/` sans extension (`boubou`, `blazer`, `tunique`), ou

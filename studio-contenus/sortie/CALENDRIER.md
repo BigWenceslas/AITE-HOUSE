@@ -3,6 +3,7 @@
 Généré par `node generer.js` à partir de `contenus/publications.json`. Ne pas modifier à la main.
 
 Rythme proposé : lundi, une affiche de motivation ; mercredi, un conseil pratique ; vendredi, une citation.
+Le week-end : détente et sourire le samedi, repos le dimanche.
 
 ## Semaine 1
 

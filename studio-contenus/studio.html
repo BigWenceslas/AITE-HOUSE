@@ -1118,12 +1118,13 @@
     const vide = document.createElement('option');
     vide.value = ''; vide.textContent = 'Choisir une publication…';
     sel.appendChild(vide);
-    let groupe = null, semaine = null;
+    let groupe = null, libelle = null;
     BIBLIO.publications.forEach((p, i) => {
-      if (p.semaine !== semaine) {
-        semaine = p.semaine;
+      const l = p.serie || 'Semaine ' + p.semaine;
+      if (l !== libelle) {
+        libelle = l;
         groupe = document.createElement('optgroup');
-        groupe.label = 'Semaine ' + p.semaine;
+        groupe.label = l;
         sel.appendChild(groupe);
       }
       const o = document.createElement('option');
