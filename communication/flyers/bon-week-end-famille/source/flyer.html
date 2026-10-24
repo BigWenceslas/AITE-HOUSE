@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>AITE — Bon week-end en famille</title>
+<style>
+  @font-face { font-family: 'Great Vibes'; src: url(fonts/great-vibes-latin-400.woff2) format('woff2'); font-weight: 400; }
+  @font-face { font-family: 'Space Grotesk'; src: url(fonts/space-grotesk-latin-600-normal.woff2) format('woff2'); font-weight: 600; }
+  @font-face { font-family: 'Space Grotesk'; src: url(fonts/space-grotesk-latin-700-normal.woff2) format('woff2'); font-weight: 700; }
+  @font-face { font-family: 'IBM Plex Sans'; src: url(fonts/ibm-plex-sans-latin-400-normal.woff2) format('woff2'); font-weight: 400; }
+  @font-face { font-family: 'IBM Plex Sans'; src: url(fonts/ibm-plex-sans-latin-500-normal.woff2) format('woff2'); font-weight: 500; }
+  @font-face { font-family: 'IBM Plex Sans'; src: url(fonts/ibm-plex-sans-latin-600-normal.woff2) format('woff2'); font-weight: 600; }
+
+  :root {
+    --violet: #8E2A8E;
+    --violet-fonce: #6A1E6A;
+    --orange: #F0921F;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1080px; background: #2B86DA; }
+
+  .flyer {
+    position: relative; width: 1080px; height: 1080px; overflow: hidden;
+    background: linear-gradient(165deg, #0E58AE 0%, #1F78CF 38%, #3E9BE3 70%, #7CC6F3 100%);
+    font-family: 'IBM Plex Sans', sans-serif;
+  }
+
+  /* Soleil : halo, rayons, puis pastille blanche qui porte le logo */
+  .halo {
+    position: absolute; left: 905px; top: 175px; width: 1100px; height: 1100px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(255,255,255,.95) 0 135px, rgba(255,247,214,.75) 175px,
+                rgba(255,240,200,.32) 300px, rgba(255,255,255,0) 520px);
+  }
+  .rayons {
+    position: absolute; left: 905px; top: 175px; width: 1300px; height: 1300px;
+    transform: translate(-50%, -50%) rotate(8deg);
+    background: repeating-conic-gradient(from 0deg, rgba(255,255,255,.30) 0deg 2.2deg, rgba(255,255,255,0) 2.2deg 15deg);
+    -webkit-mask: radial-gradient(circle, #000 120px, rgba(0,0,0,.55) 260px, transparent 600px);
+            mask: radial-gradient(circle, #000 120px, rgba(0,0,0,.55) 260px, transparent 600px);
+  }
+  .soleil {
+    position: absolute; left: 905px; top: 175px; width: 262px; height: 262px; border-radius: 50%;
+    transform: translate(-50%, -50%); background: #FFFFFF;
+    box-shadow: 0 0 0 14px rgba(255,255,255,.55), 0 0 70px 30px rgba(255,244,205,.9);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .soleil img { width: 206px; height: auto; mix-blend-mode: multiply; }
+
+  /* Nuages */
+  .nuage { position: absolute; height: auto; }
+
+  /* Texte */
+  .texte { position: absolute; left: 66px; top: 172px; width: 600px; color: #FFFFFF; }
+  .surtitre {
+    font-family: 'Great Vibes', cursive; font-size: 78px; line-height: 1;
+    text-shadow: 0 2px 10px rgba(10,40,90,.35);
+  }
+  .titre {
+    margin-top: -6px; margin-left: -8px;
+    font-family: 'Great Vibes', cursive; font-size: 184px; line-height: 1.02; white-space: nowrap;
+    color: var(--violet);
+    -webkit-text-stroke: 12px #FFFFFF; paint-order: stroke fill;
+    filter: drop-shadow(0 8px 18px rgba(20,30,80,.28));
+  }
+  .filet { margin-top: 18px; width: 92px; height: 6px; border-radius: 999px; background: var(--orange); }
+  .accroche {
+    margin-top: 22px;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 33px; line-height: 1.2;
+    letter-spacing: .02em; text-transform: uppercase;
+    text-shadow: 0 2px 8px rgba(10,40,90,.35);
+  }
+  .message {
+    margin-top: 18px; width: 540px;
+    font-size: 26px; line-height: 1.45; font-weight: 500; color: rgba(255,255,255,.96);
+    text-shadow: 0 1px 6px rgba(10,40,90,.4);
+  }
+
+  /* Famille détourée, posée sur le bandeau */
+  .lumiere {
+    position: absolute; left: 470px; top: 470px; width: 760px; height: 620px; border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(255,250,232,.55), rgba(255,250,232,0));
+  }
+  .famille {
+    position: absolute; right: -18px; bottom: 84px; width: 720px; height: auto;
+    filter: drop-shadow(0 18px 30px rgba(12,36,84,.35));
+  }
+
+  /* Bandeau de contact */
+  .bandeau {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 84px;
+    background: linear-gradient(90deg, var(--violet-fonce), var(--violet) 55%, #9B3497);
+    border-top: 4px solid var(--orange);
+    display: flex; align-items: center; justify-content: center; gap: 26px;
+    color: #FFFFFF; font-size: 23px; font-weight: 500;
+  }
+  .bandeau .groupe { display: flex; align-items: center; gap: 12px; white-space: nowrap; }
+  .bandeau .sep { width: 2px; height: 40px; background: rgba(255,255,255,.55); }
+  .bandeau .tel { font-family: 'Space Grotesk', sans-serif; font-weight: 600; letter-spacing: .01em; }
+  .icone { width: 38px; height: 38px; border-radius: 50%; background: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; }
+  .icone svg { width: 22px; height: 22px; fill: var(--violet); }
+</style>
+</head>
+<body>
+<div class="flyer">
+  <div class="halo"></div>
+  <div class="rayons"></div>
+
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <filter id="flou"><feGaussianBlur stdDeviation="3.5" /></filter>
+      <linearGradient id="ombre" gradientUnits="userSpaceOnUse" x1="0" y1="20" x2="0" y2="200">
+        <stop offset="0" stop-color="#FFFFFF" /><stop offset=".65" stop-color="#F4F9FF" /><stop offset="1" stop-color="#CFE3F7" />
+      </linearGradient>
+      <symbol id="nuage" viewBox="0 0 600 200">
+        <g filter="url(#flou)" fill="url(#ombre)">
+          <circle cx="120" cy="132" r="62" /><circle cx="215" cy="98" r="88" /><circle cx="330" cy="88" r="76" />
+          <circle cx="425" cy="122" r="62" /><circle cx="505" cy="148" r="42" /><rect x="70" y="128" width="470" height="62" rx="31" />
+        </g>
+      </symbol>
+    </defs>
+  </svg>
+  <svg class="nuage" viewBox="0 0 600 200" style="left:-80px; top:-52px; width:360px; opacity:.9"><use href="#nuage" width="600" height="200" /></svg>
+  <svg class="nuage" viewBox="0 0 600 200" style="left:-120px; top:820px; width:640px; opacity:.95"><use href="#nuage" width="600" height="200" /></svg>
+  <svg class="nuage" viewBox="0 0 600 200" style="left:250px; top:880px; width:380px; opacity:.85"><use href="#nuage" width="600" height="200" /></svg>
+
+
+  <div class="soleil"><img src="aite-logo.jpg" alt="AITE Consulting" /></div>
+
+  <div class="texte">
+    <div class="surtitre">C’est le</div>
+    <div class="titre">Week-end</div>
+    <div class="filet"></div>
+    <div class="accroche">Profitez de chaque instant<br />en famille</div>
+    <div class="message">Toute l’équipe AITE Consulting vous souhaite un excellent week-end, plein de rires et de moments partagés.</div>
+  </div>
+
+  <div class="lumiere"></div>
+  <img class="famille" src="famille_detouree.png" alt="" />
+
+  <div class="bandeau">
+    <div class="groupe">
+      <span>Suivez-nous sur :</span>
+      <span class="icone"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg></span>
+      <span class="icone"><svg viewBox="0 0 24 24"><path d="M13.5 22v-8.1h2.7l.4-3.2h-3.1V8.7c0-.9.3-1.5 1.6-1.5h1.7V4.3c-.3 0-1.3-.1-2.5-.1-2.4 0-4.1 1.5-4.1 4.2v2.3H7.5v3.2h2.7V22h3.3z"/></svg></span>
+      <span class="icone"><svg viewBox="0 0 24 24"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.75h4V21H3V9.75zM9.5 9.75h3.8v1.55h.06c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.77 2.65 4.77 6.1V21h-4v-5c0-1.2-.02-2.73-1.66-2.73-1.67 0-1.92 1.3-1.92 2.65V21h-4V9.75z"/></svg></span>
+    </div>
+    <div class="sep"></div>
+    <div class="groupe">
+      <span>Appelez-nous au :</span>
+      <span class="tel">(+237) 656 80 10 98 &nbsp;|&nbsp; 673 37 33 67</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>
