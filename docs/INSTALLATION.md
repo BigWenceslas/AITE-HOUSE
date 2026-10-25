@@ -28,7 +28,7 @@ AITE_HOUSE/
 | aite_hotel_pos_link | 18.0.1.0.2 | **Note de chambre** : report des consommations du bar sur le folio |
 | aite_pos_credit | 18.0.2.0.5 | Crédit clients (ardoises) : plafonds, encours, recouvrement |
 | aite_loyalty | 18.0.1.0.3 | Fidélité : points, niveaux VIP & VVIP |
-| aite_pos_analytics | 18.0.2.1.3 | Analyses des ventes : heures de pointe, marges, CMV |
+| aite_pos_analytics | 18.0.2.1.4 | Analyses des ventes : heures de pointe, marges, CMV |
 | aite_stock_dashboard | 18.0.1.1.3 | Stock : ruptures, coulage, couverture, inventaires |
 | aite_purchase_dashboard | 18.0.1.0.5 | Achats : échéancier fournisseurs, OTIF, hausses de prix |
 | aite_direction_dashboard | 18.0.1.1.2 | **Cockpit Direction** : vue consolidée, cash à risque, actions |

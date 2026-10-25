@@ -4,7 +4,7 @@
 AITE Consulting SARL
 
 Ce guide explique comment **monter un environnement de test**, **exécuter
-les 873 tests automatisés**, **rejouer la recette utilisateur** et
+les 874 tests automatisés**, **rejouer la recette utilisateur** et
 **régénérer le jeu d'essai**. Le cahier de recette illustré, avec ses
 captures d'écran, fait l'objet d'un document séparé :
 [`GUIDE_RECETTE_UAT.md`](GUIDE_RECETTE_UAT.md).
@@ -30,7 +30,7 @@ La suite compte trois niveaux de vérification, chacun avec son rôle.
 | `aite_slot_booking` | 95 | Grille de créneaux, alignement, conflits par capacité, tarification, report au folio, cron no-show |
 | `aite_website_booking` | 61 | Tunnel public de bout en bout, validation du formulaire, CSRF, fiche client unique, espace client |
 | `aite_demo_data` | 38 | Générateur de jeu d'essai, devise, écarts de caisse, idempotence, purge, **6 parcours métier bout-en-bout** |
-| `aite_pos_analytics` | 60 | Coût figé à la vente, marge, agrégats de session, écarts de caisse et leur sévérité, API du tableau de bord |
+| `aite_pos_analytics` | 61 | Coût figé à la vente, marge, agrégats de session, écarts de caisse et leur sévérité, API du tableau de bord |
 | `aite_loyalty` | 51 | Barème de points, grand livre, segmentation VIP / VVIP, fenêtre glissante, rétrogradation |
 | `aite_stock_dashboard` | 42 | Couverture, seuils, quantité à commander, statuts d'alerte, valorisation, rotation |
 | `aite_hotel_pos_link` | 39 | Note de chambre, décisions de rattachement, file d'attente, idempotence |
@@ -40,7 +40,7 @@ La suite compte trois niveaux de vérification, chacun avec son rôle.
 | `aite_housekeeping` | 26 | Tableau des chambres, pannes et remise en vente, technicien, inspection « Conforme », objets trouvés |
 | `aite_guest_registry` | 12 | Pré-remplissage de la fiche, « Mémoriser sur la fiche client », impression du registre de police |
 | `aite_city_tax` | 14 | Article de taxe créé à la première confirmation, quel que soit le profil |
-| **Total** | **873** | |
+| **Total** | **874** | |
 
 Les tests sont marqués par des **étiquettes** (`aite_hotel`, `aite_credit`,
 `aite_slot`, …) pour pouvoir n'en jouer qu'une partie.
@@ -121,7 +121,7 @@ aite_exec,aite_demo,aite_journey
 Résultat attendu, en fin de journal :
 
 ```
-odoo.tests.result: 0 failed, 0 error(s) of 873 tests
+odoo.tests.result: 0 failed, 0 error(s) of 874 tests
 ```
 
 ### 3.2 Un seul module

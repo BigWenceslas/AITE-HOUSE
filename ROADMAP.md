@@ -30,7 +30,7 @@ Légende des statuts : ✅ **Fait** (livré et testé) · 🟡 **Partiel** (une 
 | 4 | `aite_hotel_pos_link` | **18.0.1.0.2** | **Note de chambre** : moyen de paiement POS → folio du séjour, file de rattachement | 13 | ✅ |
 | 5 | `aite_pos_credit` | **18.0.2.0.5** | Crédit clients (ardoises) POS + Ventes : encours et sévérité par âge (pas de plafond par client), remboursements, écritures 411, recouvrement | 38 | ✅ |
 | 6 | `aite_loyalty` | **18.0.1.0.3** | Fidélité unifiée : points, historisation, statut Standard/VIP/VVIP automatique | 16 | ✅ |
-| 7 | `aite_pos_analytics` | **18.0.2.1.3** | Analyses ventes POS : CA, marge, CMV, écarts de caisse, heures de pointe, produits | 36 | ✅ |
+| 7 | `aite_pos_analytics` | **18.0.2.1.4** | Analyses ventes POS : CA, marge, CMV, écarts de caisse, heures de pointe, produits | 36 | ✅ |
 | 8 | `aite_stock_dashboard` | **18.0.1.1.3** | Stock : valorisation, couverture, ruptures, rotation, coulage, inventaires, dépôts | 19 | ✅ |
 | 9 | `aite_purchase_dashboard` | **18.0.1.0.5** | Achats : dettes 401 / balance âgée / échéancier, créances 409, OTIF, hausses de prix | 19 | ✅ |
 | 10 | `aite_direction_dashboard` | **18.0.1.1.2** | **Cockpit Direction** consolidé : POS + crédit + stock + achats + **hébergement (TO, ADR, RevPAR, N-1)**, cash à risque, actions | 9 | ✅ |

@@ -155,3 +155,16 @@ class TestPosDisplay(PosAnalyticsCommon):
         self.assertNotIn(aite, root.child_id)
         pivot = self.env.ref('aite_pos_analytics.menu_aite_pos_daily_report')
         self.assertEqual(pivot.name, "Tableau croisé & graphique")
+
+    # ------------------------------------------------------------------
+    # Montants en FCFA (règle 6)
+    # ------------------------------------------------------------------
+
+    def test_amount_headers_say_fcfa(self):
+        """L'en-tête de l'écart de caisse dit « FCFA », comme les montants
+        du reste de l'écran — plus de « Écart (F) » dans l'onglet Écarts."""
+        from odoo.tools import file_open
+        with file_open('aite_pos_analytics/static/src/xml/views.xml') as f:
+            xml = f.read()
+        self.assertFalse('(F)<' in xml, "en-tête « (F) » au lieu de « FCFA »")
+        self.assertTrue('Écart (FCFA)' in xml, "en-tête « Écart (FCFA) » absent")

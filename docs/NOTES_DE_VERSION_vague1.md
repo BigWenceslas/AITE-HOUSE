@@ -159,7 +159,7 @@ sur les modules qui en ont besoin.
 | `aite_hotel_pos_link` | 18.0.1.0.2 | lien ticket ↔ ligne de folio rétabli sur les séjours en cours (migration, fidélité) |
 | `aite_pos_credit` | 18.0.2.0.5 | mode « Ardoise client » créé s'il manque (migration) ; mois en français ; délais « 12,3 j » ; libellés accordés |
 | `aite_loyalty` | 18.0.1.0.3 | libellés et aides |
-| `aite_pos_analytics` | 18.0.2.1.3 | montants en FCFA (et non « F ») ; écarts « ▼ 3,0 % » ; badge « Aucun écart » ; seuils d'écart de caisse réglables ; société courante seulement (règle multi-sociétés) |
+| `aite_pos_analytics` | 18.0.2.1.4 | montants en FCFA (et non « F »), jusqu'à l'en-tête « Écart (FCFA) » de l'onglet Écarts de caisse ; écarts « ▼ 3,0 % » ; badge « Aucun écart » ; seuils d'écart de caisse réglables ; société courante seulement (règle multi-sociétés) |
 | `aite_stock_dashboard` | 18.0.1.1.3 | « 3 références » (plus de « réfs ») ; couverture « 12,0 j » ou « ∞ » |
 | `aite_purchase_dashboard` | 18.0.1.0.5 | « Factures échues » en positif, comme le cockpit ; libellés accordés |
 | `aite_direction_dashboard` | 18.0.1.1.2 | « À payer sous N j », barre « Sous 7 jours », liste « Échéances » et lignes « Payer … » d'accord ; seuil de 30 jours du moteur Crédit ; filtre d'origine appliqué aux remboursements ; nouvelles ardoises en hausse = rouge ; libellés de POS Crédit ; mois « janv. », « sept. » |

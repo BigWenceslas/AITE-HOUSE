@@ -919,7 +919,7 @@
                                     <th>Date</th>
                                     <th>Caissier</th>
                                     <th class="text-end">CA HT</th>
-                                    <th class="text-end">Écart (F)</th>
+                                    <th class="text-end">Écart (FCFA)</th>
                                     <th>Sévérité</th>
                                 </tr>
                             </thead>
