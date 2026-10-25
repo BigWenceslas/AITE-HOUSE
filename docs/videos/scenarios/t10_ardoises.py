@@ -29,22 +29,40 @@ Sources des libellés (relevés mot pour mot) :
    « Restant » :6607-6609, « Valider » :9008-9009, « Retour » :1117-1118,
    « Facture » :3696-3697, « Client » :2395-2396. Le pavé : ecrans.pos_paiement
    (ref_muk/613). Le bouton « Mettre sur ardoise », pleine largeur, violet
-   #714B67, icône fa-book : aite_pos_credit/static/src/js/pos/
-   payment_screen_button.xml:10-20 et static/src/scss/pos_credit_pos.scss:
-   3-16. Son geste : payment_screen_button.js:56-110 — sans client, la
-   notification « Sélectionnez d'abord un client pour une vente à crédit. »
-   (type warning, :64-73) puis la liste des clients s'ouvre et rien n'est
+   #714B67, icône fa-book (avec son title depuis la livraison 4) :
+   aite_pos_credit/static/src/js/pos/payment_screen_button.xml:10-21 et
+   static/src/scss/pos_credit_pos.scss:3-16. Son geste :
+   payment_screen_button.js:55-112 — sans client, la notification
+   « Sélectionnez d'abord un client pour une vente à crédit. » (type
+   warning, :63-72) puis la liste des clients s'ouvre et rien n'est
    validé ; avec un client, une ligne de la méthode ardoise égale au reste
    dû est ajoutée (add_paymentline, sans l'avertissement « soldes dûs » que
    seul addNewPaymentLine affiche, odoo18 payment_screen.js:112-125) puis la
-   commande est validée (:96-109) : il faut donc toucher deux fois le bouton
-   (la première fois, putOnCredit s'arrête après selectPartner, :64-73). Les
-   méthodes « Ardoise client » (is_aite_credit) et « Note de chambre »
-   (is_room_charge) sont celles que aite_demo_data crée et rattache à la
-   caisse (models/demo_generator.py:288-320) ; la caisse du bar montre donc
-   Espèces, Orange Money, MTN MoMo, Note de chambre, Ardoise client — comme
-   t04_note_chambre.py (MODES). La méthode ardoise est trouvée par
-   payment_screen_button.js:24-39 : la seule cochée « Vente à crédit ».
+   commande est validée (:98-111) : il faut donc toucher deux fois le bouton
+   (la première fois, putOnCredit s'arrête après selectPartner, :63-72). Le
+   mode « Ardoise client » (is_aite_credit, « Compte client » : sans journal,
+   « Identifier le client » coché) est créé par POS Crédit et ajouté aux
+   caisses (hooks.py:30 et :33-114) ; « Note de chambre » (is_room_charge,
+   aite_hotel_pos_link) est un mode que l'on crée sur la caisse, comme le
+   fait aite_demo_data. L'écran de paiement range les modes
+   par séquence (odoo18 payment_screen.js:42-44 ; à séquence égale, l'ordre
+   de pos.payment.method, « sequence, id », pos_payment_method.py:8), que
+   la liste Point de vente → Configuration → Modes de paiement règle à la
+   poignée (pos_payment_method_views.xml:52). La caisse du bar est celle
+   d'une base déjà en service, comme celle du client : la migration
+   18.0.2.0.5 y crée « Ardoise client » après les modes en place
+   (migrations/18.0.2.0.5/post-migrate.py, hooks._setup_company, sans
+   séquence : 0, comme des modes jamais réordonnés à la poignée), qui passe
+   donc en dernier :
+   Espèces, Orange Money, MTN MoMo, Note de chambre, Ardoise client — le
+   même ordre que t04_note_chambre.py (MODES). Sur une base neuve, le
+   crochet d'installation (puis aite_demo_data, demo_generator.py:304-341,
+   qui crée l'ardoise avant la note de chambre) placerait « Ardoise
+   client » avant « Note de chambre », sauf séquence réglée à la poignée.
+   Espèces, Orange Money et MTN MoMo sont des modes réglés sur la caisse,
+   qu'aucun module ne crée. La méthode ardoise est trouvée par
+   payment_screen_button.js:24-39 : la seule cochée « Vente à crédit
+   (ardoise) ».
    La fenêtre des clients : screens/partner_list/partner_list.xml:5-56 et
    partner_line/partner_line.xml:46-86 ; fr.po « Créer » :2261-2262,
    « Recherche des clients... » :6921-6922, « Nom » :4363, « Adresse » :721,
@@ -95,25 +113,33 @@ Sources des libellés (relevés mot pour mot) :
    ardoise annulée, pos_credit_views.xml:52-54). Remboursements triés par
    date décroissante : models/pos_credit_payment.py:21 ; moyens :49-58 ;
    états Validé / Annulé :70-75.
-4. Le tableau de bord — static/src/xml/dashboard.xml:24-231 (titre, filtres
-   Période / Origine / Caisse, « Appliquer », sections, cartes, graphiques,
-   « Tout voir », « Toutes les ardoises », colonnes, « Détail ») ; libellés
-   en majuscules par la feuille de style (static/src/scss/
-   pos_credit_dashboard.scss, .apc-flabel, .apc-section-title,
-   .apc-kpi-label, en-têtes de tableau) ; « Ce mois » par défaut :
-   static/src/js/views/dashboard_view.js:30-50 ; formats : :175-226
-   (« 113 000 FCFA », « 104 j », « ▲ 147 % vs N-1 », vert quand c'est bon
-   signe, « flux période : … ») et static/src/js/services/utils.js:21-45
-   (couleurs des moyens, des tranches et des sévérités), :51-71 ; légendes
-   masquées des barres : dashboard_view.js:255-290, 400-425 ; calculs :
-   models/pos_credit_dashboard.py:120-244 (encours = photo, flux de la
-   période, taux = recouvré / (encours + recouvré), retard ≥ 30 j, ardoise
-   moyenne par débiteur, période précédente de même durée), :251-288
-   (balance âgée 0–30 j / 30–60 j / 60–90 j / +90 j), :291-330 (encours par
-   origine, palette des caisses :31-34), :336-376 (remboursements par jour,
-   jj/mm), :382-429 (top 8 débiteurs par encours décroissant, âge max,
-   dernier paiement, statut), :433-457 (répartition par moyen), :459-505
-   (6 mois, Mai … Oct), :507-530 (derniers remboursements).
+4. Le tableau de bord — static/src/xml/dashboard.xml:4-13 (KpiCard : libellé,
+   valeur, variation, sous-texte) et :24-231 (titre, filtres Période /
+   Origine / Caisse, « Appliquer », sections, cartes — « En retard
+   (+30 j) » —, graphiques, « Tout voir », « Toutes les ardoises »,
+   colonnes, « Détail ») ; libellés en majuscules par la feuille de style
+   (static/src/scss/pos_credit_dashboard.scss, .apc-flabel,
+   .apc-section-title, .apc-kpi-label, en-têtes de tableau) ; « Ce mois »
+   par défaut, du 1er au jour même en date locale : static/src/js/views/
+   dashboard_view.js:33-38 et static/src/js/services/utils.js:135-167
+   (localIsoDate, periodRange) ; formats : dashboard_view.js:151-235
+   (money, pct, num, count, days, age, deltaOf « ▲ +147,0 % vs période
+   précédente », vert quand c'est bon signe, gris à zéro, netFlowSub
+   « flux période : … », lastPay) et utils.js:51-127 (fmtMoney « 113 000
+   FCFA », fmtPct « 41,9 % », fmtDelta, fmtInt, fmtCount « 2 ardoises
+   ouvertes », fmtDays « 31,0 j », fmtAge « 104 j ») — rendus par les
+   helpers d'ecrans.py (fcfa(…, tdb=True), pct, variation, sens, compte,
+   jours, age) ; couleurs des moyens, des tranches et des sévérités :
+   utils.js:10-46 ; légendes masquées des barres : dashboard_view.js:286-311,
+   415-444 ; calculs : models/pos_credit_dashboard.py:130-252 (encours =
+   photo, flux de la période, taux = recouvré / (encours + recouvré),
+   retard ≥ 30 j, ardoise moyenne par débiteur, période précédente de même
+   durée :206-230), :260-312 (balance âgée 0–30 j / 30–60 j / 60–90 j /
+   +90 j), :315-355 (encours par origine, palette des caisses :32-35),
+   :358-405 (remboursements par jour, jj/mm), :408-459 (top 8 débiteurs par
+   encours décroissant, âge max, dernier paiement jj/mm/aaaa, statut),
+   :462-488 (répartition par moyen), :490-538 (6 mois, « mai » … « oct. »),
+   :541-560 (derniers remboursements, date jj/mm/aaaa : _date_label :84-90).
 
 Sources des affirmations :
 - douleurs : docs/guides/AITE_POS_Credit_fiche_produit.pdf p.3 (« le crédit
@@ -129,9 +155,9 @@ Sources des affirmations :
   recalculé et « Réglée » : pos_credit.py:133-147 ;
 - « Hervé sait qui relancer en premier » : fiche produit p.3 (« le gérant
   sait combien récupérer et qui relancer en priorité ») ; top débiteurs
-  trié par encours (pos_credit_dashboard.py:428), et non par urgence : la
+  trié par encours (pos_credit_dashboard.py:458), et non par urgence : la
   voix ajoute « le statut dit qui est en retard » (statut = sévérité d'après
-  l'âge max, :382-429) et les anneaux portent sur Sylvie Mbarga (104 j,
+  l'âge max, :437-457) et les anneaux portent sur Sylvie Mbarga (104 j,
   Critique) et Joël Kamga (39 j, En retard, aucun paiement), pas sur la
   première ligne (Brigitte Essomba, 22 j, Récente) ;
 - douleur « Remboursements MoMo et Orange Money notés nulle part » : fiche
@@ -143,9 +169,9 @@ Sources des affirmations :
 - bulles : part mise sur ardoise = dette, pos_order.py:9-27 ; seuils de
   sévérité, pos_credit.py:26-28 et :162-177 ; reste dû proposé et plafonné,
   pos_credit.py:222-239 et wizard/pos_credit_repay_wizard.py:53-84 ; part
-  en retard, pos_credit_dashboard.py:120-244 et dashboard.xml:116-118 ;
+  en retard, pos_credit_dashboard.py:130-252 et dashboard.xml:116-118 ;
   clic sur un débiteur = ses ardoises ouvertes (« Ardoises du client »,
-  domaine state = open), dashboard_view.js:433-442 ;
+  domaine state = open), dashboard_view.js:447-456 ;
 - « Valider » s'allume dès que le reste à payer est nul et s'éteint sinon :
   odoo18 payment_screen.xml:67-77 (canBeValidated) ; les boutons des modes
   de paiement n'ont pas d'état sélectionné (payment_screen.xml:141-149) ;
@@ -160,19 +186,24 @@ Sources des affirmations :
   pos_credit_payment_views.xml:36-66, pos_credit_payment.py:20, :42-85,
   :131-146) ; corrigé dans aite_pos_credit 18.0.2.0.4 (ECARTS n° 20) : le
   geste montré est « Annuler » (fa-times de la ligne), puis ressaisir ;
-- résultats : 1 bouton (payment_screen_button.xml:12-18) ; 5 moyens de
+- résultats : 1 bouton (payment_screen_button.xml:13-20) ; 5 moyens de
   remboursement (pos_credit_payment.py:49-58) ; 8 indicateurs
-  (dashboard.xml:85-122) et balance âgée en 4 tranches
-  (pos_credit_dashboard.py:262-271).
+  (dashboard.xml:85-123) et balance âgée en 4 tranches
+  (pos_credit_dashboard.py:286-295).
 
 Données (fictives) : demo.py (Démo Hôtellerie SARL, Hervé Tchakounté ;
 les cinq ardoises ouvertes de demo.ARDOISES — ARD/0042 Patrick Nkoulou,
 ARD/0039 Brigitte Essomba, ARD/0031 Joël Kamga, ARD/0024 Armand Mvogo,
 ARD/0017 Sylvie Mbarga —, mêmes dates et montants, contrôlés par assert ;
-remboursements d'Armand Mvogo, 20 000 FCFA en espèces le 30/09/2026, et de
-Brigitte Essomba, 12 000 FCFA en MTN Mobile Money le 06/10, réf.
-7349218805 ; référence Orange Money OM261014.1530.A55120 de scenarios/
-c3_caisse.py). Ajoutés ici, fictifs : Cédric Ngassa (client du bar,
+remboursements d'Armand Mvogo, 20 000 FCFA en espèces, et de Brigitte
+Essomba, 12 000 FCFA en MTN Mobile Money le 06/10, réf. 7349218805 ;
+référence Orange Money OM261014.1530.A55120 de scenarios/c3_caisse.py).
+Le remboursement en espèces d'Armand Mvogo est daté du 01/10/2026, et non
+plus du 30/09 : « Ce mois » commence désormais le 1er (livraison 4,
+ECARTS n° 38), et c'est à cette date que les chiffres du tableau de bord de
+c3_caisse.py et de t15_direction.py (37 000 FCFA en 4 remboursements,
+▲ +12,1 %, 19,8 %) restent exacts ; c3 (fiche ARD/0024) et t15 (liste des
+remboursements, lue ici) reprennent le 01/10. Ajoutés ici, fictifs : Cédric Ngassa (client du bar,
 ARD/0043, la seule ardoise créée dans le tutoriel), et deux ardoises
 soldées dans la période, hors de la liste « Ouvertes » : Ruth Bekolo
 (30 000 FCFA ouverts le 12/09 au Restaurant, soldés le 02/10 : 20 j) et
@@ -189,13 +220,15 @@ vrai mobile n'est associé à une dette.
 Le matin du 14/10, avant les deux opérations du tutoriel, le tableau de bord
 Recouvrement montre exactement celui de c3_caisse.py (indicateurs(True),
 contrôlé par assert) : encours 150 000 FCFA sur 5 débiteurs, recouvré
-37 000 FCFA en 4 remboursements (30/09, 02/10, 06/10, 10/10), 18 500 FCFA
-de nouvelles ardoises (1), taux 19,8 %, 101 500 FCFA en retard, 2 ardoises
-réglées en 18 j en moyenne. La vidéo le montre après : + 7 500 FCFA
+37 000 FCFA en 4 remboursements (01/10, 02/10, 06/10, 10/10), ▲ +12,1 %
+contre 33 000 FCFA du 17 au 30/09, 18 500 FCFA de nouvelles ardoises (1),
+▼ 63,0 % contre 50 000 FCFA, taux 19,8 %, 101 500 FCFA en retard, 2 ardoises
+réglées en 18,0 j en moyenne. La vidéo le montre après : + 7 500 FCFA
 d'ardoise (ARD/0043), − 44 500 FCFA d'encours et + 44 500 FCFA de recouvré
 (ARD/0024 soldée), soit 113 000 FCFA d'encours, 81 500 FCFA recouvrés en 5
-remboursements, 26 000 FCFA de nouvelles ardoises (2), 41,9 %, 57 000 FCFA
-en retard (50,4 %), 3 ardoises réglées en 31 j en moyenne.
+remboursements (▲ +147,0 %), 26 000 FCFA de nouvelles ardoises (2,
+▼ 48,0 %), 41,9 %, 57 000 FCFA en retard (50,4 %), 3 ardoises réglées en
+31,0 j en moyenne.
 Numérotation (convention de t04_note_chambre.py:65-72 et t12_ventes.py) :
 vente de Cédric à 13:47, avant le règlement Orange Money de 15:30, 4e
 commande de la session du jour 00135 (suivi 504, « 00135-001-0004 »), soit
@@ -204,25 +237,30 @@ soir (t04) ; commande d'origine de ARD/0024 du 18/08 : « Bar de la terrasse/
 0884 », entre la /0851 du 14/08 et la /1091 du 12/09 (t11_fidelite.py:
 163-164, environ 8,3 tickets par jour). Évolution des mois de mai à août :
 des ardoises ouvertes puis soldées avant septembre (non montrées) s'ajoutent
-à celles de la liste ; les encours de fin de mois qui en découlent sont ceux
-du cockpit (t15_direction.py). La journée est le 14/10/2026 : les âges des
+à celles de la liste ; les encours de fin de mois qui en découlent (fin
+septembre : 168 500 FCFA, le remboursement du 01/10 comptant en octobre)
+sont ceux de la courbe du cockpit (t15_direction.py, ENCOURS, calculée à
+partir d'OUVERTES_MOIS et RECOUVRE_MOIS). La journée est le 14/10/2026 : les âges des
 ardoises de demo.ARDOISES en découlent. Tous les montants affichés sont
 recalculés plus bas à partir des listes ARDOISES, SOLDEES et
 REMBOURSEMENTS, avec les règles du code.
 
 Ce que la vidéo montre, et ce qu'elle évite :
-- Le bouton suppose une méthode « ardoise » sur la caisse : l'installation
-  ne la crée pas (hooks.py:46-55 en échec silencieux sous Odoo 18) ; ici la
-  méthode « Ardoise client » est déjà en place, comme sur la base de
-  démonstration. La vidéo ne dit pas « sans configuration ».
+- Le bouton suppose une méthode « ardoise » sur la caisse : depuis la
+  livraison 4, l'installation crée « Ardoise client » et l'ajoute aux
+  caisses (hooks.py, ECARTS n° 74) ; la caisse du bar l'a donc, comme la
+  base de démonstration. La vidéo ne montre pas la fiche du mode de
+  paiement (case « Vente à crédit (ardoise) » sous « Journal », avec sa
+  phrase « Case cochée : chaque ticket réglé avec ce mode ouvre une ardoise
+  au nom du client (POS Crédit → Ardoises). », res_config_settings_views.xml:
+  15-23).
 - Ni plafond de crédit, ni relance automatique, ni écriture 411 (case
   « Comptabiliser les remboursements » décochée par défaut,
   res_config_settings.py:61-64) ne sont montrés ou dits.
 - Après « Encaisser », la fiche se recharge dès la fermeture de l'assistant
   (l'en-tête change dans le même geste) : aucune remise à jour à la main ;
   l'ardoise réglée n'a plus de bouton d'en-tête.
-- La vignette est prise à l'étape 5 (« Réglée »), pas sur la carte
-  « ▲ 147 % vs N-1 » (écart 5).
+- La vignette est prise à l'étape 5 (« Réglée »).
 - « Regrouper par Sévérité » (erreur, champ non stocké) : retiré du menu de
   recherche, corrigé dans aite_pos_credit 18.0.2.0.4 (ECARTS n° 21,
   pos_credit_views.xml:160-176) ; le menu n'est pas montré.
@@ -234,38 +272,43 @@ Ce que la vidéo montre, et ce qu'elle évite :
 - Deux tons de texte foncés pour le contraste AA, comme aite.css :
   orange #8A6100 des lignes « En retard », vert #1A6E2E du « Restant » nul.
 
-Écarts relevés, rejoués tels quels (voir le rapport) :
-1. Dates ISO dans le tableau de bord : « Dernier paiement » (top débiteurs)
-   et « Date » (derniers remboursements) — pos_credit_dashboard.py:405-406,
-   :520.
-2. Le texte indicatif du courriel du reçu reste en anglais : « e.g.
-   john.doe@mail.com » (odoo18 receipt_screen.xml:27, absent de fr.po).
-3. Le message d'erreur du bouton (non montré) parle d'une méthode « Payer
-   plus tard » et de la case « Vente à crédit » : Odoo 18 dit « Compte
-   client » et la case n'a pas de libellé (payment_screen_button.js:78-82).
-4. L'action « Remboursements » n'a pas d'aide d'écran vide
-   (pos_credit_payment_views.xml:84-90).
-5. La flèche « ▲ 147 % vs N-1 » compare à la période précédente de même
-   durée (15/09–29/09), pas à l'année précédente
-   (pos_credit_dashboard.py:197-220).
-6. La méthode « ardoise » n'est jamais créée à l'installation : le
-   post_init_hook cherche account.account.company_id, absent d'Odoo 18
-   (hooks.py:46-55, erreur avalée) ; il faut la créer à la main, et sa case
-   « Vente à crédit (ardoise) » s'affiche sans libellé dans le titre de la
-   fiche (views/res_config_settings_views.xml:4-14).
-7. L'icône fa-book du bouton « Mettre sur ardoise » n'a pas d'attribut
-   title (payment_screen_button.xml:16), contre la règle de CLAUDE.md.
-8. « Ce mois » démarre la veille du 1er à Douala : periodRange passe le 1er
-   octobre à minuit local en UTC par toISOString (static/src/js/services/
-   utils.js:84-107), d'où « 30/09/2026 » dans le filtre et le
-   remboursement du 30/09 compté dans la période (comme t12, t13 et t14).
+Écarts de la version précédente, corrigés dans la livraison 4
+(aite_pos_credit 18.0.2.0.5) et rejoués corrigés :
+1. Dates ISO du tableau de bord (ECARTS n° 37) : « Dernier paiement » (top
+   débiteurs) et « Date » (derniers remboursements) s'écrivent jj/mm/aaaa
+   (pos_credit_dashboard.py:84-90, :434, :553 ; dashboard.xml:174,
+   dashboard_view.js:231-234).
+2. Message d'erreur du bouton (n° 65, non montré) : il parle désormais d'un
+   mode « Compte client » et de la case « Vente à crédit (ardoise) »
+   (payment_screen_button.js:76-86) ; la case a son libellé, sous
+   « Journal » (res_config_settings_views.xml:15-23).
+3. Aide d'écran vide de l'action « Remboursements » (n° 66, non visible :
+   liste remplie ; pos_credit_payment_views.xml:102-113).
+4. « vs N-1 » (n° 62) devient « vs période précédente », à une décimale
+   fixe : « ▲ +147,0 % vs période précédente » (dashboard_view.js:184-200,
+   utils.js:78-95).
+5. Mode « Ardoise client » créé à l'installation (n° 74, hooks.py).
+6. Icône fa-book du bouton avec son title (n° 64,
+   payment_screen_button.xml:16-17).
+7. « Ce mois » démarre le 1er (n° 38) : « 01/10/2026 » dans le filtre
+   (utils.js:135-167) ; la période précédente va du 17 au 30/09.
+8. Formats unifiés : « 41,9 % » et « 50,4 % » (une décimale fixe, espace
+   insécable), « délai moyen 31,0 j », « 104 j », « 1 ardoise ouverte » /
+   « 2 ardoises ouvertes » sans « (s) », mois « mai » … « oct. »,
+   « En retard (+30 j) » (dashboard.xml:116).
+Reste rejoué tel quel : le texte indicatif du courriel du reçu, en anglais,
+« e.g. john.doe@mail.com » (odoo18 receipt_screen.xml:27, absent de fr.po ;
+ECARTS n° 43, Odoo standard, non corrigé).
 """
 
+import math
 from datetime import date, timedelta
 
 import demo
-from ecrans import (APPS_PROFIL, ICONES, e, entree, fenetre_muk, fenetre_pos, icone, navigateur, pos_produits,
-                    recherche, statusbar, vue_fiche)
+from ecrans import (APPS_PROFIL, ICONES, MENUS_MUK, NBSP, compte, date_fr, e, entier, entree, fcfa, fenetre_muk,
+                    fenetre_pos, icone, jours, mois_abrege, navigateur, pct, pos_produits, recherche, sens, statusbar,
+                    variation, vue_fiche)
+from ecrans import age as age_j
 from marketing import bulle, dezoom, reaction, zoom
 from moteur import (animer, anneau, cacher, choisir, clic, classe, compter, curseur, defiler, fermer, montrer, notifier,
                     ouvrir, pause, saisir, texte, vue)
@@ -275,7 +318,7 @@ AUJ = date(2026, 10, 14)
 JOUR = '14/10/2026'
 CLIENT = 'Cédric Ngassa'                           # fictif : la note du bar mise sur ardoise
 BAR, RESTO, BOUT = 'Bar de la terrasse', 'Restaurant', 'Boutique'
-METHODE = 'Ardoise client'                         # aite_demo_data/models/demo_generator.py:294-303
+METHODE = 'Ardoise client'                         # aite_pos_credit/hooks.py:30 (CREDIT_METHOD_NAME)
 REGLEE = 'ARD/0024'                                # l'ardoise d'Armand Mvogo, soldée en Orange Money
 REF_OM = 'OM261014.1530.A55120'                    # scenarios/c3_caisse.py
 
@@ -294,13 +337,16 @@ ARDOISES = [
 # (référence, client, caisse d'origine, ouverture, montant initial)
 SOLDEES = [('ARD/0034', 'Ruth Bekolo', RESTO, date(2026, 9, 12), 30000),
            ('ARD/0037', 'Francis Tsala', BAR, date(2026, 9, 24), 8000)]
-# (date, ardoise, client, moyen, réf. transaction, montant) — le premier est celui de la vidéo
+# (date, ardoise, client, moyen, réf. transaction, montant) — le premier est celui de la vidéo.
+# Le remboursement en espèces d'Armand Mvogo est daté du 01/10 (et non plus du 30/09) : depuis la livraison 4,
+# « Ce mois » commence le 1er (utils.js:135-167, localIsoDate) ; au 01/10, les quatre remboursements du tableau de
+# bord de c3_caisse.py et de t15_direction.py restent dans la période, et tous leurs chiffres avec eux.
 REMBOURSEMENTS = [
     (date(2026, 10, 14), 'ARD/0024', 'Armand Mvogo', 'Orange Money', REF_OM, 44500),
     (date(2026, 10, 10), 'ARD/0037', 'Francis Tsala', 'MTN Mobile Money', '7360241177', 2000),
     (date(2026, 10, 6), 'ARD/0039', 'Brigitte Essomba', 'MTN Mobile Money', '7349218805', 12000),
     (date(2026, 10, 2), 'ARD/0034', 'Ruth Bekolo', 'Orange Money', 'OM261002.1844.B31907', 3000),
-    (date(2026, 9, 30), 'ARD/0024', 'Armand Mvogo', 'Espèces', '', 20000),
+    (date(2026, 10, 1), 'ARD/0024', 'Armand Mvogo', 'Espèces', '', 20000),
     (date(2026, 9, 26), 'ARD/0037', 'Francis Tsala', 'Espèces', '', 6000),
     (date(2026, 9, 20), 'ARD/0034', 'Ruth Bekolo', 'Espèces', '', 27000),
     (date(2026, 8, 12), 'ARD/0017', 'Sylvie Mbarga', 'Espèces', '', 5000),
@@ -322,47 +368,39 @@ for _ref, _cli, _c, _d, _mt in SOLDEES:
 assert REMBOURSEMENTS[0][5] == 64500 - 20000
 
 
-def fcfa(n):
-    """Un montant au format d'Odoo pour le franc CFA (arrondi 1, symbole après)."""
-    signe = '-' if n < 0 else ''
-    return signe + '{:,}'.format(abs(int(round(n)))).replace(',', ' ') + ' FCFA'
-
-
-def jj(d):
-    return d.strftime('%d/%m/%Y')
+# Les formats viennent d'ecrans.py : fcfa(n) pour les champs d'Odoo et la caisse (espace insécable de fr_FR),
+# fcfa(n, tdb=True) pour le tableau de bord (fmtMoney, espace fine) ; date_fr (« 14/10/2026 ») ; pct (« 41,9 % ») ;
+# variation (« ▲ +147,0 % ») ; jours (« 31,0 j ») ; age_j (« 104 j ») ; compte (« 2 ardoises ouvertes »).
+jj = date_fr
 
 
 def age(d):
+    """L'âge d'une ardoise au 14/10, en jours."""
     return (AUJ - d).days
 
 
-def severite(jours):
+def severite(jours_):
     """pos_credit.py:162-177 : Récente, En retard ≥ 30 j, Critique ≥ 60 j."""
-    if jours >= 60:
+    if jours_ >= 60:
         return 'Critique', 'rouge'
-    if jours >= 30:
+    if jours_ >= 30:
         return 'En retard', 'orange'
     return 'Récente', 'vert'
 
 
-def pct(v):
-    """utils.js:69-71 : un chiffre après la virgule, virgule française."""
-    r = round(v * 10) / 10.0
-    return ('%d' % r if r == int(r) else ('%.1f' % r).replace('.', ',')) + ' %'
-
-
 for _a, _d in zip(ARDOISES[1:], demo.ARDOISES):          # mêmes références, clients, dates et montants
-    assert (_a[0], _a[1], jj(_a[3]), fcfa(_a[4]), fcfa(_a[5])) == (_d[0], _d[1], _d[2], _d[3], _d[4]), _a[0]
+    assert (_a[0], _a[1], jj(_a[3]), fcfa(_a[4]).replace(NBSP, ' '), fcfa(_a[5]).replace(NBSP, ' ')) == (
+        _d[0], _d[1], _d[2], _d[3], _d[4]), _a[0]
 
-# La période « Ce mois », vue d'un poste à Douala le 14/10 : periodRange (utils.js:84-107) passe le 1er octobre
-# à minuit local en UTC (toISOString), d'où le 30/09 (écart 8) ; la période précédente de même durée va du 15/09
-# au 29/09 (pos_credit_dashboard.py:197-220).
-DEBUT, AVANT_DEBUT, AVANT_FIN = date(2026, 9, 30), date(2026, 9, 15), date(2026, 9, 29)
+# La période « Ce mois », vue d'un poste à Douala le 14/10 : du 01/10 au 14/10 (periodRange et localIsoDate,
+# utils.js:135-167 — la veille du 1er, « 30/09 », a disparu avec la livraison 4) ; la période précédente de même
+# durée va du 17/09 au 30/09 (prev_to = veille du début, prev_from = prev_to − 13 j : pos_credit_dashboard.py:206-230).
+DEBUT, AVANT_DEBUT, AVANT_FIN = date(2026, 10, 1), date(2026, 9, 17), date(2026, 9, 30)
 TRANCHES = [('0–30 j', -10 ** 9, 30), ('30–60 j', 30, 60), ('60–90 j', 60, 90), ('+90 j', 90, 10 ** 9)]
 
 
 def indicateurs(avant):
-    """get_kpis et get_aging (pos_credit_dashboard.py:120-288), le matin du 14/10 (``avant`` : ni ARD/0043 ni le
+    """get_kpis et get_aging (pos_credit_dashboard.py:130-312), le matin du 14/10 (``avant`` : ni ARD/0043 ni le
     règlement d'Armand Mvogo, l'état que montre c3_caisse.py) ou après les deux opérations du tutoriel."""
     remb = REMBOURSEMENTS[1:] if avant else REMBOURSEMENTS
     toutes = [a[:5] for a in (ARDOISES[1:] if avant else ARDOISES)] + SOLDEES
@@ -395,8 +433,9 @@ def indicateurs(avant):
 # recouvré, nouvelles ardoises, taux, retard, ardoises réglées et délai moyen).
 AVANT = indicateurs(True)
 assert (AVANT['encours'], AVANT['debiteurs'], AVANT['recouvre'], AVANT['nb_remb'], AVANT['nouv'], len(AVANT['nouvelles']),
-        pct(AVANT['taux']), AVANT['retard'], AVANT['reglees'], AVANT['delai']) == (
-    150000, 5, 37000, 4, 18500, 1, '19,8 %', 101500, 2, 18)
+        pct(AVANT['taux']), AVANT['retard'], AVANT['reglees'], jours(AVANT['delai']), variation(AVANT['d_rec']),
+        variation(AVANT['d_new'])) == (
+    150000, 5, 37000, 4, 18500, 1, pct(19.8), 101500, 2, jours(18), variation(12.1), variation(-63))
 # Après la vente de Cédric Ngassa (ARD/0043) et le règlement d'Armand Mvogo (ARD/0024 soldée) : ce que montre la vidéo.
 K = indicateurs(False)
 OUVERTES = K['ouvertes']
@@ -421,12 +460,12 @@ CARTE_BAR = [
     ('Arachides grillées', ACCOMP), ('Chips de plantain', ACCOMP)]
 # Le ticket de Cédric Ngassa : articles sans taxe (comme au ticket de t04), donc ni ligne « Taxes » à l'écran de
 # vente ni bloc des taxes au reçu.
-TICKET = [('t10-l1', 'Poisson braisé', '1,00', '7 000 FCFA', '7 000 FCFA'),
-          ('t10-l2', 'Plantain frit', '1,00', '1 500 FCFA', '1 500 FCFA'),
-          ('t10-l3', 'Bière blonde 65 cl', '2,00', '1 500 FCFA', '3 000 FCFA'),
-          ('t10-l4', 'Jus de bissap 50 cl', '1,00', '1 000 FCFA', '1 000 FCFA')]
-TOTAL = '12 500 FCFA'
-COMPTANT, A_CREDIT = '5 000 FCFA', '7 500 FCFA'
+TICKET = [('t10-l1', 'Poisson braisé', '1,00', fcfa(7000), fcfa(7000)),
+          ('t10-l2', 'Plantain frit', '1,00', fcfa(1500), fcfa(1500)),
+          ('t10-l3', 'Bière blonde 65 cl', '2,00', fcfa(1500), fcfa(3000)),
+          ('t10-l4', 'Jus de bissap 50 cl', '1,00', fcfa(1000), fcfa(1000))]
+TOTAL = fcfa(12500)
+COMPTANT, A_CREDIT = fcfa(5000), fcfa(7500)
 NUMERO = '504'                                     # (session 135 % 10) × 100 + 4 : pos_order.py:58-60
 REF_TICKET, HEURE = '00135-001-0004', '14/10/2026 13:47:05'   # pos_store.js:1141-1159
 _TAXES = '<small>Taxes<span id="t10-vente-taxes"></span></small>'
@@ -464,13 +503,13 @@ PAIEMENT = (
     '<div class="pos-d pos-pd"><div class="pos-du">%s</div>'
     '<div class="t10-choix" id="t10-msg">Veuillez sélectionner un mode de paiement</div>'
     '<div class="t10-zone"><div class="pile"><div class="pos-restant masque t10-ok" id="t10-st-ok"><span>Restant</span>'
-    '<span>0 FCFA</span></div><div class="pos-restant masque t10-du" id="t10-st-du"><span>Restant</span>'
-    '<b id="t10-st-du-v">12 495 FCFA</b></div></div>'
+    '<span>%s</span></div><div class="pos-restant masque t10-du" id="t10-st-du"><span>Restant</span>'
+    '<b id="t10-st-du-v">%s</b></div></div>'
     '<div class="pos-pl masque t10-pl" id="t10-pl-esp"><span>Espèces</span><span id="t10-pl-esp-mt">%s</span>'
     '<span class="x">×</span></div></div></div></div></div>'
     % (''.join('<div class="pos-mode" id="%s"><span class="ico">%s</span><span>%s</span></div>' % (i, s, e(l))
                for i, l, s in MODES),
-       ICONES['personne'], e(CLIENT), ICONES['document'], LIVRE, PAVE, TOTAL, TOTAL))
+       ICONES['personne'], e(CLIENT), ICONES['document'], LIVRE, PAVE, TOTAL, fcfa(0), fcfa(12495), TOTAL))
 
 # -- la fenêtre des clients (pos.selectPartner)
 ENVOI = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round">'
@@ -529,11 +568,11 @@ RECU = (
     '</div><hr><span class="t10-imprimer"><span class="ico">%s</span>Imprimer le reçu complet</span>'
     '<div class="t10-mail"><span class="t10-in">e.g. john.doe@mail.com</span><span class="t10-envoi">%s</span></div>'
     '<div class="t10-nouv">Nouvelle commande</div></div>'
-    '<div class="t10-recu-d"><div class="t10-ticket"><div class="t10-ent"><div>%s</div><div>Tél. : +237 6 00 00 00 10</div>'
+    '<div class="t10-recu-d"><div class="t10-ticket"><div class="t10-ent"><div>%s</div><div>Tél. : %s</div>'
     '%s<div>Servi par %s</div><div class="t10-suivi">%s</div></div>%s'
     '%s<div class="t10-tk-paie" id="t10-tk-paie">%s%s%s</div>'
     '<div class="t10-gen">Généré par Odoo<br>%s<br>%s</div></div></div></div></div>'
-    % (CERCLE_OK, TOTAL, ICONES['imprimer'], ENVOI, e(demo.SOCIETE), TIRETS, e(NOM), NUMERO,
+    % (CERCLE_OK, TOTAL, ICONES['imprimer'], ENVOI, e(demo.SOCIETE), e(demo.TEL_HOTEL), TIRETS, e(NOM), NUMERO,
        ''.join(ligne_recu(a, q, p, m) for _, a, q, p, m in TICKET), TIRETS,
        montant('TOTAL', TOTAL, ' t10-total'), montant('Espèces', COMPTANT), montant(METHODE, A_CREDIT, ' t10-ard-l'),
        REF_TICKET, HEURE))
@@ -547,7 +586,7 @@ ENGRENAGE = ('<svg viewBox="0 0 24 24" fill="currentColor"><path d="M10.3 2h3.4l
              '-.9l-2.5.9-1.7-2.9 2-1.7a6 6 0 010-1.8l-2-1.7 1.7-2.9 2.5.9c.5-.4 1.1-.7 1.7-.9zM12 9a3 3 0 100 6 3 3 0 '
              '000-6z" transform="translate(0 1.5) scale(.9) translate(1.3 0)"/></svg>')
 FLECHES = '<span class="t10-fl"><i>‹</i><i>›</i></span>'
-MENUS = ['Recouvrement', 'Ardoises', 'Remboursements']
+MENUS = MENUS_MUK['pos_credit']                    # Recouvrement, Ardoises, Remboursements (pos_credit_menus.xml)
 
 # -- la liste des ardoises ouvertes
 COLS = [('Référence', '108px'), ('Client', '172px'), ('Origine', '138px'), ("Caisse d'origine", '164px'),
@@ -738,30 +777,36 @@ def courbes(ident, series, etiquettes, ymax, pas, w=700, h=170):
 
 
 def donut(parts, r=78):
-    """Un anneau Chart.js (cutout 56 %, bord blanc de 2 px) et sa légende à droite."""
+    """Un anneau Chart.js (dashboard_view.js:354-413 : cutout 56 %, borderWidth 2, borderColor #fff ; départ à midi,
+    sens horaire) et sa légende à droite. Chaque part est un secteur fermé (arc extérieur, rayon, arc intérieur), bordé
+    de blanc comme les arcs de Chart.js : les parts se touchent net, sans encoche ni débord au point de départ."""
     total = float(sum(p[1] for p in parts))
-    rm = r * 0.78
-    c = 2 * 3.14159265 * rm
-    debut, arcs = 0.0, []
+    ri = r * 0.56
+
+    def point(rayon, ang):
+        return 100 + rayon * math.cos(ang), 100 + rayon * math.sin(ang)
+
+    def secteur(a0, a1, coul):
+        grand = 1 if a1 - a0 > math.pi else 0
+        d = ('M%.2f,%.2f A%.1f,%.1f 0 %d 1 %.2f,%.2f L%.2f,%.2f A%.1f,%.1f 0 %d 0 %.2f,%.2f Z'
+             % (point(r, a0) + (r, r, grand) + point(r, a1) + point(ri, a1) + (ri, ri, grand) + point(ri, a0)))
+        return ('<path d="%s" fill="%s" stroke="#fff" stroke-width="2" stroke-linejoin="bevel"/>' % (d, coul))
+
+    arcs, ang = [], -math.pi / 2
     for _lib, v, coul in parts:
-        lg = c * v / total
-        arcs.append('<circle r="%.1f" cx="100" cy="100" fill="none" stroke="%s" stroke-width="%.1f" '
-                    'stroke-dasharray="%.1f %.1f" stroke-dashoffset="%.1f"/>' % (rm, coul, r * 0.44, lg, c - lg, -debut))
-        debut += lg
-    import math
-    sep, ang = [], 0.0
-    for _lib, v, _c in parts:
-        x1, y1 = 100 + (r - r * 0.44) * math.cos(ang), 100 + (r - r * 0.44) * math.sin(ang)
-        x2, y2 = 100 + (r + 2) * math.cos(ang), 100 + (r + 2) * math.sin(ang)
-        sep.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#fff" stroke-width="2"/>' % (x1, y1, x2, y2))
-        ang += 2 * math.pi * v / total
-    arcs.extend(sep)
+        fin_ = ang + 2 * math.pi * v / total
+        if v == total:            # une seule part : un arc SVG ne peut pas boucler sur lui-même, deux moitiés
+            arcs.append(secteur(ang, ang + math.pi, coul) + secteur(ang + math.pi, fin_, coul))
+        else:
+            arcs.append(secteur(ang, fin_, coul))
+        ang = fin_
     leg = ''.join('<div class="t10-leg"><i style="background:%s"></i>%s</div>' % (coul, e(lib)) for lib, _v, coul in parts)
-    return ('<div class="t10-donut"><svg viewBox="0 0 200 200" width="200" height="200"><g transform="rotate(-90 100 100)">'
-            '%s</g></svg><div class="t10-legs">%s</div></div>' % (''.join(arcs), leg))
+    return ('<div class="t10-donut"><svg viewBox="0 0 200 200" width="200" height="200">%s</svg>'
+            '<div class="t10-legs">%s</div></div>' % (''.join(arcs), leg))
 
 
 def kpi_(ident, lib, val, sous, accent=None, delta=None):
+    """KpiCard de POS Crédit (dashboard.xml:4-13) : libellé, valeur, variation éventuelle, sous-texte."""
     d = '<div class="t10-kd %s">%s</div>' % (delta[1], e(delta[0])) if delta else ''
     return ('<div class="t10-kpi%s" id="%s"><div class="t10-kl">%s</div><div class="t10-kv" id="%s-v">%s</div>%s'
             '<div class="t10-ks">%s</div></div>' % (' mega acc-' + accent if accent else '', ident, e(lib), ident,
@@ -786,35 +831,36 @@ def carte_g(titre, contenu, mini='', ident=None):
 
 
 def flux(n):
-    """dashboard_view.js:200-204 : « flux période : » + signe + montant."""
-    return 'flux période : %s%s' % ('+' if n > 0 else '', fcfa(n))
+    """netFlowSub (dashboard_view.js:203-207) : « flux période : » + signe + montant (fmtMoney)."""
+    return 'flux période : %s%s' % ('+' if n > 0 else '', fcfa(n, tdb=True))
 
 
 def delta(v, bon_si_hausse):
-    r = round(v * 10) / 10.0
-    fl = '▲' if r > 0 else ('▼' if r < 0 else '■')
-    bon = r >= 0 if bon_si_hausse else r <= 0
-    txt = ('%d' % abs(r) if abs(r) == int(abs(r)) else ('%.1f' % abs(r)).replace('.', ','))
-    return '%s %s %% vs N-1' % (fl, txt), 'haut' if bon else 'bas'
+    """deltaOf (dashboard_view.js:184-200) : « ▲ +147,0 % vs période précédente » (fmtDelta) ; vert quand c'est bon
+    signe, rouge sinon, gris à zéro (une hausse des nouvelles ardoises est mauvaise)."""
+    return variation(v) + ' vs période précédente', sens(v, hausse_mauvaise=not bon_si_hausse)
 
 
-MOIS = ['Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct']
-# get_evolution (pos_credit_dashboard.py:459-505), mois civils : de mai à août, des ardoises ouvertes puis soldées
+MOIS = [mois_abrege(m) for m in range(5, 11)]        # get_evolution : « mai » … « oct. », sans l'année
+# get_evolution (pos_credit_dashboard.py:490-538), mois civils : de mai à août, des ardoises ouvertes puis soldées
 # avant septembre s'ajoutent à celles de la liste (montants fictifs) ; septembre et octobre sortent des listes.
-# Les encours de fin de mois qui en découlent (16 000, 19 000, 25 000, 94 500, 148 500) sont ceux de la courbe
-# « Encours — 6 mois » du cockpit (t15_direction.py, ENCOURS).
+# Les encours de fin de mois qui en découlent sont 16 000, 19 000, 25 000, 94 500 et 168 500 (fin septembre : le
+# remboursement de 20 000 d'Armand Mvogo est passé au 01/10) ; la courbe « Encours — 6 mois » du cockpit
+# (t15_direction.py, ENCOURS) les recalcule à partir d'OUVERTES_MOIS et de RECOUVRE_MOIS.
 TOUTES = [a[:5] for a in ARDOISES] + SOLDEES
 OUVERTES_MOIS = [38000, 44000, 52000, 82500] + [sum(a[4] for a in TOUTES if a[3].month == m) for m in (9, 10)]
 RECOUVRE_MOIS = [22000, 41000, 46000, 13000] + [sum(r[5] for r in REMBOURSEMENTS if r[0].month == m) for m in (9, 10)]
 assert sum(a[4] for a in TOUTES if a[3].month in (7, 8)) <= 52000 + 82500
 _FIN = 0
-for _o, _r, _m in zip(OUVERTES_MOIS, RECOUVRE_MOIS, MOIS):
+for _mois, _o, _r in zip(range(5, 11), OUVERTES_MOIS, RECOUVRE_MOIS):
     _FIN += _o - _r
-    assert _FIN >= 0, _m
-    if _m == 'Août':          # fin août : restent Sylvie Mbarga (30 000) et Armand Mvogo (64 500)
+    assert _FIN >= 0, _mois
+    if _mois == 8:            # fin août : restent Sylvie Mbarga (30 000) et Armand Mvogo (64 500)
         assert _FIN == 30000 + 64500
+    if _mois == 9:            # fin septembre (le remboursement du 01/10 compte en octobre)
+        assert _FIN == 168500
 assert _FIN == ENCOURS
-PALETTE = {BAR: '#714B67', RESTO: '#185FA5', BOUT: '#3B6D11'}      # pos_credit_dashboard.py:31-34, par caisse
+PALETTE = {BAR: '#714B67', RESTO: '#185FA5', BOUT: '#3B6D11'}      # pos_credit_dashboard.py:32-35, par caisse
 PAR_CAISSE = sorted(((c, sum(a[4] - a[5] for a in OUVERTES if a[2] == c)) for c in (BAR, RESTO, BOUT)),
                     key=lambda x: -x[1])
 PAR_CAISSE = [x for x in PAR_CAISSE if x[1]]                      # la Boutique n'a plus d'encours
@@ -824,13 +870,13 @@ COUL_MOYEN = {'Orange Money': '#FF7900', 'MTN Mobile Money': '#FFC403', 'Espèce
 JOURS = [DEBUT + timedelta(days=j) for j in range((AUJ - DEBUT).days + 1)]
 PAR_JOUR = [sum(r[5] for r in REMBOURSEMENTS if r[0] == j) for j in JOURS]
 
-# le top débiteurs (pos_credit_dashboard.py:382-429) : encours décroissant, à égalité l'ordre de création décroissant
+# le top débiteurs (pos_credit_dashboard.py:408-459) : encours décroissant, à égalité l'ordre de création décroissant
 TOP = []
 for _cli in dict.fromkeys(a[1] for a in OUVERTES):
     _sienne = [a for a in OUVERTES if a[1] == _cli]
     _dern = [r for r in REMBOURSEMENTS if r[2] == _cli]
     TOP.append((_cli, sum(a[4] - a[5] for a in _sienne), max(age(a[3]) for a in _sienne),
-                max(r[0] for r in _dern).isoformat() if _dern else '—'))
+                jj(max(r[0] for r in _dern)) if _dern else '—'))     # last_payment_label, jj/mm/aaaa
 TOP.sort(key=lambda x: -x[1])
 TOP = TOP[:8]
 MAX_TOP = float(max(t[1] for t in TOP))
@@ -839,14 +885,14 @@ TOP_HTML = ('<div class="t10-tab" id="t10-top"><div class="t10-th" style="grid-t
             '<span>Téléphone</span><span class="d">Encours</span><span class="d">Âge max</span><span>Dernier paiement'
             '</span><span>Statut</span><span></span></div>%s</div>' % (COLS_TOP, ''.join(
                 '<div class="t10-tr" id="t10-d%d" style="grid-template-columns:%s"><b>%s</b><span class="t10-gris">%s</span>'
-                '<span class="t10-barc"><i style="width:%.0f%%"></i><b>%s</b></span><span class="d">%d j</span>'
+                '<span class="t10-barc"><i style="width:%.0f%%"></i><b>%s</b></span><span class="d">%s</span>'
                 '<span class="t10-gris">%s</span>%s<span><span class="t10-det" id="t10-d%d-det">Détail</span></span></div>'
-                % (i, COLS_TOP, e(c), e(TELEPHONES[c]), mt * 100 / MAX_TOP, fcfa(mt), ag, dp,
+                % (i, COLS_TOP, e(c), e(TELEPHONES[c]), mt * 100 / MAX_TOP, fcfa(mt, tdb=True), age_j(ag), dp,
                    badge(*severite(ag)), i) for i, (c, mt, ag, dp) in enumerate(TOP))))
 DERNIERS = ('<div class="t10-tab t10-tab-p"><div class="t10-th" style="grid-template-columns:150px 1fr 200px 150px">'
             '<span>Date</span><span>Client</span><span>Moyen</span><span class="d">Montant</span></div>%s</div>'
             % ''.join('<div class="t10-tr" style="grid-template-columns:150px 1fr 200px 150px"><span>%s</span><span>%s</span>'
-                      '<span>%s</span><span class="d">%s</span></div>' % (d.isoformat(), e(c), e(m), fcfa(mt))
+                      '<span>%s</span><span class="d">%s</span></div>' % (jj(d), e(c), e(m), fcfa(mt, tdb=True))
                       for d, _r, c, m, _ref, mt in K['remb']))
 
 TDB = (
@@ -872,18 +918,20 @@ TDB = (
        chips('Caisse', ['Toutes les caisses', BAR, RESTO, BOUT], dots=[None, PALETTE[BAR], PALETTE[RESTO],
                                                                         PALETTE[BOUT]]),
        section('Encours & recouvrement'),
-       kpi_('t10-k-enc', 'Encours total (dû)', fcfa(ENCOURS), flux(NOUVELLES - RECOUVRE), 'danger')
-       + kpi_('t10-k-rec', 'Recouvré (période)', fcfa(RECOUVRE), '%d remboursements' % NB_REMB, 'success',
-              delta(DELTA_REC, True))
-       + kpi_('t10-k-new', 'Nouvelles ardoises (période)', fcfa(NOUVELLES), '%d ardoises ouvertes' % len(OUVERT_MOIS),
-              'warning', delta(DELTA_NEW, False))
+       kpi_('t10-k-enc', 'Encours total (dû)', fcfa(ENCOURS, tdb=True), flux(NOUVELLES - RECOUVRE), 'danger')
+       + kpi_('t10-k-rec', 'Recouvré (période)', fcfa(RECOUVRE, tdb=True),
+              compte(NB_REMB, 'remboursement', 'remboursements'), 'success', delta(DELTA_REC, True))
+       + kpi_('t10-k-new', 'Nouvelles ardoises (période)', fcfa(NOUVELLES, tdb=True),
+              compte(len(OUVERT_MOIS), 'ardoise ouverte', 'ardoises ouvertes'), 'warning', delta(DELTA_NEW, False))
        + kpi_('t10-k-taux', 'Taux de recouvrement', pct(RECOUVRE * 100.0 / (ENCOURS + RECOUVRE)),
               'recouvré / (encours + recouvré)', 'primary'),
        section('Indicateurs de risque'),
-       kpi_('t10-k-moy', 'Ardoise moyenne', fcfa(ENCOURS / DEBITEURS), '%d débiteurs actifs' % DEBITEURS)
-       + kpi_('t10-k-anc', 'Plus ancienne dette', '%d j' % age(PLUS_VIEILLE[3]), PLUS_VIEILLE[1])
-       + kpi_('t10-k-ret', 'En retard (+30j)', fcfa(RETARD), pct(RETARD * 100.0 / ENCOURS) + " de l'encours")
-       + kpi_('t10-k-reg', 'Ardoises réglées (période)', str(K['reglees']), 'délai moyen %d j' % K['delai']),
+       kpi_('t10-k-moy', 'Ardoise moyenne', fcfa(ENCOURS / DEBITEURS, tdb=True),
+            compte(DEBITEURS, 'débiteur actif', 'débiteurs actifs'))
+       + kpi_('t10-k-anc', 'Plus ancienne dette', age_j(age(PLUS_VIEILLE[3])), PLUS_VIEILLE[1])
+       + kpi_('t10-k-ret', 'En retard (+30 j)', fcfa(RETARD, tdb=True), pct(RETARD * 100.0 / ENCOURS) + " de l'encours")
+       + kpi_('t10-k-reg', 'Ardoises réglées (période)', entier(K['reglees'], tdb=True),
+              'délai moyen ' + jours(K['delai'])),
        section('Âge de la dette & évolution'),
        carte_g("Balance âgée (aging) de l'encours", barres('t10-g-age', AGING, ['#3B6D11', '#854F0B', '#A32D2D',
                                                                                  '#5E1B1B'],
@@ -1013,9 +1061,7 @@ CSS = """
 .t10-ancre { height: 1px; width: 420px; margin-left: auto; }
 /* les réactions se posent là où elles ne cachent rien de ce que l'étape montre */
 #t10-r-regle { bottom: 386px; }
-#t10-r-relance { bottom: auto; top: 344px; right: auto; left: 624px; padding: 10px 18px 10px 12px; }
-#t10-r-relance span { font-size: 21px; }
-#t10-r-relance .av { width: 52px; height: 52px; font-size: 24px; }
+#t10-r-relance { bottom: 200px; }          /* dans le blanc sous les débiteurs, sans cacher la légende du moyen */
 /* la fiche */
 .t10-stat { margin-left: 250px; display: flex; align-items: center; gap: 10px; height: 54px; padding: 0 16px; border: 1px solid var(--o-filet);
   background: #fff; }
@@ -1095,6 +1141,7 @@ CSS = """
 .t10-kd { margin-top: 2px; font-size: 15px; font-weight: 700; }
 .t10-kd.haut { color: #1D7A33; }
 .t10-kd.bas { color: #B4232C; }
+.t10-kd.nul { color: #757A7F; }            /* « ■ 0,0 % » : text-muted d'Odoo 18 (deltaOf) */
 .t10-ks { margin-top: 2px; font-size: 15px; color: #6E6D68; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .t10-card { height: 290px; background: #fff; border-radius: 12px; padding: 14px 20px; position: relative; overflow: hidden; }
 .t10-card h3 { font-size: 19px; font-weight: 500; color: #2B2A27; }
@@ -1180,11 +1227,11 @@ TUTORIEL = {
                     vue('t10-paie', 'pos'), pause(0.3), clic('#t10-m-esp', d=0.6), cacher('#t10-msg', d=0.15),
                     montrer('#t10-st-ok', d=0.25, y=0, avec=True), montrer('#t10-pl-esp', d=0.25, y=0, avec=True),
                     classe('#t10-valider', retirer=['t10-off'], avec=True), pause(0.3),
-                    clic('#t10-k5', d=0.5), texte('#t10-pl-esp-mt', '5 FCFA'),
+                    clic('#t10-k5', d=0.5), texte('#t10-pl-esp-mt', fcfa(5)),
                     classe('#t10-valider', ajouter=['t10-off'], avec=True),
                     cacher('#t10-st-ok', d=0.1, avec=True), montrer('#t10-st-du', d=0.15, y=0, avec=True),
-                    clic('#t10-k0', d=0.25), texte('#t10-pl-esp-mt', '50 FCFA'), texte('#t10-st-du-v', '12 450 FCFA', avec=True),
-                    clic('#t10-k0', d=0.15), texte('#t10-pl-esp-mt', '500 FCFA'), texte('#t10-st-du-v', '12 000 FCFA', avec=True),
+                    clic('#t10-k0', d=0.25), texte('#t10-pl-esp-mt', fcfa(50)), texte('#t10-st-du-v', fcfa(12450), avec=True),
+                    clic('#t10-k0', d=0.15), texte('#t10-pl-esp-mt', fcfa(500)), texte('#t10-st-du-v', fcfa(12000), avec=True),
                     clic('#t10-k0', d=0.15), texte('#t10-pl-esp-mt', COMPTANT), texte('#t10-st-du-v', A_CREDIT, avec=True),
                     anneau('#t10-st-du', d=1.4)]},
         {'temps': 0, 'titre': 'Mettre sur ardoise',
@@ -1219,7 +1266,7 @@ TUTORIEL = {
                     clic('#t10-as-moy', d=0.5), choisir('t10-as-moy', 'Orange Money'),
                     clic('#t10-as-ref', d=0.4), saisir('t10-as-ref', REF_OM, d=1.0), clic('#t10-as-ok', d=0.5),
                     # la fiche se recharge dès la fermeture de l'assistant
-                    fermer('t10-as'), texte('#t10-f-deja', fcfa(_A[4])), texte('#t10-f-reste', '0 FCFA', avec=True),
+                    fermer('t10-as'), texte('#t10-f-deja', fcfa(_A[4])), texte('#t10-f-reste', fcfa(0), avec=True),
                     texte('#t10-f-sev', 'Réglée', avec=True), classe('#t10-sb-0', retirer=['actif'], avec=True),
                     classe('#t10-sb-1', ajouter=['actif'], avec=True), cacher('#t10-fiche-ga', d=0.2, avec=True),
                     texte('#t10-stat-v', '2', avec=True),
@@ -1245,9 +1292,16 @@ TUTORIEL = {
                     compter('#t10-k-enc-v', 0, ENCOURS, d=1.0, apres=' FCFA', avec=True),
                     compter('#t10-k-rec-v', 0, RECOUVRE, d=1.0, apres=' FCFA', avec=True),
                     compter('#t10-k-new-v', 0, NOUVELLES, d=1.0, apres=' FCFA', avec=True),
+                    # le compteur du moteur pose une espace insécable entre les milliers ; fmtMoney (utils.js:51-54)
+                    # pose l'espace fine : la valeur exacte reprend sa place à la fin du comptage
+                    texte('#t10-k-enc-v', fcfa(ENCOURS, tdb=True), avec=True, decale=1.05),
+                    texte('#t10-k-rec-v', fcfa(RECOUVRE, tdb=True), avec=True),
+                    texte('#t10-k-new-v', fcfa(NOUVELLES, tdb=True), avec=True),
                     anneau('#t10-k-taux', d=1.0), anneau('#t10-k-ret', d=1.2),
+                    # le défilement attend que la bulle se soit refermée (2,6 s + 0,25 s de fondu) : elle ne suit
+                    # pas sa carte et masquait « 104 j » et le titre de section
                     bulle('b-retard', '#t10-k-ret', cote='gauche', d=2.6),
-                    defiler('#t10-defil', -200, d=0.9, decale=1.2),
+                    defiler('#t10-defil', -200, d=0.9, decale=2.1),
                     animer('#t10-g-age', {'scaleY': 0, 'transformOrigin': '50% 100%'},
                            {'scaleY': 1, 'immediateRender': True}, d=0.8),
                     anneau('#t10-c-age', d=1.6)]},
@@ -1257,7 +1311,8 @@ TUTORIEL = {
                  "dernier paiement ; le statut dit qui est en retard. Hervé sait qui relancer en premier.",
          'gestes': [defiler('#t10-defil', -1312, d=1.1), pause(0.3), anneau('#t10-d1', d=1.2),
                     anneau('#t10-d1 .puce', d=0.9), anneau('#t10-d2', d=1.1), anneau('#t10-d2 .puce', d=0.9),
-                    bulle('b-top', '#t10-top', cote='haut', d=2.6), pause(1.0),
+                    # la bulle ne bloque pas : la réaction attend qu'elle se soit refermée (elles se chevauchaient)
+                    bulle('b-top', '#t10-top', cote='haut', d=2.6), pause(2.3),
                     reaction('t10-r-relance', d=2.6), pause(1.4)]},
     ],
     'resultats': {

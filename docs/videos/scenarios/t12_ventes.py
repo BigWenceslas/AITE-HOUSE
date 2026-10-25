@@ -2,28 +2,33 @@
 """Tutoriel 12 — Bar et restaurant : voyez enfin ce que vous gagnez.
 
 La directrice (Danielle Eyenga, demo.POSTES['direction']) ouvre, dans le Point
-de Vente, le menu « Analyse AITE » → « Tableau de bord » du module
-aite_pos_analytics : chiffre d'affaires, marge brute, coût des marchandises
-(CMV) et transactions ; elle saisit une période (du 01/10 au 13/10/2026) et
-clique « Analyser » : tout se recalcule et la bande de comparaison à la
-période précédente apparaît ; plus bas, la carte heure × jour et ses deux
-repères (pic de deux heures, jour fort) ; l'onglet « Par caisse » compare le
-bar et le restaurant ; l'onglet « Articles » cherche les bières et ouvre le
-détail d'un article ; l'onglet « Écarts de caisse » classe les sessions de la
-plus grave à la moins grave.
+de Vente, le menu « Analyse » puis, dans sa section « Analyse AITE », le
+« Tableau de bord » du module aite_pos_analytics : chiffre d'affaires, marge
+brute, coût des marchandises (CMV) et transactions ; elle clique « Ce mois »
+(du 01/10 au 14/10/2026) : tout se recalcule et la bande de comparaison à la
+période précédente de même durée apparaît, sous un titre qui dit les dates
+comparées ; plus bas, la carte heure × jour et ses deux repères (pic de deux
+heures, jour fort) ; l'onglet « Par caisse » compare le bar et le restaurant ;
+l'onglet « Articles » cherche les bières et ouvre le détail d'un article ;
+l'onglet « Écarts de caisse » classe les sessions de la plus grave à la moins
+grave.
 
-Profil rejoué : compte demo.direction de la base MuK. Le menu « Analyse AITE »
-est réservé au groupe Utilisateur — Analyses POS (views/
-pos_analytics_menus.xml:10-14) ; la Direction l'a parce que le groupe Manager
+Produit rejoué : aite_pos_analytics 18.0.2.1.3 (livraison 4, écarts n° 37-77 ;
+`git diff ae3aab6..HEAD -- addons/aite_pos_analytics`).
+
+Profil rejoué : compte demo.direction de la base MuK. La section « Analyse
+AITE » est réservée au groupe Utilisateur — Analyses POS (views/
+pos_analytics_menus.xml:16-20) ; la Direction l'a parce que le groupe Manager
 — Analyses POS, qui l'implique, lui est donné explicitement
-(aite_demo_data/models/demo_generator.py:74-80 ; security/
-pos_analytics_security.xml:16-30), ou parce que base.group_system implique ce
-groupe Manager (pos_analytics_security.xml:33-39). Applications de la barre
+(aite_demo_data/models/demo_generator.py:83-92 ; security/
+pos_analytics_security.xml:16-31), ou parce que base.group_system implique ce
+groupe Manager (pos_analytics_security.xml:41-48). Applications de la barre
 MuK : ecrans.APPS_PROFIL['direction'] (relevées sur ref_muk/330-direction-
-accueil.png). Menus du Point de Vente : ref_muk/015 et 600 (Tableau de bord,
-Commandes, Produits, Analyse AITE, Analyse, Configuration ; libellés natifs :
+accueil.png). Barre du Point de Vente : ecrans.MENUS_MUK['point_de_vente']
+(Tableau de bord, Commandes, Produits, Analyse, Configuration — un seul menu
+« Analyse » depuis la livraison 4, écart n° 67 ; libellés natifs :
 odoo18/addons/point_of_sale/i18n/fr.po:2049-2050, 2483-2484, 5067-5068,
-5652-5653, 6320-6321, 6631-6632).
+5652-5653, 6631-6632).
 
 Sources des libellés (relevés mot pour mot) :
 
@@ -34,107 +39,138 @@ Sources des libellés (relevés mot pour mot) :
   caisse ») ; forme d'après ref_muk/600-pos-tableau-de-bord.png (deux
   colonnes, une carte par caisse). Montant au format monétaire d'Odoo, devise
   XAF de symbole « FCFA » (odoo18/odoo/addons/base/data/
-  res_currency_data.xml:476-483).
-- Menu « Analyse AITE » et ses six entrées : views/pos_analytics_menus.xml
-  :10-50 (Tableau de bord, Par caisse, Sessions POS, Par catégorie, Écarts de
-  caisse, Pivot & Graph).
-- Onglets : static/src/js/services/utils.js:188-197 (huit onglets et leurs
-  icônes ; fa-cash-register n'existe pas en Font Awesome 4.7 : l'onglet « Par
-  caisse » n'a pas d'icône, voir écarts) ; gabarit static/src/xml/
-  dashboard_shell.xml:103-114 ; onglet actif violet #714B67 :
-  static/src/scss/pos_dashboard.scss:53-68.
-- Barre de filtres : dashboard_shell.xml:119-217 (Période, six raccourcis,
+  res_currency_data.xml:476-483), ecrans.fcfa.
+- Menu déroulant « Analyse » : les entrées standard « Commandes », « Détails
+  des ventes », « Rapport de session » (séquences 3, 4, 5 :
+  point_of_sale/views/pos_order_report_view.xml:106-107,
+  point_of_sale_view.xml:29-33 ; i18n/fr.po:5067-5068, 6845-6846,
+  7111-7112), puis la section « Analyse AITE » (séquence 80) et ses six
+  entrées, ecrans.MENU_ANALYSE_AITE : pos_analytics_menus.xml:16-56 (Tableau
+  de bord, Par caisse, Sessions POS, Par catégorie, Écarts de caisse,
+  « Tableau croisé & graphique », ex-« Pivot & Graph ») ; rendu d'Odoo 18 :
+  en-tête de groupe (dropdown-header) puis entrées décalées de 12 px,
+  odoo18/addons/web/static/src/webclient/navbar/navbar.xml:209-231.
+- Onglets : static/src/js/services/utils.js:318-330 (huit onglets et leurs
+  icônes ; « Par caisse » a la calculatrice fa-calculator, écart n° 64) ;
+  gabarit static/src/xml/dashboard_shell.xml:104-116 ; onglet actif violet
+  #714B67 : static/src/scss/pos_dashboard.scss:60-76.
+- Barre de filtres : dashboard_shell.xml:120-218 (Période, six raccourcis,
   Du, au — deux <input type="date"> bornés par la première et la dernière
-  ouverture de session :132-139 —, Analyser ; Caisse, « Toutes les caisses »
-  et une pastille par caisse, ligne affichée à partir de deux caisses :143 ;
+  ouverture de session :133-139 —, Analyser ; Caisse, « Toutes les caisses »
+  et une pastille par caisse, ligne affichée à partir de deux caisses :144 ;
   Heure, cinq plages, 18 « h → » 23 « h » OK ; Jour, « Tous », Lun … Dim,
   « Semaine (lun–ven) », « Week-ends ») ; libellés des raccourcis :
-  utils.js:131-187 ; « Toute la période » au premier chargement, bornes =
-  première et dernière ouverture de session : static/src/js/dashboard.js
-  :59-125 ; saisie libre : « Analyser » envoie la clé « custom », aucun
-  raccourci ne reste allumé : components/filter_bar.js:79-96 ; couleurs des
-  pastilles dans l'ordre des pos.config : models/pos_dashboard.py:651-654,
-  905-912 (Bar violet, Restaurant bleu, Boutique vert, comme
-  t10_ardoises.py, PALETTE) ; styles : pos_dashboard.scss:70-125, 451-511 ;
-  lignes Heure et Jour affichées sur les seuls onglets « Tableau de bord » et
-  « Par caisse », qui les appliquent (showTimeFilters,
-  dashboard_shell.xml:27, :172, :191 ; components/filter_bar.js:41-44) :
-  elles disparaissent sur « Articles » et « Écarts de caisse ».
-- Tableau de bord : static/src/xml/views.xml:5-420 — quatre grandes cartes
-  (« Chiffre d'affaires » « HT · <montant> / jour · <n>j », « Marge brute »
-  « Taux: <x>% · <montant>/tx », « CMV (coût marchandises) » « <x>% du CA ·
-  <montant>/u », « Transactions » « Panier moy. <montant> · <n> u ») :9-27 ;
-  bande « CA vs N-1 · Marge vs N-1 · CMV vs N-1 · Commandes vs N-1 »,
-  masquée quand la période précédente n'a pas de vente :29-60 ; cartes
-  secondaires (« Ratio CMV/CA » « Bonne maîtrise ✓ » sous 65 %, « Taux de
-  marge » « Objectif atteint ✓ » dès 35 %, « Articles actifs » « <n> / <n> »
-  — lignes de quantité positive sur lignes de la période,
-  dashboard_view.js:272-279 —, « références vendues », « Meilleur article »
-  tronqué à 18 caractères, « <montant> CA ») :62-102 ; « Ventes &
-  évolution », « CA · Marge · CMV », « Top 8 articles — CA vs Marge »,
-  « Évolution mensuelle (CA · CMV · Marge) » et sa légende :104-146 ;
-  « Marge & CMV par catégorie », « répartition de la rentabilité »,
-  « Catégories — marge & CMV », « tx », « · CMV », « CMV vs Marge »
-  :148-200 ; « Performance par caisse », « CA · marge totale & par point de
-  vente », « Contribution au CA », « Synthèse par caisse », « du CA »,
-  « TOTAL », « marge » :202-248 ; « Répartition des ventes — heure × jour »,
-  « intensité = chiffre d'affaires · pour caler plannings & happy hours »,
-  « Pic <h>h-<h>h (<x>%) », « Jour fort : <jour> », « Jour \\ h » :250-306 ;
-  « Classements produits », « Bières · Marges · Moins vendus », « 🍺 Top
-  bières (qté) », « ⭐ Meilleures marges », « 📉 Moins vendus » :308-357
-  (marges sur le CA net de plus de 100 F, moins vendus sur la quantité nette
-  positive : un article vendu puis remboursé n'y figure pas,
-  pos_dashboard.py:496-538). Formats : utils.js:58-107 (fmt « 1 234 567 »,
-  fmtMoney « … F », fmtPct « 56.0% », fmtDelta « ▲ +9.4% », fmtSigned
-  « −322 500 F ») ; couleurs : utils.js:11-18 ; graphiques :
-  static/src/js/views/dashboard_view.js:125-237 (étiquettes tronquées à neuf
-  caractères suivis de « … », graduations « k ») ; carte de chaleur :
-  dashboard_view.js:253-268 et models/pos_dashboard.py:772-902 (7 × 24,
-  jours Lun … Dim, créneau de deux heures glissant, « Samedi »), à l'heure
-  de la société (models/pos_analytics_report.py:85-104, :146-171) ; mois de
-  l'évolution au format d'Odoo (« octobre 2026 ») :
-  models/pos_dashboard.py:396-412.
+  utils.js:261-292 ; « Toute la période » au premier chargement, bornes =
+  jours locaux de la première et de la dernière ouverture de session :
+  static/src/js/dashboard.js:85-119 (toLocalDay) ; « Ce mois » part du 1er
+  du mois local (localIsoDate, utils.js:226-235 ; écart n° 38) et finit
+  aujourd'hui ; un raccourci remplit les deux dates et s'allume :
+  components/filter_bar.js:82-90 ; couleur d'une caisse fixée par son ordre
+  de création : models/pos_dashboard.py:762-776, 1031-1039 (Bar violet,
+  Restaurant bleu, Boutique vert, comme t10_ardoises.py, PALETTE) ; bouton
+  « Tous » actif vert sarcelle (--aite-teal, définie depuis la livraison 4 :
+  pos_dashboard.scss:18-21, 497-505 ; écart n° 67) ; styles :
+  pos_dashboard.scss:78-133, 463-520 ; lignes Heure et Jour affichées sur les
+  seuls onglets « Tableau de bord » et « Par caisse », qui les appliquent
+  (showTimeFilters, dashboard_shell.xml:27, :173, :192 ;
+  components/filter_bar.js:41-44) : elles disparaissent sur « Articles » et
+  « Écarts de caisse ».
+- Tableau de bord : static/src/xml/views.xml:5-430 — quatre grandes cartes
+  (« Chiffre d'affaires » « HT · <montant> / jour · <n> j », « Marge brute »
+  « Taux : <x> % · <montant> / ticket », « CMV (coût marchandises) » « <x> %
+  du CA · <montant> / unité », « Transactions » « Panier moyen <montant> ·
+  <n> unités ») :10-27 ; titre « Évolution par rapport à la période
+  précédente de même durée (du <date> au <date>) » :32-35 (prev_from /
+  prev_to, pos_dashboard.py:184-200, 264-279) et bande « Chiffre
+  d'affaires · Marge · CMV · Commandes », masquée quand la période précédente
+  n'a pas de vente :36-66 ; cartes secondaires (« Ratio CMV/CA » « Bonne
+  maîtrise ✓ » sous 65 %, « Taux de marge » « Objectif atteint ✓ » dès 35 %,
+  « Articles actifs » « <n> / <n> » — lignes de quantité positive sur lignes
+  de la période, dashboard_view.js:294-296 —, « références vendues »,
+  « Meilleur article » au nom complet (coupé par le CSS, écart n° 67),
+  « <montant> CA ») :68-112 ; « Ventes & évolution », « CA · Marge · CMV »,
+  « Top 8 articles — CA vs Marge », « Évolution mensuelle (CA · CMV ·
+  Marge) » et sa légende :114-157 ; « Marge & CMV par catégorie »,
+  « répartition de la rentabilité », « Catégories — marge & CMV », « taux »
+  (ex-« tx »), « · CMV », « CMV vs Marge » :159-210 ; « Performance par
+  caisse » (icône calculatrice), « CA · marge totale & par point de vente »,
+  « Contribution au CA », « Synthèse par caisse », « du CA », « TOTAL »,
+  « marge » :212-259 ; « Répartition des ventes — heure × jour »,
+  « intensité = chiffre d'affaires · pour caler les plannings & les heures de
+  promotion », « Pic <h>h-<h>h (<x> %) », « Jour fort : <jour> », « Jour \\
+  h » :261-317 ; « Classements produits », « Bières · Marges · Moins
+  vendus », « 🍺 Top bières (qté) », « ⭐ Meilleures marges », « 📉 Moins
+  vendus », quantités « 324 unités » / « 1 unité » :319-368 (marges sur le CA
+  net de plus de 100, moins vendus sur la quantité nette positive : un
+  article vendu puis remboursé n'y figure pas, pos_dashboard.py:502-584).
+  Formats : utils.js:62-185 — fmt (toLocaleString fr-FR : espace fine U+202F,
+  trait d'union d'un négatif), fmtMoney « 3 120 000 FCFA » (symbole de la
+  société, setCurrencySymbol, dashboard.js:90-92 ; plus de « F »), fmtPct
+  « 56,0 % », fmtDelta « ▲ +9,4 % », deltaClass sur la valeur arrondie, un
+  coût qui monte en rouge (views.xml:55, écart n° 62), fmtSigned
+  « −322 500 FCFA », fmtCount « 4 manquants », fmtUnits « 512 unités »,
+  fmtCompact « 500 k », « 6,0 M » — rendus ici par les helpers d'ecrans.py
+  (entier, fcfa, pct, variation, sens, compte) ; gris des textes secondaires
+  #66655f (utils.js:18-21, pos_dashboard.scss:22-25 ; écart n° 71) ; couleurs :
+  utils.js:11-22 ; graphiques : static/src/js/views/dashboard_view.js:127-243
+  (étiquettes tronquées à neuf caractères suivis de « … », graduations
+  fmtCompact) ; carte de chaleur : dashboard_view.js:257-285 (fond violet
+  plus ou moins opaque ; texte blanc ou noir, le plus contrasté des deux,
+  écart n° 71 ; étiquettes fmtCompact « 105 k ») et models/pos_dashboard.py
+  :899-1028 (7 × 24, jours Lun … Dim, créneau de deux heures glissant,
+  « Samedi »), à l'heure de la société (models/pos_analytics_report.py
+  :96-110, :128-133, :147-171) ; mois de l'évolution au format d'Odoo
+  (« octobre 2026 », date:month) : models/pos_dashboard.py:460-483.
 - Calculs : marge = CA HT − CMV, CMV = quantité × coût unitaire, coût
   unitaire repris du prix de revient de l'article à la création de la ligne
   de ticket : models/pos_order_line.py:20-69 ; KPI, jours de la période
-  (fin incluse), période précédente de même durée et variations :
-  models/pos_dashboard.py:30-50, 98-224 ; seules les commandes payées,
-  clôturées ou facturées : models/pos_analytics_report.py:133.
-- Par caisse : views.xml:422-572 (« Caisse n°1 (CA) », « Caisse la +
+  (fin incluse, jours locaux : _utc_period, pos_dashboard.py:56-82), période
+  précédente de même durée et variations : models/pos_dashboard.py:184-281 ;
+  société courante seulement (:96-101) ; seules les commandes payées,
+  clôturées ou facturées : models/pos_analytics_report.py:142.
+- Par caisse : views.xml:433-583 (« Caisse n°1 (CA) », « Caisse la +
   rentable » « taux », « Meilleur panier moyen », « Écart de caisse total »
   « sur la période », « Comparatif des caisses », « marge totale & par caisse
   sur la période », colonnes CAISSE · CA HT · % CA · MARGE · TAUX · CMV ·
-  CMDES · PANIER MOY. · QTÉ · ÉCART CAISSE, « TOTAL », « 100% », « Part du CA
-  par caisse », « Taux de marge par caisse ») ; badges vert dès 50 %, ambre
-  dès 40 % : static/src/js/views/caisse_view.js:158-162 ; badge du TOTAL
-  toujours ambre :533 ; une ligne par caisse qui a vendu (read_group par
-  caisse) : la Boutique, sans vente sur la période, n'y figure pas ; écart =
-  somme des écarts des sessions de la période : models/pos_dashboard.py
-  :651-770.
-- Articles : views.xml:635-718 (« Toutes catégories », pastilles triées par
+  COMMANDES · PANIER MOYEN · QTÉ · ÉCART CAISSE (ex-« Cmdes », « Panier
+  moy. »), « TOTAL », « 100,0 % », « Part du CA par caisse », « Taux de marge
+  par caisse ») ; badges vert dès 50 %, ambre dès 40 %, ligne TOTAL comprise :
+  static/src/js/views/caisse_view.js:158-162, views.xml:543, et dans la
+  synthèse du tableau de bord dashboard_view.js:314-320, views.xml:252
+  (écart n° 67) ; graduations du taux fmtPct : caisse_view.js:116-138 ; une
+  ligne par caisse qui a vendu (read_group par caisse) : la Boutique, sans
+  vente sur la période, n'y figure pas ; écart = somme des écarts des sessions
+  de la période : models/pos_dashboard.py:779-897.
+- Articles : views.xml:646-728 (« Toutes catégories », pastilles triées par
   nom, « Rechercher un article ou une catégorie… », « <n> / <total>
   articles », colonnes, tri « CA ▼ » par défaut) ; recherche sur le nom et la
   catégorie : static/src/js/views/products_view.js:55-121 ; badge du taux
   vert dès 50 %, ambre dès 30 % :113-117 ; couleurs des catégories :
-  utils.js:20-52.
-- Panneau d'un article : dashboard_shell.xml:248-331 (« × », catégorie, CA,
+  utils.js:24-57.
+- Panneau d'un article : dashboard_shell.xml:252-336 (« × », catégorie, CA,
   Marge, CMV, « Quantité vendue » « <n> unités », « Taux de marge », « Prix
   de vente moyen », « Coût moyen unitaire (CMV) », « Marge unitaire »,
-  « / unité », « Période analysée ») ; static/src/js/components/
-  product_panel.js:67-90 ; models/pos_dashboard.py:612-644 (prix, coût et
-  marge à l'unité = montant ÷ quantité).
-- Écarts de caisse : views.xml:876-941 (« Écart négatif total » « sessions
-  clôturées », « Sessions avec écart » « <n> nég. · <n> pos. », « Écart
-  moyen » « par session négative », « Plus grand écart » « à investiguer en
-  priorité », bandeau à partir de six sessions négatives, colonnes Session ·
-  Date · Caissier · CA HT · Écart (F) · Sévérité) ; CA HT des sessions
-  (somme des lignes, pos_session.py:107-115) ; session ouverte non comptée
-  sans écart (pos_session.py:129-140, :160-166) ; libellés et couleurs des
-  sévérités : static/src/js/views/discrepancies_view.js:8-14 ; seuils
-  200 000 F (Critique) et 100 000 F (Élevé), écart = compté − théorique :
-  models/pos_session.py:19-25, 120-155 ; tri Critique > Élevé > Modéré >
-  Excédent puis montant : models/pos_dashboard.py:523-583 ; nom des sessions
-  « <caisse>/<n° sur cinq chiffres> » d'après ref_muk/017 et 019.
+  « / unité », « Période analysée » « 01/10/2026 → 14/10/2026 ») ;
+  static/src/js/components/product_panel.js:57-73 ; models/pos_dashboard.py
+  :718-760 (prix, coût et marge à l'unité = montant ÷ quantité).
+- Écarts de caisse : views.xml:887-952 (« Écart négatif total » « sessions
+  clôturées », « Sessions avec écart » « <n> manquants · <n> excédent »
+  (fmtCount, ex-« nég. · pos. »), « Écart moyen » « par session négative »,
+  « Plus grand écart » « à investiguer en priorité », bandeau à partir de
+  six sessions négatives :910, colonnes Session · Date · Caissier · CA HT ·
+  Écart (F) · Sévérité — « Écart (F) » est resté tel quel, montants sans
+  symbole :922) ; CA HT des sessions (somme des lignes, pos_session.py
+  :106-129) ; session ouverte non comptée sans écart (pos_session.py
+  :131-170) ; libellés et couleurs des sévérités, « Aucun écart » au lieu de
+  « OK » : static/src/js/views/discrepancies_view.js:8-17 ; seuils par défaut
+  200 000 (Critique) et 100 000 (Élevé), réglables par société depuis la
+  livraison 4 (Point de Vente → Configuration → Paramètres, « Écart
+  « Élevé » à partir de », « Écart « Critique » à partir de » :
+  models/res_config_settings.py:20-35, views/res_config_settings_views.xml
+  :15-27 ; écart n° 67), écart = compté − théorique : models/pos_session.py
+  :144-195 ; tri Critique > Élevé > Modéré > Excédent puis montant :
+  models/pos_dashboard.py:655-684 ; nom des sessions « <caisse>/<n° sur cinq
+  chiffres> » d'après ref_muk/017 et 019.
 
 Sources des affirmations : douleurs de l'accroche — docs/guides/
 AITE_POS_Analytics_fiche_produit.pdf p. 2 (« Vendre sans savoir ce qu'on
@@ -144,49 +180,51 @@ caisse ? » ; « CA visible mais marge inconnue […] écarts de caisse noyés. 
 pilote au ressenti, et la rentabilité se découvre trop tard. ») ; la
 question de l'heure devient « Le bar tourne à quelle heure ? », car la carte
 heure × jour montre le chiffre d'affaires (price_subtotal,
-pos_dashboard.py:795-800, 843-845), pas la marge ; slogan « Décider sur des
+pos_dashboard.py:919-923), pas la marge ; slogan « Décider sur des
 chiffres, pas au ressenti » — même fiche p. 1 ; besoin du client « sur une
 période donnée, déterminer la marge totale ET par caisse » —
-models/pos_dashboard.py:666-667 et README.md:79. Promesse et voix : marge et
-CMV calculés seuls à la ligne (pos_order_line.py:49-69) — « chaque vente dit
-ce qu'elle rapporte », sans montrer de ticket ni promettre que marge + CMV =
-CA dans le flux réel de caisse (voir le rapport) ; comparaison à la période
-précédente de même durée (pos_dashboard.py:130-153) ; classement des écarts
-(pos_session.py:120-155). Le « coût figé à la vente » de la fiche produit
-n'est pas repris : la vérification l'a jugé non prouvé dans le flux réel de
-caisse. La voix donne l'heure du pic, de 20 h à 22 h : la carte est à
-l'heure de Douala (écart 11, corrigé). Résultats : 8 onglets (utils.js:188-197), 7 × 24 = 168 cases et
-créneau de deux heures (pos_dashboard.py:800-873), 4 niveaux de gravité pour
-un écart non nul — Excédent, Modéré, Élevé, Critique (pos_session.py:78-84).
+static/src/js/views/caisse_view.js:12-14 et README.md:79. Promesse et voix :
+marge et CMV calculés seuls à la ligne (pos_order_line.py:49-69) — « chaque
+vente dit ce qu'elle rapporte », sans montrer de ticket ni promettre que
+marge + CMV = CA dans le flux réel de caisse (voir le rapport) ; comparaison
+à la période précédente de même durée (pos_dashboard.py:184-200) ; le CMV
+qui monte passe en rouge (views.xml:55, utils.js:152-163) ; classement des
+écarts et seuil réglable (pos_session.py:144-195, res_config_settings.py
+:20-35). Le « coût figé à la vente » de la fiche produit n'est pas repris :
+la vérification l'a jugé non prouvé dans le flux réel de caisse. La voix
+donne l'heure du pic, de 20 h à 22 h : la carte est à l'heure de Douala
+(écart 11, corrigé). Résultats : 8 onglets (utils.js:318-330), 7 × 24 = 168
+cases et créneau de deux heures (pos_dashboard.py:899-1028), 4 niveaux de
+gravité pour un écart non nul — Excédent, Modéré, Élevé, Critique
+(pos_session.py:144-195).
 
 Données : demo.py (Démo Hôtellerie SARL, Danielle Eyenga directrice, Hervé
 Tchakounté caissier du bar) ; trois caisses « Bar de la terrasse »,
 « Restaurant » et « Boutique », comme t04_note_chambre.py:200 et
 t10_ardoises.py (BAR, RESTO, BOUT) (la Boutique n'a rien vendu sur la période) ;
 chiffres de la période repris de la présentation, scenarios/
-c6_direction.py:100-108 (CA 3 120 000, marge 1 747 200 soit 56,0 %, CMV
-1 372 800 soit 2 681 F/u, 128 tickets, panier 24 375, 512 unités, 42 articles
-actifs sur 48, meilleur article « Bière blonde 65 cl » à 486 000 F) et de
+c6_direction.py:134-140 (« Ce mois », du 01/10 au 14/10, quatorze jours ; CA
+3 120 000, marge 1 747 200 soit 56,0 %, CMV 1 372 800 soit 2 681 FCFA / unité,
+128 tickets, panier 24 375, 512 unités, 222 857 FCFA / jour, 42 articles
+actifs sur 48, meilleur article « Bière blonde 65 cl » à 486 000 FCFA) et de
 t15_direction.py (CA en hausse de 9,4 %) ; articles, prix et coûts du bar et
 de la cave repris de t13_stock.py (ARTICLES) (Bière blonde 65 cl : 1 500 F pour
 650 F, soit 850 F de marge, comme t04:285, au TICKET de t10_ardoises.py et
-au PRIX de t14_achats.py), plats de la
-carte de t04:274-281 ; articles sans taxe, comme au ticket de t04 (t04:37-44,
-282) : HT = TTC ; le CA des sessions est d'ailleurs HT partout (écart 4,
-corrigé). Paulin Essama et Larissa
+au PRIX de t14_achats.py), plats de la carte de t04:274-281 ; articles sans
+taxe, comme au ticket de t04 (t04:37-44, 282) : HT = TTC ; le CA des sessions
+est d'ailleurs HT partout (écart 4, corrigé). Paulin Essama et Larissa
 Mbida (caissiers), les autres prix, quantités, sessions et montants sont
 fictifs. Le jour rejoué est le mercredi 14/10/2026 au matin, navigateur en
-français à Douala ; la période saisie va du 01/10 au 13/10/2026 (treize
-jours ; « au » garde la dernière ouverture de session, 13/10) ; rien n'a été
-vendu le 30/09 (inventaire de fin de mois, fictif), si bien que le « Ce mois »
-de la présentation (30/09 → 14/10) donne les mêmes totaux. « Toute la
-période » va de la première ouverture de session (04/05/2026 : les ardoises de
-mai, en-tête de t10_ardoises.py) à la dernière (13/10/2026), 163 jours. La
-période précédente (18/09 → 30/09) donne CA 2 852 000, marge 1 560 000, CMV
-1 292 000 et 119 commandes, d'où ▲ +9.4 %, +12.0 %, +6.3 % et +7.6 %. Les
-sessions en écart sont toutes clôturées (le matin du 14/10, aucune caisse
-n'est encore ouverte). Les chiffres se tiennent : ils sont calculés
-ci-dessous à partir des articles (sommes contrôlées par assert).
+français à Douala : rien n'est encore vendu le 14/10 ni le 30/09 (inventaire
+de fin de mois, fictif), si bien que les ventes de la période sont celles du
+01 au 13/10. « Toute la période » va de la première ouverture de session
+(04/05/2026 : les ardoises de mai, en-tête de t10_ardoises.py) à la dernière
+(13/10/2026), 163 jours. La période précédente (17/09 → 30/09, quatorze jours)
+donne CA 2 852 000, marge 1 560 000, CMV 1 292 000 et 119 commandes, d'où
+▲ +9,4 %, +12,0 %, +6,3 % (rouge) et +7,6 %. Les sessions en écart sont toutes
+clôturées (le matin du 14/10, aucune caisse n'est encore ouverte). Les
+chiffres se tiennent : ils sont calculés ci-dessous à partir des articles
+(sommes contrôlées par assert).
 
 Captures de référence (modèle visuel, jamais incrustées) : ref_muk/015 à
 020, 330-direction-accueil.png, 600-pos-tableau-de-bord.png ; chapitre déjà
@@ -194,87 +232,100 @@ rejoué dans la présentation : scenarios/c6_direction.py.
 
 Ce que la vidéo montre, et ce qu'elle évite :
 - Le contenu du tableau de bord défile sous la barre d'onglets, barre de
-  filtres comprise (dashboard_shell.xml:12-29, scss:32-37) ; avant de changer
+  filtres comprise (dashboard_shell.xml:12-29, scss:39-48) ; avant de changer
   d'onglet, on remonte en haut de page. Un changement de filtre, d'onglet ou de
   recherche remplace le contenu d'un coup, comme un nouveau rendu OWL.
-- La période est saisie dans « Du » plutôt que par le raccourci « Ce mois »,
-  qui afficherait « Du 30/09/2026 » (écart 1).
-- Quatre zooms (carte Marge brute, carte heure × jour avec ses jours, détail
-  de l'article, première ligne des écarts) ; pas de zoom sur le comparatif des
-  caisses, plus large que l'écran zoomé.
-- On ne clique ni « Semaine (lun–ven) » ni « Week-ends » (leurs jours
-  actifs deviennent invisibles, écart 2).
-- Réglages de lisibilité : les textes gris clairs du module (#888780 sur
-  blanc, 3,6:1) sont foncés en #6B6A65 et le texte gris des cases claires de
-  la carte de chaleur en #3D3C39, pour passer le contrôle de contraste AA ;
-  les étiquettes des cases sont grossies (19 px, gras) pour rester lisibles
-  à l'écran ; aucune case n'a une intensité comprise entre 0,55 et 0,70, où
-  ni le texte blanc ni le texte foncé ne passent le contrôle.
+- La période est choisie par le raccourci « Ce mois », qui part bien du
+  01/10 depuis la livraison 4 (écart n° 38 ; la saisie des dates évitait
+  l'ancien « Du 30/09/2026 »).
+- Quatre zooms (carte Marge brute, carte heure × jour entière — jours, pic et
+  « Jour fort : Samedi » dans l'image, à 1,2 —, détail de l'article, première
+  ligne des écarts) ; pas de zoom sur le comparatif des caisses, plus large que
+  l'écran zoomé. La ligne du samedi est entourée en plan large : elle est plus
+  large que l'écran zoomé.
+- Gestes calés sur la voix, phrase par phrase (pauses de la voix rendue
+  mesurées) : un anneau, une bulle ou un zoom tombe sur la phrase qui en parle.
+- On ne clique ni « Semaine (lun–ven) » ni « Week-ends ».
+- Réglages de lisibilité à l'échelle de la vidéo : les étiquettes des cases de
+  la carte de chaleur sont grossies (18 px, gras) ; le titre de la bande a un
+  peu plus d'air au-dessus des cellules que « mb-1 » ; il s'étend au-dessus de
+  la cellule Marge : sur « la marge gagne douze pour cent », l'anneau entoure
+  la seule valeur, pour ne pas passer sur ce titre. Les gris sont ceux du
+  module (#66655f), qui passent désormais le contrôle de contraste AA.
 
-Écarts relevés, rejoués tels quels ou évités (voir le rapport) :
-1. « Ce mois » démarre la veille du 1er à Douala (UTC+1) : « Du 30/09/2026 »
-   (utils.js:132, 143-156, toISOString d'un minuit local). Évité : la
-   période est saisie.
-2. Le bouton « Tous » de la ligne Jour est invisible (classe active sur
-   var(--aite-teal), jamais définie : blanc sur blanc), d'où le vide entre
-   « JOUR » et « Lun » (pos_dashboard.scss:12-23, 486-494).
-3. « CA vs N-1 » compare à la période précédente de même durée, pas à
-   l'année précédente (pos_dashboard.py:130-146) ; une hausse du CMV s'y
-   affiche en vert comme une bonne nouvelle (views.xml:46-51,
-   scss:537-538).
+Écarts relevés, rejoués tels quels ou évités (voir le rapport) — l'état
+après la livraison 4 :
+1. CORRIGÉ (ECARTS.md n° 38) — « Ce mois » démarrait la veille du 1er à
+   Douala (UTC+1) : « Du 30/09/2026 ». Il part du 01/10 (localIsoDate) :
+   rejoué.
+2. CORRIGÉ (n° 67) — le bouton « Tous » de la ligne Jour était invisible
+   (--aite-teal jamais définie : blanc sur blanc) ; il est vert sarcelle.
+3. CORRIGÉ (n° 62) — « CA vs N-1 » comparait à la période précédente de même
+   durée, pas à l'année précédente, et une hausse du CMV s'affichait en
+   vert : la bande s'appelle « Chiffre d'affaires · Marge · CMV ·
+   Commandes », sous « Évolution par rapport à la période précédente de même
+   durée (du … au …) », et le CMV qui monte est rouge.
 4. CORRIGÉ dans aite_pos_analytics 18.0.2.1.2 (ECARTS.md n° 25) — le CA des
    sessions était TTC (amount_total) quand celui du tableau de bord et de
-   « Par caisse » était HT ; il est HT partout, colonne « CA HT » de l'onglet
-   Écarts de caisse et carte « Chiffre d'affaires » sous-titrée « HT · … ».
-5. Pourcentages à point décimal sans espace (« 56.0% », « Taux: 56.0% »),
-   abréviations « /tx », « /u », « Cmdes », symbole « F » forcé, anglais
-   résiduel « Pivot & Graph » et « happy hours » (utils.js:67-75 ;
-   views.xml:17, 21, 261, 491 ; pos_analytics_menus.xml:47).
-6. Pas d'icône sur l'onglet « Par caisse » ni sur le module « Performance
-   par caisse » (fa-cash-register absent de Font Awesome 4.7 ;
-   utils.js:190, views.xml:207).
-7. Le badge de taux de la ligne TOTAL est toujours ambre, même à 56 %
-   (views.xml:533, 242).
-8. « Meilleur article » tronque le nom à 18 caractères (views.xml:96).
-9. Deux menus d'analyse se suivent dans le Point de Vente : « Analyse
-   AITE » et le natif « Analyse » (pos_analytics_menus.xml:10-14).
-10. Contraste du gris du module (#888780 sur blanc : 3,6:1, sous le seuil
-   AA de 4,5:1) ; texte gris (#5f5e5a) et blanc des cases moyennes de la
-   carte de chaleur sous le seuil (dashboard_view.js:253-262).
+   « Par caisse » était HT ; il est HT partout.
+5. CORRIGÉ (n° 5, 41, 42) — « 56.0% », « Taux: », « /tx », « /u », « u »,
+   « Cmdes », « Panier moy. », « nég. · pos. », symbole « F », « Pivot &
+   Graph », « happy hours », graduations « 4000k », « OK » : désormais
+   « 56,0 % », « Taux : », « / ticket », « / unité », « unités »,
+   « Commandes », « Panier moyen », « manquants · excédent », « FCFA »,
+   « Tableau croisé & graphique », « heures de promotion », « 4,0 M »,
+   « Aucun écart ». Reste l'en-tête « Écart (F) » de l'onglet Écarts de
+   caisse (views.xml:922), rejoué tel quel.
+6. CORRIGÉ (n° 64) — l'onglet « Par caisse » et le module « Performance par
+   caisse » ont l'icône fa-calculator (fa-cash-register n'existe pas en Font
+   Awesome 4.7).
+7. CORRIGÉ (n° 67) — le badge de taux de la ligne TOTAL suit les seuils
+   (vert à 56,0 %).
+8. CORRIGÉ (n° 67) — « Meilleur article » n'est plus tronqué à 18 caractères.
+9. CORRIGÉ (n° 67) — un seul menu « Analyse » dans la barre du Point de
+   Vente, avec sa section « Analyse AITE ».
+10. CORRIGÉ (n° 71) — gris #888780 (3,6:1) foncé en #66655f ; texte des
+   cases de la carte de chaleur blanc ou noir selon le fond : la vidéo ne
+   retouche plus ces couleurs ni les intensités des cases.
 11. CORRIGÉ dans aite_pos_analytics 18.0.2.1.2 (ECARTS.md n° 27) — la carte
-   heure × jour et le repère « Pic » étaient en UTC (fuseau du
-   superutilisateur qui installe le module) ; la vue SQL prend désormais le
-   fuseau de la société (pos_analytics_report.py:85-104, :146-171) : les
-   ventes de 20 h à 22 h à Douala s'affichent « Pic 20h-22h », une vente de
-   samedi 0 h 30 tombe sur « Sam », 0 h.
+   heure × jour et le repère « Pic » sont au fuseau de la société : les
+   ventes de 20 h à 22 h à Douala s'affichent « Pic 20h-22h ».
 12. CORRIGÉ dans aite_pos_analytics 18.0.2.1.2 (ECARTS.md n° 26) — lignes
-   Heure / Jour affichées sur les huit onglets mais ignorées par la plupart :
-   elles ne s'affichent plus que sur « Tableau de bord » et « Par caisse »
-   (rejoué à l'étape 5) ; classements nets des remboursements ; « Nb » et
-   carte Paiements, taux de marge d'un ticket et session ouverte sans
-   comptage, non montrés ici.
+   Heure / Jour seulement sur « Tableau de bord » et « Par caisse » (rejoué à
+   l'étape 5) ; classements nets des remboursements.
+13. Livraison 4, non montré à l'écran : seuils d'écart réglables par société
+   (dit par la voix à l'étape 6), couleur d'une caisse fixée par son ordre de
+   création, périodes en jours locaux, société courante seulement.
 """
 
 import math
 from decimal import ROUND_HALF_UP, Decimal
 
 import demo
-from ecrans import APPS_PROFIL, ICONES, e, entree, fenetre_muk, navigateur, recherche, vue_libre
+from ecrans import (APPS_PROFIL, ICONES, MENU_ANALYSE_AITE, MENUS_MUK, e, entier, entree, fcfa, fenetre_muk, navigateur,
+                    compte, pct, recherche, sens, variation, vue_libre)
 from marketing import bulle, dezoom, reaction, zoom
 from moteur import anneau, cacher, clic, classe, compter, curseur, defiler, montrer, pause, saisir, texte, vue
 
 NOM, ROLE = demo.POSTES['direction']
 CAISSIER = demo.POSTES['caisse'][0]          # Hervé Tchakounté, caissier du bar
 SOCIETE = demo.SOCIETE
-NB = ' '                                # l'espace insécable des montants (aite-motion.js : nombre)
-MENUS = ['Tableau de bord', 'Commandes', 'Produits', 'Analyse AITE', 'Analyse', 'Configuration']
-MENU_AITE = '#t12-app .o-haut > span:nth-child(6)'
+# La barre du Point de Vente d'un responsable : un seul menu « Analyse », où
+# la section « Analyse AITE » s'accroche (pos_analytics_menus.xml:16-20).
+MENUS = MENUS_MUK['point_de_vente']
+MENU_ANALYSE = '#t12-app .o-haut > span:nth-child(6)'
+assert MENUS[3] == 'Analyse'
 
-# Couleurs du module (utils.js:11-18).
+# Couleurs du module (utils.js:11-22) ; le gris des textes secondaires est
+# #66655f depuis la livraison 4 (COLORS.muted, écart n° 71 : --t12-muet du CSS).
 PRIMARY, SUCCESS, INFO, WARNING, DANGER, TEAL = '#714B67', '#3B6D11', '#185FA5', '#854F0B', '#A32D2D', '#0F6E56'
 
 
 # ------------------------------------------------------------ formats --
+# Les formats de static/src/js/services/utils.js, par les helpers partagés
+# d'ecrans.py : ``pct`` (fmtPct, « 56,0 % »), ``variation`` (fmtDelta,
+# « ▲ +9,4 % »), ``entier`` / ``fcfa`` avec ``tdb`` (fmt / fmtMoney :
+# toLocaleString fr-FR, espace fine U+202F, symbole de la société « FCFA »).
 def _arrondi(n, chiffres=0):
     """L'arrondi de JavaScript (Math.round, toFixed) : au plus proche, l'égalité vers le haut."""
     q = Decimal(1).scaleb(-chiffres)
@@ -282,34 +333,44 @@ def _arrondi(n, chiffres=0):
 
 
 def fmt(n):
-    """utils.js fmt : groupes fr-FR, sans décimale."""
-    v = int(_arrondi(n))
-    s = '{:,}'.format(abs(v)).replace(',', NB)
-    return ('-' if v < 0 else '') + s
+    """fmt : groupes fr-FR sans décimale, « 3 120 000 », « -212 500 »."""
+    return entier(n, tdb=True)
 
 
 def fmt_money(n):
-    return fmt(n) + ' F'
+    """fmtMoney : « 3 120 000 FCFA » (setCurrencySymbol, plus de « F »)."""
+    return fcfa(n, tdb=True)
 
 
-def fmt_pct(n):
-    return '%s%%' % _arrondi(n, 1)
+def fmt_unites(n):
+    """fmtUnits : « 1 unité », « 324 unités » (plus de « 324 u »)."""
+    return fmt(n) + (' unités' if abs(int(_arrondi(n))) >= 2 else ' unité')
 
 
-def fmt_delta(n):
-    fleche = '▲' if n > 0 else ('▼' if n < 0 else '■')
-    return '%s %s%s%%' % (fleche, '+' if n > 0 else '', _arrondi(n, 1))
+def fmt_compact(v):
+    """fmtCompact : graduations des graphiques et cases de la carte de chaleur, « 250 k », « 4,0 M »."""
+    if abs(v) >= 1e6:
+        return ('%s' % _arrondi(v / 1e6, 1)).replace('.', ',') + ' M'
+    if abs(v) >= 1e3:
+        return '%d k' % _arrondi(v / 1e3)
+    return '%d' % _arrondi(v)
 
 
 def fmt_signed(n):
+    """fmtSigned : « −322 500 FCFA » (signe U+2212 explicite)."""
     v = int(_arrondi(n))
     if v == 0:
-        return '0 F'
-    return '%s%s F' % ('+' if v > 0 else '−', '{:,}'.format(abs(v)).replace(',', NB))
+        return '0 FCFA'
+    return '%s%s FCFA' % ('+' if v > 0 else '−', entier(abs(v), tdb=True))
 
 
-def pct(a, b):
+def rapport(a, b):
     return a / float(b) * 100.0 if b else 0.0
+
+
+assert (fmt_money(3120000), fmt_unites(1), fmt_unites(324), fmt_compact(250000), fmt_compact(4000000),
+        fmt_compact(104900), fmt_signed(-322500)) == ('3\u202f120\u202f000 FCFA', '1 unité', '324 unités', '250 k',
+                                                      '4,0 M', '105 k', '−322\u202f500 FCFA')
 
 
 # ------------------------------------------------------------- données --
@@ -323,11 +384,14 @@ def pct(a, b):
 # les autres. Catégories d'article (product.category, celles que lit le
 # module) : celles de t13 pour le bar et la cave, celles de la carte de t04
 # (Grillades, Plats, Accompagnements) pour la cuisine ; catégories racines,
-# pour que « Bières » prenne sa couleur (utils.js:20-33). Articles sans taxe,
+# pour que « Bières » prenne sa couleur (utils.js:24-37). Articles sans taxe,
 # comme au ticket de t04 (t04:37-44, 282) : HT = TTC. « remboursé » : vendu
 # puis remboursé dans la période, d'où une ligne à zéro (42 articles actifs
 # sur 48 lignes, comme c6_direction.py:107).
 BAR, RESTO, BOUT = 'Bar de la terrasse', 'Restaurant', 'Boutique'
+# Couleur d'une caisse : la palette du module dans l'ordre de création des
+# pos.config (_caisse_colors, pos_dashboard.py:762-776 ; PALETTE de t10_ardoises.py).
+COULEUR_CAISSE = {BAR: PRIMARY, RESTO: INFO, BOUT: SUCCESS}
 ARTICLES = [
     ('Bière blonde 65 cl', 'Bières', 1500, 650, 290, 34, False),
     ('Bière brune 65 cl', 'Bières', 1500, 700, 7, 0, False),
@@ -384,11 +448,11 @@ def _produit(nom, cat, prix, cout, q_bar, q_resto, rembourse):
     q = q_bar + q_resto
     p = {'nom': nom, 'cat': cat, 'prix': prix, 'cout': cout, 'qty': q, 'ca': q * prix, 'cmv': q * cout,
          'marge': q * (prix - cout), 'par': {BAR: q_bar, RESTO: q_resto}, 'rembourse': rembourse}
-    p['taux'] = pct(p['marge'], p['ca'])
+    p['taux'] = rapport(p['marge'], p['ca'])
     return p
 
 
-# Trié comme get_products_full (pos_dashboard.py:494-521) : CA décroissant.
+# Trié comme get_products_full (pos_dashboard.py:586-616) : CA décroissant.
 PRODUITS = sorted((_produit(*a) for a in ARTICLES), key=lambda x: -x['ca'])
 TICKETS = {BAR: 108, RESTO: 20}
 
@@ -405,13 +469,25 @@ ACTIFS = len([p for p in PRODUITS if p['qty'] > 0])
 assert (CA, CMV, MARGE, CMDES, QTE) == (3120000, 1372800, 1747200, 128, 512)
 assert (ACTIFS, len(PRODUITS)) == (42, 48)
 assert (PRODUITS[0]['nom'], PRODUITS[0]['ca']) == ('Bière blonde 65 cl', 486000)
-JOURS_PERIODE = 13                                                     # 01/10 → 13/10 inclus
-# La période précédente (18/09 → 30/09, même durée) : CA, marge, CMV, commandes.
+# « Ce mois » le mercredi 14/10/2026 au matin : du 01/10 au 14/10 inclus,
+# quatorze jours (getQuickPeriods, dates locales depuis la livraison 4,
+# écart n° 38 ; même période que c6_direction.py et t15_direction.py) ; rien
+# n'est encore vendu le 14/10 (aucune caisse ouverte).
+DU, AU = '01/10/2026', '14/10/2026'
+JOURS_PERIODE = 14
+# La période précédente de même durée (17/09 → 30/09, _previous_period,
+# pos_dashboard.py:184-200 ; rien de vendu le 30/09, jour d'inventaire) :
+# CA, marge, CMV, commandes.
+PREC_DU, PREC_AU = '17/09/2026', '30/09/2026'
 PREC = {'ca': 2852000, 'marge': 1560000, 'cmv': 1292000, 'cmdes': 119}
 assert PREC['ca'] == PREC['marge'] + PREC['cmv']
-DELTAS = [('CA vs N-1', pct(CA - PREC['ca'], PREC['ca'])), ('Marge vs N-1', pct(MARGE - PREC['marge'], PREC['marge'])),
-          ('CMV vs N-1', pct(CMV - PREC['cmv'], PREC['cmv'])),
-          ('Commandes vs N-1', pct(CMDES - PREC['cmdes'], PREC['cmdes']))]
+# La bande (views.xml:32-66) : libellés sans « vs N-1 » ; le CMV qui monte est
+# rouge (deltaClass(cost_delta, false)) : (libellé, variation, hausse mauvaise).
+DELTAS = [("Chiffre d'affaires", rapport(CA - PREC['ca'], PREC['ca']), False),
+          ('Marge', rapport(MARGE - PREC['marge'], PREC['marge']), False),
+          ('CMV', rapport(CMV - PREC['cmv'], PREC['cmv']), True),
+          ('Commandes', rapport(CMDES - PREC['cmdes'], PREC['cmdes']), False)]
+assert [variation(v) for _, v, _ in DELTAS] == ['▲ +9,4\xa0%', '▲ +12,0\xa0%', '▲ +6,3\xa0%', '▲ +7,6\xa0%']
 
 # Les sessions de la période qui portent un écart (compté − théorique) :
 # (nom, date, caissier, caisse, CA de la session, écart).
@@ -424,32 +500,39 @@ SESSIONS = [
 ]
 
 
+# Seuils d'écart par défaut, réglables depuis la livraison 4 (Point de Vente →
+# Configuration → Paramètres, « Écart « Élevé » à partir de » / « Écart
+# « Critique » à partir de » ; res_config_settings.py:20-35, écart n° 67).
+SEUIL_ELEVE, SEUIL_CRITIQUE = 100000, 200000
+
+
 def severite(ecart):
-    """pos_session.py:137-155."""
+    """pos_session.py:144-195."""
     if ecart == 0:
         return 'none'
     if ecart > 0:
         return 'over'
-    return 'high' if -ecart >= 200000 else ('med' if -ecart >= 100000 else 'low')
+    return 'high' if -ecart >= SEUIL_CRITIQUE else ('med' if -ecart >= SEUIL_ELEVE else 'low')
 
 
-SEV_LIB = {'none': 'OK', 'over': 'Excédent', 'low': 'Modéré', 'med': 'Élevé', 'high': 'Critique'}
+# discrepancies_view.js:8-17 (« Aucun écart » au lieu de « OK »).
+SEV_LIB = {'none': 'Aucun écart', 'over': 'Excédent', 'low': 'Modéré', 'med': 'Élevé', 'high': 'Critique'}
 SEV_BADGE = {'over': 'b-blu', 'low': 'b-amb', 'med': 'b-amb', 'high': 'b-red'}
 _ORDRE = {'high': 0, 'med': 1, 'low': 2, 'over': 3, 'none': 4}
 assert [s[0] for s in SESSIONS] == [s[0] for s in sorted(SESSIONS, key=lambda s: (_ORDRE[severite(s[5])], -abs(s[5])))]
 
 
 def par_caisse():
-    """get_caisse_breakdown (pos_dashboard.py:651-770) : une ligne par caisse qui a vendu, triée par CA ;
+    """get_caisse_breakdown (pos_dashboard.py:779-897) : une ligne par caisse qui a vendu, triée par CA ;
     la Boutique, sans vente sur la période, n'y figure pas."""
     lignes = []
-    for i, k in enumerate(sorted((BAR, RESTO), key=lambda k: -sum(p['par'][k] * p['prix'] for p in PRODUITS))):
+    for k in sorted((BAR, RESTO), key=lambda k: -sum(p['par'][k] * p['prix'] for p in PRODUITS)):
         ca = sum(p['par'][k] * p['prix'] for p in PRODUITS)
         cmv = sum(p['par'][k] * p['cout'] for p in PRODUITS)
         qty = sum(p['par'][k] for p in PRODUITS)
-        lignes.append({'nom': k, 'couleur': [PRIMARY, INFO][i], 'ca': ca, 'marge': ca - cmv, 'cmv': cmv,
-                       'qty': qty, 'taux': pct(ca - cmv, ca), 'cmdes': TICKETS[k],
-                       'panier': ca / float(TICKETS[k]), 'part': pct(ca, CA),
+        lignes.append({'nom': k, 'couleur': COULEUR_CAISSE[k], 'ca': ca, 'marge': ca - cmv, 'cmv': cmv,
+                       'qty': qty, 'taux': rapport(ca - cmv, ca), 'cmdes': TICKETS[k],
+                       'panier': ca / float(TICKETS[k]), 'part': rapport(ca, CA),
                        'ecart': sum(s[5] for s in SESSIONS if s[3] == k)})
     return lignes
 
@@ -460,18 +543,18 @@ assert sum(c['ca'] for c in CAISSES) == CA and sum(c['qty'] for c in CAISSES) ==
 
 
 def par_categorie():
-    """get_category_breakdown (pos_dashboard.py:256-294), trié par CA."""
+    """get_category_breakdown (pos_dashboard.py:316-360), trié par CA."""
     cats = []
     for c in sorted({p['cat'] for p in PRODUITS}, key=lambda c: -_somme([p for p in PRODUITS if p['cat'] == c], 'ca')):
         lot = [p for p in PRODUITS if p['cat'] == c]
         ca, marge = _somme(lot, 'ca'), _somme(lot, 'marge')
-        cats.append({'nom': c, 'ca': ca, 'cmv': _somme(lot, 'cmv'), 'marge': marge, 'taux': pct(marge, ca)})
+        cats.append({'nom': c, 'ca': ca, 'cmv': _somme(lot, 'cmv'), 'marge': marge, 'taux': rapport(marge, ca)})
     return cats
 
 
 CATEGORIES = par_categorie()
 
-# Couleurs des catégories (utils.js:20-52) : par nom exact pour « Bières » ;
+# Couleurs des catégories (utils.js:24-57) : par nom exact pour « Bières » ;
 # sinon la palette circulaire, au rang de la ligne.
 PALETTE_NOM = {'bières': ('#714B67', '#EEEDFE', '#3C3489'), 'softs': ('#1D9E75', '#E1F5EE', '#0F6E56'),
                'vins': ('#185FA5', '#E6F1FB', '#0C447C'), 'eau': ('#888780', '#F1EFE8', '#5F5E5A')}
@@ -507,15 +590,7 @@ def carte_chaleur():
     brut = local
     total = sum(map(sum, brut))
     mat = [[int(round(v * CA / total, -2)) for v in ligne] for ligne in brut]
-    # Pas de case d'intensité entre 0,55 et 0,70 (voir l'en-tête) : on la pousse
-    # au bord le plus proche, en gardant le total.
     vmax = max(map(max, mat))
-    for d in range(7):
-        for h in range(24):
-            a = mat[d][h] / float(vmax)
-            if 0.55 < a < 0.70:
-                mat[d][h] = (int(math.floor(vmax * 0.55 / 100.0)) * 100 if a < 0.625
-                             else int(math.ceil(vmax * 0.70 / 100.0)) * 100)
     # le reliquat, réparti sur les cases claires au prorata, puis la poussière sur la plus forte d'entre elles
     claires = [(d, h) for d in range(7) for h in range(24) if 0 < mat[d][h] < 0.45 * vmax]
     base = float(sum(mat[d][h] for d, h in claires))
@@ -530,16 +605,30 @@ def carte_chaleur():
 CHALEUR = carte_chaleur()
 CHALEUR_MAX = max(map(max, CHALEUR))
 assert sum(map(sum, CHALEUR)) == CA
-for _l in CHALEUR:
-    for _v in _l:
-        assert not 0.55 < _v / float(CHALEUR_MAX) < 0.70
+
+
+def fond_case(v):
+    """heatColor (dashboard_view.js:257-261) : le violet du module, plus ou moins opaque."""
+    return 'rgba(113, 75, 103, %.3f)' % (0.06 + v / float(CHALEUR_MAX) * 0.85)
+
+
+def texte_case(v):
+    """heatTextColor (dashboard_view.js:262-280, écart n° 71) : blanc ou noir, le plus contrasté
+    des deux sur le fond réellement obtenu (violet composé sur blanc)."""
+    alpha = 0.06 + v / float(CHALEUR_MAX) * 0.85
+
+    def lin(c):
+        x = (255 - alpha * (255 - c)) / 255.0
+        return x / 12.92 if x <= 0.03928 else ((x + 0.055) / 1.055) ** 2.4
+    lum = 0.2126 * lin(113) + 0.7152 * lin(75) + 0.0722 * lin(103)
+    return '#ffffff' if 1.05 / (lum + 0.05) >= (lum + 0.05) / 0.05 else '#000000'
 
 
 def insights():
-    """get_time_insights (pos_dashboard.py:821-902)."""
+    """get_time_insights (pos_dashboard.py:950-1028)."""
     par_heure = [sum(CHALEUR[d][h] for d in range(7)) for h in range(24)]
     best = max(range(24), key=lambda h: (par_heure[h] + par_heure[(h + 1) % 24], -h))
-    pic = 'Pic %dh-%dh (%s)' % (best, (best + 2) % 24, fmt_pct(pct(par_heure[best] + par_heure[(best + 1) % 24], CA)))
+    pic = 'Pic %dh-%dh (%s)' % (best, (best + 2) % 24, pct(rapport(par_heure[best] + par_heure[(best + 1) % 24], CA)))
     noms = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
     fort = max(range(7), key=lambda d: sum(CHALEUR[d]))
     return pic, 'Jour fort : %s' % noms[fort], best, fort
@@ -552,6 +641,7 @@ assert (H_PIC, J_FORT) == (20, 5)          # 20 h – 22 h à Douala, affiché �
 # ardoises de mai, en-tête de t10_ardoises.py) au 13/10/2026 (dernière
 # ouverture), 163 jours ; rien de vendu le 30/09, jour d'inventaire (fictif),
 # si bien que octobre = la période analysée ; mois au format d'Odoo (date:month).
+TOUT_DU, TOUT_AU = '04/05/2026', '13/10/2026'
 EVO_TOUT = [('mai 2026', 5480000, 2466000), ('juin 2026', 6120000, 2692800), ('juillet 2026', 6950000, 3058000),
             ('août 2026', 7310000, 3216400), ('septembre 2026', 6104000, 2685800), ('octobre 2026', CA, CMV)]
 TOUT = {'ca': sum(x[1] for x in EVO_TOUT), 'cmv': sum(x[2] for x in EVO_TOUT), 'cmdes': 1440, 'qty': 5760,
@@ -608,30 +698,43 @@ CP_POS = ('<div class="cp"><span class="titre">Point de Vente</span>%s<span clas
 # Trois caisses, comme t04_note_chambre.py:200 et t10_ardoises.py (BOUT) ;
 # la Boutique a clôturé sa dernière session le 26/09 (fictif).
 POS = vue_libre('t12-pos', CP_POS + '<div class="t12-pk">%s%s%s</div>' % (
-    carte_pos(BAR, '13/10/2026', '25' + NB + '000' + NB + 'FCFA'),
-    carte_pos(RESTO, '13/10/2026', '20' + NB + '000' + NB + 'FCFA'),
-    carte_pos(BOUT, '26/09/2026', '10' + NB + '000' + NB + 'FCFA')), initiale=True)
+    carte_pos(BAR, '13/10/2026', fcfa(25000)),
+    carte_pos(RESTO, '13/10/2026', fcfa(20000)),
+    carte_pos(BOUT, '26/09/2026', fcfa(10000))), initiale=True)
 
-# Le menu déroulant « Analyse AITE » (pos_analytics_menus.xml:16-50).
-ENTREES = [('tdb', 'Tableau de bord'), ('caisse', 'Par caisse'), ('sess', 'Sessions POS'), ('cat', 'Par catégorie'),
-           ('ecarts', 'Écarts de caisse'), ('pivot', 'Pivot & Graph')]
-MENU = ('<div class="t12-menu masque" id="t12-menu" data-layout-allow-overlap data-layout-allow-occlusion>%s</div>'
-        % ''.join('<div id="t12-menu-%s">%s</div>' % (i, e(lib)) for i, lib in ENTREES))
+# Le menu déroulant « Analyse » du Point de Vente : les entrées standard
+# d'Odoo (Commandes, Détails des ventes, Rapport de session : séquences 3, 4, 5,
+# point_of_sale/views/pos_order_report_view.xml:106-107, point_of_sale_view.xml
+# :29-33 ; i18n/fr.po:5067-5068, 6845-6846, 7111-7112), puis la section
+# « Analyse AITE » (séquence 80, pos_analytics_menus.xml:16-56), rendue par
+# Odoo 18 comme un en-tête de groupe suivi d'entrées décalées de 12 px
+# (web/static/src/webclient/navbar/navbar.xml:209-231).
+STANDARD = ['Commandes', 'Détails des ventes', 'Rapport de session']
+ENTREES = list(zip(('tdb', 'caisse', 'sess', 'cat', 'ecarts', 'pivot'), MENU_ANALYSE_AITE))
+assert ENTREES[0] == ('tdb', 'Tableau de bord') and ENTREES[-1][1] == 'Tableau croisé & graphique'
+MENU = ('<div class="t12-menu masque" id="t12-menu" data-layout-allow-overlap data-layout-allow-occlusion>%s'
+        '<div class="t12-menu-h">Analyse AITE</div>%s</div>'
+        % (''.join('<div>%s</div>' % e(lib) for lib in STANDARD),
+           ''.join('<div class="t12-menu-g" id="t12-menu-%s">%s</div>' % (i, e(lib)) for i, lib in ENTREES)))
 
 # ------------------------------------------------------ Analyse AITE --
-ONGLETS = [('dash', 'Tableau de bord', JAUGE), ('caisse', 'Par caisse', None), ('sess', 'Sessions POS', ICONES['liste']),
+# Huit onglets (utils.js:318-330) ; « Par caisse » a son icône depuis la
+# livraison 4 (fa-calculator, écart n° 64).
+ONGLETS = [('dash', 'Tableau de bord', JAUGE), ('caisse', 'Par caisse', ICONES['calculatrice']),
+           ('sess', 'Sessions POS', ICONES['liste']),
            ('art', 'Articles', ICONES['boite']), ('marg', 'Marges & CMV', ICONES['graphe']),
            ('cat', 'Par catégorie', TH_LARGE), ('ecarts', 'Écarts de caisse', ICONES['alerte']),
            ('pay', 'Paiements', ICONES['carte'])]
 TABS = '<div class="t12-tabs">%s</div>' % ''.join(
-    '<span class="t12-tab%s%s" id="t12-tab-%s">%s%s</span>'
-    % (' on' if k == 'dash' else '', '' if svg else ' t12-sans', k, ico(svg) if svg else '', e(lib))
+    '<span class="t12-tab%s" id="t12-tab-%s">%s%s</span>' % (' on' if k == 'dash' else '', k, ico(svg), e(lib))
     for k, lib, svg in ONGLETS)
 
 
 def fb(libelle, ident=None, on=False, alt=False, jour=False, point=None):
-    """Un bouton de filtre (o_aite_fbtn) ; ``alt`` : la variante bleue de la ligne Heure."""
-    cls = 't12-fb' + (' on' if on and not alt else '') + (' alt-on' if on and alt else '') + (' jour' if jour else '')
+    """Un bouton de filtre (o_aite_fbtn) ; ``alt`` : la variante bleue de la ligne Heure ; ``jour`` : un
+    bouton de la ligne Jour, vert sarcelle quand il est actif (--aite-teal, définie depuis la livraison 4)."""
+    cls = ('t12-fb' + (' jour' if jour else '')
+           + ((' alt-on' if alt else ' jour-on' if jour else ' on') if on else ''))
     p = '<i class="t12-dot" style="background:%s"></i>' % point if point else ''
     return '<span class="%s"%s>%s%s</span>' % (cls, ' id="%s"' % ident if ident else '', p, e(libelle))
 
@@ -646,12 +749,11 @@ FILTRES = '<div class="t12-fbar" id="t12-fbar">%s</div>' % ''.join([
     '<div class="t12-frow"><span class="t12-flab">Période</span>%s<span class="t12-esp"></span>'
     '<span class="t12-du">Du</span>%s<span class="t12-du">au</span>%s<span class="t12-ok" id="t12-ok-p">Analyser</span></div>'
     % (''.join([fb('Toute la période', 't12-pe-all', True), fb("Aujourd'hui"), fb('Cette semaine'),
-                fb('Ce mois'), fb('Ce trimestre'), fb('Cette année')]),
-       date_('t12-du', '04/05/2026'), date_('t12-au', '13/10/2026')),
-    # couleurs dans l'ordre des pos.config (pos_dashboard.py:651-654, 905-912 ; PALETTE de t10_ardoises.py)
+                fb('Ce mois', 't12-pe-mois'), fb('Ce trimestre'), fb('Cette année')]),
+       date_('t12-du', TOUT_DU), date_('t12-au', TOUT_AU)),
+    # une couleur par caisse, fixée par son ordre de création (pos_dashboard.py:762-776, 1031-1039)
     '<div class="t12-frow"><span class="t12-flab">Caisse</span>%s</div>'
-    % ''.join([fb('Toutes les caisses', on=True), fb(BAR, point=PRIMARY), fb(RESTO, point=INFO),
-               fb(BOUT, point=SUCCESS)]),
+    % ''.join([fb('Toutes les caisses', on=True)] + [fb(c, point=COULEUR_CAISSE[c]) for c in (BAR, RESTO, BOUT)]),
     # Heure et Jour : seulement sur les onglets qui les appliquent, Tableau de bord et Par caisse
     # (dashboard_shell.xml:27, :172, :191 — showTimeFilters)
     '<div id="t12-fbar-temps"><div class="t12-frow"><span class="t12-flab">Heure</span>%s<span class="t12-esp"></span>'
@@ -659,16 +761,17 @@ FILTRES = '<div class="t12-fbar" id="t12-fbar">%s</div>' % ''.join([
     '<span class="t12-du">h</span><span class="t12-ok">OK</span></div>'
     % ''.join([fb('Toute la journée', on=True, alt=True), fb('Matin 6–12h'), fb('Après-midi 12–18h'),
                fb('Soir 18–23h', 't12-h-soir'), fb('Nuit 23–6h')]),
-    # « Tous » est actif mais blanc sur blanc (écart 2) : sa place reste vide
-    '<div class="t12-frow"><span class="t12-flab">Jour</span><span class="t12-tous"></span>%s'
+    # « Tous » actif, vert sarcelle (la variable --aite-teal est définie depuis la livraison 4, écart n° 67)
+    '<div class="t12-frow"><span class="t12-flab">Jour</span>%s'
     '<span class="t12-esp"></span>%s%s</div></div>'
-    % (''.join(fb(j, jour=True) for j in JOURS_SEMAINE), fb('Semaine (lun–ven)', jour=True), fb('Week-ends', jour=True)),
+    % (''.join([fb('Tous', on=True, jour=True)] + [fb(j, jour=True) for j in JOURS_SEMAINE]),
+       fb('Semaine (lun–ven)', jour=True), fb('Week-ends', jour=True)),
 ])
 
 
 # -- composants du tableau de bord --
 def kpi(ident, libelle, valeur, sous, couleur=None, haut=True, petite=False):
-    """KpiCard (dashboard_shell.xml:222-231) ou carte secondaire (views.xml:62-102)."""
+    """KpiCard (dashboard_shell.xml:223-234) ou carte secondaire (views.xml:68-112)."""
     style = ' style="border-top-color:%s"' % couleur if haut and couleur else ''
     vstyle = ' style="color:%s"' % couleur if couleur else ''
     return ('<div class="t12-kpi%s%s" id="%s"%s><div class="l">%s</div><div class="v" id="%s-v"%s>%s</div>'
@@ -687,10 +790,10 @@ def module(ident, titre, sous, couleur, svg, corps, droite='', classe_=''):
 
 
 def graduations(vmax):
-    """Les graduations « k » de Chart.js (pas de 1, 2 ou 5 × 10^n)."""
+    """Les graduations de Chart.js (pas de 1, 2 ou 5 × 10^n : niceNum ne donne jamais 2,5), écrites par fmtCompact."""
     brut = vmax / 6.0
     puissance = 10 ** int(math.floor(math.log10(brut)))
-    pas = next(m * puissance for m in (1, 2, 2.5, 5, 10) if m * puissance >= brut)
+    pas = next(m * puissance for m in (1, 2, 5, 10) if m * puissance >= brut)
     haut = pas * math.ceil(vmax / pas)
     return haut, [int(v) for v in frange(0, haut, pas)]
 
@@ -700,10 +803,6 @@ def frange(a, b, pas):
     while v <= b + 1e-6:
         yield v
         v += pas
-
-
-def k(v):
-    return '%dk' % round(v / 1000.0) if v >= 1000 else '%d' % v
 
 
 def barres_top(ident, top):
@@ -716,7 +815,7 @@ def barres_top(ident, top):
     for t in ticks:
         y = 10 + (h - 40) * (1 - t / float(haut))
         svg.append('<line x1="%d" x2="%d" y1="%.1f" y2="%.1f" stroke="#ECEBE7"/><text x="%d" y="%.1f" '
-                   'class="t12-ax" text-anchor="end">%s</text>' % (g, w, y, y, g - 8, y + 5, k(t)))
+                   'class="t12-ax" text-anchor="end">%s</text>' % (g, w, y, y, g - 8, y + 5, fmt_compact(t)))
     for i, (nom, ca, marge) in enumerate(top):
         x = g + i * pas + pas / 2.0
         for j, (v, c) in enumerate(((ca, PRIMARY), (marge, SUCCESS))):
@@ -736,7 +835,7 @@ def courbes(ident, evo):
     for t in ticks:
         y = 10 + (h - 40) * (1 - t / float(haut))
         svg.append('<line x1="%d" x2="%d" y1="%.1f" y2="%.1f" stroke="#ECEBE7"/><text x="%d" y="%.1f" '
-                   'class="t12-ax" text-anchor="end">%s</text>' % (g, w, y, y, g - 8, y + 5, k(t)))
+                   'class="t12-ax" text-anchor="end">%s</text>' % (g, w, y, y, g - 8, y + 5, fmt_compact(t)))
     n = len(evo)
     xs = [g + 20 + i * (w - g - 40) / float(max(1, n - 1)) for i in range(n)]
 
@@ -773,9 +872,9 @@ def module_ventes(ident, top, evo):
 def module_categories():
     lignes = ''.join(
         '<div class="t12-cr"><div class="t12-crh"><span class="t12-crn"><i class="t12-cd" style="background:%s"></i>'
-        '<b>%s</b><small>tx %s</small></span><span><b style="color:%s">%s</b><small> · CMV %s</small></span></div>'
+        '<b>%s</b><small>taux %s</small></span><span><b style="color:%s">%s</b><small> · CMV %s</small></span></div>'
         '<div class="t12-pb"><i style="width:%.1f%%;background:%s"></i></div></div>'
-        % (couleurs_cat(c['nom'], i)[0], e(c['nom']), fmt_pct(c['taux']), SUCCESS, fmt_money(c['marge']),
+        % (couleurs_cat(c['nom'], i)[0], e(c['nom']), pct(c['taux']), SUCCESS, fmt_money(c['marge']),
            fmt_money(c['cmv']), min(c['taux'], 100), couleurs_cat(c['nom'], i)[0])
         for i, c in enumerate(CATEGORIES))
     # « CMV vs Marge » : barres groupées par catégorie, légende en bas
@@ -785,7 +884,7 @@ def module_categories():
     for t in ticks:
         y = 10 + (h - 66) * (1 - t / float(haut))
         svg.append('<line x1="%d" x2="%d" y1="%.1f" y2="%.1f" stroke="#ECEBE7"/><text x="%d" y="%.1f" '
-                   'class="t12-ax" text-anchor="end">%s</text>' % (g, w, y, y, g - 8, y + 5, k(t)))
+                   'class="t12-ax" text-anchor="end">%s</text>' % (g, w, y, y, g - 8, y + 5, fmt_compact(t)))
     pas = (w - g) / float(len(CATEGORIES))
     for i, c in enumerate(CATEGORIES):
         x = g + i * pas + pas / 2.0
@@ -822,21 +921,24 @@ def anneau_caisses(plein=False):
 
 
 def badge(taux, seuil_ambre=40):
+    """caisseBadgeClass / marginBadgeClass (dashboard_view.js:306-320, caisse_view.js:158-162) : vert dès 50 %,
+    ambre dès 40 % (30 % pour un article), ligne TOTAL comprise depuis la livraison 4 (écart n° 67)."""
     return 'b-teal' if taux >= 50 else ('b-amb' if taux >= seuil_ambre else 'b-red')
 
 
 def module_caisses():
     lignes = ''.join('<div class="t12-cl"><i class="t12-cd" style="background:%s"></i><b class="t12-cln">%s</b>'
                      '<span class="t12-clca">%s</span><span class="t12-b %s">%s</span><span class="t12-clp">%s du CA</span>'
-                     '</div>' % (x['couleur'], e(x['nom']), fmt_money(x['ca']), badge(x['taux']), fmt_pct(x['taux']),
-                                 fmt_pct(x['part'])) for x in CAISSES)
+                     '</div>' % (x['couleur'], e(x['nom']), fmt_money(x['ca']), badge(x['taux']), pct(x['taux']),
+                                 pct(x['part'])) for x in CAISSES)
     lignes += ('<div class="t12-cl t12-cltot"><i class="t12-cd" style="background:#888780"></i><b class="t12-cln">TOTAL</b>'
-               '<b class="t12-clca">%s</b><span class="t12-b b-amb">%s</span><span class="t12-clp">marge %s</span></div>'
-               % (fmt_money(CA), fmt_pct(pct(MARGE, CA)), fmt_money(MARGE)))
+               '<b class="t12-clca">%s</b><span class="t12-b %s">%s</span><span class="t12-clp">marge %s</span></div>'
+               % (fmt_money(CA), badge(rapport(MARGE, CA)), pct(rapport(MARGE, CA)), fmt_money(MARGE)))
     corps = ('<div class="t12-g2"><div><div class="t12-st">Contribution au CA</div>%s</div>'
              '<div><div class="t12-st">Synthèse par caisse</div>%s</div></div>' % (anneau_caisses(), lignes))
-    # fa-cash-register n'existe pas en Font Awesome 4.7 : la pastille reste vide (écart 6)
-    return module(None, 'Performance par caisse', 'CA · marge totale & par point de vente', INFO, '', corps,
+    # fa-calculator depuis la livraison 4 (views.xml:217, écart n° 64)
+    return module(None, 'Performance par caisse', 'CA · marge totale & par point de vente', INFO, ICONES['calculatrice'],
+                  corps,
                   classe_='t12-m3')
 
 
@@ -847,10 +949,8 @@ def chaleur():
         cases = []
         for h in range(24):
             v = CHALEUR[d][h]
-            a = v / float(CHALEUR_MAX)
-            fond = 'rgba(113, 75, 103, %.3f)' % (0.06 + a * 0.85)
-            coul = '#ffffff' if a > 0.55 else '#3d3c39'
-            cases.append('<td style="background:%s;color:%s">%s</td>' % (fond, coul, k(v) if v else ''))
+            cases.append('<td style="background:%s;color:%s">%s</td>'
+                         % (fond_case(v), texte_case(v), fmt_compact(v) if v else ''))
         corps.append('<tr id="t12-hm-d%d"><td class="t12-hd">%s</td>%s</tr>' % (d, jour, ''.join(cases)))
     droite = ('<div class="t12-ins" id="t12-ins"><span class="t12-chip">%s</span><span class="t12-chip">%s</span></div>'
               % (e(PIC), e(JOUR_FORT)))
@@ -861,7 +961,8 @@ def chaleur():
     corps_html = ('<div class="t12-hmw" id="t12-hm-tab"><table class="t12-hm">%s%s</table>%s</div>'
                   % (tete, ''.join(corps), soir))
     return module('t12-hm', 'Répartition des ventes — heure × jour',
-                  "intensité = chiffre d'affaires · pour caler plannings & happy hours", PRIMARY, ICONES['grille'],
+                  "intensité = chiffre d'affaires · pour caler les plannings & les heures de promotion", PRIMARY,
+                  ICONES['grille'],
                   corps_html, droite=droite, classe_='t12-m4')
 
 
@@ -870,18 +971,19 @@ def module_classements():
         return ('<div class="t12-rk"><span class="n">%d</span><span class="nm">%s</span><span class="bg"><i style="width:%.1f%%;'
                 'background:%s"></i></span><span class="vl">%s</span></div>' % (i, e(nom), min(pctg, 100), coul, e(val)))
     bieres = sorted([p for p in PRODUITS if p['cat'] == 'Bières'], key=lambda p: -p['qty'])
-    # « Meilleures marges » (CA net > 100 F) et « Moins vendus » (quantité nette > 0) se lisent nets des
-    # remboursements (pos_dashboard.py:496-538) : un article vendu puis remboursé n'y figure plus.
+    # « Meilleures marges » (CA net > 100) et « Moins vendus » (quantité nette > 0) se lisent nets des
+    # remboursements (pos_dashboard.py:502-584) : un article vendu puis remboursé n'y figure plus.
+    # Quantités en toutes lettres et accordées (fmtUnits, views.xml:340, 360).
     marges = sorted([p for p in PRODUITS if p['ca'] > 100], key=lambda p: -p['taux'])[:8]
     moins = sorted([p for p in PRODUITS if p['qty'] > 0], key=lambda p: p['qty'])[:8]
     qmax_b, qmax_m = max(p['qty'] for p in bieres), max(p['qty'] for p in moins)
     corps = ('<div class="t12-g3"><div><div class="t12-st">🍺 Top bières (qté)</div>%s</div>'
              '<div><div class="t12-st">⭐ Meilleures marges</div>%s</div><div><div class="t12-st">📉 Moins vendus</div>'
              '%s</div></div>'
-             % (''.join(rang(i + 1, p['nom'], p['qty'] * 100.0 / qmax_b, '%s u' % fmt(p['qty']), PRIMARY)
+             % (''.join(rang(i + 1, p['nom'], p['qty'] * 100.0 / qmax_b, fmt_unites(p['qty']), PRIMARY)
                         for i, p in enumerate(bieres)),
-                ''.join(rang(i + 1, p['nom'], p['taux'], fmt_pct(p['taux']), SUCCESS) for i, p in enumerate(marges)),
-                ''.join(rang(i + 1, p['nom'], p['qty'] * 100.0 / qmax_m, '%s u' % fmt(p['qty']), DANGER)
+                ''.join(rang(i + 1, p['nom'], p['taux'], pct(p['taux']), SUCCESS) for i, p in enumerate(marges)),
+                ''.join(rang(i + 1, p['nom'], p['qty'] * 100.0 / qmax_m, fmt_unites(p['qty']), DANGER)
                         for i, p in enumerate(moins))))
     return module(None, 'Classements produits', 'Bières · Marges · Moins vendus', WARNING, TROPHEE, corps,
                   classe_='t12-m5')
@@ -892,27 +994,35 @@ def contenu_tableau(cle, d, top, evo, articles, meilleur, delta=False):
     i = 't12-%s' % cle
     rangee1 = '<div class="t12-g4" id="%s-r1">%s</div>' % (i, ''.join([
         kpi(i + '-ca', "Chiffre d'affaires", fmt_money(d['ca']),
-            'HT · %s / jour · %dj' % (fmt_money(d['ca'] / float(d['jours'])), d['jours']), INFO),
+            'HT · %s / jour · %d j' % (fmt_money(d['ca'] / float(d['jours'])), d['jours']), INFO),
         kpi(i + '-marge', 'Marge brute', fmt_money(d['marge']),
-            'Taux: %s · %s/tx' % (fmt_pct(pct(d['marge'], d['ca'])), fmt_money(d['marge'] / float(d['cmdes']))), SUCCESS),
+            'Taux\xa0: %s · %s / ticket' % (pct(rapport(d['marge'], d['ca'])), fmt_money(d['marge'] / float(d['cmdes']))),
+            SUCCESS),
         kpi(i + '-cmv', 'CMV (coût marchandises)', fmt_money(d['cmv']),
-            '%s du CA · %s/u' % (fmt_pct(pct(d['cmv'], d['ca'])), fmt_money(d['cmv'] / float(d['qty']))), DANGER),
+            '%s du CA · %s / unité' % (pct(rapport(d['cmv'], d['ca'])), fmt_money(d['cmv'] / float(d['qty']))), DANGER),
         kpi(i + '-tx', 'Transactions', fmt(d['cmdes']),
-            'Panier moy. %s · %s u' % (fmt_money(d['ca'] / float(d['cmdes'])), fmt(d['qty'])), PRIMARY)]))
+            'Panier moyen %s · %s' % (fmt_money(d['ca'] / float(d['cmdes'])), fmt_unites(d['qty'])), PRIMARY)]))
     bande = ''
     if delta:
-        bande = '<div class="t12-strip" id="t12-strip">%s</div>' % ''.join(
-            '<div class="t12-dc" id="t12-strip-%d"><span class="t12-dl">%s</span><span class="t12-dv %s">%s</span></div>'
-            % (n, e(lib), 'up' if v > 0 else 'down', fmt_delta(v)) for n, (lib, v) in enumerate(DELTAS))
-    ratio, taux = pct(d['cmv'], d['ca']), pct(d['marge'], d['ca'])
+        # views.xml:32-66 : un titre qui dit la période comparée, puis quatre cellules ; deltaClass lit la
+        # valeur arrondie, un CMV qui monte est rouge (écart n° 62)
+        bande = ('<div class="t12-bande" id="t12-bande"><div class="t12-dtitre" id="t12-dtitre">Évolution par rapport '
+                 'à la période précédente de même durée (du %s au %s)</div><div class="t12-strip" id="t12-strip">%s</div>'
+                 '</div>' % (PREC_DU, PREC_AU, ''.join(
+                     '<div class="t12-dc" id="t12-strip-%d"><span class="t12-dl">%s</span><span class="t12-dv %s" '
+                     'id="t12-strip-%d-v">%s</span></div>'
+                     % (n, e(lib), {'haut': 'up', 'bas': 'down', 'nul': 'flat'}[sens(v, mauvaise)], n, variation(v))
+                     for n, (lib, v, mauvaise) in enumerate(DELTAS))))
+    ratio, taux = rapport(d['cmv'], d['ca']), rapport(d['marge'], d['ca'])
     rangee2 = '<div class="t12-g4" id="%s-r2">%s</div>' % (i, ''.join([
-        kpi(i + '-ratio', 'Ratio CMV/CA', fmt_pct(ratio), 'Bonne maîtrise ✓' if ratio < 65 else 'À optimiser ⚠',
+        kpi(i + '-ratio', 'Ratio CMV/CA', pct(ratio), 'Bonne maîtrise ✓' if ratio < 65 else 'À optimiser ⚠',
             SUCCESS if ratio < 65 else DANGER, haut=False, petite=True),
-        kpi(i + '-taux', 'Taux de marge', fmt_pct(taux), 'Objectif atteint ✓' if taux >= 35 else 'Sous objectif',
+        kpi(i + '-taux', 'Taux de marge', pct(taux), 'Objectif atteint ✓' if taux >= 35 else 'Sous objectif',
             SUCCESS if taux >= 35 else WARNING, haut=False, petite=True),
         kpi(i + '-art', 'Articles actifs', '%d <span class="t12-sur">/ %d</span>' % articles,
             'références vendues', haut=False, petite=True),
-        kpi(i + '-best', 'Meilleur article', e(meilleur[0][:18]), '%s CA' % fmt_money(meilleur[1]), PRIMARY, haut=False,
+        # nom complet, coupé par le CSS si besoin (views.xml:99-111, écart n° 67)
+        kpi(i + '-best', 'Meilleur article', e(meilleur[0]), '%s CA' % fmt_money(meilleur[1]), PRIMARY, haut=False,
             petite=True)]))
     suite = module_ventes(i + '-ventes', top, evo)
     if delta:
@@ -937,7 +1047,8 @@ def kpi_caisse(ident, libelle, nom, sous, couleur):
 TOP_CA = max(CAISSES, key=lambda x: x['ca'])
 TOP_TAUX = max(CAISSES, key=lambda x: x['taux'])
 TOP_PANIER = max(CAISSES, key=lambda x: x['panier'])
-COLS_CAISSE = ['Caisse', 'CA HT', '% CA', 'Marge', 'Taux', 'CMV', 'Cmdes', 'Panier moy.', 'Qté', 'Écart caisse']
+# views.xml:494-505 : « Commandes » et « Panier moyen » en toutes lettres depuis la livraison 4 (écart n° 42).
+COLS_CAISSE = ['Caisse', 'CA HT', '% CA', 'Marge', 'Taux', 'CMV', 'Commandes', 'Panier moyen', 'Qté', 'Écart caisse']
 
 
 def ligne_caisse(x):
@@ -948,33 +1059,35 @@ def ligne_caisse(x):
             '<td class="r t12-muet">%s</td><td class="r" style="color:%s">%s</td><td class="r"><span class="t12-b %s">%s</span>'
             '</td><td class="r" style="color:%s">%s</td><td class="r t12-muet">%s</td><td class="r">%s</td>'
             '<td class="r t12-muet">%s</td><td class="r">%s</td></tr>'
-            % (x['couleur'], e(x['nom']), fmt_money(x['ca']), fmt_pct(x['part']), SUCCESS, fmt_money(x['marge']),
-               badge(x['taux']), fmt_pct(x['taux']), DANGER, fmt_money(x['cmv']), fmt(x['cmdes']), fmt_money(x['panier']),
+            % (x['couleur'], e(x['nom']), fmt_money(x['ca']), pct(x['part']), SUCCESS, fmt_money(x['marge']),
+               badge(x['taux']), pct(x['taux']), DANGER, fmt_money(x['cmv']), fmt(x['cmdes']), fmt_money(x['panier']),
                fmt(x['qty']), ecart))
 
 
 TABLE_CAISSES = ('<table class="t12-t" id="t12-ctab"><thead><tr>%s</tr></thead><tbody>%s</tbody><tfoot><tr id="t12-ctot">'
-                 '<td class="t12-b6">TOTAL</td><td class="r t12-b6">%s</td><td class="r">100%%</td>'
-                 '<td class="r t12-b6" style="color:%s">%s</td><td class="r"><span class="t12-b b-amb">%s</span></td>'
+                 '<td class="t12-b6">TOTAL</td><td class="r t12-b6">%s</td><td class="r">%s</td>'
+                 '<td class="r t12-b6" style="color:%s">%s</td><td class="r"><span class="t12-b %s">%s</span></td>'
                  '<td class="r t12-b6" style="color:%s">%s</td><td class="r">%s</td><td class="r">%s</td><td class="r">%s</td>'
                  '<td class="r"><span style="color:%s;font-weight:600">%s</span></td></tr></tfoot></table>'
                  % (''.join('<th%s>%s</th>' % ('' if i == 0 else ' class="r"', e(c)) for i, c in enumerate(COLS_CAISSE)),
-                    ''.join(ligne_caisse(x) for x in CAISSES), fmt_money(CA), SUCCESS, fmt_money(MARGE),
-                    fmt_pct(pct(MARGE, CA)), DANGER, fmt_money(CMV), fmt(CMDES), fmt_money(CA / float(CMDES)), fmt(QTE),
+                    ''.join(ligne_caisse(x) for x in CAISSES), fmt_money(CA), pct(100), SUCCESS, fmt_money(MARGE),
+                    badge(rapport(MARGE, CA)), pct(rapport(MARGE, CA)), DANGER, fmt_money(CMV), fmt(CMDES), fmt_money(CA / float(CMDES)), fmt(QTE),
                     DANGER if ECART_TOTAL < 0 else SUCCESS, fmt_signed(ECART_TOTAL)))
 
 
 def barres_taux():
-    w, h = 720, 230
+    """« Taux de marge par caisse » (caisse_view.js:116-138) : barres depuis zéro, graduations fmtPct."""
+    w, h, g = 720, 230, 76
+    haut, ticks = graduations(max(x['taux'] for x in CAISSES))
     svg = []
-    for t in range(0, 101, 20):
-        y = 10 + (h - 40) * (1 - t / 100.0)
-        svg.append('<line x1="56" x2="%d" y1="%.1f" y2="%.1f" stroke="#ECEBE7"/><text x="48" y="%.1f" class="t12-ax" '
-                   'text-anchor="end">%d%%</text>' % (w, y, y, y + 5, t))
-    pas = (w - 56) / float(len(CAISSES))
+    for t in ticks:
+        y = 10 + (h - 40) * (1 - t / float(haut))
+        svg.append('<line x1="%d" x2="%d" y1="%.1f" y2="%.1f" stroke="#ECEBE7"/><text x="%d" y="%.1f" class="t12-ax" '
+                   'text-anchor="end">%s</text>' % (g, w, y, y, g - 8, y + 5, pct(t)))
+    pas = (w - g) / float(len(CAISSES))
     for i, x in enumerate(CAISSES):
-        cx = 56 + i * pas + pas / 2.0
-        hb = (h - 40) * x['taux'] / 100.0
+        cx = g + i * pas + pas / 2.0
+        hb = (h - 40) * x['taux'] / float(haut)
         svg.append('<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" rx="3" fill="%s"/><text x="%.1f" y="%d" '
                    'class="t12-ax" text-anchor="middle">%s</text>'
                    % (cx - pas * 0.36, 10 + h - 40 - hb, pas * 0.72, hb, x['couleur'], cx, h - 8, e(x['nom'])))
@@ -986,8 +1099,8 @@ C_CAISSE = ('<div class="t12-c masque" id="t12-c-caisse"><div class="t12-g4" id=
             'par caisse</div>%s</div></div><div class="t12-mod t12-nomt"><div class="t12-mb"><div class="t12-st">Taux de '
             'marge par caisse</div>%s</div></div></div></div>'
             % (''.join([kpi_caisse('t12-ck-1', 'Caisse n°1 (CA)', TOP_CA['nom'],
-                                   '%s · %s' % (fmt_money(TOP_CA['ca']), fmt_pct(TOP_CA['part'])), INFO),
-                        kpi_caisse('t12-ck-2', 'Caisse la + rentable', TOP_TAUX['nom'], 'taux %s' % fmt_pct(TOP_TAUX['taux']),
+                                   '%s · %s' % (fmt_money(TOP_CA['ca']), pct(TOP_CA['part'])), INFO),
+                        kpi_caisse('t12-ck-2', 'Caisse la + rentable', TOP_TAUX['nom'], 'taux %s' % pct(TOP_TAUX['taux']),
                                    SUCCESS),
                         kpi_caisse('t12-ck-3', 'Meilleur panier moyen', TOP_PANIER['nom'], fmt_money(TOP_PANIER['panier']),
                                    WARNING),
@@ -1008,7 +1121,7 @@ CA_MAX = max(p['ca'] for p in PRODUITS)
 
 
 def carte_articles(ident, produits, prefixe, masque=False):
-    """Le tableau des articles (views.xml:659-715), trié par CA décroissant."""
+    """Le tableau des articles (views.xml:670-726), trié par CA décroissant."""
     tete = '<div class="t12-ah" style="%s">%s</div>' % (GRILLE_ART, ''.join(
         '<span%s>%s</span>' % (' class="r"' if a else '', e(c)) for c, a in COLS_ART))
     corps = []
@@ -1020,7 +1133,7 @@ def carte_articles(ident, produits, prefixe, masque=False):
                      'class="t12-b" style="background:%s;color:%s">%s</span></span><span><div class="t12-pb"><i style="'
                      'width:%.1f%%;background:%s"></i></div></span></div>'
                      % (prefixe, i, GRILLE_ART, e(p['nom']), fmt(p['qty']), fmt(p['ca']), DANGER, fmt(p['cmv']), SUCCESS,
-                        fmt(p['marge']), badge(p['taux'], 30), fmt_pct(p['taux']), bg, txt, e(p['cat']),
+                        fmt(p['marge']), badge(p['taux'], 30), pct(p['taux']), bg, txt, e(p['cat']),
                         p['ca'] * 100.0 / CA_MAX, PRIMARY))
     return '<div class="t12-mod t12-artmod%s" id="%s">%s%s</div>' % (' masque' if masque else '', ident, tete, ''.join(corps))
 
@@ -1053,32 +1166,35 @@ PANNEAU = ('<div class="t12-panel masque" id="t12-panel" data-layout-allow-overl
            '%s / unité</div></div>'
            '<div class="t12-f"><div class="t12-fl">Marge unitaire</div><div class="t12-fv" style="color:%s">%s / unité</div>'
            '</div></div><div class="t12-sep"></div><div class="t12-fl">Période analysée</div>'
-           '<div class="t12-fv">01/10/2026 → 13/10/2026</div></div></div>'
+           '<div class="t12-fv">%s → %s</div></div></div>'
            % (e(B65['nom']), _bg, _tx, e(B65['cat']),
               ''.join('<div class="t12-kpi"><div class="l">%s</div><div class="v" style="color:%s">%s</div></div>'
                       % (lib, coul, fmt_money(v)) for lib, coul, v in (('CA', INFO, B65['ca']),
                                                                        ('Marge', SUCCESS, B65['marge']),
                                                                        ('CMV', DANGER, B65['cmv']))),
-              fmt(B65['qty']), SUCCESS if B65['taux'] >= 50 else WARNING, fmt_pct(B65['taux']), min(B65['taux'], 100),
+              fmt(B65['qty']), SUCCESS if B65['taux'] >= 50 else WARNING, pct(B65['taux']), min(B65['taux'], 100),
               SUCCESS if B65['taux'] >= 50 else WARNING, fmt_money(B65['ca'] / float(B65['qty'])), DANGER,
-              fmt_money(B65['cmv'] / float(B65['qty'])), SUCCESS, fmt_money(B65['marge'] / float(B65['qty']))))
+              fmt_money(B65['cmv'] / float(B65['qty'])), SUCCESS, fmt_money(B65['marge'] / float(B65['qty'])), DU, AU))
 
 # -- onglet Écarts de caisse --
 NEG = [s for s in SESSIONS if s[5] < 0]
 POSI = [s for s in SESSIONS if s[5] > 0]
 ECARTS_KPI = ''.join([
     kpi('t12-ek-1', 'Écart négatif total', fmt_money(abs(sum(s[5] for s in NEG))), 'sessions clôturées', DANGER),
-    kpi('t12-ek-2', 'Sessions avec écart', fmt(len(SESSIONS)), '%d nég. · %d pos.' % (len(NEG), len(POSI)), WARNING),
+    # « 4 manquants · 1 excédent » (fmtCount, views.xml:897-900) au lieu de « 4 nég. · 1 pos. »
+    kpi('t12-ek-2', 'Sessions avec écart', fmt(len(SESSIONS)),
+        '%s · %s' % (compte(len(NEG), 'manquant', 'manquants'), compte(len(POSI), 'excédent', 'excédents')), WARNING),
     kpi('t12-ek-3', 'Écart moyen', fmt_money(abs(sum(s[5] for s in NEG)) / float(len(NEG))), 'par session négative',
         PRIMARY),
     kpi('t12-ek-4', 'Plus grand écart', fmt_money(abs(min(s[5] for s in NEG))), 'à investiguer en priorité', DANGER)])
-assert len(NEG) <= 5            # pas de bandeau « Plusieurs sessions… » (views.xml:900)
+assert len(NEG) <= 5            # pas de bandeau « Plusieurs sessions… » (views.xml:910)
 LIGNES_ECARTS = ''.join(
     '<tr id="t12-e-r%d"><td class="t12-b6" style="color:%s">%s</td><td>%s</td><td id="t12-e-r%d-qui">%s</td><td class="r">%s</td>'
     '<td class="r t12-b6" style="color:%s">%s</td><td><span class="t12-b %s" id="t12-e-r%d-sev">%s</span></td></tr>'
-    % (i, INFO, e(nom), date, i, e(qui), fmt(ca_ttc), DANGER if ec < 0 else INFO, fmt(ec), SEV_BADGE[severite(ec)], i,
+    % (i, INFO, e(nom), date, i, e(qui), fmt(ca_ht), DANGER if ec < 0 else INFO, fmt(ec), SEV_BADGE[severite(ec)], i,
        SEV_LIB[severite(ec)])
-    for i, (nom, date, qui, _, ca_ttc, ec) in enumerate(SESSIONS))
+    for i, (nom, date, qui, _, ca_ht, ec) in enumerate(SESSIONS))
+# L'en-tête « Écart (F) » est resté tel quel dans le module (views.xml:922), montants sans symbole.
 C_ECARTS = ('<div class="t12-c masque" id="t12-c-ecarts"><div class="t12-g4">%s</div><div class="t12-mod t12-nomt">'
             '<table class="t12-t" id="t12-etab"><thead><tr><th>Session</th><th>Date</th><th>Caissier</th><th class="r">CA HT</th>'
             '<th class="r">Écart (F)</th><th>Sévérité</th></tr></thead><tbody>%s</tbody></table></div></div>'
@@ -1093,10 +1209,12 @@ ECRAN = navigateur(fenetre_muk('t12-app', 'Point de Vente', MENUS, [POS, ANALYSE
                                calques=MENU + VOILE + PANNEAU))
 
 # Le défilement jusqu'à la carte de chaleur (mesuré sur la composition).
-DEFIL_CHALEUR = -1610
-# Le zoom sur la carte de chaleur : cadré sur la gauche du tableau, pour garder
-# les jours (Lun … Dim) et les colonnes du pic dans l'image.
-ZOOM_HM_FX = 0.45
+DEFIL_CHALEUR = -1635
+# Le zoom sur la carte de chaleur : le module entier, centré, à 1,2 (1 512 px de
+# large, 1 814 px à l'écran) : les jours (Lun … Dim), les colonnes du pic et les
+# deux repères, « Jour fort : Samedi » compris, restent dans l'image ; à 1,3, la
+# pastille du jour fort était coupée au bord droit.
+ZOOM_HM_S = 1.2
 
 # Ce que dit l'onglet Par caisse, vérifié sur les chiffres.
 assert TOP_CA['nom'] == BAR and CAISSES[0]['part'] > 80
@@ -1115,7 +1233,7 @@ def onglet(depuis, vers, contenu_depuis, contenu_vers):
 
 
 CSS = """
-#t12-app { --t12-muet: #6B6A65; }
+#t12-app { --t12-muet: #66655f; }
 #t12-app .o-haut .nom-app { font-size: 23px; }
 #t12-app .cp .titre { font-size: 24px; }
 /* accueil du Point de Vente (kanban des caisses, thème MuK) */
@@ -1131,15 +1249,17 @@ CSS = """
   background: var(--muk-prim); color: #fff; font-size: 19px; font-weight: 500; border-radius: 4px; }
 .t12-pc-i { position: absolute; left: 380px; top: 80px; display: grid; grid-template-columns: 220px auto; row-gap: 6px; font-size: 19px; color: var(--o-texte); }
 /* menu déroulant « Analyse AITE » */
-.t12-menu { position: absolute; left: 676px; top: 54px; width: 300px; padding: 6px 0; background: #fff; border: 1px solid var(--o-filet);
+.t12-menu { position: absolute; left: 676px; top: 54px; width: 340px; padding: 6px 0; background: #fff; border: 1px solid var(--o-filet);
   border-radius: 6px; box-shadow: 0 14px 34px rgba(0,0,0,.22); z-index: 29; }
-.t12-menu div { height: 46px; display: flex; align-items: center; padding: 0 22px; font-size: 19px; color: var(--o-texte); white-space: nowrap; }
+.t12-menu div { height: 44px; display: flex; align-items: center; padding: 0 20px; font-size: 19px; color: var(--o-texte); white-space: nowrap; }
+/* « Analyse AITE » : en-tête de groupe (dropdown-header) ; ses entrées décalées (o_dropdown_menu_group_entry) */
+.t12-menu div.t12-menu-h { height: 34px; margin-top: 4px; padding-top: 6px; font-size: 16px; font-weight: 700; color: #5C636A; }
+.t12-menu div.t12-menu-g { padding-left: 32px; }
 /* l'action « Analyse AITE » (pos_dashboard.scss, à l'échelle de la vidéo) */
 .t12-tabs { position: absolute; left: 0; right: 0; top: 0; height: 62px; background: #fff; border-bottom: 1px solid rgba(0,0,0,.08);
   display: flex; align-items: center; gap: 6px; padding: 0 16px; }
 .t12-tab { height: 44px; padding: 0 16px; border: 1px solid transparent; border-radius: 10px; display: inline-flex; align-items: center; gap: 8px;
   font-size: 17px; color: #5f5e5a; white-space: nowrap; }
-.t12-tab.t12-sans { padding-left: 20px; }
 .t12-tab .ico { width: 18px; height: 18px; display: inline-flex; }
 .t12-tab .ico svg { width: 18px; height: 18px; }
 .t12-tab.on { background: #714B67; border-color: #714B67; color: #fff; }
@@ -1153,8 +1273,8 @@ CSS = """
   background: #fff; display: inline-flex; align-items: center; white-space: nowrap; flex: none; }
 .t12-fb.on { background: #714B67; border-color: #714B67; color: #fff; }
 .t12-fb.alt-on { background: #185FA5; border-color: #185FA5; color: #fff; }
+.t12-fb.jour-on { background: #0F6E56; border-color: #0F6E56; color: #fff; }
 .t12-fb.jour { min-width: 52px; justify-content: center; }
-.t12-tous { width: 60px; height: 34px; flex: none; }
 .t12-dot { width: 11px; height: 11px; border-radius: 50%; margin-right: 7px; display: inline-block; }
 .t12-esp { flex: 1; }
 .t12-du { font-size: 15px; color: #6c757d; white-space: nowrap; }
@@ -1177,7 +1297,11 @@ CSS = """
 #t12-c-art, #t12-c-ecarts { top: -100px; }
 .t12-court #t12-c-art, .t12-court #t12-c-ecarts { top: 0; }
 .t12-g4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
-.t12-g4 + .t12-g4, .t12-strip + .t12-g4, .t12-g4 + .t12-strip { margin-top: 12px; }
+.t12-g4 + .t12-g4 { margin-top: 12px; }
+/* la bande de comparaison : son titre (o_aite_delta_title, 11 px muet, mb-1) puis les quatre cellules */
+.t12-bande { margin-top: 16px; }
+.t12-bande + .t12-g4 { margin-top: 8px; }
+.t12-dtitre { margin-bottom: 6px; font-size: 15px; color: var(--t12-muet); }
 .t12-g2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
 .t12-g3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
 .t12-mt14 { margin-top: 14px; }
@@ -1194,7 +1318,7 @@ CSS = """
   align-items: center; justify-content: space-between; }
 .t12-dl { font-size: 16px; color: var(--t12-muet); }
 .t12-dv { font-size: 19px; font-weight: 700; }
-.t12-dv.up { color: #3B6D11; } .t12-dv.down { color: #A32D2D; }
+.t12-dv.up { color: #3B6D11; } .t12-dv.down { color: #A32D2D; } .t12-dv.flat { color: var(--t12-muet); }
 .t12-mod { background: #fff; border: 1px solid rgba(0,0,0,.08); border-radius: 14px; overflow: hidden; margin-top: 14px; }
 .t12-mh { height: 66px; padding: 0 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,.06); }
 .t12-mhl { display: flex; align-items: center; gap: 14px; }
@@ -1241,8 +1365,8 @@ CSS = """
 .t12-hm { width: 100%; border-collapse: separate; border-spacing: 3px; table-layout: fixed; }
 .t12-hm th { height: 28px; font-size: 14px; font-weight: 600; color: var(--t12-muet); text-align: center; }
 .t12-hm th.t12-hc { width: 80px; text-align: left; white-space: nowrap; }
-.t12-hm td { height: 38px; text-align: center; font-size: 19px; font-weight: 700; letter-spacing: -.02em; }
-.t12-hm td.t12-hd { font-size: 15px; font-weight: 600; color: var(--t12-muet); text-align: left; letter-spacing: 0; }
+.t12-hm td { height: 38px; text-align: center; font-size: 18px; font-weight: 700; letter-spacing: -.03em; white-space: nowrap; padding: 0; }
+.t12-hm td.t12-hd { font-size: 15px; font-weight: 600; color: #5f5e5a; text-align: left; letter-spacing: 0; }
 .t12-soir { position: absolute; top: 32px; bottom: 0; }
 /* classements */
 .t12-rk { display: flex; align-items: center; gap: 9px; padding: 6px 0; border-bottom: 1px solid rgba(0,0,0,.05); font-size: 15px; color: #212529; }
@@ -1250,7 +1374,7 @@ CSS = """
 .t12-rk .nm { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .t12-rk .bg { flex: 0 0 80px; height: 7px; background: #f5f5f4; border-radius: 3px; overflow: hidden; }
 .t12-rk .bg i { display: block; height: 7px; }
-.t12-rk .vl { width: 70px; text-align: right; font-size: 14px; color: #5f5e5a; }
+.t12-rk .vl { flex: 0 0 auto; min-width: 70px; white-space: nowrap; text-align: right; font-size: 14px; color: #5f5e5a; }
 /* tableaux (o_aite_table) */
 .t12-t { width: 100%; border-collapse: collapse; font-size: 16.5px; color: #212529; }
 .t12-t thead { background: #f5f5f4; }
@@ -1296,9 +1420,10 @@ CSS = """
 .t12-ft b { font-size: 27px; }
 .t12-pbl { flex: 1; }
 .t12-sep { height: 1px; background: rgba(0,0,0,.08); margin: 14px 0; }
-/* les réactions de Danielle, loin de ce qu'elles commentent */
+/* les réactions de Danielle, loin de ce qu'elles commentent : celle des écarts dans la zone
+   vide sous le tableau, à gauche, sans cacher ni la ligne Critique ni la ligne Excédent */
 #t12-r-biere { left: 140px; right: auto; top: 150px; bottom: auto; }
-#t12-r-ecart { top: 488px; bottom: auto; }
+#t12-r-ecart { left: 300px; right: auto; top: 824px; bottom: auto; }
 """
 
 TUTORIEL = {
@@ -1335,56 +1460,74 @@ TUTORIEL = {
         't12-b-n1': 'Comparé à la période précédente, de même durée.',
         't12-b-heat': "Plus la case est foncée, plus le chiffre d'affaires est fort.",
         't12-b-caisse': 'Marge totale et par caisse.',
-        't12-b-grav': '200 000 F manquants ou plus : Critique, en tête de liste.',
+        't12-b-grav': '%s manquants ou plus : Critique, en tête de liste.' % fmt_money(SEUIL_CRITIQUE),
     },
     'reactions': {
-        't12-r-biere': '850 F de marge sur chaque bouteille.',
+        't12-r-biere': '%s de marge sur chaque bouteille.' % fmt_money(B65['prix'] - B65['cout']),
         't12-r-ecart': 'Je sais quelle clôture vérifier en premier.',
     },
     'etapes': [
         {'temps': 0, 'titre': 'Le tableau de bord des ventes',
-         'texte': "Point de Vente → Analyse AITE : chiffre d'affaires, marge, coût des marchandises, tickets.",
-         'voix': "Dans le point de vente, Danielle ouvre Analyse Aïte, puis Tableau de bord. En tête : le chiffre "
-                 "d'affaires, la marge brute, le coût des marchandises et les tickets. La marge se calcule sur chaque "
-                 "ligne de ticket, sans rien saisir.",
-         'gestes': [pause(0.3), clic(MENU_AITE, d=0.6, puis=0.1), montrer('#t12-menu', d=0.2, y=-6),
-                    clic('#t12-menu-tdb', d=0.45, puis=0.1), cacher('#t12-menu', d=0.15), vue('t12-ana'), pause(0.4),
-                    anneau('#t12-all-r1', d=1.6), curseur('#t12-all-marge', fx=0.7, fy=0.6, d=0.6, avec=True),
-                    zoom('#t12-all-marge', s=1.6, d=0.8),
-                    bulle('t12-b-marge', '#t12-all-marge', cote='bas', d=3.0), pause(2.8), dezoom(d=0.6),
-                    anneau('#t12-all-ratio', d=1.1), anneau('#t12-all-taux', d=1.1)]},
+         'texte': "Point de Vente → Analyse, section Analyse AITE : chiffre d'affaires, marge, coût des marchandises, "
+                  "tickets.",
+         'voix': "Dans le point de vente, Danielle ouvre le menu Analyse, puis Tableau de bord, dans la section Analyse "
+                 "Aïte. En tête : le chiffre d'affaires, la marge brute, le coût des marchandises et les tickets. La "
+                 "marge se calcule sur chaque ligne de ticket, sans rien saisir.",
+         # calés sur la voix : « ouvre le menu Analyse » (clic), « puis Tableau de bord » (clic), « En tête : … »
+         # (les quatre cartes, le temps de l'énumération), « La marge se calcule… » (zoom et bulle)
+         'gestes': [pause(0.9), clic(MENU_ANALYSE, d=0.6, puis=0.1), montrer('#t12-menu', d=0.2, y=-6), pause(0.5),
+                    clic('#t12-menu-tdb', d=0.5, puis=0.1), cacher('#t12-menu', d=0.15), vue('t12-ana'), pause(1.3),
+                    anneau('#t12-all-r1', d=3.4), curseur('#t12-all-marge', fx=0.7, fy=0.6, d=0.6, avec=True),
+                    zoom('#t12-all-marge', s=1.6, d=0.9),
+                    bulle('t12-b-marge', '#t12-all-marge', cote='bas', d=2.95), pause(2.2), dezoom(d=0.5)]},
         {'temps': 0, 'titre': 'Une période, face à la précédente',
-         'texte': 'Du 01/10 au 13/10, puis « Analyser » : tout se recalcule, et une bande compare à la période '
-                  'précédente.',
-         'voix': "Danielle choisit ses dates, du premier au treize octobre, puis clique sur Analyser : tout se "
-                 "recalcule. Une bande compare aussitôt le chiffre d'affaires, la marge, le coût et les commandes à la "
-                 "période précédente, de même durée. Ici, la marge gagne douze pour cent.",
-         'gestes': [clic('#t12-du', fx=0.2, d=0.7), saisir('t12-du', '01/10/2026', d=0.8), pause(0.2),
-                    clic('#t12-ok-p', d=0.6), classe('#t12-pe-all', retirer=['on']), cacher('#t12-all', d=0.12),
+         'texte': '« Ce mois » : tout se recalcule, et une bande compare à la période précédente de même durée.',
+         'voix': "Danielle clique sur Ce mois, du premier octobre à aujourd'hui : tout se recalcule. Une bande compare "
+                 "aussitôt le chiffre d'affaires, la marge, le coût et les commandes à la période précédente, de même "
+                 "durée. Ici, la marge gagne douze pour cent ; le coût des marchandises, qui monte, passe en rouge.",
+         # « Ce mois » remplit les deux dates (filter_bar.js:82-90) et allume son bouton
+         'gestes': [clic('#t12-pe-mois', d=0.8), classe('#t12-pe-all', retirer=['on']),
+                    classe('#t12-pe-mois', ajouter=['on'], avec=True), texte('#t12-du-val', DU, avec=True),
+                    texte('#t12-au-val', AU, avec=True), cacher('#t12-all', d=0.12),
                     montrer('#t12-m', d=0.25, y=0),
-                    compter('#t12-m-ca-v', 0, CA, d=1.0, apres=' F', avec=True), pause(0.6),
-                    anneau('#t12-strip', d=1.4), bulle('t12-b-n1', '#t12-strip', cote='bas', d=3.0),
-                    anneau('#t12-strip-1', d=1.6), pause(0.8), anneau('#t12-m-r1', d=1.4)]},
+                    # le compteur pose une espace insécable : le texte exact du module (espace fine) le remplace
+                    compter('#t12-m-ca-v', 0, CA, d=1.0, apres=' FCFA', avec=True), texte('#t12-m-ca-v', fmt_money(CA)),
+                    # « tout se recalcule » : les quatre cartes
+                    pause(0.5), anneau('#t12-m-r1', d=1.3),
+                    # « Une bande compare… » : la bande et son titre d'un seul anneau, puis la bulle sur « à la
+                    # période précédente, de même durée »
+                    anneau('#t12-bande', d=2.9), bulle('t12-b-n1', '#t12-strip-1', cote='bas', d=2.9), pause(2.6),
+                    # « la marge gagne douze pour cent » : la valeur seule (un anneau de la cellule Marge passerait
+                    # sur le titre de la bande, qui s'étend au-dessus d'elle)
+                    anneau('#t12-strip-1-v', d=1.8), pause(0.15),
+                    # « le coût des marchandises, qui monte, passe en rouge »
+                    anneau('#t12-strip-2', d=2.2)]},
         {'temps': 1, 'titre': 'Les heures de pointe',
          'texte': "La carte heure × jour : le pic de deux heures et le jour fort, calculés seuls.",
          'voix': "Plus bas, la carte des heures et des jours, à l'heure de Douala : plus la case est foncée, plus "
                  "la vente est forte. Les deux repères se calculent seuls : le meilleur créneau va de vingt à "
                  "vingt-deux heures, et le samedi est le jour fort. De quoi organiser le service du soir, et "
                  "renforcer l'équipe le samedi.",
-         'gestes': [defiler('#t12-defil', DEFIL_CHALEUR, d=1.6), pause(0.4),
-                    curseur('#t12-ins', fx=0.25, fy=0.85, d=0.6), anneau('#t12-ins', d=1.6),
-                    zoom('#t12-hm-tab', s=1.3, fx=ZOOM_HM_FX, fy=0.5, d=0.8),
-                    anneau('#t12-hm-soir', d=1.6),
-                    bulle('t12-b-heat', '#t12-hm-soir', cote='gauche', d=3.0), pause(2.8),
-                    anneau('#t12-hm-d%d' % J_FORT, d=1.8), pause(0.4), dezoom(d=0.6)]},
+         # « à l'heure de Douala » (zoom sur la carte entière), « plus la case est foncée… » (bulle), « Les deux
+         # repères » (anneau), « de vingt à vingt-deux heures » (le créneau), « le samedi » (plan large, la ligne)
+         'gestes': [defiler('#t12-defil', DEFIL_CHALEUR, d=1.6), pause(0.2),
+                    zoom('#t12-hm', s=ZOOM_HM_S, d=0.8), pause(0.5),
+                    bulle('t12-b-heat', '#t12-hm-soir', cote='gauche', d=2.4),
+                    curseur('#t12-hm-soir', fx=0.5, fy=0.55, d=0.6, avec=True), pause(1.75),
+                    anneau('#t12-ins', d=1.8), curseur('#t12-ins', fx=0.25, fy=0.85, d=0.6, avec=True),
+                    anneau('#t12-hm-soir', d=2.2),
+                    dezoom(d=0.5), anneau('#t12-hm-d%d' % J_FORT, d=1.9, avec=True, decale=0.2)]},
         {'temps': 1, 'titre': 'Marge totale et par caisse',
          'texte': 'Bar de la terrasse et restaurant côte à côte : CA, marge, taux, panier, écart de caisse.',
          'voix': VOIX_CAISSES,
          'gestes': [defiler('#t12-defil', 0, d=0.9)] + onglet('dash', 'caisse', 't12-m', 't12-c-caisse')
-                   + [pause(0.3), anneau('#t12-ck-1', d=1.1), anneau('#t12-ck-2', d=1.1), anneau('#t12-ck-3', d=1.0),
-                      curseur('#t12-ctot', fx=0.1, d=0.6), anneau('#t12-ctab', d=1.6),
-                      bulle('t12-b-caisse', '#t12-cmod-t', cote='droite', d=3.2), anneau('#t12-ctot', d=1.6),
-                      pause(1.6), anneau('#t12-ck-4', d=1.2)]},
+                   # calés sur la voix : « plus de quatre-vingts pour cent » (n° 1), « le meilleur taux de marge »,
+                   # « le meilleur panier », « Dans le tableau » (tableau et bulle), « écart de caisse », « la ligne total »
+                   + [pause(0.75), anneau('#t12-ck-1', d=2.0), pause(0.3), anneau('#t12-ck-2', d=1.6),
+                      anneau('#t12-ck-3', d=1.2), pause(0.2), anneau('#t12-ctab', d=2.2),
+                      bulle('t12-b-caisse', '#t12-cmod-t', cote='droite', d=2.6, avec=True, decale=0.5), pause(0.9),
+                      anneau('#t12-ck-4', d=1.1),
+                      anneau('#t12-ctot', d=2.6), curseur('#t12-ctot', fx=0.1, d=0.6, avec=True)]},
         {'temps': 1, 'titre': 'Les articles qui rapportent',
          'texte': "Recherche, puis le détail d'un article : prix, coût et marge ramenés à l'unité.",
          'voix': "Dans l'onglet Articles, Danielle tape bière : seules les bières restent. Un clic sur la bière "
@@ -1404,13 +1547,17 @@ TUTORIEL = {
          'texte': "Critique, élevé, modéré, excédent : la session à vérifier d'abord est en tête.",
          'voix': "Restent les écarts de caisse. À chaque clôture, l'argent compté est comparé à l'attendu, et "
                  "chaque session se classe toute seule, de la plus grave à la moins grave. En tête : à partir de deux "
-                 "cent mille francs manquants, elle est critique. Un excédent ferme la liste.",
+                 "cent mille francs manquants, un seuil réglable dans les paramètres, la session est critique. Un "
+                 "excédent ferme la liste.",
          'gestes': onglet('art', 'ecarts', 't12-c-art', 't12-c-ecarts')
                    + [pause(0.3), anneau('#t12-ek-1', d=1.0), anneau('#t12-ek-4', d=1.0),
                       curseur('#t12-e-r0-sev', fx=0.9, fy=1.1, d=0.6), zoom('#t12-e-r0', s=1.3, fx=0.5, d=0.8),
-                      anneau('#t12-e-r0', d=1.6), bulle('t12-b-grav', '#t12-e-r0-qui', cote='bas', d=3.0), pause(2.8),
-                      dezoom(d=0.6), curseur('#t12-e-r4-sev', fx=0.9, fy=1.1, d=0.5), anneau('#t12-e-r4', d=1.6),
-                      reaction('t12-r-ecart', d=2.6), pause(1.6)]},
+                      anneau('#t12-e-r0', d=1.6), bulle('t12-b-grav', '#t12-e-r0-qui', cote='bas', d=3.0), pause(4.55),
+                      # « la session est critique » : le badge, toujours en gros plan
+                      anneau('#t12-e-r0-sev', d=1.2),
+                      # « Un excédent ferme la liste » : plan large, la dernière ligne, et la réaction
+                      dezoom(d=0.5), curseur('#t12-e-r4-sev', fx=0.9, fy=1.1, d=0.5, avec=True),
+                      anneau('#t12-e-r4', d=1.5, avec=True, decale=0.25), reaction('t12-r-ecart', d=2.0, avec=True)]},
     ],
     'resultats': {
         'titre': 'Ce que vous gagnez, enfin visible',
@@ -1431,5 +1578,5 @@ TUTORIEL = {
         'voix': "Aïte haousse, par Aïte Consulting. Demandez votre démonstration, et retrouvez tous nos tutoriels sur "
                 "notre chaîne.",
     },
-    'vignette': {'etape': 3, 'apres': 3.2},
+    'vignette': {'etape': 3, 'apres': 7.0},
 }
