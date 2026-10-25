@@ -169,6 +169,21 @@ Une seule donnée de démonstration traverse toute la série et la présentation
 l'autre (ardoises, stock, achats, cockpit) se lit au même endroit dans le code
 du scénario de référence (`demo.py`, `t13_stock.AGREGATS`, `c6_direction.py`).
 
+Deux chiffres ne concordent pas encore d'une vidéo à l'autre. Les aligner
+veut dire recalibrer et refaire plusieurs vidéos ensemble : c'est à décider
+avant de toucher aux données.
+
+- **Ventes du bar.** Le « CA estimé (période) » du stock (t13 : 6 504 100
+  FCFA du 01/10 au 14/10, boissons et snacks seuls) vaut le double du CA des
+  caisses (t12 = c6 = t15 : 3 120 000 FCFA HT du 01/10 au 13/10, cuisine
+  comprise). Même écart article par article : t13 sort 14 Bière blonde 65 cl
+  par jour, t12 en vend 324 en treize jours. Recalibrer t12 et t13 déplace le
+  coulage de 0,6 %, que reprennent c5, c6 et t15.
+- **Points de fidélité.** Le tableau exécutif (t15) émet 9 895 points du 01
+  au 14/10, dont 8 055 venus des folios. La fidélité (t11) n'en compte que
+  21 734 depuis novembre 2025, dont 18 556 venus des folios : la quinzaine
+  pèse près de la moitié de l'année.
+
 Son : voix, bruitages et musique ramenés à −16 LUFS, passe-bas à 15 kHz et
 limiteur sur-échantillonné à −3 dBFS avant l'AAC 128 kb/s, pour que les
 crêtes vraies restent sous −2 dBFS.
