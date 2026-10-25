@@ -142,21 +142,21 @@ hors du dépôt (`../aite-videos/ref_muk`).
 
 | N° | Vidéo | Fonctionnalité | Durée | Poids |
 |---|---|---|---|---|
-| 1 | `02-tutoriel-reception.mp4` | La réception, de la réservation à la facture | 2 min 07 | 8,4 Mo |
-| 2 | `03-tutoriel-planning.mp4` | Planning des chambres | 2 min 04 | 8,9 Mo |
-| 3 | `04-tutoriel-folio.mp4` | Le folio du séjour | 2 min 11 | 9,0 Mo |
-| 4 | `05-tutoriel-note-chambre.mp4` | Note de chambre | 2 min 13 | 7,3 Mo |
-| 5 | `06-tutoriel-taxe-sejour.mp4` | Taxe de séjour automatique | 1 min 59 | 7,1 Mo |
-| 6 | `07-tutoriel-registre.mp4` | Fiche de police et statistiques | 2 min 06 | 8,4 Mo |
-| 7 | `08-tutoriel-gouvernante.mp4` | Gouvernante & maintenance | 2 min 12 | 8,3 Mo |
-| 8 | `09-tutoriel-site-web.mp4` | Réservation en ligne | 2 min 09 | 7,8 Mo |
-| 9 | `10-tutoriel-espaces.mp4` | Espaces & Prestations | 2 min 07 | 8,1 Mo |
-| 10 | `11-tutoriel-ardoises.mp4` | Ardoises & recouvrement | 1 min 59 | 7,7 Mo |
-| 11 | `12-tutoriel-fidelite.mp4` | Fidélité & statuts VIP | 2 min 02 | 8,1 Mo |
-| 12 | `13-tutoriel-ventes.mp4` | Analyse des ventes | 2 min 13 | 8,5 Mo |
+| 1 | `02-tutoriel-reception.mp4` | La réception, de la réservation à la facture | 2 min 10 | 8,6 Mo |
+| 2 | `03-tutoriel-planning.mp4` | Planning des chambres | 2 min 05 | 9,1 Mo |
+| 3 | `04-tutoriel-folio.mp4` | Le folio du séjour | 2 min 11 | 9,2 Mo |
+| 4 | `05-tutoriel-note-chambre.mp4` | Note de chambre | 2 min 15 | 7,3 Mo |
+| 5 | `06-tutoriel-taxe-sejour.mp4` | Taxe de séjour automatique | 1 min 58 | 7,2 Mo |
+| 6 | `07-tutoriel-registre.mp4` | Fiche de police et statistiques | 2 min 07 | 8,4 Mo |
+| 7 | `08-tutoriel-gouvernante.mp4` | Gouvernante & maintenance | 2 min 14 | 8,2 Mo |
+| 8 | `09-tutoriel-site-web.mp4` | Réservation en ligne | 2 min 10 | 7,9 Mo |
+| 9 | `10-tutoriel-espaces.mp4` | Espaces & Prestations | 2 min 10 | 8,3 Mo |
+| 10 | `11-tutoriel-ardoises.mp4` | Ardoises & recouvrement | 2 min 02 | 7,7 Mo |
+| 11 | `12-tutoriel-fidelite.mp4` | Fidélité & statuts VIP | 2 min 06 | 8,3 Mo |
+| 12 | `13-tutoriel-ventes.mp4` | Analyse des ventes | 2 min 14 | 8,8 Mo |
 | 13 | `14-tutoriel-stock.mp4` | Stock bar & cave | 2 min 04 | 8,6 Mo |
-| 14 | `15-tutoriel-achats.mp4` | Achats & fournisseurs | 2 min 04 | 9,3 Mo |
-| 15 | `16-tutoriel-direction.mp4` | Cockpit Direction | 2 min 06 | 8,2 Mo |
+| 14 | `15-tutoriel-achats.mp4` | Achats & fournisseurs | 2 min 04 | 9,4 Mo |
+| 15 | `16-tutoriel-direction.mp4` | Cockpit Direction | 2 min 10 | 8,5 Mo |
 
 Le tutoriel 14 lit dans `aite_purchase_dashboard` le calcul des créances
 fournisseurs (409/4091) : il a été refait après la correction du module
