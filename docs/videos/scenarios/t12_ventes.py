@@ -158,7 +158,7 @@ Sources des libellés (relevés mot pour mot) :
   (fmtCount, ex-« nég. · pos. »), « Écart moyen » « par session négative »,
   « Plus grand écart » « à investiguer en priorité », bandeau à partir de
   six sessions négatives :910, colonnes Session · Date · Caissier · CA HT ·
-  Écart (F) · Sévérité — « Écart (F) » est resté tel quel, montants sans
+  Écart (FCFA) · Sévérité — en-tête corrigé en 18.0.2.1.4, montants sans
   symbole :922) ; CA HT des sessions (somme des lignes, pos_session.py
   :106-129) ; session ouverte non comptée sans écart (pos_session.py
   :131-170) ; libellés et couleurs des sévérités, « Aucun écart » au lieu de
@@ -274,8 +274,8 @@ après la livraison 4 :
    « 56,0 % », « Taux : », « / ticket », « / unité », « unités »,
    « Commandes », « Panier moyen », « manquants · excédent », « FCFA »,
    « Tableau croisé & graphique », « heures de promotion », « 4,0 M »,
-   « Aucun écart ». Reste l'en-tête « Écart (F) » de l'onglet Écarts de
-   caisse (views.xml:922), rejoué tel quel.
+   « Aucun écart », et l'en-tête « Écart (FCFA) » de l'onglet Écarts de
+   caisse (views.xml:922, corrigé en 18.0.2.1.4).
 6. CORRIGÉ (n° 64) — l'onglet « Par caisse » et le module « Performance par
    caisse » ont l'icône fa-calculator (fa-cash-register n'existe pas en Font
    Awesome 4.7).
@@ -1194,10 +1194,10 @@ LIGNES_ECARTS = ''.join(
     % (i, INFO, e(nom), date, i, e(qui), fmt(ca_ht), DANGER if ec < 0 else INFO, fmt(ec), SEV_BADGE[severite(ec)], i,
        SEV_LIB[severite(ec)])
     for i, (nom, date, qui, _, ca_ht, ec) in enumerate(SESSIONS))
-# L'en-tête « Écart (F) » est resté tel quel dans le module (views.xml:922), montants sans symbole.
+# En-tête « Écart (FCFA) » (views.xml:922, aite_pos_analytics 18.0.2.1.4), montants sans symbole.
 C_ECARTS = ('<div class="t12-c masque" id="t12-c-ecarts"><div class="t12-g4">%s</div><div class="t12-mod t12-nomt">'
             '<table class="t12-t" id="t12-etab"><thead><tr><th>Session</th><th>Date</th><th>Caissier</th><th class="r">CA HT</th>'
-            '<th class="r">Écart (F)</th><th>Sévérité</th></tr></thead><tbody>%s</tbody></table></div></div>'
+            '<th class="r">Écart (FCFA)</th><th>Sévérité</th></tr></thead><tbody>%s</tbody></table></div></div>'
             % (ECARTS_KPI, LIGNES_ECARTS))
 
 ANALYSE = vue_libre('t12-ana', TABS + '<div class="t12-corps"><div class="t12-defil" id="t12-defil" '
