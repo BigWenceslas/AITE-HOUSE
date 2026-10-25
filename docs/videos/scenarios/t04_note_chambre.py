@@ -10,10 +10,11 @@ Ateba) traite le folio et la file d'attente (menu réservé à
 aite_hotel_management.group_hotel_user, aite_hotel_pos_link/views/
 roomcharge_menus.xml:3-8). Public visé du guide : « Caissiers (restaurant &
 boutique), réception » (docs/guides/AITE_Guide_Note_de_chambre.pdf p.1).
-Le titre reprend l'annonce du tutoriel 3 (t03_folio.py:660-662).
+Le titre reprend l'annonce du tutoriel 3 (t03_folio.py, TUTORIEL['cta']
+['suivant']).
 
-Conditions du monde rejoué (aite_hotel_pos_link 18.0.1.0.1, aite_pos_credit
-18.0.2.0.4) :
+Conditions du monde rejoué (aite_hotel_pos_link 18.0.1.0.2, aite_pos_credit
+18.0.2.0.5, livraison 4) :
 
 - le caissier n'a que son profil de caisse (demo.caisse, APPS_PROFIL['caisse'],
   sans « Hôtel ») : le report au folio — recherche du folio ouvert, ligne de
@@ -21,51 +22,73 @@ Conditions du monde rejoué (aite_hotel_pos_link 18.0.1.0.1, aite_pos_credit
   (aite_hotel_pos_link/models/pos_order.py:143-228). Corrigé (ECARTS n° 10) :
   avant 18.0.1.0.1, il fallait donner au caissier le profil « Réception »
   pour que le ticket se synchronise ; ce contournement et sa bulle ont été
-  retirés ;
+  retirés. Symétrique depuis la livraison 4 : la réception tranche la file
+  sans droit sur la caisse (lecture du ticket en sudo(),
+  models/roomcharge_pending.py:81-84) ;
 - aite_pos_credit est installé, comme au tutoriel 10 : application « POS
-  Crédit » dans la barre de la direction, case sans libellé « Vente à crédit
-  (ardoise) » après le nom du mode (aite_pos_credit/views/
-  res_config_settings_views.xml:4-14, écart 6 de t10_ardoises.py), mode
-  « Ardoise client » et bouton « Mettre sur ardoise » à la caisse. Corrigé
-  (ECARTS n° 17) : seul le mode coché « Vente à crédit » ouvre une ardoise,
-  jamais « Note de chambre » (aite_pos_credit/models/pos_payment_method.py:
-  24-40, static/src/js/pos/payment_screen_button.js:35-38) — la
-  consommation n'est réclamée qu'une fois, sur le folio ; c'est dit à
-  l'étape 4. aite_pos_analytics (« Analyse AITE ») est installé ;
+  Crédit » dans la barre de la direction, case « Vente à crédit (ardoise) »
+  avec son libellé dans le groupe des réglages, suivie de la phrase « Case
+  cochée : chaque ticket réglé avec ce mode ouvre une ardoise au nom du
+  client (POS Crédit → Ardoises). », visible avant de cocher (aite_pos_credit/
+  views/res_config_settings_views.xml:15-24 ; corrigé, ECARTS n° 65 : la case
+  était injectée sans libellé après le nom du mode), mode « Ardoise client »
+  et bouton « Mettre sur ardoise » à la caisse. Les deux modules posent leur
+  case « après Journal » ; la vue d'aite_pos_credit, d'identifiant plus
+  petit, s'applique la première, et « Note de chambre » s'insère donc devant
+  elle (ordre relevé sur aite_t_final, aite_dev et aite_fresh :
+  Paiement en ligne, Identifier le client, Journal, Note de chambre, Vente à
+  crédit (ardoise), la phrase, Société). Corrigé (ECARTS n° 17) : seul le mode
+  coché « Vente à crédit » ouvre une ardoise, jamais « Note de chambre »,
+  même cochée par erreur (aite_pos_credit/models/pos_payment_method.py:
+  24-39, static/src/js/pos/payment_screen_button.js:35-38) — la case reste
+  décochée à l'étape 1, et la consommation n'est réclamée qu'une fois, sur
+  le folio (étape 4). aite_pos_analytics (« Analyse AITE ») est installé :
+  depuis la livraison 4, c'est une section du menu « Analyse », plus une
+  entrée de la barre (ecrans.MENUS_MUK['point_de_vente']) ;
 - pas de TVA, comme aux tutoriels 1 et 3 et au chapitre 1 de la
-  présentation (t03_folio.py:141-143 : « aucun taux n'est livré par les
+  présentation (en-tête de t03_folio.py : « aucun taux n'est livré par les
   modules ») : la nuitée prend les taxes de l'article du type de chambre
-  (aite_hotel_management/models/hotel_folio.py:249-266), l'article est créé
+  (aite_hotel_management/models/hotel_folio.py:253-278), l'article est créé
   sans taxe explicite (hotel_room.py:126) ; les articles du bar non plus,
   d'où l'absence de la ligne « Taxes » au ticket (point_of_sale/static/src/
   app/generic_components/order_widget/order_widget.xml:19-27, affichée
   seulement s'il y a des groupes de taxes).
 
 Le séjour : Brigitte Essomba, chambre 202 [CFT] Confort du 13 au 16/10/2026
-(t02_planning.py:201, :222), folio FOL/2026/0210 / RES/2026/0210 resté
+(t02_planning.py, SEJOURS), folio FOL/2026/0210 / RES/2026/0210 resté
 « Ouvert » le 16/10 avec 198 000 FCFA TTC, 100 000 encaissés, 98 000 dus
-(t03_folio.py:447) — les 13 500 FCFA du bar du 14/10 y sont donc compris,
-comme le massage du 15/10 (RES/26/0158, 27 000 FCFA, t09_espaces.py:249) ;
-le 14/10 au soir, ici, le folio vaut 157 500 FCFA.
+(t03_folio.py, FOLIOS) — les 13 500 FCFA du bar du 14/10 y sont donc compris,
+comme le massage du 15/10 (demo.CRENEAU_MASSAGE, CRN/2026/0158, 27 000 FCFA,
+t09_espaces.py) ; le 14/10 au soir, ici, le folio vaut 157 500 FCFA.
 Le folio d'Estelle Ngono (FOL/2026/0214) n'est pas utilisé : au tutoriel 3
 son folio de départ n'a aucune ligne du bar. Les notes en attente datent du
 16/10 au soir, après la liste des folios du tutoriel 3 : Martin Ebode
-(FOL/2026/0209, séjour du 14 au 17/10, demo.ARRIVEES) a confirmé l'après-midi
-une réservation de novembre (folio FOL/2026/0227, ouvert dès la confirmation,
-hotel_reservation.py:320-331), juste après une autre réservation confirmée
-dans l'après-midi (FOL/2026/0226) ; Sylvie Mbarga (FOL/2026/0207 « Soldé »,
-t03_folio.py:450) et Boris Ndzana (client du bar, t11_fidelite.py) n'ont
-aucun folio ouvert. Les folios ouverts ce soir-là sont ceux que le tutoriel 3
-montre « Ouvert » (t03_folio.py:436-452), plus 0226 et 0227 : la liste
-déroulante de « Folio choisi » n'en propose que les huit plus récents
-(name_search limité à 8, relational_utils.js:209, :318), où 0209 n'est pas ;
-Mireille tape donc « 0209 ».
+(FOL/2026/0209, séjour du 14 au 17/10, « Arrivé », demo.ARRIVEES) a confirmé
+l'après-midi une réservation de novembre (folio FOL/2026/0227, ouvert dès la
+confirmation, hotel_reservation.py:374-390), juste après une autre
+réservation confirmée dans l'après-midi, au nom d'un autre client
+(FOL/2026/0226 ; la série continue en FOL/2026/0228, t05_taxe_sejour.py) ;
+Sylvie Mbarga (FOL/2026/0207 « Soldé », t03_folio.py, FOLIOS) et Boris
+Ndzana (client du bar, t11_fidelite.py) n'ont aucun folio ouvert. Le
+report automatique compte tout folio ouvert du client, séjour à venir
+compris (pos_order.py:160-178) : d'où le motif « 2 folios ouverts » de
+Martin (point laissé à trancher, ECARTS.md, « Restent à trancher »). « Folio choisi », lui, ne propose que les
+séjours commencés — client arrivé, ou parti sans facture — et seulement ceux
+du client du ticket s'il en a (roomcharge_pending.py:37-69, domaine
+roomcharge_pending_views.xml:51-56, tests/test_room_charge.py:548-564) :
+pour Martin, FOL/2026/0209 seul : ni sa réservation de novembre ni le
+0226 (confirmés, pas commencés ; le 0226 n'est pas à son nom) n'y sont. Il
+s'affiche « FOL/2026/0209 — Martin Ebode » (contexte aite_folio_with_partner,
+roomcharge_pending.py:96-114). Corrigé (ECARTS n° 55) : la liste proposait
+tous les folios ouverts de tous les clients, par leur seule référence, et
+Mireille devait taper « 0209 ».
 
 Tickets : la caisse du bar a ouvert le 04/05/2026 et compte environ 1 350
-tickets au 13/10 (environ 8,3 par jour : 108 du 01 au 13/10, t12_ventes.py:380 ;
-1 440 tickets toutes caisses depuis le 04/05, t12_ventes.py:550) ; le dîner
-de Brigitte, le 14/10 au soir, est donc « Bar de la terrasse/1360 », 8e
-ticket de la session du jour (00135 : suivi 508, pos_order.py:58-60), et la
+tickets au 13/10 (environ 8,3 par jour : 108 du 01 au 13/10, t12_ventes.py,
+TICKETS ; 1 440 tickets toutes caisses depuis le 04/05, t12_ventes.py,
+TOUT) ; le dîner de Brigitte, le 14/10 au soir, est donc « Bar de la
+terrasse/1360 », 8e ticket de la session du jour (00135 : suivi 508,
+pos_order.py:58-60), et la
 note de Martin Ebode du 16/10 à 22:41 la /1377. Restaurant (environ 80
 tickets) et Boutique (une vingtaine) vendent peu : Restaurant/0083 et
 Boutique/0018 le 16/10.
@@ -82,12 +105,20 @@ Sources des libellés (relevés mot pour mot) :
    paiement » :5276-5277, menus « Tableau de bord », « Commandes »,
    « Produits », « Analyse », « Configuration » :2483, :5067, :6320, :6631,
    :2049 ; « Paiement en ligne » : pos_online_payment/i18n/fr.po:168-169 ;
-   menu « Analyse AITE » : aite_pos_analytics/views/pos_analytics_menus.xml:11.
+   barre du Point de Vente de la direction : ecrans.MENUS_MUK['point_de_vente']
+   (« Analyse AITE » est une section du menu « Analyse » depuis la livraison 4,
+   aite_pos_analytics/views/pos_analytics_menus.xml:16-20).
    La case ajoutée par le module, juste après « Journal », et son infobulle :
    aite_hotel_pos_link/views/pos_payment_method_views.xml:8-10,
    models/pos_payment_method.py:9-13 (« Note de chambre », « Les
    encaissements sur ce moyen sont reportés au folio du séjour du client (ou
-   en file d'attente si ambigu). »). Mise en page, case « Société » (base
+   en file d'attente si ambigu). »). Puis la case d'aite_pos_credit et sa
+   phrase en gris (text-muted, sur toute la largeur du groupe) :
+   aite_pos_credit/views/res_config_settings_views.xml:15-24,
+   models/pos_payment_method.py:17-22 (« Vente à crédit (ardoise) », avec
+   infobulle) ; la consigne « Laissez le journal vide… » ne s'affiche que
+   case cochée : elle n'est pas montrée. Ordre des cases : relevé sur la base
+   (voir « Conditions »). Mise en page, case « Société » (base
    multi-sociétés) et infobulle noire : capture en lecture seule de la base
    MuK (Point de Vente → Configuration → Modes de paiement → Note de chambre).
    Applications de la direction : APPS_PROFIL['direction'] (avec « POS Crédit »).
@@ -126,41 +157,49 @@ Sources des libellés (relevés mot pour mot) :
    taxe de séjour » sont réservés au responsable :43-46 et
    aite_city_tax/views/hotel_folio_views.xml:17-24, la réception ne les voit
    pas ; « Règlements », « Séjour », « Montants », onglets, colonnes, note
-   grise) ; models/hotel_folio.py:28-114 et :395-436 (libellés, états
-   Ouvert / Facturé / Soldé, types Nuitée / Service) ; libellé de nuitée à
-   dates ISO :256-260 ; « Arrivé » : hotel_reservation.py:134 ; aite_city_tax :
+   grise) ; models/hotel_folio.py:29-118 et :398-440 (libellés, états
+   Ouvert / Facturé / Soldé, types Nuitée / Service) ; libellé de nuitée
+   « Nuitée 202 (Confort) — 13/10/2026 → 16/10/2026 », dates locales au
+   format jj/mm/aaaa, ligne datée de l'arrivée : models/hotel_folio.py:253-276
+   et hotel_reservation.py:193-195 (_fmt_local_date ; corrigé, ECARTS n° 37 et
+   56) ; « Arrivé » : hotel_reservation.py:134 ; aite_city_tax :
    ligne « Taxe de séjour — 3 nuitée(s) × personne (3 ★, Cameroun) », sans
-   TVA, et montant « Taxe de séjour » models/hotel_folio.py:9-12, :37-41,
-   :100-140 ; menu Facturation → Folios hotel_menus.xml:66-75 ; ordre des
-   folios « create_date desc » (hotel_folio.py:25) : FOL/2026/0210 est le
-   12e des 14 folios « Avec solde dû » du tutoriel 3 (t03_folio.py:436-457),
+   TVA, et montant « Taxe de séjour » models/hotel_folio.py:10-13, :56-60,
+   :119-160 ; barre de la réception ecrans.MENUS_MUK['hotel_reception']
+   (« Réception », anciennement « Front Desk », hotel_menus.xml:18-25) ;
+   menu Facturation → Folios hotel_menus.xml:69-79 ; ordre des
+   folios « create_date desc » (hotel_folio.py:29) : FOL/2026/0210 est le
+   12e des 14 folios « Avec solde dû » du tutoriel 3 (t03_folio.py, FOLIOS et DUS),
    d'où « 12 / 14 ». La ligne reportée :
    aite_hotel_pos_link/models/pos_order.py:76-141 (type service, quantité 1,
    une ligne par jeu de taxes du ticket, en HT avec ses taxes — ECARTS n° 18,
    corrigé dans 18.0.1.0.1 ; ticket sans taxe : une seule ligne, HT = TTC,
    colonne Taxes vide) et :212-222 (libellé « POS <commande> », date du jour).
    Aspect : ref_muk/029.
-5. La file — aite_hotel_pos_link/views/roomcharge_pending_views.xml:3-21
+5. La file — aite_hotel_pos_link/views/roomcharge_pending_views.xml:3-24
    (liste sans « Nouveau », lignes orange « À rattacher », somme du montant
-   sans libellé en pied, colonne « Created on » non traduite), :51-61
-   (action, filtre « À rattacher » par défaut), :63-74 (recherche) ;
-   models/roomcharge_pending.py:12-35 (ordre « create_date desc »,
-   « Commande POS », « Client », « Montant », « Motif », « Folio choisi »
-   limité aux folios ouverts, « À rattacher » / « Rattachée ») ; motifs :
-   models/pos_order.py:112-117 (« Aucun folio ouvert », « %(n)s folios
+   sans libellé en pied, colonne « Reçue le » :9-11 — corrigé, ECARTS n° 42 :
+   « Created on » —, « Folio choisi » vide tant que rien n'est choisi),
+   :64-77 (action, filtre « À rattacher » par défaut ; l'aide de l'écran vide,
+   réécrite, ECARTS n° 48, n'apparaît pas : la file n'est pas vide), :78-89
+   (recherche) ; models/roomcharge_pending.py:12-50 (ordre « create_date
+   desc », « Commande POS », « Client », « Montant », « Motif », « Folio
+   choisi », « À rattacher » / « Rattachée ») ; motifs :
+   models/pos_order.py:174-178 (« Aucun folio ouvert », « %(n)s folios
    ouverts »). Aspect : ref_muk/048.
-6. Le rattachement — roomcharge_pending_views.xml:22-50 (« Rattacher au
-   folio », statusbar, « Folio choisi » verrouillé une fois rattachée) ;
-   models/roomcharge_pending.py:37-56 (action_resolve) ; liste déroulante
-   d'Odoo : odoo18/addons/web/static/src/views/fields/relational_utils.js:
-   313-382 (name_search dans l'ordre du modèle, les plus récents d'abord ;
-   « Recherche avancée... » dès qu'il y a un résultat, « Commencer à
-   écrire... » quand le champ est vide) et web/i18n/fr.po:5713-5714,
-   :6141-6142 ; une fois « 0209 » tapé : « Créer "%s" », « Créer et
-   modifier... » (relational_utils.js:339-382, web/i18n/fr.po:1834-1835,
-   :1852-1853 ; la réception peut créer un folio, aite_hotel_management/
-   security/ir.model.access.csv:21) ; fil d'Ariane technique « aite.roomcharge.pending,<id> » :
-   ref_muk/048-…-fiche.png.
+6. Le rattachement — roomcharge_pending_views.xml:25-63 (fiche sans
+   « Nouveau », create="0" :29-31 ; « Rattacher au folio », statusbar,
+   « Folio choisi » limité aux folios proposés, sans création
+   (options no_create), verrouillé une fois rattachée) ; fil d'Ariane au
+   numéro du ticket : champ name « Ticket » lié à la commande
+   (roomcharge_pending.py:16-20 ; corrigé, ECARTS n° 55 : la fiche
+   s'intitulait « aite.roomcharge.pending,12 ») ; models/
+   roomcharge_pending.py:71-93 (action_resolve) ; liste déroulante d'Odoo :
+   odoo18/addons/web/static/src/views/fields/relational_utils.js:313-385
+   (name_search sur le domaine du champ ; « Recherche avancée... » dès qu'il
+   y a un résultat ; ni « Créer "%s" », ni « Créer et modifier... », ni
+   « Commencer à écrire... » avec no_create : many2one_field.js:377-384) et
+   web/i18n/fr.po:5713-5714 (« Recherche avancée... »). Aspect : ref_muk/048-…-fiche.png.
 
 Sources des affirmations :
 
@@ -168,12 +207,13 @@ Sources des affirmations :
   repas » (guide p.1 §1) ; ticket recopié à la main : sans report, le folio
   invite à « ajouter librement des lignes de service (restaurant,
   blanchisserie, minibar…) » (hotel_folio_views.xml:122-128) ; « Moitié
-  espèces, moitié note de chambre » (tests/test_room_charge.py:192-201,
+  espèces, moitié note de chambre » (tests/test_room_charge.py:196-205,
   guide p.1 §3) ; « Deux séjours au même nom » (guide p.2 FAQ) ; mauvais
   séjour : « le système ne devine jamais » (guide p.2 FAQ, pos_order.py:
-  55-67). Chacune est résolue à l'écran (étapes 3, 4, 6) ;
+  62-75). Chacune est résolue à l'écran (étapes 3, 4, 6) ;
 - promesse : client identifié et un seul folio ouvert → report direct ;
-  sinon file d'attente, la réception choisit (pos_order.py:55-67, :87-127) ;
+  sinon file d'attente, la réception choisit (pos_order.py:62-75,
+  :143-187) ;
 - mise en place une fois, ajout aux caisses du bar, du restaurant et de la
   boutique : guide p.1 §2 ; sessions fermées : le champ des modes de
   paiement d'une caisse est en lecture seule tant qu'une session est ouverte
@@ -182,41 +222,45 @@ Sources des affirmations :
   (pos_payment_method_views.xml:19-20) et « Client requis » à la caisse
   (payment_screen.js:424-439) ;
 - caissier sans profil hôtel, report en sudo() : voir « Conditions » ci-dessus ;
-- pas d'ardoise en double : aite_pos_credit/models/pos_payment_method.py:24-40
-  (« Une note de chambre n'ouvre jamais d'ardoise ») ;
+- pas d'ardoise en double : aite_pos_credit/models/pos_payment_method.py:24-39
+  (« Une note de chambre n'ouvre jamais d'ardoise, même cochée par
+  erreur ») ; la case « Vente à crédit (ardoise) » reste décochée et sa
+  phrase dit ce qu'elle ferait (res_config_settings_views.xml:16-19) ;
 - lien par la fiche client, pas par le numéro de chambre : guide p.1 §3
-  (« Bon réflexe ») et pos_order.py:100-106 (recherche par partner_id) ;
+  (« Bon réflexe ») et pos_order.py:160-166 (recherche par partner_id) ;
 - l'avertissement n'empêche pas de valider : payment_screen.js:113-125
   (notification), aucune condition de facture dans _isOrderValid (:441 et
   suivantes) ;
-- paiement mixte : pos_order.py:41-53, :94-96 ; tests/test_room_charge.py:
-  192-201 (5 000 en espèces + 7 000 en note de chambre → 7 000 sur le
-  folio) ; guide p.1 §3 ;
-- une ligne par ticket : pos_order.py:89-91 (garde d'idempotence),
-  tests/test_room_charge.py:210-217 ; trois gestes et « C'est tout » : guide
+- paiement mixte : pos_order.py:49-60, :96-139 (prorata) ;
+  tests/test_room_charge.py:196-205 (5 000 en espèces + 7 000 en note de
+  chambre → 7 000 sur le folio) ; guide p.1 §3 ;
+- une ligne par ticket : pos_order.py:151-152 (garde d'idempotence),
+  tests/test_room_charge.py:214-221 ; trois gestes et « C'est tout » : guide
   p.1 §3 (« Côté caisse : trois gestes », « C'est tout ») ;
 - solde dû à jour : 157 500 − 100 000 = 57 500 FCFA (hotel_folio.py:
   _compute_amounts) ; « Services (HT) » vaut bien le HT du ticket (report HT
-  + taxes, pos_order.py:96-141 ; sans TVA, HT = TTC) ;
-- le motif dit pourquoi : guide p.2, légende de l'écran 3 ; seuls les
-  folios ouverts : roomcharge_pending.py:28-31 ; une réservation confirmée a
-  déjà son folio ouvert (d'où « 2 folios ouverts ») : hotel_reservation.py:
-  320-331, tests/test_room_charge.py:262-269 ;
+  + taxes, pos_order.py:96-139 ; sans TVA, HT = TTC) ;
+- le motif dit pourquoi : guide p.2, légende de l'écran 3 ; une réservation
+  confirmée a déjà son folio ouvert (d'où « 2 folios ouverts ») :
+  hotel_reservation.py:374-390 ; seuls les séjours commencés, et ceux du
+  client s'il en a, sont proposés : roomcharge_pending.py:50-69 (voir « Le
+  séjour » ci-dessus) ;
 - notes sans folio ouvert : guide p.2 FAQ (« rattachez-la plus tard à un
   folio s'il prend une chambre, ou réglez le ticket au comptoir et signalez
   la ligne à votre manager ») ; seul le responsable supprime une note
   (aite_hotel_pos_link/security/ir.model.access.csv:2-3) ;
 - résultats : 3 gestes (guide p.1 §3) ; 1 ligne par ticket (ci-dessus) ;
-  7 000 FCFA sur 12 000 (test_room_charge.py:192-201).
+  7 000 FCFA sur 12 000 (tests/test_room_charge.py:196-205).
 
-Écarts rejoués tels quels (voir le rapport) : en-tête « Created on » en
-anglais (roomcharge_pending_views.xml:9) ; fil d'Ariane technique
-« aite.roomcharge.pending,12 » (aucun champ name) ; « Nouveau » sur la fiche
-d'une note en attente alors que la liste interdit la création
-(roomcharge_pending_views.xml:7-8, 26) ; « Folio choisi » ne propose que des
-références, sans nom de client ; avertissement d'Odoo « soldes dûs » au choix
-du mode (payment_screen.js:113-125) ; dates ISO dans le libellé de la
-nuitée ; menu « Front Desk » en anglais (hotel_menus.xml:17-21).
+Écart rejoué tel quel (voir ECARTS.md) : avertissement d'Odoo « soldes dûs »
+au choix du mode (payment_screen.js:113-125 ; n° 43, chaîne standard du point
+de vente laissée non surchargée). Corrigés dans la livraison 4 et montés
+corrigés : « Created on » → « Reçue le » et « Front Desk » → « Réception »
+(n° 42) ; fil d'Ariane technique « aite.roomcharge.pending,12 », « Nouveau »
+sur la fiche et « Folio choisi » sans nom de client, ouvert à tous les
+folios (n° 55) ; dates ISO dans le libellé de la nuitée (n° 37) ; case
+« Vente à crédit (ardoise) » sans libellé (n° 65) ; aide de la file (n° 48,
+non visible ici).
 
 Données fictives : demo.py (Complexe Hôtelier — Démo, Démo Hôtellerie SARL ;
 Martin Ebode, RES/2026/0209 ; Hervé Tchakounté, Mireille Ateba, Danielle
@@ -226,9 +270,9 @@ Carine Owona (t11) ; Thérèse Essomba ; caisses « Bar de la terrasse »,
 """
 
 import demo
-from ecrans import (APPS_PROFIL, bouton, champ, cp_fiche, deux_colonnes, e, entree, fenetre_muk, fenetre_pos,
-                    groupe, icone, navigateur, onglets, pos_ligne_paiement, pos_paiement, pos_produits, statusbar,
-                    table, titre_fiche, toast, vue_fiche, vue_libre, vue_liste, cell_puce, num)
+from ecrans import (APPS_PROFIL, MENUS_MUK, bouton, champ, cp_fiche, date_fr, deux_colonnes, e, entree, fcfa,
+                    fenetre_muk, fenetre_pos, groupe, icone, navigateur, onglets, pos_ligne_paiement, pos_paiement,
+                    pos_produits, statusbar, table, titre_fiche, toast, vue_fiche, vue_libre, vue_liste, cell_puce, num)
 from marketing import bulle, dezoom, reaction, zoom
 from moteur import (anneau, cacher, clic, classe, curseur, defiler, fermer, montrer, notifier, ouvrir, pause, saisir,
                     survol, texte, vue)
@@ -237,9 +281,9 @@ DIRECTION, ROLE_DIR = demo.POSTES['direction']     # Danielle Eyenga, Directrice
 CAISSIER, ROLE_CAISSE = demo.POSTES['caisse']       # Hervé Tchakounté, Caissier du bar
 RECEPTION, ROLE_REC = demo.POSTES['reception']      # Mireille Ateba, Réceptionniste
 COMMANDE = 'Bar de la terrasse/1360'               # le ticket de Brigitte Essomba, le 14/10 au soir
-TICKET = '13 500 FCFA'
+TICKET = fcfa(13500)
 CLIENTE = 'Brigitte Essomba'                        # chambre 202 [CFT], du 13 au 16/10 (tutoriels 2 et 3)
-FOLIO_B, RESA_B = 'FOL/2026/0210', 'RES/2026/0210'   # t03_folio.py:447
+FOLIO_B, RESA_B = 'FOL/2026/0210', 'RES/2026/0210'   # t03_folio.py, FOLIOS
 
 
 def masque(nav):
@@ -271,15 +315,19 @@ MODE = vue_libre('t4-mode', (
     cp_fiche('Modes de paiement', 'Nouveau')
     + '<div class="t04-pm" id="t4-pm">'
       '<div class="t04-lab">Mode<sup>?</sup></div>'
-    + '<div class="t04-titre">' + entree('t4-nom', 'par ex. Espèces', classe='entree t04-nom')
-    # aite_pos_credit : la case « Vente à crédit (ardoise) », sans libellé, après le nom (écart 6 de t10)
-    + '<span class="t04-cb t04-cb-ard"></span></div>'
+    + '<div class="t04-titre">' + entree('t4-nom', 'par ex. Espèces', classe='entree t04-nom') + '</div>'
     + '<div class="t04-cols"><div id="t4-pm-g">'
     + ligne_pm('Paiement en ligne', '<span class="t04-cb"></span>')
     + ligne_pm('Identifier le client', '<span class="t04-cb" id="t4-cb-ident"></span>', 't4-l-ident')
     + ligne_pm('Journal', '<span class="t04-in" id="t4-journal">Laisser vide pour utiliser le compte débiteur du '
                           'client</span>')
     + ligne_pm('Note de chambre', '<span class="t04-cb" id="t4-cb-note"></span>', 't4-l-note')
+    # aite_pos_credit (livraison 4) : la case avec son libellé, puis la phrase « ce qui va se passer », visible
+    # avant de cocher (res_config_settings_views.xml:15-24) ; la consigne ne s'affiche que case cochée.
+    + '<div id="t4-ard">'
+    + ligne_pm('Vente à crédit (ardoise)', '<span class="t04-cb" id="t4-cb-ard"></span>', 't4-l-ard')
+    + '<div class="t04-muet">Case cochée : chaque ticket réglé avec ce mode ouvre une ardoise au nom du client '
+      '(POS Crédit → Ardoises).</div></div>'
     + ligne_pm('Société', '<span class="t04-lien">%s</span>' % e(demo.SOCIETE), aide=False, leger=True)
     + '</div><div>'
     + ligne_pm('Intégration', '<span class="t04-in noir">Non requis</span>', aide=False)
@@ -287,7 +335,7 @@ MODE = vue_libre('t4-mode', (
     + '<div class="t04-tip masque" id="t4-tip">Les encaissements sur ce moyen sont reportés au folio du séjour du '
       'client (ou en file d\'attente si ambigu).</div></div>'), initiale=True)
 
-MENUS_POS = ['Tableau de bord', 'Commandes', 'Produits', 'Analyse AITE', 'Analyse', 'Configuration']
+MENUS_POS = MENUS_MUK['point_de_vente']           # direction (responsable du point de vente)
 APPS_DIRECTION = APPS_PROFIL['direction']
 NAV_CONFIG = navigateur(fenetre_muk('app-t4c', 'Point de Vente', MENUS_POS, [MODE], actif='Configuration',
                                     societe=demo.SOCIETE, initiale=DIRECTION[0], avatar='#8E3B46',
@@ -306,10 +354,10 @@ CARTE_BAR = [
     ('Plantain frit', ACCOMP), ('Bâton de manioc', ACCOMP), ('Miondo', ACCOMP), ('Frites de plantain', ACCOMP),
     ('Arachides grillées', ACCOMP), ('Chips de plantain', ACCOMP)]
 # Le ticket de Brigitte Essomba : articles sans taxe (voir l'en-tête), donc pas de ligne « Taxes ».
-LIGNES_TICKET = [('t4-l1', 'Poisson braisé', '1,00', '7 000 FCFA', '7 000 FCFA'),
-                 ('t4-l2', 'Plantain frit', '1,00', '1 500 FCFA', '1 500 FCFA'),
-                 ('t4-l3', 'Bière blonde 65 cl', '2,00', '1 500 FCFA', '3 000 FCFA'),
-                 ('t4-l4', 'Jus de bissap 50 cl', '2,00', '1 000 FCFA', '2 000 FCFA')]
+LIGNES_TICKET = [('t4-l1', 'Poisson braisé', '1,00', fcfa(7000), fcfa(7000)),
+                 ('t4-l2', 'Plantain frit', '1,00', fcfa(1500), fcfa(1500)),
+                 ('t4-l3', 'Bière blonde 65 cl', '2,00', fcfa(1500), fcfa(3000)),
+                 ('t4-l4', 'Jus de bissap 50 cl', '2,00', fcfa(1000), fcfa(2000))]
 VENTE = pos_produits('t4-vente', CATEGORIES, [('t4-p%d' % i, n, c) for i, (n, c) in enumerate(CARTE_BAR)],
                      LIGNES_TICKET, TICKET, '', initiale=True)
 VENTE = remplacer(VENTE, '<small>Taxes<span id="t4-vente-taxes"></span></small>', '')
@@ -346,7 +394,8 @@ PAIEMENT = remplacer(PAIEMENT, '<div class="pos-zone">', '<div class="t04-choix"
                                                          'un mode de paiement</div><div class="pos-zone">')
 PAIEMENT = remplacer(PAIEMENT, 'class="pos-restant" id="t4-paie-restant"',
                      'class="pos-restant masque" id="t4-paie-restant"')
-PAIEMENT = remplacer(PAIEMENT, '<span id="t4-paie-reste">%s</span>' % TICKET, '<span id="t4-paie-reste">0 FCFA</span>')
+PAIEMENT = remplacer(PAIEMENT, '<span id="t4-paie-reste">%s</span>' % TICKET,
+                     '<span id="t4-paie-reste">%s</span>' % fcfa(0))
 PAIEMENT = remplacer(PAIEMENT, '<div id="t4-paie-lignes"></div>', '<div id="t4-paie-lignes">%s</div>'
                      % pos_ligne_paiement('t4-pl', 'Note de chambre', TICKET))
 
@@ -391,23 +440,24 @@ POS = remplacer(POS, '<span class="pos-caissier">', '<span class="pos-caissier" 
 NAV_POS = masque(navigateur(POS, 'nav-pos'))
 
 # ============================================================= 3. l'hôtel --
-MENUS_HOTEL = ['Front Desk', 'Réservations', 'Espaces & Prestations', 'Notes de chambre en attente', 'Facturation',
-               'Fidélité', 'Gouvernante']
+MENUS_HOTEL = MENUS_MUK['hotel_reception']        # « Réception » (anciennement « Front Desk »)
 
 # -- le folio de Brigitte Essomba, la ligne du bar déjà reportée (le 14/10 au soir)
-COLS_F = [('Date', '124px'), ('Type', '150px'), ('Service', '84px'), ('Libellé', '1fr'), ('Qté', '64px', 'd'),
-          ('Prix unitaire', '146px', 'd'), ('Taxes', '72px'), ('Sous-total (HT)', '156px', 'd'),
-          ('Total (TTC)', '146px', 'd')]
+# colonnes resserrées : le libellé de nuitée, au format français, se lit en entier jusqu'au départ
+COLS_F = [('Date', '116px'), ('Type', '150px'), ('Service', '72px'), ('Libellé', '1fr'), ('Qté', '64px', 'd'),
+          ('Prix unitaire', '134px', 'd'), ('Taxes', '64px'), ('Sous-total (HT)', '148px', 'd'),
+          ('Total (TTC)', '140px', 'd')]
 LIGNES_F = table(COLS_F, [
-    ('t4-fl1', ['13/10/2026', ('<span><span class="puce info">Nuitée</span></span>',), '',
-                'Nuitée 202 (Confort) — 2026-10-13 → 2026-10-16', '3,00', demo.PRIX_NUIT, '', '135 000 FCFA',
-                '135 000 FCFA']),
-    ('t4-fl2', ['13/10/2026', ('<span><span class="puce orange">Taxe de séjour</span></span>',), '',
-                'Taxe de séjour — 3 nuitée(s) × personne (3 ★, Cameroun)', '3,00', '3 000 FCFA', '', '9 000 FCFA',
-                '9 000 FCFA']),
-    ('t4-fl3', ['14/10/2026', ('<span><span class="puce violet">Service</span></span>',), '',
+    # libellé de nuitée au format français, dates locales (hotel_folio.py:253-276, livraison 4)
+    ('t4-fl1', [date_fr('2026-10-13'), ('<span><span class="puce info">Nuitée</span></span>',), '',
+                'Nuitée 202 (Confort) — %s → %s' % (date_fr('2026-10-13'), date_fr('2026-10-16')), '3,00',
+                fcfa(45000), '', fcfa(135000), fcfa(135000)]),
+    ('t4-fl2', [date_fr('2026-10-13'), ('<span><span class="puce orange">Taxe de séjour</span></span>',), '',
+                'Taxe de séjour — 3 nuitée(s) × personne (3 ★, Cameroun)', '3,00', fcfa(3000), '', fcfa(9000),
+                fcfa(9000)]),
+    ('t4-fl3', [date_fr('2026-10-14'), ('<span><span class="puce violet">Service</span></span>',), '',
                 'POS ' + COMMANDE, '1,00', TICKET, '', TICKET, TICKET])],
-    total=['', '', '', '', '', '', '', '157 500 FCFA', '157 500 FCFA'], identifiant='t4-lignes')
+    total=['', '', '', '', '', '', '', fcfa(157500), fcfa(157500)], identifiant='t4-lignes')
 LIGNES_F = remplacer(LIGNES_F, 'class="t-ligne" id="t4-fl1"', 'class="t-ligne t04-nuitee" id="t4-fl1"')
 LIGNES_F = remplacer(LIGNES_F, 'class="t-ligne" id="t4-fl2"', 'class="t-ligne taxe" id="t4-fl2"')
 FEUILLE_FOLIO = (
@@ -416,11 +466,11 @@ FEUILLE_FOLIO = (
         groupe('Séjour', [champ('Client', CLIENTE, lien_=True), champ('Réservation', RESA_B, lien_=True),
                           champ('Séjour', 'Arrivé'), champ('Arrivée', '13/10/2026 14:00:00'),
                           champ('Départ', '16/10/2026 12:00:00'), champ('Hôtel', demo.HOTEL, lien_=True)]),
-        groupe('Montants', [champ('Hébergement (HT)', '135 000 FCFA'), champ('Services (HT)', TICKET),
-                            champ('Taxe de séjour', '9 000 FCFA'), champ('Total HT', '157 500 FCFA'),
-                            champ('Taxes', '0 FCFA'), champ('Total TTC', '<b>157 500 FCFA</b>', html=True),
-                            champ('Encaissé', '100 000 FCFA'),
-                            champ('Solde dû', '<b>57 500 FCFA</b>', 't4-f-solde', html=True)], 't4-f-montants'))
+        groupe('Montants', [champ('Hébergement (HT)', fcfa(135000)), champ('Services (HT)', TICKET),
+                            champ('Taxe de séjour', fcfa(9000)), champ('Total HT', fcfa(157500)),
+                            champ('Taxes', fcfa(0)), champ('Total TTC', '<b>%s</b>' % fcfa(157500), html=True),
+                            champ('Encaissé', fcfa(100000)),
+                            champ('Solde dû', '<b>%s</b>' % fcfa(57500), 't4-f-solde', html=True)], 't4-f-montants'))
     + onglets(['Lignes du folio', 'Règlements', 'Note']) + LIGNES_F
     + '<div class="note-pied">Les lignes « nuitée » sont synchronisées depuis la réservation ; ajoutez librement des '
       'lignes de service (restaurant, blanchisserie, minibar…).</div>')
@@ -429,12 +479,12 @@ FOLIO = vue_fiche('t4-folio', cp_fiche('Folios', FOLIO_B, '12 / 14', stats=[('t4
                   statusbar('t4-fsb', ['Ouvert', 'Facturé', 'Soldé'], 0), FEUILLE_FOLIO, initiale=True)
 
 # -- la file « Notes de chambre en attente » (filtre À rattacher), le 16/10 au soir
-COLS_N = [('Created on', '212px'), ('Commande POS', '262px'), ('Client', '196px'), ('Montant', '150px', 'd'),
+COLS_N = [('Reçue le', '212px'), ('Commande POS', '262px'), ('Client', '196px'), ('Montant', '150px', 'd'),
           ('Motif', '1fr'), ('Folio choisi', '170px'), ('État', '140px')]
 NOTE_MARTIN = 'Bar de la terrasse/1377'            # le 16/10 à 22:41 (voir l'en-tête)
-ATTENTE = [('16/10/2026 22:41:17', NOTE_MARTIN, 'Martin Ebode', '9 500 FCFA', '2 folios ouverts'),
-           ('16/10/2026 20:18:03', 'Restaurant/0083', 'Boris Ndzana', '21 000 FCFA', 'Aucun folio ouvert'),
-           ('16/10/2026 16:52:40', 'Boutique/0018', 'Sylvie Mbarga', '6 000 FCFA', 'Aucun folio ouvert')]
+ATTENTE = [('16/10/2026 22:41:17', NOTE_MARTIN, 'Martin Ebode', fcfa(9500), '2 folios ouverts'),
+           ('16/10/2026 20:18:03', 'Restaurant/0083', 'Boris Ndzana', fcfa(21000), 'Aucun folio ouvert'),
+           ('16/10/2026 16:52:40', 'Boutique/0018', 'Sylvie Mbarga', fcfa(6000), 'Aucun folio ouvert')]
 
 
 def file_attente(ident, lignes, total):
@@ -449,37 +499,30 @@ def file_attente(ident, lignes, total):
     return remplacer(vue_html, pied, '<span class="d">%s</span><span id="%s-ancre"></span>' % (e(total), ident))
 
 
-FILE = file_attente('t4-file', ATTENTE, '36 500 FCFA')
-FILE_APRES = file_attente('t4-file2', ATTENTE[1:], '27 000 FCFA')
+FILE = file_attente('t4-file', ATTENTE, fcfa(36500))
+FILE_APRES = file_attente('t4-file2', ATTENTE[1:], fcfa(27000))
 
-# -- la note en attente de Martin Ebode : deux folios ouverts (séjour en cours et réservation de novembre).
-# Les folios ouverts ce soir-là, les plus récents d'abord (create_date desc) : la réservation de novembre
-# de Martin Ebode (0227), celle confirmée l'après-midi (0226), puis ceux que le tutoriel 3 montre « Ouvert »
-# (t03_folio.py:436-452). La liste déroulante n'en propose que huit (name_search limité à 8 :
-# relational_utils.js:209, :318) : le folio du séjour en cours de Martin (0209) n'y est pas, Mireille tape
-# « 0209 » et la liste se réduit à lui.
-OUVERTS = ['FOL/2026/%s' % n for n in ('0227', '0226', '0221', '0220', '0219', '0218', '0217', '0216', '0215',
-                                        '0213', '0212', '0211', '0210', '0209', '0205')]
-assert len(OUVERTS[:8]) == 8 and 'FOL/2026/0209' not in OUVERTS[:8]
-CHERCHE = '0209'
-DEROULANT = ('<div class="t04-dd masque" id="t4-dd" data-layout-allow-overlap data-layout-allow-occlusion>%s'
-             '<div class="t04-dd-o lien">Recherche avancée...</div><div class="t04-dd-o ital">Commencer à écrire...</div>'
-             '</div>' % ''.join('<div class="t04-dd-o">%s</div>' % f for f in OUVERTS[:8]))
-DEROULANT_2 = ('<div class="t04-dd masque" id="t4-dd2" data-layout-allow-overlap data-layout-allow-occlusion>%s'
-               '<div class="t04-dd-o lien">Créer "%s"</div><div class="t04-dd-o lien">Recherche avancée...</div>'
-               '<div class="t04-dd-o lien">Créer et modifier...</div></div>'
-               % (''.join('<div class="t04-dd-o" id="t4-dd-%s">%s</div>' % (f[-4:], f) for f in OUVERTS
-                          if CHERCHE in f), CHERCHE))
-# le champ se tape comme une entrée (geste « saisir » : #t4-fc, #t4-fc-ph, #t4-fc-val)
-FOLIO_CHOISI = ('<div class="t04-m2o" id="t4-fc"><span class="ph" id="t4-fc-ph"></span>'
-                '<span class="t04-m2o-v" id="t4-fc-val"></span><span class="t04-car">▾</span>'
-                '%s%s</div>' % (DEROULANT, DEROULANT_2))
+# -- la note en attente de Martin Ebode : deux folios ouverts (séjour en cours et réservation de novembre),
+# d'où le motif. « Folio choisi » ne propose que les séjours commencés, et ceux du client s'il en a
+# (roomcharge_pending.py:37-69, livraison 4) : le seul séjour arrivé de Martin, affiché « référence — client »
+# (contexte aite_folio_with_partner) ; la réservation de novembre, confirmée mais pas commencée, n'y est pas.
+# Champ sans création (options no_create) : ni « Créer… » ni « Commencer à écrire... » ; « Recherche
+# avancée... » dès qu'il y a un résultat (relational_utils.js:313-385, many2one_field.js:377-384).
+FOLIO_MARTIN = 'FOL/2026/0209 — Martin Ebode'
+DEROULANT = ('<div class="t04-dd masque" id="t4-dd" data-layout-allow-overlap data-layout-allow-occlusion>'
+             '<div class="t04-dd-o" id="t4-dd-0209">%s</div><div class="t04-dd-o lien">Recherche avancée...</div>'
+             '</div>' % e(FOLIO_MARTIN))
+FOLIO_CHOISI = ('<div class="t04-m2o" id="t4-fc"><span class="t04-m2o-v" id="t4-fc-val"></span>'
+                '<span class="t04-car">▾</span>%s</div>' % DEROULANT)
 FEUILLE_NOTE = deux_colonnes(
     '<div class="grp">%s</div>' % ''.join([champ('Commande POS', NOTE_MARTIN, lien_=True),
-                                         champ('Client', 'Martin Ebode', lien_=True), champ('Montant', '9 500 FCFA'),
+                                         champ('Client', 'Martin Ebode', 't4-n-client', lien_=True),
+                                         champ('Montant', fcfa(9500)),
                                          champ('Motif', '2 folios ouverts', 't4-motif')]),
     '<div class="grp">%s</div>' % champ('Folio choisi', FOLIO_CHOISI, html=True, gras=True))
-NOTE = vue_fiche('t4-note', cp_fiche('Notes de chambre en attente', 'aite.roomcharge.pending,12', '1 / 3'),
+# Fil d'Ariane au numéro du ticket (champ « Ticket », roomcharge_pending.py:16-20) ; fiche create="0", sans
+# « Nouveau » (roomcharge_pending_views.xml:29-31).
+NOTE = vue_fiche('t4-note', cp_fiche('Notes de chambre en attente', NOTE_MARTIN, '1 / 3', nouveau=False),
                  [bouton('t4-b-ratt', 'Rattacher au folio', 'primaire')],
                  statusbar('t4-nsb', ['À rattacher', 'Rattachée'], 0), FEUILLE_NOTE)
 NOTE = remplacer(NOTE, '<span class="parent">', '<span class="parent" id="t4-fil">')
@@ -517,19 +560,20 @@ CSS = """
 """ + pastille_css('t04-pc', CAISSIER, ROLE_CAISSE) + pastille_css('t04-pr', RECEPTION, ROLE_REC) + """
 /* -- 1. fiche du mode de paiement (thème MuK) -- */
 #t4-mode .cp { height: 80px; }
-.t04-pm { position: absolute; left: 22px; right: 22px; top: 102px; height: 430px; background: #fff;
+.t04-pm { position: absolute; left: 22px; right: 22px; top: 102px; height: 548px; background: #fff;
   border: 1px solid var(--o-filet); padding: 22px 30px; color: var(--o-texte); }
 .t04-lab { font-size: 19px; font-weight: 600; }
 .t04-pm sup { margin-left: 3px; font-size: 13px; color: #3F6A83; font-weight: 600; }
 .t04-titre { display: flex; align-items: center; gap: 18px; }
-.t04-cb-ard { margin-top: 18px; }
 .t04-nom { margin-top: 4px; width: 640px; height: 64px; border-width: 0 0 1px 0; border-radius: 0; padding: 0 4px; font-size: 40px; }
 .t04-nom .ph, .t04-nom .val { left: 4px; }
 .t04-nom .val { font-weight: 400; }
 .t04-cols { display: grid; grid-template-columns: 780px 420px; column-gap: 56px; margin-top: 24px; }
-.t04-r { display: grid; grid-template-columns: 230px 1fr; align-items: center; min-height: 52px; font-size: 19px; }
+.t04-r { display: grid; grid-template-columns: 286px 1fr; align-items: center; min-height: 52px; font-size: 19px; }
 .t04-r .l { font-weight: 600; white-space: nowrap; }
 .t04-r .l.leger { font-weight: 400; color: var(--o-texte-2); }
+/* la phrase d'aite_pos_credit, text-muted sur toute la largeur du groupe */
+.t04-muet { padding: 2px 0 12px; font-size: 19px; line-height: 1.4; color: #6C757D; }
 .t04-cb { width: 20px; height: 20px; border: 1px solid #ADB5BD; border-radius: 3px; background: #fff; display: inline-flex;
   align-items: center; justify-content: center; }
 .t04-cb.on { background: var(--muk-prim); border-color: var(--muk-prim); }
@@ -597,7 +641,7 @@ CSS = """
 .t04-m2o.lecture .t04-m2o-v { color: #3F6A83; }
 .t04-car { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font-size: 14px; color: var(--o-texte-2); }
 .t04-m2o.lecture .t04-car { opacity: 0; }
-.t04-dd { position: absolute; left: 0; top: 44px; width: 290px; background: #fff; border: 1px solid var(--o-filet);
+.t04-dd { position: absolute; left: 0; top: 44px; width: 380px; background: #fff; border: 1px solid var(--o-filet);
   box-shadow: 0 10px 24px rgba(0,0,0,.14); padding: 6px 0; z-index: 6; }
 .t04-dd-o { height: 40px; display: flex; align-items: center; padding: 0 20px; font-size: 19px; color: var(--o-texte); white-space: nowrap; }
 .t04-dd-o.survol { background: #E9ECEF; }
@@ -640,7 +684,7 @@ TUTORIEL = {
         'b-mixte': 'Paiement mixte : seule la part « Note de chambre » part sur la chambre.',
         'b-ligne': 'Une seule ligne par ticket, avec sa référence. Et aucune ardoise en double.',
         'b-motif': 'Le motif dit pourquoi le rattachement automatique n\'a pas eu lieu.',
-        'b-folio': 'Seuls les folios ouverts sont proposés, les plus récents d\'abord.',
+        'b-folio': 'Seuls les séjours commencés sont proposés : ceux du client, s\'il en a.',
         'b-aucun': 'Aucun folio ouvert : on rattache plus tard si le client prend une chambre ; sinon, le ticket se '
                    'règle au comptoir et le responsable est prévenu.',
     },
@@ -652,12 +696,13 @@ TUTORIEL = {
          'texte': 'Le mode « Note de chambre », ajouté aux caisses du bar, du restaurant et de la boutique, '
                   'sessions fermées.',
          'voix': "Une fois pour toutes, la direction crée le mode de paiement Note de chambre : Identifier le client "
-                 "coché, journal laissé vide, et la case Note de chambre. On l'ajoute ensuite aux caisses du bar, du "
-                 "restaurant et de la boutique, sessions fermées.",
+                 "coché, journal laissé vide, et la case Note de chambre. Vente à crédit reste décochée : pas "
+                 "d'ardoise. On l'ajoute ensuite aux caisses du bar, du restaurant et de la boutique, sessions fermées.",
          'gestes': [clic('#t4-nom', fx=0.3), saisir('t4-nom', 'Note de chambre'), clic('#t4-cb-ident'),
-                    classe('#t4-cb-ident', ajouter=['on']), zoom('#t4-pm', s=1.45, d=0.8, fx=0.4, fy=0.45),
-                    bulle('b-ident', '#t4-cb-ident', cote='droite', d=2.2), pause(2.0), anneau('#t4-journal', d=1.2),
-                    clic('#t4-cb-note'), classe('#t4-cb-note', ajouter=['on']),
+                    classe('#t4-cb-ident', ajouter=['on']), zoom('#t4-pm', s=1.45, d=0.8, fx=0.43, fy=0.45),
+                    bulle('b-ident', '#t4-cb-ident', cote='droite', d=2.2), pause(0.15), anneau('#t4-journal', d=1.2),
+                    clic('#t4-cb-note', d=0.5), classe('#t4-cb-note', ajouter=['on']), pause(0.25),
+                    anneau('#t4-ard', d=2.3),
                     curseur('#t4-l-note-aide', fx=0.3, fy=0.2, d=0.5), montrer('#t4-tip', d=0.35, y=8),
                     pause(2.3), cacher('#t4-tip', d=0.3), dezoom(d=0.6)]},
         {'temps': 1, 'titre': 'Au bar : le ticket et le client',
@@ -705,17 +750,17 @@ TUTORIEL = {
                     anneau('#t4-file-0-motif', d=1.4), bulle('b-motif', '#t4-file-ancre', cote='bas', d=2.6),
                     pause(1.8), anneau('#t4-file-1-motif', d=1.2)]},
         {'temps': 3, 'titre': 'Choisir le bon folio',
-         'texte': 'Folio choisi : la liste des folios ouverts, par référence.',
-         'voix': "Martin Ebode a deux folios ouverts : son séjour en cours, et une réservation confirmée pour "
-                 "novembre. Mireille ouvre la ligne, déroule Folio choisi, tape le numéro du séjour en cours, et le "
-                 "prend.",
-         'gestes': [clic('#t4-file-0', fx=0.3), vue('t4-note', 'hotel'), pause(0.3), anneau('#t4-motif', d=1.0),
+         'texte': 'Folio choisi : seulement les séjours commencés, au nom du client.',
+         'voix': "Mireille ouvre la note de Martin Ebode : deux folios ouverts, son séjour en cours et une "
+                 "réservation confirmée pour novembre. Elle déroule Folio choisi : seul le séjour commencé est "
+                 "proposé, à son nom. Elle le prend.",
+         'gestes': [clic('#t4-file-0', fx=0.3), vue('t4-note', 'hotel'), pause(0.3), anneau('#t4-motif', d=2.5),
                     clic('#t4-fc', fx=0.3), classe('#t4-fc', ajouter=['focus']), montrer('#t4-dd', d=0.3, y=-6),
-                    zoom('#t4-note .feuille', s=1.3, d=0.6, fy=0.9), bulle('b-folio', '#t4-dd', cote='gauche', d=2.4),
-                    pause(0.2), saisir('t4-fc', CHERCHE, d=0.5),
-                    cacher('#t4-dd', d=0.15), montrer('#t4-dd2', d=0.25, y=0, avec=True),
-                    curseur('#t4-dd-0209', fx=0.3, d=0.4), survol('#t4-dd-0209'), pause(0.4),
-                    clic('#t4-dd-0209', fx=0.3), cacher('#t4-dd2', d=0.2), texte('#t4-fc-val', 'FOL/2026/0209'),
+                    # fx=0.48 : le fil d'Ariane au numéro du ticket reste lisible en entier pendant le zoom
+                    zoom('#t4-note .feuille', s=1.3, d=0.6, fx=0.48, fy=0.9),
+                    bulle('b-folio', '#t4-dd', cote='gauche', d=3.0),
+                    curseur('#t4-dd-0209', fx=0.3, d=0.4), survol('#t4-dd-0209'), anneau('#t4-dd-0209', d=1.2),
+                    clic('#t4-dd-0209', fx=0.3), cacher('#t4-dd', d=0.2), texte('#t4-fc-val', FOLIO_MARTIN),
                     classe('#t4-fc', retirer=['focus']), dezoom(d=0.5), anneau('#t4-fc', d=1.0)]},
         {'temps': 3, 'titre': '« Rattacher au folio »',
          'texte': 'La note passe « Rattachée » et quitte la file d\'attente.',
