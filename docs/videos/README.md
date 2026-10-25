@@ -167,7 +167,11 @@ Une seule donnée de démonstration traverse toute la série et la présentation
 20 chambres, société sans TVA, numéros de téléphone dans la plage de fiction
 `+237 6 00 00 00 xx` (voir `DESIGN.md`). Un chiffre repris d'un tutoriel à
 l'autre (ardoises, stock, achats, cockpit) se lit au même endroit dans le code
-du scénario de référence (`demo.py`, `t13_stock.AGREGATS`, `c6_direction.py`).
+du scénario de référence (`demo.py`, `t13_stock.AGREGATS`, `t14_achats.py`,
+`c6_direction.py`). La vue Achats de la présentation relit les données de
+`t14_achats.py` et les recalcule au 14/10 : 1 742 000 FCFA d'achats et
+« 7 commandes · 6 réceptions », quand le tutoriel 14, le 16/10, en compte
+1 850 000 et 8 · 6 (une commande est datée du 15/10).
 
 Deux chiffres ne concordent pas encore d'une vidéo à l'autre. Les aligner
 veut dire recalibrer et refaire plusieurs vidéos ensemble : c'est à décider

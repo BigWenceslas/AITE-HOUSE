@@ -206,17 +206,19 @@ moyenne pondérée des achats de la fenêtre ; de même pour les sept autres
 articles. Le prix ancien (fenêtre 120 à 210 jours : 20/03 → 18/06) est celui
 de mai-juin.
 
-Mêmes chiffres que la vue Achats de la présentation (scenarios/
-c6_direction.py) et que le cockpit de scenarios/t15_direction.py (tutoriel
-suivant, lu le 14/10), contrôlés par assert : achats de la période
-1 850 000 FCFA (Wouri 52 %, Akwa 26 %, Bonapriso 14 %, Hygiène 8 %), dette
-fournisseurs 1 280 000 FCFA sur 4 factures, dont 180 000 FCFA échus (1
-facture) et 420 000 FCFA à payer sous 7 jours (1 facture), 4 fournisseurs
-actifs. Aucune facture ne change de statut entre le 14 et le 16/10
-(contrôlé). Restent propres à ce tutoriel, calculés par le code et
-différents de c6 : « 8 commandes · 6 réceptions » (c6 : 6 · 5), OTIF 83,3 %,
-224 000 FCFA de commandes en cours (c6 : 640 000), DPO 13,9 j (c6 : 24 j) et
-la créance 409 (c6 : 95 000 FCFA).
+Données communes à la vue Achats de la présentation (scenarios/
+c6_direction.py), qui les relit ici et les recalcule au 14/10 avec les mêmes
+fonctions du module, et au cockpit de scenarios/t15_direction.py (lu le
+14/10). Ce tutoriel se place le 16/10 : achats de la période 1 850 000 FCFA
+(Wouri 52 %, Akwa 26 %, Bonapriso 14 %, Hygiène 8 %), « 8 commandes · 6
+réceptions », OTIF 83,3 %, DPO 13,9 j ; la présentation, le 14/10, montre
+1 742 000 FCFA et « 7 commandes · 6 réceptions », DPO 12,1 j, parce que la
+commande P00158 (Dépôt Akwa Distribution, 108 000 FCFA) est datée du 15/10.
+Identiques aux deux dates (contrôlé) : dette fournisseurs 1 280 000 FCFA sur
+4 factures, dont 180 000 FCFA échus (1 facture) et 420 000 FCFA à payer sous
+7 jours (1 facture), 4 fournisseurs actifs, créance 409 de 319 200 FCFA
+avant le retour des 20 casiers ; aucune facture ne change de statut entre le
+14 et le 16/10.
 """
 
 import math
@@ -581,8 +583,8 @@ FLUX = list(zip(MOIS, [3980000, 3620000, 4310000, 3870000, 4420000, FAC_PERIODE]
 
 assert (len(CMD), len(RECUS), len(FAC)) == (8, 6, 4)
 assert [f['status'] for f in FAC] == ['En retard', 'À payer bientôt', 'À échoir', 'À échoir']
-# Les chiffres de la présentation (c6_direction.py, vue Achats) et du cockpit (t15_direction.py) : achats de la
-# période, dette sur 4 factures, 1 échue, à payer sous 7 j, 4 fournisseurs actifs (52 / 26 / 14 / 8 %), OTIF.
+# Les chiffres de ce tutoriel au 16/10 : achats de la période, dette sur 4 factures, 1 échue, à payer sous 7 j,
+# 4 fournisseurs actifs (52 / 26 / 14 / 8 %), OTIF ; c6_direction.py (vue Achats) les recalcule au 14/10.
 assert (ACHATS, ENCOURS, sum(f['residual'] for f in RETARD), len(RETARD), sum(f['residual'] for f in SOON), len(SOON)) == (
     1850000, 1280000, 180000, 1, 420000, 1)
 assert [round(r['part']) for r in FOUR] == [52, 26, 14, 8] and pct(OTIF) == '83,3' + NBSP + '%'
