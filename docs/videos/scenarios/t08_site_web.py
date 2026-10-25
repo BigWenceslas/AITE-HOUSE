@@ -8,14 +8,21 @@ Sources des écrans (libellés vérifiés mot pour mot par ``grep -rF`` dans
 ``addons/``) :
 
 - Site public — ``aite_website_booking/views/website_templates.xml`` :
-  accueil « Réserver en ligne » et ses trois cartes (l. 5-41) ; liste
-  « Espaces VIP & VVIP », « Ouvert de HH:MM à HH:MM », prix « 15 000 FCFA /
-  heure » (format ``'{:,.0f}'`` + espace + symbole de la devise, l. 44-71) ;
+  accueil « Réserver en ligne » et ses trois cartes (l. 5-41 ; « —
+  confirmation immédiate par e-mail » n'y figure que si l'envoi automatique
+  est actif, l. 9, ce qui est le réglage par défaut :
+  ``aite_slot_booking/models/res_config_settings.py`` l. 33-37, écart n° 49) ;
+  liste « Espaces VIP & VVIP », « Ouvert de HH:MM à HH:MM », prix « 15 000
+  FCFA / heure » (format ``'{:,.0f}'`` + espace + symbole de la devise,
+  l. 44-71 : des espaces simples, ``prix_site``) ;
   grille « ← Tous les espaces », « Date », « Voir ce jour », « Créneaux
   disponibles », « Vos coordonnées », « Réserver ce créneau », mention de
   l'acompte, bandeau « Ce créneau vient d'être pris — choisissez-en un
-  autre. » (l. 74-130) ; « Demande de séjour » et ses champs (l. 233-277) ;
-  page « Merci ! » d'un créneau et d'un séjour (l. 280-300). Menu du site
+  autre. » (l. 74-131) ; « Demande de séjour » et ses champs (l. 235-279) ;
+  page « Merci ! » d'un créneau et d'un séjour (l. 282-302 ; « Un e-mail de
+  confirmation vous a été envoyé. » si l'envoi est actif et l'adresse
+  connue, ``mail_sent``, controllers/main.py l. 306-311 : c'est le cas de
+  Claire, l'e-mail part juste après la confirmation). Menu du site
   « Réservation » : ``data/website_menu_data.xml`` ; autres entrées de
   l'en-tête (Accueil, Contactez-nous, Se connecter) et pied de page par
   défaut d'Odoo 18 (``odoo18/addons/website/views/website_templates.xml``
@@ -27,47 +34,64 @@ Sources des écrans (libellés vérifiés mot pour mot par ``grep -rF`` dans
   ``auth='public'`` ; seules les ressources « Réservable en ligne » ; jour
   passé ramené à aujourd'hui (``_safe_day``, l. 56-64) ; grille =
   ``get_day_grid`` dans le fuseau de l'établissement (``_grid``, l. 74-78),
-  seuls les créneaux ``free`` encore à venir (``_now_h`` l. 66-72,
-  ``_future_slots`` l. 116-117 ; ``models/website_booking.py`` l. 84-89) ;
-  à la validation : créneau commencé refusé (``error=past``, l. 232-234),
-  créneau qui n'est plus proposé par la grille refusé avant toute écriture
-  (``error=slot``, l. 236-245 : ni contact ni numéro consommés), puis
-  contact, création ``source='online'`` et ``action_confirm`` sous point de
-  sauvegarde (l. 247-270) ; fin = début + durée de la prestation arrondie au
-  pas, sinon un pas (``_slot_minutes_for``, website_booking.py l. 69-82) ;
-  demande de séjour en brouillon, canal ``website``, arrivée 14:00 et départ
-  11:00 ; client retrouvé par téléphone (numéros normalisés des deux côtés,
-  ``_search_partner_by_phone`` l. 115-137) puis par e-mail, sinon créé
-  (``find_or_create_partner`` l. 95-113).
+  seuls les créneaux qui ne sont pas pleins (« free » ou, sur une ressource
+  de capacité 2, « partial » : ``_space_slots`` l. 172-180, ``_fit_starts``
+  website_booking.py l. 53-71, écart n° 59 ; un salon a une capacité de 1)
+  et encore à venir (``_now_h`` l. 66-72, ``_future_slots`` l. 119-120 ;
+  website_booking.py l. 88-98) ; à la validation : créneau commencé refusé
+  (``error=past``, l. 260-263), créneau qui n'est plus proposé par la grille
+  refusé avant toute écriture (``error=slot``, l. 265-273 : ni contact ni
+  numéro consommés), puis contact, création ``source='online'`` et
+  ``action_confirm`` sous point de sauvegarde (l. 275-298) ; fin = début +
+  durée de la prestation arrondie au pas, sinon un pas
+  (``_slot_minutes_for``, website_booking.py l. 74-86) ; demande de séjour
+  en brouillon, canal ``website``, sur le premier hôtel de la société, aux
+  heures standard de cet hôtel : arrivée 14:00, départ 12:00 (l. 352-368,
+  ``hotel_hotel.py`` l. 54-62 ; écart n° 58, auparavant 11:00 en dur) ;
+  client retrouvé par téléphone (numéros normalisés des deux côtés,
+  ``_search_partner_by_phone``, ``models/website_booking.py`` l. 120-141)
+  puis par e-mail, sinon créé (``find_or_create_partner``, même fichier,
+  l. 100-117).
 - Moteur de créneaux — ``aite_slot_booking/models/booking_resource.py``
   (``get_day_grid``, « source de vérité unique » du site et du tableau de
   bord, l. 27-30, 157-223 : seules les réservations confirmées ou réalisées
   occupent la grille, l. 182-183 ; champ « Réservable en ligne », l. 74-77) ;
   ``models/booking_booking.py`` (états, « Origine » Comptoir / En ligne
-  l. 87-101, montant = heures × tarif horaire ``_slot_price`` l. 126-138,
+  l. 88-105, montant = heures × tarif horaire ``_slot_price`` l. 136-148,
   conflit refusé au-delà de la capacité, la ressource verrouillée pendant
-  la confirmation ``_check_no_conflict`` l. 269-306) ;
-  ``data/slot_sequence_data.xml`` (référence ``RES/%(y)s/`` sur 4 chiffres
-  → RES/26/0131).
+  la confirmation ``_check_no_conflict`` l. 304-343) ;
+  ``data/slot_sequence_data.xml`` (préfixe ``CRN/%(range_year)s/``, 4
+  chiffres, numérotation annuelle → CRN/2026/0131, ``demo.CRENEAU_SALON`` ;
+  écart n° 61, auparavant RES/26/0131).
 - Réception — tableau de bord ``aite_slot_booking/static/src/xml/dashboard.xml``
   (titre, filtres Jour / Période stats / Famille / Ressource, quatre
-  indicateurs, « Chargement… » pendant le rechargement l. 71-73, « Planning
-  du <t t-esc="state.day"/> », couloirs, « x/y créneaux libres », l. 18-128 ;
-  section « Répartition & remplissage » et ses deux cartes, l. 131-140 ;
-  rangées de puces à la ligne, ``slot_dashboard.scss`` l. 58-69),
+  indicateurs « CA prestations réalisées » / « 5 réalisées », « Taux de
+  remplissage », « Non présentés » / « 0 rendez-vous manqué », « Retraits
+  pressing en attente » / « 6 réservations à venir » l. 78-96 (accordés,
+  écarts n° 42 et 44), « Chargement… » pendant le rechargement l. 71-73,
+  « Planning du » et le jour au format JJ/MM/AAAA (``dayLabel``, l. 99),
+  couloirs, « x/y créneaux libres », l. 18-128 ; section « Répartition &
+  remplissage » et ses deux cartes, l. 131-140 ; rangées de puces à la
+  ligne, ``slot_dashboard.scss`` l. 58-69),
   ``static/src/js/views/slot_dashboard_view.js`` (un changement de jour
-  recharge tout l'écran, l. 72-112 ; repères toutes les deux heures
-  l. 204-215, texte des créneaux libres l. 221-231, clic sur un bloc → fiche
-  l. 322-330), ``static/src/js/services/utils.js`` (formats montant, %,
-  heures), ``static/src/scss/slot_dashboard.scss`` (couleurs, l. 148-152),
-  ``models/slot_dashboard.py`` (couleurs des familles l. 22-25, indicateurs
-  ``get_kpis`` l. 124-176 : CA des réalisées, heures réservées / heures
+  recharge tout l'écran, l. 72-112 ; ``dayLabel`` l. 172-175 ; repères
+  toutes les deux heures l. 214-225, texte des créneaux libres l. 231-245 :
+  un créneau entamé mais pas plein compte comme libre, écart n° 59, d'où
+  « 22/22 » au comptoir pressing de capacité 2 ; clic sur un bloc → fiche),
+  ``static/src/js/services/utils.js`` (``fmtMoney`` : milliers à l'espace
+  fine, ``fmtPct`` : « 18,3 % » à une décimale fixe, ``fmtCount``,
+  ``fmtHours``, ``fmtDay``), ``static/src/scss/slot_dashboard.scss``
+  (couleurs des blocs et du texte des créneaux libres, l. 386-395),
+  ``models/slot_dashboard.py`` (couleurs des familles l. 24-27, indicateurs
+  ``get_kpis`` l. 145-198 : CA des réalisées, heures réservées / heures
   ouvrées, réservations à venir) ; fiche ``views/booking_booking_views.xml``
-  (boutons et statusbar l. 37-59, champs l. 60-91, ``<chatter/>`` l. 92) ;
-  nom de l'action ``views/slot_dashboard_actions.xml``. Discussion : message
-  de création « %s créé » (``odoo18/addons/mail/models/mail_thread.py``
-  l. 452-458, ``mail/i18n/fr.po`` l. 269-270) et suivi de l'état (champ
-  ``tracking=True``, booking_booking.py l. 95), signés par l'utilisateur
+  (boutons « Réalisée », « Renvoyer l'e-mail », « Non présenté »,
+  « Annuler » et statusbar l. 39-63, champs l. 64-96, ``<chatter/>``
+  l. 97) ; nom de l'action ``views/slot_dashboard_actions.xml``.
+  Discussion : message de création « Réservation créée »
+  (``_creation_message``, booking_booking.py l. 356-361, écart n° 43, à la
+  place du « %s créé » d'Odoo) et suivi de l'état (champ ``tracking=True``,
+  booking_booking.py l. 99), signés par l'utilisateur
   courant (mail_thread.py l. 2913-2919), soit l'utilisateur public du site
   (``odoo18/addons/website/models/ir_http.py`` l. 175-182) dont le contact
   s'appelle « Public user » (``odoo18/odoo/addons/base/data/res_partner_data.xml``
@@ -78,18 +102,25 @@ Sources des écrans (libellés vérifiés mot pour mot par ``grep -rF`` dans
   d'« Activités » (le modèle n'hérite que de ``mail.thread``) ; mise en page :
   ref_muk/027.
 - Réservations hôtel — ``aite_hotel_management/views/hotel_reservation_views.xml``
-  (liste l. 5-33, décorations, filtres « Arrivées du jour », « Départs du
-  jour », « Clients présents », « Brouillons », « Confirmées », « No-show »,
-  regroupements « État », « Client », « Hôtel », « Canal », « Date
-  d'arrivée » l. 225-262 ; action sans filtre par défaut, vues
-  list,kanban,form,calendar l. 265-279), ``models/hotel_reservation.py``
+  (liste l. 5-35, décorations, colonne « Canal » en badge visible par
+  défaut l. 23-25, écart n° 58 ; filtres « Arrivées du jour », « Départs du
+  jour », « Clients présents », « Brouillons », « Confirmées », « Non
+  présentés », puis « Du site web », regroupements « État », « Client »,
+  « Hôtel », « Canal », « Date d'arrivée » l. 233-275 ; action sans filtre
+  par défaut, vues list,kanban,form,calendar), ``models/hotel_reservation.py``
   (« Canal » et « Site web » l. 70-80, ordre ``checkin_date desc, id desc``
   l. 27, nuits / chambres / total stockés et donc sommés par groupe
-  l. 64-116, Confirmer vérifie la disponibilité puis ouvre le folio
-  l. 288-337, heures standard 14:00 / 12:00 l. 152-165) ;
-  ``models/hotel_room.py`` l. 431-446 (seules les lignes confirmées ou en
-  séjour occupent une chambre) ; colonne « Registre » / « Aucune fiche » :
-  ``aite_guest_registry/views/hotel_reservation_views.xml`` l. 57-67 ; menus
+  l. 64-116, Confirmer vérifie la disponibilité puis ouvre le folio :
+  ``_check_lines_availability`` l. 323-360 et ``action_confirm``
+  l. 374-389, heures standard 14:00 / 12:00 l. 152-165 ; seules les lignes
+  confirmées ou en séjour occupent une chambre : ``_overlap_domain``
+  l. 684-701) ; ``models/hotel_room.py`` (``is_available`` et
+  ``_availability_blocker``, l. 474-500) ; colonne « Registre » / « Aucune fiche »,
+  badge neutre tant que le client n'est pas arrivé :
+  ``aite_guest_registry/views/hotel_reservation_views.xml`` l. 63-78
+  (écart n° 54), qui ajoute aussi le filtre « Registre à compléter » en tête
+  du menu (l. 80-91) ; menus (« Réception » et non plus « Front Desk »,
+  ``MENUS_MUK['hotel_reception']``)
   ``aite_hotel_management/views/hotel_menus.xml`` et
   ``aite_slot_booking/views/slot_menus.xml``. Cadre web d'Odoo 18
   (``odoo18/addons/web/i18n/fr.po``) : « Filtres », « Regrouper par »,
@@ -138,11 +169,12 @@ montre à l'étape 2 : à 10:20, la grille du jour commence à 11:00.
 
 Résultats : trois parcours publics (``website_templates.xml`` l. 10-38) ;
 une seule grille pour le site et la réception (``booking_resource.py``
-l. 27-30, ``slot_dashboard.py`` l. 107-117, ``controllers/main.py`` l. 74-78) ;
-53 tests Odoo du module, dont ``test_double_booking_is_refused``
-(``aite_website_booking/tests/test_controllers.py`` : 26 tests,
-``test_helpers.py`` : 27 tests, comptés dans le code après les corrections
-du 20/10/2026 ; ``docs/GUIDE_TESTS.md`` l. 31 dit encore 45).
+l. 27-30, ``slot_dashboard.py`` ``get_day_board`` l. 129-139,
+``controllers/main.py`` ``_grid`` l. 74-78) ;
+61 tests Odoo du module, dont ``test_double_booking_is_refused``
+(``aite_website_booking/tests/test_controllers.py`` : 33 tests,
+``test_helpers.py`` : 28 tests, comptés dans le code (``def test_``) après
+la livraison 4 ; ``docs/GUIDE_TESTS.md`` l. 31 dit aussi 61).
 
 Données : fictives (``demo.py``). Claire Durand (cliente), Mireille Ateba
 (réception). Les huit ressources (salons « Wouri », « Sanaga »,
@@ -150,24 +182,29 @@ Données : fictives (``demo.py``). Claire Durand (cliente), Mireille Ateba
 pressing), leurs horaires, pas, capacités, tarifs horaires des salons
 (15 000 / 25 000 FCFA) et le catalogue (massage relaxant 60 min 27 000,
 coupe homme 6 200, tresses 19 000, chemise 4 800) sont ceux du tutoriel 9
-(``scenarios/t09_espaces.py`` l. 192-219), qui suit celui-ci. Indicateurs du
+(``scenarios/t09_espaces.py``, ``RESSOURCES`` et ``RESAS``), qui suit celui-ci. Indicateurs du
 14/10 recalculés sur ces huit ressources : 109 h ouvrées comme au tutoriel 9,
 et deux dépôts de pressing non retirés, que le tutoriel 9 compte encore le
 15/10 au matin avec celui de Samuel Etoga (``RETRAITS``, 3 puis 2). La
-référence du créneau, RES/26/0131, précède celles que le tutoriel 9 crée le
-15/10 (RES/26/0158 à 11:09). Claire reprend l'adresse de la série
-(claire.durand@exemple.fr, ``t04_note_chambre.py`` l. 333) : le site
+référence du créneau, CRN/2026/0131 (``demo.CRENEAU_SALON``), précède celles
+que le tutoriel 9 crée le 15/10 (CRN/2026/0158 à 11:06,
+``demo.CRENEAU_MASSAGE``). Claire reprend l'adresse de la série
+(claire.durand@exemple.fr, ``t04_note_chambre.py``, ``CLIENTS``) : le site
 retrouve sa fiche par son téléphone, la réservation affiche le téléphone
 déjà enregistré (voir ``TEL_FICHE``). Les réservations confirmées de la liste de l'hôtel,
 celle de Rodrigue Tamba et le brouillon de Jacques Owona sont ceux du
-tutoriel 2 (``scenarios/t02_planning.py`` l. 231-260, 277-289, 648-680 ;
+tutoriel 2 (``scenarios/t02_planning.py``, ``TYPES``, ``CONFIRMEES``,
+``RODRIGUE`` et ``JACQUES`` ;
 tarifs Standard 35 000, Confort 45 000, Suite Junior 75 000, Suite VIP
 120 000) ; le solde d'une réservation confirmée non réglée est son folio :
 nuitées (sans TVA, convention de la série) plus la taxe de séjour, deux
 adultes (``solde_folio``, comme au tutoriel 2 : 102 000 FCFA pour Rodrigue,
-``FOLIO_RODRIGUE``, t02_planning.py l. 302-308). Les demandes du site
-(RES/2026/0223, RES/2026/0224), le visiteur Arnaud Fotsing et les clients des
-couloirs sont inventés. Numéros de fiction : plage ARCEP réservée à la
+``FOLIO_RODRIGUE``, t02_planning.py). Les demandes du site
+(RES/2026/0223, RES/2026/0224, canal « Site web »), le visiteur Arnaud
+Fotsing et les clients des couloirs sont inventés ; Rodrigue Tamba a
+réservé par téléphone (« Téléphone / WhatsApp », comme au tutoriel 2), les
+autres réservations de la liste portent le canal par défaut, « Direct /
+comptoir ». Numéros de fiction : plage ARCEP réservée à la
 fiction (+33 6 39 98 …) et numéros camerounais en 6 00 00 00 … ; adresses
 ``exemple.cm``. Le pied de page du site est celui d'Odoo 18, personnalisé
 par l'établissement (liens et texte « À propos de nous » fictifs, à la place
@@ -182,13 +219,25 @@ tutoriel 2 crée à 10:06 et 10:09, et après celle de Yannick Mbassi
 (RES/2026/0223) ; d'où RES/2026/0224. Mireille ouvre le tableau de bord vers
 11:30 (prestations de 8 h à 11 h réalisées).
 
-Écarts rejoués tels quels (voir le rapport) : « Planning du 2026-10-17 »
-(date ISO, ``dashboard.xml`` l. 99) ; menu « Front Desk » en anglais
-(``hotel_menus.xml`` l. 18) ; deux numérotations « RES » (RES/26/0131 pour
-le créneau, RES/2026/0224 pour le séjour) ; départ de la demande de séjour
-à 11:00, fixé en dur (``controllers/main.py`` l. 264-267) ; discussion signée
-« Public user » (nom anglais du contact public) et « … créé » au masculin ;
-sommes de groupe sans devise et à deux décimales (« 90 000,00 »). La liste
+Écarts corrigés dans la livraison 4 (n° 37-77) et montés tels que le
+produit les affiche désormais : « Planning du 17/10/2026 » et non plus la
+date ISO (``dayLabel``) ; menu « Réception » et non plus « Front Desk »
+(n° 42, ``hotel_menus.xml`` l. 18-25) ; indicateur « Non présentés » à
+« 0,0 % » et bouton « Non présenté » au lieu de « No-show » (n° 42) ;
+sous-titres accordés, sans « (s) » (n° 44) ; taux à une décimale fixe ;
+« Réservation créée » au lieu de « Réservation de créneau (espace /
+prestation) créé » (n° 43) ; deux numérotations distinctes, CRN/2026/0131
+pour le créneau et RES/2026/0224 pour le séjour (n° 61) ; départ de la
+demande de séjour à l'heure standard de l'hôtel, 12:00, et non plus 11:00
+en dur (n° 58) ; colonne « Canal » visible et filtre « Du site web » dans
+la liste des réservations (n° 58) ; « Aucune fiche » neutre avant
+l'arrivée (n° 54) ; créneaux entamés d'une ressource de capacité 2 comptés
+libres (n° 59) ; e-mail de confirmation annoncé seulement s'il part, et
+envoyé juste après la confirmation (n° 49).
+
+Écarts du standard d'Odoo, rejoués tels quels : discussion signée
+« Public user » (nom anglais du contact public) ; sommes de groupe sans
+devise et à deux décimales (« 90 000,00 »). La liste
 non filtrée des réservations charge 80 lignes (« 1-80 / 224 ») : sa ligne de
 total, après la 80e, n'est pas à l'écran (le pied de liste d'Odoo 18 n'est
 pas collant, ``web/static/src/views/list/list_renderer.scss`` l. 14-24,
@@ -196,8 +245,9 @@ pas collant, ``web/static/src/views/list/list_renderer.scss`` l. 14-24,
 """
 
 import demo
-from ecrans import (APPS_PROFIL, ICONES, bouton, champ, cp_fiche, deux_colonnes, e, entree, fenetre_muk, groupe,
-                    icone, navigateur, s_vue, statusbar, titre_fiche, vue_fiche, vue_libre)
+from ecrans import (APPS_PROFIL, ICONES, MENUS_MUK, bouton, champ, compte, cp_fiche, date_fr, deux_colonnes, e,
+                    entier, entree, fcfa, fenetre_muk, groupe, icone, navigateur, pct, s_vue, statusbar, titre_fiche,
+                    vue_fiche, vue_libre)
 from marketing import bulle, dezoom, reaction, zoom
 from moteur import animer, anneau, cacher, clic, classe, curseur, montrer, pause, saisir, texte, vue
 
@@ -205,23 +255,23 @@ NOM, ROLE = demo.POSTES['client']                 # Claire Durand, la cliente
 RECEPTION, ROLE_RECEPTION = demo.POSTES['reception']   # Mireille Ateba, réceptionniste
 VISITEUR, ROLE_VISITEUR = 'Arnaud Fotsing', 'Autre visiteur'
 SITE = 'Complexe Hôtelier'
-TEL_HOTEL = '+237 6 00 00 00 10'
+TEL_HOTEL = demo.TEL_HOTEL                        # +237 6 00 00 00 10, le numéro de l'hôtel dans toute la série
 TEL_CLAIRE = '+33 6 39 98 21 47'                  # saisi sur le site (plage ARCEP réservée à la fiction)
-MAIL_CLAIRE = 'claire.durand@exemple.fr'          # l'adresse de Claire dans la série (t04_note_chambre.py l. 333)
+MAIL_CLAIRE = 'claire.durand@exemple.fr'          # l'adresse de Claire dans la série (t04_note_chambre.py, CLIENTS)
 # find_or_create_partner cherche d'abord le téléphone, en comparant les numéros
-# normalisés des deux côtés (_search_partner_by_phone, website_booking.py
-# l. 115-137 : la fiche porte le numéro avec ses espaces), puis l'e-mail : la
+# normalisés des deux côtés (_search_partner_by_phone, models/website_booking.py
+# l. 120-141 : la fiche porte le numéro avec ses espaces), puis l'e-mail : la
 # fiche existante de Claire est retrouvée, sans doublon. La réservation affiche donc le téléphone déjà
 # enregistré sur ce contact (partner_phone = related partner_id.phone,
-# booking_booking.py l. 53-54) : le même numéro, celui de Claire dans toute la série.
+# booking_booking.py l. 54-55) : le même numéro, celui de Claire dans toute la série.
 TEL_FICHE = TEL_CLAIRE
 TEL_VISITEUR = '+237 6 00 00 00 27'
 SALON = 'Salon VIP Wouri'
-REF_CRENEAU = 'RES/26/0131'                       # séquence RES/%(y)s/ (créneaux), avant celles du 15/10 (t09)
+REF_CRENEAU = demo.CRENEAU_SALON                  # CRN/2026/0131 : séquence CRN/%(range_year)s/ (créneaux), avant t09
 REF_SEJOUR = 'RES/2026/0224'                      # séquence RES/%(year)s/ (séjours)
 REF_YANNICK = 'RES/2026/0223'
 HEURE_RESA = '10:20'                              # l'heure où Claire a réservé le salon
-# Tarif horaire des salons, comme au tutoriel 9 (t09_espaces.py l. 192-201).
+# Tarif horaire des salons, comme au tutoriel 9 (t09_espaces.py, RESSOURCES).
 TARIF_SALON, TARIF_VVIP = 15000, 25000
 
 # Une icône de calendrier (champ date du navigateur), l'icône « regrouper
@@ -262,7 +312,10 @@ SPIN = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width
         '<path d="M12 3a9 9 0 109 9" /></svg>')
 
 
-def fcfa(n):
+def prix_site(n):
+    """Un prix du site public : ``'{:,.0f}'.format(...).replace(',', ' ')``,
+    une espace, le symbole de la devise (website_templates.xml l. 58-61,
+    79-82) — des espaces simples, pas le format des champs d'Odoo."""
     return '{:,.0f}'.format(n).replace(',', ' ') + ' FCFA'
 
 
@@ -312,8 +365,10 @@ def vue_site(ident, contenu, haut_pied=None, initiale=False):
 
 
 def site_t08(ident, vues):
-    """Le site de l'établissement, en-tête en français (le composant partagé
-    ``ecrans.site`` écrit « Nous contacter », absent d'Odoo)."""
+    """Le site de l'établissement, avec l'en-tête complet d'Odoo 18 : la
+    loupe et « Se connecter », que le composant partagé ``ecrans.site``
+    n'affiche pas (mêmes menus « Accueil », « Réservation »,
+    « Contactez-nous » et même téléphone, ``demo.TEL_HOTEL``)."""
     return '<div class="app site t08-site" id="%s">%s<div class="s-page">%s</div></div>' % (ident, NAV, ''.join(vues))
 
 
@@ -329,11 +384,11 @@ ACCUEIL = vue_site('t08-accueil', (
 
 ESPACES = vue_site('t08-espaces', (
     '<div class="s-h1">Espaces VIP & VVIP</div><div class="s-cartes t08-salons" id="t08-salons">%s%s%s</div>'
-    % (s_carte('t08-e1', SALON, 'Ouvert de 09:00 à 23:00', 'Voir les créneaux', True, fcfa(TARIF_SALON) + ' / heure'),
+    % (s_carte('t08-e1', SALON, 'Ouvert de 09:00 à 23:00', 'Voir les créneaux', True, prix_site(TARIF_SALON) + ' / heure'),
        s_carte('t08-e2', 'Salon VIP Sanaga', 'Ouvert de 09:00 à 23:00', 'Voir les créneaux', True,
-               fcfa(TARIF_SALON) + ' / heure'),
+               prix_site(TARIF_SALON) + ' / heure'),
        s_carte('t08-e3', 'Salon VVIP Bonabéri', 'Ouvert de 10:00 à 23:00', 'Voir les créneaux', True,
-               fcfa(TARIF_VVIP) + ' / heure'))), haut_pied=440)
+               prix_site(TARIF_VVIP) + ' / heure'))), haut_pied=440)
 
 # Les créneaux libres du salon (pas d'une heure, 09:00 → 23:00), cohérents
 # avec le planning de la réception : le mercredi 14/10 à 10:20 (12:00-14:00
@@ -364,7 +419,7 @@ def grille(ident, date, heures, coche=None, nom='', tel='', alerte=False, saisie
         '<div class="t08-h5">Vos coordonnées</div><div class="s-ligne3 t08-coord">%s%s%s</div>'
         '<div class="s-gros-bt t08-gros" id="%s-reserver">Réserver ce créneau</div>'
         '<div class="s-note">Acompte à régler au comptoir — Orange Money, MTN MoMo ou espèces.</div></div>'
-        % (e(SALON), fcfa(TARIF_SALON), bandeau, champ_date, CAL, ident, ident, creneaux,
+        % (e(SALON), prix_site(TARIF_SALON), bandeau, champ_date, CAL, ident, ident, creneaux,
            entree(ident + '-nom', '' if nom else 'Nom complet', nom),
            entree(ident + '-tel', '' if tel else 'Téléphone', tel),
            entree(ident + '-mail', 'E-mail (confirmation)'), ident)))
@@ -426,22 +481,35 @@ def kpi_t08(libelle, valeur, sous, accent):
             % (accent, e(libelle), e(valeur), e(sous)))
 
 
-def couloir(ident, nom, couleur, ouverture, fermeture, pas, blocs):
+def libres(ouverture, fermeture, pas, capacite, blocs):
+    """Le texte « x/y créneaux libres » d'un couloir (``boardFreeText``,
+    slot_dashboard_view.js l. 231-245) sur la grille de ``_build_day_slots``
+    (booking_resource.py l. 107-142) : un créneau n'est pris que s'il est
+    plein (autant de réservations que la capacité) ; entamé (« partial »),
+    il reste libre (écart n° 59) ; « créneau libre » au singulier."""
+    pas_h, total, libre, h = pas / 60.0, 0, 0, float(ouverture)
+    while h + pas_h <= fermeture + 1e-6:
+        total += 1
+        if sum(1 for b in blocs if b['de'] < h + pas_h and b['a'] > h) < capacite:
+            libre += 1
+        h += pas_h
+    return '%d/%d %s' % (libre, total, 'créneaux libres' if libre > 1 else 'créneau libre')
+
+
+def couloir(ident, nom, couleur, ouverture, fermeture, pas, capacite, blocs):
     """Un couloir du planning : repères toutes les deux heures, blocs
     réservés {client, de, a, etat, id} (heures décimales ; état
     ``confirmed`` bleu, ``done`` vert), créneaux libres « x/y »."""
     span = float(fermeture - ouverture)
     reperes = ''.join('<i class="t08-rep" style="left:%.2f%%"></i>' % ((h - ouverture) / span * 100)
                       for h in range(ouverture, fermeture + 1, 2) if h > ouverture)
-    total = int(round(span * 60 / pas))
-    pris = int(round(sum((b['a'] - b['de']) * 60 / pas for b in blocs)))
     html = ''.join('<div class="t08-bk%s"%s style="left:%.2f%%;width:%.2f%%">%s</div>'
                    % (' fait' if b.get('etat') == 'done' else '', ' id="%s"' % b['id'] if b.get('id') else '',
                       (b['de'] - ouverture) / span * 100, (b['a'] - b['de']) / span * 100, e(b['client']))
                    for b in blocs)
     return ('<div class="t08-lane" id="%s"><div class="t08-lane-nom"><i class="t08-point" style="background:%s"></i>'
-            '<span>%s</span></div><div class="t08-piste">%s%s</div><div class="t08-libre">%d/%d créneaux libres</div>'
-            '</div>' % (ident, couleur, e(nom), reperes, html, total - pris, total))
+            '<span>%s</span></div><div class="t08-piste">%s%s</div><div class="t08-libre">%s</div>'
+            '</div>' % (ident, couleur, e(nom), reperes, html, libres(ouverture, fermeture, pas, capacite, blocs)))
 
 
 def bloc(client, de, a, etat='confirmed', ident=None, montant=0):
@@ -451,7 +519,7 @@ def bloc(client, de, a, etat='confirmed', ident=None, montant=0):
 # Couleurs des familles (slot_dashboard.py l. 22-25), reprises comme couleur de chaque ressource.
 VIOLET, VERT, BLEU, BRUN = '#714B67', '#0F6E56', '#185FA5', '#854F0B'
 # Les huit ressources de l'établissement, celles du tutoriel 9
-# (t09_espaces.py l. 192-201, même ordre) : (nom, couleur, ouverture,
+# (t09_espaces.py, RESSOURCES, même ordre) : (nom, couleur, ouverture,
 # fermeture, pas en minutes, capacité). Les tarifs horaires des salons sont
 # TARIF_SALON et TARIF_VVIP.
 RESSOURCES = [(SALON, VIOLET, 9, 23, 60, 1), ('Salon VIP Sanaga', VIOLET, 9, 23, 60, 1),
@@ -479,15 +547,19 @@ JOUR_17 = [[bloc('Aline Nkengue', 12, 14), bloc(NOM, 16, 17, ident='t08-bk-clair
            [bloc('Armel Tsala', 9, 9.5), bloc('Hugo Biyong', 14, 14.5)],
            [bloc('Gisèle Kouam', 9.5, 11.5), bloc('Odile Ekwalla', 14, 15)],
            []]
-COULOIRS_14 = ''.join(couloir('t08-c14-%d' % i, *r[:5], blocs=j)
+COULOIRS_14 = ''.join(couloir('t08-c14-%d' % i, *r, blocs=j)
                       for i, (r, j) in enumerate(zip(RESSOURCES, JOUR_14), 1))
-COULOIRS_17 = ''.join(couloir('t08-c17-%d' % i, *r[:5], blocs=j)
+COULOIRS_17 = ''.join(couloir('t08-c17-%d' % i, *r, blocs=j)
                       for i, (r, j) in enumerate(zip(RESSOURCES, JOUR_17), 1))
+# Le comptoir pressing (capacité 2) : ses deux dépôts du 14/10 n'occupent
+# chacun qu'une place, ses créneaux restent libres (écart n° 59).
+assert libres(8, 19, 30, 2, JOUR_14[7]) == '22/22 créneaux libres'
 
 
-def virgule(x):
-    """Une décimale, virgule française, sans « ,0 » (fmtPct / fmtHours, utils.js l. 30-40)."""
-    return ('%g' % (int(x * 10 + 0.5) / 10.0)).replace('.', ',')
+def heures(x):
+    """Des heures : une décimale, virgule française, sans « ,0 » (``fmtHours``,
+    utils.js l. 51-55) — « 109 h », « 27,5 h »."""
+    return ('%g' % (int(x * 10 + 0.5) / 10.0)).replace('.', ',') + ' h'
 
 
 # Les indicateurs de la période « Aujourd'hui » (slot_dashboard.get_kpis
@@ -502,7 +574,7 @@ CA_FAIT = sum(b['montant'] for b in FAITES)
 HEURES = sum(b['a'] - b['de'] for jour in JOUR_14 for b in jour)
 OUVERTES = sum((r[3] - r[2]) * r[5] for r in RESSOURCES)
 A_VENIR = sum(1 for jour in JOUR_14 for b in jour if b['etat'] == 'confirmed')
-REMPLISSAGE = virgule(HEURES / OUVERTES * 100) + ' %'
+REMPLISSAGE = pct(HEURES / OUVERTES * 100)       # « 18,3 % » (fmtPct : une décimale fixe)
 RETRAITS = len(JOUR_14[7])
 
 TDB = vue_libre('t08-tdb', (
@@ -516,7 +588,7 @@ TDB = vue_libre('t08-tdb', (
     '<div class="t08-d-rang"><span class="t08-d-lab">Ressource</span>%s%s</div></div>'
     '<div class="t08-corps" id="t08-corps">'
     '<div class="t08-d-sect">Activité de la période</div><div class="t08-d-kpis">%s%s%s%s</div>'
-    '<div class="t08-d-sect" id="t08-plan-t">Planning du 2026-10-14</div>'
+    '<div class="t08-d-sect" id="t08-plan-t">Planning du %s</div>'
     '<div class="t08-d-carte"><div class="t08-lanes" id="t08-l14">%s</div>'
     '<div class="t08-lanes t08-dessus masque" id="t08-l17">%s</div></div>'
     '<div class="t08-d-sect">Répartition & remplissage</div><div class="t08-d-deux">'
@@ -528,12 +600,14 @@ TDB = vue_libre('t08-tdb', (
        chip('Toutes', True), chip('Espace VIP / VVIP', point=VIOLET), chip('SPA', point=VERT),
        chip('Coiffure', point=BLEU), chip('Pressing', point=BRUN), chip('Autre', point='#888780'),
        chip('Toutes', True), ''.join(chip(r[0], point=r[1]) for r in RESSOURCES),
-       kpi_t08('CA prestations réalisées', fcfa(CA_FAIT), '%d réalisée(s)' % len(FAITES), 'a-violet'),
+       kpi_t08('CA prestations réalisées', fcfa(CA_FAIT, tdb=True), compte(len(FAITES), 'réalisée', 'réalisées'),
+               'a-violet'),
        kpi_t08('Taux de remplissage', REMPLISSAGE,
-               '%s h réservées / %s h ouvrées' % (virgule(HEURES), virgule(OUVERTES)), 'a-bleu'),
-       kpi_t08('No-show', '0 %', '0 rendez-vous manqué(s)', 'a-rouge'),
-       kpi_t08('Retraits pressing en attente', str(RETRAITS), '%d réservation(s) à venir' % A_VENIR, 'a-ambre'),
-       COULOIRS_14, COULOIRS_17, svg(SPIN, 't08-spin'))), initiale=True, fond='tdb')
+               '%s réservées / %s ouvrées' % (heures(HEURES), heures(OUVERTES)), 'a-bleu'),
+       kpi_t08('Non présentés', pct(0), compte(0, 'rendez-vous manqué', 'rendez-vous manqués'), 'a-rouge'),
+       kpi_t08('Retraits pressing en attente', entier(RETRAITS, tdb=True),
+               compte(A_VENIR, 'réservation à venir', 'réservations à venir'), 'a-ambre'),
+       date_fr('2026-10-14'), COULOIRS_14, COULOIRS_17, svg(SPIN, 't08-spin'))), initiale=True, fond='tdb')
 
 
 # --------------------------------------------- la fiche, et sa discussion --
@@ -553,7 +627,7 @@ DISCUSSION = (
        svg(ABONNES),
        message('<span class="t08-anc">Brouillon</span><span class="t08-sep">→</span><span class="t08-nouv">Confirmée'
                '</span> <i>(État)</i>', 't08-ch-suivi'),
-       message('Réservation de créneau (espace / prestation) créé', 't08-ch-cree')))
+       message('Réservation créée', 't08-ch-cree')))
 
 
 def avec_discussion(vue_html, panneau):
@@ -569,20 +643,20 @@ FICHE = avec_discussion(vue_fiche(
         '<span class="ref">%s</span>' % REF_CRENEAU,
         '<span class="ref">%s<span class="t08-rouage">%s</span></span>' % (REF_CRENEAU, ROUAGE), 1),
     [bouton('t08-realisee', 'Réalisée', 'primaire'), bouton(None, "Renvoyer l'e-mail", 'gris'),
-     bouton(None, 'No-show', 'gris'), bouton(None, 'Annuler', 'gris')],
+     bouton(None, 'Non présenté', 'gris'), bouton(None, 'Annuler', 'gris')],
     statusbar('t08-sb', ['Brouillon', 'Confirmée', 'Réalisée'], 1),
     titre_fiche(REF_CRENEAU)
     + deux_colonnes(champ('Client', NOM) + champ('Téléphone', TEL_FICHE) + champ('Ressource', SALON)
                     + champ('Prestation', '') + champ('Origine', 'En ligne', 't08-f-origine'),
                     champ('Début', '17/10/2026 16:00:00') + champ('Fin', '17/10/2026 17:00:00')
                     + champ('Durée (h)', '01:00') + champ('Montant', fcfa(TARIF_SALON), 't08-f-montant')
-                    + champ('Prix manuel', '0 FCFA'))
+                    + champ('Prix manuel', fcfa(0)))
     + groupe('Séjour (note de chambre)', [champ('Folio du séjour', ''), champ('Ligne de folio', '')])
     + '<div class="t08-note">Note interne…</div>'), DISCUSSION)
 
 
 # ------------------------------------------------- les réservations hôtel --
-# Tarifs des types de chambre (t02_planning.py l. 231-260) et les 20 chambres de la série : 101-107 Standard
+# Tarifs des types de chambre (t02_planning.py, TYPES) et les 20 chambres de la série : 101-107 Standard
 # (la 105 hors service, jamais vendue), 201-206 Confort, 301-304 Suite Junior, 401-403 Suite VIP.
 PRIX = {'STD': 35000, 'CFT': 45000, 'SJR': 75000, 'VIP': 120000}
 TYPE = dict([('%d' % n, 'STD') for n in range(101, 108) if n != 105] + [('%d' % n, 'CFT') for n in range(201, 207)]
@@ -592,17 +666,19 @@ assert len(TYPE) == 19                            # 20 chambres, moins la 105 ho
 
 # (référence, client, arrivée, départ, nuits, chambre — None : pas encore de
 # chambre —, état). Ordre de la liste : arrivée décroissante, puis id
-# décroissant (hotel_reservation.py l. 27).
+# décroissant (hotel_reservation.py l. 27). Les deux demandes du site
+# arrivent à 14:00 et partent à 12:00, les heures standard de l'hôtel
+# (controllers/main.py l. 352-366, hotel_hotel.py l. 54-62).
 TOUTES = [
     ('RES/2026/0220', 'Viviane Eyoum', '04/11/2026 14:00:00', '06/11/2026 12:00:00', 2, '303', 'confirmed'),
     ('RES/2026/0219', 'Mathieu Nkodo', '30/10/2026 14:00:00', '01/11/2026 12:00:00', 2, '104', 'confirmed'),
     ('RES/2026/0215', 'Blaise Atangana', '28/10/2026 14:00:00', '31/10/2026 12:00:00', 3, '205', 'confirmed'),
-    (REF_YANNICK, 'Yannick Mbassi', '24/10/2026 14:00:00', '26/10/2026 11:00:00', 2, None, 'draft'),
+    (REF_YANNICK, 'Yannick Mbassi', '24/10/2026 14:00:00', '26/10/2026 12:00:00', 2, None, 'draft'),
     ('RES/2026/0218', 'Aristide Bella', '24/10/2026 14:00:00', '26/10/2026 12:00:00', 2, '401', 'confirmed'),
     ('RES/2026/0217', 'Olivier Ndzana', '23/10/2026 14:00:00', '25/10/2026 12:00:00', 2, '106', 'confirmed'),
     ('RES/2026/0212', 'Carine Manga', '22/10/2026 14:00:00', '24/10/2026 12:00:00', 2, '302', 'confirmed'),
     ('RES/2026/0216', 'Christelle Ndongo', '21/10/2026 14:00:00', '23/10/2026 12:00:00', 2, '102', 'confirmed'),
-    (REF_SEJOUR, NOM, '20/10/2026 14:00:00', '23/10/2026 11:00:00', 3, None, 'draft'),
+    (REF_SEJOUR, NOM, '20/10/2026 14:00:00', '23/10/2026 12:00:00', 3, None, 'draft'),
     ('RES/2026/0221', 'Rodrigue Tamba', '19/10/2026 14:00:00', '21/10/2026 12:00:00', 2, '203', 'confirmed'),
     ('RES/2026/0211', 'Joël Kamga', '18/10/2026 14:00:00', '20/10/2026 12:00:00', 2, '204', 'confirmed'),
     ('RES/2026/0205', 'Paul Abessolo', '16/10/2026 14:00:00', '18/10/2026 12:00:00', 2, '301', 'confirmed'),
@@ -611,12 +687,20 @@ TOUTES = [
 JACQUES = ('RES/2026/0222', 'Jacques Owona', '15/10/2026 14:00:00', '17/10/2026 12:00:00', 2, '204', 'draft')
 BROUILLONS = [r for r in TOUTES if r[6] == 'draft'] + [JACQUES]
 # La liste non filtrée charge 80 lignes : sous les douze premières, la suite
-# (Jacques Owona, puis Gaston Mbida, t02_planning.py l. 287) file sous le bord.
+# (Jacques Owona, puis Gaston Mbida, t02_planning.py CONFIRMEES) file sous le bord.
 SUITE = [JACQUES, ('RES/2026/0213', 'Gaston Mbida', '15/10/2026 14:00:00', '17/10/2026 12:00:00', 2, '103', 'confirmed')]
 
-COLS = '142px 168px 180px 180px 50px 94px 1fr 118px 126px 108px 28px'
+# La colonne « Canal » (badge neutre, optional="show" depuis la livraison 4,
+# hotel_reservation_views.xml l. 23-25) se place entre « Solde folio » et
+# « Registre » ; les demandes du site sont « Site web », Rodrigue Tamba a
+# réservé par téléphone au tutoriel 2 (« Téléphone / WhatsApp »,
+# t02_planning.py ``CANAL_R``), les autres réservations portent la valeur
+# par défaut, « Direct / comptoir » (hotel_reservation.py l. 70-80).
+WEB_REFS = (REF_YANNICK, REF_SEJOUR)
+CANAUX = dict([(ref, 'Site web') for ref in WEB_REFS] + [('RES/2026/0221', 'Téléphone / WhatsApp')])
+COLS = '118px 132px 150px 150px 44px 80px 1fr 110px 176px 112px 100px 24px'
 TETE = ['Référence', 'Client', 'Arrivée', 'Départ', 'Nuits', 'Nb chambres', 'Total hébergement (HT)', 'Solde folio',
-        'Registre', 'État']
+        'Canal', 'Registre', 'État']
 DROITE = {4, 5, 6, 7}
 
 
@@ -627,9 +711,9 @@ def total_resa(r):
 def solde_folio(r, adultes=2):
     """Le folio ouvert à la confirmation, rien n'étant réglé : nuitées (sans
     TVA, convention de la série) + taxe de séjour 3 ★ (3 000 F par adulte et
-    par nuit), comme ``solde_folio`` du tutoriel 2 (t02_planning.py
-    l. 302-308 : 102 000 FCFA pour Rodrigue Tamba, deux nuits à 45 000, deux
-    adultes) et le folio du tutoriel 5 (t05_taxe_sejour.py l. 166-172) ;
+    par nuit), comme ``solde_folio`` du tutoriel 2 (t02_planning.py :
+    102 000 FCFA pour Rodrigue Tamba, deux nuits à 45 000, deux adultes) et
+    le folio du tutoriel 5 (t05_taxe_sejour.py, ``sejour``) ;
     deux adultes par séjour."""
     return total_resa(r) + 3000 * adultes * r[4]
 
@@ -640,10 +724,15 @@ def ligne_resa(ident, r, masque=False):
     tant que rien n'est réglé ; pas de folio (solde 0) pour un brouillon."""
     total = total_resa(r)
     confirmee = r[6] == 'confirmed'
-    valeurs = [r[0], r[1], r[2], r[3], str(r[4]), '1' if r[5] else '0', fcfa(total),
+    valeurs = [r[0], r[1], r[2], r[3], entier(r[4]), entier(1 if r[5] else 0), fcfa(total),
                fcfa(solde_folio(r) if confirmee else 0)]
     cs = ['<span class="ell%s">%s</span>' % (' d' if k in DROITE else '', e(v)) for k, v in enumerate(valeurs)]
-    cs.append('<span><span class="puce rouge t08-badge">Aucune fiche</span></span>')
+    cs.append('<span class="t08-cn"><span class="puce t08-badge neutre"%s>%s</span></span>'
+              % (' id="%s-canal"' % ident, CANAUX.get(r[0], 'Direct / comptoir')))
+    # « Aucune fiche » reste neutre tant que le client n'est pas arrivé (rouge
+    # seulement après le check-in : aite_guest_registry/views/
+    # hotel_reservation_views.xml l. 69-75, ECARTS n° 54).
+    cs.append('<span><span class="puce t08-badge neutre">Aucune fiche</span></span>')
     cs.append('<span><span class="puce %s t08-badge"%s>%s</span></span>'
               % ('info' if confirmee else 'orange', ' id="%s-etat"' % ident, 'Confirmée' if confirmee else 'Brouillon'))
     cs.append('<span></span>')
@@ -654,14 +743,15 @@ def ligne_resa(ident, r, masque=False):
 def tete_liste():
     return ('<div class="tete" style="grid-template-columns:40px %s"><span class="cb"></span>%s'
             '<span class="t08-optcol">%s</span></div>'
-            % (COLS, ''.join('<span class="ell%s">%s</span>' % (' d' if k in DROITE else '', e(t))
+            % (COLS, ''.join('<span class="ell%s%s">%s</span>' % (' d' if k in DROITE else '',
+                                                                  ' t08-cn' if t == 'Canal' else '', e(t))
                              for k, t in enumerate(TETE)), REGLAGES))
 
 
 def total_liste(valeur, ident=None, masque=False):
     return ('<div class="total t08-total%s"%s style="grid-template-columns:40px %s">%s<span class="d">%s</span>%s</div>'
             % (' masque' if masque else '', ' id="%s"' % ident if ident else '', COLS, '<span></span>' * 7, e(valeur),
-               '<span></span>' * 4))
+               '<span></span>' * 5))
 
 
 def groupe_resa(ident, libelle, nuits, chambres, total):
@@ -670,7 +760,7 @@ def groupe_resa(ident, libelle, nuits, chambres, total):
     return ('<div class="ligne t08-grp" id="%s" style="grid-template-columns:40px %s"><span></span>'
             '<span class="t08-grp-l"><b id="%s-fl">▸</b> %s</span><span class="d">%s</span><span class="d">%s</span>'
             '<span class="d">%s</span>%s</div>'
-            % (ident, COLS, ident, e(libelle), nuits, chambres, total, '<span></span>' * 4))
+            % (ident, COLS, ident, e(libelle), nuits, chambres, total, '<span></span>' * 5))
 
 
 def rid(r):
@@ -678,7 +768,9 @@ def rid(r):
 
 
 def deux(n):
-    return '{:,.0f}'.format(n).replace(',', ' ') + ',00'
+    """La somme monétaire d'un groupe : sans devise, à deux décimales, les
+    milliers séparés comme dans les champs d'Odoo (« 90 000,00 »)."""
+    return entier(n) + ',00'
 
 
 def recherche_t08(ident, facettes, masque=False):
@@ -695,7 +787,7 @@ LISTE_A = ('<div class="liste t08-liste" id="t08-la">%s%s</div>'
 LISTE_B = ('<div class="liste t08-liste masque" id="t08-lb">%s%s%s</div>'
            % (tete_liste(), ''.join(ligne_resa(rid(r) + 'b', r) for r in BROUILLONS),
               total_liste(fcfa(sum(total_resa(r) for r in BROUILLONS)))))
-WEB = [r for r in BROUILLONS if r[0] in (REF_YANNICK, REF_SEJOUR)]
+WEB = [r for r in BROUILLONS if r[0] in WEB_REFS]
 LISTE_C = ('<div class="liste t08-liste masque" id="t08-lc">%s%s%s%s%s%s</div>'
            % (tete_liste(),
               groupe_resa('t08-g-dir', 'Direct / comptoir (1)', JACQUES[4], 1, deux(total_resa(JACQUES))),
@@ -714,11 +806,13 @@ def item(libelle, ident=None, classe_=''):
 
 MENU_RECH = (
     '<div class="t08-menu masque" id="t08-menu">'
-    '<div class="t08-mcol"><div class="t08-mt">%sFiltres</div>%s%s%s<hr>%s%s%s<hr>%s</div>'
+    '<div class="t08-mcol"><div class="t08-mt">%sFiltres</div>%s%s%s%s<hr>%s%s%s<hr>%s<hr>%s</div>'
     '<div class="t08-mcol"><div class="t08-mt">%sRegrouper par</div>%s%s%s%s%s<hr>%s</div>'
     '<div class="t08-mcol"><div class="t08-mt">%sFavoris</div>%s</div></div>'
-    % (svg(FILTRE, 't08-mic t08-mic-f'), item('Arrivées du jour'), item('Départs du jour'), item('Clients présents'),
-       item('Brouillons', 't08-mf-brouillons'), item('Confirmées'), item('No-show'), item('Ajouter un filtre personnalisé'),
+    % (svg(FILTRE, 't08-mic t08-mic-f'), item('Registre à compléter'), item('Arrivées du jour'),
+       item('Départs du jour'), item('Clients présents'),
+       item('Brouillons', 't08-mf-brouillons'), item('Confirmées'), item('Non présentés'), item('Du site web'),
+       item('Ajouter un filtre personnalisé'),
        svg(COUCHES_N, 't08-mic'), item('État'), item('Client'), item('Hôtel'), item('Canal', 't08-mg-canal'),
        item("Date d'arrivée", classe_='t08-acc'), item('Ajouter un groupe personnalisé', classe_='t08-acc'),
        svg(ETOILE, 't08-mic'), item('Enregistrer la recherche actuelle', classe_='t08-acc')))
@@ -734,8 +828,7 @@ RESAS = vue_libre('t08-resas', (
        recherche_t08('t08-rech-c', [('Brouillons', FILTRE), ('Canal', COUCHES)], masque=True),
        V_LISTE, V_KANBAN, V_CAL, LISTE_A, LISTE_B, LISTE_C, MENU_RECH)))
 
-MENUS = ['Front Desk', 'Réservations', 'Espaces & Prestations', 'Notes de chambre en attente', 'Facturation',
-         'Fidélité', 'Gouvernante']
+MENUS = MENUS_MUK['hotel_reception']              # « Réception » (anciennement « Front Desk »), hotel_menus.xml l. 18-25
 DD_RES = ('<div class="t08-dd masque" id="t08-dd-res"><div id="t08-dd-res-1">Réservations</div>'
           '<div>Planning des chambres</div></div>')
 BACK = fenetre_muk('t08-app', 'Hôtel', MENUS, [TDB, FICHE, RESAS], actif='Espaces & Prestations',
@@ -946,9 +1039,9 @@ CSS = perso_css('t08-pa', VISITEUR, ROLE_VISITEUR) + perso_css('t08-pm', RECEPTI
 .t08-vues svg { width: 22px; height: 22px; }
 .t08-pile { position: absolute; left: 0; right: 0; top: 80px; bottom: 0; }
 .t08-liste { position: absolute; left: 0; right: 0; top: 0; }
-.t08-liste .ligne, .t08-liste .tete, .t08-liste .total { column-gap: 10px; padding-right: 14px; }
-.t08-liste .tete { font-size: 16px; height: 50px; }
-.liste .ligne.t08-ligne { height: 47px; font-size: 16px; color: #495057; }
+.t08-liste .ligne, .t08-liste .tete, .t08-liste .total { column-gap: 13px; padding-right: 14px; }
+.t08-liste .tete { font-size: 15px; height: 50px; }
+.liste .ligne.t08-ligne { height: 47px; font-size: 15px; color: #495057; }
 .liste .ligne.t08-ligne.t08-conf { color: #0E7490; }
 .t08-optcol { display: inline-flex; width: 20px; height: 20px; color: #495057; }
 .t08-optcol svg { width: 100%; height: 100%; }
@@ -958,6 +1051,10 @@ CSS = perso_css('t08-pa', VISITEUR, ROLE_VISITEUR) + perso_css('t08-pm', RECEPTI
 .t08-grp-l b { display: inline-block; width: 18px; font-weight: 400; }
 .t08-badge { height: 26px; font-size: 14px; padding: 0 10px; }
 .t08-badge.orange { background: #F3B21B; color: #2B2100; }
+/* badge sans décoration d'Odoo 18 (text-bg-300 : $o-gray-300, texte foncé) : Canal, et « Aucune fiche » avant l'arrivée */
+.t08-badge.neutre { background: #DEE2E6; color: #212529; }
+/* la marge intérieure des cellules d'Odoo : le badge du canal ne colle pas au solde aligné à droite */
+.t08-liste .t08-cn { padding-left: 5px; }
 .liste .total.t08-total { height: 50px; color: #212529; font-size: 16px; }
 .t08-menu { position: absolute; right: 424px; top: 72px; padding: 18px 0; display: flex; z-index: 30;
   background: #fff; border: 1px solid #DEE2E6; border-radius: 6px; box-shadow: 0 10px 28px rgba(0,0,0,.18);
@@ -1081,7 +1178,7 @@ TUTORIEL = {
              clic('#t08-jour', fx=0.12, d=0.6, avec=True), classe('#t08-d-date', ajouter=['focus']), pause(0.15),
              texte('#t08-jour', '17/10/2026'), pause(0.1),
              cacher('#t08-corps', d=0.1), montrer('#t08-charge', d=0.1, y=0, avec=True), pause(0.4),
-             texte('#t08-plan-t', 'Planning du 2026-10-17'), montrer('#t08-l17', d=0.05, y=0),
+             texte('#t08-plan-t', 'Planning du ' + date_fr('2026-10-17')), montrer('#t08-l17', d=0.05, y=0),
              cacher('#t08-charge', d=0.1), animer('#t08-corps', {'autoAlpha': 0}, {'autoAlpha': 1}, d=0.25, avec=True),
              classe('#t08-d-date', retirer=['focus']), pause(0.3),
              anneau('#t08-c17-1', d=1.4), curseur('#t08-bk-claire', fx=1.35, d=0.6, avec=True),
@@ -1092,7 +1189,8 @@ TUTORIEL = {
         {'temps': 2, 'titre': 'La demande de séjour, en brouillon',
          'texte': "Brouillons regroupés par canal : la chambre ne sera bloquée qu'à la confirmation.",
          'voix': "Côté chambres, Mireille ouvre la liste des réservations, puis filtre les brouillons et les regroupe "
-                 "par canal : la demande de Claire attend là, venue du site, encore sans chambre.",
+                 "par canal : la demande de Claire attend là, venue du site, toujours en brouillon et encore "
+                 "sans chambre.",
          'gestes': [clic('#t08-m-res', d=0.4, puis=0.05), montrer('#t08-dd-res', d=0.15, y=0, puis=0.05),
                     clic('#t08-dd-res-1', d=0.3, puis=0.05), cacher('#t08-dd-res', d=0.15),
                     classe('#t08-m-ep', retirer=['actif'], avec=True), classe('#t08-m-res', ajouter=['actif'], avec=True),
@@ -1107,13 +1205,17 @@ TUTORIEL = {
                     cacher('#t08-rech-b', d=0.1, avec=True), montrer('#t08-rech-c', d=0.15, y=0, avec=True),
                     cacher('#t08-lb', d=0.15, avec=True), montrer('#t08-lc', d=0.2, y=0, avec=True),
                     texte('#t08-pager', '1-2 / 2', avec=True), pause(0.25),
-                    # un clic hors du menu (sur le groupe) le referme
-                    clic('#t08-g-web', fx=0.12, d=0.45, puis=0.05), cacher('#t08-menu', d=0.15, avec=True),
+                    # un clic hors du menu (sur le groupe, à droite : à gauche, la ligne est sous le
+                    # menu ouvert) le referme et déplie le groupe ; les effets partent à l'impact
+                    # (curseur 0,45 s + 0,08 s), pas au départ du curseur
+                    clic('#t08-g-web', fx=0.8, d=0.45, puis=0.05), cacher('#t08-menu', d=0.15, avec=True, decale=0.55),
                     texte('#t08-g-web-fl', '▾', avec=True), cacher('#t08-tot-c1', d=0.1, avec=True),
                     montrer('#t08-r-0223', d=0.25, y=0, avec=True), montrer('#t08-r-0224', d=0.25, y=0, avec=True),
                     montrer('#t08-tot-c2', d=0.25, y=0, avec=True), curseur('#t08-r-0224-etat', fx=1.35, d=0.35),
-                    zoom('#t08-r-0224', s=1.12, d=0.6), anneau('#t08-r-0224-etat', d=1.1),
-                    bulle('b-brouillon', '#t08-r-0224', cote='bas', d=2.3), pause(1.2)]},
+                    zoom('#t08-r-0224', s=1.12, d=0.6), anneau('#t08-r-0224-canal', d=1.0),
+                    anneau('#t08-r-0224-etat', d=1.1),
+                    # sous la ligne de total, pour ne pas la masquer
+                    bulle('b-brouillon', '#t08-tot-c2', cote='bas', d=2.3), pause(1.2)]},
     ],
     'resultats': {
         'titre': 'Réservé en ligne, retrouvé à la réception',
@@ -1122,10 +1224,10 @@ TUTORIEL = {
              'texte': 'publics sur une même page : salons, spa et coiffure, chambres — sans compte'},
             {'valeur': '1', 'compter': 1, 'unite': 'grille', 'icone': 'horloge',
              'texte': 'de disponibilités pour le site et la réception : une seule source'},
-            {'valeur': '53', 'compter': 53, 'unite': 'tests', 'icone': 'bouclier',
+            {'valeur': '61', 'compter': 61, 'unite': 'tests', 'icone': 'bouclier',
              'texte': "automatisés du tunnel public, dont le refus d'un créneau déjà pris"},
         ],
-        'voix': "Trois parcours publics, une seule grille pour le site et la réception, et cinquante-trois tests "
+        'voix': "Trois parcours publics, une seule grille pour le site et la réception, et soixante et un tests "
                 "automatisés, dont le refus d'un créneau déjà pris.",
     },
     'cta': {

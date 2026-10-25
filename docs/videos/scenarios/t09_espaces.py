@@ -5,186 +5,225 @@ La réceptionniste (Mireille Ateba, demo.POSTES) ouvre le tableau de bord
 Espaces & Prestations : salons VIP / VVIP, cabines SPA, fauteuils de coiffure
 et comptoir pressing sur un seul planning. Elle réserve un massage pour une
 cliente en séjour (le montant vient de la prestation, la fin de la prestation
-et du début), le confirme (le créneau est bloqué, l'e-mail est mis en file
-d'envoi), voit refuser un salon déjà réservé, passe le soin en « Réalisée »
-(report automatique au folio du séjour), rend un dépôt pressing (« Marquer
-retiré ») et retrouve le bilan du soir sur le tableau de bord.
+et du début), le confirme (le créneau est bloqué, l'e-mail part aussitôt),
+voit refuser un salon déjà réservé, passe le soin en « Réalisée » (report
+automatique au folio du séjour), rend un dépôt pressing (« Marquer retiré »)
+et retrouve le bilan du soir sur le tableau de bord.
 
 Profil rejoué : Réception (aite_hotel_management.group_hotel_user), comme le
 compte demo.reception de la base MuK. Menus de la barre : ceux de la
-réception (capture de demo.reception, base aite_muk, et scenarios/
-t03_folio.py) ; applications : ecrans.APPS_PROFIL['reception']. Le menu
+réception, ecrans.MENUS_MUK['hotel_reception'] (« Réception » et non plus
+« Front Desk ») ; applications : ecrans.APPS_PROFIL['reception']. Le menu
 « Espaces & Prestations » n'offre à la réception que « Tableau de bord » et
 « Réservations » : « Configuration » est réservé au Responsable
 (addons/aite_slot_booking/views/slot_menus.xml:4-38) ; la réception lit les
 ressources et prestations, crée et modifie les réservations
 (security/ir.model.access.csv:2-7).
 
-Sources des libellés et des règles (addons/aite_slot_booking, relevés mot pour
-mot) :
+Sources des libellés et des règles (addons/aite_slot_booking 18.0.1.0.5,
+relevés mot pour mot) :
 
 - Tableau de bord : static/src/xml/dashboard.xml:21-27 (« Espaces &
   Prestations », « Planning des créneaux · SPA, coiffure, pressing, espaces
   VIP / VVIP », « + Nouvelle réservation »), :30-68 (lignes « Jour » ‹ date ›
   « Aujourd'hui », « Période stats », « Famille » « Toutes », « Ressource »
-  « Toutes », affichée s'il y a plus d'une ressource), :78-96 (« Activité de la
-  période », cartes « CA prestations réalisées » / « N réalisée(s) », « Taux de
-  remplissage » / « x h réservées / y h ouvrées », « No-show » / « N
-  rendez-vous manqué(s) », « Retraits pressing en attente » / « N
-  réservation(s) à venir »), :99-127 (« Planning du » + jour ISO, un couloir
-  par ressource, bloc au nom du client, « x/y créneaux libres »), :131-141
+  « Toutes », affichée s'il y a plus d'une ressource), :77-96 (« Activité de la
+  période », cartes « CA prestations réalisées » / « 3 réalisées », « Taux de
+  remplissage » / « x h réservées / y h ouvrées », « Non présentés » /
+  « 0 rendez-vous manqué », « Retraits pressing en attente » / « 6
+  réservations à venir » : accordés par fmtCount, plus de « (s) »), :98-127
+  (« Planning du » + jour au format JJ/MM/AAAA, dayLabel, un couloir par
+  ressource, bloc au nom du client, « x/y créneaux libres »), :130-140
   (« Répartition & remplissage », « CA réalisé par famille (période) »,
-  « Remplissage par ressource ») ; static/src/js/services/utils.js:5-53
-  (couleurs, libellés d'état, formats montant « 38 000 FCFA », pourcentage
-  « 14,2 % », heures « 15,5 h », périodes « Aujourd'hui », « Cette semaine »,
-  « Ce mois ») ; static/src/js/views/slot_dashboard_view.js:194-231
-  (position des blocs, graduations toutes les 2 h, créneaux libres = créneaux
-  entièrement vides), :260-316 (anneau légende à droite, barres horizontales
-  graduées 0–100 %) ; static/src/scss/slot_dashboard.scss:154-161 et :190-196
-  (titres et libellés en majuscules), :378-396 (couloirs, bloc bleu #185FA5
-  confirmé, vert #0F6E56 réalisé, texte « créneaux libres » vert) ;
-  models/slot_dashboard.py:22-25 (pastilles de famille : #714B67, #0F6E56,
-  #185FA5, #854F0B, #888780), :123-176 (CA = réalisées, remplissage =
-  heures confirmées + réalisées ÷ amplitude × capacité, no-show, retraits
-  pressing toutes périodes confondues), :206-246 (anneau et barres) ;
+  « Remplissage par ressource ») ; static/src/js/services/utils.js:5-106
+  (couleurs, libellés d'état, fmtMoney « 38 000 FCFA » à l'espace fine,
+  fmtPct « 14,2 % » à une décimale fixe, fmtCount, fmtHours « 15,5 h »,
+  fmtDay, périodes « Aujourd'hui », « Cette semaine », « Ce mois ») ;
+  static/src/js/views/slot_dashboard_view.js:163-176 (num, count, dayLabel),
+  :204-226 (position des blocs, graduations toutes les 2 h), :231-245
+  (créneaux libres : tout créneau qui n'est pas plein, accordé « créneau
+  libre » / « créneaux libres »), :256-330 (anneau légende à droite, barres
+  horizontales graduées 0–100 %) ; static/src/scss/slot_dashboard.scss:154-161
+  et :190-196 (titres et libellés en majuscules), :380-394 (couloirs, bloc
+  bleu #185FA5 confirmé, vert #0F6E56 réalisé, texte « créneaux libres »
+  vert) ; models/slot_dashboard.py:24-27 (pastilles de famille : #714B67,
+  #0F6E56, #185FA5, #854F0B, #888780), :146-198 (CA = réalisées, remplissage
+  = heures confirmées + réalisées ÷ amplitude × capacité, non présentés,
+  retraits pressing toutes périodes confondues), :231-270 (anneau et barres) ;
   models/booking_resource.py:9-15 (cinq familles), :106-142 (grille de
-  créneaux). Les chiffres du tableau de bord sont CALCULÉS dans ce fichier
-  par les mêmes formules, à partir des réservations rejouées (RESAS).
-- Fiche de réservation : views/booking_booking_views.xml:36-93 (boutons
+  créneaux « free », « partial », « full »). Les chiffres du tableau de bord
+  sont CALCULÉS dans ce fichier par les mêmes formules, à partir des
+  réservations rejouées (RESAS).
+- Fiche de réservation : views/booking_booking_views.xml:39-62 (boutons
   « Confirmer », « Réalisée », « Renvoyer l'e-mail », « Reporter au folio »,
-  « Marquer retiré », « No-show », « Annuler » et leurs conditions ; barre
-  d'état « Brouillon / Confirmée / Réalisée » ; champs Client, Téléphone,
-  Ressource, Prestation, Quantité (pressing seulement), Origine | Début, Fin,
-  Durée (h) (float_time), Montant, Prix manuel ; groupes « Pressing »
-  (Retrait prévu, Retiré) et « Séjour (note de chambre) » (Folio du séjour,
-  Ligne de folio) ; « Note interne… ») ; models/booking_booking.py:36-119
-  (libellés, aides « ? », « Nouveau », origine « Comptoir »), :62-67 (seules
-  les prestations de la famille de la ressource sont proposées), :125-138
-  (prix : manuel > prestation × quantité > heures × tarif horaire),
-  :205-209 (la fin ne se calcule que si une prestation est choisie : un
-  salon loué à l'heure se saisit à la main, étape 4), :260-282 (conflit :
-  « Conflit : « … » est complète sur ce créneau (capacité 1). », contrôlé au
-  passage en Confirmée), :300-331 (Confirmer prépare l'e-mail si le réglage
-  est actif, send_mail(force_send=False) : mis en file, envoyé par la tâche
-  « Mail: Email Queue Manager », toutes les heures, odoo18/addons/mail/data/
-  ir_cron_data.xml:4-12 ; la voix dit donc « part tout seul », pas
-  « aussitôt »), :333-345 (Réalisée reporte au folio ouvert unique du
-  client, réglage actif par défaut ; sans folio ouvert, rien n'est reporté et
-  « Reporter au folio » reste affiché, vue :44-46), :370-373 (Marquer
-  retiré), :379-426 (ligne de folio « <prestation> — <référence> », une
-  seule fois), :456-481 (no-show automatique après le délai de grâce, hors
-  pressing depuis aite_slot_booking 18.0.1.0.4 : un dépôt attend son
-  retrait, ECARTS n° 36, test_cron_spares_a_pressing_deposit_awaiting_pickup) ;
-  data/slot_sequence_data.xml:6-7
-  (RES/26/0158) ; data/mail_template_data.xml:3-33 (objet « <société> —
-  Confirmation <réf.> », « Bonjour …, », « Votre réservation est confirmée : »,
-  Référence, Ressource, Prestation, Début dd/MM/yyyy HH:mm, Fin HH:mm, Montant,
-  « À très bientôt, » ; heures dans le fuseau de l'établissement,
-  object._local_tz(), booking_booking.py:221-229, depuis 18.0.1.0.4, ECARTS
-  n° 27, test_confirmation_mail_uses_the_company_timezone : 15:00 heure de
-  Douala) ; data/ir_cron_data.xml:3-11 (tâche toutes les heures) ;
-  models/res_config_settings.py:20-35 (6 heures, report au folio et e-mail
-  actifs par défaut) ; views/booking_booking_views.xml:3-30 et :111-153
-  (liste « Réservations de créneaux » : colonnes, couleurs, badge d'état,
-  somme du Montant, filtre « Aujourd'hui » par défaut ; seule la ligne d'une
-  annulée est grisée, :10 ; un brouillon garde un texte normal et un badge
-  gris, :21-25).
+  « Marquer retiré », « Non présenté », « Annuler » et leurs conditions ;
+  barre d'état « Brouillon / Confirmée / Réalisée »), :64-95 (champs Client,
+  Téléphone, Ressource, Prestation, Quantité (pressing seulement), Origine |
+  Début, Fin, Durée (h) (float_time), Montant, Prix manuel ; groupes
+  « Pressing » (Retrait prévu, Retiré) et « Séjour (note de chambre) »
+  (Folio du séjour, Ligne de folio) ; « Note interne… ») ;
+  models/booking_booking.py:37-129 (libellés, aides « ? », « Nouveau »,
+  origine « Comptoir »), :63-68 (seules les prestations de la famille de la
+  ressource sont proposées), :135-148 (prix : manuel > prestation × quantité
+  > heures × tarif horaire), :229-233 (la fin ne se calcule que si une
+  prestation est choisie : un salon loué à l'heure se saisit à la main,
+  étape 4), :304-342 (conflit : « Plus de place sur « … » pour ce créneau
+  (capacité 1). », contrôlé au passage en Confirmée, ressource verrouillée),
+  :356-361 (message de création « Réservation créée »), :367-413 (Confirmer
+  prépare l'e-mail si le réglage est actif et l'envoie juste après la
+  validation, send_after_commit), :415-434 (Réalisée reporte au folio ouvert
+  unique du client, réglage actif par défaut ; sinon le fil dit « Rien
+  reporté au folio : … »), :215-227 et vue :46-50 (« Reporter au folio »
+  n'est proposé que s'il peut aboutir : ni après un report, ni à un client
+  de passage), :458-461 (Marquer retiré), :467-516 (« Aucun folio ouvert
+  unique pour … — choisissez le folio sur la réservation. » ; ligne de folio
+  « <prestation> — <référence> », une seule fois), :520-545 (« Non présenté »
+  automatique après le délai de grâce, vérifié toutes les heures, donc
+  entre 6 et 7 h après la fin : « après un délai de 6 h » dans la bulle et
+  la voix ; hors pressing : un dépôt attend son retrait, ECARTS n° 36) ;
+  data/slot_sequence_data.xml:7-14 (CRN/%(range_year)s/ sur 4 chiffres →
+  CRN/2026/0158, demo.CRENEAU_MASSAGE) ; data/mail_template_data.xml:3-33
+  (objet « <société> — Confirmation <réf.> », « Bonjour …, », « Votre
+  réservation est confirmée : », Référence, Ressource, Prestation, Début
+  dd/MM/yyyy HH:mm, Fin HH:mm, Montant, « À très bientôt, » ; heures dans le
+  fuseau de l'établissement, object._local_tz(), booking_booking.py:252-261,
+  ECARTS n° 27 : 15:00 heure de Douala) ; data/ir_cron_data.xml:5-13 (tâche
+  « … clients non présentés (toutes les heures) ») ;
+  models/res_config_settings.py:21-38 (« « Non présenté » après (heures) »
+  6 heures, report au folio et e-mail actifs par défaut) ;
+  views/booking_booking_views.xml:3-31 et :116-161 (liste « Réservations de
+  créneaux » : colonnes, dont « Origine » visible par défaut, couleurs, badge
+  d'état, somme du Montant, filtre « Aujourd'hui » par défaut ; seule la
+  ligne d'une annulée est grisée, :10 ; un brouillon garde un texte normal et
+  un badge gris, :23-28).
 - Odoo 18 (../odoo18) : addons/web/static/src/core/errors/error_dialogs.xml:4-12
   et i18n/fr.po (« Erreur de validation », « Fermer », « Rechercher… ») ;
-  addons/mail/i18n/fr.po (« %s créé », « Envoyer message », « Note », « Suivre »,
+  addons/mail/i18n/fr.po (« Envoyer message », « Note », « Suivre »,
   « Abonné(e) », « Aujourd'hui à %(time)s ») ; addons/mail/static/src/chatter/web/
   chatter.xml:58-75 (« Suivre » devient « Abonné(e) ») et addons/mail/models/
-  mail_thread.py:294-300 (le créateur d'une fiche en est abonné) ;
-  addons/web/static/src/views/fields/badge/badge_field.js:26-38 (badge gris d'un
-  brouillon) ; list_renderer.js (somme avec la devise).
+  mail_thread.py:294-300 (le créateur d'une fiche en est abonné) ; le suivi
+  d'un changement d'état est écrit à la validation de la transaction
+  (_track_finalize, mail_thread.py:538-552), après le message « Rien reporté
+  au folio » posté pendant action_done : il s'affiche donc au-dessus ;
+  addons/mail/static/src/core/common/thread.js:603-625 (isSquashed : dans le
+  chatter d'une fiche, chaque message garde son en-tête, auteur et heure ;
+  le message de création est un journal, mail_thread.py:314-331) ;
+  addons/web/static/src/views/fields/badge/badge_field.js:26-38 (badge gris
+  d'un brouillon) ; list_renderer.js (somme avec la devise).
 - Fenêtre MuK, fiche et discussion : captures prises en lecture seule sur la
-  base aite_muk avec demo.reception (fiche RES/26/0286 pressing, RES/26/0282
-  salon, RES/26/0324 no-show : « Envoyer message », « Note », « Suivre »,
-  suivi « Confirmée → No-show (État) » ; liste groupée par état ; menu
-  déroulant « Tableau de bord » / « Réservations ») ; ref_muk/049 à 052.
+  base aite_muk avec demo.reception (fiches de créneau pressing, salon et
+  « Non présenté » : « Envoyer message », « Note », « Suivre », suivi de
+  l'état ; liste groupée par état ; menu déroulant « Tableau de bord » /
+  « Réservations ») ; ref_muk/049 à 052.
 
 Douleurs de l'accroche : recette/cas_de_test.py B03 (priorité 1 « Empêcher la
 double réservation d'un créneau ») et docs/guides/AITE_HOUSE_plaquette_
 commerciale.pdf p.8 (« Le planning des ressources évite les doubles
 réservations ») ; B04 (« Rattacher une prestation au folio d'une chambre ») et
 docs/guides/AITE_Guide_Espaces_Prestations.pdf §3.4 ; guide §3.2 (« sinon le
-robot de nuit le fera après le délai de grâce ») et booking_booking.py:268-277
-(une réservation confirmée compte dans le conflit tant qu'elle n'est pas en
-no-show) ; guide §3.3 (« le tableau de bord compte les dépôts en attente de
-retrait ») ; guide §4 (« pour voir ce qui tourne et ce qui dort ») et B07.
+robot de nuit le fera après le délai de grâce ») et booking_booking.py:304-342
+(une réservation confirmée compte dans le conflit tant qu'elle n'est pas
+« Non présenté ») ; guide §3.3 (« le tableau de bord compte les dépôts en
+attente de retrait ») ; guide §4 (« pour voir ce qui tourne et ce qui dort »)
+et B07.
 
 Résultats : 5 familles (booking_resource.py:9-15) ; 3 automatismes actifs dès
-l'installation (res_config_settings.py:20-35) ; 72 tests Odoo du module
-(tests/test_booking.py 37, test_grid.py 20, test_folio_posting.py 14,
+l'installation (res_config_settings.py:21-38) ; 95 tests Odoo du module
+(tests/test_booking.py 37, test_grid.py 20, test_folio_posting.py 16,
+test_ecarts_nb.py 12, test_dashboard_dates.py 7, test_relecture.py 2,
 test_concurrency.py 1 — deux confirmations simultanées du même créneau —,
-comptés dans le code après les corrections du 20/10/2026 ;
-docs/GUIDE_TESTS.md:30 dit encore 69).
+comptés dans le code de la livraison 4, comme docs/GUIDE_TESTS.md:30).
 
 Données : demo.py (Complexe Hôtelier — Démo, Démo Hôtellerie SARL, Estelle
 Ngono, demo.CLIENT_TEL ; Patrick Nkoulou, Brigitte Essomba ; réceptionniste
-Mireille Ateba). Les folios de la série sont chiffrés au tutoriel 3 (liste du
-16/10 vers 11 h 45, t03_folio.py:424-452) : ceux d'Estelle Ngono
-(FOL/2026/0214, 112 800 FCFA sans prestation), de Martin Ebode (FOL/2026/0209,
-114 000 = séjour + taxe) et de Gaston Mbida (FOL/2026/0213, nuits + taxe)
-n'ont pas de place pour une prestation du 15/10. Seul celui de Brigitte
-Essomba (202 [CFT], 13-16/10, t02_planning.py:257) en a : 157 500 FCFA le
-14/10 au soir (t04_note_chambre.py:368-390), 198 000 le 16/10 (t03:447),
-soit 40 500 FCFA de services entre les deux. Le massage (27 000 FCFA) est
-donc le sien, reporté sur FOL/2026/0210, numéro du tutoriel 3 retenu pour
-toute la série ; son téléphone est celui du tutoriel 10 (+237 6 00 00 00 32,
-t10_ardoises.py, TELEPHONES). Estelle Ngono tient
-la demande de salon refusée (étape 4, un brouillon : rien sur son folio). Le
-dépôt pressing est celui d'un client de passage, Samuel Etoga (fictif, sans
-séjour, donc sans folio ; téléphone de la plage fictive de la série,
-+237 6 00 00 00 42, le …31 étant celui d'Armand Mvogo au tutoriel 10).
-Les autres noms (Paul Essomba, Famille Ndjock, Linda Ewané, Rachel Bilong, Yves Tchana, Boris Kamga,
-Carine Ndongo) sont ceux, fictifs, du chapitre 6 (scenarios/c6_direction.py).
-Ressources, catalogue et tarifs sont fictifs (salons Wouri, Sanaga, Bonabéri
-comme au chapitre 6). La journée rejouée est le jeudi 15/10/2026.
+Mireille Ateba ; références demo.CRENEAU_MASSAGE et demo.CRENEAU_PRESSING).
+Les folios de la série sont chiffrés au tutoriel 3 (liste du 16/10 vers
+11 h 45, t03_folio.py:424-452) : ceux d'Estelle Ngono (FOL/2026/0214,
+112 800 FCFA sans prestation), de Martin Ebode (FOL/2026/0209, 114 000 =
+séjour + taxe) et de Gaston Mbida (FOL/2026/0213, nuits + taxe) n'ont pas de
+place pour une prestation du 15/10. Seul celui de Brigitte Essomba (202
+[CFT], 13-16/10, t02_planning.py:257) en a : 157 500 FCFA le 14/10 au soir
+(t04_note_chambre.py:368-390), 198 000 le 16/10 (t03:447), soit 40 500 FCFA
+de services entre les deux. Le massage (27 000 FCFA) est donc le sien,
+reporté sur FOL/2026/0210, numéro du tutoriel 3 retenu pour toute la série ;
+son téléphone est celui du tutoriel 10 (+237 6 00 00 00 32, t10_ardoises.py,
+TELEPHONES). Estelle Ngono tient la demande de salon refusée (étape 4, un
+brouillon : rien sur son folio). Le dépôt pressing est celui d'un client de
+passage, Samuel Etoga (fictif, sans séjour, donc sans folio ; téléphone de
+la plage fictive de la série, +237 6 00 00 00 42, le …31 étant celui
+d'Armand Mvogo au tutoriel 10). Les autres noms (Paul Essomba, Famille
+Ndjock, Linda Ewané, Rachel Bilong, Yves Tchana, Boris Kamga, Carine Ndongo)
+sont fictifs et propres à ce tutoriel ; le journal du 15/10 du tutoriel 11
+reprend ses prestations réalisées, avec les mêmes montants et références
+(t11_fidelite.py, JOURNAL, lignes du 15/10). Ressources, catalogue et
+tarifs sont fictifs (salons Wouri, Sanaga, Bonabéri comme au chapitre 6,
+c6_direction.py:349-353). La journée rejouée est le jeudi 15/10/2026 ;
+toutes les réservations du jour sont prises au comptoir (colonne
+« Origine »). Le soir, Boris Kamga (Fauteuil homme 1, 17:00-17:30) est le
+seul client confirmé dont l'heure est passée : c'est lui que l'étape 7
+désigne pour le « Non présenté » automatique, encore à venir (carte
+« 0,0 % »).
 
-Écarts relevés, rejoués tels quels (voir le rapport) :
-1. « Planning du 2026-10-15 » : date ISO (dashboard.xml:99), contre la règle
-   des dates %d/%m/%Y (déjà ECARTS.md n° 3).
-2. « No-show » en anglais : état, bouton, carte, filtre (booking_booking.py:93,
-   booking_booking_views.xml:50,124, dashboard.xml:89).
-3. « Conflit : « Salon VIP Wouri » est complète… » : message au féminin pour
-   toute ressource (booking_booking.py:279-282).
-4. Message de création d'Odoo « Réservation de créneau (espace / prestation)
-   créé » : accord masculin de la traduction standard (mail/i18n/fr.po).
-5. Les réservations de créneau (RES/26/0158) et d'hôtel (RES/2026/0214)
-   partagent le préfixe « RES/ » (slot_sequence_data.xml:6).
-6. L'e-mail de confirmation est mis en file (send_mail(force_send=False),
-   booking_booking.py:331) et part avec la tâche horaire d'Odoo
-   (mail/data/ir_cron_data.xml:4-12) : jusqu'à une heure d'attente, alors que
-   le guide (AITE_Guide_Espaces_Prestations.pdf §2.3) dit « dès le clic sur
-   Confirmer ». La vidéo ne dit pas « aussitôt ».
-Corrigés depuis dans aite_slot_booking 18.0.1.0.4, sans changer l'image :
-- ECARTS n° 36 : le no-show automatique épargne le pressing (booking_booking
-  .py:461-472) ; la bulle et la voix de la dernière étape le disent
-  (« hors pressing »). Le dépôt de Samuel Etoga est passé « Réalisée » le
-  matin, comme avant ; il aurait aussi pu rester « Confirmé » jusqu'au
-  retrait (« Marquer retiré » s'affiche dans les deux états, vue :47-49).
+Écarts relevés aux versions précédentes, corrigés dans la livraison 4
+(aite_slot_booking 18.0.1.0.5) et rejoués corrigés :
+1. « Planning du 2026-10-15 » → « Planning du 15/10/2026 » (dayLabel,
+   fmtDay ; ECARTS n° 3).
+2. « No-show » → « Non présenté » : état, bouton, filtre « Non présentés »,
+   carte « Non présentés » « 0,0 % » / « 0 rendez-vous manqué », réglage
+   (booking_booking.py:96, booking_booking_views.xml:54 et :129,
+   dashboard.xml:89 ; ECARTS n° 42). Bulles, légendes et résultats suivent.
+3. « Conflit : « Salon VIP Wouri » est complète… » → « Plus de place sur
+   « Salon VIP Wouri » pour ce créneau (capacité 1). » (booking_booking.py
+   :336-342 ; ECARTS n° 44).
+4. « Réservation de créneau (espace / prestation) créé » → « Réservation
+   créée » (_creation_message, booking_booking.py:356-361 ; ECARTS n° 43).
+5. Préfixe « RES/26/ » partagé avec les séjours → « CRN/2026/ »
+   (slot_sequence_data.xml:10-12 ; ECARTS n° 61) : CRN/2026/0158, 0159,
+   0141 et les autres réservations du jour.
+6. E-mail mis en file (jusqu'à une heure) → envoyé juste après le clic sur
+   Confirmer (send_after_commit, booking_booking.py:398-413 ; ECARTS n° 49) :
+   la bulle, la légende et la voix de l'étape 3 disent « aussitôt ».
+7. Pourcentages « 14,2 % » sans décimale fixe et « 0 % » → « 14,2 % »,
+   « 0,0 % » (fmtPct) ; montants du tableau de bord à l'espace fine
+   (fmtMoney) ; « N réalisée(s) », « N réservation(s) à venir » accordés.
+8. Créneaux libres : un créneau entamé d'une ressource de capacité 2 compte
+   désormais comme libre (ECARTS n° 59) : le comptoir pressing passe de
+   « 21/22 » à « 22/22 créneaux libres ».
+9. Dépôt pressing d'un client de passage (Samuel Etoga) : « Reporter au
+   folio » n'est plus proposé, et le fil dit « Rien reporté au folio :
+   Aucun folio ouvert unique pour Samuel Etoga — choisissez le folio sur la
+   réservation. » (ECARTS n° 60). Une fois retiré, la fiche n'a plus de
+   bouton.
+10. Liste « Réservations de créneaux » : colonne « Origine » visible par
+    défaut (« Comptoir »), filtre « Du site web » (ECARTS n° 58).
+Corrigés auparavant (aite_slot_booking 18.0.1.0.4), sans changer l'image :
+- ECARTS n° 36 : le « Non présenté » automatique épargne le pressing
+  (booking_booking.py:533-537) ; la bulle et la voix de la dernière étape le
+  disent (« hors pressing »). Le dépôt de Samuel Etoga est passé « Réalisée »
+  le matin ; il aurait aussi pu rester « Confirmé » jusqu'au retrait
+  (« Marquer retiré » s'affiche dans les deux états, vue :51-53).
 - ECARTS n° 27 : l'e-mail de confirmation donne l'heure de Douala, quel que
-  soit le fuseau de l'utilisateur (déjà 15:00 dans la vidéo).
+  soit le fuseau de l'utilisateur (15:00 dans la vidéo).
 - ECARTS n° 32 : le contrôle de conflit verrouille la ressource
-  (booking_booking.py:269-306) : deux confirmations simultanées ne vendent
+  (booking_booking.py:304-342) : deux confirmations simultanées ne vendent
   plus deux fois le salon ; l'étape 4 montre une confirmation successive,
-  refusée comme avant.
+  refusée.
 
-7. Série : le folio de Brigitte Essomba est FOL/2026/0210, celui du
-   tutoriel 3 (t03_folio.py:447), retenu pour toute la série
-   (FOL/2026/0218 est le numéro de la réservation d'Aristide Bella au
-   tutoriel 2). Ce tutoriel suit le tutoriel 3.
+Série : le folio de Brigitte Essomba est FOL/2026/0210, celui du tutoriel 3
+(t03_folio.py:447), retenu pour toute la série (FOL/2026/0218 est le numéro
+de la réservation d'Aristide Bella au tutoriel 2). Ce tutoriel suit le
+tutoriel 3.
 """
 
 import demo
-from ecrans import APPS_PROFIL, ICONES, e, entree, fenetre_muk, graphe_anneau, navigateur, vue_libre, vue_tdb
+from ecrans import (APPS_PROFIL, ICONES, MENUS_MUK, compte, date_fr, e, entier, entree, fcfa, fenetre_muk, graphe_anneau,
+                    navigateur, pct, vue_libre, vue_tdb)
 from marketing import bulle, dezoom, reaction, zoom
 from moteur import anneau, cacher, choisir, clic, classe, curseur, defiler, fermer, montrer, ouvrir, pause, saisir, texte, vue
 
 NOM, ROLE = demo.POSTES['reception']
-JOUR = '15/10/2026'
 JOUR_ISO = '2026-10-15'
+JOUR = date_fr(JOUR_ISO)            # 15/10/2026 : fiche, liste, e-mail et, depuis l'écart n° 3, le planning (fmtDay)
 CLIENT, TEL = demo.CLIENT, demo.CLIENT_TEL
 # La cliente du massage : Brigitte Essomba, chambre 202 [CFT] du 13 au 16/10 (t02_planning.py:257), son
 # téléphone du tutoriel 10 (t10_ardoises.py, TELEPHONES) ; son folio FOL/2026/0210 (t03_folio.py:447) passe de 157 500 FCFA
@@ -192,11 +231,20 @@ CLIENT, TEL = demo.CLIENT, demo.CLIENT_TEL
 SPA_CLI, SPA_TEL, SPA_FOLIO = 'Brigitte Essomba', '+237 6 00 00 00 32', 'FOL/2026/0210'
 # Le dépôt pressing : un client de passage, sans séjour donc sans folio (numéro de la plage fictive de la série).
 DEPOT, DEPOT_TEL = 'Samuel Etoga', '+237 6 00 00 00 42'
-MENUS = ['Front Desk', 'Réservations', 'Espaces & Prestations', 'Notes de chambre en attente', 'Facturation',
-         'Fidélité', 'Gouvernante']
+MENUS = MENUS_MUK['hotel_reception']
 PARENT_TDB = 'Espaces & Prestations — Tableau de bord'
 PARENT_LISTE = 'Réservations de créneaux'
-CREE = 'Réservation de créneau (espace / prestation) créé'
+# Références des créneaux : CRN/%(range_year)s/ sur 4 chiffres (slot_sequence_data.xml:10-12, écart n° 61).
+CRN = 'CRN/2026/'
+REF_SPA, REF_SALON, REF_PRESSING = demo.CRENEAU_MASSAGE, CRN + '0159', demo.CRENEAU_PRESSING
+assert (REF_SPA, REF_PRESSING) == (CRN + '0158', CRN + '0141')
+# Discussion : message de création (booking_booking.py:356-361, écart n° 43) et, à la réalisation sans folio
+# ouvert unique, la raison (booking_booking.py:425-433 et :489-493, écart n° 60).
+CREE = 'Réservation créée'
+# « Non présenté » dans les bulles, légendes et cartes : espaces insécables, pour ne jamais couper l'état en deux.
+NP = '«\u00a0Non\u00a0présenté\u00a0»'
+RIEN = ('Rien reporté au folio : Aucun folio ouvert unique pour %s — choisissez le folio sur la réservation.'
+        % DEPOT)
 
 
 def _id(ident):
@@ -207,12 +255,9 @@ def ico(svg, classe_='ico'):
     return '<span class="%s">%s</span>' % (classe_, svg)
 
 
-def fcfa(montant):
-    return '{:,}'.format(int(round(montant))).replace(',', ' ') + ' FCFA'
-
-
 def virgule(x):
-    """Un nombre à une décimale, virgule française, sans « ,0 » (utils.js:30-40)."""
+    """Les heures du tableau de bord : une décimale, virgule française, sans « ,0 » (``fmtHours``,
+    utils.js:51-55, inchangé ; les pourcentages, eux, passent à ``pct`` : « 56,0 % »)."""
     r = int(x * 10 + 0.5) / 10.0
     return ('%g' % r).replace('.', ',')
 
@@ -286,7 +331,9 @@ def actives(moment):
 
 
 def creneaux_libres(cle, moment):
-    """La grille de booking_resource.py:106-142 : un créneau n'est libre que s'il est vide."""
+    """La grille de booking_resource.py:107-142 (« free », « partial », « full ») lue par boardFreeText
+    (slot_dashboard_view.js:231-245) : depuis l'écart n° 59, seul un créneau plein est pris ; un créneau
+    entamé d'une ressource de capacité 2 (le comptoir pressing) reste libre."""
     _, _, _, _, ouv, ferm, pas, cap, _ = RES[cle]
     occupe = [(r[4], r[5]) for r in actives(moment) if r[2] == cle]
     step = pas / 60.0
@@ -294,25 +341,30 @@ def creneaux_libres(cle, moment):
     while h + step <= ferm + 1e-6:
         used = sum(1 for s, f in occupe if s < h + step and f > h)
         total += 1
-        libres += 1 if used == 0 else 0
+        libres += 0 if (cap <= 0 or used >= cap) else 1
         h += step
     return libres, total
 
 
+def texte_libres(libres, total):
+    """« 12/14 créneaux libres », « 1/14 créneau libre » (boardFreeText, accordé)."""
+    return '%d/%d %s' % (libres, total, 'créneaux libres' if libres > 1 else 'créneau libre')
+
+
 def indicateurs(moment):
-    """Les cartes « Activité de la période » (slot_dashboard.py:123-176), période « Aujourd'hui »."""
+    """Les cartes « Activité de la période » (slot_dashboard.py:146-198), période « Aujourd'hui »."""
     faites = [r for r in RESAS if r[moment] == 'done']
     confirmees = [r for r in RESAS if r[moment] == 'confirmed']
     heures = sum(r[5] - r[4] for r in faites + confirmees)
     ouvrees = sum((r[5] - r[4]) * r[7] for r in RESSOURCES)
-    return {'ca': fcfa(sum(r[6] for r in faites)), 'faites': len(faites), 'confirmees': len(confirmees),
-            'remp': virgule(min(100.0, heures / ouvrees * 100)) + ' %',
+    return {'ca': fcfa(sum(r[6] for r in faites), tdb=True), 'faites': len(faites), 'confirmees': len(confirmees),
+            'remp': pct(min(100.0, heures / ouvrees * 100)),
             'heures': '%s h réservées / %s h ouvrées' % (virgule(heures), virgule(ouvrees)),
             'retraits': RETRAITS[moment]}
 
 
 def melange(moment):
-    """CA réalisé par famille, du plus grand au plus petit (slot_dashboard.py:206-222)."""
+    """CA réalisé par famille, du plus grand au plus petit (slot_dashboard.py:231-246)."""
     agg = {}
     for r in RESAS:
         if r[moment] == 'done':
@@ -322,7 +374,7 @@ def melange(moment):
 
 
 def remplissage(moment):
-    """Remplissage par ressource, trié (slot_dashboard.py:224-246)."""
+    """Remplissage par ressource, trié (slot_dashboard.py:249-270)."""
     out = []
     for cle, nom, _, coul, ouv, ferm, _, cap, _ in RESSOURCES:
         h = sum(r[5] - r[4] for r in actives(moment) if r[2] == cle)
@@ -354,17 +406,17 @@ def tableau_de_bord(k, moment, initiale=False):
             '<span class="bt primaire t09-nouv" id="%s-nouv">+ Nouvelle réservation</span></div>' % p)
     kpis = ('<div class="tdb-grille c4" id="%s-kpis">%s%s%s%s</div>' % (
         p,
-        kpi(p + '-ca', 'CA prestations réalisées', ind['ca'], '%d réalisée(s)' % ind['faites'], 'violet'),
+        kpi(p + '-ca', 'CA prestations réalisées', ind['ca'], compte(ind['faites'], 'réalisée', 'réalisées'), 'violet'),
         kpi(p + '-remp', 'Taux de remplissage', ind['remp'], ind['heures'], 'bleu'),
-        kpi(p + '-ns', 'No-show', '0 %', '0 rendez-vous manqué(s)', 'rouge'),
-        kpi(p + '-pr', 'Retraits pressing en attente', str(ind['retraits']),
-            '%d réservation(s) à venir' % ind['confirmees'], 'ambre')))
+        kpi(p + '-ns', 'Non présentés', pct(0), compte(0, 'rendez-vous manqué', 'rendez-vous manqués'), 'rouge'),
+        kpi(p + '-pr', 'Retraits pressing en attente', entier(ind['retraits'], tdb=True),
+            compte(ind['confirmees'], 'réservation à venir', 'réservations à venir'), 'ambre')))
     couloirs = ''.join(couloir(p, i, r, moment) for i, r in enumerate(RESSOURCES))
     parts = [(LIB_FAMILLE[k_], v, COUL_FAMILLE[k_]) for k_, v in melange(moment)]
     graphes = ('<div class="tdb-grille c2 t09-gr">%s%s</div>' % (
         graphe_anneau(p + '-mix', 'CA réalisé par famille (période)', parts), barres(p + '-remp-g', moment)))
     contenu = (tete + filtres + '<div class="tdb-sect">Activité de la période</div>' + kpis
-               + '<div class="tdb-sect">Planning du %s</div>' % JOUR_ISO
+               + '<div class="tdb-sect">Planning du %s</div>' % JOUR
                + '<div class="t09-pl" id="%s-pl">%s</div>' % (p, couloirs)
                + '<div class="tdb-sect">Répartition &amp; remplissage</div>' + graphes)
     return vue_tdb('t09-tdb%d' % k, '<div class="t09" data-layout-allow-overflow id="t09-in%d">%s</div>' % (k, contenu),
@@ -387,8 +439,8 @@ def couloir(p, i, ressource, moment):
                     for r in actives(moment) if r[2] == cle)
     libres, total = creneaux_libres(cle, moment)
     return ('<div class="t09-lane" id="%s-l%d"><span class="t09-ln">%s<span class="ell">%s</span></span>'
-            '<div class="t09-track" id="%s-t%d">%s%s</div><span class="t09-libre" id="%s-x%d">%d/%d créneaux libres</span>'
-            '</div>' % (p, i, puce_fam(coul), e(nom), p, i, traits, blocs, p, i, libres, total))
+            '<div class="t09-track" id="%s-t%d">%s%s</div><span class="t09-libre" id="%s-x%d">%s</span>'
+            '</div>' % (p, i, puce_fam(coul), e(nom), p, i, traits, blocs, p, i, texte_libres(libres, total)))
 
 
 def barres(ident, moment):
@@ -426,10 +478,9 @@ def case(ident, cochee=False):
     return '<span class="case%s"%s><i></i></span>' % (' coche' if cochee else '', _id(ident))
 
 
-def message(auteur, quand, corps, ident=None, suite=False):
-    """Un message de la discussion ; ``suite`` : regroupé sous le précédent (même auteur)."""
-    if suite:
-        return '<div class="t09-msg suite"%s><span></span><div class="t09-msg-t">%s</div></div>' % (_id(ident), corps)
+def message(auteur, quand, corps, ident=None):
+    """Un message de la discussion, toujours avec son en-tête (avatar, auteur, heure) : le chatter
+    d'une fiche ne regroupe jamais deux messages (isSquashed, mail/static/src/core/common/thread.js:603-625)."""
     return ('<div class="t09-msg"%s><span class="t09-av">%s</span><div><div class="t09-msg-a"><b>%s</b> <small>%s</small>'
             '</div><div class="t09-msg-t">%s</div></div></div>' % (_id(ident), e(auteur[0]), e(auteur), e(quand), corps))
 
@@ -491,11 +542,11 @@ def groupe_sejour(p, folio='', ligne_=''):
 
 
 SB = ['Brouillon', 'Confirmée', 'Réalisée']
-CONFIRMEE = [bt('t09-spa-b-done', 'Réalisée', 'primaire'), bt(None, "Renvoyer l'e-mail"), bt(None, 'No-show'),
+CONFIRMEE = [bt('t09-spa-b-done', 'Réalisée', 'primaire'), bt(None, "Renvoyer l'e-mail"), bt(None, 'Non présenté'),
              bt(None, 'Annuler')]
 
-# La réservation d'Estelle Ngono : créée depuis le tableau de bord, confirmée,
-# puis rouverte depuis la liste et passée en Réalisée.
+# La réservation de Brigitte Essomba : créée depuis le tableau de bord, confirmée,
+# puis rouverte depuis la liste et passée en Réalisée (reportée sur son folio ouvert unique).
 SPA = fiche(
     't09-spa', PARENT_TDB, 'Nouveau', '',
     [[bt('t09-spa-b-conf', 'Confirmer', 'primaire'), bt(None, 'Annuler')], CONFIRMEE, []],
@@ -505,14 +556,15 @@ SPA = fiche(
     + ch('Origine', 'Comptoir', saisie=False),
     ch('Début', champ('t09-spa-deb')) + ch('Fin', champ('t09-spa-fin'))
     + ch('Durée (h)', champ('t09-spa-dur', '00:00'), saisie=False)
-    + ch('Montant', champ('t09-spa-mnt', '0 FCFA'), saisie=False, ident='t09-spa-l-mnt')
-    + ch('Prix manuel', '0 FCFA', aide=True),
+    + ch('Montant', champ('t09-spa-mnt', fcfa(0)), saisie=False, ident='t09-spa-l-mnt')
+    + ch('Prix manuel', fcfa(0), aide=True),
     groupe_sejour('t09-spa'),
     ['',
      separateur("Aujourd'hui") + message(NOM, "Aujourd'hui à 11:06", suivi('Brouillon', 'Confirmée'))
-     + message(NOM, '', CREE, suite=True),
+     + message(NOM, "Aujourd'hui à 11:06", CREE),
      separateur("Aujourd'hui") + message(NOM, "Aujourd'hui à 16:05", suivi('Confirmée', 'Réalisée'))
-     + message(NOM, "Aujourd'hui à 11:06", suivi('Brouillon', 'Confirmée')) + message(NOM, '', CREE, suite=True)],
+     + message(NOM, "Aujourd'hui à 11:06", suivi('Brouillon', 'Confirmée'))
+     + message(NOM, "Aujourd'hui à 11:06", CREE)],
     sale=True)
 
 # La prestation de spa : la liste ne propose que la famille SPA (domaine kind = kind).
@@ -524,7 +576,7 @@ DEROULANT = ('<div class="t09-dd masque" id="t09-spa-dd" data-layout-allow-overl
 SPA = SPA.replace('<span class="v saisie">%s</span></div>' % champ('t09-spa-pre'),
                   '<span class="v saisie t09-m2o">%s%s</span></div>' % (champ('t09-spa-pre'), DEROULANT), 1)
 
-# La réservation du salon VIP Wouri pour Brigitte Essomba : refusée à la confirmation.
+# La réservation du salon VIP Wouri pour Estelle Ngono : refusée à la confirmation.
 SALON = fiche(
     't09-salon', PARENT_TDB, 'Nouveau', '',
     [[bt('t09-salon-b-conf', 'Confirmer', 'primaire'), bt(None, 'Annuler')]],
@@ -534,17 +586,19 @@ SALON = fiche(
     + ch('Origine', 'Comptoir', saisie=False),
     ch('Début', champ('t09-salon-deb')) + ch('Fin', champ('t09-salon-fin'))
     + ch('Durée (h)', champ('t09-salon-dur', '00:00'), saisie=False)
-    + ch('Montant', champ('t09-salon-mnt', '0 FCFA'), saisie=False, ident='t09-salon-l-mnt')
-    + ch('Prix manuel', '0 FCFA', aide=True),
+    + ch('Montant', champ('t09-salon-mnt', fcfa(0)), saisie=False, ident='t09-salon-l-mnt')
+    + ch('Prix manuel', fcfa(0), aide=True),
     groupe_sejour('t09-salon'),
     ['', separateur("Aujourd'hui") + message(NOM, "Aujourd'hui à 11:09", CREE)],
     sale=True)
 
 # Le dépôt pressing de Samuel Etoga, client de passage, réalisé ce matin : sans folio ouvert, rien n'est
-# reporté (booking_booking.py:333-345, :379-405), d'où « Reporter au folio » encore visible (vue :44-46).
+# reporté et le fil dit pourquoi (booking_booking.py:415-434, :480-493) ; « Reporter au folio » n'est plus
+# proposé (can_post_to_folio, booking_booking.py:215-227, vue :46-50, écart n° 60). Une fois retiré, plus
+# aucun bouton : « Marquer retiré » était le seul (vue :51-53).
 PRESSING = fiche(
-    't09-pres', PARENT_LISTE, 'RES/26/0141', '11 / 11',
-    [[bt(None, 'Reporter au folio'), bt('t09-pres-b-ret', 'Marquer retiré')], [bt(None, 'Reporter au folio')]],
+    't09-pres', PARENT_LISTE, REF_PRESSING, '11 / 11',
+    [[bt('t09-pres-b-ret', 'Marquer retiré')], []],
     (SB, 2),
     ch('Client', champ('t09-pres-cli', DEPOT)) + ch('Téléphone', DEPOT_TEL, saisie=False)
     + ch('Ressource', champ('t09-pres-res', 'Comptoir pressing'))
@@ -553,21 +607,25 @@ PRESSING = fiche(
     + ch('Origine', 'Comptoir', saisie=False),
     ch('Début', champ('t09-pres-deb', JOUR + ' 08:30:00')) + ch('Fin', champ('t09-pres-fin', JOUR + ' 09:00:00'))
     + ch('Durée (h)', '00:30', saisie=False)
-    + ch('Montant', '<span id="t09-pres-mnt">4 800 FCFA</span>', saisie=False, ident='t09-pres-l-mnt')
-    + ch('Prix manuel', '0 FCFA', aide=True),
+    + ch('Montant', '<span id="t09-pres-mnt">%s</span>' % fcfa(4800), saisie=False, ident='t09-pres-l-mnt')
+    + ch('Prix manuel', fcfa(0), aide=True),
     '<div class="t09-grp" id="t09-pres-pg-g"><div class="t09-grp-t">Pressing</div>%s%s</div>'
     % (ch('Retrait prévu', champ('t09-pres-rp', JOUR + ' 18:00:00')),
        ch('Retiré', case('t09-pres-retire'), ident='t09-pres-l-ret'))
     + groupe_sejour('t09-pres'),
     [separateur("Aujourd'hui") + message(NOM, "Aujourd'hui à 08:36", suivi('Confirmée', 'Réalisée'))
-     + message(NOM, "Aujourd'hui à 08:34", suivi('Brouillon', 'Confirmée')) + message(NOM, '', CREE, suite=True)],
+     + message(NOM, "Aujourd'hui à 08:36", e(RIEN), ident='t09-pres-rien')
+     + message(NOM, "Aujourd'hui à 08:34", suivi('Brouillon', 'Confirmée'))
+     + message(NOM, "Aujourd'hui à 08:34", CREE)],
     abonne=True)
 
 # --------------------------------------------------- la liste du jour --
 ETAT_LISTE = {'done': ('Réalisée', 't09-ok', 'ok'), 'confirmed': ('Confirmée', 't09-info', 'info'),
               'draft': ('Brouillon', '', 'gris')}
-COLS = [('Référence', '138px'), ('Début', '200px'), ('Client', '1fr'), ('Ressource', '192px'), ('Famille', '168px'),
-        ('Prestation', '1.45fr'), ('Montant', '142px', 'd'), ('État', '120px')]
+# Colonnes visibles par défaut (booking_booking_views.xml:11-27) : « Origine » s'affiche désormais (optional="show",
+# écart n° 58), entre « Montant » et « État » ; toutes ces réservations sont prises au comptoir.
+COLS = [('Référence', '136px'), ('Début', '176px'), ('Client', '1fr'), ('Ressource', '172px'), ('Famille', '152px'),
+        ('Prestation', '1.4fr'), ('Montant', '122px', 'd'), ('Origine', '100px'), ('État', '98px')]
 GAB = '40px ' + ' '.join(c[1] for c in COLS)
 
 
@@ -575,10 +633,10 @@ def ligne_liste(r, moment):
     n, cli, cle, pre, deb, _, mnt = r[:7]
     lib, cl_ligne, cl_badge = ETAT_LISTE[r[moment]]
     return ('<div class="ligne %s" id="t09-l-%s" style="grid-template-columns:%s"><span class="cb"></span>'
-            '<span class="ell">RES/26/%s</span><span class="ell">%s %s:00</span><span class="ell">%s</span>'
+            '<span class="ell">%s%s</span><span class="ell">%s %s:00</span><span class="ell">%s</span>'
             '<span class="ell">%s</span><span class="ell">%s</span><span class="ell">%s</span><span class="d">%s</span>'
-            '<span><span class="t09-badge %s" id="t09-l-%s-e">%s</span></span></div>'
-            % (cl_ligne, n, GAB, n, JOUR, hhmm(deb), e(cli), e(RES[cle][1]), e(LIB_FAMILLE[RES[cle][2]]), e(pre),
+            '<span class="ell">Comptoir</span><span><span class="t09-badge %s" id="t09-l-%s-e">%s</span></span></div>'
+            % (cl_ligne, n, GAB, CRN, n, JOUR, hhmm(deb), e(cli), e(RES[cle][1]), e(LIB_FAMILLE[RES[cle][2]]), e(pre),
                fcfa(mnt), cl_badge, n, e(lib)))
 
 
@@ -597,28 +655,28 @@ TETE_LISTE = ('<div class="tete" style="grid-template-columns:%s"><span class="c
               % (GAB, ''.join('<span class="ell%s">%s</span>' % (' d' if len(c) > 2 else '', e(c[0])) for c in COLS)))
 LISTE = vue_libre('t09-liste', CP_LISTE + '<div class="liste t09-liste">%s%s<div class="total" style="grid-template-columns:'
                   '%s"><span></span><span></span><span></span><span></span><span></span><span></span><span></span>'
-                  '<span class="d">%s</span><span></span></div></div>'
+                  '<span class="d">%s</span><span></span><span></span></div></div>'
                   % (TETE_LISTE, ''.join(ligne_liste(r, APREM) for r in ordre_liste()), GAB,
                      fcfa(sum(r[6] for r in RESAS))))
 
 # -------------------------------------------------------------- calques --
 # Le téléphone de la cliente : l'e-mail de confirmation (mail_template_data.xml:3-33).
-LIGNES_MAIL = [('Référence', 'RES/26/0158'), ('Ressource', 'Cabine SPA 1'), ('Prestation', 'Massage relaxant 60 min'),
-               ('Début', JOUR + ' 15:00'), ('Fin', '16:00'), ('Montant', '27 000 FCFA')]
+LIGNES_MAIL = [('Référence', REF_SPA), ('Ressource', 'Cabine SPA 1'), ('Prestation', 'Massage relaxant 60 min'),
+               ('Début', JOUR + ' 15:00'), ('Fin', '16:00'), ('Montant', fcfa(27000))]
 TELEPHONE = ('<div class="voile masque" id="t09-tel-voile" data-layout-allow-overlap data-layout-allow-occlusion></div>'
              '<div class="tel masque t09-tel" id="t09-tel" data-layout-allow-overlap data-layout-allow-occlusion>'
              '<div class="tel-ecran t09-mail"><div class="t09-mail-h"><span class="t09-ret">‹</span></div>'
-             '<div class="t09-mail-o" id="t09-mail-o">%s — Confirmation RES/26/0158</div>'
+             '<div class="t09-mail-o" id="t09-mail-o">%s — Confirmation %s</div>'
              '<div class="t09-mail-c"><p>Bonjour %s,</p><p>Votre réservation est <b>confirmée</b> :</p>'
              '<div class="t09-mail-t">%s</div><p>À très bientôt,<br>%s</p></div></div></div>'
-             % (e(demo.SOCIETE), e(SPA_CLI),
+             % (e(demo.SOCIETE), REF_SPA, e(SPA_CLI),
                 ''.join('<div><b>%s</b><span>%s</span></div>' % (e(a), e(b)) for a, b in LIGNES_MAIL), e(demo.SOCIETE)))
 
 ERREUR = ('<div class="voile masque" id="t09-err-voile" data-layout-allow-overlap data-layout-allow-occlusion></div>'
           '<div class="modale masque t09-modale" id="t09-err" style="top:200px;width:1060px;margin-left:-530px" '
           'data-layout-allow-overlap data-layout-allow-occlusion>'
           '<div class="m-tete"><span>Erreur de validation</span><span class="m-x">%s</span></div>'
-          '<div class="m-corps"><p class="t09-err-p" id="t09-err-p">Conflit : « Salon VIP Wouri » est complète sur ce '
+          '<div class="m-corps"><p class="t09-err-p" id="t09-err-p">Plus de place sur « Salon VIP Wouri » pour ce '
           'créneau (capacité 1).</p></div><div class="m-pied">%s</div></div>'
           % (ICONES['x'], bt('t09-err-ok', 'Fermer', 'primaire')))
 
@@ -761,9 +819,7 @@ CSS = """
 .t09-ch-etat { position: absolute; left: 0; right: 0; top: 0; }
 .t09-sep { display: flex; align-items: center; gap: 12px; margin: 10px 0 4px; font-size: 13px; color: #6C757D; }
 .t09-sep::before, .t09-sep::after { content: ''; flex: 1; height: 1px; background: #DEE2E6; }
-.t09-msg { display: flex; gap: 12px; padding: 7px 0; }
-.t09-msg.suite { padding-top: 0; }
-.t09-msg.suite > span { width: 36px; flex: none; }
+.t09-msg { display: flex; gap: 12px; padding: 10px 0; }
 .t09-av { width: 36px; height: 36px; border-radius: 6px; background: #185FA5; color: #fff; display: flex; align-items: center;
   justify-content: center; font-weight: 700; flex: none; }
 .t09-msg-a { font-size: 15px; color: #212529; }
@@ -791,6 +847,8 @@ CSS = """
 .t09-liste .tete { height: 48px; font-size: 17px; }
 .t09-liste .ligne { height: 46px; font-size: 17px; }
 .t09-liste .total { height: 48px; font-size: 17px; }
+/* « Origine » après un montant aligné à droite : la marge de cellule d'Odoo */
+.t09-liste .tete > span:nth-child(9), .t09-liste .ligne > span:nth-child(9) { padding-left: 18px; }
 .t09-liste .ligne.t09-info { color: #0E7490; }
 .t09-liste .ligne.t09-ok { color: #1E7B34; }
 .t09-liste .ligne.t09-muet { color: #6C757D; }
@@ -848,9 +906,9 @@ TUTORIEL = {
     'bulles': {
         'b-libres': "Une ligne par ressource : les créneaux libres se lisent d'un coup d'œil.",
         'b-calcul': 'La fin et le montant viennent de la prestation : rien à calculer.',
-        'b-mail': "Confirmée : le créneau est bloqué, l'e-mail part tout seul.",
+        'b-mail': "Confirmée : le créneau est bloqué, l'e-mail part aussitôt.",
         'b-folio': 'Reportée seule sur la note de chambre, une seule fois.',
-        'b-absent': 'Client confirmé absent : No-show automatique, 6 h après la fin (hors pressing).',
+        'b-absent': 'Client confirmé absent : %s automatique après un délai de 6\u00a0h (hors pressing).' % NP,
     },
     'reactions': {
         'r-conflit': 'Le salon est déjà pris : impossible de le vendre deux fois.',
@@ -879,18 +937,18 @@ TUTORIEL = {
                     choisir('t09-spa-res', 'Cabine SPA 1', puis=0.1), clic('#t09-spa-pre', fx=0.3, d=0.4, puis=0.05),
                     montrer('#t09-spa-dd', d=0.2, y=-6), pause(0.7), clic('#t09-spa-dd0', d=0.35, puis=0.05),
                     cacher('#t09-spa-dd', d=0.15), choisir('t09-spa-pre', 'Massage relaxant 60 min', puis=0.1),
-                    texte('#t09-spa-mnt-val', '27 000 FCFA', puis=0.05),
+                    texte('#t09-spa-mnt-val', fcfa(27000), puis=0.05),
                     clic('#t09-spa-deb', fx=0.3, d=0.4, puis=0.05), saisir('t09-spa-deb', JOUR + ' 15:00:00', d=0.8),
                     texte('#t09-spa-fin-val', JOUR + ' 16:00:00'), texte('#t09-spa-dur-val', '01:00', avec=True),
                     zoom('#t09-spa-droite', s=1.25, fx=0.9, d=0.7), curseur('#t09-spa-l-mnt', fx=0.75, fy=0.3, d=0.5, avec=True),
                     anneau('#t09-spa-l-mnt', d=1.4),
                     bulle('b-calcul', '#t09-spa-l-mnt', cote='droite', d=2.8, avec=True), pause(1.6), dezoom(d=0.5)]},
         {'temps': 2, 'titre': 'Confirmer : le créneau est bloqué',
-         'texte': "La réservation passe en Confirmée ; l'e-mail de confirmation part tout seul.",
-         'voix': "Un clic sur Confirmer : le créneau est bloqué, et l'imèle de confirmation part tout seul, avec "
+         'texte': "La réservation passe en Confirmée ; l'e-mail de confirmation part aussitôt.",
+         'voix': "Un clic sur Confirmer : le créneau est bloqué, et l'imèle de confirmation part aussitôt, avec "
                  "l'heure, la cabine et le montant.",
          'gestes': [clic('#t09-spa-b-conf', d=0.5), cacher('#t09-spa-save', d=0.1),
-                    texte('#t09-spa-titre', 'RES/26/0158', avec=True), texte('#t09-spa-ref', 'RES/26/0158', avec=True),
+                    texte('#t09-spa-titre', REF_SPA, avec=True), texte('#t09-spa-ref', REF_SPA, avec=True),
                     cacher('#t09-spa-g0', d=0.1, avec=True), montrer('#t09-spa-g1', d=0.25, y=0, avec=True),
                     classe('#t09-spa-sb0', retirer=['actif'], avec=True),
                     classe('#t09-spa-sb1', ajouter=['actif'], avec=True),
@@ -911,10 +969,10 @@ TUTORIEL = {
                     clic('#t09-salon-res', fx=0.3, d=0.4, puis=0.05), choisir('t09-salon-res', 'Salon VIP Wouri', puis=0.1),
                     clic('#t09-salon-deb', fx=0.3, d=0.4, puis=0.05), saisir('t09-salon-deb', JOUR + ' 20:00:00', d=0.6),
                     clic('#t09-salon-fin', fx=0.3, d=0.35, puis=0.05), saisir('t09-salon-fin', JOUR + ' 23:00:00', d=0.6),
-                    texte('#t09-salon-dur-val', '03:00'), texte('#t09-salon-mnt-val', '45 000 FCFA', avec=True),
+                    texte('#t09-salon-dur-val', '03:00'), texte('#t09-salon-mnt-val', fcfa(45000), avec=True),
                     anneau('#t09-salon-l-mnt', d=1.0, avec=True), clic('#t09-salon-b-conf', d=0.45),
-                    cacher('#t09-salon-save', d=0.1), texte('#t09-salon-titre', 'RES/26/0159', avec=True),
-                    texte('#t09-salon-ref', 'RES/26/0159', avec=True), cacher('#t09-salon-ch0', d=0.05, avec=True),
+                    cacher('#t09-salon-save', d=0.1), texte('#t09-salon-titre', REF_SALON, avec=True),
+                    texte('#t09-salon-ref', REF_SALON, avec=True), cacher('#t09-salon-ch0', d=0.05, avec=True),
                     montrer('#t09-salon-ch1', d=0.05, y=0, avec=True), texte('#t09-salon-suivre', 'Abonné(e)', avec=True),
                     classe('#t09-salon-suivre', ajouter=['abonne'], avec=True), ouvrir('t09-err'),
                     zoom('#t09-err', s=1.3, d=0.7), reaction('r-conflit', d=3.4), pause(1.3), dezoom(d=0.5),
@@ -930,33 +988,36 @@ TUTORIEL = {
              vue('t09-spa'), clic('#t09-spa-b-done', d=0.45), cacher('#t09-spa-g1', d=0.1),
              classe('#t09-spa-sb1', retirer=['actif'], avec=True), classe('#t09-spa-sb2', ajouter=['actif'], avec=True),
              texte('#t09-spa-folio-val', SPA_FOLIO, avec=True),
-             texte('#t09-spa-ligne', 'Massage relaxant 60 min — RES/26/0158', avec=True),
+             texte('#t09-spa-ligne', 'Massage relaxant 60 min — ' + REF_SPA, avec=True),
              cacher('#t09-spa-ch1', d=0.1, avec=True), montrer('#t09-spa-ch2', d=0.3, y=8, avec=True),
              zoom('#t09-spa-sejour', s=1.5, fx=0.35, d=0.7), anneau('#t09-spa-sejour', d=1.4),
              bulle('b-folio', '#t09-spa-sejour', cote='bas', d=3.0, avec=True), pause(1.8), dezoom(d=0.5)]},
         {'temps': 3, 'titre': 'Pressing : la quantité fait le prix',
-         'texte': '4 chemises × 1 200 FCFA : 4 800 FCFA ; au retrait, Marquer retiré.',
+         'texte': '4 chemises × 1 200 FCFA : 4 800 FCFA ; sans séjour, le fil dit pourquoi rien n\'est reporté ; '
+                  'au retrait, Marquer retiré.',
          'voix': "Ce matin, Samuel Etoga, client de passage, a déposé quatre chemises : le montant a suivi la "
-                 "quantité. Ce soir, il les récupère : Marquer retiré, et le dépôt sort des retraits en attente.",
+                 "quantité. Sans séjour, rien n'est reporté au folio, et le fil dit pourquoi. Ce soir, il les "
+                 "récupère : Marquer retiré, et le dépôt sort des retraits en attente.",
          'gestes': [classe('#t09-l-0158', retirer=['survol', 't09-info'], ajouter=['t09-ok']),
                     classe('#t09-l-0158-e', retirer=['info'], ajouter=['ok'], avec=True),
                     texte('#t09-l-0158-e', 'Réalisée', avec=True),
                     clic('#t09-spa-par', d=0.45), vue('t09-liste'), pause(0.2),
                     classe('#t09-l-0141', ajouter=['survol'], avec=True), clic('#t09-l-0141', fx=0.3, d=0.45),
                     vue('t09-pres'), anneau('#t09-pres-l-qte', d=0.9), anneau('#t09-pres-l-mnt', d=0.9),
-                    reaction('r-pressing', d=3.0),
+                    # l'anneau tient pendant « Sans séjour, … le fil dit pourquoi » ; le clic tombe sur « Marquer retiré »
+                    reaction('r-pressing', d=3.0), anneau('#t09-pres-rien', d=2.9), pause(1.2),
                     clic('#t09-pres-b-ret', d=0.45), cacher('#t09-pres-g0', d=0.1),
-                    montrer('#t09-pres-g1', d=0.2, y=0, avec=True),
-                    classe('#t09-pres-retire', ajouter=['coche'], avec=True), anneau('#t09-pres-l-ret', d=1.2)]},
+                    classe('#t09-pres-retire', ajouter=['coche'], avec=True), anneau('#t09-pres-l-ret', d=2.0)]},
         {'temps': 3, 'titre': 'Le bilan du soir',
-         'texte': "Chiffre d'affaires, remplissage, retraits en attente ; un client absent passe seul en No-show, "
-                  "hors pressing.",
+         'texte': ("Chiffre d'affaires, remplissage, retraits en attente ; un client absent passe seul en %s, "
+                   "hors pressing." % NP),
          'voix': "Le soir, le tableau de bord fait le bilan : chiffre d'affaires, remplissage, retraits en attente. Et "
-                 "un client confirmé qui ne vient pas passe tout seul en rendez-vous manqué, six heures après la fin ; "
+                 "un client confirmé qui ne vient pas passe tout seul en non présenté, après un délai de six heures ; "
                  "un dépôt de pressinng, lui, attend son retrait.",
          'gestes': naviguer('tdb', [vue('t09-tdb2'), defiler('#t09-in2', -200, d=0.01)]) + [
              anneau('#t09-d2-ca', d=1.1), anneau('#t09-d2-remp', d=1.0), anneau('#t09-d2-pr', d=1.0),
-             anneau('#t09-d2-t3', d=1.0), curseur('#t09-d2-t3', fx=0.5, d=0.5, avec=True), bulle('b-absent', '#t09-d2-ns', cote='haut', d=3.4),
+             anneau('#t09-d2-b0153', d=1.0), curseur('#t09-d2-b0153', fx=0.5, d=0.5, avec=True),
+             bulle('b-absent', '#t09-d2-ns', cote='haut', d=3.4),
              anneau('#t09-d2-ns', d=1.4, avec=True), pause(2.4)]},
     ],
     'resultats': {
@@ -965,11 +1026,11 @@ TUTORIEL = {
             {'valeur': '5', 'compter': 5, 'unite': 'familles', 'icone': 'liste',
              'texte': 'salons VIP / VVIP, SPA, coiffure, pressing et autres ressources, sur un même planning'},
             {'valeur': '3', 'compter': 3, 'unite': 'automatismes', 'icone': 'eclair',
-             'texte': "actifs dès l'installation : e-mail de confirmation, report au folio, no-show après 6 h"},
-            {'valeur': '72', 'compter': 72, 'unite': 'tests', 'icone': 'bouclier',
-             'texte': 'automatisés sur le moteur : créneaux, conflits, prix, report au folio, no-show'},
+             'texte': "actifs dès l'installation : e-mail de confirmation, report au folio, %s après 6 h" % NP},
+            {'valeur': '95', 'compter': 95, 'unite': 'tests', 'icone': 'bouclier',
+             'texte': 'automatisés sur le moteur : créneaux, conflits, prix, report au folio, non présentés'},
         ],
-        'voix': "Cinq familles sur un seul planninng, trois automatismes dès l'installation, soixante-douze tests "
+        'voix': "Cinq familles sur un seul planninng, trois automatismes dès l'installation, quatre-vingt-quinze tests "
                 "automatisés.",
     },
     'cta': {

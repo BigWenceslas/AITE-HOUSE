@@ -4,23 +4,29 @@
 La gouvernante (Josiane Fouda, demo.POSTES) suit l'état de chaque chambre sur
 le tableau des chambres et répartit les chambres du jour entre ses
 équipières, qui travaillent depuis « Ma journée » sur leur téléphone. Elle
-passe la checklist de huit points de la tâche d'inspection, créée à la main
-(écart 4 : la voix le dit en une demi-phrase, le geste n'est pas montré). Elle signale
-une panne qui retire une chambre libre de la vente, puis passe elle-même la
-demande à « Réparé » : la chambre revient en vente, à nettoyer.
+passe la checklist de huit points de la tâche d'inspection, créée d'elle-même
+quand la chambre passe « À inspecter » (écart 4, corrigé dans la livraison
+4). Elle signale une panne qui retire une chambre libre de la vente, puis
+passe elle-même la demande à « Réparé » : la chambre revient en vente, à
+nettoyer.
 
-Profil rejoué, et dit à l'écran. Josiane a le profil Réception, qui implique
-Gouvernante (aite_hotel_management/security/hotel_security.xml:11-24). Le menu
-« Répartir les chambres du jour » et son assistant sont réservés à ce profil
-(aite_housekeeping/views/menus.xml:9-12 ; security/ir.model.access.csv:9), de
-même que les boutons « Conforme » / « À refaire » (views/hotel_room_views.xml
-:60-71). La pastille du personnage l'affiche (« Gouvernante (profil
-Réception) ») et la légende de l'étape 2 le rappelle (écart 2). Menus de la
-barre : ceux du profil Réception, relevés sur ref_muk/306-reception-
-reservations.png (comme scenarios/c1_reception.py:30-31). Applications :
-ecrans.APPS_PROFIL['gouvernante'], identiques à celles du profil Réception.
-Le profil Réception ne crée pas de chambre : pas de bouton « Nouveau » sur
-le tableau (aite_hotel_management/security/ir.model.access.csv:10-11 ;
+Profil rejoué, et dit à l'écran. Depuis la livraison 4 (aite_housekeeping
+18.0.1.0.6, ECARTS n° 1 et 52), Josiane a le profil « Gouvernante générale »
+(aite_housekeeping/security/housekeeping_security.xml:17-22), qui implique
+Gouvernante ; la Réception l'implique à son tour (:24-26). Le menu
+« Répartir les chambres du jour » (views/menus.xml:15-18, groups
+« -aite_hotel_management.group_hotel_user,group_hk_governess »), son
+assistant (security/ir.model.access.csv:9) et les boutons « Conforme » /
+« À refaire » (views/hotel_room_views.xml:67-80) lui sont réservés. Elle n'a
+pas le profil Réception : la barre de l'application Hôtel ne montre que
+« Gouvernante », les autres sections étant réservées à group_hotel_user
+(aite_hotel_management/views/hotel_menus.xml ; ecrans.MENUS_MUK
+['hotel_gouvernante']), et l'icône Hôtel lui ouvre le tableau des chambres
+(action_open_home, aite_hotel_management/models/hotel_dashboard.py:246-274).
+La pastille du personnage affiche « Gouvernante générale » (écart 2,
+corrigé). Applications : ecrans.APPS_PROFIL['gouvernante']. Le profil
+Gouvernante ne crée pas de chambre : pas de bouton « Nouveau » sur le
+tableau (aite_hotel_management/security/ir.model.access.csv:10-11 ;
 ref_muk/300-gouv-tableau.png).
 
 Les équipières viennent de demo.EQUIPIERES, la source unique des données de
@@ -31,24 +37,30 @@ Elles n'ont que le profil Gouvernante. Leurs prénoms (« Clarisse »,
 
 Comment l'équipière arrive sur « Ma journée ». Depuis aite_hotel_management
 18.0.1.0.6 (ECARTS n° 12, écart 11 ci-dessous), l'icône Hôtel ouvre l'action
-« Hôtel » (action_hotel_home, views/hotel_dashboard_actions.xml:9-21 ;
-menu racine, hotel_menus.xml:11-17) : le Front Desk pour la Réception, et
-pour le seul profil Gouvernante le premier menu de sa section Gouvernante,
-le « Tableau des chambres » (action_open_home, models/hotel_dashboard.py
-:245-274 ; test_ecarts_videos.py:73-79). Le téléphone s'ouvre donc sur le
-tableau des chambres en kanban mobile (ref_muk/401 : colonne « À nettoyer
-(1) » et sa carte 103 affectée à E1, la colonne « Propre (19) » qui dépasse
-à droite, pas de bouton « Nouveau »), puis l'équipière ouvre le menu de
-l'application (≡) et choisit « Ma journée ». Menu de l'application sur
-téléphone : odoo18/addons/web/static/src/webclient/navbar/navbar.xml:47-73 et
+« Hôtel » (action_hotel_home, views/hotel_dashboard_actions.xml:15-21 ;
+menu racine, hotel_menus.xml:11-16) : le « Tableau de bord — Réception »
+pour la Réception, et sans le profil Réception le premier menu de la
+section Gouvernante, le « Tableau des chambres » (action_open_home,
+models/hotel_dashboard.py:246-274 ; test_ecarts_videos.py:73-79). Le
+téléphone s'ouvre donc sur le tableau des chambres en kanban mobile
+(ref_muk/401 : colonne « À nettoyer (1) » et sa carte 103 affectée à E1,
+pas de bouton « Nouveau »). Depuis la livraison 4, les quatre colonnes sont
+toujours là, dans l'ordre du travail : la deuxième, qui dépasse à droite,
+est « Nettoyage en cours (0) », vide (la capture 401, plus ancienne,
+montrait « Propre (19) » ; titre et compteur « (0) » d'une colonne vide :
+odoo18/addons/web/static/src/views/kanban/kanban_header.xml:11-17). Puis
+l'équipière ouvre le menu de l'application (≡) et choisit « Ma journée ».
+Menu de l'application sur téléphone :
+odoo18/addons/web/static/src/webclient/navbar/navbar.xml:47-73 et
 :105-141 (bandeau « Toutes les applications » — web/i18n/fr.po:754-755 —,
 croix, icône et nom de l'application, section en gras, entrées en retrait ;
 largeur min(360 px, 80 %) et fond : burger_menu.scss:5-7,
 burger_menu.variables.scss). Sections visibles pour le seul profil
-Gouvernante : « Gouvernante » seule (hotel_menus.xml:84-98), sans
-« Répartir les chambres du jour » (Réception, menus.xml:9-12) ni « Chambres
-(liste) » (désactivé, menus.xml:19-21). L'ancien contournement (« Ma
-journée » posée en page d'accueil sur la fiche de l'équipière) est retiré.
+Gouvernante : « Gouvernante » seule (hotel_menus.xml:86-102), sans
+« Répartir les chambres du jour » (Gouvernante générale, menus.xml:15-18) ni
+« Chambres (liste) » (désactivé, menus.xml:25-28). L'ancien contournement
+(« Ma journée » posée en page d'accueil sur la fiche de l'équipière) est
+retiré.
 
 La journée rejouée : le jeudi 15/10/2026, le matin.
 - L'hôtel de la série compte 20 chambres vendables, la liste commune à
@@ -71,58 +83,73 @@ La journée rejouée : le jeudi 15/10/2026, le matin.
 - Les tâches du jour. Le ménage quotidien des chambres occupées est créé
   chaque matin : 104, 202, 204 et 401 (réglage « Ménage quotidien
   automatique », coché par défaut, aite_hotel_management/models/
-  res_config_settings.py:58-61 et :125-130 ; hotel_reservation.py:490-492 ;
-  hotel_housekeeping.py:151-170). S'y ajoute la recouche de la 103, remise
+  res_config_settings.py:58-61 et :125-130 ; hotel_reservation.py:548-550 ;
+  hotel_housekeeping.py:182-201). S'y ajoute la recouche de la 103, remise
   « À nettoyer » le matin avant l'arrivée : le bouton « À nettoyer » crée une
   tâche « Recouche (départ) » pour une chambre non occupée (aite_housekeeping/
-  models/hotel_room.py:173-185). Il y a donc 5 chambres à répartir.
-- La répartition se fait à tour de rôle sur les tâches triées par étage puis
-  par chambre (assign_wizard.py:30-48), les équipières étant triées par nom
-  (res.users « name, login »). Vérifié sur la base MuK : name_search et le
-  Many2many rendent l'ordre alphabétique. Résultat, E1 et E2 dans l'ordre
-  alphabétique : 103 E1, 104 E2, 202 E1, 204 E2, 401 E1.
+  models/hotel_room.py:190-201). Il y a donc 5 chambres à répartir.
+- La répartition se fait à tour de rôle sur les tâches de ménage triées par
+  étage puis par chambre, les inspections exclues (assign_wizard.py:40-61),
+  les équipières étant triées par nom (res.users « name, login »). Vérifié
+  sur la base MuK : name_search et le Many2many rendent l'ordre
+  alphabétique. Résultat, E1 et E2 dans l'ordre alphabétique : 103 E1,
+  104 E2, 202 E1, 204 E2, 401 E1.
+- « Répartir » ferme la fenêtre, affiche « Chambres réparties » — « 5
+  chambres réparties entre 2 équipières. », accordé (assign_wizard.py:63-75,
+  :87-98) — et recharge l'écran du dessous, le tableau des chambres (action
+  « soft_reload », :97 ; odoo18/addons/web/static/src/webclient/actions/
+  client_actions.js:86-96 ; ECARTS n° 53, corrigé dans la livraison 4) : les
+  équipières apparaissent sur les cartes sans repasser par le menu.
 - « Inspection après recouche » est cochée (res_config_settings.py:62-65 et
-  :131-136). E2 a commencé la 104 quand E1 termine la 103.
-- « Équipières présentes » propose tous les utilisateurs du groupe
-  Gouvernante, y compris ceux dont le profil l'implique (assign_wizard.py:21-24 ;
-  écart 3). Rejoué dans l'ordre alphabétique : les deux équipières, Danielle
-  Eyenga, la directrice, qui est le compte administrateur renommé, placé par
-  le socle dans le profil Responsable (hotel_security.xml:26-31), Josiane
-  Fouda et Mireille Ateba.
+  :131-136). À « C'est fait » sur la recouche, la chambre passe « À
+  inspecter » et sa tâche d'inspection est créée, sans affectation
+  (aite_hotel_management/models/hotel_housekeeping.py:107-146 ; écart 4,
+  corrigé). E2 a commencé la 104 quand E1 termine la 103.
+- « Équipières présentes » ne propose que l'équipe d'étage : le profil
+  Gouvernante, sans Gouvernante générale ni Réception (assign_wizard.py
+  :21-34 ; écart 3, corrigé). Josiane (Gouvernante générale), Mireille
+  Ateba (Réception) et Danielle Eyenga (Responsable, qui implique la
+  Réception) en sont écartées : restent les deux équipières, dans l'ordre
+  alphabétique.
 
 Sources des libellés et des règles (relevés mot pour mot) :
 
 - Tableau des chambres : addons/aite_housekeeping/views/hotel_room_views.xml
-  :5-103. Fond rouge d'une chambre hors service :26. Badge clé et nombre,
-  infobulle « Pannes ouvertes » :28-33. Phrase d'état :35. « type · étage »
-  :36-39. Client (fa-user) :40-42. « Arrivée prévue » en couleur info :43-45.
-  Équipière (fa-female, « Affectée à ») :46-48. Boutons « Commencer » :50-54,
-  « Terminé » :55-59, « Conforme » :60-65, « À refaire » :66-71 (groupe
-  Réception), « À nettoyer » :72-76, clé « Signaler un problème (panne,
-  dégât) » :77-81. Titre de l'action :91.
-  Les phrases d'état : aite_housekeeping/models/hotel_room.py:69-85
+  :5-112. Fond rouge d'une chambre hors service :26-27. Badge clé et nombre,
+  infobulle « Pannes ouvertes » :30-34. Phrase d'état :36. « type · étage »
+  :40-44, en text-body sur une carte hors service, text-muted sinon (écart
+  10, corrigé). Client (fa-user) :45-47. « Arrivée prévue » en couleur info
+  :48-50. Équipière (fa-female, « Affectée à ») :51-53. Boutons « Je
+  commence » :57-61, « C'est fait » :62-66 (les mots de Ma journée, écart 12
+  corrigé), « Conforme » :69-74, « À refaire » :75-80 (groupe Gouvernante
+  générale), « À nettoyer » :81-85, clé « Signaler un problème (panne,
+  dégât) » :86-90. Titre de l'action :100.
+  Les phrases d'état : aite_housekeeping/models/hotel_room.py:80-97
   (_hint_for : « À nettoyer », « Recouche à faire », « Nettoyage en cours »,
   « À inspecter par la gouvernante », « Propre — client présent », « Propre
   — prête pour l'arrivée », « Propre — libre », « Hors service — ne pas
-  vendre »). « Arrivée prévue 14h00 » au format %Hh%M :59-61. Équipière de
-  la tâche ouverte du jour :50-56 (_compute_today, :46-67).
+  vendre »). « Arrivée prévue 14:00 » au format %H:%M :67-73 (« 14h00 »
+  avant la livraison 4). Équipière de la tâche ouverte du jour :57-65
+  (_compute_today, :52-79).
   Colonnes : libellés de hk_state, aite_hotel_management/models/hotel_room.py
-  :263-271. Elles sont rejouées dans l'ordre où Odoo 18 les affiche
-  (écart 1). Une colonne vide n'est pas affichée : le regroupement par
-  sélection n'a pas de group_expand, et ref_muk/300 ne montre que deux
-  colonnes. Dans une colonne, les cartes suivent le numéro (default_order
-  … name, :13). Seules les premières cartes d'une colonne tiennent à l'écran
-  (le tableau défile), et le compteur donne le total.
-- Menu Gouvernante : aite_housekeeping/views/menus.xml:3-18 (Tableau des
+  :263-271. Depuis la livraison 4, un group_expand les affiche toutes, vides
+  comprises, dans l'ordre de la sélection : À nettoyer · Nettoyage en cours
+  · À inspecter · Propre (aite_housekeeping/models/hotel_room.py:13-20 et
+  :48-51 ; default_order « name », hotel_room_views.xml:14 ; écart 1,
+  corrigé). Une colonne vide garde son titre et « (0) » (kanban_header.xml
+  :11-17). Dans une colonne, les cartes suivent le numéro. Seules les
+  premières cartes d'une colonne tiennent à l'écran (le tableau défile), et
+  le compteur donne le total.
+- Menu Gouvernante : aite_housekeeping/views/menus.xml:3-24 (Tableau des
   chambres 5, Ma journée 8, Répartir les chambres du jour 12, Pannes &
   réparations 30, Objets trouvés 40) et aite_hotel_management/views/
-  hotel_menus.xml:83-92 (Tâches de ménage 10).
+  hotel_menus.xml:92-96 (Tâches de ménage 10).
 - Répartir : aite_housekeeping/wizard/assign_wizard_views.xml:7-20 (texte,
   champs, « Répartir » icône fa-random, « Annuler ») ; wizard/
-  assign_wizard.py:15-28 (Hôtel, Jour, Équipières présentes, Redistribuer…,
-  Chambres à répartir) et :59-68 (notification « Chambres réparties »,
-  « %(n)d chambre(s) réparties entre %(u)d équipière(s). »). Bouton
-  d'agrandissement et lien interne du champ Hôtel : ref_muk/037.
+  assign_wizard.py:15-38 (Hôtel, Jour, Équipières présentes, Redistribuer…,
+  Chambres à répartir) et :63-98 (notification « Chambres réparties »,
+  message accordé, rechargement du tableau). Bouton d'agrandissement et
+  lien interne du champ Hôtel : ref_muk/037.
 - Ma journée : aite_housekeeping/views/housekeeping_task_views.xml:5-70.
   Liseré rouge d'une tâche urgente :18. « Chambre <chambre> » et pastille
   d'état :20-24. « Quoi faire » :26. Client :27-29. Consigne en rouge :30-32.
@@ -130,20 +157,21 @@ Sources des libellés et des règles (relevés mot pour mot) :
   :44-48. Titre :58. Domaine :62 ; filtre « Mes chambres » (les tâches
   affectées à l'utilisatrice et celles de personne) :63 et :147-148. État
   vide « Rien à faire pour l'instant » :64-69. Libellés des tâches et
-  « URGENT — » : aite_housekeeping/models/housekeeping_task.py:82-93. Ordre
+  « URGENT — » : aite_housekeeping/models/housekeeping_task.py:81-93. Ordre
   « date desc, priority desc, id desc » : aite_hotel_management/models/
   hotel_housekeeping.py:19. États À faire / En cours / Terminé :61-69.
   « Inspection après recouche » : la recouche passe la chambre « à
-  inspecter » (:101-115).
+  inspecter » et ouvre sa tâche d'inspection (:107-146).
 - Téléphone : barre MuK, bulle, horloge des activités et avatar relevés sur
   ref_muk/400-mobile-ma-journee.png et ref_muk/401-mobile-tableau.png. Il
   s'ouvre sur le tableau des chambres, l'écran de l'icône Hôtel, puis passe à
   Ma journée par le menu (voir plus haut). Au second passage (étape 5), il est
   resté sur Ma journée.
-- Tâche d'inspection : type Inspection (hotel_housekeeping.py:38-46), créée
-  depuis Tâches de ménage (hotel_menus.xml:83-92 ;
-  hotel_housekeeping_views.xml:75-125). Le geste n'est pas montré ; la voix
-  de l'étape 4 dit « Josiane a créé la tâche d'inspection » (écart 4).
+- Tâche d'inspection : type Inspection (hotel_housekeeping.py:38-46),
+  créée seule, sans affectation, quand la recouche de la 103 est faite
+  (_ensure_inspection_task, :128-146 ; sa checklist :
+  housekeeping_task.py:99-113). La voix de l'étape 4 le dit : « elle s'est
+  créée toute seule » (écart 4, corrigé).
 - Inspection : housekeeping_task_views.xml:73-108 (titre « Chambre … »,
   « contrôle 0 / 8 », consigne, colonnes « OK » / « Point de contrôle » /
   « Remarque », indication « Remarque si non conforme », boutons « Tout
@@ -152,9 +180,10 @@ Sources des libellés et des règles (relevés mot pour mot) :
   :59-65. Une case non cochée fait repasser la chambre « À nettoyer » et crée
   une recouche urgente avec la consigne « Inspection refusée. À reprendre :
   <point> — <remarque> », confiée à l'équipière de la dernière tâche de
-  ménage affectée (:121-153). Les huit points :
+  ménage affectée (:121-153). « Tout cocher » garde la fenêtre ouverte
+  (:170-179 ; écart 6, corrigé). Les huit points :
   aite_housekeeping/data/housekeeping_data.xml:3-12 (noupdate).
-- Signaler un problème : hotel_room.py:149-159 (titre « Signaler un problème
+- Signaler un problème : hotel_room.py:166-176 (titre « Signaler un problème
   — chambre %s ») ; wizard/report_issue_wizard.py:10-23 (Chambre, Quel est le
   problème ?, Précisions, La chambre ne peut pas être vendue en l'état,
   Urgence Normal / Important par défaut / Urgent / Très urgent, Photo) ;
@@ -162,10 +191,11 @@ Sources des libellés et des règles (relevés mot pour mot) :
   « Problème signalé »). wizard/report_issue_wizard_views.xml:8-20
   (indications, « Envoyer à la maintenance » fa-paper-plane, « Annuler »).
   Hors service si la chambre n'est pas occupée :
-  aite_housekeeping/models/maintenance_request.py:39-58 (recette P05, P07).
+  aite_housekeeping/models/maintenance_request.py:61-69, dans la règle :39-88
+  (recette P05, P07).
   Plus disponible à la vente : aite_hotel_management/models/hotel_room.py
-  :431-442. Check-in refusé : aite_hotel_management/models/
-  hotel_reservation.py:379-383.
+  :474-488. Check-in refusé : aite_hotel_management/models/
+  hotel_reservation.py:437-441.
 - Priorité de la demande : l'urgence « Important » (défaut de l'assistant)
   devient la priorité Maintenance « Haute », trois étoiles sur la carte et la
   fiche, et « Urgence : Important » est écrit en tête de la description,
@@ -184,7 +214,7 @@ Sources des libellés et des règles (relevés mot pour mot) :
   Instructions, Notes internes, À faire). « Chambre invendable pendant
   l'intervention » : maintenance_request.py:19-22 et maintenance_views.xml:9-12.
   Remise en vente, « À nettoyer » et tâche « Remise en service après
-  intervention : … » : maintenance_request.py:59-69 (recette P06). Date de
+  intervention : … » : maintenance_request.py:76-88 (recette P06). Date de
   clôture posée au passage à une étape terminée : odoo18/addons/
   maintenance/models/maintenance.py:336-339. « ? » d'aide : Chambre
   (maintenance_request.py:13-16), Chambre invendable…, Date de clôture,
@@ -210,11 +240,11 @@ maintenance), :144-145 (pas de flux réception ↔ étages ↔ maintenance), :44
 Promesse : « Chaque équipière retrouve ses chambres dans Ma journée » (filtre
 « Mes chambres », housekeeping_task_views.xml:63, :147-148). « Une panne
 bloquante retire une chambre libre de la vente » : une chambre occupée n'est
-pas bloquée (maintenance_request.py:51-54, recette P07).
+pas bloquée (maintenance_request.py:61-65, recette P07).
 
-Résultats : 8 phrases d'état (hotel_room.py:69-85). 8 points de contrôle
+Résultats : 8 phrases d'état (hotel_room.py:80-97). 8 points de contrôle
 livrés en noupdate, modifiables dans Configuration → Points de contrôle
-(inspection) (housekeeping_data.xml:3-12, menus.xml:23-25,
+(inspection) (housekeeping_data.xml:3-12, menus.xml:29-31,
 housekeeping_task_views.xml:155-176). 3 boutons dans Ma journée : Je
 commence, C'est fait, Passer la checklist (housekeeping_task_views.xml:33-48).
 
@@ -223,28 +253,32 @@ Captures de référence (modèle visuel, jamais incrustées) : ref_muk/034 à 03
 
 Ce que la vidéo montre, et ce qu'elle évite :
 - Odoo 18 ne rafraîchit pas un kanban tout seul. Le tableau ne change qu'au
-  rechargement (menu Gouvernante → Tableau des chambres) ou après un bouton
-  de ses cartes (la clé, dont la fenêtre se referme en rechargeant la vue).
-  L'assistant Répartir, ouvert par le menu, ne recharge pas le tableau
-  (odoo18/addons/web/static/src/webclient/actions/action_service.js
-  :1382-1394) : la notification d'abord, puis le tableau rechargé par le
-  menu. Chaque changement d'écran passe par le menu Gouvernante, sauf
-  l'ouverture d'une fiche ou d'une fenêtre.
+  rechargement (menu Gouvernante → Tableau des chambres), après un bouton
+  de ses cartes (la clé, dont la fenêtre se referme en rechargeant la vue)
+  ou après « Répartir », qui recharge l'écran du dessous depuis la
+  livraison 4 (ECARTS n° 53) : la fenêtre se ferme, la notification
+  s'affiche et le tableau montre aussitôt les équipières. Les autres
+  changements d'écran passent par le menu Gouvernante, sauf l'ouverture
+  d'une fiche ou d'une fenêtre.
 - Sur le téléphone, l'équipière ouvre l'application Hôtel : le tableau des
   chambres, puis Ma journée par le menu (écart 11 corrigé).
 - Après « C'est fait », la tâche est « Terminé » et sa carte n'a plus de
   bouton (housekeeping_task_views.xml:34-48). Elle quitte Ma journée au
   rechargement (domaine :62).
-- La tâche d'inspection a été créée à la main (écart 4), sans « Assignée à » :
-  elle paraît dans Ma journée de Josiane (filtre « Mes chambres ») et « Je
-  commence » la lui affecte (hotel_housekeeping.py:97-98).
+- La tâche d'inspection s'est créée seule (écart 4, corrigé), sans
+  « Assignée à » : elle paraît dans Ma journée de Josiane (filtre « Mes
+  chambres ») et « Je commence » la lui affecte (hotel_housekeeping.py
+  :103-104). L'assistant Répartir ne la distribue pas.
 - Le bouton « Conforme » est visible sur la carte « À inspecter » de la 103,
-  comme dans Odoo pour le profil Réception. Il n'est ni montré du doigt ni
-  cliqué : la scène montre une inspection refusée (écart 5 corrigé, il coche
-  désormais toute la checklist avant de clore).
+  comme dans Odoo pour la gouvernante générale. Il n'est ni montré du doigt
+  ni cliqué : la scène montre une inspection refusée (écart 5 corrigé, il
+  coche toute la checklist et clôt la tâche d'inspection ;
+  aite_hotel_management/models/hotel_room.py:397-452 la clôt aussi quand la
+  chambre est déclarée propre autrement).
 - La remarque de la checklist n'est saisissable qu'une fois la ligne en
   édition : l'indication « Remarque si non conforme » apparaît alors.
-- On ne clique pas « Tout cocher » (il ferme la fenêtre, écart 6).
+- On ne clique pas « Tout cocher » : la scène veut un point non coché (il
+  garde désormais la fenêtre ouverte, écart 6 corrigé).
 - Après la validation, Ma journée de Josiane est vide : la recouche urgente
   est affectée à E1. Son état vide s'affiche, sans compteur.
 - C'est Josiane, auteure de la demande, qui la passe à « Réparé » : la voix
@@ -255,36 +289,37 @@ Ce que la vidéo montre, et ce qu'elle évite :
   enregistrement » (odoo18/addons/web/models/models.py:235-239 ;
   web/i18n/fr.po:7449-7450 ; aite_hotel_management/security/
   ir.model.access.csv:10-11), relevé comme nouvel écart.
-- Un seul réglage de couleur : le texte gris « Standard · Rez-de-chaussée »
-  d'une carte hors service est foncé (#565D64) pour passer le contrôle de
-  contraste AA. Dans Odoo, text-muted sur bg-danger-subtle donne 3,6:1
-  (écart 10).
+- Le texte « Standard · Rez-de-chaussée » d'une carte hors service est en
+  text-body (#495057) depuis la livraison 4 (écart 10, corrigé) : plus
+  aucun réglage de couleur propre à la vidéo.
 
-Écarts relevés (voir le rapport). Les n° 5, 7, 8, 9 et 11 sont corrigés
-(aite_hotel_management 18.0.1.0.6, aite_housekeeping 18.0.1.0.3 ; ECARTS
-n° 12, 15, 19) ; les autres sont rejoués tels quels :
-1. Les colonnes du tableau s'affichent dans l'ordre À nettoyer · À inspecter ·
-   Nettoyage en cours · Propre. Odoo 18 trie la sélection par clé : « hk_state
-   desc » donne to_clean, inspect, cleaning, clean. Le commentaire de la vue
-   dit le contraire (hotel_room_views.xml:10-12). Vérifié par read_group sur
-   la base de démonstration MuK : « desc » rend cleaning avant clean.
-2. Le profil nommé « Gouvernante » ne voit ni « Répartir les chambres du
-   jour » ni « Conforme » / « À refaire » : il faut le profil Réception
-   (menus.xml:9-12, hotel_room_views.xml:60-71). La gouvernante du jeu de
-   démonstration n'a que le profil Gouvernante. La recette (P02) attend
-   pourtant ce menu sous le profil Gouvernante.
-3. « Équipières présentes » propose aussi la directrice, la réception et la
-   gouvernante (domaine sur un groupe impliqué), assign_wizard.py:21-24.
-4. Aucune tâche d'inspection n'est créée quand une chambre passe « à
-   inspecter » (aite_hotel_management/models/hotel_housekeeping.py:101-115).
-   La checklist n'est atteignable qu'après avoir créé à la main une tâche
-   « Inspection » : la voix le dit, le geste n'est pas montré.
+Écarts relevés (voir le rapport). Les n° 5, 7, 8, 9 et 11 ont été corrigés
+avant (aite_hotel_management 18.0.1.0.6, aite_housekeeping 18.0.1.0.3 ;
+ECARTS n° 12, 15, 19). Les n° 1, 2, 3, 4, 6, 10 et 12 le sont dans la
+livraison 4 (aite_housekeeping 18.0.1.0.6, aite_hotel_management 18.0.1.0.7 ;
+ECARTS n° 1, 50 à 53, 71) : la vidéo montre le produit corrigé. Seul le
+n° 13 est encore rejoué tel quel.
+1. Corrigé (ECARTS n° 50) : les colonnes suivent l'ordre du travail, À
+   nettoyer · Nettoyage en cours · À inspecter · Propre, et restent
+   affichées vides (group_expand, aite_housekeeping/models/hotel_room.py
+   :13-20, :48-51). Avant : À nettoyer · À inspecter · Nettoyage en cours ·
+   Propre (« hk_state desc »), colonnes vides masquées.
+2. Corrigé (ECARTS n° 1 et 52) : le profil « Gouvernante générale »
+   (housekeeping_security.xml:17-22) donne « Répartir les chambres du
+   jour », « Conforme » et « À refaire » sans le profil Réception. Avant,
+   Josiane était jouée avec le profil Réception (dit à l'écran).
+3. Corrigé (ECARTS n° 52) : « Équipières présentes » ne propose que
+   l'équipe d'étage (assign_wizard.py:21-34). Avant : la directrice, la
+   réception et la gouvernante y figuraient aussi.
+4. Corrigé (ECARTS n° 52) : la tâche d'inspection se crée seule quand la
+   recouche passe la chambre « à inspecter » (aite_hotel_management/models/
+   hotel_housekeeping.py:107-146). Avant, il fallait la créer à la main.
 5. Corrigé (ECARTS n° 19) : « Conforme » coche toute la checklist puis clôt
-   l'inspection, sans recouche « Inspection refusée » (hotel_room.py:126-140 ;
+   l'inspection, sans recouche « Inspection refusée » (hotel_room.py:138-152 ;
    tests/test_inspection.py). Avant : les huit cases décochées valaient
    refus.
-6. « Tout cocher » renvoie True : Odoo ferme la fenêtre d'inspection
-   (housekeeping_task.py:170-172).
+6. Corrigé (ECARTS n° 52) : « Tout cocher » garde la fenêtre d'inspection
+   ouverte (housekeeping_task.py:170-179). Non cliqué ici.
 7. Corrigé (ECARTS n° 15 c) : Normal → Normal, Important / Urgent / Très
    urgent → Haute, et « Urgence : … » en tête de la description
    (report_issue_wizard.py:25-50). Rejoué : trois étoiles sur la carte et la
@@ -292,44 +327,45 @@ n° 12, 15, 19) ; les autres sont rejoués tels quels :
    devenait « Basse ».
 8. Corrigé (ECARTS n° 15 b) : la chambre revient en vente quand plus aucune
    demande bloquante n'est ouverte, quel que soit l'ordre des réparations
-   (maintenance_request.py:39-89). Non montré (une seule panne ici).
+   (maintenance_request.py:39-88). Non montré (une seule panne ici).
 9. Corrigé (ECARTS n° 15 a) : la chambre est écrite en sudo, un technicien
    sans profil hôtel passe la demande à « Réparé » (maintenance_request.py
-   :39-89 ; tests/test_maintenance.py). Reste la règle standard de
+   :39-88 ; tests/test_maintenance.py). Reste la règle standard de
    Maintenance : un simple utilisateur ne voit pas une demande dont il n'est
    ni l'auteur, ni le suiveur, ni le responsable (le test donne au
    technicien le profil Administrateur de Maintenance ; odoo18/addons/
    maintenance/security/maintenance.xml:15-20). Nouveau : sa fiche afficherait
    « Vous n'avez pas accès à cet enregistrement » dans « Chambre ».
-10. Contraste du texte gris sur une carte hors service : 3,6:1 (sous le seuil
-   AA de 4,5:1).
+10. Corrigé (ECARTS n° 71) : le texte d'une carte hors service passe en
+   text-body (hotel_room_views.xml:37-44). Avant : text-muted, 3,6:1.
 11. Corrigé (ECARTS n° 12) : avec le seul profil Gouvernante, l'icône
-   Hôtel ouvre le « Tableau des chambres » (action_open_home), plus le Front
-   Desk et son erreur d'accès. Rejoué sur le téléphone de l'équipière.
-12. Un même geste porte trois libellés selon l'écran : « Commencer /
-   Terminé » (tableau), « Je commence / C'est fait » (Ma journée),
-   « Démarrer / Terminer » (Tâches de ménage). C'est contraire à la règle 4
-   de CLAUDE.md.
+   Hôtel ouvre le « Tableau des chambres » (action_open_home), plus le
+   tableau de bord de la réception et son erreur d'accès. Rejoué sur le
+   téléphone de l'équipière.
+12. Corrigé (ECARTS n° 51) : un geste, un libellé — « Je commence » / « C'est
+   fait » sur le tableau, dans Ma journée et dans Tâches de ménage (avant :
+   « Commencer / Terminé », « Démarrer / Terminer »).
 13. « Recouche complète (départ) » s'affiche pour une chambre remise à
    nettoyer avant une arrivée : « À nettoyer » crée une tâche de type
-   Recouche (départ) pour toute chambre non occupée (hotel_room.py:173-185).
+   Recouche (départ) pour toute chambre non occupée (hotel_room.py:190-201).
 """
 
 import demo
-from ecrans import (APPS_PROFIL, ICONES, avec_chatter, cp_fiche, e, entree, fenetre_muk, icone, icone_app,
-                    interrupteur, navigateur, onglets, recherche, statusbar, toast, vue_fiche, vue_libre)
+from ecrans import (APPS_PROFIL, ICONES, MENUS_MUK, avec_chatter, cp_fiche, e, entree, fenetre_muk, icone,
+                    icone_app, interrupteur, navigateur, onglets, recherche, statusbar, toast, vue_fiche, vue_libre)
 from marketing import bulle, dezoom, reaction, zoom
 from moteur import (animer, anneau, cacher, clic, classe, curseur, etat, fermer, montrer, notifier, ouvrir, pause,
                     saisir, survol, texte, vue)
 
 NOM, _ROLE = demo.POSTES['gouvernante']
-ROLE = 'Gouvernante (profil Réception)'
+# Le profil de Josiane depuis la livraison 4 (aite_housekeeping/security/housekeeping_security.xml:17-22).
+ROLE = 'Gouvernante générale'
 # Les équipières de demo.py, dans l'ordre alphabétique où Odoo les trie (res.users « name, login »).
 E1, E2 = sorted(demo.EQUIPIERES)
 JOUR = '15/10/2026'
 GASTON = 'Gaston Mbida'             # arrivée attendue en 103 le 15/10 à 14:00 (t02_planning.py:224, :251)
-MENUS = ['Front Desk', 'Réservations', 'Espaces & Prestations', 'Notes de chambre en attente', 'Facturation',
-         'Fidélité', 'Gouvernante']
+# Sans le profil Réception, la barre de l'application Hôtel ne montre que « Gouvernante ».
+MENUS = MENUS_MUK['hotel_gouvernante']
 MENU_GOUV = '#t07-app .o-haut .menu.actif'
 
 # ------------------------------------------------------------ icônes --
@@ -415,8 +451,9 @@ assert len(CHAMBRES) == 20
 CLIENTS = {'104': 'Martin Ebode', '202': 'Brigitte Essomba', '204': demo.CLIENT, '401': 'Claire Durand'}
 # La répartition : tâches triées étage puis chambre, équipières par nom, tour de rôle.
 REPARTITION = {'103': E1, '104': E2, '202': E1, '204': E2, '401': E1}
-ARR_103 = 'Arrivée prévue 14h00'
-COLONNES = ['À nettoyer', 'À inspecter', 'Nettoyage en cours', 'Propre']   # ordre affiché par Odoo 18 (écart 1)
+ARR_103 = 'Arrivée prévue 14:00'      # %H:%M (aite_housekeeping/models/hotel_room.py:67-73)
+# Les colonnes de hk_state, toutes et dans l'ordre de la sélection (group_expand, livraison 4).
+COLONNES = ['À nettoyer', 'Nettoyage en cours', 'À inspecter', 'Propre']
 VISIBLES = 5            # cartes rendues par colonne : la suite est sous le bas de l'écran (le tableau défile)
 
 
@@ -425,10 +462,12 @@ def carte_ch(k, num, hint, type_etage, client=None, arrivee=None, equipiere=None
     ident = 't07-b%d-%s' % (k, num)
     badge = '<span class="badge-panne">%s%d</span>' % (icone('cle'), panne) if panne else ''
     corps = '<div class="hint" id="%s-h">%s</div><div class="mini">%s</div>' % (ident, e(hint), e(type_etage))
-    if client:
-        corps += '<div class="lg">%s%s</div>' % (icone('personne'), e(client))
+    qui = '<div class="lg">%s%s</div>' % (icone('personne'), e(client)) if client else ''
     if arrivee:
-        corps += '<div class="lg t07-arr" id="%s-arr">%s%s</div>' % (ident, icone('horloge'), e(arrivee))
+        # Nom et heure d'arrivée regroupés : l'anneau de l'étape 1 les entoure ensemble.
+        qui = '<div id="%s-qui">%s<div class="lg t07-arr" id="%s-arr">%s%s</div></div>' % (
+            ident, qui, ident, icone('horloge'), e(arrivee))
+    corps += qui
     if equipiere:
         corps += '<div class="lg" id="%s-eq">%s%s</div>' % (ident, ico(FEMME), e(equipiere))
     bts = ''.join(b(ident) for b in boutons)
@@ -437,12 +476,13 @@ def carte_ch(k, num, hint, type_etage, client=None, arrivee=None, equipiere=None
             '</div></div>' % (' hors-service' if hs else '', ident, e(num), badge, corps, ident, bts))
 
 
+# Les mots de Ma journée, sur le tableau aussi (hotel_room_views.xml:57-66, ECARTS n° 51).
 def COMMENCER(i):
-    return bt(i + '-go', 'Commencer', 'primaire', ICONES['play'])
+    return bt(i + '-go', 'Je commence', 'primaire', ICONES['play'])
 
 
 def TERMINE(i):
-    return bt(i + '-fin', 'Terminé', 'vert', ICONES['coche'])
+    return bt(i + '-fin', "C'est fait", 'vert', ICONES['coche'])
 
 
 def CONFORME(i):
@@ -485,15 +525,15 @@ def chambre(k, num, code, etage, etat_):
 
 
 def instant(k, etat_, initiale=False):
-    """Le tableau à l'instant ``k`` : les colonnes non vides, dans l'ordre d'Odoo."""
+    """Le tableau à l'instant ``k`` : les quatre colonnes, vides comprises, dans
+    l'ordre du travail (group_expand de hk_state)."""
     cols = {c: [] for c in COLONNES}
     for num, code, etage in CHAMBRES:
         col, html = chambre(k, num, code, etage, etat_)
         cols[col].append(html)
-    pleines = [(c, cartes) for c, cartes in cols.items() if cartes]
     html = ''.join('<div class="k-col" id="t07-b%d-c%d"><div class="k-titre">%s <span>(%d)</span></div>%s</div>'
-                   % (k, i, e(c), len(cartes), ''.join(cartes[:VISIBLES])) for i, (c, cartes) in enumerate(pleines, 1))
-    largeur = 356 * len(pleines) + 20 * (len(pleines) - 1)
+                   % (k, i, e(c), len(cartes), ''.join(cartes[:VISIBLES])) for i, (c, cartes) in enumerate(cols.items(), 1))
+    largeur = 356 * len(cols) + 20 * (len(cols) - 1)
     tetes = '<div class="t07-tetes" id="t07-b%d-tetes" style="width:%dpx"></div>' % (k, largeur)
     return ('<div class="t07-instant%s" id="t07-b%d" data-layout-allow-overflow><div class="kanban t07-k">%s</div>%s'
             '</div>' % ('' if initiale else ' masque', k, html, tetes))
@@ -527,9 +567,9 @@ def naviguer(entree_, apres):
 
 
 # ------------------------------------------- Répartir les chambres du jour --
-# Tous les profils hôtel, dans l'ordre alphabétique (écart 3) ; les équipières portent t07-eq-e1 / t07-eq-e2.
-PRESENTS = sorted([('e1', E1), ('e2', E2), ('danielle', demo.POSTES['direction'][0]), ('josiane', NOM),
-                   ('mireille', demo.POSTES['reception'][0])], key=lambda x: x[1])
+# L'équipe d'étage seulement : Josiane (Gouvernante générale), la réception et la directrice sont
+# écartées (assign_wizard.py:21-34). Les équipières portent t07-eq-e1 / t07-eq-e2.
+PRESENTS = [('e1', E1), ('e2', E2)]
 CASES = ''.join('<span class="case t07-case" id="t07-eq-%s"><i></i>%s</span>' % (i, e(n)) for i, n in PRESENTS)
 REPARTIR = modale('t07-as-rep', 'Répartir les chambres du jour', (
     '<div class="m-aide" id="t07-rep-aide">Cochez les équipières présentes : les chambres à faire sont distribuées '
@@ -542,7 +582,17 @@ REPARTIR = modale('t07-as-rep', 'Répartir les chambres du jour', (
        ligne('Redistribuer aussi les chambres déjà affectées', '<span class="case"><i></i></span>'),
        ligne('Chambres à répartir', '<b class="t07-n" id="t07-rep-n">5</b>', lecture=True))),
     bt('t07-rep-ok', 'Répartir', 'primaire', HASARD) + bt(None, 'Annuler'), haut=60, largeur=1120)
-TOAST_REP = toast('t07-toast-rep', 'Chambres réparties', '5 chambre(s) réparties entre 2 équipière(s).')
+
+
+def message_repartition(n, u):
+    """La notification de « Répartir », accordée (assign_wizard.py:63-75)."""
+    if u <= 1:
+        return ('%d chambre confiée à %d équipière.' if n <= 1 else '%d chambres confiées à %d équipière.') % (n, u)
+    return ('%d chambre répartie entre %d équipières.' if n <= 1 else '%d chambres réparties entre %d équipières.') % (n, u)
+
+
+TOAST_REP = toast('t07-toast-rep', 'Chambres réparties', message_repartition(len(REPARTITION), len(PRESENTS)))
+assert message_repartition(5, 2) == '5 chambres réparties entre 2 équipières.'
 
 
 # ------------------------------------------------ Ma journée (téléphones) --
@@ -570,8 +620,8 @@ def bts_tel(ident, second='fin'):
 # et :105-141 ; burger_menu.scss, burger_menu.variables.scss) : bandeau gris clair avec « Toutes les
 # applications » (web/i18n/fr.po:754-755) et la croix, l'application, puis ses sections. Une équipière
 # n'a que le profil Gouvernante : la seule section visible est « Gouvernante », sans « Répartir les
-# chambres du jour » (Réception) ni « Chambres (liste) » (désactivé) — menus.xml:3-18,
-# hotel_menus.xml:84-98.
+# chambres du jour » (Gouvernante générale) ni « Chambres (liste) » (désactivé) — menus.xml:3-28,
+# hotel_menus.xml:87-102.
 APPS_I = ('<svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="5" height="5" rx="1"/>'
           '<rect x="9.5" y="3" width="5" height="5" rx="1"/><rect x="16" y="3" width="5" height="5" rx="1"/>'
           '<rect x="3" y="9.5" width="5" height="5" rx="1"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/>'
@@ -588,12 +638,14 @@ MENU_TEL = [(None, 'Tableau des chambres'), ('jour', 'Ma journée'), (None, 'Tâ
 def accueil_tel(ident):
     """Ce que l'icône Hôtel ouvre pour le seul profil Gouvernante : le tableau des
     chambres (action_open_home, aite_hotel_management 18.0.1.0.6), en kanban
-    mobile (ref_muk/401) ; puis le menu de l'application, glissé depuis la gauche."""
+    mobile (ref_muk/401) ; puis le menu de l'application, glissé depuis la gauche.
+    Les quatre colonnes sont là depuis la livraison 4 : la deuxième, qui dépasse
+    à droite, est « Nettoyage en cours », encore vide."""
     cols = ('<div class="t07-mk-col"><div class="t07-mk-t">À nettoyer <span>(1)</span><i>%s</i></div>%s</div>'
-            '<div class="t07-mk-col"><div class="t07-mk-t">Propre <span>(19)</span><i>%s</i></div>%s</div>'
+            '<div class="t07-mk-col"><div class="t07-mk-t">Nettoyage en cours <span>(0)</span><i>%s</i></div>'
+            '</div>'
             % (ROUAGE, carte_ch(9, '103', 'Recouche à faire', 'Standard · Rez-de-chaussée', GASTON, ARR_103, E1,
-                                [COMMENCER]),
-               ROUAGE, carte_ch(9, '101', 'Propre — libre', 'Standard · Rez-de-chaussée', boutons=[A_NETTOYER])))
+                                [COMMENCER]), ROUAGE))
     tableau = ('<div class="t07-tel-tab" id="%s-tab"><div class="t07-tel-barre"><span class="t07-tel-g"><i>%s</i>'
                '<i>%s</i></span></div><div class="kanban t07-k t07-mk">%s</div></div>' % (ident, KANBAN, ICONES['loupe'],
                                                                                        cols))
@@ -766,7 +818,7 @@ CSS = """
 .t07-k .k-carte { padding: 12px 16px; line-height: 1.4; }
 .t07-k .k-carte .hint { color: #243742; }
 .t07-k .k-carte .t07-arr { color: #0E7490; }
-.t07-k .k-carte.hors-service .mini { color: #565D64; }
+.t07-k .k-carte.hors-service .mini { color: var(--o-texte-2); }   /* text-body (#495057), ECARTS n° 71 */
 .t07-k .k-carte .bts { margin-top: 8px; }
 .t07-k .k-carte .lg .ico svg { width: 16px; height: 16px; }
 .t07-k .t07-cle { padding: 0 10px; }
@@ -775,8 +827,8 @@ CSS = """
 #t07-l-eq { align-items: start; }
 #t07-l-eq .l { padding-top: 10px; }
 .t07-tetes { position: absolute; left: 16px; top: 10px; height: 40px; }
-/* menu déroulant « Gouvernante » */
-.t07-menu { position: absolute; left: 1012px; top: 52px; width: 330px; padding: 6px 0; background: #fff; border: 1px solid var(--o-filet);
+/* menu déroulant « Gouvernante », seul menu de la barre : 15 px à gauche du libellé, comme avant */
+.t07-menu { position: absolute; left: 130px; top: 52px; width: 330px; padding: 6px 0; background: #fff; border: 1px solid var(--o-filet);
   border-radius: 6px; box-shadow: 0 14px 34px rgba(0,0,0,.22); z-index: 29; }
 .t07-menu div { height: 44px; display: flex; align-items: center; padding: 0 20px; font-size: 19px; color: var(--o-texte); white-space: nowrap; }
 /* assistants */
@@ -945,7 +997,7 @@ TUTORIEL = {
     'bulles': {
         'b-phrase': "Une phrase d'état par carte, calculée sans aucune saisie.",
         'b-rep': 'Les chambres à faire, à tour de rôle, étage par étage.',
-        'b-tel': "Un bouton par étape : Je commence, puis C'est fait.",
+        'b-tel': "Un bouton par étape : Je commence, puis C'est fait, comme sur le tableau.",
         'b-check': 'Un point non coché renvoie la chambre en nettoyage, avec la remarque.',
         'b-hs': 'Hors service : retirée des disponibilités, check-in refusé.',
     },
@@ -955,24 +1007,31 @@ TUTORIEL = {
     },
     'etapes': [
         {'temps': 0, 'titre': 'Le tableau des chambres',
-         'texte': "Une colonne par état de ménage, une phrase claire sur chaque carte.",
-         'voix': "Le tableau des chambres se lit d'un coup d'œil : une colonne par état de ménage. Sur chaque carte, "
-                 "une phrase claire ; et si un client arrive, son nom et son heure d'arrivée.",
-         'gestes': [pause(0.4), anneau('#t07-b0-tetes', d=1.3), zoom('#t07-b0-103', s=1.7, d=0.8),
-                    bulle('b-phrase', '#t07-b0-103', cote='bas', d=2.6), pause(1.6),
-                    anneau('#t07-b0-103-arr', d=1.1), dezoom(d=0.6), anneau('#t07-b0-104', d=1.2)]},
+         'texte': "Quatre colonnes dans l'ordre du travail, une phrase claire sur chaque carte.",
+         'voix': "Le tableau des chambres se lit d'un coup d'œil : quatre colonnes, dans l'ordre du travail. Sur chaque "
+                 "carte, une phrase claire ; et si un client arrive, son nom et son heure d'arrivée.",
+         # Calés sur la voix : les colonnes sur « quatre colonnes », la bulle sur « une phrase claire »,
+         # l'arrivée de la 103 (nom et heure) sur « si un client arrive ».
+         'gestes': [pause(2.55), anneau('#t07-b0-tetes', d=1.8), zoom('#t07-b0-103', s=1.7, d=0.7),
+                    bulle('b-phrase', '#t07-b0-103', cote='bas', d=2.2), pause(1.25),
+                    anneau('#t07-b0-103-qui', d=1.6), dezoom(d=0.6)]},
         {'temps': 0, 'titre': 'Répartir les chambres du jour',
-         'texte': 'Un menu du profil Réception : on coche les équipières, les chambres partent à tour de rôle.',
-         'voix': "Pour lancer la journée, Josiane ouvre Répartir les chambres du jour, un menu du profil Réception, "
-                 "et coche %s et %s. Un clic sur Répartir : les cinq chambres à faire partent à tour de "
-                 "rôle, et chaque carte dit qui s'en charge." % (E1, E2),
-         'gestes': naviguer('repartir', [ouvrir('t07-as-rep')]) + [
+         'texte': "Réservé à la gouvernante générale : on coche l'équipe d'étage, les chambres partent à tour de rôle.",
+         'voix': "Pour lancer la journée, Josiane, gouvernante générale, ouvre Répartir les chambres du jour. Seule "
+                 "l'équipe d'étage y figure : elle coche %s et %s. Un clic sur Répartir : les cinq chambres partent "
+                 "à tour de rôle, et le tableau, rechargé aussitôt, dit qui s'en charge." % (E1, E2),
+         # « Répartir » ferme la fenêtre et recharge le tableau du dessous (soft_reload, ECARTS n° 53) :
+         # notification et tableau rechargé arrivent ensemble, sans repasser par le menu.
+         # Calés sur la voix : la fenêtre sur « ouvre Répartir », l'anneau sur « Seule l'équipe d'étage »,
+         # la bulle sur « à tour de rôle », le rechargement sur « le tableau, rechargé aussitôt ».
+         'gestes': [pause(0.8)] + naviguer('repartir', [ouvrir('t07-as-rep')]) + [
+             pause(1.6), anneau('#t07-l-eq', d=1.8),
              clic('#t07-eq-e1', fx=0.08, d=0.5), classe('#t07-eq-e1', ajouter=['coche']),
              clic('#t07-eq-e2', fx=0.1, d=0.4), classe('#t07-eq-e2', ajouter=['coche']),
-             curseur('#t07-rep-ok', d=0.4), bulle('b-rep', '#t07-rep-n', cote='droite', d=2.2), pause(1.0),
-             clic('#t07-rep-ok', d=0.45), fermer('t07-as-rep'), notifier('t07-toast-rep', duree=2.2), pause(1.6)]
-                   + naviguer('tableau', [cacher('#t07-b0', d=0.2), montrer('#t07-b1', d=0.35, y=0, avec=True)])
-                   + [anneau('#t07-b1-103-eq', d=1.1)]},
+             curseur('#t07-rep-ok', d=0.4), bulle('b-rep', '#t07-rep-n', cote='droite', d=1.8), pause(0.6),
+             clic('#t07-rep-ok', d=0.45), fermer('t07-as-rep'), cacher('#t07-b0', d=0.2, avec=True),
+             montrer('#t07-b1', d=0.35, y=0, avec=True), notifier('t07-toast-rep', duree=2.4, avec=True),
+             pause(0.5), anneau('#t07-b1-103-eq', d=1.0), anneau('#t07-b1-104-eq', d=0.9)]},
         {'temps': 0, 'titre': 'Ma journée, sur le téléphone',
          'texte': "L'icône Hôtel ouvre le tableau des chambres, le menu mène à Ma journée : Je commence, puis C'est fait.",
          'voix': "Sur son téléphone, %s ouvre l'application Hôtel : elle arrive sur le tableau des chambres, et le "
@@ -996,10 +1055,11 @@ TUTORIEL = {
                    + [anneau('#t07-b2-103', d=1.2)]},
         {'temps': 1, 'titre': "L'inspection en huit points",
          'texte': 'Un point non coché, une remarque : la chambre repart en nettoyage.',
-         'voix': "Josiane a créé la tâche d'inspection de la cent trois. Dans sa journée : Je commence, puis Passer la "
-                 "checklist. Huit points de contrôle, un interrupteur chacun. Les serviettes manquent : Josiane laisse ce point "
-                 "décoché, note sa remarque, et valide.",
+         'voix': "L'inspection de la cent trois s'est créée toute seule. Dans la journée de Josiane : Je commence, puis "
+                 "Passer la checklist. Huit points de contrôle, un interrupteur chacun. Les serviettes manquent : "
+                 "Josiane laisse ce point décoché, note sa remarque, et valide.",
          'gestes': naviguer('journee', [vue('t07-journee')]) + [
+             anneau('#t07-tj103', d=1.0),      # l'inspection attend déjà, créée seule
              clic('#t07-tj103-go', d=0.4), etat('#t07-tj103-etat', 'En cours', 'info', puis=0.15),
              cacher('#t07-tj103-go', d=0.2), montrer('#t07-tj103-chk', d=0.25, y=0), clic('#t07-tj103-chk', d=0.35),
              ouvrir('t07-as-insp'), curseur('#t07-ck0', d=0.35, avec=True),
@@ -1016,8 +1076,10 @@ TUTORIEL = {
          'texte': 'Une recouche urgente, avec le point à reprendre et la remarque.',
          'voix': "La cent trois repart aussitôt en nettoyage. %s reçoit une recouche urgente, avec la consigne "
                  "exacte : le point à reprendre, et la remarque de Josiane." % E1,
-         'gestes': [pause(0.3), ouvrir('t07-tel-b'), zoom('#t07-tb103', s=1.5, d=0.8),
-                    anneau('#t07-tb103-note', d=1.5), reaction('r-consigne', d=2.8), pause(2.2), dezoom(d=0.6),
+         # L'anneau sur « la consigne exacte : le point à reprendre » ; la réaction après le dézoom,
+         # pour ne pas couvrir le bouton de la 401 sur le téléphone agrandi.
+         'gestes': [pause(0.3), ouvrir('t07-tel-b'), zoom('#t07-tb103', s=1.5, d=0.8), pause(2.8),
+                    anneau('#t07-tb103-note', d=2.6), dezoom(d=0.5), reaction('r-consigne', d=1.9),
                     fermer('t07-tel-b')]},
         {'temps': 2, 'titre': 'Signaler une panne',
          'texte': 'Depuis la carte : la chambre libre sort de la vente, sur fond rouge.',
@@ -1028,9 +1090,9 @@ TUTORIEL = {
              clic('#t07-b3-102-cle', d=0.5), ouvrir('t07-as-pb'),
              saisir('t07-pb', 'Climatiseur en panne'), clic('#t07-bloque', d=0.4),
              classe('#t07-bloque', ajouter=['coche']), clic('#t07-pb-ok', d=0.5), fermer('t07-as-pb'),
-             notifier('t07-toast-pb', duree=2.0), cacher('#t07-b3', d=0.2, avec=True),
-             montrer('#t07-b4', d=0.35, y=0, avec=True),
-             pause(0.7), zoom('#t07-b4-102', s=1.6, d=0.7), bulle('b-hs', '#t07-b4-102-bts', cote='droite', d=2.3),
+             notifier('t07-toast-pb', duree=2.0), cacher('#t07-b3', d=0.01, avec=True),
+             montrer('#t07-b4', d=0.01, y=0, avec=True),      # la fenêtre se ferme en rechargeant la vue
+             pause(0.7), zoom('#t07-b4-102', s=1.6, d=0.7), bulle('b-hs', '#t07-b4-102-bts', cote='gauche', d=2.3),
              pause(1.5), dezoom(d=0.6)]},
         {'temps': 2, 'titre': 'Pannes & réparations',
          'texte': 'Josiane passe la demande à Réparé : la chambre revient en vente, à nettoyer.',
