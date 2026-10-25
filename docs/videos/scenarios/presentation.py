@@ -9,6 +9,17 @@ maintenance, indicateurs RevPAR / pickup / pace.
 
 Chaque chapitre vit dans son module (``scenarios/cN_<poste>.py``) : l'écran
 rejoué, ses libellés et leurs sources, les gestes et la voix.
+
+Chiffres de la carte « La solution » : 16 modules livrés (``addons/``) ;
+874 tests automatisés, recomptés pour la livraison 4 (``def test_`` dans
+``addons/*/tests/``, écarts n° 37-77 compris, et le test de l'en-tête
+« Écart (FCFA) » d'aite_pos_analytics 18.0.2.1.4 ; 613 avant) ; recette UAT de
+6 scénarios et 34 étapes, sans écart (docs/GUIDE_RECETTE_UAT.md) ; cahier de
+recette de 146 cas sur 17 domaines (recette/cas_de_test.py).
+
+Le moteur ne lit qu'une feuille de style par vidéo (``SCENARIO['css']``,
+moteur.py:671) : elle réunit le CSS propre à chaque chapitre
+(``CHAPITRE['css']``, par exemple le « ? » d'aide ``.c1-aide``).
 """
 
 import importlib
@@ -31,6 +42,9 @@ def _chapitres():
     return liste
 
 
+_CHAPITRES = _chapitres()
+
+
 SCENARIO = {
     'slug': '01-presentation',
     'profil': 'presentation',
@@ -49,7 +63,7 @@ SCENARIO = {
         ('Pour qui', "Hôtels, résidences et complexes hôteliers, en francs CFA"),
         ('Ce qu\'elle couvre', "16 modules : hébergement, espaces, site web, caisse, crédit, fidélité, stock, achats, direction"),
         ('Où elle tourne', "Odoo 18, édition Community ou Enterprise"),
-        ('Comment elle est validée', "Une recette poste par poste : 6 scénarios, 34 étapes, aucun écart ; 613 tests automatisés"),
+        ('Comment elle est validée', "Une recette poste par poste : 6 scénarios, 34 étapes, aucun écart ; 874 tests automatisés"),
     ],
     'circuit': {
         'kicker': '2 · Le parcours',
@@ -70,7 +84,8 @@ SCENARIO = {
             ('Votre profil', "Il décide de vos menus : Réception, Gouvernante, Caisse, Magasin ou Direction."),
         ],
     },
-    'chapitres': _chapitres(),
+    'chapitres': _CHAPITRES,
+    'css': '\n'.join(chap['css'] for chap in _CHAPITRES if chap.get('css')),
     'retenir': {
         'kicker': 'À retenir',
         'regle': "Un seul outil, un seul folio, une seule vérité : chaque geste du terrain alimente les chiffres de la direction.",

@@ -150,6 +150,19 @@ ou phrases fausses.
 >   d'inventaire (seul l'affichage du tableau de bord est traduit) ;
 >   chaînes du point de vente standard (« soldes dûs », texte indicatif du
 >   reçu) non surchargées pour ne pas risquer de bloquer la caisse.
+> - libellé de la ligne de taxe « Taxe de séjour — 4 nuitée(s) × personne
+>   (3 ★, Cameroun) » (`aite_city_tax/models/hotel_folio.py:145`) : le
+>   « (s) » reste ; l'accorder (« 1 nuitée », « 4 nuitées ») changerait la
+>   ligne vue dans t01, t03, t04, t05 et la présentation, à refaire ensemble.
+>
+> **État au 25/10/2026 : les vidéos montrent la livraison 4.** Les quinze
+> tutoriels et la présentation ont été refaits sur le produit corrigé, chacun
+> relu de façon adverse, image par image, avant son rendu (son à −16 LUFS).
+> La colonne « Dans la vidéo » des tableaux décrit la version d'avant. Une
+> dernière correction du produit est venue du tournage : l'en-tête
+> « Écart (F) » de l'onglet Écarts de caisse devient « Écart (FCFA) »
+> (`aite_pos_analytics` 18.0.2.1.4, test `test_amount_headers_say_fcfa`),
+> t12 refait.
 
 ### B. Règle 6 — formats et langue
 

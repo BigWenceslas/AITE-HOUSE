@@ -76,6 +76,13 @@ Aucun élément de vue réservé à ce groupe ne s'affiche donc : ni « Hôtel �
 au folio ou dans la liste des réservations, ni « Société » sur une fiche
 (capture de référence du profil Réception : `ref_muk/306`).
 
+Seule exception à l'image : la barre « Hôtel » du profil Direction (neuf
+menus, chapitres c6 et c7 de la présentation) n'a pas la place du nom de la
+société. Odoo rangerait les derniers menus sous « + »
+(`web/static/src/webclient/navbar/navbar.js:120-190`), ce qui cacherait
+« Configuration », que c7 ouvre au premier geste ; la vidéo garde les menus
+et omet le nom.
+
 Claire Durand réserve en ligne le salon VIP Wouri pour le samedi 17/10 à
 16:00 (`CRN/2026/0131`) ; on retrouve sa réservation dans le planning des
 espaces de la direction. Les réservations de créneaux portent le préfixe

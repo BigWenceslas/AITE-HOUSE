@@ -12,22 +12,29 @@ Libellés relevés dans : aite_website_booking/views/website_templates.xml
 placeholders, « Réserver ce créneau », mention de l'acompte, page « Merci ! »
 pour un créneau et pour un séjour, « Demande de séjour », « Envoyer la
 demande »), aite_slot_booking/data/slot_sequence_data.xml (référence
-RES/AA/NNNN). L'en-tête du site (logo, menus) est celui du site de
-l'établissement : il est rejoué neutre, au nom de l'hôtel de démonstration,
-avec le menu « Contactez-nous » d'Odoo et le téléphone de l'hôtel de la série.
+CRN/AAAA/NNNN : préfixe propre aux créneaux et année sur quatre chiffres
+depuis la livraison 4, écart n° 61 ; les séjours gardent RES/AAAA/NNNN).
+L'en-tête du site (logo, menus) est celui du site de l'établissement : il est
+rejoué neutre, au nom de l'hôtel de démonstration, par ecrans.site (menus
+« Accueil », « Réservation », « Contactez-nous » d'Odoo, téléphone de l'hôtel
+de la série, demo.TEL_HOTEL). « Confirmation immédiate par e-mail » et « Un
+e-mail de confirmation vous a été envoyé. » ne s'affichent que si l'envoi
+automatique est actif (écart n° 49) : c'est le réglage par défaut
+(aite_slot_booking/models/res_config_settings.py:33-37), et Claire donne son
+e-mail.
 
 Données harmonisées avec scenarios/t08_site_web.py (le même parcours, en
 tutoriel) : tarifs des salons 15 000 et 25 000 FCFA / heure (ceux du
 tutoriel 9) ; Claire Durand (+33 6 39 98 21 47, plage réservée à la fiction ;
 claire.durand@exemple.fr) réserve le salon VIP Wouri pour le samedi
-17/10/2026 à 16:00, référence RES/26/0131 ; créneaux libres du 17/10
-(12:00-14:00 et 19:00-21:00 déjà vendus) ; sa demande de séjour du 20 au
-23/10 devient RES/2026/0224.
+17/10/2026 à 16:00, référence CRN/2026/0131 (demo.CRENEAU_SALON) ; créneaux
+libres du 17/10 (12:00-14:00 et 19:00-21:00 déjà vendus) ; sa demande de
+séjour du 20 au 23/10 devient RES/2026/0224 (départ à 12:00, l'heure de
+l'hôtel, écart n° 58).
 """
 
 TEL_CLAIRE = '+33 6 39 98 21 47'
 TARIF_SALON, TARIF_VVIP = '15 000 FCFA / heure', '25 000 FCFA / heure'
-TEL_HOTEL = '+237 6 00 00 00 10'
 
 
 import demo
@@ -76,12 +83,12 @@ CRENEAU = s_vue('c4-creneau', (
 
 MERCI = s_vue('c4-merci', (
     '<div class="s-merci"><div class="h">Merci !</div>'
-    '<div class="p">Votre réservation <b>RES/26/0131</b> est <b>confirmée</b>.</div>'
+    '<div class="p">Votre réservation <b>%s</b> est <b>confirmée</b>.</div>'
     '<div class="q" style="color:var(--o-texte)">Salon VIP Wouri</div>'
     '<div class="q">Un e-mail de confirmation vous a été envoyé.</div>'
     '<div class="s-alerte" id="c4-acompte">L\'acompte se règle au comptoir à votre arrivée — <b>Orange Money, MTN MoMo '
     'ou espèces</b>.</div><div style="margin-top:22px"><span class="s-bouton contour" style="display:inline-flex;padding:0 22px">'
-    'Retour aux réservations</span></div></div>'))
+    'Retour aux réservations</span></div></div>' % e(demo.CRENEAU_SALON)))
 
 SEJOUR = s_vue('c4-sejour', (
     '<div class="s-form"><div class="s-h1">Demande de séjour</div>'
@@ -101,9 +108,8 @@ MERCI_SEJOUR = s_vue('c4-merci2', (
     '<div style="margin-top:22px"><span class="s-bouton contour" style="display:inline-flex;padding:0 22px">'
     'Retour aux réservations</span></div></div>'))
 
-# L'en-tête partagé (ecrans.site) écrit « Nous contacter » et un autre numéro : on rejoue celui de l'hôtel (t08).
-ECRAN = (site('app-c4', [ACCUEIL, ESPACES, CRENEAU, MERCI, SEJOUR, MERCI_SEJOUR], 'Complexe Hôtelier')
-         .replace('Nous contacter', 'Contactez-nous').replace('+237 6 99 00 00 00', TEL_HOTEL))
+# L'en-tête partagé (ecrans.site) : « Accueil », « Réservation », « Contactez-nous » et demo.TEL_HOTEL.
+ECRAN = site('app-c4', [ACCUEIL, ESPACES, CRENEAU, MERCI, SEJOUR, MERCI_SEJOUR], 'Complexe Hôtelier')
 
 CHAPITRE = {
     'court': 'Site web',
