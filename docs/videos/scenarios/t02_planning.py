@@ -5,11 +5,12 @@ Personnage : la réceptionniste (demo.POSTES['reception']), profil Réception
 (aite_hotel_management.group_hotel_user) : c'est elle qui consulte le
 planning, cherche les disponibilités, réserve, prolonge et change un client
 de chambre (security/ir.model.access.csv ; menus réservés à ce groupe,
-views/hotel_menus.xml:15-63). Applications de la barre MuK :
-ecrans.APPS_PROFIL['reception'] ; menus de l'application Hôtel relevés pour
-le compte demo.reception sur la base MuK (Front Desk, Réservations, Espaces &
+views/hotel_menus.xml:21-66). Applications de la barre MuK :
+ecrans.APPS_PROFIL['reception'] ; menus de l'application Hôtel :
+ecrans.MENUS_MUK['hotel_reception'] (Réception — anciennement « Front
+Desk », écart n° 42 corrigé dans la livraison 4 —, Réservations, Espaces &
 Prestations, Notes de chambre en attente, Facturation, Fidélité,
-Gouvernante) ; sous-menus : hotel_menus.xml:15-63 (« Tableau de bord »,
+Gouvernante) ; sous-menus : hotel_menus.xml:21-66 (« Tableau de bord »,
 « Réservation rapide », « Arrivées du jour », « Départs du jour », « Clients
 présents » ; « Réservations », « Planning des chambres »).
 
@@ -32,41 +33,43 @@ Accroche (douleurs, toutes sourcées) :
   Enterprise) »).
 
 Promesse et révélation : le planning (action « Planning des chambres »,
-views/hotel_reservation_views.xml:314-396 : calendrier, une barre par ligne
-de séjour, couleur par chambre, états Confirmée / Arrivé / Parti seulement) ;
-la Réservation rapide (wizard/hotel_booking_wizard.py:62-128) ; le refus à
-la confirmation (models/hotel_reservation.py:288-305, :319-334) et la
-contrainte de chevauchement (hotel_reservation.py:709-732). Les deux limites
-qui retenaient la promesse sont corrigées dans aite_hotel_management
-18.0.1.0.6 : un séjour « Arrivé » dont le départ est dépassé bloque sa
-chambre jusqu'au check-out (_overlap_domain, hotel_reservation.py:648-672 ;
-message « La chambre %(room)s est toujours occupée par %(ref)s (%(guest)s),
-dont le départ était prévu le %(cout)s : faites d'abord son check-out, ou
-prolongez son séjour. », :308-318), et les chambres sont verrouillées à la
-confirmation (_lock_for_booking, hotel_room.py:459-479). Ni l'un ni l'autre
+views/hotel_reservation_views.xml:334-359 et :410-420 : calendrier, une
+barre par ligne de séjour, couleur par chambre, états Confirmée / Arrivé /
+Parti seulement) ; la Réservation rapide (wizard/hotel_booking_wizard.py:
+87-159) ; le refus à la confirmation (models/hotel_reservation.py:323-360,
+:374-390) et la contrainte de chevauchement (hotel_reservation.py:744-768).
+Deux protections de plus, livrées avec aite_hotel_management 18.0.1.0.6 :
+un séjour « Arrivé » dont le départ est dépassé bloque sa chambre jusqu'au
+check-out (_overlap_domain, hotel_reservation.py:684-702 ; message « La
+chambre %(room)s est toujours occupée par %(ref)s (%(guest)s), dont le
+départ était prévu le %(cout)s : faites d'abord son check-out, ou
+prolongez son séjour. », :341-351), et les chambres sont verrouillées à la
+confirmation (_lock_for_booking, hotel_room.py:502). Ni l'une ni l'autre
 ne se voit dans ce tutoriel : la promesse, la voix de la révélation et le
 titre restent sur ce qu'il montre, une chambre déjà réservée sur ces dates
 refusée à la confirmation.
 
 Écrans et libellés (relevés mot pour mot) :
-1. Réservations (vue de départ) — views/hotel_reservation_views.xml:5-32
+1. Réservations (vue de départ) — views/hotel_reservation_views.xml:5-34
    (colonnes « Référence », « Client », « Arrivée », « Départ », « Nuits »,
    « Nb chambres », « Total hébergement (HT) », « État », somme du total ;
-   décorations info / success / muted) ; filtre « Confirmées » (:242-243) ;
-   « Solde folio » et « Registre » (aite_guest_registry/views/
-   hotel_reservation_views.xml:56-66) sont des colonnes optionnelles,
-   masquées ici par le sélecteur de colonnes ; libellés des champs :
-   models/hotel_reservation.py:29-140. Mise en page : ref_muk/027 (liste).
-2. Planning des chambres — views/hotel_reservation_views.xml:314-335 et
-   :386-396 (calendar string « Planning des chambres », date_start / date_stop,
-   color="room_id", mode="month", filtre « Chambre » (filters="1"), champs
-   « Chambre », « Client », « Réservation », « État » de la fenêtre de
-   détail) ; libellé d'une barre « <chambre> · <client> »
-   (hotel_reservation.py:611-617), chambre « 204 [CFT] » (models/
-   hotel_room.py:373-380) ; domaine confirmed / checked_in / checked_out
-   (:390). Cadre du calendrier d'Odoo 18 (odoo18/addons/web/i18n/fr.po :
-   « Aujourd'hui », « Mois », « Rechercher… », « Modifier »,
-   « en plus ») ; empilement des barres : eventLimit = 5
+   décorations info / success / muted) ; filtre « Confirmées » (:255-256) ;
+   « Solde folio » (:22), « Canal » (:25, badge, affiché par défaut depuis
+   la livraison 4, écart n° 58) et « Registre » (aite_guest_registry/views/
+   hotel_reservation_views.xml:62-79) sont des colonnes optionnelles,
+   masquées ici par le sélecteur de colonnes (⇋) : la liste ne sert que de
+   point de départ, une seconde à l'écran ; libellés des champs :
+   models/hotel_reservation.py:29-145. Mise en page : ref_muk/027 (liste).
+2. Planning des chambres — views/hotel_reservation_views.xml:334-359 et
+   :410-420 (calendar string « Planning des chambres », date_start /
+   date_stop, color="room_id", mode="month", hide_date="1", champs
+   « Arrivée » et « Départ » sans les secondes (options show_seconds), filtre
+   « Chambre » (filters="1"), « Client », « Réservation », « État ») ;
+   libellé d'une barre « <chambre> · <client> » (hotel_reservation.py:
+   715-719), chambre « 204 [CFT] » (models/hotel_room.py:374-380) ; domaine
+   confirmed / checked_in / checked_out (:414). Cadre du calendrier d'Odoo 18
+   (odoo18/addons/web/i18n/fr.po : « Aujourd'hui », « Mois », « Rechercher… »,
+   « Modifier », « en plus ») ; empilement des barres : eventLimit = 5
    (calendar_arch_parser.js:26) passé en dayMaxEventRows
    (calendar_common_renderer.js:87) : jusqu'à cinq rangées par case, au-delà
    quatre et « +N en plus » (lib/fullcalendar/daygrid/index.global.js:284-292,
@@ -76,60 +79,83 @@ refusée à la confirmation.
    durée décroissante, libellé » ; barres passées voilées (calendar_common_renderer.js:266-268,
    calendar_renderer.scss:58-64) ; numéros de semaine (weekNumbers: true,
    calendar_common_renderer.js:119). Forme, couleurs des chambres, fenêtre
-   de détail (« octobre 14-16, 2026 », bouton Modifier) : ref_muk/028 et
-   captures en lecture seule sur la base MuK (compte demo.reception). Le
-   bouton « Supprimer » de la fenêtre de détail a disparu : calendrier
-   delete="0" (views/hotel_reservation_views.xml:330, aite_hotel_management
-   18.0.1.0.6), et une ligne confirmée ou arrivée ne se supprime plus
-   directement (_unlink_guard_line, hotel_reservation.py:734-765).
-3. Réservation rapide — views/hotel_menus.xml:27-31 ; wizard/
-   hotel_booking_wizard_views.xml:8-61 (« Hôtel », « Arrivée », « Départ »,
+   de détail : ref_muk/028 et captures en lecture seule sur la base MuK
+   (compte demo.reception). La fenêtre de détail n'a plus d'en-tête de date :
+   hide_date masque la date du cadre d'Odoo (« octobre 14-16, 2026 », écart
+   n° 43 corrigé dans la livraison 4 ; calendar_arch_parser.js:106-107,
+   calendar_common_popover.js:96-107) et la plage n'étant pas d'un seul
+   jour, aucune heure ne s'affiche ; les champs suivent dans l'ordre de la
+   vue (calendar_arch_parser.js:129, calendar_common_popover.xml:44-66,
+   libellé en gras) : « Arrivée 14/10/2026 14:00 », « Départ 16/10/2026
+   12:00 » (formatDateTime sans les secondes, web/core/l10n/dates.js:
+   395-411), Chambre, Client, Réservation, État. Pas de bouton « Supprimer » :
+   calendrier delete="0" (:344, aite_hotel_management 18.0.1.0.6), et une
+   ligne confirmée ou arrivée ne se supprime plus directement
+   (_unlink_guard_line, hotel_reservation.py:770-800).
+3. Réservation rapide — views/hotel_menus.xml:31-35 ; wizard/
+   hotel_booking_wizard_views.xml:8-66 (« Hôtel », « Arrivée », « Départ »,
    « Type de chambre » et son aide, « Adultes », « Enfants », « Rechercher
    les chambres disponibles », colonnes « Réserver », « Chambre », « Type »,
    « Étage », « Cap. adultes », « Nuits », « Prix / nuit », « Total séjour
-   (HT) », « Client », « Confirmer immédiatement », « Réserver »,
-   « Fermer ») ; wizard/hotel_booking_wizard.py:18-128 (défauts, recherche :
-   chambres libres seulement, triées par type puis numéro, hors service et
-   capacité exclues ; réservation confirmée d'un clic). Après la recherche,
-   la fenêtre s'intitule « Odoo » (action sans nom, hotel_booking_wizard.py:
-   89-95 ; odoo18 action_service.js:1014-1016, dialog.js:67) : rejoué tel
-   quel. Mise en page : ref_muk/022.
-4. Fiche réservation — views/hotel_reservation_views.xml:36-167 (« Confirmer »,
+   (HT) », « Client », « Canal », « Confirmer immédiatement », « Réserver »,
+   « Fermer ») ; wizard/hotel_booking_wizard.py:18-123 et :162-200 (défauts,
+   recherche : chambres libres seulement, triées par type puis numéro, hors
+   service et capacité exclues ; réservation confirmée d'un clic). Depuis la
+   livraison 4 : la fenêtre garde son titre « Réservation rapide » après la
+   recherche (action nommée, hotel_booking_wizard.py:116-118, écart n° 45
+   corrigé : elle s'intitulait « Odoo ») ; le champ « Canal » (mêmes canaux
+   que la réservation, « Direct / comptoir » par défaut, avec son aide :
+   « Canal ? », comme « Type de chambre ? ») suit « Client » et
+   passe sur la réservation (hotel_booking_wizard.py:46-55, :125-140 ;
+   hotel_booking_wizard_views.xml:49-56 ; écart n° 56 corrigé). Rodrigue
+   Tamba appelle : Mireille choisit « Téléphone / WhatsApp »
+   (hotel_reservation.py:70-79 ; test_ecarts_nb.py:181-189 fait la même
+   chose). Mise en page : ref_muk/022.
+4. Fiche réservation — views/hotel_reservation_views.xml:37-170 (« Confirmer »,
    « Check-in », « Encaisser un acompte », « Envoyer la confirmation »,
-   « No-show », « Annuler », statusbar Brouillon / Confirmée / Arrivé /
-   Parti, bouton « Folio », groupes « Client », « Séjour », « Canal &
+   « Non présenté » (:59-61, anciennement « No-show », écart n° 42 corrigé),
+   « Annuler », statusbar Brouillon / Confirmée / Arrivé / Parti, bouton
+   « Folio » (:73-83), groupes « Client », « Séjour », « Canal &
    commission », « Occupation », onglets « Chambres » / « Demandes
    particulières », colonnes des lignes dont « Prix fixé » (price_locked,
-   optional="show", :143-144 ; hotel_reservation.py:591-598), icône ⇄
-   « Changer de chambre ») ;
-   aite_guest_registry/views/hotel_reservation_views.xml:11-47 (« Fiches
-   clients », « Fiches d'enregistrement ») ; canal « Direct / comptoir », le
-   canal par défaut que la Réservation rapide ne demande pas
-   (hotel_reservation.py:70-78, hotel_booking_wizard.py:105-118). Statusbar réduite à
-   l'état courant et boutons sur deux rangées, discussion à droite :
-   ref_muk/027 (fiche). Discussion d'Odoo 18 : « Envoyer message », « Note »,
-   « Activités », séparateur de date « Aujourd'hui », « Aujourd'hui à 10:12 »
+   optional="show", :145-146 ; hotel_reservation.py:626-633), icône ⇄
+   « Changer de chambre » (:155-158)) ; aite_guest_registry/views/
+   hotel_reservation_views.xml:11-25 (bouton intelligent « Fiches
+   d'enregistrement », anciennement « Fiches clients ») et :50-54 (bouton
+   d'impression « Imprimer les fiches », anciennement « Fiches
+   d'enregistrement ») ; canal « Direct / comptoir » pour la saisie au
+   comptoir de Jacques Owona (défaut, hotel_reservation.py:70-79).
+   « Client » est modifiable en brouillon et confirmée, « Hôtel » en
+   brouillon seulement (:91-97) : champs de saisie (libellé gras, valeur
+   soulignée, pas en lien — web/…/many2one_field.xml) ; « Hôtel » en lien
+   sur la fiche confirmée de Rodrigue, en saisie sur le brouillon de
+   Jacques.
+   Statusbar réduite à l'état courant et boutons sur deux rangées,
+   discussion à droite : ref_muk/027 (fiche). Discussion d'Odoo 18 :
+   « Envoyer message », « Note », « Activités », séparateur de date
+   « Aujourd'hui », « Aujourd'hui à 10:12 »
    (odoo18/addons/mail/static/src/core/common/message_model.js:225-262 ;
-   mail/i18n/fr.po:10407-10408), suivi
-   « ancien → nouveau (Champ) » (mail/static/src/core/web/message_patch.xml:
-   15-19), message de
-   création « %s créé » (mail_thread.py:458, fr.po:269-270) appliqué à
-   « Réservation hôtelière » (hotel_reservation.py:25).
-5. Double réservation refusée — hotel_reservation.py:288-305 (message
+   mail/i18n/fr.po:10407-10408), suivi « ancien → nouveau (Champ) »
+   (mail/static/src/core/web/message_patch.xml:15-19, dates avec les
+   secondes : message_patch.js:92-97), message de création « Réservation
+   créée » (_creation_message, hotel_reservation.py:286-290, écart n° 43
+   corrigé : « Réservation hôtelière créé »).
+5. Double réservation refusée — hotel_reservation.py:352-360 (message
    « La chambre %(room)s n'est pas disponible du %(cin)s au %(cout)s (déjà
-   réservée ou hors service). », dates en ISO et en UTC) ; UserError →
-   « Opération invalide » et bouton « Fermer » (odoo18/addons/web/static/src/
-   core/errors/error_dialogs.js:36, error_dialogs.xml:4-13, fr.po:3267-3269
-   et :1500-1502) ; la réservation reste « Brouillon » (le contrôle précède
-   le changement d'état, :319-334). Le zoom cadre « La chambre 204 [CFT]
-   n'est pas disponible » et la bulle ne vante que la chambre nommée : les
-   dates du message sont en ISO et en UTC (écart).
-6. Prolonger — hotel_reservation.py:264-273 (dates modifiées sur une
+   réservée ou hors service). », dates à l'heure de l'utilisateur au format
+   « 15/10/2026 14:00 » : _fmt_local_datetime, :197-200, écart n° 37 corrigé
+   — elles s'écrivaient en ISO et en UTC) ; UserError → « Opération
+   invalide » et bouton « Fermer » (odoo18/addons/web/static/src/core/
+   errors/error_dialogs.js:36, error_dialogs.xml:4-13, fr.po:3267-3269 et
+   :1500-1502) ; la réservation reste « Brouillon » (le contrôle précède le
+   changement d'état, :374-390). Le zoom cadre tout le message, la bulle dit
+   qu'il nomme la chambre et les dates.
+6. Prolonger — hotel_reservation.py:292-307 (dates modifiées sur une
    réservation confirmée : disponibilité revérifiée, folio resynchronisé),
-   :188-196 (nuits), :198-205 (totaux) ; suivi du champ « Départ »
-   (tracking=True, :61) ; test_reservation.py:370-376
+   :206-214 (nuits), :216-223 (totaux) ; suivi du champ « Départ »
+   (tracking=True, :60-62) ; test_reservation.py:370-377
    (test_extending_stay_updates_folio). Le bouton « Folio » affiche le solde
-   (folio_amount_residual, views/hotel_reservation_views.xml:70-80 ;
+   (folio_amount_residual, views/hotel_reservation_views.xml:73-83 ;
    hotel_reservation.py:121-124). Convention de la série (fiche
    d'harmonisation) : aucun article sans TVA, taxe de séjour 3 ★ de
    3 000 FCFA par personne et par nuit. Rodrigue Tamba (RES/2026/0221), sans
@@ -137,59 +163,66 @@ refusée à la confirmation.
    prolongé d'une nuit : 90 000 + 12 000 = 102 000 FCFA, le folio de la
    série (t03_folio.py, t08_site_web.py). Estelle Ngono n'est ni prolongée
    ni déplacée : elle garde la 204 du 14 au 16/10 (fiche d'harmonisation).
-7. Changer de chambre — wizard/hotel_room_change_wizard_views.xml:4-52
+   Montants des champs au format d'Odoo (ecrans.fcfa : espace insécable).
+7. Changer de chambre — wizard/hotel_room_change_wizard_views.xml:4-38
    (« Changer de chambre », groupes « Séjour » / « Nouvelle chambre »,
    « Client », « Chambre actuelle », « Arrivée », « Départ », « Nouvelle
    chambre », « Conserver le prix actuel », « Prix actuel / nuit »,
    « Nouveau prix / nuit », « ? » après « Prix actuel / nuit » (champ lié à
-   price_night, dont il hérite l'aide : hotel_reservation.py:562-566,
+   price_night, dont il hérite l'aide : hotel_reservation.py:619-625,
    odoo18/odoo/fields.py:767), « Changer la chambre », « Annuler » ; le
    bandeau « Surclassement gracieux : … » n'apparaît que case cochée,
-   invisible="not keep_price") ; wizard/hotel_room_change_wizard.py:20-97
+   invisible="not keep_price") ; wizard/hotel_room_change_wizard.py:20-102
    (aides, prix ; case cochée, la ligne passe « Prix fixé » et le message
-   « Surclassement gracieux : le tarif de %(price)s / nuit est conservé. »
-   est posté ; le prix fixé n'est plus recalculé par une prolongation :
-   _compute_price_night, hotel_reservation.py:622-642, et l'aide du champ
-   « Prix fixé » ; tests test_ecarts_videos.py:87-139 ; corrigé dans
-   aite_hotel_management 18.0.1.0.6). Ici, de la 201 à la 203, deux Confort à
-   45 000, la case reste décochée, « Prix fixé » aussi, et la bulle en dit
-   l'usage d'après les deux aides ; hotel_reservation.py:781-808 (disponibilité contrôlée, message
+   « Surclassement gracieux : le tarif de 45 000 FCFA / nuit est conservé. »
+   est posté — montant avec la devise depuis la livraison 4, format_amount,
+   :95-101, écart n° 40 corrigé ; le prix fixé n'est plus recalculé par une
+   prolongation : _compute_price_night, hotel_reservation.py:657-678, et
+   l'aide du champ « Prix fixé » ; tests test_ecarts_videos.py:87-139).
+   Ici, de la 201 à la 203, deux Confort à 45 000, la case reste décochée,
+   « Prix fixé » aussi, et la bulle en dit l'usage d'après les deux aides ;
+   hotel_reservation.py:816-849 (disponibilité contrôlée, message
    « Changement de chambre : %(old)s → %(new)s. », folio resynchronisé) ;
-   tests test_reservation.py:305-333, test_wizards.py:241-258. Rodrigue
+   tests test_reservation.py:305-338, test_wizards.py:264-282. Rodrigue
    Tamba finit en 203, du 19 au 21/10 : la réservation de la série
    (t03_folio.py, t08_site_web.py).
 
-Chiffres des résultats : 43 tests automatisés — addons/aite_hotel_management/
+Chiffres des résultats : 49 tests automatisés — addons/aite_hotel_management/
 tests/test_room_pricing.py:209-249 (7 tests de disponibilité),
-test_reservation.py:133, 148, 241, 305, 315, 326, 370, 379, 389, 405 (10),
-test_wizards.py:27-114 et 241-250 (14), test_ecarts_videos.py:87-240 (12 :
+test_reservation.py:133, 148, 241, 305, 315, 326, 370, 379, 390, 406 (10),
+test_wizards.py:27-114, 264 et 273 (14), test_ecarts_videos.py:87-240 (12 :
 prix fixé et prolongation 3, double vente 4, suppression depuis le
-planning 5, ajoutés avec aite_hotel_management 18.0.1.0.6) ; 1 clic — bouton « Rechercher les
-chambres disponibles » (hotel_booking_wizard_views.xml:22-26) ; 2 éditions
-— le même menu « Planning des chambres », sur Community comme sur
-Enterprise : le socle ne dépend d'aucun module Enterprise et porte la vue
-calendrier (docs/RAPPORT_TESTS.md:44-68, A1 ; views/hotel_reservation_views.xml:
-314-396 ; vérifié par installation sur Community) ; sur Enterprise, le module
-passerelle aite_hotel_gantt garde la vue calendrier dans l'action (view_mode
-« gantt,calendar,list,form », aite_hotel_gantt/views/
+planning 5, ajoutés avec aite_hotel_management 18.0.1.0.6),
+test_ecarts_nb.py:82, 126, 177, 181, 191, 201 (6, livraison 4 : dates du
+refus, montant du surclassement, titre et canal de la Réservation rapide) ;
+1 clic — bouton « Rechercher les chambres disponibles »
+(hotel_booking_wizard_views.xml:24-26) ; 2 éditions — le même menu
+« Planning des chambres », sur Community comme sur Enterprise : le socle ne
+dépend d'aucun module Enterprise et porte la vue calendrier
+(docs/RAPPORT_TESTS.md:44-68, A1 ; views/hotel_reservation_views.xml:
+334-420 ; vérifié par installation sur Community) ; sur Enterprise, le
+module passerelle aite_hotel_gantt garde la vue calendrier dans l'action
+(view_mode « gantt,calendar,list,form », aite_hotel_gantt/views/
 hotel_reservation_gantt_views.xml:8-35). Ni le Gantt ni une installation
 automatique ne sont annoncés : web_gantt n'est ni dans le dépôt ni sur une
 base de démonstration, et sur une base Enterprise où le socle est déjà
-installé, aite_hotel_gantt ne s'installe pas seul à la mise à niveau.
+installé, aite_hotel_gantt ne s'installe pas seul à la mise à niveau (il
+s'installe à la main depuis Apps, écart n° 72).
 
-ÉCARTS rejoués tels quels (signalés, jamais corrigés) : dates ISO en heure
-UTC dans le refus de disponibilité (« du 2026-10-15 13:00:00 au 2026-10-17
-11:00:00 », hotel_reservation.py:322-328 ; CLAUDE.md règle 6) ; titre « Odoo »
-de la Réservation rapide après la recherche ; date de la fenêtre de détail
-au format « octobre 14-16, 2026 » (cadre Odoo) ; anglais résiduel « Front
-Desk », « Check-in », « No-show » ; « Réservation hôtelière créé » (accord du
-message de création d'Odoo). Non rejoué mais relevé : montant brut
-« 45000.0 » sans FCFA dans le message de surclassement
-(hotel_room_change_wizard.py:94-96), qui n'apparaît pas ici.
-Corrigés dans aite_hotel_management 18.0.1.0.6 (ECARTS n° 31, 32, 33) : le
-prix conservé par un surclassement gracieux survit à la prolongation
-(colonne « Prix fixé », rejouée) ; un séjour « Arrivé » dont le départ est
-dépassé bloque sa chambre jusqu'au check-out (non montré) ; plus de bouton
+ÉCARTS : ceux que ce tutoriel rejouait tels quels sont corrigés dans la
+livraison 4 et l'écran suit le produit — dates du refus en heure locale
+au format français (n° 37) ; titre « Réservation rapide » conservé après la
+recherche (n° 45) ; fenêtre de détail sans la date « octobre 14-16, 2026 »,
+avec Arrivée et Départ (n° 43) ; « Réception » et « Non présenté » au lieu
+de « Front Desk » et « No-show » (n° 42) ; « Réservation créée » au lieu de
+« Réservation hôtelière créé » (n° 43) ; montant du surclassement avec la
+devise (n° 40, non montré). « Check-in » (bouton de la fiche confirmée)
+reste tel quel : décision laissée à l'équipe (ECARTS.md, « Restent à
+trancher », et n° 42). Déjà corrigés dans aite_hotel_management 18.0.1.0.6
+(ECARTS n° 31, 32, 33) : le prix
+conservé par un surclassement gracieux survit à la prolongation (colonne
+« Prix fixé », rejouée) ; un séjour « Arrivé » dont le départ est dépassé
+bloque sa chambre jusqu'au check-out (non montré) ; plus de bouton
 « Supprimer » dans la fenêtre de détail du planning (rejoué : « Modifier »
 seul).
 
@@ -209,7 +242,7 @@ prononciation française [planiŋ]), jamais à l'écran.
 
 Données : demo.py (Complexe Hôtelier — Démo, Démo Hôtellerie SARL, Estelle
 Ngono, RES/2026/0214, chambre 204 [CFT] Confort à 45 000 FCFA la nuit,
-arrivée le 14/10/2026 à 14 h, départ le 16/10/2026 à 12 h ; Claire Durand,
+arrivée le 14/10/2026 à 14:00, départ le 16/10/2026 à 12:00 ; Claire Durand,
 RES/2026/0201, 401 [VIP]) ; les 20 chambres de la série (fiche
 d'harmonisation) : 101-107 [STD] au rez-de-chaussée, dont la 105 hors
 service, donc sans séjour et absente du filtre « Chambre » (le calendrier
@@ -223,31 +256,26 @@ src/scss/secondary_variables.scss:11-18). Les autres clients sont fictifs
 17/10/2026 12:00:00 : demo.ARRIVEES ; Brigitte Essomba en 202 du 13 au
 16/10, Gaston Mbida en 103 du 15 au 17/10, Joël Kamga en 204 du 18 au 20/10,
 Aristide Bella en 401 du 24 au 26/10 ; téléphones de Rodrigue Tamba et
-Jacques Owona dans la plage de fiction +237 6 00 00 00 xx) ;
-« aujourd'hui » est le mercredi 14/10/2026, comme dans la vidéo de
-présentation.
+Jacques Owona dans la plage de fiction +237 6 00 00 00 xx ; Rodrigue Tamba
+réserve au téléphone, canal « Téléphone / WhatsApp ») ; « aujourd'hui » est
+le mercredi 14/10/2026, comme dans la vidéo de présentation.
 """
 
 import datetime as dt
 
 import demo
-from ecrans import APPS_PROFIL, ICONES, _id, e, entree, fenetre_muk, icone, navigateur, vue_libre
+from ecrans import APPS_PROFIL, ICONES, MENUS_MUK, NBSP, _id, e, entree, fcfa, fenetre_muk, icone, navigateur, vue_libre
 from marketing import bulle, dezoom, reaction, zoom
 from moteur import anneau, cacher, choisir, clic, classe, curseur, fermer, montrer, ouvrir, pause, saisir, texte, vue
 
 NOM, ROLE = demo.POSTES['reception']
-MENUS = ['Front Desk', 'Réservations', 'Espaces & Prestations', 'Notes de chambre en attente', 'Facturation',
-         'Fidélité', 'Gouvernante']
+MENUS = MENUS_MUK['hotel_reception']     # « Réception » (anciennement « Front Desk », écart n° 42)
 APP = 'app-t02'
 
 
 def menu(nom):
     """Le sélecteur d'un menu de la barre (grille, nom de l'application, puis les menus)."""
     return '#%s .o-haut .menu:nth-child(%d)' % (APP, MENUS.index(nom) + 3)
-
-
-def fcfa(n):
-    return '{:,}'.format(n).replace(',', ' ') + ' FCFA'
 
 
 # ------------------------------------------------------------ les données --
@@ -339,8 +367,10 @@ def solde_folio(nuits, acompte=0, prix=45000, personnes=2):
 
 FOLIO_AVANT, FOLIO_RODRIGUE = solde_folio(1), solde_folio(2)
 TOTAL_AVANT, TOTAL_APRES = fcfa(45000), fcfa(2 * 45000)
-assert (FOLIO_AVANT, FOLIO_RODRIGUE, TOTAL_AVANT, TOTAL_APRES) == (
-    '51 000 FCFA', '102 000 FCFA', '45 000 FCFA', '90 000 FCFA')
+# Montants des champs d'Odoo : espace insécable entre les milliers et avant « FCFA » (ecrans.fcfa).
+PRIX_CFT = fcfa(TYPES['CFT'][1])
+assert [m.replace(NBSP, ' ') for m in (FOLIO_AVANT, FOLIO_RODRIGUE, TOTAL_AVANT, TOTAL_APRES, PRIX_CFT)] == [
+    '51 000 FCFA', '102 000 FCFA', '45 000 FCFA', '90 000 FCFA', demo.PRIX_NUIT]
 
 
 # ------------------------------------------------------------ le planning --
@@ -476,8 +506,6 @@ NUAGE = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-widt
          '<path d="M12 16v-6M9.5 12.5L12 10l2.5 2.5"/></svg>')
 ANNULER_I = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" '
              'stroke-linejoin="round"><path d="M9 7H4V2"/><path d="M4.5 7A8 8 0 1112 20"/></svg>')
-CAL_I = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" '
-         'height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>')
 IMPRIMER_I = icone('imprimer', 't02-bi')
 
 
@@ -519,16 +547,21 @@ def _recherche():
             % icone('loupe', 'loupe'))
 
 
+# La fenêtre de détail d'une barre : sans en-tête de date (hide_date="1", écart n° 43 corrigé), les
+# champs du calendrier dans l'ordre de la vue, Arrivée et Départ sans les secondes (show_seconds).
+POP_ARRIVEE, POP_DEPART = demo.ARRIVEE[:-3], demo.DEPART[:-3]          # « 14/10/2026 14:00 »
 POPOVER = (
     '<div class="t02-pop masque" id="t02-pop" data-layout-allow-overlap data-layout-allow-occlusion>'
     '<div class="t02-pop-t" style="background:%s"><span>%s · %s</span><span class="t02-pop-x">%s</span></div>'
-    '<div class="t02-pop-c"><div class="t02-pop-d">%s<span>octobre 14-16, 2026</span></div>'
+    '<div class="t02-pop-c">'
+    '<div class="t02-pop-ch"><span>Arrivée</span><i>%s</i></div><div class="t02-pop-ch"><span>Départ</span><i>%s</i></div>'
     '<div class="t02-pop-ch"><span>Chambre</span><b>%s</b></div><div class="t02-pop-ch"><span>Client</span><b>%s</b></div>'
     '<div class="t02-pop-ch"><span>Réservation</span><b>%s</b></div>'
     '<div class="t02-pop-ch"><span>État</span><i>Confirmée</i></div></div>'
     '<div class="t02-pop-p"><span class="bt primaire">Modifier</span></div></div>'
-    % (_teinte(CHAMBRES['204'][2], .3), '204', e(demo.CLIENT), ICONES['x'], CAL_I, e(demo.CHAMBRE), e(demo.CLIENT),
-       e(demo.RESA)))
+    % (_teinte(CHAMBRES['204'][2], .3), '204', e(demo.CLIENT), ICONES['x'], e(POP_ARRIVEE), e(POP_DEPART),
+       e(demo.CHAMBRE), e(demo.CLIENT), e(demo.RESA)))
+assert (POP_ARRIVEE, POP_DEPART) == ('14/10/2026 14:00', '16/10/2026 12:00')
 
 PLANNING = vue_libre('t02-planning', (
     '<div class="t02-pl">'
@@ -659,9 +692,12 @@ def fiche(p, parent, ref, entete, stats, client, sejour, canal, occupation, lign
     return vue_libre(p, '<div class="t02-f">%s%s%s</div>' % (cp, gauche, chatter))
 
 
-def client_grp(nom, tel, mail):
-    return grp('Client', [ch('Client', nom, saisie=True, lien=True), ch('Téléphone', tel), ch('E-mail', mail),
-                          ch('Hôtel', demo.HOTEL, lien=True)])
+def client_grp(nom, tel, mail, brouillon=False):
+    """Groupe « Client » : le client reste modifiable en brouillon et confirmée, l'hôtel en brouillon seulement
+    (hotel_reservation_views.xml:91-97). Un many2one modifiable est un champ de saisie, pas un lien
+    (web/…/many2one_field.xml) ; en lecture seule, l'hôtel s'affiche en lien."""
+    hotel = ch('Hôtel', demo.HOTEL, saisie=True) if brouillon else ch('Hôtel', demo.HOTEL, lien=True)
+    return grp('Client', [ch('Client', nom, saisie=True), ch('Téléphone', tel), ch('E-mail', mail), hotel])
 
 
 def occupation_grp():
@@ -673,32 +709,37 @@ def canal_grp(canal):
 
 
 ETATS_RESA = ['Brouillon', 'Confirmée', 'Arrivé', 'Parti']
+# « Imprimer les fiches » (aite_guest_registry, anciennement « Fiches d'enregistrement ») et
+# « Non présenté » (anciennement « No-show », écart n° 42).
 ENTETE_CONFIRMEE = ('<div class="t02-bts">%s%s%s%s%s<span class="t02-etat">Confirmée</span></div>'
                     '<div class="t02-bts">%s</div>'
                     % (bt(None, 'Check-in', 'primaire'), bt(None, 'Encaisser un acompte'),
-                       bt(None, 'Envoyer la confirmation'), bt(None, "Fiches d'enregistrement", ico=IMPRIMER_I),
-                       bt(None, 'No-show'), bt(None, 'Annuler')))
+                       bt(None, 'Envoyer la confirmation'), bt(None, 'Imprimer les fiches', ico=IMPRIMER_I),
+                       bt(None, 'Non présenté'), bt(None, 'Annuler')))
 
-# Rodrigue Tamba : réservé par la Réservation rapide (une nuit en 201), confirmé d'emblée,
-# folio ouvert ; il rappelle : une nuit de plus (10:12), puis la 203 (10:14).
+# Rodrigue Tamba : réservé au téléphone par la Réservation rapide (une nuit en 201, canal
+# « Téléphone / WhatsApp »), confirmé d'emblée, folio ouvert ; il rappelle : une nuit de plus
+# (10:12), puis la 203 (10:14). Message de création : « Réservation créée » (écart n° 43 corrigé).
 SUIVI = ('<div class="t02-suivi"><b class="anc">20/10/2026 12:00:00</b><span class="sep">→</span>'
          '<b class="nouv">21/10/2026 12:00:00</b> <i>(Départ)</i></div>')
-CREE_R = message(NOM, "Aujourd'hui à 10:06", 'Réservation hôtelière créé')
+CREE = 'Réservation créée'
+CREE_R = message(NOM, "Aujourd'hui à 10:06", CREE)
 FIL_R0 = separateur("Aujourd'hui") + CREE_R
 FIL_R1 = separateur("Aujourd'hui") + message(NOM, "Aujourd'hui à 10:12", SUIVI, 't02-r-m1') + CREE_R
 FIL_R2 = (separateur("Aujourd'hui")
           + message(NOM, "Aujourd'hui à 10:14", 'Changement de chambre : 201 [CFT] → 203 [CFT].', 't02-r-m2')
           + message(NOM, "Aujourd'hui à 10:12", SUIVI) + CREE_R)
+CANAL_R = 'Téléphone / WhatsApp'
 DEPART_R = ('<span class="t02-champ" id="t02-r-dep"><span class="ph" id="t02-r-dep-ph"></span>'
             '<span class="val" id="t02-r-dep-val">20/10/2026 12:00:00</span></span>')
 RODRIGUE_FICHE = fiche(
     't02-rodrigue', 'Planning des chambres', 'RES/2026/0221', ENTETE_CONFIRMEE,
-    stat('t02-r-folio', 'document', 'Folio', FOLIO_AVANT) + stat(None, 'fiche', 'Fiches clients', '0/2'),
+    stat('t02-r-folio', 'document', 'Folio', FOLIO_AVANT) + stat(None, 'fiche', "Fiches d'enregistrement", '0/2'),
     client_grp('Rodrigue Tamba', '+237 6 00 00 00 21', 'rodrigue.tamba@exemple.cm'),
     grp('Séjour', [ch('Arrivée', '19/10/2026 14:00:00', saisie=True), ch('Départ', DEPART_R, saisie=True, html=True),
                    ch('Nuits', '1', 't02-r-nuits', aide=True), ch('Total hébergement (HT)', TOTAL_AVANT, 't02-r-tot')]),
-    canal_grp('Direct / comptoir'), occupation_grp(),
-    ligne_chambre('t02-r-l', 'Confort', '201 [CFT]', '1', demo.PRIX_NUIT, TOTAL_AVANT),
+    canal_grp(CANAL_R), occupation_grp(),
+    ligne_chambre('t02-r-l', 'Confort', '201 [CFT]', '1', PRIX_CFT, TOTAL_AVANT),
     discussion([FIL_R0, FIL_R1, FIL_R2], 't02-r-fil'), enregistrer=True)
 
 # Jacques Owona : saisi à la main sur la 204, aux dates du séjour d'Estelle — refusé à la confirmation.
@@ -708,13 +749,13 @@ JACQUES = fiche(
     % (bt('t02-j-confirmer', 'Confirmer', 'primaire'), bt(None, 'Annuler'),
        ''.join('<span class="t02-sb-e%s">%s</span>' % (' actif' if i == 0 else '', x) for i, x in enumerate(ETATS_RESA))),
     '',
-    client_grp('Jacques Owona', '+237 6 00 00 00 22', 'jacques.owona@exemple.cm'),
+    client_grp('Jacques Owona', '+237 6 00 00 00 22', 'jacques.owona@exemple.cm', brouillon=True),
     grp('Séjour', [ch('Arrivée', '15/10/2026 14:00:00', 't02-j-arr', saisie=True),
                    ch('Départ', '17/10/2026 12:00:00', 't02-j-dep', saisie=True),
-                   ch('Nuits', '2', aide=True), ch('Total hébergement (HT)', '90 000 FCFA')]),
+                   ch('Nuits', '2', aide=True), ch('Total hébergement (HT)', TOTAL_APRES)]),
     canal_grp('Direct / comptoir'), occupation_grp(),
-    ligne_chambre('t02-j-l', 'Confort', demo.CHAMBRE, '2', demo.PRIX_NUIT, '90 000 FCFA', echange=False),
-    discussion([separateur("Aujourd'hui") + message(NOM, "Aujourd'hui à 10:09", 'Réservation hôtelière créé')],
+    ligne_chambre('t02-j-l', 'Confort', demo.CHAMBRE, '2', PRIX_CFT, TOTAL_APRES, echange=False),
+    discussion([separateur("Aujourd'hui") + message(NOM, "Aujourd'hui à 10:09", CREE)],
                't02-j-fil'))
 
 
@@ -725,11 +766,12 @@ def deroulant(ident, gauche, items):
             '</div>' % (ident, gauche, ''.join('<div class="t02-dd-i"%s>%s</div>' % (_id(i), e(t)) for i, t in items)))
 
 
-# Positions relevées sur la barre du haut rendue (menus « Front Desk » et « Réservations »).
-DD_FRONT = deroulant('t02-dd-front', 148, [(None, 'Tableau de bord'), ('t02-dd-rapide', 'Réservation rapide'),
+# Positions relevées sur la barre du haut rendue : 10 px à gauche du texte des menus « Réception »
+# (x = 158) et « Réservations » (x = 279, plus à gauche qu'avec « Front Desk »), hotel_menus.xml:21-66.
+DD_RECEP = deroulant('t02-dd-recep', 148, [(None, 'Tableau de bord'), ('t02-dd-rapide', 'Réservation rapide'),
                                            (None, 'Arrivées du jour'), (None, 'Départs du jour'),
                                            (None, 'Clients présents')])
-DD_RESA = deroulant('t02-dd-resa', 276, [(None, 'Réservations'), ('t02-dd-planning', 'Planning des chambres')])
+DD_RESA = deroulant('t02-dd-resa', 269, [(None, 'Réservations'), ('t02-dd-planning', 'Planning des chambres')])
 
 
 def modale(ident, titre, corps, pied, haut, largeur, titre_id=None, agrandir=True):
@@ -769,13 +811,14 @@ RESULTATS = (
     '<div class="m-grille t02-rr-client"><div>%s</div><div>%s</div></div></div>'
     % (GAB_RR, ''.join('<div class="t02-rr-ligne" id="t02-rr-%s" style="grid-template-columns:%s"><span>%s</span>'
                        '<span>%s [CFT]</span><span>Confort</span><span>%s</span><span class="d">2</span>'
-                       '<span class="d">1</span><span class="d">45 000 FCFA</span><span class="d">45 000 FCFA</span></div>'
-                       % (n, GAB_RR, toggle('t02-rr-t' + n), n, et) for n, et in LIBRES),
-       mch('Client', m2o('t02-rr-client')), mch('Confirmer immédiatement', case(None), aide=True)))
+                       '<span class="d">1</span><span class="d">%s</span><span class="d">%s</span></div>'
+                       % (n, GAB_RR, toggle('t02-rr-t' + n), n, et, PRIX_CFT, PRIX_CFT) for n, et in LIBRES),
+       mch('Client', m2o('t02-rr-client')) + mch('Canal', m2o('t02-rr-canal', '', 'Direct / comptoir'), aide=True),
+       mch('Confirmer immédiatement', case(None), aide=True)))
 RAPIDE = modale('t02-rr', 'Réservation rapide', (
     '<div class="m-grille"><div>%s%s%s</div><div>%s%s%s</div></div>'
     '<div class="t02-rr-bt"><span class="bt gris" id="t02-rr-chercher">%sRechercher les chambres disponibles</span>'
-    '<span class="t02-ancre" id="t02-rr-ancre"></span></div>%s'
+    '</div>%s'
     % (mch('Hôtel', m2o('t02-rr-hotel', '', demo.HOTEL)), mch('Arrivée', entree('t02-rr-arr', '', '14/10/2026 14:00:00')),
        mch('Départ', entree('t02-rr-dep', '', '15/10/2026 12:00:00')),
        mch('Type de chambre', m2o('t02-rr-type'), aide=True), mch('Adultes', entree('t02-rr-ad', '', '1')),
@@ -783,10 +826,13 @@ RAPIDE = modale('t02-rr', 'Réservation rapide', (
     '<span class="bt primaire masque t02-rr-reserver" id="t02-rr-reserver">Réserver</span>'
     '<span class="bt gris t02-rr-fermer" id="t02-rr-fermer">Fermer</span>', 44, 1180, 't02-rr-titre')
 
+# Le refus de Jacques Owona (15/10 14:00 → 17/10 12:00 sur la 204) : dates à l'heure de l'utilisateur, au
+# format français, sans les secondes (_fmt_local_datetime, hotel_reservation.py:197-200 et :350-360 ;
+# écart n° 37 corrigé).
+REFUS = ("La chambre %s n'est pas disponible du %s au %s (déjà réservée ou hors service)."
+         % (demo.CHAMBRE, '15/10/2026 14:00', '17/10/2026 12:00'))
 ERREUR = modale('t02-err', 'Opération invalide', (
-    '<p class="t02-err-p" id="t02-err-p"><span id="t02-err-ch">La chambre 204 [CFT] n\'est pas disponible</span> du '
-    '2026-10-15 13:00:00 au '
-    '2026-10-17 11:00:00 (déjà réservée ou hors service).</p>'),
+    '<p class="t02-err-p" id="t02-err-p">%s</p>' % e(REFUS)),
     '<span class="bt primaire" id="t02-err-ok">Fermer</span>', 260, 1120, agrandir=False)
 
 # De la 201 à la 203, deux Confort au même tarif : la case « Conserver le prix actuel » reste
@@ -798,14 +844,14 @@ CHANGER = modale('t02-cc', 'Changer de chambre', (
        mch('Chambre actuelle', '<span class="t02-lien">201 [CFT]</span>'), mch('Arrivée', '19/10/2026 14:00:00'),
        mch('Départ', '21/10/2026 12:00:00'), mch('Nouvelle chambre', m2o('t02-cc-nc')),
        mch('Conserver le prix actuel', case('t02-cc-garder', coche=False), aide=True, ident='t02-cc-garder-l'),
-       mch('Prix actuel / nuit', e(demo.PRIX_NUIT), aide=True),
-       mch('Nouveau prix / nuit', '<span id="t02-cc-prix">%s</span>' % e(demo.PRIX_NUIT), aide=True))),
+       mch('Prix actuel / nuit', e(PRIX_CFT), aide=True),
+       mch('Nouveau prix / nuit', '<span id="t02-cc-prix">%s</span>' % e(PRIX_CFT), aide=True))),
     '<span class="bt primaire" id="t02-cc-ok">Changer la chambre</span><span class="bt gris">Annuler</span>', 120, 1180)
 
 ECRAN = navigateur(fenetre_muk(APP, 'Hôtel', MENUS, [LISTE, PLANNING, RODRIGUE_FICHE, JACQUES],
                                societe=demo.SOCIETE, initiale=NOM[0], avatar='#185FA5',
                                apps=APPS_PROFIL['reception'], app_active='Hôtel',
-                               calques=DD_FRONT + DD_RESA + RAPIDE + ERREUR + CHANGER))
+                               calques=DD_RECEP + DD_RESA + RAPIDE + ERREUR + CHANGER))
 
 CSS = """
 .t02-pl { position: absolute; inset: 0; background: #fff; color: #212529; }
@@ -870,9 +916,8 @@ CSS = """
   font-size: 19px; font-weight: 500; color: #212529; }
 .t02-pop-x { width: 20px; height: 20px; display: inline-flex; color: #343A40; }
 .t02-pop-c { padding: 14px 18px 6px; border-bottom: 1px solid #DEE2E6; }
-.t02-pop-d { display: flex; align-items: center; gap: 12px; font-size: 17px; color: #212529; height: 34px; margin-bottom: 6px; }
-.t02-pop-d svg { width: 18px; height: 18px; color: #ADB5BD; }
 .t02-pop-ch { display: flex; gap: 10px; align-items: baseline; height: 36px; font-size: 17px; color: #212529; }
+.t02-pop-ch > span { font-weight: 500; }
 .t02-pop-ch b { font-weight: 400; color: #3F6A83; }
 .t02-pop-ch i { font-style: normal; }
 .t02-pop-p { display: flex; gap: 8px; padding: 14px 18px; }
@@ -982,8 +1027,8 @@ CSS = """
 .t02-m2o { position: relative; display: block; }
 .t02-car { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 14px; color: #495057; }
 .t02-rr-bt { position: relative; margin-top: 10px; }
-.t02-ancre { position: absolute; pointer-events: none; }
-#t02-rr-ancre { left: 0; top: 3px; width: 440px; height: 42px; }
+/* b-libres sur une ligne, entre « Enfants » et l'en-tête du tableau : elle ne cache plus rien. */
+#b-libres { max-width: none; white-space: nowrap; padding-top: 11px; padding-bottom: 11px; }
 .t02-rr-bt .bt { height: 42px; font-size: 18px; }
 .t02-rr-table { margin-top: 18px; border-top: 1px solid #DEE2E6; }
 .t02-rr-tete, .t02-rr-ligne { display: grid; align-items: center; column-gap: 10px; padding: 0 10px; white-space: nowrap; }
@@ -1031,7 +1076,7 @@ TUTORIEL = {
     'bulles': {
         'b-barre': 'Une barre par séjour : la chambre et le client, de l\'arrivée au départ.',
         'b-libres': 'Seules les chambres libres, avec le prix par nuit et le total.',
-        'b-refus': 'La chambre en conflit est nommée : la réservation reste en brouillon.',
+        'b-refus': 'La chambre et les dates en conflit sont nommées : la réservation reste en brouillon.',
         'b-suit': 'Nuits, total et folio recalculés dès l\'enregistrement.',
         'b-prix': 'Cochée, la nouvelle chambre garde le tarif de l\'ancienne, même si le séjour est prolongé : '
                   'un surclassement gracieux.',
@@ -1044,7 +1089,8 @@ TUTORIEL = {
         {'temps': 0, 'titre': 'Le planning des chambres',
          'texte': 'Réservations › Planning des chambres : le mois entier, une barre par séjour, une couleur par chambre.',
          'voix': "Mireille ouvre le planinng des chambres : tout le mois sur un écran, une barre par séjour, une couleur "
-                 "par chambre. Un clic sur une barre, et le séjour s'affiche : chambre, cliente, réservation, état.",
+                 "par chambre. Un clic sur une barre, et le séjour s'affiche : arrivée, départ, chambre, cliente, "
+                 "réservation, état.",
          'gestes': [clic(menu('Réservations'), d=0.6), montrer('#t02-dd-resa', d=0.25, y=-6),
                     clic('#t02-dd-planning', d=0.5), cacher('#t02-dd-resa', d=0.15), vue('t02-planning'),
                     curseur('#t02-b-estelle', fx=0.62, d=0.8), pause(0.4), anneau('#t02-planning .t02-auj', d=1.0),
@@ -1053,37 +1099,39 @@ TUTORIEL = {
                     bulle('b-barre', '#t02-b-estelle', cote='bas', d=2.8), pause(3.0), cacher('#t02-pop', d=0.25),
                     dezoom(d=0.6)]},
         {'temps': 1, 'titre': 'Les chambres libres, avec leur prix',
-         'texte': 'Front Desk › Réservation rapide : dates, type, adultes, et seules les chambres libres s\'affichent.',
+         'texte': 'Réception › Réservation rapide : dates, type, adultes, et seules les chambres libres s\'affichent.',
          'voix': "Au téléphone, un client cherche une chambre Confort pour une nuit, lundi. Mireille "
                  "ouvre la réservation rapide : seules les chambres libres sur ces dates s'affichent, avec le prix par "
                  "nuit et le total du séjour.",
-         'gestes': [clic(menu('Front Desk'), d=0.6), montrer('#t02-dd-front', d=0.25, y=-6),
-                    clic('#t02-dd-rapide', d=0.5), cacher('#t02-dd-front', d=0.15), ouvrir('t02-rr'),
+         'gestes': [clic(menu('Réception'), d=0.6), montrer('#t02-dd-recep', d=0.25, y=-6),
+                    clic('#t02-dd-rapide', d=0.5), cacher('#t02-dd-recep', d=0.15), ouvrir('t02-rr'),
                     saisir('t02-rr-arr', '19/10/2026 14:00:00', d=0.7), curseur('#t02-rr-arr', fx=0.92, d=0.4, avec=True),
                     saisir('t02-rr-dep', '20/10/2026 12:00:00', d=0.7), curseur('#t02-rr-dep', fx=0.92, d=0.4, avec=True),
                     choisir('t02-rr-type', 'Confort'), curseur('#t02-rr-type', fx=0.6, d=0.4, avec=True),
                     saisir('t02-rr-ad', '2', d=0.2), curseur('#t02-rr-ad', fx=0.4, d=0.3, avec=True),
-                    clic('#t02-rr-chercher', d=0.6), texte('#t02-rr-titre', 'Odoo'),
+                    clic('#t02-rr-chercher', d=0.6),
                     montrer('#t02-rr-res', d=0.35, y=10), montrer('#t02-rr-reserver', d=0.2, y=0, avec=True),
                     classe('#t02-rr-fermer', ajouter=['decale'], avec=True),
                     zoom('#t02-rr-res .t02-rr-table', s=1.3, fy=0.4, d=0.7),
-                    bulle('b-libres', '#t02-rr-ancre', cote='droite', d=2.6), pause(2.4)]},
+                    bulle('b-libres', '#t02-rr-chercher', cote='droite', d=2.6), pause(2.4)]},
         {'temps': 1, 'titre': 'Réservé, et déjà au planning',
-         'texte': 'Une chambre cochée, le client, Réserver : la réservation est confirmée, son folio ouvert.',
-         'voix': "Mireille coche la deux cent un, choisit le client, et réserve. La réservation est aussitôt "
-                 "confirmée, son folio ouvert, et le séjour apparaît déjà au planinng, sur sa chambre.",
+         'texte': 'Une chambre cochée, le client, le canal, Réserver : la réservation est confirmée, son folio ouvert.',
+         'voix': "Mireille coche la deux cent un, choisit le client et le canal, téléphone, puis réserve. La "
+                 "réservation est aussitôt confirmée, son folio ouvert, et le séjour apparaît déjà au planinng, sur sa "
+                 "chambre.",
          'gestes': [clic('#t02-rr-t201', d=0.6), classe('#t02-rr-t201', ajouter=['on']), dezoom(d=0.5, avec=True),
-                    saisir('t02-rr-client', 'Rodrigue Tamba', d=0.6), clic('#t02-rr-reserver', d=0.6),
+                    saisir('t02-rr-client', 'Rodrigue Tamba', d=0.6), curseur('#t02-rr-canal', fx=0.6, d=0.4),
+                    choisir('t02-rr-canal', CANAL_R), clic('#t02-rr-reserver', d=0.6),
                     fermer('t02-rr'), vue('t02-rodrigue'), pause(0.5), anneau('#t02-rodrigue .t02-etat', d=1.0),
                     anneau('#t02-r-folio', d=1.0), clic('#t02-rodrigue .t02-parent', d=0.6), vue('t02-planning'),
                     montrer('#t02-b-rodrigue', d=0.4, y=0), anneau('#t02-b-rodrigue', d=1.4)]},
         {'temps': 2, 'titre': 'La double réservation refusée',
          'texte': 'La 204 saisie à la main sur des dates déjà prises : la confirmation est refusée.',
          'voix': "Et si on saisit à la main la deux cent quatre, déjà prise ces jours-là ? À la confirmation, "
-                 "Aïte haousse refuse net, en nommant la chambre en conflit : la réservation reste simplement en "
-                 "brouillon.",
+                 "Aïte haousse refuse net, en nommant la chambre et les dates en conflit : la réservation reste "
+                 "simplement en brouillon.",
          'gestes': [vue('t02-jacques'), pause(0.4), anneau('#t02-j-l-ch', d=0.9), anneau('#t02-j-arr', d=0.8),
-                    clic('#t02-j-confirmer', d=0.6), ouvrir('t02-err'), zoom('#t02-err-ch', s=1.4, d=0.7),
+                    clic('#t02-j-confirmer', d=0.6), ouvrir('t02-err'), zoom('#t02-err-p', s=1.4, d=0.7),
                     bulle('b-refus', '#t02-err-p', cote='bas', d=2.6), pause(1.6), reaction('r-refus', d=2.6),
                     pause(1.0), dezoom(d=0.5), clic('#t02-err-ok', d=0.5), fermer('t02-err')]},
         {'temps': 3, 'titre': 'Une nuit de plus : tout suit',
@@ -1106,7 +1154,7 @@ TUTORIEL = {
                  "la réservation, et le folio suit le client.",
          'gestes': [clic('#t02-r-l-ech', d=0.6), ouvrir('t02-cc'), choisir('t02-cc-nc', '203 [CFT]'),
                     curseur('#t02-cc-garder', d=0.5), zoom('#t02-cc-nouv', s=1.3, fy=0.4, d=0.6),
-                    anneau('#t02-cc-prix', d=1.0), bulle('b-prix', '#t02-cc-garder', cote='droite', d=2.6), pause(1.8),
+                    anneau('#t02-cc-prix', d=1.0), bulle('b-prix', '#t02-cc-prix', cote='bas', d=2.6), pause(1.8),
                     dezoom(d=0.5), clic('#t02-cc-ok', d=0.4), fermer('t02-cc'), texte('#t02-r-l-ch', '203 [CFT]'),
                     cacher('#t02-r-fil-1', d=0.2), montrer('#t02-r-fil-2', d=0.35, y=-10), anneau('#t02-r-l-ch', d=1.0),
                     anneau('#t02-r-m2', d=1.4)]},
@@ -1121,14 +1169,14 @@ TUTORIEL = {
     'resultats': {
         'titre': "Le planning qui tient l'hôtel à jour",
         'cartes': [
-            {'valeur': '43', 'compter': 43, 'unite': 'tests', 'icone': 'bouclier',
+            {'valeur': '49', 'compter': 49, 'unite': 'tests', 'icone': 'bouclier',
              'texte': 'automatisés : disponibilité, réservation rapide, planning, prolongation, changement de chambre'},
             {'valeur': '1', 'compter': 1, 'unite': 'clic', 'icone': 'eclair',
              'texte': 'pour lister les chambres libres, avec le prix par nuit et le total du séjour'},
             {'valeur': '2', 'compter': 2, 'unite': 'éditions', 'icone': 'coche',
              'texte': "d'Odoo : le même menu Planning des chambres, sur Community comme sur Enterprise"},
         ],
-        'voix': "Quarante-trois tests automatisés, un clic pour trouver une chambre libre, et un planinng qui s'ouvre sur "
+        'voix': "Quarante-neuf tests automatisés, un clic pour trouver une chambre libre, et un planinng qui s'ouvre sur "
                 "les deux éditions d'Odoo.",
     },
     'cta': {
