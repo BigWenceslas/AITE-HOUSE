@@ -81,7 +81,8 @@ grep -rF ; `git diff ae3aab6..HEAD` pour ce qui a changé) :
   (:49-54, sous le client), « Confirmer immédiatement », Réserver, Fermer) ;
   wizard/hotel_booking_wizard.py:18-66 (valeurs par défaut : 1 adulte, canal
   « Direct / comptoir », confirmation cochée, dates du jour à 14:00 →
-  lendemain 12:00), :87-123 (seules les chambres hors service exclues, de
+  lendemain 12:00 ; « ? » d'aide après Type de chambre, Canal et Confirmer
+  immédiatement, qui portent un help=), :87-123 (seules les chambres hors service exclues, de
   capacité suffisante, libres selon is_available, triées par type puis
   numéro ; fenêtre rouverte sous le nom « Réservation rapide », :116-118,
   ECARTS n° 45), :125-158 (réservation créée avec le canal choisi, ECARTS
@@ -389,6 +390,13 @@ FRONT = vue_tdb('t1-front', (
                        for i, k in enumerate(TYPES_RANG)]))
 ), initiale=True)
 
+def m_champ_aide(libelle, valeur_html, identifiant=None):
+    """Un champ d'assistant qui porte une aide : Odoo met un « ? » après le libellé
+    (hotel_booking_wizard.py : help= sur Type de chambre, Canal, Confirmer immédiatement)."""
+    return ('<div class="m-ch"%s><span class="l">%s<sup class="t1-aide">?</sup></span><span class="v">%s</span></div>'
+            % (' id="%s"' % identifiant if identifiant else '', e(libelle), valeur_html))
+
+
 # Le menu déroulant « Réception » (hotel_menus.xml:21-50 et aite_guest_registry
 # menus.xml:4-8, sous-menus par séquence).
 DEROULANT = ('<div class="t1-dd masque" id="t1-dd" data-layout-allow-overlap data-layout-allow-occlusion>%s</div>'
@@ -437,7 +445,7 @@ RAPIDE_2 = assistant('t1-rap2', 'Réservation rapide', (
         m_champ('Hôtel', entree('t1-q-hotel', '', demo.HOTEL)),
         m_champ('Arrivée', entree('t1-q-arr', '', '14/10/2026 14:00:00')),
         m_champ('Départ', entree('t1-q-dep', '', '16/10/2026 12:00:00')),
-        m_champ('Type de chambre', entree('t1-q-type', '')),
+        m_champ_aide('Type de chambre', entree('t1-q-type', '')),
         m_champ('Adultes', entree('t1-q-ad', '', '2')),
         m_champ('Enfants', entree('t1-q-enf', '', '0')))
     + CHERCHER % bouton('t1-q-chercher', 'Rechercher les chambres disponibles', 'gris', 'loupe')
@@ -445,8 +453,8 @@ RAPIDE_2 = assistant('t1-rap2', 'Réservation rapide', (
     # Sous le client, le canal (hotel_booking_wizard_views.xml:49-54), « Direct / comptoir » par défaut.
     + '<div class="m-grille t1-client"><div>%s%s</div><div>%s</div></div>' % (
         m_champ('Client', entree('t1-q-cli', '')),
-        m_champ('Canal', entree('t1-q-canal', '', CANAL), 't1-q-canal-l'),
-        m_champ('Confirmer immédiatement', '<span class="case coche"><i></i></span>'))),
+        m_champ_aide('Canal', entree('t1-q-canal', '', CANAL), 't1-q-canal-l'),
+        m_champ_aide('Confirmer immédiatement', '<span class="case coche"><i></i></span>'))),
     [('t1-q-ok', 'Réserver', 'primaire', None), ('t1-q-fermer', 'Fermer', 'gris', None)], haut=40, largeur=1360)
 
 # ------------------------------------------------------------ Réservation --
@@ -683,6 +691,7 @@ ECRAN = navigateur(fenetre_muk('app-t1', 'Hôtel', MENUS, [FRONT, ARRIVEES, RESA
 MENU_FD = '#app-t1 .o-haut .menu.actif'
 
 CSS = """
+.t1-aide { color: var(--o-lien); font-size: 13px; margin-left: 3px; font-weight: 700; }
 /* t01 — la réception : menu déroulant, assistants et fiches resserrés */
 #app-t1 .t1-dd { position: absolute; left: 152px; top: 58px; width: 300px; z-index: 26; background: #fff; padding: 6px 0;
   border: 1px solid #DEE2E6; border-radius: 0 0 6px 6px; box-shadow: 0 12px 28px rgba(0,0,0,.20); }
