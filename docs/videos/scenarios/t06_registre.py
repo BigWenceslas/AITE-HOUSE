@@ -52,15 +52,29 @@ produit de la livraison 4) :
    (badge « Aucune fiche » neutre avant l'arrivée, rouge seulement pour un
    client arrivé : ECARTS n° 54) ; libellés des champs et du canal
    (« Direct / comptoir », « Téléphone / WhatsApp ») :
-   models/hotel_reservation.py:28-145. Sans colonne Hôtel pour la réception
-   (groupe multi-société, hotel_reservation_views.xml:15-16 ; ref_muk/306).
+   models/hotel_reservation.py:28-145. Sans colonne « Hôtel » : base
+   mono-société, la réception n'est pas membre de base.group_multi_company
+   (hotel_reservation_views.xml:15-16 ; odoo18/odoo/addons/base/models/
+   res_users.py:1907-1914 ; ref_muk/306 ; DESIGN.md « La base est
+   mono-société »).
 2. Réservation — hotel_reservation_views.xml:37-170 (en-tête :43-70 :
    Check-in, Encaisser un acompte, Envoyer la confirmation, Non présenté
    (anciennement « No-show », ECARTS n° 42), Annuler ; barre Brouillon /
    Confirmée / Arrivé / Parti ; bouton Folio ; groupes Client, Séjour,
    Canal & commission, Occupation ; « Check-in réel » visible une fois
-   renseigné ; onglets Chambres / Demandes particulières et colonnes de la
-   ligne, :133-160, dont « Prix fixé » (price_locked, case,
+   renseigné ; libellés des champs modifiables en gras, des autres en
+   graisse normale (odoo18 web/static/src/views/form/form_controller.scss
+   :589-600, .o_form_label et .o_form_label_readonly) : à l'état Confirmée,
+   Client (readonly hors brouillon / confirmée, :90-92), Arrivée (readonly
+   dès l'arrivée, :102-103), Départ (:104-105) et Canal (:114), le client
+   dans sa zone de saisie, pas en lien (ref_muk/023-…-fiche.png) ; au
+   check-in, Client et Arrivée passent en lecture seule et le client
+   devient un lien, comme t01 ; « Nuits » porte le « ? » d'aide d'Odoo 18 (help du champ
+   nights, models/hotel_reservation.py:64-68 ; odoo18/addons/web/static/
+   src/views/form/form_label.js:39-49 et form_label.xml:6), seul champ
+   affiché de la fiche à avoir un help (Téléphone et E-mail, related
+   sans help, res_partner.py) ; onglets Chambres / Demandes particulières
+   et colonnes de la ligne, :133-160, dont « Prix fixé » (price_locked, case,
    optional="show") et la somme « Total » en pied, comme t01) ; check-in :
    models/hotel_reservation.py:420-444 (état Arrivé, heure réelle). Ajouts
    du registre : aite_guest_registry/views/hotel_reservation_views.xml
@@ -400,6 +414,23 @@ def case(coche=False):
     return ('<span><span class="case%s"><i></i></span></span>' % (' coche' if coche else ''),)
 
 
+def champ_modif(ident, libelle, valeur):
+    """Un champ modifiable de la fiche : libellé en gras (.o_form_label) ; ``<ident>-l`` pour le
+    passer en lecture seule (.o_form_label_readonly : graisse normale), valeur ``<ident>`` (sans lien
+    tant qu'elle est modifiable : la zone de saisie) ; comme champ_modif de t01_reception.py."""
+    html = champ(libelle, valeur, ident, gras=True)
+    assert html.count('<span class="l gras">') == 1
+    return html.replace('<span class="l gras">', '<span class="l gras" id="%s-l">' % ident)
+
+
+def champ_aide(libelle, valeur, gras=False):
+    """Un champ de fiche dont le champ porte un help : Odoo 18 met un « ? » en
+    exposant après le libellé (odoo18 web/static/src/views/form/form_label.js:39-49,
+    form_label.xml:6) ; rendu de .t1-aide (t01_reception.py)."""
+    return ('<div class="ch"><span class="l%s">%s<sup class="t06-aide">?</sup></span><span class="v">%s</span></div>'
+            % (' gras' if gras else '', e(libelle), e(valeur)))
+
+
 # ===================================================== 1. Arrivées du jour --
 # Colonnes de la liste (hotel_reservation_views.xml:9-33) : « Canal » en badge
 # sans couleur, affiché par défaut depuis la livraison 4 (:23-25, ECARTS n° 58),
@@ -446,14 +477,23 @@ LIGNE_CH = (
            ('Type', 0), ('Chambre', 0), ('Adultes', 1), ('Enfants', 1), ('Occupants', 0), ('Nuits', 1),
            ('Prix / nuit', 1), ('Prix fixé', 0), ('Sous-total (HT)', 1), ('', 0))),
        'px': e(demo.PRIX_NUIT), 'heb': e(demo.TOTAL_HEB), 'vides': '<span></span>' * 8, 'ech': icone('echange')})
+# Libellés en gras pour les champs modifiables à l'état Confirmée
+# (hotel_reservation_views.xml:88-122 ; odoo18 form_controller.scss:589-600) :
+# Client (readonly hors brouillon / confirmée), Arrivée (readonly dès
+# l'arrivée), Départ (jusqu'au départ), Canal (toujours) ; Téléphone, E-mail
+# (related), Hôtel (hors brouillon) et les champs calculés sont en lecture
+# seule. Le client modifiable s'écrit dans sa zone de saisie ; en lecture
+# seule, c'est un lien (ref_muk/023-…-fiche.png ; comme t01).
 FEUILLE_RESA = (
     titre_fiche(demo.RESA)
     + deux_colonnes(
-        groupe('Client', [champ('Client', demo.CLIENT, lien_=True), champ('Téléphone', demo.CLIENT_TEL),
+        groupe('Client', [champ_modif('t06-rf-cli', 'Client', demo.CLIENT), champ('Téléphone', demo.CLIENT_TEL),
                           champ('E-mail', demo.CLIENT_MAIL), champ('Hôtel', demo.HOTEL, lien_=True)])
-        + groupe('Canal & commission', [champ('Canal', CANAL)]),
-        groupe('Séjour', [champ('Arrivée', demo.ARRIVEE, gras=True), champ('Départ', demo.DEPART, gras=True),
-                          champ('Nuits', '2'), champ('Total hébergement (HT)', demo.TOTAL_HEB)])
+        + groupe('Canal & commission', [champ_modif('t06-rf-canal', 'Canal', CANAL)]),
+        groupe('Séjour', [champ_modif('t06-rf-arr', 'Arrivée', demo.ARRIVEE),
+                          champ_modif('t06-rf-dep', 'Départ', demo.DEPART),
+                          # « ? » : help du champ nights (hotel_reservation.py:64-68).
+                          champ_aide('Nuits', '2'), champ('Total hébergement (HT)', demo.TOTAL_HEB)])
         + '<div class="masque t06-cireel" id="t06-cireel">%s</div>' % champ('Check-in réel', CHECKIN_REEL)
         + groupe('Occupation', [champ('Nb chambres', '1'), champ('Adultes', '2'), champ('Enfants', '0')]))
     + onglets(['Chambres', 'Demandes particulières']) + LIGNE_CH)
@@ -735,6 +775,8 @@ CSS = PASTILLE_DIR + """
 #app-t6 .liste .ligne.t06-vert { color: #1B6E2F; }
 #app-t6 .liste .puce { font-size: 15px; height: 28px; }
 #app-t6 .liste .case i { width: 20px; height: 20px; }
+/* le « ? » d'aide d'un libellé de fiche (form_label.xml), comme .t1-aide de t01 */
+.t06-aide { color: var(--o-lien); font-size: 13px; margin-left: 3px; font-weight: 700; }
 .t06-opt { position: absolute; right: 12px; top: 15px; width: 22px; height: 22px; color: #495057; display: inline-flex; }
 .t06-opt svg { width: 22px; height: 22px; }
 /* la réservation, resserrée comme dans t01 */
@@ -894,6 +936,11 @@ TUTORIEL = {
          'gestes': [pause(0.3), classe('#t06-a1', ajouter=['survol']), clic('#t06-a1', fx=0.09, d=0.7), vue('t06-resa'),
                     anneau('#t06-st-fiches', d=1.0), clic('#t06-b-checkin', d=0.6),
                     classe('#t06-sb-1', retirer=['actif']), classe('#t06-sb-2', ajouter=['actif']),
+                    # Arrivé : Client et Arrivée passent en lecture seule (le client devient un lien),
+                    # Départ et Canal restent modifiables (comme t01).
+                    classe('#t06-rf-cli-l', retirer=['gras'], avec=True),
+                    classe('#t06-rf-arr-l', retirer=['gras'], avec=True),
+                    classe('#t06-rf-cli', ajouter=['lien'], avec=True),
                     curseur('#t06-sb-2', d=0.5),
                     cacher('#t06-resa-ga', d=0.2), montrer('#t06-resa-gb', d=0.3, y=0),
                     montrer('#t06-cireel', d=0.3, y=0), montrer('#t06-bandeau', d=0.4, y=-10),

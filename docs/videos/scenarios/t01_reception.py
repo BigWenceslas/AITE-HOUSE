@@ -26,6 +26,11 @@ d'Odoo, espace insécable ; tableaux de bord, espace fine avec tdb=True),
 ecrans.pct, ecrans.compte et la variation de ecrans.kpi, tels que le produit
 les écrit depuis la livraison 4.
 
+Base mono-société, comme celle du client (DESIGN.md, « La base est
+mono-société » ; odoo18/odoo/addons/base/models/res_users.py:1907-1914) :
+aucun élément réservé à groups="base.group_multi_company" n'est affiché, ni
+« Hôtel » dans les arrivées du jour, ni au folio (ref_muk/306).
+
 Sources des libellés (addons/, livraison 4, vérifiés mot pour mot par
 grep -rF ; `git diff ae3aab6..HEAD` pour ce qui a changé) :
 
@@ -81,8 +86,9 @@ grep -rF ; `git diff ae3aab6..HEAD` pour ce qui a changé) :
   (:49-54, sous le client), « Confirmer immédiatement », Réserver, Fermer) ;
   wizard/hotel_booking_wizard.py:18-66 (valeurs par défaut : 1 adulte, canal
   « Direct / comptoir », confirmation cochée, dates du jour à 14:00 →
-  lendemain 12:00 ; « ? » d'aide après Type de chambre, Canal et Confirmer
-  immédiatement, qui portent un help=), :87-123 (seules les chambres hors service exclues, de
+  lendemain 12:00 ; « ? » d'aide après Type de chambre, dans les deux
+  fenêtres, Canal et Confirmer immédiatement, qui portent un help=, :36-39,
+  :49-54, :60-63), :87-123 (seules les chambres hors service exclues, de
   capacité suffisante, libres selon is_available, triées par type puis
   numéro ; fenêtre rouverte sous le nom « Réservation rapide », :116-118,
   ECARTS n° 45), :125-158 (réservation créée avec le canal choisi, ECARTS
@@ -93,7 +99,8 @@ grep -rF ; `git diff ae3aab6..HEAD` pour ce qui a changé) :
   affichée par défaut, :23-25, ECARTS n° 58), :43-69 (boutons et barre
   d'état Brouillon, Confirmée, Arrivé, Parti ; « Non présenté », :59-61,
   ECARTS n° 42), :72-83 (bouton Folio), :88-130 (groupes Client, Séjour,
-  Canal & commission, Occupation ; Check-in réel), :131-166 (onglets
+  Canal & commission, Occupation ; Check-in réel ; « ? » après Nuits, seul
+  champ affiché qui porte un help=, models/hotel_reservation.py:64-68), :131-166 (onglets
   Chambres, Demandes particulières ; colonnes Type, Chambre, Adultes,
   Enfants, Occupants, Nuits, Prix / nuit, « Prix fixé » (case,
   optional="show"), Sous-total (HT), bouton de changement de chambre) ;
@@ -137,7 +144,8 @@ grep -rF ; `git diff ae3aab6..HEAD` pour ce qui a changé) :
   règlement », champs, référence exigée pour MTN et Orange, texte indicatif
   « ID transaction Mobile Money », Encaisser, Annuler) ;
   wizard/hotel_payment_wizard.py:18-62 (Solde dû actuel, Acompte coché tout
-  seul avant l'arrivée, les cinq moyens de paiement).
+  seul avant l'arrivée, les cinq moyens de paiement ; « ? » après Acompte,
+  qui porte un help=, :36-41).
 - Folio : views/hotel_folio_views.xml:35-163 (Encaisser, Générer la facture,
   Ouvert / Facturé / Soldé, Règlements, Facture, groupes Séjour et Montants,
   Lignes du folio, Ajouter une ligne, Règlements, Note ; Total TTC et
@@ -160,7 +168,8 @@ grep -rF ; `git diff ae3aab6..HEAD` pour ce qui a changé) :
   aite_city_tax/models/hotel_folio.py:119-166 (ligne « Taxe de séjour — 4
   nuitée(s) × personne (3 ★, Cameroun) », sans TVA, hors Services, datée du
   jour de chaque synchronisation, :158), views/hotel_folio_views.xml:10-24
-  (montant « Taxe de séjour » ; « Recalculer la taxe de séjour » réservé au
+  (montant « Taxe de séjour », avec le « ? » de son help=,
+  aite_city_tax/models/hotel_folio.py:56-60 ; « Recalculer la taxe de séjour » réservé au
   Responsable, donc absent ici). Barème 3 ★ : 3 000 FCFA par nuitée
   (docs/etude_comparative/benchmark_afrique_odoo.md:12). Prestation :
   « Petit-déjeuner buffet », 2 700 FCFA
@@ -390,9 +399,17 @@ FRONT = vue_tdb('t1-front', (
                        for i, k in enumerate(TYPES_RANG)]))
 ), initiale=True)
 
+def champ_aide(libelle, valeur, identifiant=None, lien_=False):
+    """Un champ de fiche qui porte une aide : le « ? » d'Odoo après le libellé (ecrans.champ, plus l'exposant) ;
+    Nuits (hotel_reservation.py:64-68) et Taxe de séjour (aite_city_tax hotel_folio.py:56-60) portent un help=."""
+    return ('<div class="ch"><span class="l">%s<sup class="t1-aide">?</sup></span><span class="v%s"%s>%s</span></div>'
+            % (e(libelle), ' lien' if lien_ else '', ' id="%s"' % identifiant if identifiant else '', e(valeur)))
+
+
 def m_champ_aide(libelle, valeur_html, identifiant=None):
     """Un champ d'assistant qui porte une aide : Odoo met un « ? » après le libellé
-    (hotel_booking_wizard.py : help= sur Type de chambre, Canal, Confirmer immédiatement)."""
+    (hotel_booking_wizard.py : help= sur Type de chambre, Canal, Confirmer immédiatement ; Acompte de
+    l'assistant Encaisser un règlement, hotel_payment_wizard.py:36-41)."""
     return ('<div class="m-ch"%s><span class="l">%s<sup class="t1-aide">?</sup></span><span class="v">%s</span></div>'
             % (' id="%s"' % identifiant if identifiant else '', e(libelle), valeur_html))
 
@@ -415,7 +432,7 @@ RAPIDE = assistant('t1-rap', 'Réservation rapide', (
         m_champ('Hôtel', entree('t1-r-hotel', '', demo.HOTEL)),
         m_champ('Arrivée', entree('t1-r-arr', '', '14/10/2026 14:00:00')),
         m_champ('Départ', entree('t1-r-dep', '', '15/10/2026 12:00:00')),
-        m_champ('Type de chambre', entree('t1-r-type', '')),
+        m_champ_aide('Type de chambre', entree('t1-r-type', '')),
         m_champ('Adultes', entree('t1-r-ad', '', '1')),
         m_champ('Enfants', entree('t1-r-enf', '', '0')))
     + CHERCHER % bouton('t1-r-chercher', 'Rechercher les chambres disponibles', 'gris', 'loupe')),
@@ -497,7 +514,7 @@ FEUILLE_RESA = (
         + groupe('Canal & commission', [champ_modif('t1-rf-canal', 'Canal', CANAL)]),
         groupe('Séjour', [champ_modif('t1-rf-arr', 'Arrivée', demo.ARRIVEE),
                           champ_modif('t1-rf-dep', 'Départ', demo.DEPART),
-                          champ('Nuits', '2'), champ('Total hébergement (HT)', HEB)])
+                          champ_aide('Nuits', '2'), champ('Total hébergement (HT)', HEB)])
         + '<div class="masque t1-cireel" id="t1-cireel">%s</div>' % champ('Check-in réel', '14/10/2026 14:06:12')
         + groupe('Occupation', [champ('Nb chambres', '1'), champ('Adultes', '2'), champ('Enfants', '0')]))
     + onglets(['Chambres', 'Demandes particulières']) + LIGNE_CH)
@@ -538,7 +555,7 @@ ACOMPTE_AS = assistant('t1-as-acompte', 'Encaisser un règlement', (
         + m_champ('Client', '<span class="lien">%s</span>' % e(demo.CLIENT))
         + m_champ('Solde dû actuel', e(TOTAL_RESA)),
         m_champ('Montant à encaisser', entree('t1-p-mt', '', TOTAL_RESA))
-        + m_champ('Acompte', '<span class="case coche"><i></i></span>')
+        + m_champ_aide('Acompte', '<span class="case coche"><i></i></span>')
         + m_champ('Moyen de paiement', entree('t1-p-moyen', '', 'Espèces'))
         + m_champ('Réf. transaction', entree('t1-p-ref', 'ID transaction Mobile Money'), 't1-p-ref-l')
         + m_champ('Date', e('14/10/2026'), 't1-p-date-l'),
@@ -645,7 +662,7 @@ FEUILLE_FOLIO = (
         groupe('Séjour', [champ('Client', demo.CLIENT, lien_=True), champ('Réservation', demo.RESA, lien_=True),
                           champ('Séjour', 'Arrivé', 't1-f-sej'), champ('Arrivée', demo.ARRIVEE), champ('Départ', demo.DEPART)]),
         groupe('Montants', [champ('Hébergement (HT)', HEB), champ('Services (HT)', ZERO, 't1-f-serv'),
-                            champ('Taxe de séjour', TAXE), champ('Total HT', TOTAL_RESA, 't1-f-ht'),
+                            champ_aide('Taxe de séjour', TAXE), champ('Total HT', TOTAL_RESA, 't1-f-ht'),
                             champ('Taxes', ZERO), champ('Total TTC', TOTAL_RESA, 't1-f-ttc'),
                             champ('Encaissé', ACOMPTE), champ('Solde dû', SOLDE_1, 't1-f-solde')], 't1-f-montants')
         + '<div class="masque" id="t1-f-etat">%s</div>' % champ('État facture', 'Partiellement réglé'))
@@ -886,7 +903,7 @@ TUTORIEL = {
                     clic('#t1-dd-arr', d=0.5), cacher('#t1-dd', d=0.15), vue('t1-arrivees'),
                     texte('#t1-resa .fil .parent', 'Arrivées du jour', avec=True),
                     texte('#t1-resa .pager', '2 / 3', avec=True),
-                    survol('#t1-a1'), clic('#t1-a1', fx=0.2), vue('t1-resa'), clic('#t1-b-checkin'),
+                    survol('#t1-a1'), clic('#t1-a1', fx=0.15), vue('t1-resa'), clic('#t1-b-checkin'),
                     classe('#t1-sb-1', retirer=['actif']), classe('#t1-sb-2', ajouter=['actif']),
                     # Arrivé : Client et Arrivée passent en lecture seule (le client devient un lien),
                     # Départ et Canal restent modifiables.
@@ -902,7 +919,7 @@ TUTORIEL = {
                  "le service choisi donne le libellé et le prix, il reste la quantité. L'acompte est déjà déduit du "
                  "solde.",
          'gestes': [clic('#t1-st-folio'), vue('t1-folio'), pause(0.3), anneau('#t1-f-solde', d=1.0),
-                    defiler('#t1-folio-defil', -318, d=0.8), curseur('#t1-fl2', fx=0.06, d=0.5), anneau('#t1-fl1', d=0.9, avec=True),
+                    defiler('#t1-folio-defil', -330, d=0.8), curseur('#t1-fl2', fx=0.06, d=0.5), anneau('#t1-fl1', d=0.9, avec=True),
                     zoom('#t1-fl', s=1.25, d=0.7, fy=0.3), bulle('t1-b-taxe', '#t1-fl2', cote='bas', d=2.5),
                     pause(2.0), dezoom(d=0.5), clic('#t1-aj1', fx=0.1), cacher('#t1-aj1', d=0.15),
                     montrer('#t1-fl3', d=0.3, y=0), clic('#t1-fl3-srv', d=0.45), choisir('t1-fl3-srv', 'Petit-déjeuner buffet'),

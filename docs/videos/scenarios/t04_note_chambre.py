@@ -37,7 +37,7 @@ Conditions du monde rejoué (aite_hotel_pos_link 18.0.1.0.2, aite_pos_credit
   petit, s'applique la première, et « Note de chambre » s'insère donc devant
   elle (ordre relevé sur aite_t_final, aite_dev et aite_fresh :
   Paiement en ligne, Identifier le client, Journal, Note de chambre, Vente à
-  crédit (ardoise), la phrase, Société). Corrigé (ECARTS n° 17) : seul le mode
+  crédit (ardoise), la phrase). Corrigé (ECARTS n° 17) : seul le mode
   coché « Vente à crédit » ouvre une ardoise, jamais « Note de chambre »,
   même cochée par erreur (aite_pos_credit/models/pos_payment_method.py:
   24-39, static/src/js/pos/payment_screen_button.js:35-38) — la case reste
@@ -118,9 +118,12 @@ Sources des libellés (relevés mot pour mot) :
    models/pos_payment_method.py:17-22 (« Vente à crédit (ardoise) », avec
    infobulle) ; la consigne « Laissez le journal vide… » ne s'affiche que
    case cochée : elle n'est pas montrée. Ordre des cases : relevé sur la base
-   (voir « Conditions »). Mise en page, case « Société » (base
-   multi-sociétés) et infobulle noire : capture en lecture seule de la base
-   MuK (Point de Vente → Configuration → Modes de paiement → Note de chambre).
+   (voir « Conditions »). Mise en page et infobulle noire : capture en
+   lecture seule de la base MuK (Point de Vente → Configuration → Modes de
+   paiement → Note de chambre). Base mono-société, comme celle du client
+   (DESIGN.md, « La base est mono-société » ; res_users.py:1907-1914) : pas
+   de « Société », réservé à base.group_multi_company
+   (pos_payment_method_views.xml:23).
    Applications de la direction : APPS_PROFIL['direction'] (avec « POS Crédit »).
 2. La caisse — odoo18/addons/point_of_sale/static/src/app : écran de vente
    (ecrans.pos_produits, captures ref_muk/611 et 612) ; unité « Unité(s) »
@@ -157,7 +160,9 @@ Sources des libellés (relevés mot pour mot) :
    taxe de séjour » sont réservés au responsable :43-46 et
    aite_city_tax/views/hotel_folio_views.xml:17-24, la réception ne les voit
    pas ; « Règlements », « Séjour », « Montants », onglets, colonnes, note
-   grise) ; models/hotel_folio.py:29-118 et :398-440 (libellés, états
+   grise ; le champ « Hôtel » du groupe « Séjour », réservé à
+   base.group_multi_company :73-74, est absent sur la base mono-société,
+   voir le point 1) ; models/hotel_folio.py:29-118 et :398-440 (libellés, états
    Ouvert / Facturé / Soldé, types Nuitée / Service) ; libellé de nuitée
    « Nuitée 202 (Confort) — 13/10/2026 → 16/10/2026 », dates locales au
    format jj/mm/aaaa, ligne datée de l'arrivée : models/hotel_folio.py:253-276
@@ -165,7 +170,12 @@ Sources des libellés (relevés mot pour mot) :
    56) ; « Arrivé » : hotel_reservation.py:134 ; aite_city_tax :
    ligne « Taxe de séjour — 3 nuitée(s) × personne (3 ★, Cameroun) », sans
    TVA, et montant « Taxe de séjour » models/hotel_folio.py:10-13, :56-60,
-   :119-160 ; barre de la réception ecrans.MENUS_MUK['hotel_reception']
+   :119-160, seul champ du groupe « Montants » à porter le « ? » d'aide
+   (help « Montant collecté pour le compte de l'État sur ce séjour. »,
+   :56-60 ; les montants du socle n'ont pas de help,
+   aite_hotel_management/models/hotel_folio.py:71-98 ;
+   odoo18/addons/web/static/src/views/form/form_label.js:39-49,
+   form_label.xml:6) ; barre de la réception ecrans.MENUS_MUK['hotel_reception']
    (« Réception », anciennement « Front Desk », hotel_menus.xml:18-25) ;
    menu Facturation → Folios hotel_menus.xml:69-79 ; ordre des
    folios « create_date desc » (hotel_folio.py:29) : FOL/2026/0210 est le
@@ -262,11 +272,11 @@ folios (n° 55) ; dates ISO dans le libellé de la nuitée (n° 37) ; case
 « Vente à crédit (ardoise) » sans libellé (n° 65) ; aide de la file (n° 48,
 non visible ici).
 
-Données fictives : demo.py (Complexe Hôtelier — Démo, Démo Hôtellerie SARL ;
-Martin Ebode, RES/2026/0209 ; Hervé Tchakounté, Mireille Ateba, Danielle
-Eyenga ; Brigitte Essomba et Sylvie Mbarga, clientes du bar) ; Boris Ndzana,
-Carine Owona (t11) ; Thérèse Essomba ; caisses « Bar de la terrasse »,
-« Restaurant », « Boutique » ; carte du bar fictive.
+Données fictives : demo.py (Démo Hôtellerie SARL, nom de la société dans la
+barre du haut ; Martin Ebode, RES/2026/0209 ; Hervé Tchakounté, Mireille
+Ateba, Danielle Eyenga ; Brigitte Essomba et Sylvie Mbarga, clientes du
+bar) ; Boris Ndzana, Carine Owona (t11) ; Thérèse Essomba ; caisses « Bar
+de la terrasse », « Restaurant », « Boutique » ; carte du bar fictive.
 """
 
 import demo
@@ -298,6 +308,15 @@ def remplacer(html, avant, apres):
     return html.replace(avant, apres, 1)
 
 
+def champ_aide(libelle, valeur, identifiant=None, lien_=False, html=False):
+    """Un ecrans.champ dont le libellé porte le « ? » qu'Odoo 18 pose après le libellé d'un champ qui a une aide
+    (help= du modèle, related compris, ou de la vue ; form_label.js:39-49, form_label.xml:6) ; rendu de
+    .t1-aide (scenarios/t01_reception.py)."""
+    return remplacer(champ(libelle, valeur, identifiant, lien_=lien_, html=html),
+                     '<span class="l">%s</span>' % e(libelle),
+                     '<span class="l">%s<sup class="t04-aide">?</sup></span>' % e(libelle))
+
+
 # ===================================================== 1. la mise en place --
 # Point de Vente → Configuration → Modes de paiement → Nouveau (direction).
 APPAREIL = ('<svg viewBox="0 0 24 24" fill="none" stroke="#ADB5BD" stroke-width="1.6" stroke-linejoin="round">'
@@ -305,10 +324,10 @@ APPAREIL = ('<svg viewBox="0 0 24 24" fill="none" stroke="#ADB5BD" stroke-width=
             '<circle cx="18" cy="17.5" r="4" fill="#fff"/><path d="M18 15.5v4M16 17.5h4" stroke-linecap="round"/></svg>')
 
 
-def ligne_pm(libelle, valeur_html, ident=None, aide=True, leger=False):
+def ligne_pm(libelle, valeur_html, ident=None, aide=True):
     sup = ('<sup%s>?</sup>' % (' id="%s-aide"' % ident if ident else '')) if aide else ''
-    return ('<div class="t04-r"><span class="l%s"%s>%s%s</span>%s</div>'
-            % (' leger' if leger else '', ' id="%s"' % ident if ident else '', e(libelle), sup, valeur_html))
+    return ('<div class="t04-r"><span class="l"%s>%s%s</span>%s</div>'
+            % (' id="%s"' % ident if ident else '', e(libelle), sup, valeur_html))
 
 
 MODE = vue_libre('t4-mode', (
@@ -328,7 +347,8 @@ MODE = vue_libre('t4-mode', (
     + ligne_pm('Vente à crédit (ardoise)', '<span class="t04-cb" id="t4-cb-ard"></span>', 't4-l-ard')
     + '<div class="t04-muet">Case cochée : chaque ticket réglé avec ce mode ouvre une ardoise au nom du client '
       '(POS Crédit → Ardoises).</div></div>'
-    + ligne_pm('Société', '<span class="t04-lien">%s</span>' % e(demo.SOCIETE), aide=False, leger=True)
+    # pas de « Société » : company_id est réservé à base.group_multi_company (pos_payment_method_views.xml:23),
+    # absent sur la base mono-société (docs/videos/DESIGN.md)
     + '</div><div>'
     + ligne_pm('Intégration', '<span class="t04-in noir">Non requis</span>', aide=False)
     + '</div></div><div class="t04-img">%s</div>' % APPAREIL
@@ -463,11 +483,14 @@ LIGNES_F = remplacer(LIGNES_F, 'class="t-ligne" id="t4-fl2"', 'class="t-ligne ta
 FEUILLE_FOLIO = (
     titre_fiche(FOLIO_B)
     + deux_colonnes(
+        # « Hôtel » (hotel_folio_views.xml:73-74) est réservé à base.group_multi_company : absent sur la base
+        # mono-société (docs/videos/DESIGN.md)
         groupe('Séjour', [champ('Client', CLIENTE, lien_=True), champ('Réservation', RESA_B, lien_=True),
                           champ('Séjour', 'Arrivé'), champ('Arrivée', '13/10/2026 14:00:00'),
-                          champ('Départ', '16/10/2026 12:00:00'), champ('Hôtel', demo.HOTEL, lien_=True)]),
+                          champ('Départ', '16/10/2026 12:00:00')]),
         groupe('Montants', [champ('Hébergement (HT)', fcfa(135000)), champ('Services (HT)', TICKET),
-                            champ('Taxe de séjour', fcfa(9000)), champ('Total HT', fcfa(157500)),
+                            # le « ? » : help d'amount_city_tax (aite_city_tax/models/hotel_folio.py:56-60)
+                            champ_aide('Taxe de séjour', fcfa(9000)), champ('Total HT', fcfa(157500)),
                             champ('Taxes', fcfa(0)), champ('Total TTC', '<b>%s</b>' % fcfa(157500), html=True),
                             champ('Encaissé', fcfa(100000)),
                             champ('Solde dû', '<b>%s</b>' % fcfa(57500), 't4-f-solde', html=True)], 't4-f-montants'))
@@ -560,7 +583,7 @@ CSS = """
 """ + pastille_css('t04-pc', CAISSIER, ROLE_CAISSE) + pastille_css('t04-pr', RECEPTION, ROLE_REC) + """
 /* -- 1. fiche du mode de paiement (thème MuK) -- */
 #t4-mode .cp { height: 80px; }
-.t04-pm { position: absolute; left: 22px; right: 22px; top: 102px; height: 548px; background: #fff;
+.t04-pm { position: absolute; left: 22px; right: 22px; top: 102px; height: 496px; background: #fff;
   border: 1px solid var(--o-filet); padding: 22px 30px; color: var(--o-texte); }
 .t04-lab { font-size: 19px; font-weight: 600; }
 .t04-pm sup { margin-left: 3px; font-size: 13px; color: #3F6A83; font-weight: 600; }
@@ -571,7 +594,6 @@ CSS = """
 .t04-cols { display: grid; grid-template-columns: 780px 420px; column-gap: 56px; margin-top: 24px; }
 .t04-r { display: grid; grid-template-columns: 286px 1fr; align-items: center; min-height: 52px; font-size: 19px; }
 .t04-r .l { font-weight: 600; white-space: nowrap; }
-.t04-r .l.leger { font-weight: 400; color: var(--o-texte-2); }
 /* la phrase d'aite_pos_credit, text-muted sur toute la largeur du groupe */
 .t04-muet { padding: 2px 0 12px; font-size: 19px; line-height: 1.4; color: #6C757D; }
 .t04-cb { width: 20px; height: 20px; border: 1px solid #ADB5BD; border-radius: 3px; background: #fff; display: inline-flex;
@@ -581,7 +603,6 @@ CSS = """
 .t04-in { height: 42px; border-bottom: 1px solid #CED4DA; display: block; line-height: 42px; padding: 0 4px; color: #6C757D;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .t04-in.noir { color: var(--o-texte); }
-.t04-lien { color: #3F6A83; }
 .t04-img { position: absolute; left: 1330px; top: 130px; width: 130px; height: 130px; border: 1px solid var(--o-filet);
   display: flex; align-items: center; justify-content: center; }
 .t04-img svg { width: 82px; height: 82px; }
@@ -632,6 +653,8 @@ CSS = """
 #b-aucun { max-width: 640px; }
 .table .t-ligne.t04-nuitee { color: var(--info); }
 #t4-folio .ch { min-height: 38px; }
+/* le « ? » d'aide d'Odoo 18 (form_label.xml:6), rendu de .t1-aide (scenarios/t01_reception.py) */
+.t04-aide { color: var(--o-lien); font-size: 13px; margin-left: 3px; font-weight: 700; }
 #t4-folio .f-titre { margin-bottom: 14px; }
 #t4-note .feuille { min-height: 0; border-bottom: 1px solid var(--o-filet); padding-bottom: 26px; }
 .t04-m2o { position: relative; height: 42px; border-bottom: 1px solid #CED4DA; }
@@ -699,7 +722,7 @@ TUTORIEL = {
                  "coché, journal laissé vide, et la case Note de chambre. Vente à crédit reste décochée : pas "
                  "d'ardoise. On l'ajoute ensuite aux caisses du bar, du restaurant et de la boutique, sessions fermées.",
          'gestes': [clic('#t4-nom', fx=0.3), saisir('t4-nom', 'Note de chambre'), clic('#t4-cb-ident'),
-                    classe('#t4-cb-ident', ajouter=['on']), zoom('#t4-pm', s=1.45, d=0.8, fx=0.43, fy=0.45),
+                    classe('#t4-cb-ident', ajouter=['on']), zoom('#t4-pm', s=1.45, d=0.8, fx=0.43, fy=0.50),
                     bulle('b-ident', '#t4-cb-ident', cote='droite', d=2.2), pause(0.15), anneau('#t4-journal', d=1.2),
                     clic('#t4-cb-note', d=0.5), classe('#t4-cb-note', ajouter=['on']), pause(0.25),
                     anneau('#t4-ard', d=2.3),

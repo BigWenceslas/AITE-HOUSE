@@ -22,12 +22,13 @@ Sources — libellés et règles (addons/) :
   particulières » ; colonnes de l'onglet Chambres, dont « Prix fixé »
   (price_locked, optional="show") et le bouton « Changer de chambre ») ;
 - aite_hotel_management/models/hotel_reservation.py:47-79 (Client, Téléphone,
-  E-mail, Arrivée, Départ, Nuits, Canal), :103-116 (Nb chambres, Adultes,
-  Enfants, Total hébergement (HT)), :130-142 (états), :143 (« Check-in
-  réel »), :374-389 (la confirmation crée le folio une seule fois et y pose
-  les nuitées), :446-455 (titre « Check-out — RES/… »), :499-517 (« Folio »
-  ouvre le folio, « Encaisser un acompte » ouvre l'assistant d'encaissement
-  du folio), :619-637 (« Prix / nuit », « Prix fixé », « Sous-total (HT) ») ;
+  E-mail, Arrivée, Départ, Nuits — « ? » d'aide, help de nights :64-68 —,
+  Canal), :103-116 (Nb chambres, Adultes, Enfants, Total hébergement (HT)),
+  :130-142 (états), :143 (« Check-in réel »), :374-389 (la confirmation
+  crée le folio une seule fois et y pose les nuitées), :446-455 (titre
+  « Check-out — RES/… »), :499-517 (« Folio » ouvre le folio, « Encaisser un
+  acompte » ouvre l'assistant d'encaissement du folio), :619-637 (« Prix /
+  nuit », « Prix fixé », « Sous-total (HT) ») ;
 - aite_guest_registry/views/hotel_reservation_views.xml:11-25 (« Fiches
   d'enregistrement » n/N, anciennement « Fiches clients », masqué en
   brouillon), :40-47 (« Registre des clients à jour. » / « Imprimer les
@@ -65,7 +66,8 @@ Sources — libellés et règles (addons/) :
   Client, Solde dû actuel, Montant à encaisser pré-rempli avec le solde,
   Acompte coché seul tant que le client n'est pas arrivé, Moyen de paiement,
   Réf. transaction obligatoire en MTN / Orange, texte « ID transaction Mobile
-  Money », Date, Note, « Encaisser » / « Annuler ») ;
+  Money », Date, Note, « Encaisser » / « Annuler ») ; « ? » d'aide sur
+  « Acompte » (help de is_deposit, hotel_payment_wizard.py:36-41) ;
 - aite_hotel_management/wizard/hotel_checkout_wizard.py:20-63, :77-114 et
   hotel_checkout_wizard_views.xml:8-44 (groupes « Séjour » et « Folio »,
   Départ prévu, Départ réel, Total TTC, Déjà encaissé, Solde dû, Générer la
@@ -81,9 +83,10 @@ Sources — libellés et règles (addons/) :
   séjour » réservés au Responsable, absents ici) ;
 - aite_city_tax/models/hotel_folio.py:10-13 (badge « Taxe de séjour »),
   :28-44 (la ligne de taxe ne se supprime pas à la main, ECARTS n° 57),
-  :56-59 (montant « Taxe de séjour »), :119-162 (une ligne, sans TVA,
-  « Taxe de séjour — 4 nuitée(s) × personne (3 ★, Cameroun) », datée du jour
-  de la synchronisation, :158), views/hotel_folio_views.xml:11-52 (Qté, Prix
+  :56-60 (montant « Taxe de séjour » et son help, d'où le « ? » du groupe
+  « Montants »), :119-162 (une ligne, sans TVA, « Taxe de séjour —
+  4 nuitée(s) × personne (3 ★, Cameroun) », datée du jour de la
+  synchronisation, :158), views/hotel_folio_views.xml:11-52 (Qté, Prix
   unitaire, Libellé et Taxes en lecture seule sur la ligne de taxe) ;
   aite_city_tax/models/hotel_hotel.py:108-109 et aite_hotel_management/models/
   hotel_room.py:108 (articles « Taxe de séjour — <hôtel> » et « Nuitée —
@@ -93,12 +96,18 @@ Sources — libellés et règles (addons/) :
   « Payé » — lettrage au mieux, vérifié depuis la livraison 4 par
   test_folio.py:298-307).
 
-Sources — Odoo 18 (../odoo18) : addons/account/i18n/fr.po (« Partiellement
-réglé », « Payé »), addons/account/models/account_move.py:1237-1275
-(règlements lettrés par écriture, sans paiement ni relevé : « partial » puis
-« paid », jamais « En paiement ») ; aite_hotel_management/models/
-hotel_folio.py:12-24 et :697-785 (chaque règlement passe une écriture 411,
-lettrée avec la facture du folio) ; addons/web/i18n/fr.po
+Sources — Odoo 18 (../odoo18) : addons/web/static/src/views/form/
+form_label.xml:5-6 et form_label.js:39-49 (« ? » en exposant après le libellé
+de tout champ de formulaire qui porte un help) ; odoo/addons/base/models/
+res_users.py:1907-1914 (base mono-société, comme celle du client :
+base.group_multi_company n'est donné qu'à un utilisateur à plusieurs
+sociétés, donc pas de « Hôtel » au folio — docs/videos/DESIGN.md) ;
+addons/account/i18n/fr.po (« Partiellement réglé », « Payé »),
+addons/account/models/account_move.py:1237-1275 (règlements lettrés par
+écriture, sans paiement ni relevé : « partial » puis « paid », jamais « En
+paiement ») ; aite_hotel_management/models/hotel_folio.py:12-24 et
+:697-785 (chaque règlement passe une écriture 411, lettrée avec la facture
+du folio) ; addons/web/i18n/fr.po
 (« Filtres », « Regrouper par », « Favoris », « Ajouter un filtre
 personnalisé », « Ajouter un groupe personnalisé », « Enregistrer la recherche
 actuelle », « Ajouter une ligne », « Nouveau »).
@@ -309,6 +318,25 @@ def ligne(lid, libelle, valeur, id_val):
     return '<div id="%s">%s</div>' % (lid, champ(libelle, valeur, id_val))
 
 
+# Le « ? » d'aide d'Odoo 18 (web/static/src/views/form/form_label.xml:5-6,
+# form_label.js:39-49) : un exposant après le libellé de tout champ de
+# formulaire qui porte un help (Python, related compris, ou dans la vue) ;
+# même rendu que .t1-aide de t01_reception.py.
+AIDE = '<sup class="t03-aide">?</sup>'
+
+
+def champ_aide(libelle, valeur, identifiant=None):
+    """Un champ de fiche dont le champ porte une aide : « ? » après le libellé."""
+    return remplacer(champ(libelle, valeur, identifiant), '<span class="l">%s</span>' % e(libelle),
+                     '<span class="l">%s%s</span>' % (e(libelle), AIDE))
+
+
+def m_champ_aide(libelle, valeur_html, identifiant=None):
+    """Un champ d'assistant dont le champ porte une aide : « ? » après le libellé."""
+    return remplacer(m_champ(libelle, valeur_html, identifiant), '<span class="l">%s</span>' % e(libelle),
+                     '<span class="l">%s%s</span>' % (e(libelle), AIDE))
+
+
 # ------------------------------------------------------------ la réservation --
 # En-tête (hotel_reservation_views.xml:43-70) : « Non présenté » (anciennement
 # « No-show », ECARTS n° 42) ; bouton d'impression « Imprimer les fiches »
@@ -344,7 +372,7 @@ FEUILLE_RESA = (
                           champ('E-mail', demo.CLIENT_MAIL), champ('Hôtel', demo.HOTEL, lien_=True)])
         + groupe('Canal & commission', [champ('Canal', 'Direct / comptoir')]),
         groupe('Séjour', [champ('Arrivée', demo.ARRIVEE, gras=True), champ('Départ', demo.DEPART, gras=True),
-                          champ('Nuits', '2'), champ('Total hébergement (HT)', demo.TOTAL_HEB),
+                          champ_aide('Nuits', '2'), champ('Total hébergement (HT)', demo.TOTAL_HEB),
                           '<div class="t03-cache" id="t03-cireel">%s</div>'
                           % champ('Check-in réel', CHECKIN_REEL)], identifiant='t03-grp-sejour')
         + groupe('Occupation', [champ('Nb chambres', '1'), champ('Adultes', '2'), champ('Enfants', '0')]))
@@ -385,6 +413,10 @@ LIGNES = tableau('t03-lignes', COLS_LIGNES, [
                  _cell('t03-fl3-st', ZERO, True), _cell('t03-fl3-tt', ZERO, True)], 't03-edit t03-cache'),
 ], total=[('', '')] * 7 + [(TOTAL_1, 't03-lt-ht'), (TOTAL_1, 't03-lt-ttc')],
     ajouter='Ajouter une ligne', classe_='t03-lignes')
+# Groupe « Séjour » (hotel_folio_views.xml:67-77) : Client, Réservation, Séjour,
+# Arrivée, Départ ; « Hôtel » (:73-74) est réservé à base.group_multi_company,
+# absent sur la base mono-société (docs/videos/DESIGN.md). « Taxe de séjour »
+# porte un « ? » (help de amount_city_tax, aite_city_tax hotel_folio.py:56-60).
 FEUILLE_FOLIO = (
     titre_fiche(FOLIO)
     + deux_colonnes(
@@ -392,7 +424,7 @@ FEUILLE_FOLIO = (
                           champ('Séjour', 'Confirmée', 't03-f-sejour'), champ('Arrivée', demo.ARRIVEE),
                           champ('Départ', demo.DEPART)]),
         groupe('Montants', [champ('Hébergement (HT)', demo.TOTAL_HEB), champ('Services (HT)', ZERO, 't03-f-serv'),
-                            champ('Taxe de séjour', TAXE_MT), champ('Total HT', TOTAL_1, 't03-f-ht'),
+                            champ_aide('Taxe de séjour', TAXE_MT), champ('Total HT', TOTAL_1, 't03-f-ht'),
                             champ('Taxes', ZERO), champ('Total TTC', TOTAL_1, 't03-f-ttc'),
                             ligne('t03-r-paye', 'Encaissé', ACOMPTE, 't03-f-paye'),
                             ligne('t03-r-solde', 'Solde dû', SOLDE_1, 't03-f-solde')],
@@ -511,7 +543,7 @@ FEUILLE_FOLIO2 = (
         groupe('Séjour', [champ('Client', CLIENT, lien_=True), champ('Réservation', RESA, lien_=True),
                           champ('Séjour', 'Parti'), champ('Arrivée', demo.ARRIVEE), champ('Départ', demo.DEPART)]),
         groupe('Montants', [champ('Hébergement (HT)', demo.TOTAL_HEB), champ('Services (HT)', SERVICES),
-                            champ('Taxe de séjour', TAXE_MT), champ('Total HT', TOTAL_2),
+                            champ_aide('Taxe de séjour', TAXE_MT), champ('Total HT', TOTAL_2),
                             champ('Taxes', ZERO), champ('Total TTC', TOTAL_2, 't03-f2-ttc'),
                             champ('Encaissé', ACOMPTE, 't03-f2-paye'),
                             champ('Solde dû', SOLDE_2, 't03-f2-solde'),
@@ -536,7 +568,7 @@ FEUILLE_FOLIO3 = (
         groupe('Séjour', [champ('Client', CLIENT, lien_=True), champ('Réservation', RESA, lien_=True),
                           champ('Séjour', 'Parti'), champ('Arrivée', demo.ARRIVEE), champ('Départ', demo.DEPART)]),
         groupe('Montants', [champ('Hébergement (HT)', demo.TOTAL_HEB), champ('Services (HT)', SERVICES),
-                            champ('Taxe de séjour', TAXE_MT), champ('Total HT', TOTAL_2),
+                            champ_aide('Taxe de séjour', TAXE_MT), champ('Total HT', TOTAL_2),
                             champ('Taxes', ZERO), champ('Total TTC', TOTAL_2, 't03-f3-ttc'),
                             champ('Encaissé', ACOMPTE),
                             ligne('t03-r3-solde', 'Solde dû', SOLDE_2, 't03-f3-solde'),
@@ -553,11 +585,12 @@ V_FOLIO3 = vue_fiche('t03-folio3', cp_fiche(TDB + ' / ' + RESA, FOLIO, '', stats
 
 
 def _encaisser(ident, solde, montant, acompte, date):
-    """L'assistant « Encaisser un règlement », pré-rempli avec le solde dû."""
+    """L'assistant « Encaisser un règlement », pré-rempli avec le solde dû ;
+    « Acompte » porte un « ? » (help de is_deposit, hotel_payment_wizard.py:36-41)."""
     gauche = (m_champ('Folio', lien(FOLIO)) + m_champ('Client', lien(CLIENT))
               + m_champ('Solde dû actuel', e(solde)))
     droite = (m_champ('Montant à encaisser', entree(ident + '-montant', '', montant))
-              + m_champ('Acompte', case(acompte, ident + '-case'), ident + '-ch-acompte')
+              + m_champ_aide('Acompte', case(acompte, ident + '-case'), ident + '-ch-acompte')
               + m_champ('Moyen de paiement', entree(ident + '-moyen', '', 'Espèces'))
               + m_champ('Réf. transaction', entree(ident + '-ref', 'ID transaction Mobile Money'), ident + '-ch-ref')
               + m_champ('Date', e(date)))
@@ -600,6 +633,7 @@ CSS = '''
 #app-t03 .st-et.actif { color: var(--o-texte); }
 .t03-cache { display: none !important; }
 .t03-lien { color: var(--o-lien); }
+.t03-aide { color: var(--o-lien); font-size: 13px; margin-left: 3px; font-weight: 700; }
 .t03-m { position: relative; }
 .t03-dd { position: absolute; left: -18px; top: 42px; width: 390px; padding: 8px 0; border-radius: 6px; background: #fff;
   border: 1px solid var(--o-filet); box-shadow: 0 14px 34px rgba(0,0,0,.24); display: flex; flex-direction: column; }
@@ -695,7 +729,11 @@ TUTORIEL = {
          'voix': "Le matin, Mireille vient d'enregistrer la réservation d'Estelle Ngono : deux nuits en chambre "
                  "Confort, confirmée d'office. Le folio du séjour s'est ouvert aussitôt, nuitées et taxe de séjour "
                  "déjà comptées : cent deux mille francs.",
-         'gestes': [pause(0.3), anneau('#t03-sbc', d=1.0), anneau('#t03-grp-sejour', d=1.3),
+         # le curseur quitte le centre de la fiche, où il cachait le « N » de
+         # « Nuits ? », et rejoint « Confirmée » pendant son anneau, sous le
+         # libellé : la durée de l'étape ne change pas
+         'gestes': [pause(0.3), anneau('#t03-sbc', d=1.0), curseur('#t03-sbc', fy=0.95, d=0.7, avec=True),
+                    anneau('#t03-grp-sejour', d=1.3),
                     zoom('#t03-st-folio', s=1.45, d=0.8), bulle('b-folio', '#t03-st-folio', cote='bas', d=2.8),
                     pause(2.5), dezoom(d=0.6)]},
         {'temps': 1, 'titre': "L'acompte en Mobile Money",

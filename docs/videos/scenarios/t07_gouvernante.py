@@ -190,6 +190,10 @@ Sources des libellés et des règles (relevés mot pour mot) :
   :29-30 (« Chambre 102 — Climatiseur en panne ») ; :47-55 (notification
   « Problème signalé »). wizard/report_issue_wizard_views.xml:8-20
   (indications, « Envoyer à la maintenance » fa-paper-plane, « Annuler »).
+  « Chambre » y est en lecture seule (readonly="1", :9 ; pas de help,
+  report_issue_wizard.py:10) : valeur en lien, libellé estompé, en graisse
+  normale et sans « ? » (o_form_label_readonly, odoo18/addons/web/static/
+  src/views/form/form_label.js:34-36, form_controller.scss:598-601).
   Hors service si la chambre n'est pas occupée :
   aite_housekeeping/models/maintenance_request.py:61-69, dans la règle :39-88
   (recette P05, P07).
@@ -211,14 +215,24 @@ Sources des libellés et des règles (relevés mot pour mot) :
   par :, Demande, Équipement, Date de la demande, Date de clôture, Type de
   maintenance, Corrective, Préventive, Équipe, Maintenance interne,
   Responsable, Date planifiée, Durée, heures, Priorité, Annuler, Notes,
-  Instructions, Notes internes, À faire). « Chambre invendable pendant
+  Instructions, Notes internes, À faire). Pas de « Société »
+  (groups="base.group_multi_company", maintenance_views.xml:133) : base
+  mono-société comme celle du client (odoo18/odoo/addons/base/models/
+  res_users.py:1907-1914 ; docs/videos/DESIGN.md). « Chambre invendable pendant
   l'intervention » : maintenance_request.py:19-22 et maintenance_views.xml:9-12.
+  « Chambre » (room_id) y est modifiable (ni readonly ni condition, :9-12) :
+  valeur en texte normal dans la zone de saisie, comme « Équipe », le lien
+  interne n'apparaissant qu'au survol (odoo18/addons/web/static/src/views/
+  fields/many2one/many2one_field.xml:16-40, many2one_field.scss:1-13).
   Remise en vente, « À nettoyer » et tâche « Remise en service après
   intervention : … » : maintenance_request.py:76-88 (recette P06). Date de
   clôture posée au passage à une étape terminée : odoo18/addons/
   maintenance/models/maintenance.py:336-339. « ? » d'aide : Chambre
-  (maintenance_request.py:13-16), Chambre invendable…, Date de clôture,
-  Date planifiée, Durée (odoo18 maintenance.py:258, :264, :267). Discussion :
+  (maintenance_request.py:13-16), Chambre invendable…, Date de la demande,
+  Date de clôture, Date planifiée, Durée (odoo18 maintenance.py:247-248,
+  :258, :264, :267 ; le « ? » suit le help du champ, en lecture seule
+  comme en écriture : odoo18/addons/web/static/src/views/form/
+  form_label.js:39-51 et form_label.xml:5-7). Discussion :
   message de création (sous-type « Demande créée », description « Demande de
   maintenance créée » : maintenance.py:227-228, data/mail_message_subtype_
   data.xml:5-11, i18n/fr.po:903-904) et suivi d'étape (sous-type « Statut
@@ -726,7 +740,7 @@ INSPECTION = modale('t07-as-insp', 'Inspection — chambre 103', (
 
 # ------------------------------------------------------ Signaler un problème --
 PROBLEME = modale('t07-as-pb', 'Signaler un problème — chambre 102', '<div class="m-grille un">%s</div>' % ''.join([
-    ligne('Chambre', '<span class="t07-lien">102 [STD]</span>'),
+    ligne('Chambre', '<span class="t07-lien">102 [STD]</span>', lecture=True),   # readonly="1" : o_form_label_readonly
     ligne('Quel est le problème ?', entree('t07-pb', 'Ex. : climatiseur en panne, fuite lavabo…', classe='entree t07-ligne'),
           aide=True),
     ligne('Urgence', etoiles(1)),
@@ -764,15 +778,18 @@ PANNES = vue_libre('t07-pannes', CP_PANNES + '<div class="t07-pk">%s%s%s%s</div>
 
 # ------------------------------------------- La demande de maintenance --
 def gauche(cloture):
-    lignes = [ch('Chambre', '<span class="t07-lien">102 [STD]</span>', aide=True),
+    lignes = [ch('Chambre', '102 [STD]', aide=True),   # many2one modifiable : texte normal, lien au survol seulement
               ch("Chambre invendable pendant l'intervention", '<span class="case coche"><i></i></span>', aide=True),
-              ch('Équipement', ''), ch('Date de la demande', JOUR, gras=False)]
+              ch('Équipement', ''),
+              ch('Date de la demande', JOUR, gras=False, aide=True)]   # help : odoo18 maintenance.py:247-248
     if cloture:
         lignes.append(ch('Date de clôture', JOUR, gras=False, aide=True))
     lignes.append(ch('Type de maintenance', '<span class="t07-radio"><i class="on"></i>Corrective <i></i>Préventive</span>'))
     return ''.join(lignes)
 
 
+# « Email cc » (base.group_no_one) et « Société » (base.group_multi_company), odoo18 maintenance_views.xml:132-133,
+# restent cachés : base mono-société (docs/videos/DESIGN.md).
 DROITE = ''.join([ch('Équipe', 'Maintenance interne'), ch('Responsable', ''), ch('Date planifiée', '', aide=True),
                   ch('Durée', '00:00 <span class="t07-gris">heures</span>', aide=True),
                   ch('Priorité', etoiles(3), ident='t07-dm-prio')])

@@ -87,7 +87,21 @@ Sources des écrans (libellés vérifiés mot pour mot par ``grep -rF`` dans
   ouvrées, réservations à venir) ; fiche ``views/booking_booking_views.xml``
   (boutons « Réalisée », « Renvoyer l'e-mail », « Non présenté »,
   « Annuler » et statusbar l. 39-63, champs l. 64-96, ``<chatter/>``
-  l. 97) ; nom de l'action ``views/slot_dashboard_actions.xml``.
+  l. 97) ; « ? » d'aide en exposant (``odoo18/addons/web/static/src/views/
+  form/form_label.js``, rendu de ``.t1-aide`` au tutoriel 1, ``champ_aide``)
+  sur les quatre champs qui ont un ``help`` : « Prestation », « Prix
+  manuel », « Folio du séjour » et « Ligne de folio »
+  (``models/booking_booking.py`` l. 63-68, 79-82, 106-110, 111-116) ;
+  la fiche s'ouvre en édition : les sept champs modifiables (« Client »,
+  « Ressource », « Prestation », « Début », « Fin », « Prix manuel »,
+  « Folio du séjour » : aucun ``readonly`` dans booking_booking_views.xml
+  l. 64-96 ni dans le modèle) ont le libellé en gras et une zone de saisie
+  soulignée (``odoo18/addons/web/static/src/views/form/form_controller.scss``
+  l. 589-601, ``fields/fields.scss`` l. 49-52, ref_muk/027), les autres
+  (« Téléphone » related, « Origine » ``readonly="1"``, « Durée (h) » et
+  « Montant » calculés, « Ligne de folio » ``readonly``) le libellé en
+  graisse normale (``o_form_label_readonly``, form_label.js l. 20-37), comme
+  au tutoriel 9 ; nom de l'action ``views/slot_dashboard_actions.xml``.
   Discussion : message de création « Réservation créée »
   (``_creation_message``, booking_booking.py l. 356-361, écart n° 43, à la
   place du « %s créé » d'Odoo) et suivi de l'état (champ ``tracking=True``,
@@ -102,11 +116,14 @@ Sources des écrans (libellés vérifiés mot pour mot par ``grep -rF`` dans
   d'« Activités » (le modèle n'hérite que de ``mail.thread``) ; mise en page :
   ref_muk/027.
 - Réservations hôtel — ``aite_hotel_management/views/hotel_reservation_views.xml``
-  (liste l. 5-35, décorations, colonne « Canal » en badge visible par
-  défaut l. 23-25, écart n° 58 ; filtres « Arrivées du jour », « Départs du
-  jour », « Clients présents », « Brouillons », « Confirmées », « Non
-  présentés », puis « Du site web », regroupements « État », « Client »,
-  « Hôtel », « Canal », « Date d'arrivée » l. 233-275 ; action sans filtre
+  (liste l. 5-35, décorations ; colonne « Hôtel » l. 15-16 réservée à
+  ``base.group_multi_company``, absente : base mono-société comme celle du
+  client, DESIGN.md, res_users.py:1907-1914, ref_muk/306 ; colonne « Canal »
+  en badge visible par défaut l. 23-25, écart n° 58 ; filtres « Arrivées
+  du jour », « Départs du jour », « Clients présents », « Brouillons »,
+  « Confirmées », « Non présentés », puis « Du site web », regroupements
+  « État », « Client », « Hôtel », « Canal », « Date d'arrivée »
+  l. 233-275 ; action sans filtre
   par défaut, vues list,kanban,form,calendar), ``models/hotel_reservation.py``
   (« Canal » et « Site web » l. 70-80, ordre ``checkin_date desc, id desc``
   l. 27, nuits / chambres / total stockés et donc sommés par groupe
@@ -630,6 +647,17 @@ DISCUSSION = (
        message('Réservation créée', 't08-ch-cree')))
 
 
+def champ_aide(libelle, valeur, identifiant=None, gras=False):
+    """Un champ de la fiche qui porte une aide : Odoo 18 met un « ? » en
+    exposant après le libellé quand le champ a un ``help``
+    (``odoo18/addons/web/static/src/views/form/form_label.js``), rendu comme
+    ``.t1-aide`` du tutoriel 1. ``gras`` : champ modifiable (libellé en gras)."""
+    lib = '<span class="l%s">%s</span>' % (' gras' if gras else '', e(libelle))
+    html = champ(libelle, valeur, identifiant, gras=gras)
+    assert lib in html, libelle                   # sinon le « ? » disparaîtrait sans bruit
+    return html.replace(lib, lib[:-len('</span>')] + '<sup class="t08-aide">?</sup></span>', 1)
+
+
 def avec_discussion(vue_html, panneau):
     """Pose la discussion à droite de la fiche, comme ``ecrans.avec_chatter``
     (qui ajoute un bouton « Activités » : ce modèle n'en a pas)."""
@@ -646,12 +674,20 @@ FICHE = avec_discussion(vue_fiche(
      bouton(None, 'Non présenté', 'gris'), bouton(None, 'Annuler', 'gris')],
     statusbar('t08-sb', ['Brouillon', 'Confirmée', 'Réalisée'], 1),
     titre_fiche(REF_CRENEAU)
-    + deux_colonnes(champ('Client', NOM) + champ('Téléphone', TEL_FICHE) + champ('Ressource', SALON)
-                    + champ('Prestation', '') + champ('Origine', 'En ligne', 't08-f-origine'),
-                    champ('Début', '17/10/2026 16:00:00') + champ('Fin', '17/10/2026 17:00:00')
+    # « ? » d'aide sur les quatre champs qui ont un help (booking_booking.py :
+    # Prestation l. 63-68, Prix manuel l. 79-82, Folio du séjour l. 106-110,
+    # Ligne de folio l. 111-116) ; aucun sur les autres champs de la fiche.
+    # Fiche en édition : libellé en gras (gras=True) pour les champs modifiables, en graisse
+    # normale pour Téléphone, Origine, Durée, Montant et Ligne de folio, en lecture seule
+    # (form_controller.scss l. 589-601 ; booking_booking_views.xml l. 64-96).
+    + deux_colonnes(champ('Client', NOM, gras=True) + champ('Téléphone', TEL_FICHE)
+                    + champ('Ressource', SALON, gras=True)
+                    + champ_aide('Prestation', '', gras=True) + champ('Origine', 'En ligne', 't08-f-origine'),
+                    champ('Début', '17/10/2026 16:00:00', gras=True) + champ('Fin', '17/10/2026 17:00:00', gras=True)
                     + champ('Durée (h)', '01:00') + champ('Montant', fcfa(TARIF_SALON), 't08-f-montant')
-                    + champ('Prix manuel', fcfa(0)))
-    + groupe('Séjour (note de chambre)', [champ('Folio du séjour', ''), champ('Ligne de folio', '')])
+                    + champ_aide('Prix manuel', fcfa(0), gras=True))
+    + groupe('Séjour (note de chambre)', [champ_aide('Folio du séjour', '', gras=True),
+                                          champ_aide('Ligne de folio', '')])
     + '<div class="t08-note">Note interne…</div>'), DISCUSSION)
 
 
@@ -994,6 +1030,12 @@ CSS = perso_css('t08-pa', VISITEUR, ROLE_VISITEUR) + perso_css('t08-pm', RECEPTI
 #t08-fiche .st-et.actif { color: #212529; }
 #t08-fiche .grp { margin-top: 18px; }
 #t08-fiche .ch { grid-template-columns: 190px 1fr; }
+/* champ modifiable (libellé gras) : zone de saisie soulignée, comme .t09-ch .v.saisie
+   (Odoo 18 .o_input, fields.scss l. 49-52 ; ref_muk/027) */
+#t08-fiche .ch .v { min-height: 28px; display: flex; align-items: center; }
+#t08-fiche .ch .l.gras + .v { border-bottom: 1px solid #DEE2E6; }
+/* le « ? » d'aide d'Odoo 18 (form_label.js), rendu de .t1-aide (tutoriel 1) */
+.t08-aide { color: var(--o-lien); font-size: 13px; margin-left: 3px; font-weight: 700; }
 #t08-fiche .bb-groupe .bt { padding: 0 14px; }
 .t08-chat { background: #F8F9FA; padding: 14px 16px; }
 .t08-ch-bts { display: flex; align-items: center; gap: 6px; }
@@ -1211,7 +1253,10 @@ TUTORIEL = {
                     clic('#t08-g-web', fx=0.8, d=0.45, puis=0.05), cacher('#t08-menu', d=0.15, avec=True, decale=0.55),
                     texte('#t08-g-web-fl', '▾', avec=True), cacher('#t08-tot-c1', d=0.1, avec=True),
                     montrer('#t08-r-0223', d=0.25, y=0, avec=True), montrer('#t08-r-0224', d=0.25, y=0, avec=True),
-                    montrer('#t08-tot-c2', d=0.25, y=0, avec=True), curseur('#t08-r-0224-etat', fx=1.35, d=0.35),
+                    montrer('#t08-tot-c2', d=0.25, y=0, avec=True),
+                    # à droite du badge d'état, sans le masquer ; fx=1.2 et non 1.35 : une fois
+                    # la ligne zoomée, la pointe droite du curseur touchait le bord de l'écran
+                    curseur('#t08-r-0224-etat', fx=1.2, d=0.35),
                     zoom('#t08-r-0224', s=1.12, d=0.6), anneau('#t08-r-0224-canal', d=1.0),
                     anneau('#t08-r-0224-etat', d=1.1),
                     # sous la ligne de total, pour ne pas la masquer

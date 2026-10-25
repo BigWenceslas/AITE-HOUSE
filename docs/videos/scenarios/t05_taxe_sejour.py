@@ -13,7 +13,14 @@ et « Front Desk » renommés à la livraison 4, hotel_menus.xml:18-22 et
 aite_exec_dashboard). Menus déroulants : hotel_menus.xml (Réservations,
 Facturation, Configuration), aite_city_tax/views/menus.xml,
 aite_guest_registry/views/menus.xml:10-20, aite_housekeeping/views/
-menus.xml:29-30 — inchangés à la livraison 4.
+menus.xml:29-30 — inchangés à la livraison 4. Base mono-société, comme
+celle du client (docs/videos/DESIGN.md) : « Démo Hôtellerie SARL » dans la
+barre, entre les pictos et l'avatar, sélecteur désactivé (odoo18/addons/web/
+static/src/webclient/switch_company_menu/switch_company_menu.js:287-296),
+mais aucun élément réservé à base.group_multi_company, groupe absent d'un
+profil à une seule société (odoo18/odoo/addons/base/models/res_users.py:
+1907-1914) ; barre resserrée comme celle de la même directrice dans
+t11_fidelite.py (16 px, écart de 18 px).
 
 Accroche (douleurs) — docs/etude_comparative/benchmark_afrique_odoo.md :
 - :10 « Aucun PMS international ne gère nativement la taxe de séjour
@@ -30,7 +37,11 @@ Accroche (douleurs) — docs/etude_comparative/benchmark_afrique_odoo.md :
 1. Fiche hôtel — aite_hotel_management/views/hotel_hotel_views.xml:22-83
    (Identité, Code, Catégorie, Horaires standards, Coordonnées, Structure,
    Chambres vendables, onglet « Politique / informations » et son texte
-   indicatif) ; models/hotel_hotel.py (libellés, « 3 ★ ») ; onglet ajouté
+   indicatif) ; « Société » (company_id, groups="base.group_multi_company",
+   :48-49) ne s'affiche pas en base mono-société ; le groupe extérieur est
+   une rangée Bootstrap (odoo18/addons/web/static/src/views/form/form_group/
+   form_group.xml:4-11) : Identité | Horaires standards, puis Coordonnées |
+   Structure ; models/hotel_hotel.py (libellés, « 3 ★ ») ; onglet ajouté
    par aite_city_tax/views/hotel_hotel_views.xml:11-42 (« Taxe de séjour »,
    « Réglage », « Pays (fiche hôtel) », « Catégorie (fiche hôtel) », « Ce
    qui s'applique », bandeau alert-info, texte gris dont le chemin
@@ -73,6 +84,8 @@ Accroche (douleurs) — docs/etude_comparative/benchmark_afrique_odoo.md :
 4. Folio — aite_hotel_management/views/hotel_folio_views.xml:31-160
    (Encaisser, Générer la facture, Annuler, Ouvert / Facturé / Soldé,
    Règlements, Séjour, Montants, Lignes du folio, colonnes, note grise) ;
+   « Hôtel » (hotel_id, groups="base.group_multi_company", :73-74) ne
+   s'affiche pas en base mono-société ;
    models/hotel_folio.py:253-276 (nuitée « Nuitée 201 (Confort) —
    26/10/2026 → 28/10/2026 », dates locales jj/mm/aaaa, et datée du jour
    d'arrivée, :275) ; lignes triées par date puis id (_order = 'date, id',
@@ -325,25 +338,31 @@ def case(cochee=True):
 # ------------------------------------------------------------ fiche hôtel --
 # Hôtel → Configuration → Hôtels → Complexe Hôtelier — Démo ; aucun <header> :
 # la feuille suit le panneau (pas de bande de boutons).
-H_GAUCHE = (
-    groupe('Identité', [ch('Code', 'CHD', aide_=True, gras=True, saisie=True),
-                        ch('Catégorie', demo.ETOILES, 't05-h-cat', gras=True, saisie=True)])
-    + groupe('Coordonnées', [ch('Rue', 'Akwa', gras=True, saisie=True), ch('Ville', demo.VILLE, gras=True, saisie=True),
-                             ch('Pays', 'Cameroun', 't05-h-pays', gras=True, saisie=True),
-                             ch('Téléphone', '+237 6 00 00 00 10', gras=True, saisie=True),
-                             ch('E-mail', '', gras=True, saisie=True), ch('Site web', '', gras=True, saisie=True)]))
+# « Société » (company_id, groups="base.group_multi_company", hotel_hotel_views.xml:48-49) n'est pas là : base
+# mono-société (docs/videos/DESIGN.md) ; currency_id est invisible.
+H_IDENTITE = groupe('Identité', [ch('Code', 'CHD', aide_=True, gras=True, saisie=True),
+                                 ch('Catégorie', demo.ETOILES, 't05-h-cat', gras=True, saisie=True)])
+H_COORDONNEES = groupe('Coordonnées', [ch('Rue', 'Akwa', gras=True, saisie=True),
+                                       ch('Ville', demo.VILLE, gras=True, saisie=True),
+                                       ch('Pays', 'Cameroun', 't05-h-pays', gras=True, saisie=True),
+                                       ch('Téléphone', '+237 6 00 00 00 10', gras=True, saisie=True),
+                                       ch('E-mail', '', gras=True, saisie=True), ch('Site web', '', gras=True, saisie=True)])
 # Les quatre étages de la série (101-107 au rez-de-chaussée, 2xx au 1er, 3xx au 2e, 4xx au 3e : t02_planning.py,
 # t07_gouvernante.py).
 ETAGES = ''.join('<div class="t05-etage"><span class="t05-poignee">⠿</span><span>%s</span>%s</div>'
                  % (n, icone('corbeille', 't05-corb'))
                  for n in ('Rez-de-chaussée', '1er étage', '2e étage', '3e étage'))
-H_DROITE = (
-    groupe('Horaires standards', [ch("Heure d'arrivée standard", '14:00', aide_=True, gras=True, saisie=True),
-                                  ch('Heure de départ standard', '12:00', aide_=True, gras=True, saisie=True)])
-    + groupe('Structure', [ch('Chambres vendables', '20', aide_=True),
-                           '<div class="t05-etages"><div class="t05-etage t05-tete"><span></span><span>Nom</span></div>'
-                           '%s<div class="t05-etage t05-ajout"><span></span><span>Ajouter une ligne</span></div></div>'
-                           % ETAGES]))
+H_HORAIRES = groupe('Horaires standards', [ch("Heure d'arrivée standard", '14:00', aide_=True, gras=True, saisie=True),
+                                           ch('Heure de départ standard', '12:00', aide_=True, gras=True, saisie=True)])
+H_STRUCTURE = groupe('Structure', [ch('Chambres vendables', '20', aide_=True),
+                                   '<div class="t05-etages"><div class="t05-etage t05-tete"><span></span><span>Nom</span>'
+                                   '</div>%s<div class="t05-etage t05-ajout"><span></span><span>Ajouter une ligne</span>'
+                                   '</div></div>' % ETAGES])
+# Le groupe extérieur d'Odoo 18 est une rangée Bootstrap à retour à la ligne (« o_group row », un col-lg-6 par
+# groupe : odoo18/addons/web/static/src/views/form/form_group/form_group.xml:4-11) : Identité | Horaires standards,
+# puis Coordonnées | Structure, sous la plus haute des deux premières (ici Identité et Horaires ont deux lignes
+# chacun) ; d'où deux rangées et non deux colonnes indépendantes.
+H_GROUPES = deux_colonnes(H_IDENTITE, H_HORAIRES) + deux_colonnes(H_COORDONNEES, H_STRUCTURE)
 H_TAXE = (
     '<div class="t05-onglet-corps">'
     + deux_colonnes(groupe('Réglage', [ch('Collecter la taxe de séjour', case(), aide_=True, gras=True, html=True),
@@ -365,7 +384,7 @@ H_POLITIQUE = ('<div class="t05-onglet-corps t05-ph" id="t05-h-pol">Conditions d
 FEUILLE_HOTEL = (
     '<div class="t05-photo">%s</div>' % icone('fiche', 't05-photo-i')
     + titre_fiche(demo.HOTEL)
-    + deux_colonnes(H_GAUCHE, H_DROITE)
+    + H_GROUPES
     + '<div class="onglets t05-onglets"><span class="onglet actif" id="t05-h-ong-pol">Politique / informations</span>'
       '<span class="onglet" id="t05-h-ong-taxe">Taxe de séjour</span></div>'
     # l'onglet « Taxe de séjour » reste dans le flux (la feuille garde sa hauteur) ; la politique se pose dessus
@@ -491,6 +510,8 @@ LIGNES_F = ('<div class="table t05-table t05-lignes"><div class="t-tete" style="
 FEUILLE_FOLIO = (
     titre_fiche(FOLIO_R)
     + deux_colonnes(
+        # « Hôtel » (hotel_id, groups="base.group_multi_company", hotel_folio_views.xml:73-74) n'est pas là : base
+        # mono-société (docs/videos/DESIGN.md).
         groupe('Séjour', [ch('Client', CLIENT_R, lien=True), ch('Réservation', RESA_R, lien=True),
                           ch('Séjour', 'Confirmée'), ch('Arrivée', ARRIVEE_R),
                           ch('Départ', AVANT['dep'], 't05-f-dep')]),
@@ -597,8 +618,11 @@ ETAT = vue_libre('t05-etat', '<div class="pile t05-epile"><div class="t05-etat-s
 
 # ------------------------------------------------------- menus déroulants --
 # Les sous-menus de la barre (load_menus du compte demo.direction), posés sous leur menu (bord gauche du
-# bouton, soit 8 à 9 px avant le libellé, mesuré sur la barre MENUS_MUK['hotel_direction']) ; celui de
-# « Configuration » s'aligne sur le bord droit de la fenêtre, comme le fait Odoo quand la place manque.
+# bouton, soit 9 px avant le libellé, la moitié de l'écart de 18 px ; mesuré sur la barre resserrée
+# MENUS_MUK['hotel_direction'] + nom de la société, avec le menu actif à ce moment-là, en gras : libellés à
+# 372 px (Configuration active), 914 px (Réservations active, étape 6) et 1 202 px du bord de la fenêtre).
+# Position par défaut d'Odoo, « bottom-start » (odoo18/addons/web/static/src/core/dropdown/dropdown.js:184) :
+# celui de « Configuration » (324 px de large) tient désormais sous son menu, sans se caler à droite.
 def deroule(ident, gauche, items):
     return ('<div class="t05-deroule masque" id="%s" style="left:%dpx" data-layout-allow-overlap '
             'data-layout-allow-occlusion>%s</div>'
@@ -606,16 +630,19 @@ def deroule(ident, gauche, items):
 
 
 DEROULES = (
-    deroule('t05-dd-resa', 415, [('t05-dd-resa-res', 'Réservations'), (None, 'Planning des chambres')])
-    + deroule('t05-dd-fact', 1071, [(None, 'Folios'), (None, 'Règlements'), ('t05-dd-fact-taxe', 'Taxe de séjour'),
+    deroule('t05-dd-resa', 363, [('t05-dd-resa-res', 'Réservations'), (None, 'Planning des chambres')])
+    + deroule('t05-dd-fact', 905, [(None, 'Folios'), (None, 'Règlements'), ('t05-dd-fact-taxe', 'Taxe de séjour'),
                                      (None, 'Registre de police (impression)'), (None, "Statistiques d'hébergement")])
-    + deroule('t05-dd-conf', 1362, [(None, 'Hôtels'), (None, 'Types de chambre'), (None, 'Chambres'),
+    + deroule('t05-dd-conf', 1193, [(None, 'Hôtels'), (None, 'Types de chambre'), (None, 'Chambres'),
                                      (None, 'Aménités'), (None, 'Services hôteliers'), (None, 'Tarifs saisonniers'),
                                      ('t05-dd-conf-bar', 'Barèmes de taxe de séjour'),
                                      (None, 'Points de contrôle (inspection)')]))
 
+# Nom de la société dans la barre, entre les pictos et l'avatar : Odoo 18 l'affiche aussi en base mono-société,
+# sélecteur désactivé (odoo18/addons/web/static/src/webclient/switch_company_menu/switch_company_menu.js:287-296 ;
+# ref_muk/306), comme pour la même directrice dans t11_fidelite.py.
 ECRAN = navigateur(fenetre_muk('app-t05', 'Hôtel', MENUS, [HOTEL, BAREMES, RESA, FOLIO, ETAT], actif='Configuration',
-                               societe='', initiale=NOM[0], avatar='#854F0B', apps=APPS_PROFIL['direction'],
+                               societe=demo.SOCIETE, initiale=NOM[0], avatar='#854F0B', apps=APPS_PROFIL['direction'],
                                app_active='Hôtel', calques=DEROULES))
 
 
@@ -640,8 +667,11 @@ def maj_folio(v):
 
 
 CSS = """
-/* barre MuK : neuf menus depuis « Activité par pôle » ; l'écart de 17 px les fait tenir sans écraser la grille */
-#app-t05 .o-haut { gap: 17px; }
+/* barre MuK : neuf menus depuis « Activité par pôle », puis le nom de la société ; pour que tout tienne, la
+   barre du Responsable de la série (t11_fidelite.py, #t11-app .o-haut) : 16 px, écart de 18 px */
+#app-t05 .o-haut { gap: 18px; font-size: 16px; }
+#app-t05 .o-haut .nom-app { font-size: 21px; }
+#app-t05 .o-haut .menu.actif { font-weight: 600; }
 #t05-bar-ouvert { background: #fff; }
 .t05-aide { font-size: 13px; font-weight: 600; color: #1B6A82; margin-left: 3px; position: relative; top: -8px; }
 .t05-rouage { display: inline-flex; width: 17px; height: 17px; margin-left: 8px; vertical-align: -1px; }
