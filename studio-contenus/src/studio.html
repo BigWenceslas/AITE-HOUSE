@@ -40,6 +40,8 @@
   textarea { resize: vertical; min-height: 88px; }
   .aide { margin: 6px 0 0; font-size: 12.5px; color: var(--gris-clair); }
   .aide code { background: var(--mauve2); color: var(--violet); padding: 1px 5px; border-radius: 5px; font-size: 12px; }
+  label.case { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-weight: 400; color: var(--encre); }
+  label.case input { width: 18px; height: 18px; accent-color: var(--violet); }
   .compteur { float: right; font-size: 12px; color: var(--gris-clair); font-weight: 400; }
   .compteur.trop { color: #B5651A; font-weight: 600; }
 
@@ -96,8 +98,8 @@
 <header>
   <img id="logo" alt="AITE Consulting" />
   <div>
-    <h1>Studio de contenus</h1>
-    <p>Citations, affiches et conseils pratiques au format réseaux sociaux</p>
+    <h1 id="titre-studio">Studio de contenus</h1>
+    <p id="sous-titre-studio">Citations, affiches et conseils pratiques au format réseaux sociaux</p>
   </div>
 </header>
 
@@ -124,35 +126,36 @@
 
     <section class="carte">
       <h2>Modèle</h2>
-      <div class="segments" id="modeles" role="group" aria-label="Modèle">
-        <button type="button" data-v="citation">Citation</button>
-        <button type="button" data-v="affiche">Affiche</button>
-        <button type="button" data-v="conseil">Conseil</button>
-        <button type="button" data-v="sombre">Sombre</button>
-      </div>
+      <div class="segments" id="modeles" role="group" aria-label="Modèle"></div>
     </section>
 
     <section class="carte orange">
       <h2>Texte</h2>
-      <label for="etiquette">Étiquette <span class="aide" style="display:inline">(facultative)</span></label>
-      <input type="text" id="etiquette" placeholder="Ex. Motivation du lundi" />
-      <div id="zone-titre">
+      <div id="champ-etiquette">
+        <label for="etiquette"><span id="libelle-etiquette">Étiquette (facultative)</span></label>
+        <input type="text" id="etiquette" placeholder="Ex. Motivation du lundi" />
+      </div>
+      <div id="champ-titre">
         <label for="titre"><span id="libelle-titre">Titre</span> <span class="compteur" id="c-titre"></span></label>
         <input type="text" id="titre" />
         <p class="aide" id="aide-titre">Affiche : l'accroche s'écrit en grand, le texte en dessous devient un paragraphe. Laisser vide pour une phrase seule.</p>
       </div>
-      <div id="zone-texte">
-        <label for="texte">Texte affiché <span class="compteur" id="c-texte"></span></label>
+      <div id="champ-texte">
+        <label for="texte"><span id="libelle-texte">Texte affiché</span> <span class="compteur" id="c-texte"></span></label>
         <textarea id="texte" rows="5"></textarea>
       </div>
-      <div id="zone-conseil">
-        <label for="points">Points (un par ligne, 3 ou 4)</label>
+      <div id="champ-points">
+        <label for="points"><span id="libelle-points">Points (un par ligne, 3 ou 4)</span></label>
         <textarea id="points" rows="6"></textarea>
+      </div>
+      <div id="champ-puces">
         <label for="puces">Puces</label>
         <select id="puces">
           <option value="chiffres">01, 02, 03 : liste, conseils</option>
           <option value="lettres">A, B, C : sondage, quiz</option>
         </select>
+      </div>
+      <div id="champ-numero">
         <label for="numero">Numéro du conseil</label>
         <input type="number" id="numero" min="1" max="999" />
       </div>
@@ -163,12 +166,21 @@
       <h2>Photo</h2>
       <div class="photos" id="photos"></div>
       <div class="import">
-        <label for="fichier">Importer une photo (PNG détouré de préférence)</label>
+        <label for="fichier" id="libelle-fichier">Importer une photo (PNG détouré de préférence)</label>
         <input type="file" id="fichier" accept="image/png,image/webp,image/jpeg" />
       </div>
     </section>
 
-    <section class="carte">
+    <section class="carte" id="carte-coordonnees" hidden>
+      <h2>Coordonnées</h2>
+      <label for="adresse">Adresse</label>
+      <input type="text" id="adresse" />
+      <label for="telephone">Téléphone (appels et WhatsApp)</label>
+      <input type="text" id="telephone" />
+      <label class="case"><input type="checkbox" id="alcool" /> Mention « L'abus d'alcool est dangereux pour la santé »</label>
+    </section>
+
+    <section class="carte" id="carte-signature">
       <h2>Signature</h2>
       <label for="nom">Nom</label>
       <input type="text" id="nom" />

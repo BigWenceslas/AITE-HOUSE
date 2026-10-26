@@ -19,6 +19,28 @@ Chaque modèle existe en trois formats : **carré** 1080 × 1080 (fil LinkedIn,
 Facebook, Instagram), **portrait** 1080 × 1350 (le plus visible sur Instagram
 et LinkedIn mobile) et **story** 1080 × 1920.
 
+## La Vérandah
+
+Le même studio produit aussi les visuels de **La Vérandah** (cave · lounge ·
+restaurant, Makepe, en face de l'église Sainte Monique) : ouvrir
+**`studio-verandah.html`**. Quatre modèles aux couleurs de ses affiches (crème,
+rouge vin, vert, écriture manuscrite et capitales condensées) :
+
+| Modèle | Usage |
+|---|---|
+| **Annonce** | vœux et annonces : ligne manuscrite rouge, grandes capitales vertes |
+| **Ambiance** | invitation, après le travail, week-end : fond de bar, logo dans un panneau blanc |
+| **La cave** | une sélection de bouteilles, prix facultatifs (`Produit \| 15 000 FCFA`) |
+| **Photo** | photo pleine page, titre en capitales fines, programme en bas (`18h : …`) |
+
+Les publications sont dans `contenus/verandah.json`, les visuels dans
+`sortie/verandah/` (`node generer.js --marque verandah --format tous`). Les photos
+déposées dans `assets/verandah/photos/` (JPEG, PNG ou WebP) apparaissent dans le
+studio ; on peut aussi en importer une directement. La mention « L'abus d'alcool est
+dangereux pour la santé » s'ajoute d'office ; la décocher pour un visuel sans alcool.
+Le logo de `assets/verandah/logo/` est provisoire (extrait d'une affiche) : le
+remplacer par le fichier d'origine dès qu'il est disponible.
+
 ## Utiliser le studio (sans rien installer)
 
 Ouvrir **`studio.html`** dans Chrome, Edge, Firefox ou Safari, d'un double-clic.
@@ -114,13 +136,15 @@ fichier de `assets/photos/` sans extension (`boubou`, `blazer`, `tunique`), ou
 
 ```
 studio-contenus/
-├── studio.html              le studio, autonome (généré : ne pas modifier à la main)
+├── studio.html              le studio AITE, autonome (généré : ne pas modifier à la main)
+├── studio-verandah.html     le studio La Vérandah (généré)
 ├── generer.js               construit studio.html et génère les visuels
 ├── contenus/
 │   └── publications.json    le calendrier : textes, légendes, hashtags
 ├── sortie/                  visuels générés et CALENDRIER.md
 ├── src/
-│   ├── rendu.js             moteur de dessin des trois modèles (canvas)
+│   ├── rendu.js             moteur de dessin et modèles AITE (canvas)
+│   ├── rendu-verandah.js    modèles de La Vérandah
 │   ├── editeur.js           interface du studio
 │   └── studio.html          gabarit de la page
 └── assets/

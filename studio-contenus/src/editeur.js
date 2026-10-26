@@ -6,9 +6,23 @@
   'use strict';
 
   const BIBLIO = window.AITE_PUBLICATIONS || { publications: [] };
+  const MARQUE = window.AITE_MARQUE || { cle: 'aite' };
+  const AITE_M = MARQUE.cle === 'aite';
   const SIG = Object.assign({}, window.AITE.SIGNATURE, BIBLIO.signature || {});
-  const CLE_BROUILLON = 'studio-aite-brouillon';
-  const LIMITES = { citation: 190, affiche: 75, titre: 58, accroche: 70, paragraphe: 200, legende: 750 };
+  const COORD = BIBLIO.coordonnees || {};
+  const CLE_BROUILLON = 'studio-' + MARQUE.cle + '-brouillon';
+  const LIMITES = { legende: AITE_M ? 750 : 650 };
+
+  // Champs du formulaire par modèle : [libellé, longueur conseillée]. Les modèles
+  // d'autres marques apportent les leurs (MODELES[cle].champs).
+  const CHAMPS = {
+    citation: { etiquette: ['Étiquette (facultative)'], texte: ['Texte affiché', 190] },
+    affiche: { etiquette: ['Étiquette (facultative)'], titre: ['Accroche (facultative)', 70], texte: ['Texte affiché', 75] },
+    conseil: { etiquette: ['Étiquette (facultative)'], titre: ['Titre', 58], points: ['Points (un par ligne, 3 ou 4)'], puces: true, numero: true },
+    sombre: { etiquette: ['Étiquette (facultative)'], texte: ['Texte affiché', 190] },
+  };
+  const champs = m => (window.AITE.MODELES[m] && window.AITE.MODELES[m].champs) || CHAMPS[m] || CHAMPS.citation;
+  const modelesMarque = () => Object.entries(window.AITE.MODELES).filter(([, d]) => (d.marque || 'aite') === MARQUE.cle).map(([k]) => k);
 
   const $ = id => document.getElementById(id);
 
@@ -19,7 +33,7 @@
   }
 
   function completer(pub) {
-    return Object.assign({}, pub, {
+    return Object.assign({}, COORD, pub, {
       signature: {
         nom: (pub.signature && pub.signature.nom) || SIG.nom,
         fonction: (pub.signature && pub.signature.fonction) || SIG.fonction,
@@ -28,10 +42,11 @@
   }
 
   function vierge(modele) {
-    return {
-      id: '', modele: modele || 'citation', etiquette: '', texte: '', titre: '', points: [], numero: null,
-      photo: premierePhoto(), legende: '', hashtags: ['#AITEConsulting'], signature: { nom: SIG.nom, fonction: SIG.fonction }, site: window.AITE.SITE,
+    const base = {
+      id: '', modele: modele || modelesMarque()[0], etiquette: '', texte: '', titre: '', points: [], numero: null,
+      photo: AITE_M ? premierePhoto() : null, legende: '', hashtags: [AITE_M ? '#AITEConsulting' : '#LaVerandah'],
     };
+    return AITE_M ? Object.assign(base, { signature: { nom: SIG.nom, fonction: SIG.fonction }, site: window.AITE.SITE }) : base;
   }
 
   const premierePhoto = () => Object.keys(window.AITE.photos)[0] || null;
@@ -67,7 +82,7 @@
 
   function nomFichier(format) {
     const p = etat.pub;
-    return (p.id ? p.id + '-' : 'aite-') + p.modele + (format === 'carre' ? '' : '-' + format) + '.png';
+    return (p.id ? p.id + '-' : MARQUE.cle + '-') + p.modele + (format === 'carre' ? '' : '-' + format) + '.png';
   }
 
   function telecharger(format) {
@@ -89,7 +104,17 @@
     const app = $('app');
     app.innerHTML = '';
     app.appendChild($('gabarit').content.cloneNode(true));
-    $('logo').src = window.AITE_RESSOURCES.logo;
+    $('logo').src = window.AITE_RESSOURCES.entete || window.AITE_RESSOURCES.logo;
+    if (MARQUE.titre) { $('titre-studio').textContent = MARQUE.titre; $('sous-titre-studio').textContent = MARQUE.sousTitre || ''; document.title = MARQUE.titre; }
+    $('carte-signature').hidden = !AITE_M;
+    $('carte-coordonnees').hidden = AITE_M;
+    if (!AITE_M) $('libelle-fichier').textContent = 'Importer une photo (salle, bar, bouteilles, plats…)';
+    const zm = $('modeles');
+    for (const m of modelesMarque()) {
+      const b = document.createElement('button');
+      b.type = 'button'; b.dataset.v = m; b.textContent = window.AITE.MODELES[m].court || window.AITE.MODELES[m].nom.split(' ')[0];
+      zm.appendChild(b);
+    }
 
     // bibliothèque
     const sel = $('biblio');
@@ -107,22 +132,21 @@
       }
       const o = document.createElement('option');
       o.value = String(i);
-      const txt = (p.modele === 'conseil' ? p.titre : p.texte).replace(/\*/g, '');
+      const txt = ((p.modele === 'conseil' || !p.texte ? p.titre : p.texte) || '').replace(/\*/g, '');
       o.textContent = cap(p.jour) + ' · ' + txt.slice(0, 60) + (txt.length > 60 ? '…' : '');
       (groupe || sel).appendChild(o);
     });
     sel.addEventListener('change', () => {
       if (sel.value === '') return;
       etat.pub = JSON.parse(JSON.stringify(BIBLIO.publications[Number(sel.value)]));
-      etat.pub.signature = etat.pub.signature || { nom: SIG.nom, fonction: SIG.fonction };
-      etat.pub.site = etat.pub.site || window.AITE.SITE;
+      normaliser(etat.pub);
       remplir(); rendre();
     });
     $('nouveau').addEventListener('click', () => {
       etat.pub = vierge(etat.pub.modele);
       sel.value = '';
       remplir(); rendre();
-      $(etat.pub.modele === 'conseil' ? 'titre' : 'texte').focus();
+      $(champs(etat.pub.modele).texte ? 'texte' : 'titre').focus();
     });
 
     segments('modeles', v => { etat.pub.modele = v; remplir(); rendre(); });
@@ -138,6 +162,9 @@
     lier('nom', v => { etat.pub.signature.nom = v; });
     lier('fonction', v => { etat.pub.signature.fonction = v; });
     lier('site', v => { etat.pub.site = v; });
+    lier('adresse', v => { etat.pub.adresse = v; etat.pub.adresseCourte = v; });
+    lier('telephone', v => { etat.pub.telephone = v; });
+    $('alcool').addEventListener('change', () => { etat.pub.alcool = $('alcool').checked; rendre(); });
     lier('legende', v => { etat.pub.legende = v; });
     lier('hashtags', v => { etat.pub.hashtags = v.split(/\s+/).filter(Boolean); });
 
@@ -206,7 +233,7 @@
     window.AITE.photos[cle] = await window.AITE.preparerPhoto(img, null, f.name);
     etat.pub.photo = cle;
     photos(); rendre();
-    toast(window.AITE.photos[cle].detouree ? 'Photo importée' : 'Photo importée (non détourée : elle remplira le cadre)');
+    toast(!AITE_M || window.AITE.photos[cle].detouree ? 'Photo importée' : 'Photo importée (non détourée : elle remplira le cadre)');
   }
 
   function remplir() {
@@ -214,22 +241,24 @@
     $('etiquette').value = p.etiquette || '';
     const exemple = p.modele === 'citation' ? 'La pensée du vendredi' : window.AITE.MODELES[p.modele].etiquette;
     $('etiquette').placeholder = exemple ? 'Ex. ' + exemple : 'Facultative';
+    const ch = champs(p.modele);
+    for (const k of ['etiquette', 'titre', 'texte', 'points', 'puces', 'numero']) $('champ-' + k).style.display = ch[k] ? '' : 'none';
+    for (const k of ['etiquette', 'titre', 'texte', 'points']) if (ch[k]) $('libelle-' + k).textContent = ch[k][0];
+    $('aide-titre').style.display = p.modele === 'affiche' ? '' : 'none';
     $('texte').value = p.texte || '';
     $('titre').value = p.titre || '';
     $('points').value = (p.points || []).join('\n');
     $('numero').value = p.numero || '';
     $('puces').value = p.puces || 'chiffres';
-    $('nom').value = p.signature.nom || '';
-    $('fonction').value = p.signature.fonction || '';
+    $('nom').value = (p.signature && p.signature.nom) || '';
+    $('fonction').value = (p.signature && p.signature.fonction) || '';
     $('site').value = p.site || '';
+    $('adresse').value = p.adresse || COORD.adresse || '';
+    $('telephone').value = p.telephone || COORD.telephone || '';
+    $('alcool').checked = p.alcool !== false;
     $('legende').value = p.legende || '';
     $('hashtags').value = (p.hashtags || []).join(' ');
-    $('zone-texte').style.display = p.modele === 'conseil' ? 'none' : '';
-    $('zone-conseil').style.display = p.modele === 'conseil' ? '' : 'none';
-    $('zone-titre').style.display = p.modele === 'citation' || p.modele === 'sombre' ? 'none' : '';
-    $('libelle-titre').textContent = p.modele === 'affiche' ? 'Accroche (facultative)' : 'Titre';
-    $('aide-titre').style.display = p.modele === 'affiche' ? '' : 'none';
-    if (p.photo && !window.AITE.photos[p.photo]) p.photo = premierePhoto();
+    if (p.photo && !window.AITE.photos[p.photo]) p.photo = AITE_M ? premierePhoto() : null;
     majSegments(); majPhotos(); compteurs();
   }
 
@@ -241,9 +270,11 @@
       el.textContent = val + ' / ' + max;
       el.classList.toggle('trop', val > max);
     };
+    const ch = champs(p.modele);
     const paragraphe = p.modele === 'affiche' && (p.titre || '').trim();
-    c('c-texte', n(p.texte), paragraphe ? LIMITES.paragraphe : p.modele === 'affiche' ? LIMITES.affiche : LIMITES.citation);
-    c('c-titre', n(p.titre), p.modele === 'affiche' ? LIMITES.accroche : LIMITES.titre);
+    const lt = ch.texte && (paragraphe ? 200 : ch.texte[1]);
+    if (lt) c('c-texte', n(p.texte), lt); else $('c-texte').textContent = '';
+    if (ch.titre && ch.titre[1]) c('c-titre', n(p.titre), ch.titre[1]); else $('c-titre').textContent = '';
     c('c-legende', (p.legende || '').length, LIMITES.legende);
   }
 
@@ -259,6 +290,15 @@
 
   const cap = s => (s ? s.charAt(0).toUpperCase() + s.slice(1) : '');
 
+  function normaliser(p) {
+    if (AITE_M) {
+      p.signature = p.signature || { nom: SIG.nom, fonction: SIG.fonction };
+      p.site = p.site || window.AITE.SITE;
+    }
+    p.hashtags = p.hashtags || [];
+    p.points = p.points || [];
+  }
+
   // ───────────── démarrage ─────────────
 
   window.AITE_STUDIO = { exporter };
@@ -266,10 +306,9 @@
     window.AITE_PRET = true;
     if (/[?&]lot=1/.test(location.search)) return;
     const b = lireBrouillon();
-    etat.pub = (b && b.pub) || (BIBLIO.publications[0] ? JSON.parse(JSON.stringify(BIBLIO.publications[0])) : vierge('citation'));
-    etat.pub.signature = etat.pub.signature || { nom: SIG.nom, fonction: SIG.fonction };
-    etat.pub.site = etat.pub.site || window.AITE.SITE;
-    etat.pub.hashtags = etat.pub.hashtags || [];
+    etat.pub = (b && b.pub && modelesMarque().includes(b.pub.modele) && b.pub)
+      || (BIBLIO.publications[0] ? JSON.parse(JSON.stringify(BIBLIO.publications[0])) : vierge());
+    normaliser(etat.pub);
     etat.format = (b && b.format) || 'carre';
     construire();
   }).catch(e => {

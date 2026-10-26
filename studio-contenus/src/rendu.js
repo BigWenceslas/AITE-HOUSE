@@ -36,13 +36,13 @@
     citation: { nom: 'Citation', etiquette: '' },
     affiche: { nom: 'Affiche motivation', etiquette: 'Motivation du lundi' },
     conseil: { nom: 'Conseil pratique', etiquette: 'Conseil pratique' },
-    sombre: { nom: 'Fond sombre', etiquette: '' },
+    sombre: { nom: 'Fond sombre', court: 'Sombre', etiquette: '' },
   };
 
   const SIGNATURE = { nom: 'Cyrille Donald ABOLO', fonction: 'Directeur Général, AITE Consulting' };
   const SITE = 'www.aite-consulting.com';
 
-  const R = { logo: null, photos: {} };
+  const R = { logo: null, logos: {}, photos: {} };
 
   // ───────────────────────── chargement ─────────────────────────
 
@@ -64,6 +64,7 @@
       return ff.load();
     });
     R.logo = await image(res.logo);
+    for (const [cle, src] of Object.entries(res.logos || {})) R.logos[cle] = await image(src);
     for (const [cle, ph] of Object.entries(res.photos || {})) {
       R.photos[cle] = await preparerPhoto(await image(ph.src), ph.reperes, ph.nom);
     }
@@ -119,6 +120,8 @@
       if (p === ':' && ap === '/') return p; // adresse web
       return '\u202F' + p;
     });
+    // le point médian part avec le mot qui le suit (« · RESTAURANT ») : il ne finit jamais une ligne
+    s = s.replace(/ · /g, ' ·\u00A0');
     // pas de « 4 » ni de « à » en fin de ligne, séparés de leur mot
     s = s.replace(/(^|[\s(])(\d+) (?=[\p{L}*])/gu, '$1$2\u00A0');
     // mots d'une ou deux lettres (à, le, de, un, Si…) gardés avec le mot qui suit
@@ -140,7 +143,7 @@
         if (b === ' ') { pousser(); continue; }
         if (b === '\n') { pousser(); out.push({ saut: true }); continue; }
         if (!b) continue;
-        (relief ? [b] : b.split(/(?<=[\p{L}’]{4}-)(?=\p{L}{4})/u)).forEach((seg, k) => {
+        (relief ? [b] : b.split(/(?<=[\p{L}’]{4}-)(?=\p{L}{5})/u)).forEach((seg, k) => {
           if (k) { pousser(); cur.colle = true; }
           cur.morceaux.push({ t: seg, relief });
         });
@@ -264,6 +267,7 @@
             if (l.length === 1) p += 20;
           }
           if (i > 0 && l.length > 1 && prem.fin && !prem.debut) p += 40;
+          if (i > 0 && /^·/.test(l[0].morceaux[0].t)) p += 30;
         });
         if (n > 1 && li[n - 1].length === 1) p += 25;
         const esp = ctx.measureText(' ').width;
@@ -1047,10 +1051,19 @@
     const ctx = canvas.getContext('2d');
     ctx.setTransform(echelle, 0, 0, echelle, 0, 0);
     ctx.imageSmoothingQuality = 'high';
-    const modele = { citation, affiche, conseil, sombre }[pub.modele] || citation;
+    const modele = { citation, affiche, conseil, sombre, ...AUTRES }[pub.modele] || citation;
     modele(ctx, W, H, pub, fmt);
     return canvas;
   }
 
-  global.AITE = { C, FORMATS, MODELES, SIGNATURE, SITE, charger, preparerPhoto, dessiner, typo, photos: R.photos };
+  // Modèles d'autres marques (ex. La Vérandah), ajoutés par un fichier séparé
+  // qui s'appuie sur les mêmes outils de mise en page.
+  const AUTRES = {};
+  function enregistrer(cle, definition, fonction) {
+    MODELES[cle] = definition;
+    AUTRES[cle] = fonction;
+  }
+  const outils = { police, typo, mots, ajuster, ecrire, rect, remplirRect, espace, largeurEspacee, tailleLigne, trame, photo, cadrer, silhouette };
+
+  global.AITE = { C, FORMATS, MODELES, SIGNATURE, SITE, charger, preparerPhoto, dessiner, typo, photos: R.photos, logos: R.logos, enregistrer, outils };
 })(window);

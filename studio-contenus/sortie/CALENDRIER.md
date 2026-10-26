@@ -621,7 +621,7 @@ Quelle contrainte locale a le plus renforcé votre entreprise ?
 
 ![WE-1](WE-1-affiche.jpg)
 
-**Visuel :** Que ces deux jours soient l'occasion de te reposer, de te recentrer et de revenir encore plus fort. Chaque nouveau jour est une nouvelle opportunité de réussir.
+**Visuel :** Bon week-end ! — Que ces deux jours soient l'occasion de te reposer, de te recentrer et de revenir encore plus fort. Chaque nouveau jour est une nouvelle opportunité de réussir.
 
 **Légende à publier :**
 
@@ -635,7 +635,7 @@ Bon week-end ! Que ces deux jours soient l'occasion de te reposer, de te recentr
 
 ![WE-2](WE-2-affiche.jpg)
 
-**Visuel :** C'est le moment de recharger ton énergie pour les accomplir. Profite de chaque instant.
+**Visuel :** Le week-end n'est pas une pause dans tes rêves — C'est le moment de recharger ton énergie pour les accomplir. Profite de chaque instant.
 
 **Légende à publier :**
 
@@ -649,7 +649,7 @@ Le week-end n'est pas une pause dans tes rêves, c'est le moment de recharger to
 
 ![WE-3](WE-3-affiche.jpg)
 
-**Visuel :** Le succès récompense ceux qui persévèrent. Excellent week-end !
+**Visuel :** N'abandonne jamais une vision simplement parce qu'elle prend du temps. — Le succès récompense ceux qui persévèrent. Excellent week-end !
 
 **Légende à publier :**
 
@@ -663,7 +663,7 @@ N'abandonne jamais une vision simplement parce qu'elle prend du temps. Le succè
 
 ![WE-4](WE-4-affiche.jpg)
 
-**Visuel :** Mais chaque effort accompli aujourd'hui prépare les résultats de demain. Repose-toi, recharge tes batteries et reviens prêt à conquérir de nouveaux défis.
+**Visuel :** Une semaine de travail s'achève — Mais chaque effort accompli aujourd'hui prépare les résultats de demain. Repose-toi, recharge tes batteries et reviens prêt à conquérir de nouveaux défis.
 
 **Légende à publier :**
 
@@ -677,7 +677,7 @@ Une semaine de travail s'achève, mais chaque effort accompli aujourd'hui prépa
 
 ![WE-5](WE-5-affiche.jpg)
 
-**Visuel :** Fais de ce week-end un investissement dans ton énergie et ta créativité.
+**Visuel :** Les grands leaders savent quand travailler et quand se ressourcer. — Fais de ce week-end un investissement dans ton énergie et ta créativité.
 
 **Légende à publier :**
 

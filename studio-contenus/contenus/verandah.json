@@ -1,0 +1,153 @@
+{
+  "marque": "La Vérandah",
+  "coordonnees": {
+    "adresse": "Makepe, en face de l’église Sainte Monique",
+    "adresseCourte": "Makepe, face Sainte Monique",
+    "telephone": "656 80 10 98"
+  },
+  "publications": [
+    {
+      "id": "VD-27-10-mardi",
+      "serie": "Semaine du 27 octobre",
+      "jour": "mardi",
+      "moment": "mardi 12h",
+      "modele": "vd-annonce",
+      "theme": "Présentation de La Vérandah : cave, lounge et restaurant (adaptée de la proposition 9, l'accueil)",
+      "etiquette": "",
+      "titre": "La Vérandah, c'est à la fois",
+      "texte": "CAVE\n*LOUNGE*\nRESTAURANT",
+      "points": [
+        "À Makepe, on vous attend !"
+      ],
+      "photo": null,
+      "legende": "Une seule adresse, trois façons de passer un bon moment. ✨ À La Vérandah, il y a la cave et sa sélection de vins, de whiskies et de champagnes ; le lounge, pour se poser et décompresser ; le restaurant, pour se retrouver à table entre amis ou en famille.\n\nChez nous, chaque client est reçu comme un invité. Passez nous voir à Makepe, en face de l'église Sainte Monique. Appels et WhatsApp : 656 80 10 98. 📍\n\nL'abus d'alcool est dangereux pour la santé. À consommer avec modération.",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#CaveAVin",
+        "#Lounge",
+        "#Restaurant"
+      ]
+    },
+    {
+      "id": "VD-28-10-mercredi",
+      "serie": "Semaine du 27 octobre",
+      "jour": "mercredi",
+      "moment": "mercredi 16h30",
+      "modele": "vd-ambiance",
+      "theme": "Après le travail en milieu de semaine",
+      "etiquette": "",
+      "titre": "Après le boulot, on décompresse !",
+      "texte": "QUITTEZ LE BUREAU, POSEZ-VOUS À LA VÉRANDAH ET SOUFFLEZ ENTRE COLLÈGUES",
+      "points": [],
+      "photo": null,
+      "legende": "Milieu de semaine, dossiers qui s'empilent, journées qui n'en finissent pas… Vous méritez une vraie pause ! 😌 Après le travail, retrouvez vos collègues ou vos amis à La Vérandah. Installez-vous, choisissez une Guinness, une Heineken ou un verre de vin, et prenez le temps de souffler.\n\nOn vous attend à Makepe, en face de l'église Sainte Monique. Appels et WhatsApp : 656 80 10 98. 📍\n\nL'abus d'alcool est dangereux pour la santé. À consommer avec modération.",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#ApresLeTravail",
+        "#Lounge"
+      ]
+    },
+    {
+      "id": "VD-29-10-jeudi",
+      "serie": "Semaine du 27 octobre",
+      "jour": "jeudi",
+      "moment": "jeudi 18h",
+      "modele": "vd-carte",
+      "theme": "Les whiskies de la cave",
+      "etiquette": "Pour les amateurs",
+      "titre": "NOS WHISKIES",
+      "texte": "À savourer avec modération",
+      "points": [
+        "Jack Daniel's",
+        "Johnnie Walker Red Label",
+        "Chivas Regal 12 ans"
+      ],
+      "photo": null,
+      "legende": "Jack Daniel's, Johnnie Walker Red Label ou Chivas Regal 12 ans : à La Vérandah, chacun choisit le sien. 🥃\n\nAprès le travail ou le week-end, venez vous poser entre amis et prendre le temps de savourer. On vous attend à Makepe, en face de l'église Sainte Monique. Appels et WhatsApp : 656 80 10 98. 📍\n\nL'abus d'alcool est dangereux pour la santé. À consommer avec modération.",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#Whisky",
+        "#CaveAVin"
+      ]
+    },
+    {
+      "id": "VD-30-10-vendredi",
+      "serie": "Semaine du 27 octobre",
+      "jour": "vendredi",
+      "moment": "vendredi 16h",
+      "modele": "vd-photo",
+      "theme": "Invitation pour le week-end (vendredi)",
+      "etiquette": "Vendredi soir",
+      "titre": "On *trinque* au début du *week-end*",
+      "texte": "",
+      "points": [
+        "Cave : whiskies, champagnes et vins",
+        "Lounge : on se pose entre amis",
+        "Restaurant : on se retrouve à table"
+      ],
+      "photo": null,
+      "legende": "Vendredi, c'est le jour où l'on souffle enfin. 🙌 La semaine est bouclée, les dossiers peuvent attendre : place aux retrouvailles. Ce soir entre collègues, demain entre amis ou en famille, venez vous poser à La Vérandah. Bière, whisky, vin ou champagne : chacun y trouve son plaisir.\n\nBon week-end à tous ! On vous attend à Makepe, en face de l'église Sainte Monique. Appels et WhatsApp : 656 80 10 98. 📍\n\nL'abus d'alcool est dangereux pour la santé. À consommer avec modération.",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#BonWeekEnd",
+        "#Lounge"
+      ]
+    },
+    {
+      "id": "VD-31-10-samedi",
+      "serie": "Semaine du 27 octobre",
+      "jour": "samedi",
+      "moment": "samedi 11h",
+      "modele": "vd-carte",
+      "theme": "Les champagnes pour les grandes occasions",
+      "etiquette": "On fête ça !",
+      "titre": "LES GRANDES OCCASIONS",
+      "texte": "Pour lever son verre",
+      "points": [
+        "Champagne Moët & Chandon",
+        "Champagne Ruinart",
+        "Vins rouges, blancs et rosés"
+      ],
+      "photo": null,
+      "legende": "Un anniversaire, une réussite, une bonne nouvelle à fêter ? Les grandes occasions méritent leurs bulles. 🥂\n\nMoët & Chandon ou Ruinart pour lever son verre, nos vins rouges, blancs et rosés pour accompagner le moment : venez trinquer entre amis à La Vérandah, à Makepe, en face de l'église Sainte Monique. Appels et WhatsApp : 656 80 10 98.\n\nL'abus d'alcool est dangereux pour la santé. À consommer avec modération.",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#Champagne",
+        "#CaveAVin"
+      ]
+    },
+    {
+      "id": "VD-01-11-dimanche",
+      "serie": "Semaine du 27 octobre",
+      "jour": "dimanche",
+      "moment": "dimanche 8h",
+      "modele": "vd-annonce",
+      "theme": "Vœux du 1er novembre : bon mois de novembre",
+      "etiquette": "",
+      "titre": "La Vérandah vous souhaite un",
+      "texte": "BON MOIS DE *NOVEMBRE*",
+      "points": [
+        "À toutes et à tous !"
+      ],
+      "photo": null,
+      "legende": "Novembre est là ! ✨ Toute l'équipe de La Vérandah vous souhaite un mois plein de santé, de réussite et de beaux moments partagés. Merci pour votre fidélité !\n\nAprès le travail, entre amis ou en famille, prenez le temps de vous retrouver et de décompresser. Nous serons heureux de vous accueillir.\n\n📍 Rendez-vous à Makepe, en face de l'église Sainte Monique.\n📞 Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#BonMoisDeNovembre",
+        "#Douala",
+        "#Makepe"
+      ],
+      "alcool": false
+    }
+  ]
+}
