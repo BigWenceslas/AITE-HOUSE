@@ -1,6 +1,6 @@
 ---
 name: contenus-aite
-description: Rédige et produit les visuels réseaux sociaux d'AITE Consulting signés par le Directeur Général avec sa photo — citations, affiches de motivation, conseils pratiques numérotés, pensées sur fond sombre avec photo ronde — au format carré, portrait ou story, avec la légende du post et les hashtags. À utiliser dès qu'il est question d'un post LinkedIn, Facebook ou Instagram d'AITE, d'une citation ou pensée du DG, d'une phrase de motivation, d'un conseil pratique à publier, du calendrier éditorial ou du studio de contenus : « fais une citation sur la délégation », « un conseil sur les sauvegardes », « prépare les posts de la semaine », « refais le visuel du mercredi en story ».
+description: Rédige et produit les visuels réseaux sociaux d'AITE Consulting signés par le Directeur Général avec sa photo — citations, affiches de motivation, conseils pratiques numérotés, pensées sur fond sombre avec photo ronde, annonces de recrutement — au format carré, portrait ou story, avec la légende du post et les hashtags. À utiliser dès qu'il est question d'un post LinkedIn, Facebook ou Instagram d'AITE, d'une citation ou pensée du DG, d'une phrase de motivation, d'un conseil pratique à publier, d'une offre d'emploi ou d'un flyer de recrutement, du calendrier éditorial ou du studio de contenus : « fais une citation sur la délégation », « un conseil sur les sauvegardes », « prépare les posts de la semaine », « refais le visuel du mercredi en story ».
 ---
 
 # Contenus réseaux sociaux AITE
@@ -16,7 +16,14 @@ son moteur : ne pas dessiner de visuel à la main ni avec un autre outil.
      commençant par un impératif (vouvoiement), `numero` = suivant du calendrier ;
    - `citation` : une pensée du DG, 70 à 190 caractères ;
    - `sombre` : même usage qu'une citation (une pensée, 40 à 190 caractères), en version
-     sobre sur fond sombre, photo du DG en médaillon rond.
+     sobre sur fond sombre, photo du DG en médaillon rond ;
+   - `recrutement` : offre d'emploi. `titre` = intitulé du poste (relief sur 1 ou 2 mots),
+     `texte` = 2 ou 3 étiquettes séparées par « · » (lieu, secteur), `etiquette` = pastille
+     (« Nous recrutons »), `points` = rubriques `# Vos missions`, `# Votre profil`, puis
+     `# Pour postuler` (affichée en encadré : e-mail en relief, objet du mail). 4 points
+     au plus par rubrique, 60 caractères au plus chacun ; le détail va dans la légende.
+     Ne rien promettre (contrat, salaire, avantages, dates) que la direction n'a pas
+     confirmé : lister ces points à faire valider en livrant le visuel.
    Mettre en relief 1 à 4 mots avec des astérisques simples, une seule fois par texte.
 2. Ajouter l'entrée à `studio-contenus/contenus/publications.json` (même structure
    que les autres, `id` du type `S11-lundi`, photo différente de la publication

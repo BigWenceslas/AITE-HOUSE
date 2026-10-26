@@ -37,6 +37,10 @@
     affiche: { nom: 'Affiche motivation', etiquette: 'Motivation du lundi' },
     conseil: { nom: 'Conseil pratique', etiquette: 'Conseil pratique' },
     sombre: { nom: 'Fond sombre', court: 'Sombre', etiquette: '' },
+    recrutement: { nom: 'Recrutement', court: 'Recrutement', etiquette: 'Nous recrutons', champs: {
+      etiquette: ['Pastille (ex. Nous recrutons)'], titre: ['Intitulé du poste', 40], texte: ['Étiquettes, séparées par « · » (ex. Douala · B2B)', 70],
+      points: ['Rubriques : « # Vos missions » puis une ligne par point ; la rubrique « # Pour postuler » s’affiche en encadré'],
+    } },
   };
 
   const SIGNATURE = { nom: 'Cyrille Donald ABOLO', fonction: 'Directeur Général, AITE Consulting' };
@@ -1055,6 +1059,152 @@
     });
   }
 
+  // ───────────────────────── modèle « recrutement » ─────────────────────────
+
+  // Rubriques saisies dans « points » : « # Titre » ouvre une rubrique, les autres lignes en sont les points.
+  function rubriques(points) {
+    const out = [];
+    for (const l of points || []) {
+      const t = String(l).trim();
+      if (!t) continue;
+      if (t.startsWith('#')) out.push({ titre: t.replace(/^#+\s*/, ''), items: [] });
+      else { if (!out.length) out.push({ titre: '', items: [] }); out[out.length - 1].items.push(t.replace(/^[-•]\s*/, '')); }
+    }
+    return out;
+  }
+
+  function recrutement(ctx, W, H, pub, fmt) {
+    const ph = photo(pub.photo);
+    const story = fmt === 'story';
+    const mx = story ? 70 : 60;
+    const bas = story ? H - 260 : H;          // en story, le bas est couvert par « Répondre »
+
+    ctx.fillStyle = C.creme; ctx.fillRect(0, 0, W, H);
+    trame(ctx, { x: 0, y: 0, l: W, h: H }, [0, H], 520, { couleur: 'rgba(142,42,142,.14)' });
+
+    // en-tête violet
+    const hH = story ? 600 : fmt === 'portrait' ? 470 : 384;
+    const g = ctx.createLinearGradient(0, 0, W, hH);
+    g.addColorStop(0, '#9A309A'); g.addColorStop(1, '#6A1E6C');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, hH);
+    ctx.save();
+    ctx.beginPath(); ctx.rect(0, 0, W, hH); ctx.clip();
+    trame(ctx, { x: 0, y: 0, l: W, h: hH }, [W, hH], W * 0.7, { couleur: 'rgba(255,255,255,.09)', pas: 22, rMax: 3 });
+    croissant(ctx, W - 30, hH * 0.42, hH * 0.62, hH * 0.07, -0.7, 'rgba(46,140,178,.9)');
+    croissant(ctx, W - 30, hH * 0.42, hH * 0.5, hH * 0.055, -0.7, 'rgba(240,146,31,.95)');
+    ctx.restore();
+
+    const yh = story ? 150 : 46;
+    const lh = story ? 74 : 60;
+    logo(ctx, mx + lh * 0.3, yh + 6, lh, true);
+    const et = typo(pub.etiquette || MODELES.recrutement.etiquette).toUpperCase();
+    const tp = story ? 26 : 21;
+    ctx.font = police(700, tp, TITRE);
+    const lp = largeurEspacee(ctx, et, tp * 0.14) + tp * 1.9;
+    pastille(ctx, et, W - mx - lp, yh + lh / 2 + 6 - tp * 1.05, { taille: tp, fond: C.orange, couleur: C.blanc });
+
+    // intitulé du poste et étiquettes
+    // le titre s'arrête avant les arcs décoratifs (et avant la photo)
+    const colTitre = ph && !story ? W * 0.6 - mx : W * 0.7 - mx;
+    const yt = yh + lh + (story ? 60 : 46);
+    const tags = String(pub.texte || '').split('·').map(v => v.trim()).filter(Boolean);
+    const hTags = tags.length ? (story ? 70 : 56) : 0;
+    const bt = ajuster(ctx, pub.titre || '', { l: colTitre, h: hH - yt - hTags - (story ? 56 : 40) }, { poids: 700, famille: TITRE, min: 40, max: story ? 104 : 84, interligne: 1.04, soigne: true });
+    ecrire(ctx, bt, mx, yt, { couleur: C.blanc, couleurRelief: C.orangeTexte, largeur: colTitre });
+    let xt = mx;
+    const ttag = story ? 26 : 21;
+    for (const t of tags) {
+      ctx.font = police(500, ttag, TEXTE);
+      const l = ctx.measureText(t).width + ttag * 1.6, h = ttag * 2;
+      if (xt + l > mx + colTitre + 40) break;
+      remplirRect(ctx, xt, yt + bt.hauteur + (story ? 26 : 16), l, h, h / 2, 'rgba(255,255,255,.18)');
+      ctx.fillStyle = C.blanc; ctx.textBaseline = 'middle';
+      ctx.fillText(t, xt + ttag * 0.8, yt + bt.hauteur + (story ? 26 : 16) + h / 2 + 1);
+      ctx.textBaseline = 'alphabetic';
+      xt += l + 12;
+    }
+
+    // la personne, entière, à droite : sa tête passe devant l'en-tête.
+    // En story, elle se tient à côté de l'encadré de candidature et les rubriques prennent toute la largeur.
+    const debout = ph && ph.detouree;
+    if (debout && !story) {
+      const z = { x1: W * 0.6, x2: W - 8, bas: H, hautMin: hH - (fmt === 'portrait' ? 250 : 210), teteH: 178 };
+      silhouette(ctx, ph, cadrer(ph, z), H, 'rgba(40,10,45,.28)');
+    }
+
+    // rubriques ; « Pour postuler » (ou la dernière, si son titre parle de candidature) en encadré
+    const rs = rubriques(pub.points);
+    let cta = null;
+    if (rs.length && /postuler|candidat/i.test(rs[rs.length - 1].titre)) cta = rs.pop();
+    const colBas = ph ? W * 0.6 - mx : W - 2 * mx;          // encadré et pied
+    const col = ph && !story ? colBas : W - 2 * mx;         // rubriques
+    // pied : site et téléphones, sur deux lignes en story (la colonne y est étroite)
+    const pieds = [pub.site || SITE, '(+237) 656 80 10 98 / 673 37 33 67'];
+    if (!story) pieds.splice(0, 2, pieds.join('  ·  '));
+    const pied = story ? 34 : 26;
+    const yPied = bas - pied * (1 + (pieds.length - 1) * 1.15) - (story ? 30 : 22);
+
+    // encadré de candidature
+    let yCta = yPied - 18;
+    if (cta) {
+      const tc = story ? 32 : fmt === 'portrait' ? 26 : 24;
+      const blocs = cta.items.map(v => ajuster(ctx, v, { l: colBas - 60, h: 9999 }, { poids: 500, famille: TEXTE, min: tc, max: tc, interligne: 1.35 }));
+      const hc = 34 + tc * 1.6 + blocs.reduce((s2, b) => s2 + b.hauteur + 6, 0) + 26;
+      yCta = yPied - 22 - hc;
+      ctx.save();
+      ctx.shadowColor = 'rgba(67,18,74,.25)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 8;
+      remplirRect(ctx, mx, yCta, colBas, hc, 26, C.violet);
+      ctx.restore();
+      ctx.font = police(700, tc * 0.82, TITRE); ctx.fillStyle = C.orangeTexte;
+      espace(ctx, typo(cta.titre).toUpperCase(), mx + 30, yCta + 34 + tc * 0.8, tc * 0.1);
+      let yy = yCta + 34 + tc * 1.6;
+      for (const b of blocs) { ecrire(ctx, b, mx + 30, yy, { couleur: C.blanc, couleurRelief: C.orangeTexte, largeur: colBas - 60 }); yy += b.hauteur + 6; }
+    }
+    if (debout && story) {
+      // la tête arrive à hauteur du haut de l'encadré, les pieds en bas de l'image
+      const haut = (cta ? yCta : yPied - 300) - 30;
+      const teteH = (H - haut) * (ph.menton - ph.teteHaut) / (ph.h - ph.teteHaut);
+      silhouette(ctx, ph, cadrer(ph, { x1: W * 0.6, x2: W - 8, bas: H, hautMin: haut, teteH }), H, 'rgba(40,10,45,.28)');
+    }
+
+    // missions, profil… : taille commune, la plus grande qui tient
+    const y0 = hH + (story ? 56 : 32), y1 = yCta - (story ? 50 : 24);
+    const pasRub = story ? 34 : fmt === 'portrait' ? 22 : 16;
+    let t = story ? 40 : fmt === 'portrait' ? 32 : 30, mise = null;
+    for (; t >= 17; t -= 0.5) {
+      const th = t * 1.0;
+      const r = rs.map(rb => ({ rb, blocs: rb.items.map(v => ajuster(ctx, v, { l: col - t * 1.4, h: 9999 }, { poids: 500, famille: TEXTE, min: t, max: t, interligne: 1.3, equilibrer: false })) }));
+      const total = r.reduce((s2, x) => s2 + (x.rb.titre ? th * 2.1 : 0) + x.blocs.reduce((a, b) => a + b.hauteur + t * 0.35, 0), 0) + pasRub * Math.max(0, r.length - 1);
+      mise = { r, th, total };
+      if (total <= y1 - y0) break;
+    }
+    let y = y0 + Math.max(0, (y1 - y0 - mise.total) / 2);
+    const couleurs = [C.violet, C.bleu, C.orange];
+    mise.r.forEach((x, i) => {
+      if (x.rb.titre) {
+        ctx.fillStyle = couleurs[i % 3];
+        remplirRect(ctx, mx, y + mise.th * 0.3, 8, mise.th * 1.15, 4, couleurs[i % 3]);
+        ctx.font = police(700, mise.th * 1.12, TITRE); ctx.fillStyle = C.encre; ctx.textBaseline = 'alphabetic';
+        ctx.fillText(typo(x.rb.titre), mx + 22, y + mise.th * 1.25);
+        y += mise.th * 2.1;
+      }
+      for (const b of x.blocs) {
+        ctx.fillStyle = couleurs[i % 3];
+        ctx.beginPath(); ctx.arc(mx + t * 0.32, y + b.taille * 0.62, t * 0.17, 0, Math.PI * 2); ctx.fill();
+        ecrire(ctx, b, mx + t * 1.0, y - b.taille * 0.15, { couleur: C.encre, couleurRelief: C.violet, largeur: col });
+        y += b.hauteur + t * 0.35;
+      }
+      y += pasRub;
+    });
+
+    // pied, dans la colonne de l'encadré
+    const tpied = Math.min(...pieds.map(v => tailleLigne(ctx, v, 500, TEXTE, pied * 0.72, colBas - 34, 0)));
+    ctx.font = police(500, tpied, TEXTE); ctx.fillStyle = C.gris; ctx.textBaseline = 'middle';
+    globe(ctx, mx + 10, yPied + pied / 2, 10, C.violet);
+    pieds.forEach((v, i) => ctx.fillText(v, mx + 30, yPied + pied / 2 + 1 + i * pied * 1.15));
+    ctx.textBaseline = 'alphabetic';
+  }
+
   // ───────────────────────── point d'entrée ─────────────────────────
 
   function dessiner(canvas, pub, o) {
@@ -1066,7 +1216,7 @@
     const ctx = canvas.getContext('2d');
     ctx.setTransform(echelle, 0, 0, echelle, 0, 0);
     ctx.imageSmoothingQuality = 'high';
-    const modele = { citation, affiche, conseil, sombre, ...AUTRES }[pub.modele] || citation;
+    const modele = { citation, affiche, conseil, sombre, recrutement, ...AUTRES }[pub.modele] || citation;
     modele(ctx, W, H, pub, fmt);
     return canvas;
   }

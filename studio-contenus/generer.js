@@ -191,11 +191,16 @@ function ecrireCalendrier(publications, ext) {
   for (const x of publications) {
     if (groupeDe(x) !== groupe) { groupe = groupeDe(x); lignes.push('## ' + groupe, ''); }
     const titre = [x.etiquette && x.modele.startsWith('vd-') ? x.etiquette : '', x.titre, x.texte].filter(Boolean).join(' — ');
-    const NOMS = { conseil: 'Conseil', affiche: 'Affiche', citation: 'Citation', sombre: 'Fond sombre', 'vd-annonce': 'Annonce', 'vd-ambiance': 'Ambiance', 'vd-carte': 'La cave', 'vd-photo': 'Photo pleine page', 'vd-sombre': 'Pensée (photo ronde)' };
+    const NOMS = { conseil: 'Conseil', affiche: 'Affiche', citation: 'Citation', sombre: 'Fond sombre', recrutement: 'Recrutement', 'vd-annonce': 'Annonce', 'vd-ambiance': 'Ambiance', 'vd-carte': 'La cave', 'vd-photo': 'Photo pleine page', 'vd-sombre': 'Pensée (photo ronde)' };
     lignes.push('### ' + cap(x.moment || x.jour) + ' — ' + (NOMS[x.modele] || 'Citation') + ' · ' + x.theme, '');
     lignes.push('![' + x.id + '](' + nomFichier(x, 'carre', ext) + ')', '');
     lignes.push('**Visuel :** ' + titre.replace(/\*/g, ''), '');
-    if ((x.points || []).length) { x.points.forEach((pt, i) => lignes.push((i + 1) + '. ' + pt.replace(/\*/g, ''))); lignes.push(''); }
+    const pts = (x.points || []).map(pt => pt.replace(/\*/g, ''));
+    if (pts.some(pt => pt.startsWith('#'))) {
+      // rubriques d'une annonce : « # Titre » puis ses points
+      pts.forEach(pt => lignes.push(...(pt.startsWith('#') ? [...(lignes[lignes.length - 1] ? [''] : []), '**' + pt.replace(/^#+\s*/, '') + '**', ''] : ['- ' + pt])));
+      lignes.push('');
+    } else if (pts.length) { pts.forEach((pt, i) => lignes.push((i + 1) + '. ' + pt)); lignes.push(''); }
     lignes.push('**Légende à publier :**', '', '```text', x.legende, '', x.hashtags.join(' '), '```', '');
   }
   fs.writeFileSync(p(M.sortie, 'CALENDRIER.md'), lignes.join('\n'));

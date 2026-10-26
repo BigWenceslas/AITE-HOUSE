@@ -780,3 +780,42 @@ Qui détient aujourd’hui les droits d’administrateur chez vous ? Écrivez-no
 
 #AITEConsulting #Microsoft365 #Cybersecurite #SecuriteInformatique #PME
 ```
+
+## Recrutement
+
+### Dès validation des conditions — Recrutement · commercial(e) junior B2B Tech, Douala
+
+![REC-1](REC-1-recrutement.jpg)
+
+**Visuel :** Commercial(e) junior B2B Tech — Douala · B2B · Solutions digitales
+
+**Vos missions**
+
+- Prospecter entreprises et administrations
+- Cerner les besoins, organiser les démonstrations
+- Rédiger propositions et devis, relancer jusqu’à la signature
+- Tenir à jour le suivi des clients
+
+**Votre profil**
+
+- 0 à 2 ans d’expérience en vente, stages compris
+- Formation en commerce, gestion, informatique ou équivalent
+- Aisance à l’oral et à l’écrit, goût du terrain
+- Curiosité pour le numérique, rigueur et ténacité
+
+**Pour postuler**
+
+- CV et lettre de motivation à info@aite-consulting.com
+- Objet : « Commercial(e) junior B2B Tech »
+
+**Légende à publier :**
+
+```text
+AITE Consulting recrute un commercial ou une commerciale junior B2B Tech à Douala. Notre règle d’or : « On ne vend pas de la technologie, on vend la fin d’un problème de gestion. »
+
+Votre rôle : prospecter les entreprises et les administrations, comprendre leurs besoins, organiser les démonstrations avec l’équipe technique, rédiger propositions et devis, puis suivre chaque dossier jusqu’à la signature. Vous porterez une offre complète : ERP Odoo (notre produit phare), Microsoft 365, dématérialisation, cybersécurité, réseaux, ainsi que nos solutions AITE House, AITE SI RH, AITE Courrier et AITE GMAO.
+
+Vous débutez (0 à 2 ans d’expérience, stages compris) et vous aimez convaincre ? Envoyez CV et lettre de motivation à info@aite-consulting.com, objet « Commercial(e) junior B2B Tech ». Vous connaissez la bonne personne ? Identifiez-la en commentaire ou partagez cette annonce.
+
+#Recrutement #Emploi #Douala #Cameroun #Commercial #VenteB2B #TransformationDigitale #Odoo #AITEConsulting
+```

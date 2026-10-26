@@ -132,8 +132,8 @@
       }
       const o = document.createElement('option');
       o.value = String(i);
-      const txt = ((p.modele === 'conseil' || !p.texte ? p.titre : p.texte) || '').replace(/\*/g, '');
-      o.textContent = cap(p.jour) + ' · ' + txt.slice(0, 60) + (txt.length > 60 ? '…' : '');
+      const txt = ((p.modele === 'conseil' || p.modele === 'recrutement' || !p.texte ? p.titre : p.texte) || '').replace(/\*/g, '');
+      o.textContent = (p.jour ? cap(p.jour) + ' · ' : '') + txt.slice(0, 60) + (txt.length > 60 ? '…' : '');
       (groupe || sel).appendChild(o);
     });
     sel.addEventListener('change', () => {

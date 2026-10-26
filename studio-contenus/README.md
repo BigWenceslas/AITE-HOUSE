@@ -2,7 +2,7 @@
 
 Visuels pour LinkedIn, Facebook et Instagram, signés par le Directeur Général
 d'AITE Consulting et illustrés de sa photo : **citations**, **affiches de
-motivation** et **conseils pratiques**, aux couleurs de la charte AITE (violet
+motivation**, **conseils pratiques** et **annonces de recrutement**, aux couleurs de la charte AITE (violet
 `#8E2A8E`, orange `#F0921F`, bleu `#2E8CB2`, Space Grotesk et IBM Plex Sans).
 
 | Modèle | Usage | Jour proposé |
@@ -11,6 +11,7 @@ motivation** et **conseils pratiques**, aux couleurs de la charte AITE (violet
 | **Conseil** | un titre et 3 ou 4 conseils numérotés, applicables dès demain | mercredi |
 | **Citation** | une pensée du DG, entre guillemets, dans le panneau violet | vendredi |
 | **Fond sombre** | une pensée centrée en lettres fines sur fond sombre, le mot clé en gras souligné d'orange, la photo du DG en médaillon rond | au choix |
+| **Recrutement** | une offre d'emploi : intitulé du poste, missions, profil, encadré « Pour postuler », le DG en pied | à la demande |
 
 Le week-end, le ton change (détente et sourire le samedi, repos le dimanche) avec
 les mêmes modèles et une étiquette adaptée : « Samedi détente », « Dimanche repos »…
@@ -117,11 +118,22 @@ Champs facultatifs : `serie` range la publication hors des semaines
 numérotées (ex. `"serie": "Week-end"`), `moment` indique l'heure conseillée
 (`"samedi 10h"`) ; tous deux apparaissent dans le studio et dans `CALENDRIER.md`.
 
-`modele` vaut `citation`, `affiche`, `conseil` ou `sombre` ; `photo` est le nom d'un
+`modele` vaut `citation`, `affiche`, `conseil`, `sombre` ou `recrutement` ; `photo` est le nom d'un
 fichier de `assets/photos/` sans extension (`boubou`, `blazer`, `tunique`), ou
 `null`. Pour un conseil, remplir `titre`, `points` et `numero`, et laisser
 `texte` vide ; `"puces": "lettres"` affiche A, B, C, D au lieu de 01, 02, 03
 (sondage, quiz). Le bouton « Copier la fiche (JSON) » du studio produit ce bloc.
+
+Une annonce de recrutement (`"modele": "recrutement"`) : `titre` est l'intitulé du
+poste, `texte` les étiquettes séparées par « · » (`Douala · B2B`), `etiquette` la
+pastille (« Nous recrutons ») et `points` les rubriques, chacune ouverte par une
+ligne `# Titre` ; la rubrique `# Pour postuler` s'affiche dans l'encadré violet.
+
+```json
+"points": ["# Vos missions", "Prospecter entreprises et administrations", "…",
+           "# Votre profil", "0 à 2 ans d’expérience en vente, stages compris", "…",
+           "# Pour postuler", "CV et lettre de motivation à *info@aite-consulting.com*"]
+```
 
 ## Ajouter une photo
 
