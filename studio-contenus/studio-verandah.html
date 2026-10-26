@@ -1364,9 +1364,9 @@ window.AITE_MARQUE = {"cle":"verandah","titre":"Studio La Vérandah","sousTitre"
     if (rs.length && /postuler|candidat/i.test(rs[rs.length - 1].titre)) cta = rs.pop();
     const colBas = ph ? W * 0.6 - mx : W - 2 * mx;          // encadré et pied
     const col = ph && !story ? colBas : W - 2 * mx;         // rubriques
-    // pied : site et téléphones, sur deux lignes en story (la colonne y est étroite)
+    // pied : site et téléphones, sur deux lignes en story à côté de la photo (la colonne y est étroite)
     const pieds = [pub.site || SITE, '(+237) 656 80 10 98 / 673 37 33 67'];
-    if (!story) pieds.splice(0, 2, pieds.join('  ·  '));
+    if (!story || !ph) pieds.splice(0, 2, pieds.join('  ·  '));
     const pied = story ? 34 : 26;
     const yPied = bas - pied * (1 + (pieds.length - 1) * 1.15) - (story ? 30 : 22);
 
