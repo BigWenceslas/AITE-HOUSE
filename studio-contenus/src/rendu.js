@@ -36,6 +36,7 @@
     citation: { nom: 'Citation', etiquette: '' },
     affiche: { nom: 'Affiche motivation', etiquette: 'Motivation du lundi' },
     conseil: { nom: 'Conseil pratique', etiquette: 'Conseil pratique' },
+    sombre: { nom: 'Fond sombre', etiquette: '' },
   };
 
   const SIGNATURE = { nom: 'Cyrille Donald ABOLO', fonction: 'Directeur Général, AITE Consulting' };
@@ -151,9 +152,26 @@
 
   function police(poids, taille, famille) { return poids + ' ' + taille + 'px ' + famille; }
 
+  // Police des mots en relief quand elle diffère du texte (poids, famille),
+  // fixée le temps d'un ajuster() ou d'un ecrire().
+  let RELIEF = null;
+
+  function policeRelief(ctx) {
+    return police(RELIEF.poids, parseFloat(/([\d.]+)px/.exec(ctx.font)[1]), RELIEF.famille);
+  }
+
+  function largeurMorceau(ctx, p) {
+    if (!p.relief || !RELIEF) return ctx.measureText(p.t).width;
+    const f = ctx.font;
+    ctx.font = policeRelief(ctx);
+    const l = ctx.measureText(p.t).width;
+    ctx.font = f;
+    return l;
+  }
+
   function mesurerMot(ctx, mot) {
     let l = 0;
-    for (const m of mot.morceaux) l += ctx.measureText(m.t).width;
+    for (const m of mot.morceaux) l += largeurMorceau(ctx, m);
     return l;
   }
 
@@ -173,6 +191,7 @@
 
   // Taille la plus grande qui tient dans la boîte, puis lignes équilibrées.
   function ajuster(ctx, texte, boite, o) {
+    RELIEF = o.poidsRelief ? { poids: o.poidsRelief, famille: o.familleRelief || o.famille } : null;
     const ms = mots(texte);
     // les mots soudés par une insécable comptent chacun pour un mot
     const nbMots = ms.filter(m => !m.saut).reduce((n, m) => n + m.morceaux.map(p => p.t).join('').split('\u00A0').length, 0);
@@ -218,6 +237,58 @@
       const autre = disposer(t);
       if (!orphelin(autre) && autre.length * t * o.interligne <= boite.h) { taille = t; lignes = autre; }
     }
+    // Coupures soignées : parmi plusieurs largeurs de ligne et des tailles un peu
+    // réduites, on garde la disposition la moins pénalisée (début de phrase en
+    // fin de ligne, fin de phrase rejetée, mise en relief coupée, mot seul…).
+    if (o.soigne && ms.filter(m => !m.saut).length > 1) {
+      const info = new Map();
+      let fin = true, run = 0, avant = false;
+      for (const m of ms) {
+        if (m.saut) { fin = true; avant = false; continue; }
+        const t = m.morceaux.map(p => p.t).join('');
+        const rel = m.morceaux.some(p => p.relief);
+        if (rel && !avant) run++;
+        const fp = /[.!?…][»”")\u202F]*$/u.test(t);
+        info.set(m, { debut: fin, fin: fp, run: rel ? run : null });
+        fin = fp; avant = rel;
+      }
+      const penalite = li => {
+        let p = 0;
+        const n = li.length;
+        li.forEach((l, i) => {
+          const der = info.get(l[l.length - 1]), prem = info.get(l[0]);
+          if (i < n - 1) {
+            const suiv = info.get(li[i + 1][0]);
+            if (l.length > 1 && der.debut && !der.fin) p += 70;
+            if (der.run !== null && der.run === suiv.run) p += 60;
+            if (l.length === 1) p += 20;
+          }
+          if (i > 0 && l.length > 1 && prem.fin && !prem.debut) p += 40;
+        });
+        if (n > 1 && li[n - 1].length === 1) p += 25;
+        const esp = ctx.measureText(' ').width;
+        const ws = li.map(l => l.reduce((s, m, i) => s + mesurerMot(ctx, m) + (i && !m.colle ? esp : 0), 0));
+        const wmax = Math.max(...ws);
+        ws.slice(0, -1).forEach(w => { p += 20 * (1 - w / wmax) ** 2; });
+        return p;
+      };
+      let meilleur = null;
+      const t0 = Math.floor(taille);
+      for (let t = t0; t >= Math.max(o.min, t0 * 0.78); t -= Math.max(1, Math.round(t0 * 0.02))) {
+        ctx.font = police(o.poids, t, o.famille);
+        if (ms.some(m => !m.saut && mesurerMot(ctx, m) > boite.l)) continue;
+        const nmin = couper(ctx, ms, boite.l).length;
+        for (let k = 0; k <= 24; k++) {
+          const l = boite.l * (0.5 + 0.5 * k / 24);
+          if (ms.some(m => !m.saut && mesurerMot(ctx, m) > l)) continue;
+          const li = couper(ctx, ms, l);
+          if (li.length * t * o.interligne > boite.h) continue;
+          const score = penalite(li) + 12 * (li.length - nmin) + 100 * (t0 - t) / t0;
+          if (!meilleur || score < meilleur.score) meilleur = { score, t, lignes: li };
+        }
+      }
+      if (meilleur) { taille = meilleur.t; lignes = meilleur.lignes; }
+    }
     // Affiches : une ligne réduite à un petit mot (« pas », « juste ») hache la
     // lecture ; on accepte jusqu'à un cinquième de taille en moins pour l'éviter.
     if (o.eviterMotsSeuls) {
@@ -234,6 +305,7 @@
     ctx.font = police(o.poids, taille, o.famille);
     const espace = ctx.measureText(' ').width;
     const largeurs = lignes.map(li => li.reduce((s, m, i) => s + mesurerMot(ctx, m) + (i && !m.colle ? espace : 0), 0));
+    RELIEF = null;
     return { taille, lignes, largeurs, hauteur: lignes.length * taille * o.interligne, interligne: o.interligne, o };
   }
 
@@ -241,38 +313,65 @@
   function ecrire(ctx, bloc, x, y, o) {
     const { taille, lignes, largeurs, interligne } = bloc;
     ctx.font = police(bloc.o.poids, taille, bloc.o.famille);
+    RELIEF = bloc.o.poidsRelief ? { poids: bloc.o.poidsRelief, famille: bloc.o.familleRelief || bloc.o.famille } : null;
+    const normale = ctx.font, forte = RELIEF ? policeRelief(ctx) : normale;
     ctx.textBaseline = 'alphabetic';
     const espace = ctx.measureText(' ').width;
     const pas = taille * interligne;
     const asc = taille * (interligne - 1) / 2 + taille * 0.8;
+
+    // position de chaque morceau, et bandes continues d'un mot en relief au
+    // suivant (sans la ponctuation finale)
+    const places = [], bandes = [];
     lignes.forEach((ligne, i) => {
       let cx = x;
       if (o.aligner === 'centre') cx = x + (o.largeur - largeurs[i]) / 2;
       const by = y + i * pas + asc;
-      if (o.relief === 'surligne') {
-        let xx = cx;
-        ligne.forEach((m, j) => {
-          if (j && !m.colle) xx += espace;
-          for (const p of m.morceaux) {
-            const lp = ctx.measureText(p.t).width;
-            if (p.relief) {
-              const suite = j < ligne.length - 1 && ligne[j + 1].morceaux[0].relief && !ligne[j + 1].colle && p === m.morceaux[m.morceaux.length - 1];
-              ctx.fillStyle = o.couleurSurligne || '#F6CD9F';
-              ctx.fillRect(xx - 2, by - taille * 0.30, lp + 4 + (suite ? espace : 0), taille * 0.36);
-            }
-            xx += lp;
-          }
-        });
-      }
+      let debut = null, fin = null;
+      const clore = () => { if (debut !== null) bandes.push({ by, debut, fin }); debut = null; };
       ligne.forEach((m, j) => {
         if (j && !m.colle) cx += espace;
         for (const p of m.morceaux) {
-          ctx.fillStyle = p.relief ? o.couleurRelief : o.couleur;
-          ctx.fillText(p.t, cx, by);
-          cx += ctx.measureText(p.t).width;
+          const lp = largeurMorceau(ctx, p);
+          places.push({ p, x: cx, by });
+          if (p.relief) {
+            if (debut === null) debut = cx;
+            const sans = p.t.replace(/[.,;:!?…»\u202F\u00A0]+$/u, '');
+            fin = cx + (sans === p.t ? lp : largeurMorceau(ctx, { t: sans, relief: true }));
+          } else clore();
+          cx += lp;
         }
       });
+      clore();
     });
+
+    if (o.relief === 'surligne') {
+      ctx.fillStyle = o.couleurSurligne || '#F6CD9F';
+      for (const b of bandes) ctx.fillRect(b.debut - 2, b.by - taille * 0.30, b.fin - b.debut + 4, taille * 0.36);
+    }
+    if (o.relief === 'souligne' && bandes.length) {
+      // trait tracé à part, puis découpé autour des lettres qui descendent (g, j, p)
+      const off = document.createElement('canvas');
+      off.width = ctx.canvas.width; off.height = ctx.canvas.height;
+      const oc = off.getContext('2d');
+      oc.setTransform(ctx.getTransform());
+      oc.fillStyle = o.couleurSurligne || C.orange;
+      for (const b of bandes) { oc.beginPath(); rect(oc, b.debut, b.by + taille * 0.14, b.fin - b.debut, taille * 0.085, taille * 0.042); oc.fill(); }
+      oc.globalCompositeOperation = 'destination-out';
+      oc.font = forte; oc.textBaseline = 'alphabetic'; oc.lineWidth = taille * 0.16; oc.lineJoin = 'round';
+      for (const q of places) if (q.p.relief) oc.strokeText(q.p.t, q.x, q.by);
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.shadowColor = 'transparent';
+      ctx.drawImage(off, 0, 0);
+      ctx.restore();
+    }
+    for (const q of places) {
+      ctx.font = q.p.relief ? forte : normale;
+      ctx.fillStyle = q.p.relief ? o.couleurRelief : o.couleur;
+      ctx.fillText(q.p.t, q.x, q.by);
+    }
+    ctx.font = normale;
+    RELIEF = null;
   }
 
   function espace(ctx, texte, x, y, espacement, aligner) {
@@ -825,6 +924,118 @@
     ctx.textBaseline = 'alphabetic';
   }
 
+  // ───────────────────────── modèle « fond sombre » ─────────────────────────
+
+  // Éclats de couleur dans un coin : un biseau découpé en bandes obliques.
+  // (tx, ty) est le coin ; sx, sy = ±1 orientent le biseau vers l'intérieur.
+  function eclat(ctx, tx, ty, sx, sy, L, D, couleurs) {
+    ctx.save();
+    ctx.translate(tx, ty); ctx.scale(sx, sy);
+    ctx.beginPath();
+    ctx.moveTo(0, 0); ctx.lineTo(L, 0); ctx.lineTo(L * 0.42, D); ctx.lineTo(0, D * 0.62); ctx.closePath();
+    ctx.clip();
+    const pente = L * 0.58, w = (L + pente) / couleurs.length;
+    couleurs.forEach((c, i) => {
+      const x0 = i * w;
+      ctx.beginPath();
+      ctx.moveTo(x0, 0); ctx.lineTo(x0 + w + 1, 0); ctx.lineTo(x0 + w + 1 - pente, D); ctx.lineTo(x0 - pente, D); ctx.closePath();
+      ctx.fillStyle = c; ctx.fill();
+    });
+    ctx.restore();
+  }
+
+  // Photo dans un médaillon rond, cerclé d'orange : tête et épaules.
+  function medaillon(ctx, ph, cx, cy, r) {
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,.45)'; ctx.shadowBlur = 30; ctx.shadowOffsetY = 8;
+    ctx.beginPath(); ctx.arc(cx, cy, r + 7, 0, Math.PI * 2); ctx.fillStyle = C.orange; ctx.fill();
+    ctx.restore();
+    ctx.save();
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.clip();
+    const g = ctx.createRadialGradient(cx, cy - r * 0.3, r * 0.1, cx, cy, r * 1.1);
+    g.addColorStop(0, '#A8399F'); g.addColorStop(1, '#5A1A5E');
+    ctx.fillStyle = g; ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
+    if (ph.detouree) {
+      const e = (r * 2 * 0.60) / Math.max(1, ph.menton - ph.teteHaut);
+      ctx.drawImage(ph.img, cx - ph.visageX * e, cy - r * 0.84 - ph.teteHaut * e, ph.l * e, ph.h * e);
+    } else {
+      const c = Math.min(ph.l, ph.h) * 0.72;
+      ctx.drawImage(ph.img, (ph.l - c) / 2, ph.h * 0.03, c, c, cx - r, cy - r, 2 * r, 2 * r);
+    }
+    ctx.restore();
+  }
+
+  function sombre(ctx, W, H, pub, fmt) {
+    const ph = photo(pub.photo);
+    const story = fmt === 'story';
+    const s = W / 1080;
+    const sig = pub.signature || SIGNATURE;
+
+    const g = ctx.createRadialGradient(W / 2, H * 0.45, 40, W / 2, H * 0.45, Math.max(W, H) * 0.75);
+    g.addColorStop(0, '#2C2532'); g.addColorStop(1, '#141017');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+
+    const ep = story ? 1.3 : 1;
+    eclat(ctx, 0, 0, 1, 1, 360 * s, 64 * s * ep, [C.violetNuit, C.violet, C.orange, C.bleu]);
+    eclat(ctx, W, 0, -1, 1, 280 * s, 64 * s * ep, [C.violetNuit, C.bleu, C.blanc]);
+    eclat(ctx, 0, H, 1, -1, 300 * s, 56 * s * ep, [C.blanc, C.orange, C.violet, C.bleu]);
+    // le coin bas droit reçoit un éclat quand le médaillon ne l'occupe pas
+    if (story || !ph) eclat(ctx, W, H, -1, -1, 240 * s, 56 * s * ep, [C.violetNuit, C.bleu, C.orange]);
+
+    // logo, dans sa pastille blanche
+    const lh = story ? 88 : 72;
+    const lw = lh * R.logo.naturalWidth / R.logo.naturalHeight;
+    const ly = story ? 200 : 58;
+    logo(ctx, (W - lw) / 2, ly, lh, true);
+
+    // médaillon et nom
+    const r = story ? 175 : fmt === 'portrait' ? 142 : 128;
+    const tn = story ? 34 : 26, tf = story ? 25 : 21;
+    let cx, cy;
+    if (story || !ph) { cx = W / 2; cy = story ? H - 370 - r : H - 52 - tn - tf * 1.6 - 18 - r; }
+    else { cx = W - 62 - r; cy = H - 52 - tn - tf * 1.6 - 18 - r; }
+    if (ph) medaillon(ctx, ph, cx, cy, r);
+    const nom = sig.nom || '', fonction = sig.fonction || '';
+    ctx.font = police(600, tn, TEXTE);
+    const ln = ctx.measureText(nom).width;
+    ctx.font = police(400, tf, TEXTE);
+    const lf = ctx.measureText(fonction).width;
+    const centre = Math.min(cx, W - 64 - Math.max(ln, lf) / 2);
+    const ny = ph ? cy + r + 18 + tn : (story ? H - 370 : H - 60 - tf * 1.6);
+    ctx.textBaseline = 'alphabetic';
+    ctx.font = police(600, tn, TEXTE); ctx.fillStyle = C.blanc;
+    ctx.fillText(nom, centre - ln / 2, ny);
+    ctx.font = police(400, tf, TEXTE); ctx.fillStyle = '#CFC6D6';
+    ctx.fillText(fonction, centre - lf / 2, ny + tf * 1.6);
+
+    // étiquette facultative et texte, centrés
+    const haut = ly + lh + (story ? 110 : 70);
+    const bas = !ph ? ny - tn - (story ? 160 : 90) : story ? cy - r - 90 : cy - r - (fmt === 'portrait' ? 80 : 50);
+    const boite = { x: story ? 80 : 100, l: W - (story ? 160 : 200), y: haut, h: bas - haut };
+    let dy = 0;
+    if (pub.etiquette) {
+      const te = story ? 24 : 19;
+      ctx.font = police(700, te, TITRE); ctx.fillStyle = C.orange;
+      dy = te * 2.4;
+      boite.y += dy; boite.h -= dy;
+    }
+    // un texte de un à trois mots s'écrit nettement plus grand
+    const court = typo(pub.texte).replace(/\*/g, '').split(/\s+/).filter(Boolean).length <= 3;
+    const max = (story ? 110 : fmt === 'portrait' ? 94 : 90) * (court ? 1.7 : 1);
+    const bloc = ajuster(ctx, pub.texte, boite, {
+      poids: 300, poidsRelief: 600, famille: TEXTE, min: 34, max, interligne: 1.3, soigne: true,
+    });
+    const ty = boite.y + (boite.h - bloc.hauteur) / 2;
+    if (pub.etiquette) {
+      const te = story ? 24 : 19;
+      ctx.font = police(700, te, TITRE); ctx.fillStyle = C.orange;
+      espace(ctx, typo(pub.etiquette).toUpperCase(), W / 2, ty - dy + te, te * 0.16, 'centre');
+    }
+    ecrire(ctx, bloc, boite.x, ty, {
+      couleur: '#F2EEF4', couleurRelief: C.blanc, relief: 'souligne', couleurSurligne: C.orange, aligner: 'centre', largeur: boite.l,
+    });
+  }
+
   // ───────────────────────── point d'entrée ─────────────────────────
 
   function dessiner(canvas, pub, o) {
@@ -836,7 +1047,7 @@
     const ctx = canvas.getContext('2d');
     ctx.setTransform(echelle, 0, 0, echelle, 0, 0);
     ctx.imageSmoothingQuality = 'high';
-    const modele = { citation, affiche, conseil }[pub.modele] || citation;
+    const modele = { citation, affiche, conseil, sombre }[pub.modele] || citation;
     modele(ctx, W, H, pub, fmt);
     return canvas;
   }

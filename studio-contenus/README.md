@@ -10,6 +10,7 @@ motivation** et **conseils pratiques**, aux couleurs de la charte AITE (violet
 | **Affiche** | une phrase courte de motivation, en grand, sur fond violet | lundi |
 | **Conseil** | un titre et 3 ou 4 conseils numérotés, applicables dès demain | mercredi |
 | **Citation** | une pensée du DG, entre guillemets, dans le panneau violet | vendredi |
+| **Fond sombre** | une pensée centrée en lettres fines sur fond sombre, le mot clé en gras souligné d'orange, la photo du DG en médaillon rond | au choix |
 
 Le week-end, le ton change (détente et sourire le samedi, repos le dimanche) avec
 les mêmes modèles et une étiquette adaptée : « Samedi détente », « Dimanche repos »…
@@ -90,7 +91,7 @@ Champs facultatifs : `serie` range la publication hors des semaines
 numérotées (ex. `"serie": "Week-end"`), `moment` indique l'heure conseillée
 (`"samedi 10h"`) ; tous deux apparaissent dans le studio et dans `CALENDRIER.md`.
 
-`modele` vaut `citation`, `affiche` ou `conseil` ; `photo` est le nom d'un
+`modele` vaut `citation`, `affiche`, `conseil` ou `sombre` ; `photo` est le nom d'un
 fichier de `assets/photos/` sans extension (`boubou`, `blazer`, `tunique`), ou
 `null`. Pour un conseil, remplir `titre`, `points` et `numero`, et laisser
 `texte` vide ; `"puces": "lettres"` affiche A, B, C, D au lieu de 01, 02, 03

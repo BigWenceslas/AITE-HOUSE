@@ -1,6 +1,6 @@
 ---
 name: contenus-aite
-description: Rédige et produit les visuels réseaux sociaux d'AITE Consulting signés par le Directeur Général avec sa photo — citations, affiches de motivation du lundi, conseils pratiques numérotés — au format carré, portrait ou story, avec la légende du post et les hashtags. À utiliser dès qu'il est question d'un post LinkedIn, Facebook ou Instagram d'AITE, d'une citation ou pensée du DG, d'une phrase de motivation, d'un conseil pratique à publier, du calendrier éditorial ou du studio de contenus : « fais une citation sur la délégation », « un conseil sur les sauvegardes », « prépare les posts de la semaine », « refais le visuel du mercredi en story ».
+description: Rédige et produit les visuels réseaux sociaux d'AITE Consulting signés par le Directeur Général avec sa photo — citations, affiches de motivation, conseils pratiques numérotés, pensées sur fond sombre avec photo ronde — au format carré, portrait ou story, avec la légende du post et les hashtags. À utiliser dès qu'il est question d'un post LinkedIn, Facebook ou Instagram d'AITE, d'une citation ou pensée du DG, d'une phrase de motivation, d'un conseil pratique à publier, du calendrier éditorial ou du studio de contenus : « fais une citation sur la délégation », « un conseil sur les sauvegardes », « prépare les posts de la semaine », « refais le visuel du mercredi en story ».
 ---
 
 # Contenus réseaux sociaux AITE
@@ -14,7 +14,9 @@ son moteur : ne pas dessiner de visuel à la main ni avec un autre outil.
    - `affiche` : une phrase de motivation, 18 à 75 caractères ;
    - `conseil` : `titre` de 20 à 58 caractères, 3 ou 4 `points` de 25 à 90 caractères
      commençant par un impératif (vouvoiement), `numero` = suivant du calendrier ;
-   - `citation` : une pensée du DG, 70 à 190 caractères.
+   - `citation` : une pensée du DG, 70 à 190 caractères ;
+   - `sombre` : même usage qu'une citation (une pensée, 40 à 190 caractères), en version
+     sobre sur fond sombre, photo du DG en médaillon rond.
    Mettre en relief 1 à 4 mots avec des astérisques simples, une seule fois par texte.
 2. Ajouter l'entrée à `studio-contenus/contenus/publications.json` (même structure
    que les autres, `id` du type `S11-lundi`, photo différente de la publication

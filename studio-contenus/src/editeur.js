@@ -212,7 +212,8 @@
   function remplir() {
     const p = etat.pub;
     $('etiquette').value = p.etiquette || '';
-    $('etiquette').placeholder = p.modele === 'citation' ? 'Ex. La pensée du vendredi' : 'Ex. ' + window.AITE.MODELES[p.modele].etiquette;
+    const exemple = p.modele === 'citation' ? 'La pensée du vendredi' : window.AITE.MODELES[p.modele].etiquette;
+    $('etiquette').placeholder = exemple ? 'Ex. ' + exemple : 'Facultative';
     $('texte').value = p.texte || '';
     $('titre').value = p.titre || '';
     $('points').value = (p.points || []).join('\n');
@@ -225,7 +226,7 @@
     $('hashtags').value = (p.hashtags || []).join(' ');
     $('zone-texte').style.display = p.modele === 'conseil' ? 'none' : '';
     $('zone-conseil').style.display = p.modele === 'conseil' ? '' : 'none';
-    $('zone-titre').style.display = p.modele === 'citation' ? 'none' : '';
+    $('zone-titre').style.display = p.modele === 'citation' || p.modele === 'sombre' ? 'none' : '';
     $('libelle-titre').textContent = p.modele === 'affiche' ? 'Accroche (facultative)' : 'Titre';
     $('aide-titre').style.display = p.modele === 'affiche' ? '' : 'none';
     if (p.photo && !window.AITE.photos[p.photo]) p.photo = premierePhoto();

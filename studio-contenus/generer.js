@@ -156,7 +156,7 @@ function ecrireCalendrier(publications, ext) {
   for (const x of publications) {
     if (groupeDe(x) !== groupe) { groupe = groupeDe(x); lignes.push('## ' + groupe, ''); }
     const titre = x.modele === 'conseil' ? x.titre : x.texte;
-    lignes.push('### ' + cap(x.moment || x.jour) + ' — ' + (x.modele === 'conseil' ? 'Conseil' : x.modele === 'affiche' ? 'Affiche' : 'Citation') + ' · ' + x.theme, '');
+    lignes.push('### ' + cap(x.moment || x.jour) + ' — ' + ({ conseil: 'Conseil', affiche: 'Affiche', citation: 'Citation', sombre: 'Fond sombre' }[x.modele] || 'Citation') + ' · ' + x.theme, '');
     lignes.push('![' + x.id + '](' + nomFichier(x, 'carre', ext) + ')', '');
     lignes.push('**Visuel :** ' + titre.replace(/\*/g, ''), '');
     if (x.modele === 'conseil') { x.points.forEach((pt, i) => lignes.push((i + 1) + '. ' + pt.replace(/\*/g, ''))); lignes.push(''); }
