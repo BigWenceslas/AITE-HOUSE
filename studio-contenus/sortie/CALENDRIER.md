@@ -686,3 +686,97 @@ Les grands leaders savent quand travailler et quand se ressourcer. Fais de ce we
 
 #Leadership #BonWeekEnd #Ressourcement #AITEConsulting
 ```
+
+## Lundi 26 octobre — produits et services
+
+### Lundi 9h — Conseil · AITE GMAO
+
+![PS-1](PS-1-conseil.jpg)
+
+**Visuel :** Climatiseurs, groupes : 4 règles contre la panne
+
+1. Recensez vos équipements et classez-les selon leur criticité.
+2. Donnez à chacun une périodicité d’entretien et un technicien responsable.
+3. Listez pour chaque passage les points à contrôler et les pièces à prévoir.
+4. Programmez l’intervention quelques jours avant l’échéance, pas le jour même.
+
+**Légende à publier :**
+
+```text
+Le climatiseur de la salle de réunion lâche en pleine chaleur, le groupe électrogène refuse de démarrer pendant une coupure. Souvent, l’entretien était prévu, mais personne n’a vu passer la date.
+
+Avec AITE GMAO, chaque équipement a sa fiche et ses plans de maintenance, ponctuels ou périodiques : technicien, instructions, points de contrôle, pièces requises. Chaque plan fixe combien de jours avant l’échéance l’intervention doit être créée, et le planning affiche les maintenances en retard et à venir.
+
+Pour combien de vos équipements connaissez-vous la date du prochain entretien ? Écrivez-nous à info@aite-consulting.com pour une démonstration.
+
+#AITEConsulting #GMAO #MaintenancePreventive #GestionDePatrimoine #Douala
+```
+
+### En réserve — Conseil · AITE House — Note de chambre (module aite_hotel_pos_link, Odoo 18)
+
+![PS-2](PS-2-conseil.jpg)
+
+**Visuel :** Note de chambre : 4 gestes pour ne rien perdre
+
+1. Identifiez le client par son nom, pas seulement par le numéro de chambre annoncé.
+2. Faites signer au client chaque bon porté sur sa chambre, daté et chiffré.
+3. Chaque soir, rapprochez les bons du bar des notes de séjour : aucun ne doit attendre.
+4. Remettez au client sa note détaillée la veille du départ, pour qu’il la vérifie.
+
+**Légende à publier :**
+
+```text
+Un client prend un verre au bar, demande de le « mettre sur la chambre », puis quitte l’hôtel tôt le lendemain. Le bon papier arrive à la réception après son départ. Il faut alors l’appeler pour réclamer la somme, ou y renoncer.
+
+Avec AITE House, le caissier du bar ou du restaurant sélectionne le client et encaisse sur le moyen de paiement « Note de chambre » : la consommation est reportée automatiquement sur le folio du séjour, puis réglée au départ avec les nuitées. Si le système ne trouve pas seul le bon séjour, le ticket entre dans la file « Notes de chambre en attente », que la réception traite. Rien ne se perd, rien ne se devine.
+
+Comment vos consommations passent-elles aujourd’hui du bar à la réception ? Pour une démonstration, écrivez-nous à info@aite-consulting.com.
+
+#AITEConsulting #Hotellerie #GestionHoteliere #Restauration #Odoo #Cameroun
+```
+
+### En réserve — Conseil · AITE Courrier
+
+![PS-3](PS-3-conseil.jpg)
+
+**Visuel :** Courrier entrant : 4 règles pour répondre à temps
+
+1. Fixez un délai de réponse pour chaque type de courrier et annoncez-le à vos équipes.
+2. Confiez chaque courrier à un seul responsable dès son enregistrement.
+3. Accusez réception à l’expéditeur en lui indiquant la référence attribuée.
+4. Relancez dès que le délai est dépassé, puis alertez le chef de service.
+
+**Légende à publier :**
+
+```text
+Un courrier resté sans réponse finit toujours par revenir : une relance de l’expéditeur, une réclamation, parfois un litige. Bien souvent, il attendait sur un bureau sans que personne ne le remarque.
+
+Dans AITE Courrier, chaque étape du circuit de traitement peut porter son propre délai. Une fois l’échéance dépassée, les personnes chargées de l’étape sont relancées ; si le retard persiste, la hiérarchie est alertée. L’expéditeur peut recevoir un accusé de réception automatique qui rappelle la référence attribuée, et le tableau de bord fait apparaître les courriers en retard.
+
+Combien de courriers attendent une réponse chez vous ce lundi ? Écrivez-nous à info@aite-consulting.com pour en parler.
+
+#AITEConsulting #GestionDuCourrier #DelaisDeReponse #Administration #Odoo
+```
+
+### En réserve — Conseil · Microsoft 365 (AITE, partenaire Microsoft autorisé au Cameroun : licences, cybersécurité, infogérance, audit SI)
+
+![PS-4](PS-4-conseil.jpg)
+
+**Visuel :** Microsoft 365 : 4 règles pour protéger vos comptes
+
+1. Activez la double authentification sur tous les comptes, direction comprise.
+2. Confiez les droits d’administrateur à quelques personnes, jamais à une seule.
+3. Changez le mot de passe et bloquez le compte d’un collaborateur le jour de son départ.
+4. Remplacez les mots de passe partagés par des boîtes aux lettres partagées.
+
+**Légende à publier :**
+
+```text
+Dans beaucoup d’entreprises, le mot de passe de la messagerie « comptabilité » circule entre plusieurs personnes, et le compte d’un ancien collaborateur reste ouvert après son départ. Un seul mot de passe volé suffit alors pour lire vos échanges avec vos clients et vos banques.
+
+Ces réglages existent déjà dans Microsoft 365 : encore faut-il les appliquer. AITE, partenaire Microsoft autorisé au Cameroun, fournit les licences Microsoft 365 et intervient en cybersécurité, en infogérance et en audit des systèmes d’information. Nous pouvons passer ces points en revue avec votre équipe et vous aider à les mettre en place.
+
+Qui détient aujourd’hui les droits d’administrateur chez vous ? Écrivez-nous à info@aite-consulting.com.
+
+#AITEConsulting #Microsoft365 #Cybersecurite #SecuriteInformatique #PME
+```
