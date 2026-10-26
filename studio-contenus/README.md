@@ -24,7 +24,8 @@ et LinkedIn mobile) et **story** 1080 × 1920.
 Le même studio produit aussi les visuels de **La Vérandah** (cave · lounge ·
 restaurant, Makepe, en face de l'église Sainte Monique) : ouvrir
 **`studio-verandah.html`**. Quatre modèles aux couleurs de ses affiches (crème,
-rouge vin, vert, écriture manuscrite et capitales condensées) :
+rouge vin, vert, écriture manuscrite et capitales condensées), plus une
+« Pensée » sur fond sombre avec la photo ronde du promoteur :
 
 | Modèle | Usage |
 |---|---|
@@ -32,11 +33,14 @@ rouge vin, vert, écriture manuscrite et capitales condensées) :
 | **Ambiance** | invitation, après le travail, week-end : fond de bar, logo dans un panneau blanc |
 | **La cave** | une sélection de bouteilles, prix facultatifs (`Produit \| 15 000 FCFA`) |
 | **Photo** | photo pleine page, titre en capitales fines, programme en bas (`18h : …`) |
+| **Pensée** | le modèle « fond sombre » d'AITE aux couleurs de La Vérandah : pensée centrée, mot clé souligné d'or, photo ronde et nom |
 
 Les publications sont dans `contenus/verandah.json`, les visuels dans
 `sortie/verandah/` (`node generer.js --marque verandah --format tous`). Les photos
 déposées dans `assets/verandah/photos/` (JPEG, PNG ou WebP) apparaissent dans le
-studio ; on peut aussi en importer une directement. La mention « L'abus d'alcool est
+studio, suivies des photos détourées du promoteur (pour la « Pensée ») ; on
+peut aussi en importer une directement. Le nom et la mention sous la photo ronde
+viennent du champ `signature` de `contenus/verandah.json`. La mention « L'abus d'alcool est
 dangereux pour la santé » s'ajoute d'office ; la décocher pour un visuel sans alcool.
 Le logo de `assets/verandah/logo/` est provisoire (extrait d'une affiche) : le
 remplacer par le fichier d'origine dès qu'il est disponible.

@@ -242,6 +242,8 @@
     const exemple = p.modele === 'citation' ? 'La pensée du vendredi' : window.AITE.MODELES[p.modele].etiquette;
     $('etiquette').placeholder = exemple ? 'Ex. ' + exemple : 'Facultative';
     const ch = champs(p.modele);
+    $('carte-signature').hidden = !(AITE_M || ch.signature);
+    if (ch.photoDG && !p.photo) p.photo = Object.keys(window.AITE.photos).find(k => window.AITE.photos[k].detouree) || null;
     for (const k of ['etiquette', 'titre', 'texte', 'points', 'puces', 'numero']) $('champ-' + k).style.display = ch[k] ? '' : 'none';
     for (const k of ['etiquette', 'titre', 'texte', 'points']) if (ch[k]) $('libelle-' + k).textContent = ch[k][0];
     $('aide-titre').style.display = p.modele === 'affiche' ? '' : 'none';

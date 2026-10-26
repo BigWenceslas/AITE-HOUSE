@@ -948,16 +948,16 @@
     ctx.restore();
   }
 
-  // Photo dans un médaillon rond, cerclé d'orange : tête et épaules.
-  function medaillon(ctx, ph, cx, cy, r) {
+  // Photo dans un médaillon rond, cerclé (orange pour AITE) : tête et épaules.
+  function medaillon(ctx, ph, cx, cy, r, th) {
     ctx.save();
     ctx.shadowColor = 'rgba(0,0,0,.45)'; ctx.shadowBlur = 30; ctx.shadowOffsetY = 8;
-    ctx.beginPath(); ctx.arc(cx, cy, r + 7, 0, Math.PI * 2); ctx.fillStyle = C.orange; ctx.fill();
+    ctx.beginPath(); ctx.arc(cx, cy, r + 7, 0, Math.PI * 2); ctx.fillStyle = th.anneau; ctx.fill();
     ctx.restore();
     ctx.save();
     ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.clip();
     const g = ctx.createRadialGradient(cx, cy - r * 0.3, r * 0.1, cx, cy, r * 1.1);
-    g.addColorStop(0, '#A8399F'); g.addColorStop(1, '#5A1A5E');
+    g.addColorStop(0, th.medaillon[0]); g.addColorStop(1, th.medaillon[1]);
     ctx.fillStyle = g; ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
     if (ph.detouree) {
       const e = (r * 2 * 0.60) / Math.max(1, ph.menton - ph.teteHaut);
@@ -969,48 +969,64 @@
     ctx.restore();
   }
 
-  function sombre(ctx, W, H, pub, fmt) {
+  // Couleurs, logo et polices du modèle « fond sombre » ; une autre marque
+  // passe son propre thème (voir rendu-verandah.js).
+  const THEME_SOMBRE = {
+    fond: ['#2C2532', '#141017'],
+    eclats: {
+      hg: [C.violetNuit, C.violet, C.orange, C.bleu], hd: [C.violetNuit, C.bleu, C.blanc],
+      bg: [C.blanc, C.orange, C.violet, C.bleu], bd: [C.violetNuit, C.bleu, C.orange],
+    },
+    logo: (ctx, cx, y, h) => logo(ctx, cx - h * R.logo.naturalWidth / R.logo.naturalHeight / 2, y, h, true),
+    logoH: [72, 88],
+    anneau: C.orange, medaillon: ['#A8399F', '#5A1A5E'],
+    famille: TEXTE, poids: 300, poidsRelief: 600, texte: '#F2EEF4', relief: C.blanc, souligne: C.orange,
+    etiquette: C.orange, nom: C.blanc, fonction: '#CFC6D6', storyBas: 370,
+  };
+
+  function sombre(ctx, W, H, pub, fmt, theme) {
+    const th = theme || THEME_SOMBRE;
     const ph = photo(pub.photo);
     const story = fmt === 'story';
     const s = W / 1080;
-    const sig = pub.signature || SIGNATURE;
+    const sig = pub.signature || th.signature || SIGNATURE;
 
     const g = ctx.createRadialGradient(W / 2, H * 0.45, 40, W / 2, H * 0.45, Math.max(W, H) * 0.75);
-    g.addColorStop(0, '#2C2532'); g.addColorStop(1, '#141017');
+    g.addColorStop(0, th.fond[0]); g.addColorStop(1, th.fond[1]);
     ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
 
     const ep = story ? 1.3 : 1;
-    eclat(ctx, 0, 0, 1, 1, 360 * s, 64 * s * ep, [C.violetNuit, C.violet, C.orange, C.bleu]);
-    eclat(ctx, W, 0, -1, 1, 280 * s, 64 * s * ep, [C.violetNuit, C.bleu, C.blanc]);
-    eclat(ctx, 0, H, 1, -1, 300 * s, 56 * s * ep, [C.blanc, C.orange, C.violet, C.bleu]);
+    eclat(ctx, 0, 0, 1, 1, 360 * s, 64 * s * ep, th.eclats.hg);
+    eclat(ctx, W, 0, -1, 1, 280 * s, 64 * s * ep, th.eclats.hd);
+    eclat(ctx, 0, H, 1, -1, 300 * s, 56 * s * ep, th.eclats.bg);
     // le coin bas droit reçoit un éclat quand le médaillon ne l'occupe pas
-    if (story || !ph) eclat(ctx, W, H, -1, -1, 240 * s, 56 * s * ep, [C.violetNuit, C.bleu, C.orange]);
+    if (story || !ph) eclat(ctx, W, H, -1, -1, 240 * s, 56 * s * ep, th.eclats.bd);
 
-    // logo, dans sa pastille blanche
-    const lh = story ? 88 : 72;
-    const lw = lh * R.logo.naturalWidth / R.logo.naturalHeight;
+    // logo en haut, au centre
+    const lh = story ? th.logoH[1] : th.logoH[0];
     const ly = story ? 200 : 58;
-    logo(ctx, (W - lw) / 2, ly, lh, true);
+    th.logo(ctx, W / 2, ly, lh);
 
     // médaillon et nom
     const r = story ? 175 : fmt === 'portrait' ? 142 : 128;
     const tn = story ? 34 : 26, tf = story ? 25 : 21;
     let cx, cy;
-    if (story || !ph) { cx = W / 2; cy = story ? H - 370 - r : H - 52 - tn - tf * 1.6 - 18 - r; }
+    if (story || !ph) { cx = W / 2; cy = story ? H - th.storyBas - r : H - 52 - tn - tf * 1.6 - 18 - r; }
     else { cx = W - 62 - r; cy = H - 52 - tn - tf * 1.6 - 18 - r; }
-    if (ph) medaillon(ctx, ph, cx, cy, r);
+    if (ph) medaillon(ctx, ph, cx, cy, r, th);
     const nom = sig.nom || '', fonction = sig.fonction || '';
-    ctx.font = police(600, tn, TEXTE);
+    ctx.font = police(600, tn, th.famille);
     const ln = ctx.measureText(nom).width;
-    ctx.font = police(400, tf, TEXTE);
+    ctx.font = police(400, tf, th.famille);
     const lf = ctx.measureText(fonction).width;
     const centre = Math.min(cx, W - 64 - Math.max(ln, lf) / 2);
-    const ny = ph ? cy + r + 18 + tn : (story ? H - 370 : H - 60 - tf * 1.6);
+    const ny = ph ? cy + r + 18 + tn : (story ? H - th.storyBas : H - 60 - tf * 1.6);
     ctx.textBaseline = 'alphabetic';
-    ctx.font = police(600, tn, TEXTE); ctx.fillStyle = C.blanc;
+    ctx.font = police(600, tn, th.famille); ctx.fillStyle = th.nom;
     ctx.fillText(nom, centre - ln / 2, ny);
-    ctx.font = police(400, tf, TEXTE); ctx.fillStyle = '#CFC6D6';
+    ctx.font = police(400, tf, th.famille); ctx.fillStyle = th.fonction;
     ctx.fillText(fonction, centre - lf / 2, ny + tf * 1.6);
+    if (th.apres) th.apres(ctx, W, H, pub, fmt, { ph, cx, cy, r, ny, tn, tf, story });
 
     // étiquette facultative et texte, centrés
     const haut = ly + lh + (story ? 110 : 70);
@@ -1019,7 +1035,6 @@
     let dy = 0;
     if (pub.etiquette) {
       const te = story ? 24 : 19;
-      ctx.font = police(700, te, TITRE); ctx.fillStyle = C.orange;
       dy = te * 2.4;
       boite.y += dy; boite.h -= dy;
     }
@@ -1027,16 +1042,16 @@
     const court = typo(pub.texte).replace(/\*/g, '').split(/\s+/).filter(Boolean).length <= 3;
     const max = (story ? 110 : fmt === 'portrait' ? 94 : 90) * (court ? 1.7 : 1);
     const bloc = ajuster(ctx, pub.texte, boite, {
-      poids: 300, poidsRelief: 600, famille: TEXTE, min: 34, max, interligne: 1.3, soigne: true,
+      poids: th.poids, poidsRelief: th.poidsRelief, famille: th.famille, min: 34, max, interligne: 1.3, soigne: true,
     });
     const ty = boite.y + (boite.h - bloc.hauteur) / 2;
     if (pub.etiquette) {
       const te = story ? 24 : 19;
-      ctx.font = police(700, te, TITRE); ctx.fillStyle = C.orange;
+      ctx.font = police(700, te, TITRE); ctx.fillStyle = th.etiquette;
       espace(ctx, typo(pub.etiquette).toUpperCase(), W / 2, ty - dy + te, te * 0.16, 'centre');
     }
     ecrire(ctx, bloc, boite.x, ty, {
-      couleur: '#F2EEF4', couleurRelief: C.blanc, relief: 'souligne', couleurSurligne: C.orange, aligner: 'centre', largeur: boite.l,
+      couleur: th.texte, couleurRelief: th.relief, relief: 'souligne', couleurSurligne: th.souligne, aligner: 'centre', largeur: boite.l,
     });
   }
 
@@ -1063,7 +1078,7 @@
     MODELES[cle] = definition;
     AUTRES[cle] = fonction;
   }
-  const outils = { police, typo, mots, ajuster, ecrire, rect, remplirRect, espace, largeurEspacee, tailleLigne, trame, photo, cadrer, silhouette };
+  const outils = { police, typo, mots, ajuster, ecrire, rect, remplirRect, espace, largeurEspacee, tailleLigne, trame, photo, cadrer, silhouette, sombre, THEME_SOMBRE };
 
   global.AITE = { C, FORMATS, MODELES, SIGNATURE, SITE, charger, preparerPhoto, dessiner, typo, photos: R.photos, logos: R.logos, enregistrer, outils };
 })(window);

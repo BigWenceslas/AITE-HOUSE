@@ -1,6 +1,6 @@
 ---
 name: contenus-verandah
-description: Rédige et produit les visuels réseaux sociaux de La Vérandah (cave · lounge · restaurant à Makepe, Douala) — vœux du mois, annonces, ambiance après le travail et week-end, mise en avant de la cave, photo pleine page avec programme — au format carré, portrait ou story, avec la légende et les hashtags. À utiliser dès qu'il est question d'une publication, d'une affiche, d'un flyer, d'un statut WhatsApp ou d'un post Facebook ou Instagram pour La Vérandah ou La Verandah : « fais un post pour la Verandah », « bon mois de décembre pour la Verandah », « mets nos whiskies en avant », « une affiche pour vendredi soir ».
+description: Rédige et produit les visuels réseaux sociaux de La Vérandah (cave · lounge · restaurant à Makepe, Douala) — vœux du mois, annonces, ambiance après le travail et week-end, mise en avant de la cave, photo pleine page avec programme, pensées du promoteur avec sa photo ronde — au format carré, portrait ou story, avec la légende et les hashtags. À utiliser dès qu'il est question d'une publication, d'une affiche, d'un flyer, d'un statut WhatsApp ou d'un post Facebook ou Instagram pour La Vérandah ou La Verandah : « fais un post pour la Verandah », « bon mois de décembre pour la Verandah », « mets nos whiskies en avant », « une affiche pour vendredi soir ».
 ---
 
 # Contenus de La Vérandah
@@ -12,7 +12,8 @@ Le studio est dans `studio-contenus/` (lire la section « La Vérandah » de son
 
 1. Choisir le modèle : `vd-annonce` (vœux, annonce), `vd-ambiance` (invitation,
    ambiance), `vd-carte` (sélection de la cave), `vd-photo` (photo pleine page et
-   programme). Champs et longueurs : voir les libellés du studio (`champs` de
+   programme), `vd-sombre` (pensée du promoteur sur fond sombre avec sa photo ronde :
+   `boubou`, `blazer` ou `tunique`). Champs et longueurs : voir les libellés du studio (`champs` de
    chaque modèle dans `src/rendu-verandah.js`).
 2. Ajouter l'entrée à `studio-contenus/contenus/verandah.json` (`id` du type
    `VD-JJ-MM-jour`, `alcool: false` pour un visuel qui ne parle pas d'alcool).

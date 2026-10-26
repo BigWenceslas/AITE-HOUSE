@@ -34,7 +34,8 @@ const MARQUES = {
     entete: 'assets/logo/aite-consulting.png', polices: ['space-grotesk', 'ibm-plex-sans'],
   },
   verandah: {
-    contenus: 'contenus/verandah.json', studio: 'studio-verandah.html', sortie: 'sortie/verandah', photos: 'assets/verandah/photos',
+    contenus: 'contenus/verandah.json', studio: 'studio-verandah.html', sortie: 'sortie/verandah',
+    photos: ['assets/verandah/photos', 'assets/photos'],   // photos du lieu, puis celles du promoteur (détourées)
     titre: 'Studio La Vérandah', sousTitre: 'Cave · Lounge · Restaurant — visuels pour les réseaux sociaux',
     entete: 'assets/verandah/logo/la-verandah.png', polices: ['oswald', 'great-vibes', 'montserrat', 'ibm-plex-sans', 'space-grotesk'],
   },
@@ -60,9 +61,9 @@ function ressources() {
   // Toute image détourée déposée dans assets/photos/ est proposée dans le studio.
   // reperes.json donne son nom et, si besoin, ses repères de cadrage ; sans
   // repères, le moteur les calcule lui-même à partir de la transparence.
-  const dossier = M.photos;
-  const reperes = fs.existsSync(p(dossier, 'reperes.json')) ? JSON.parse(fs.readFileSync(p(dossier, 'reperes.json'), 'utf8')) : {};
   const photos = {};
+  for (const dossier of [].concat(M.photos)) {
+  const reperes = fs.existsSync(p(dossier, 'reperes.json')) ? JSON.parse(fs.readFileSync(p(dossier, 'reperes.json'), 'utf8')) : {};
   const fichiers = fs.existsSync(p(dossier)) ? fs.readdirSync(p(dossier)).filter(f => /\.(webp|png|jpe?g)$/i.test(f)) : [];
   const ordre = Object.keys(reperes);
   fichiers.sort((a, b) => rang(ordre, a) - rang(ordre, b) || a.localeCompare(b));
@@ -73,6 +74,7 @@ function ressources() {
       nom: r.nom || cle, src: base64(p(dossier, f), /png$/i.test(f) ? 'image/png' : /webp$/i.test(f) ? 'image/webp' : 'image/jpeg'),
       reperes: r.teteHaut != null ? { teteHaut: r.teteHaut, menton: r.menton, visageX: r.visageX } : null,
     };
+  }
   }
   return {
     polices, photos,
@@ -141,9 +143,9 @@ async function genererVisuels(o) {
   }
   const { publications } = lirePublications();
   const liste = o.id ? publications.filter(x => o.id.includes(x.id)) : publications;
-  const photos = fs.existsSync(p(M.photos)) ? fs.readdirSync(p(M.photos)).map(f => f.replace(/\.(webp|png|jpe?g)$/i, '')) : [];
+  const photos = [].concat(M.photos).flatMap(d => fs.existsSync(p(d)) ? fs.readdirSync(p(d)).map(f => f.replace(/\.(webp|png|jpe?g)$/i, '')) : []);
   for (const x of liste) {
-    if (x.photo && !photos.includes(x.photo)) throw new Error(x.id + ' : photo « ' + x.photo + ' » absente de ' + M.photos + '/');
+    if (x.photo && !photos.includes(x.photo)) throw new Error(x.id + ' : photo « ' + x.photo + ' » absente de ' + [].concat(M.photos).join(' et ') + '/');
   }
   if (!liste.length) { console.error('Aucune publication ne correspond.'); process.exit(1); }
   const formats = o.format === 'tous' ? ['carre', 'portrait', 'story'] : [o.format];
@@ -189,7 +191,7 @@ function ecrireCalendrier(publications, ext) {
   for (const x of publications) {
     if (groupeDe(x) !== groupe) { groupe = groupeDe(x); lignes.push('## ' + groupe, ''); }
     const titre = [x.etiquette && x.modele.startsWith('vd-') ? x.etiquette : '', x.titre, x.texte].filter(Boolean).join(' — ');
-    const NOMS = { conseil: 'Conseil', affiche: 'Affiche', citation: 'Citation', sombre: 'Fond sombre', 'vd-annonce': 'Annonce', 'vd-ambiance': 'Ambiance', 'vd-carte': 'La cave', 'vd-photo': 'Photo pleine page' };
+    const NOMS = { conseil: 'Conseil', affiche: 'Affiche', citation: 'Citation', sombre: 'Fond sombre', 'vd-annonce': 'Annonce', 'vd-ambiance': 'Ambiance', 'vd-carte': 'La cave', 'vd-photo': 'Photo pleine page', 'vd-sombre': 'Pensée (photo ronde)' };
     lignes.push('### ' + cap(x.moment || x.jour) + ' — ' + (NOMS[x.modele] || 'Citation') + ' · ' + x.theme, '');
     lignes.push('![' + x.id + '](' + nomFichier(x, 'carre', ext) + ')', '');
     lignes.push('**Visuel :** ' + titre.replace(/\*/g, ''), '');

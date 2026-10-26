@@ -8,7 +8,7 @@
   'use strict';
 
   const A = global.AITE;
-  const { police, typo, ajuster, ecrire, rect, remplirRect, tailleLigne, photo } = A.outils;
+  const { police, typo, ajuster, ecrire, rect, remplirRect, tailleLigne, photo, sombre, THEME_SOMBRE } = A.outils;
 
   const VD = {
     rouge: '#9E1B2E', rougeFonce: '#6E1020', vert: '#1F6B3A', vertFonce: '#0E3522', vertVif: '#2E9E57',
@@ -439,6 +439,32 @@
     ctx.restore();
   }
 
+  // ───────────── 5. pensée (fond sombre, photo ronde du promoteur) ─────────────
+
+  // Le modèle « fond sombre » d'AITE, aux couleurs de La Vérandah.
+  const THEME = Object.assign({}, THEME_SOMBRE, {
+    fond: ['#2B1714', '#0E0706'],
+    eclats: {
+      hg: [VD.rougeFonce, VD.rouge, VD.or, VD.vert], hd: [VD.rougeFonce, VD.vert, VD.creme],
+      bg: [VD.creme, VD.or, VD.rouge, VD.vert], bd: [VD.rougeFonce, VD.vert, VD.or],
+    },
+    logo: (ctx, cx, y, h) => logoVd(ctx, cx, y, h, 'panneau'),
+    logoH: [128, 150],
+    anneau: VD.or, medaillon: ['#B32A40', '#5A0F1C'],
+    famille: MONT, poids: 300, poidsRelief: 700, texte: '#F6EFE6', relief: VD.blanc, souligne: VD.or,
+    etiquette: VD.or, nom: VD.blanc, fonction: '#E6D6C4', storyBas: 450,
+    signature: { nom: 'Cyrille Donald ABOLO', fonction: 'La Vérandah · Makepe' },
+    // mention santé : en bas à gauche à côté du médaillon, au-dessus du nom sans photo, hors zone couverte en story
+    apres: (ctx, W, H, pub, fmt, g) => {
+      if (!avecAlcool(pub)) return;
+      const t = g.story ? 23 : 19;
+      if (g.story) sante(ctx, W / 2, H - SURE_BAS - t * 1.4, { taille: t, largeur: W - 200, couleur: 'rgba(246,239,230,.85)', aligner: 'centre' });
+      else if (!g.ph) sante(ctx, W / 2, g.ny - g.tn - 64, { taille: t, largeur: W - 200, couleur: 'rgba(246,239,230,.85)', aligner: 'centre' });
+      else sante(ctx, 64, H - 112, { taille: t, largeur: g.cx - g.r - 110, couleur: 'rgba(246,239,230,.85)' });
+    },
+  });
+  const pensee = (ctx, W, H, pub, fmt) => sombre(ctx, W, H, pub, fmt, THEME);
+
   const M = 'verandah';
   A.enregistrer('vd-annonce', { nom: 'Annonce', marque: M, etiquette: '', champs: {
     titre: ['Ligne manuscrite', 40], texte: ['Grandes capitales (mots en relief en rouge)', 28], points: ['Petite ligne finale (facultative)'],
@@ -449,6 +475,9 @@
   A.enregistrer('vd-carte', { nom: 'La cave', court: 'La cave', marque: M, etiquette: 'Notre cave', champs: {
     etiquette: ['Ligne manuscrite'], titre: ['Titre en capitales', 28], points: ['Produits, un par ligne (prix facultatif après « | »)'], texte: ['Ligne finale (facultative)', 50],
   } }, carte);
+  A.enregistrer('vd-sombre', { nom: 'Pensée (photo ronde)', court: 'Pensée', marque: M, etiquette: '', champs: {
+    etiquette: ['Petit libellé (facultatif)'], texte: ['Pensée (mots clés entre astérisques)', 160], signature: true, photoDG: true,
+  } }, pensee);
   A.enregistrer('vd-photo', { nom: 'Photo pleine page', court: 'Photo', marque: M, etiquette: 'Vendredi soir', champs: {
     etiquette: ['Petit libellé en capitales'], titre: ['Titre en capitales (mots en gras entre astérisques)', 50], points: ['Programme, une ligne par étape (ex. « 18h : Apéritif »)'],
   } }, photoPleine);
