@@ -152,6 +152,134 @@
         "#Makepe"
       ],
       "alcool": false
+    },
+    {
+      "id": "VD-P1",
+      "serie": "Pensées du promoteur",
+      "jour": "",
+      "moment": "au choix",
+      "modele": "vd-sombre",
+      "theme": "L'accueil, premier geste",
+      "etiquette": "",
+      "titre": "",
+      "texte": "L'accueil n'est pas un geste de plus. C'est la *première saveur* que l'on sert à chaque table.",
+      "points": [],
+      "photo": "boubou",
+      "alcool": false,
+      "legende": "Avant toute commande, il y a un bonjour, un regard, une place que l'on vous indique avec soin. C'est là que commence l'art de recevoir, et nous y tenons.\n\nNous vous attendons à La Vérandah, à Makepe, en face de l'église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#ArtDeRecevoir",
+        "#Accueil",
+        "#Douala"
+      ]
+    },
+    {
+      "id": "VD-P2",
+      "serie": "Pensées du promoteur",
+      "jour": "",
+      "moment": "au choix",
+      "modele": "vd-sombre",
+      "theme": "Le sourire de l'équipe",
+      "etiquette": "",
+      "titre": "",
+      "texte": "Un service se mesure moins à sa rapidité qu'au *sourire sincère* qui l'accompagne.",
+      "points": [],
+      "photo": "blazer",
+      "alcool": false,
+      "legende": "Un service rapide, c'est bien. Un service souriant, c'est ce qui reste en mémoire. Notre équipe le sait, et c'est avec ce sourire-là qu'elle vous accueille à chaque visite.\n\nPassez nous dire bonjour à La Vérandah, à Makepe, en face de l'église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98 😊",
+      "hashtags": [
+        "#LaVerandah",
+        "#ServiceAvecLeSourire",
+        "#Equipe",
+        "#Douala"
+      ]
+    },
+    {
+      "id": "VD-P3",
+      "serie": "Pensées du promoteur",
+      "jour": "",
+      "moment": "au choix",
+      "modele": "vd-sombre",
+      "theme": "Le plaisir de se retrouver",
+      "etiquette": "",
+      "titre": "",
+      "texte": "J'aime ces soirées où des amis se *retrouvent* et oublient de regarder l'heure.",
+      "points": [],
+      "photo": "tunique",
+      "alcool": false,
+      "legende": "On court toute la semaine, on se promet de se voir, puis on remet à plus tard. Pourtant, rien ne vaut ces moments où l'on se retrouve enfin, autour d'une table, pour se raconter la vie.\n\nCes retrouvailles, nous aimons les accueillir. Donnez-vous rendez-vous à La Vérandah, à Makepe, en face de l'église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98 🤝",
+      "hashtags": [
+        "#LaVerandah",
+        "#Convivialite",
+        "#EntreAmis",
+        "#Retrouvailles",
+        "#Makepe"
+      ]
+    },
+    {
+      "id": "VD-P4",
+      "serie": "Pensées du promoteur",
+      "jour": "",
+      "moment": "au choix",
+      "modele": "vd-sombre",
+      "theme": "Prendre le temps",
+      "etiquette": "",
+      "titre": "",
+      "texte": "Ici, personne ne vous presse. Vous laisser *prendre votre temps* fait partie de l'accueil.",
+      "points": [],
+      "photo": "boubou",
+      "alcool": false,
+      "legende": "Pas de course, aucune pression pour libérer la table. Une fois installé, vous n'avez plus qu'à profiter : l'équipe veille à ce que rien ne vous manque.\n\nOffrez-vous ce luxe simple, du temps pour vous et pour ceux qui vous accompagnent. On vous attend à La Vérandah, à Makepe, en face de l'église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#PrendreLeTemps",
+        "#ArtDeRecevoir",
+        "#Douala"
+      ]
+    },
+    {
+      "id": "VD-P5",
+      "serie": "Pensées du promoteur",
+      "jour": "",
+      "moment": "au choix",
+      "modele": "vd-sombre",
+      "theme": "Savourer plutôt que se presser",
+      "etiquette": "",
+      "titre": "",
+      "texte": "Un bon verre se *savoure* sans hâte. Le vrai plaisir tient au moment partagé, jamais à la quantité.",
+      "points": [],
+      "photo": "blazer",
+      "alcool": true,
+      "legende": "Savourer, c'est d'abord ralentir. On s'assoit, on parle, on goûte sans se presser, et l'on apprécie surtout d'être ensemble. La modération fait partie du plaisir.\n\nRetrouvons-nous à La Vérandah, à Makepe, en face de l'église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98\nL'abus d'alcool est dangereux pour la santé. À consommer avec modération.",
+      "hashtags": [
+        "#LaVerandah",
+        "#Savourer",
+        "#PlaisirPartage",
+        "#Moderation",
+        "#Douala"
+      ]
+    },
+    {
+      "id": "VD-P6",
+      "serie": "Pensées du promoteur",
+      "jour": "",
+      "moment": "au choix",
+      "modele": "vd-sombre",
+      "theme": "Un lieu où l'on se sent bien",
+      "etiquette": "",
+      "titre": "",
+      "texte": "Mon plus beau compliment ? Un invité qui s'installe, respire et me dit qu'il se sent *comme chez lui*.",
+      "points": [],
+      "photo": "tunique",
+      "alcool": false,
+      "legende": "On peut soigner le décor, la carte, chaque détail. Mais ce qui fait vraiment un lieu, c'est ce qu'on y ressent en arrivant : la sensation d'être attendu et d'avoir trouvé sa place.\n\nC'est ce que nous cherchons à vous offrir chaque jour. Venez le ressentir à La Vérandah, à Makepe, en face de l'église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98 🏡",
+      "hashtags": [
+        "#LaVerandah",
+        "#CommeALaMaison",
+        "#SeSentirBien",
+        "#Makepe"
+      ]
     }
   ]
 }

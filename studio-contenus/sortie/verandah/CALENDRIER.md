@@ -130,3 +130,102 @@ Après le travail, entre amis ou en famille, prenez le temps de vous retrouver e
 
 #LaVerandah #BonMoisDeNovembre #Douala #Makepe
 ```
+
+## Pensées du promoteur
+
+### Au choix — Pensée (photo ronde) · L'accueil, premier geste
+
+![VD-P1](VD-P1-vd-sombre.jpg)
+
+**Visuel :** L'accueil n'est pas un geste de plus. C'est la première saveur que l'on sert à chaque table.
+
+**Légende à publier :**
+
+```text
+Avant toute commande, il y a un bonjour, un regard, une place que l'on vous indique avec soin. C'est là que commence l'art de recevoir, et nous y tenons.
+
+Nous vous attendons à La Vérandah, à Makepe, en face de l'église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #ArtDeRecevoir #Accueil #Douala
+```
+
+### Au choix — Pensée (photo ronde) · Le sourire de l'équipe
+
+![VD-P2](VD-P2-vd-sombre.jpg)
+
+**Visuel :** Un service se mesure moins à sa rapidité qu'au sourire sincère qui l'accompagne.
+
+**Légende à publier :**
+
+```text
+Un service rapide, c'est bien. Un service souriant, c'est ce qui reste en mémoire. Notre équipe le sait, et c'est avec ce sourire-là qu'elle vous accueille à chaque visite.
+
+Passez nous dire bonjour à La Vérandah, à Makepe, en face de l'église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98 😊
+
+#LaVerandah #ServiceAvecLeSourire #Equipe #Douala
+```
+
+### Au choix — Pensée (photo ronde) · Le plaisir de se retrouver
+
+![VD-P3](VD-P3-vd-sombre.jpg)
+
+**Visuel :** J'aime ces soirées où des amis se retrouvent et oublient de regarder l'heure.
+
+**Légende à publier :**
+
+```text
+On court toute la semaine, on se promet de se voir, puis on remet à plus tard. Pourtant, rien ne vaut ces moments où l'on se retrouve enfin, autour d'une table, pour se raconter la vie.
+
+Ces retrouvailles, nous aimons les accueillir. Donnez-vous rendez-vous à La Vérandah, à Makepe, en face de l'église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98 🤝
+
+#LaVerandah #Convivialite #EntreAmis #Retrouvailles #Makepe
+```
+
+### Au choix — Pensée (photo ronde) · Prendre le temps
+
+![VD-P4](VD-P4-vd-sombre.jpg)
+
+**Visuel :** Ici, personne ne vous presse. Vous laisser prendre votre temps fait partie de l'accueil.
+
+**Légende à publier :**
+
+```text
+Pas de course, aucune pression pour libérer la table. Une fois installé, vous n'avez plus qu'à profiter : l'équipe veille à ce que rien ne vous manque.
+
+Offrez-vous ce luxe simple, du temps pour vous et pour ceux qui vous accompagnent. On vous attend à La Vérandah, à Makepe, en face de l'église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #PrendreLeTemps #ArtDeRecevoir #Douala
+```
+
+### Au choix — Pensée (photo ronde) · Savourer plutôt que se presser
+
+![VD-P5](VD-P5-vd-sombre.jpg)
+
+**Visuel :** Un bon verre se savoure sans hâte. Le vrai plaisir tient au moment partagé, jamais à la quantité.
+
+**Légende à publier :**
+
+```text
+Savourer, c'est d'abord ralentir. On s'assoit, on parle, on goûte sans se presser, et l'on apprécie surtout d'être ensemble. La modération fait partie du plaisir.
+
+Retrouvons-nous à La Vérandah, à Makepe, en face de l'église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98
+L'abus d'alcool est dangereux pour la santé. À consommer avec modération.
+
+#LaVerandah #Savourer #PlaisirPartage #Moderation #Douala
+```
+
+### Au choix — Pensée (photo ronde) · Un lieu où l'on se sent bien
+
+![VD-P6](VD-P6-vd-sombre.jpg)
+
+**Visuel :** Mon plus beau compliment ? Un invité qui s'installe, respire et me dit qu'il se sent comme chez lui.
+
+**Légende à publier :**
+
+```text
+On peut soigner le décor, la carte, chaque détail. Mais ce qui fait vraiment un lieu, c'est ce qu'on y ressent en arrivant : la sensation d'être attendu et d'avoir trouvé sa place.
+
+C'est ce que nous cherchons à vous offrir chaque jour. Venez le ressentir à La Vérandah, à Makepe, en face de l'église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98 🏡
+
+#LaVerandah #CommeALaMaison #SeSentirBien #Makepe
+```
