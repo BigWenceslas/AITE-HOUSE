@@ -820,86 +820,104 @@ Vous débutez (0 à 2 ans d’expérience, stages compris) et vous aimez convain
 #Recrutement #Emploi #Douala #Cameroun #Commercial #VenteB2B #TransformationDigitale #Odoo #AITEConsulting
 ```
 
-## Mardi 27 octobre — motivation et conseil
+## Mardi 27 octobre
 
-### Mardi 7h30 — Affiche · motivation · Audit, conseil et gouvernance SI (audit ERP), en lien avec l'ERP Odoo, produit phare d'AITE. Angle : le dirigeant face à ses outils
+### Mardi 7h30 — Fond sombre · motivation · Intégration ERP Odoo : paramétrage des circuits et des seuils de validation ; porte d’entrée : Diagnostic Digital 360°
 
-![MAR-M1](MAR-M1-affiche.jpg)
+![MAR-1](MAR-1-sombre.jpg)
 
-**Visuel :** Le cahier tenu à côté du logiciel est votre premier audit.
+**Visuel :** Le jour du démarrage, votre ERP posera une question que l’entreprise n’a jamais tranchée : qui valide quoi, et jusqu’à quel montant. Tranchez-la avant.
 
 **Légende à publier :**
 
 ```text
-Le logiciel ne gère pas les remises ? On les note dans un cahier. L’état de stock est faux ? On recompte à la main en fin de mois. Personne ne l’a décidé, mais c’est devenu la méthode.
+Avant l’ERP, la validation se fait de vive voix : le DAF signe quand il est là, le DG décide au téléphone, le chef d’agence « arrange » en attendant. Le logiciel, lui, exige une règle écrite : qui approuve un bon de commande, à partir de quel montant, et qui remplace l’absent.
 
-Ces tâches refaites à côté du système ne sont pas des détails : chacune signale un écart entre l’outil et le travail réel. Ce mardi, demandez à chaque responsable de service la liste des tâches qu’il refait hors du logiciel. Cette liste est un bon point de départ pour un audit de votre ERP ou de votre système d’information, l’un des métiers d’AITE, afin d’établir si le problème vient du paramétrage, de la formation ou de l’outil lui-même.
+C’est souvent là qu’un projet ERP s’enlise dans une PME, à Douala comme à Yaoundé : pas sur l’installation, mais sur des circuits que personne n’a voulu trancher. Les pièces restent bloquées, les équipes contournent l’outil, et les validations repartent au téléphone. Écrivez vos seuils de validation et vos suppléants avant le premier paramétrage, pas pendant la formation.
 
-Quel cahier tient-on encore à côté du logiciel chez vous ? Écrivez-nous à info@aite-consulting.com.
+Vos circuits de validation sont-ils prêts pour un ERP ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98, ou par e-mail à info@aite-consulting.com.
 
-#AITEConsulting #AuditSI #ERP #Gestion #Dirigeant
+#AITEConsulting #ERP #Odoo #PME #Douala #Cameroun
 ```
 
-### En réserve — Fond sombre · motivation · Réseaux d’entreprise (liaison de secours), dans la famille « contrôle d’accès, réseaux, sécurité électronique, Starlink ». Le nom Starlink n’apparaît pas : son autorisation au Cameroun doit d’abord être confirmée par le DG
+### Mardi 12h — Conseil · conseil · Intégration ERP Odoo (et Sage 100) : paramétrage, reprise des données, formation, suivi après démarrage ; porte d’entrée : Diagnostic Digital 360°
 
-![MAR-M2](MAR-M2-sombre.jpg)
+![MAR-2](MAR-2-conseil.jpg)
 
-**Visuel :** Tant que toute l’entreprise tient sur une seule connexion, chaque coupure arrête tout le monde. Prévoyez la liaison de secours avant la prochaine.
+**Visuel :** Budget ERP : 4 postes que la licence ne couvre pas
+
+1. Chiffrez le paramétrage de vos circuits : ventes, achats, stock, validations.
+2. Prévoyez la reprise des données : articles, clients, soldes, stocks d’ouverture.
+3. Budgétez une formation par métier, pas une seule séance pour tout le monde.
+4. Exigez par écrit l’accompagnement après démarrage : durée, contacts, délais.
 
 **Légende à publier :**
 
 ```text
-Il est 10 h, la connexion tombe. Plus de messagerie, plus d’accès aux applications en ligne, et le client attend au comptoir pendant que l’équipe appelle le fournisseur d’accès.
+Comparer deux devis d’ERP sur le seul prix des licences, c’est comparer la partie visible. Le budget réel se joue dans le travail qui fait du logiciel le reflet de votre entreprise.
 
-On ne choisit pas le moment d’une coupure, mais on peut décider de ce qu’elle provoque. Une seconde liaison, chez un autre opérateur ou par satellite, permet de continuer à travailler pendant que la première est rétablie. AITE intervient sur les réseaux d’entreprise : nous pouvons étudier avec vous la liaison de secours adaptée à votre site.
+Le paramétrage traduit vos règles de gestion dans l’outil, circuits de validation compris. La reprise des données décide si le premier jour démarre sur des chiffres justes. La formation par métier évite que chacun contourne le système. L’accompagnement après démarrage couvre les premières clôtures, quand arrivent les vraies questions. Un devis qui ne détaille pas ces postes n’est pas moins cher : il reporte la dépense. Après plus de 15 déploiements Odoo, c’est notre règle : formation, guides illustrés et suivi après démarrage se prévoient dès le départ.
 
-Combien de temps votre équipe peut-elle travailler sans connexion ? Parlons-en au (+237) 656 80 10 98.
+Vous comparez des devis d’ERP pour votre PME au Cameroun ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
 
-#AITEConsulting #Reseaux #Connectivite #ContinuiteDActivite #PME
+#AITEConsulting #ERP #Odoo #PME #Douala #Cameroun
 ```
 
-### Mardi 12h — Conseil · AITE SI RH (RH et paie Afrique centrale, Odoo 18)
+### En réserve — Affiche · preuve · Gestion documentaire SharePoint sous Microsoft 365 ; porte d’entrée : Diagnostic Digital 360°
 
-![MAR-C1](MAR-C1-conseil.jpg)
+![MAR-3](MAR-3-affiche.jpg)
 
-**Visuel :** Paie : 4 contrôles avant de verser les salaires
-
-1. Arrêtez à date fixe les éléments variables : absences, heures supplémentaires, primes.
-2. Enregistrez embauches, départs et changements de salaire avant de lancer le calcul.
-3. Comparez la masse salariale au mois précédent et expliquez chaque écart.
-4. Faites relire la paie par une seconde personne avant le virement.
+**Visuel :** Atlantic Cocoa : délais de traitement −60 % avec SharePoint.
 
 **Légende à publier :**
 
 ```text
-Fin octobre, la paie se boucle souvent dans l’urgence, la veille du versement, entre les mains d’une seule personne. Une absence signalée après le calcul, une prime oubliée, un salarié parti mais toujours payé : l’erreur se découvre sur le bulletin.
+Le délai de traitement est le coût caché que tout dirigeant ressent : le client qui relance, le fournisseur qui attend, la décision qui glisse. Encore faut-il le mesurer.
 
-Ces quatre contrôles ne demandent aucun logiciel : une date d’arrêt et un second regard suffisent pour commencer. Quand la paie se fait encore sur un tableur, AITE SI RH, notre solution RH et paie sous Odoo 18, calcule la paie camerounaise (CNPS, IRPP, DIPE) et prépare bulletins, déclarations et virements groupés.
+AITE Consulting a accompagné Atlantic Cocoa sur sa gestion documentaire SharePoint, dans Microsoft 365. Résultat : délais de traitement −60 %. Avant tout projet, notez combien de jours prend une facture ou un contrat, de son arrivée à la décision : c’est votre point de départ, et la seule base pour prouver un gain.
 
-Qui relit la paie chez vous avant le virement ? Démonstration d’AITE SI RH sur rendez-vous : (+237) 656 80 10 98 ou info@aite-consulting.com.
+Vous voulez savoir où vos dossiers perdent du temps, à Douala ou ailleurs au Cameroun ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
 
-#AITEConsulting #Paie #RessourcesHumaines #GestionRH #Odoo #Cameroun
+#AITEConsulting #SharePoint #Microsoft365 #GestionDocumentaire #Douala #Cameroun
 ```
 
-### En réserve — Conseil · Caisse externe AITE : encaissements et décaissements hors point de vente (module th_caisse_externe, Odoo 18 Enterprise)
+### En réserve — Fond sombre · motivation · Réseaux d’entreprise multi-sites (Cisco/HP, WiFi, SD-WAN, connectivité satellitaire) et outils communs Microsoft 365 / ERP Odoo ; porte d’entrée : Diagnostic Digital 360°
 
-![MAR-C2](MAR-C2-conseil.jpg)
+![MAR-4](MAR-4-sombre.jpg)
 
-**Visuel :** Petite caisse : 4 règles pour justifier chaque sortie
-
-1. Faites valider toute dépense au-delà d’un montant fixé, avant de payer.
-2. Établissez pour chaque sortie un bon numéroté, montant en chiffres et en lettres.
-3. Exigez le reçu du fournisseur ; à défaut, faites signer le bénéficiaire sur le bon.
-4. Classez chaque dépense dans une rubrique fixée d’avance : transport, fournitures…
+**Visuel :** Un siège qui découvre les chiffres de ses agences en fin de mois ne les dirige pas. Il prend acte.
 
 **Légende à publier :**
 
 ```text
-Une avance pour le carburant, des fournitures achetées en urgence, une réparation payée en espèces : chaque sortie paraît petite. En fin de mois, la caisse a fondu et personne ne sait dire qui a autorisé quoi.
+Le siège est à Douala, l’agence à Yaoundé, le dépôt ailleurs. Chaque site tient ses fichiers, les chiffres remontent par e-mail en fin de mois, et l’écart se découvre trop tard pour être corrigé. Le problème n’est pas la distance : les sites ne partagent ni le même réseau ni les mêmes données.
 
-Dans Caisse externe, notre module pour Odoo 18 Enterprise, chaque dépense est saisie dans une catégorie qui porte son compte comptable. Activée sur une caisse, la validation soumet chaque opération au responsable désigné, et la feuille de caisse ne peut être confirmée qu’une fois tout approuvé. Le bon de décaissement s’imprime avec sa référence, le montant en lettres et trois cases de signature : caissier, bénéficiaire, superviseur.
+Relier ses sites, ce sont deux chantiers, dans cet ordre : d’abord une liaison fiable entre les agences, sinon chacun retourne à ses fichiers à la première coupure ; ensuite des outils communs où tout le monde saisit au même endroit. Côté outils : Microsoft 365 et l’ERP Odoo chez CAFRAD Cameroun, +45 % de collaboration inter-sites. Côté liaison : Zenithe Insurance nous a confié ses liaisons internet multi-sites Douala–Yaoundé.
 
-Chez vous, qui autorise les sorties d’espèces ? Démonstration sur demande : info@aite-consulting.com.
+Combien de jours vous faut-il pour connaître les chiffres de vos agences ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
 
-#AITEConsulting #Caisse #ControleInterne #Tresorerie #Odoo #PME
+#AITEConsulting #MultiSites #Reseaux #PME #Douala #Cameroun
+```
+
+### En réserve — Conseil · conseil · Infogérance, cloud & cybersécurité : infrastructures on-premise et cloud hybride supervisées 24/7 ; porte d’entrée : Diagnostic Digital 360°
+
+![MAR-5](MAR-5-conseil.jpg)
+
+**Visuel :** Infogérance : 4 points à exiger avant de signer
+
+1. Faites écrire le délai d’intervention garanti dans le contrat, pas dans l’offre.
+2. Exigez que les accès administrateur restent au nom de votre entreprise.
+3. Faites lister ce qui est supervisé, et surtout ce qui ne l’est pas.
+4. Prévoyez dès la signature la restitution de vos données et de la documentation.
+
+**Légende à publier :**
+
+```text
+Pour une PME de Douala ou de Yaoundé, confier son informatique à un prestataire est souvent une bonne décision. Le risque n’est pas l’externalisation, c’est le contrat flou. La panne arrive un samedi, ou vous voulez changer de prestataire, et vous découvrez que rien n’est écrit et que les mots de passe sont à son nom.
+
+Ces quatre points se négocient avant la signature, jamais après. Exigez-les de tout prestataire, AITE compris. Demandez aussi un exemple de rapport mensuel : incidents, délais tenus, risques encore ouverts. Un prestataire qui supervise vraiment vos serveurs 24/7, dans vos locaux ou dans le cloud, n’a aucune difficulté à vous le montrer.
+
+Votre contrat actuel respecte-t-il ces quatre points ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98, ou par e-mail à info@aite-consulting.com.
+
+#AITEConsulting #Infogerance #PME #DSI #Douala #Cameroun
 ```

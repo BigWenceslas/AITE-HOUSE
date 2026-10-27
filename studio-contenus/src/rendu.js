@@ -479,12 +479,13 @@
   }
 
   // Bulle de conversation (appel à l'action vers la messagerie)
-  function bulle(ctx, x, y, r, couleur) {
+  function bulle(ctx, x, y, r, couleur, points) {
     ctx.save();
     ctx.fillStyle = couleur;
     ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
     ctx.beginPath(); ctx.moveTo(x - r * 0.62, y + r * 0.5); ctx.lineTo(x - r * 1.02, y + r * 1.05); ctx.lineTo(x - r * 0.05, y + r * 0.9); ctx.fill();
-    ctx.globalCompositeOperation = 'destination-out';
+    // les trois points, de la couleur du fond de la pastille (sans percer l'image)
+    ctx.fillStyle = points;
     for (const d of [-0.42, 0, 0.42]) { ctx.beginPath(); ctx.arc(x + d * r, y, r * 0.13, 0, Math.PI * 2); ctx.fill(); }
     ctx.restore();
   }
@@ -497,7 +498,7 @@
     const h = t * 2.1, l = ctx.measureText(texte).width + t * 2.9;
     const x0 = o.centre ? x - l / 2 : x;
     remplirRect(ctx, x0, y - h / 2, l, h, h / 2, o.fond);
-    bulle(ctx, x0 + t * 1.25, y, t * 0.58, o.icone);
+    bulle(ctx, x0 + t * 1.25, y, t * 0.58, o.icone, o.fond);
     ctx.fillStyle = o.couleur; ctx.textBaseline = 'middle';
     ctx.fillText(texte, x0 + t * 2.2, y + 1);
     ctx.textBaseline = 'alphabetic';
