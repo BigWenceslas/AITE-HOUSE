@@ -8,6 +8,14 @@ description: Rédige et produit les visuels réseaux sociaux d'AITE Consulting s
 Le studio est dans `studio-contenus/` (lire son `README.md`). Tout visuel passe par
 son moteur : ne pas dessiner de visuel à la main ni avec un autre outil.
 
+**Avant d'écrire, lire `references/ligne-editoriale.md`** : la ligne tirée de la stratégie
+commerciale et marketing du DG. Elle prime sur les règles plus anciennes ci-dessous. En bref :
+écrire pour le décideur qui signe (coûts, délais, risques, comparatifs, preuves), enseigner
+quelque chose à chaque publication, citer uniquement les références et chiffres de la plaquette,
+et finir chaque légende par l'appel à l'action unique (Diagnostic Digital 360°, WhatsApp).
+Le DG a rejeté les publications « juste motivation » et les conseils génériques sans lien avec
+une décision d'achat.
+
 ## Produire une publication
 
 1. Rédiger selon les règles ci-dessous, en choisissant le modèle :
@@ -41,12 +49,14 @@ son moteur : ne pas dessiner de visuel à la main ni avec un autre outil.
   majuscules, phrases courtes, verbes d'action.
 - Citations **originales** : vérifier qu'aucune citation célèbre, aucun proverbe connu
   ni aucune formule d'un autre auteur n'est attribué au DG.
-- Aucun chiffre, statistique ou nom de client inventé ; pas de superlatifs, pas de
-  jargon (« synergie », « disruptif », « booster »), pas de clichés de développement
-  personnel. Conseils techniques exacts et prudents.
-- Légende : 350 à 750 caractères, 2 ou 3 paragraphes (accroche, situation vécue,
-  question ouverte), au plus un emoji ; au plus une légende sur trois mentionne AITE.
-  3 à 6 hashtags en CamelCase sans accents (`#AITEConsulting`, `#TransformationDigitale`).
+- Aucun chiffre, statistique ou nom de client inventé : seuls les références et chiffres
+  de la plaquette (liste dans `references/ligne-editoriale.md`) sont publiables. Pas de
+  superlatifs, pas de jargon (« synergie », « disruptif », « booster »), pas de clichés de
+  développement personnel, jamais « nous sommes leaders ». Conseils exacts et prudents.
+- Légende : 450 à 900 caractères en 3 paragraphes (ce que le décideur apprend, le concret
+  et la preuve, l'appel à l'action Diagnostic Digital 360° par WhatsApp), au plus un emoji.
+  4 à 6 hashtags en CamelCase sans accents, dont `#AITEConsulting` et un mot-clé local
+  (`#Douala`, `#Cameroun`).
 - Devise maison, citable telle quelle : « On ne vend pas de la technologie, on vend la
   fin d'un problème de gestion. »
 

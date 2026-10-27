@@ -162,6 +162,7 @@
     lier('nom', v => { etat.pub.signature.nom = v; });
     lier('fonction', v => { etat.pub.signature.fonction = v; });
     lier('site', v => { etat.pub.site = v; });
+    lier('appel', v => { etat.pub.appel = v; });
     lier('adresse', v => { etat.pub.adresse = v; etat.pub.adresseCourte = v; });
     lier('telephone', v => { etat.pub.telephone = v; });
     $('alcool').addEventListener('change', () => { etat.pub.alcool = $('alcool').checked; rendre(); });
@@ -255,6 +256,7 @@
     $('nom').value = (p.signature && p.signature.nom) || '';
     $('fonction').value = (p.signature && p.signature.fonction) || '';
     $('site').value = p.site || '';
+    $('appel').value = p.appel || '';
     $('adresse').value = p.adresse || COORD.adresse || '';
     $('telephone').value = p.telephone || COORD.telephone || '';
     $('alcool').checked = p.alcool !== false;

@@ -117,6 +117,9 @@ Une publication dans `contenus/publications.json` :
 Champs facultatifs : `serie` range la publication hors des semaines
 numérotées (ex. `"serie": "Week-end"`), `moment` indique l'heure conseillée
 (`"samedi 10h"`) ; tous deux apparaissent dans le studio et dans `CALENDRIER.md`.
+`appel` imprime l'appel à l'action dans une pastille en pied de visuel (affiche,
+conseil, fond sombre), par exemple `"Diagnostic 360° gratuit · WhatsApp 656 80 10 98"` :
+le visuel garde son appel même partagé seul, en statut WhatsApp. 50 caractères au plus.
 
 `modele` vaut `citation`, `affiche`, `conseil`, `sombre` ou `recrutement` ; `photo` est le nom d'un
 fichier de `assets/photos/` sans extension (`boubou`, `blazer`, `tunique`), ou

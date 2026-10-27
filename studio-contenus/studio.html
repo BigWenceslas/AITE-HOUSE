@@ -188,6 +188,8 @@
       <input type="text" id="fonction" />
       <label for="site">Site</label>
       <input type="text" id="site" />
+      <label for="appel">Appel à l'action (pied du visuel, facultatif)</label>
+      <input type="text" id="appel" placeholder="Diagnostic 360° gratuit · WhatsApp (+237) 656 80 10 98" />
     </section>
 
     <section class="carte orange">
@@ -704,6 +706,31 @@ window.AITE_MARQUE = {"cle":"aite","titre":"Studio de contenus","sousTitre":"Cit
     ctx.restore();
   }
 
+  // Bulle de conversation (appel à l'action vers la messagerie)
+  function bulle(ctx, x, y, r, couleur) {
+    ctx.save();
+    ctx.fillStyle = couleur;
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(x - r * 0.62, y + r * 0.5); ctx.lineTo(x - r * 1.02, y + r * 1.05); ctx.lineTo(x - r * 0.05, y + r * 0.9); ctx.fill();
+    ctx.globalCompositeOperation = 'destination-out';
+    for (const d of [-0.42, 0, 0.42]) { ctx.beginPath(); ctx.arc(x + d * r, y, r * 0.13, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+  }
+
+  // Appel à l'action (champ « appel ») : une pastille avec une bulle de conversation,
+  // ramenée à la largeur disponible ; y est le milieu de la pastille
+  function ligneAppel(ctx, texte, x, y, o) {
+    const t = tailleLigne(ctx, texte, 600, TEXTE, o.taille, o.largeur - o.taille * 2.9, 0);
+    ctx.font = police(600, t, TEXTE);
+    const h = t * 2.1, l = ctx.measureText(texte).width + t * 2.9;
+    const x0 = o.centre ? x - l / 2 : x;
+    remplirRect(ctx, x0, y - h / 2, l, h, h / 2, o.fond);
+    bulle(ctx, x0 + t * 1.25, y, t * 0.58, o.icone);
+    ctx.fillStyle = o.couleur; ctx.textBaseline = 'middle';
+    ctx.fillText(texte, x0 + t * 2.2, y + 1);
+    ctx.textBaseline = 'alphabetic';
+  }
+
   function globe(ctx, x, y, r, couleur) {
     ctx.save();
     ctx.strokeStyle = couleur; ctx.lineWidth = Math.max(1.5, r * 0.16);
@@ -1034,11 +1061,12 @@ window.AITE_MARQUE = {"cle":"aite","titre":"Studio de contenus","sousTitre":"Cit
     ctx.fillRect(boite.x, barreY, story ? 110 : 90, story ? 10 : 8);
 
     // signature : sous le texte en story, en pied sinon
-    const sy = story ? barreY + 60 : H - 130;
+    const sy = story ? barreY + 60 : H - (pub.appel ? 156 : 130);
     signature(ctx, sig, mx, sy, {
       hauteur: story ? 84 : 68, retrait: 18, largeur: story ? 520 : boite.l, tailleNom: story ? 34 : 27, tailleFonction: story ? 25 : 20,
       couleurNom: C.blanc, couleurFonction: C.mauveTexte,
     });
+    if (pub.appel) ligneAppel(ctx, typo(pub.appel), mx, sy + (story ? 84 + 56 : 68 + 36), { taille: story ? 27 : 20, largeur: story ? W - 2 * mx : boite.l, fond: C.blanc, icone: C.orange, couleur: C.violet });
   }
 
   // ───────────────────────── modèle « conseil » ─────────────────────────
@@ -1148,12 +1176,17 @@ window.AITE_MARQUE = {"cle":"aite","titre":"Studio de contenus","sousTitre":"Cit
       ctx.font = police(500, 24, TEXTE); ctx.fillStyle = C.mauveTexte; ctx.textBaseline = 'middle';
       globe(ctx, sx + 12, sy + 132, 12, C.mauveTexte);
       ctx.fillText(site, sx + 36, sy + 133);
+      // en story, l'appel à l'action prend toute la largeur, entre les points et le bloc violet
+      if (pub.appel) ligneAppel(ctx, typo(pub.appel), W / 2, bloc.y - 112, { taille: 29, largeur: W - 2 * mx, centre: true, fond: C.violet, icone: C.orange, couleur: C.blanc });
     } else {
       const sy = H - 150;
       signature(ctx, sig, mx, sy, { hauteur: 66, retrait: 18, largeur: ph ? 600 : W - mx * 2, tailleNom: 25, tailleFonction: 19, couleurNom: C.violet, couleurFonction: C.gris });
-      ctx.font = police(500, 19, TEXTE); ctx.fillStyle = C.gris; ctx.textBaseline = 'middle';
-      globe(ctx, mx + 10, sy + 100, 10, C.violet);
-      ctx.fillText(site, mx + 30, sy + 101);
+      if (pub.appel) ligneAppel(ctx, typo(pub.appel), mx - 4, sy + 102, { taille: 20, largeur: ph ? 620 : W - mx * 2, fond: C.violet, icone: C.orange, couleur: C.blanc });
+      else {
+        ctx.font = police(500, 19, TEXTE); ctx.fillStyle = C.gris; ctx.textBaseline = 'middle';
+        globe(ctx, mx + 10, sy + 100, 10, C.violet);
+        ctx.fillText(site, mx + 30, sy + 101);
+      }
     }
     ctx.textBaseline = 'alphabetic';
   }
@@ -1257,6 +1290,13 @@ window.AITE_MARQUE = {"cle":"aite","titre":"Studio de contenus","sousTitre":"Cit
     ctx.font = police(400, tf, th.famille); ctx.fillStyle = th.fonction;
     ctx.fillText(fonction, centre - lf / 2, ny + tf * 1.6);
     if (th.apres) th.apres(ctx, W, H, pub, fmt, { ph, cx, cy, r, ny, tn, tf, story });
+    if (pub.appel) {
+      // à gauche du médaillon, à hauteur du nom ; en story, entre le texte et le médaillon
+      // (le bas de la story est couvert par « Répondre ») ; sans photo, sous le nom
+      const cote = ph && !story;
+      const ya = cote ? ny + tf * 0.8 : story ? (ph ? cy - r : ny - tn) - 48 : ny + tf * 1.6 + 34;
+      ligneAppel(ctx, typo(pub.appel), cote ? 60 : W / 2, ya, { taille: story ? 27 : 20, largeur: cote ? cx - r - 60 - 30 : W - 160, centre: !cote, fond: th.etiquette || C.orange, icone: C.encre, couleur: C.encre });
+    }
 
     // étiquette facultative et texte, centrés
     const haut = ly + lh + (story ? 110 : 70);
@@ -2108,6 +2148,7 @@ window.AITE_MARQUE = {"cle":"aite","titre":"Studio de contenus","sousTitre":"Cit
     lier('nom', v => { etat.pub.signature.nom = v; });
     lier('fonction', v => { etat.pub.signature.fonction = v; });
     lier('site', v => { etat.pub.site = v; });
+    lier('appel', v => { etat.pub.appel = v; });
     lier('adresse', v => { etat.pub.adresse = v; etat.pub.adresseCourte = v; });
     lier('telephone', v => { etat.pub.telephone = v; });
     $('alcool').addEventListener('change', () => { etat.pub.alcool = $('alcool').checked; rendre(); });
@@ -2201,6 +2242,7 @@ window.AITE_MARQUE = {"cle":"aite","titre":"Studio de contenus","sousTitre":"Cit
     $('nom').value = (p.signature && p.signature.nom) || '';
     $('fonction').value = (p.signature && p.signature.fonction) || '';
     $('site').value = p.site || '';
+    $('appel').value = p.appel || '';
     $('adresse').value = p.adresse || COORD.adresse || '';
     $('telephone').value = p.telephone || COORD.telephone || '';
     $('alcool').checked = p.alcool !== false;
