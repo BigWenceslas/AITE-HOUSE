@@ -819,3 +819,87 @@ Vous débutez (0 à 2 ans d’expérience, stages compris) et vous aimez convain
 
 #Recrutement #Emploi #Douala #Cameroun #Commercial #VenteB2B #TransformationDigitale #Odoo #AITEConsulting
 ```
+
+## Mardi 27 octobre — motivation et conseil
+
+### Mardi 7h30 — Affiche · motivation · Audit, conseil et gouvernance SI (audit ERP), en lien avec l'ERP Odoo, produit phare d'AITE. Angle : le dirigeant face à ses outils
+
+![MAR-M1](MAR-M1-affiche.jpg)
+
+**Visuel :** Le cahier tenu à côté du logiciel est votre premier audit.
+
+**Légende à publier :**
+
+```text
+Le logiciel ne gère pas les remises ? On les note dans un cahier. L’état de stock est faux ? On recompte à la main en fin de mois. Personne ne l’a décidé, mais c’est devenu la méthode.
+
+Ces tâches refaites à côté du système ne sont pas des détails : chacune signale un écart entre l’outil et le travail réel. Ce mardi, demandez à chaque responsable de service la liste des tâches qu’il refait hors du logiciel. Cette liste est un bon point de départ pour un audit de votre ERP ou de votre système d’information, l’un des métiers d’AITE, afin d’établir si le problème vient du paramétrage, de la formation ou de l’outil lui-même.
+
+Quel cahier tient-on encore à côté du logiciel chez vous ? Écrivez-nous à info@aite-consulting.com.
+
+#AITEConsulting #AuditSI #ERP #Gestion #Dirigeant
+```
+
+### En réserve — Fond sombre · motivation · Réseaux d’entreprise (liaison de secours), dans la famille « contrôle d’accès, réseaux, sécurité électronique, Starlink ». Le nom Starlink n’apparaît pas : son autorisation au Cameroun doit d’abord être confirmée par le DG
+
+![MAR-M2](MAR-M2-sombre.jpg)
+
+**Visuel :** Tant que toute l’entreprise tient sur une seule connexion, chaque coupure arrête tout le monde. Prévoyez la liaison de secours avant la prochaine.
+
+**Légende à publier :**
+
+```text
+Il est 10 h, la connexion tombe. Plus de messagerie, plus d’accès aux applications en ligne, et le client attend au comptoir pendant que l’équipe appelle le fournisseur d’accès.
+
+On ne choisit pas le moment d’une coupure, mais on peut décider de ce qu’elle provoque. Une seconde liaison, chez un autre opérateur ou par satellite, permet de continuer à travailler pendant que la première est rétablie. AITE intervient sur les réseaux d’entreprise : nous pouvons étudier avec vous la liaison de secours adaptée à votre site.
+
+Combien de temps votre équipe peut-elle travailler sans connexion ? Parlons-en au (+237) 656 80 10 98.
+
+#AITEConsulting #Reseaux #Connectivite #ContinuiteDActivite #PME
+```
+
+### Mardi 12h — Conseil · AITE SI RH (RH et paie Afrique centrale, Odoo 18)
+
+![MAR-C1](MAR-C1-conseil.jpg)
+
+**Visuel :** Paie : 4 contrôles avant de verser les salaires
+
+1. Arrêtez à date fixe les éléments variables : absences, heures supplémentaires, primes.
+2. Enregistrez embauches, départs et changements de salaire avant de lancer le calcul.
+3. Comparez la masse salariale au mois précédent et expliquez chaque écart.
+4. Faites relire la paie par une seconde personne avant le virement.
+
+**Légende à publier :**
+
+```text
+Fin octobre, la paie se boucle souvent dans l’urgence, la veille du versement, entre les mains d’une seule personne. Une absence signalée après le calcul, une prime oubliée, un salarié parti mais toujours payé : l’erreur se découvre sur le bulletin.
+
+Ces quatre contrôles ne demandent aucun logiciel : une date d’arrêt et un second regard suffisent pour commencer. Quand la paie se fait encore sur un tableur, AITE SI RH, notre solution RH et paie sous Odoo 18, calcule la paie camerounaise (CNPS, IRPP, DIPE) et prépare bulletins, déclarations et virements groupés.
+
+Qui relit la paie chez vous avant le virement ? Démonstration d’AITE SI RH sur rendez-vous : (+237) 656 80 10 98 ou info@aite-consulting.com.
+
+#AITEConsulting #Paie #RessourcesHumaines #GestionRH #Odoo #Cameroun
+```
+
+### En réserve — Conseil · Caisse externe AITE : encaissements et décaissements hors point de vente (module th_caisse_externe, Odoo 18 Enterprise)
+
+![MAR-C2](MAR-C2-conseil.jpg)
+
+**Visuel :** Petite caisse : 4 règles pour justifier chaque sortie
+
+1. Faites valider toute dépense au-delà d’un montant fixé, avant de payer.
+2. Établissez pour chaque sortie un bon numéroté, montant en chiffres et en lettres.
+3. Exigez le reçu du fournisseur ; à défaut, faites signer le bénéficiaire sur le bon.
+4. Classez chaque dépense dans une rubrique fixée d’avance : transport, fournitures…
+
+**Légende à publier :**
+
+```text
+Une avance pour le carburant, des fournitures achetées en urgence, une réparation payée en espèces : chaque sortie paraît petite. En fin de mois, la caisse a fondu et personne ne sait dire qui a autorisé quoi.
+
+Dans Caisse externe, notre module pour Odoo 18 Enterprise, chaque dépense est saisie dans une catégorie qui porte son compte comptable. Activée sur une caisse, la validation soumet chaque opération au responsable désigné, et la feuille de caisse ne peut être confirmée qu’une fois tout approuvé. Le bon de décaissement s’imprime avec sa référence, le montant en lettres et trois cases de signature : caissier, bénéficiaire, superviseur.
+
+Chez vous, qui autorise les sorties d’espèces ? Démonstration sur demande : info@aite-consulting.com.
+
+#AITEConsulting #Caisse #ControleInterne #Tresorerie #Odoo #PME
+```
