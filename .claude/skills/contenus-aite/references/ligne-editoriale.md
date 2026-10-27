@@ -42,9 +42,11 @@ redeviennent ça, la stratégie cesse de fonctionner.
 
 ## L'appel à l'action unique
 
-- **Diagnostic Digital 360°** : 90 minutes, gratuit — l'appel à l'action répété partout.
+- **Diagnostic Digital 360°** : 90 minutes, gratuit — l'appel à l'action répété partout. Offre
+  lancée et annonçable publiquement (confirmé par le DG le 27 octobre 2026).
 - **WhatsApp** : la conversation commerciale se conclut sur WhatsApp au Cameroun ; chaque post
-  renvoie vers une conversation (compte WhatsApp Business d'AITE, jamais un téléphone personnel).
+  renvoie vers une conversation. Numéro WhatsApp d'AITE : **(+237) 656 80 10 98** (confirmé par
+  le DG). Pastille du visuel (champ `appel`) : « Diagnostic 360° gratuit · WhatsApp 656 80 10 98 ».
 - Offres d'entrée citées par la stratégie : Diagnostic 360°, **Pack Odoo Démarrage**, pilote Odoo
   cadré de 2 à 4 semaines. Ne pas annoncer de prix tant que la direction ne l'a pas fixé.
 - Mots-clés locaux dans les titres et légendes : Cameroun, Douala, Yaoundé, PME.
