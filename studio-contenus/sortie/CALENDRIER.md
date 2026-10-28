@@ -928,33 +928,33 @@ Votre contrat actuel respecte-t-il ces quatre points ? Diagnostic Digital 360° 
 
 ![ODOO20-1](ODOO20-1-conseil.jpg)
 
-**Visuel :** Odoo 20 : 4 nouveautés qui comptent au Cameroun
+**Visuel :** Odoo 20 : 4 nouveautés qui changent le quotidien
 
-1. Mode hors ligne : vos équipes saisissent et modifient même quand la connexion tombe.
+1. Mode hors ligne : vos équipes continuent à saisir et à modifier si la connexion tombe.
 2. Commissions : calculables sur l’encaissé, pour intéresser vos vendeurs au recouvrement.
-3. Paie : partez du net négocié avec le salarié, Odoo simule le salaire brut correspondant.
-4. Stock : un rapport d’ancienneté repère la marchandise qui dort et gèle la trésorerie.
+3. Paie : la RH part du net négocié avec le salarié et Odoo simule le brut correspondant.
+4. Stock : un rapport d’ancienneté repère les articles qui dorment et gèlent la trésorerie.
 
 **Légende à publier :**
 
 ```text
-La vitrine d’Odoo 20, sorti le 24 septembre, c’est l’IA. Pour une PME camerounaise, l’essentiel est ailleurs : les notes de version n’annoncent rien pour le Cameroun, l’OHADA ou le SYSCOHADA. Les gains viennent des améliorations générales, dont certaines collent à nos réalités : coupures de connexion, créances qui traînent, salaires souvent négociés en net, stocks qui dorment.
+La vitrine d’Odoo 20, sorti le 24 septembre, c’est l’IA, dont chaque fonction consomme des crédits achetés à part. Pour vos équipes, l’essentiel est souvent ailleurs : des améliorations discrètes qui touchent le travail quotidien, du commercial à la RH en passant par le magasin.
 
-Trois précautions. Les notes ne disent ni quelles applications fonctionnent hors ligne, ni comment se fait la synchronisation : testez avec vos équipes avant d’y compter. La simulation à partir du net suppose que vos règles de paie camerounaises soient paramétrées : Odoo 20 n’en annonce aucune. Et chaque fonction d’IA consomme des crédits achetés à part.
+Le mode hors ligne permet de continuer à travailler pendant une coupure ; les notes de version ne disent ni quelles applications sont concernées ni comment se fait la synchronisation : testez avant d’y compter. Les commissions peuvent suivre ce que le client a vraiment payé. En paie, Odoo simule le brut à partir du net, si vos règles de paie sont bien paramétrées. Le rapport d’ancienneté, lui, montre ce qui dort en stock depuis longtemps.
 
-Odoo 20 change-t-il quelque chose pour votre entreprise ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+Vous voulez voir Odoo 20 sur vos propres données ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
 
-#AITEConsulting #Odoo20 #ERP #PME #Douala #Cameroun
+#AITEConsulting #Odoo20 #ERP #Paie #GestionDeStock #ForceDeVente
 ```
 
-### En réserve — Conseil · nouveautés Odoo 20
+### Série Odoo 20 — Conseil · nouveautés Odoo 20
 
 ![ODOO20-2](ODOO20-2-conseil.jpg)
 
 **Visuel :** Odoo 20 : ce que votre PME doit préparer avant de migrer
 
 1. IA : toutes ses fonctions consomment des crédits achetés à part. Budgétez-les.
-2. Banque : chaque écriture bancaire doit venir d’une transaction. Procédures à revoir.
+2. Banque : chaque écriture bancaire doit venir d’une transaction. Revoyez vos procédures.
 3. Plan comptable : comptes parents au lieu des groupes de comptes. Revoyez vos états.
 4. Droits d’accès : leur mécanisme est simplifié. Vérifiez qui voit quoi avant de migrer.
 
@@ -963,9 +963,78 @@ Odoo 20 change-t-il quelque chose pour votre entreprise ? Diagnostic Digital 360
 ```text
 Pour une PME sur Odoo Online, passer à Odoo 20 n’est pas toujours un choix : la montée de version majeure y est obligatoire tous les deux ans et, sans action de votre part, Odoo la déclenche lui-même. Et Odoo 17 n’a plus de support standard depuis septembre 2026. La vraie question : qu’est-ce qui changera dans vos habitudes ?
 
-Commencez par une base de test, jamais par la production. Listez vos modules spécifiques : tant qu’ils ne sont pas adaptés à la version 20, la base ne peut pas migrer, et la migration incluse avec Enterprise ne couvre ni les modules hors contrat de maintenance ni le nettoyage des données. Formez les comptables aux statuts de paiement renommés. Chiffrez enfin les crédits d’IA et la hausse de 20 % du plan Custom annoncée par Odoo.
+Commencez par une base de test, jamais par la production. Listez vos modules spécifiques : tant qu’ils ne sont pas adaptés à la version 20, la base ne peut pas migrer, et le service de migration d’Odoo ne couvre ni les modules hors contrat de maintenance ni le nettoyage des données. Formez les comptables aux statuts de paiement renommés. Chiffrez enfin les crédits d’IA et la hausse de 20 % du plan Custom annoncée par Odoo.
 
 Vous envisagez de passer à Odoo 20 ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
 
-#AITEConsulting #Odoo20 #MigrationERP #DAF #Douala #Cameroun
+#AITEConsulting #Odoo20 #MigrationERP #Comptabilite #DAF #PME
+```
+
+### Série Odoo 20 — Conseil · nouveautés Odoo 20 · comptabilite
+
+![ODOO20-3](ODOO20-3-conseil.jpg)
+
+**Visuel :** Odoo 20 : 4 nouveautés pour les comptables
+
+1. Saisie des factures fournisseurs : lignes pré-remplies d’après vos factures passées.
+2. Doubles paiements évités : règlements non rapprochés déduits du montant dû.
+3. Notes de frais : plafond par poste, que le manager peut appliquer avant validation.
+4. Paiement en ligne par virement : confirmé automatiquement via les transactions bancaires.
+
+**Légende à publier :**
+
+```text
+Comptables et équipes finance, Odoo 20 est sorti le 24 septembre. L’IA fait la une, mais d’autres changements touchent votre quotidien : saisie, règlements, notes de frais, encaissements.
+
+À la saisie ou à l’import d’une facture fournisseur, Odoo propose produit, compte, taxe et répartition analytique d’après vos factures passées et le libellé, sans écraser vos saisies. L’assistant de paiement repère les règlements pas encore rapprochés de la banque et les déduit du montant dû, pour éviter les paiements en double. Vous pouvez fixer un montant maximal de frais par poste ; le manager peut y ramener une dépense avant de l’approuver. Et les paiements en ligne par virement sont confirmés automatiquement à partir des transactions bancaires.
+
+Vous voulez voir Odoo 20 sur vos propres données ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Odoo20 #Comptabilite #Finance #ERP
+```
+
+### Série Odoo 20 — Conseil · nouveautés Odoo 20 · ventes-operations
+
+![ODOO20-4](ODOO20-4-conseil.jpg)
+
+**Visuel :** Odoo 20 : 4 nouveautés pour vendeurs et magasiniers
+
+1. Marge modifiable : sur le devis, saisissez la marge voulue et le prix de vente suit.
+2. Stocks mini et maxi suggérés : Odoo les propose d’après la demande passée.
+3. Inventaire au scanner : cliquez sur le crayon et saisissez la quantité totale comptée.
+4. Recherche au point de vente : retrouvez une vente par son numéro de ticket ou de facture.
+
+**Légende à publier :**
+
+```text
+Odoo 20 est sorti le 24 septembre. On parle beaucoup d’IA, mais pour ceux qui font les devis, achètent, comptent le stock ou tiennent la caisse, cette version apporte aussi des changements discrets : des gestes en moins au quotidien.
+
+Au devis, le commercial modifie la marge sur la ligne et Odoo recalcule le prix de vente. Pour les règles de réapprovisionnement, Odoo propose des stocks mini et maxi d’après la demande passée, le nombre minimal de jours de stock souhaité et le rythme des commandes : l’acheteur garde la décision. En inventaire avec l’application Code-barres, le magasinier saisit directement le total compté d’un article. Et pour un échange ou une réclamation, le numéro du ticket ou de la facture permet de retrouver la vente.
+
+Vous voulez voir Odoo 20 sur vos propres données ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Odoo20 #ForceDeVente #GestionDesStocks #PointDeVente #Achats
+```
+
+### Série Odoo 20 — Conseil · nouveautés Odoo 20 · equipe
+
+![ODOO20-5](ODOO20-5-conseil.jpg)
+
+**Visuel :** Odoo 20 : 4 nouveautés pour toute l’équipe
+
+1. Partage mobile : un fichier du téléphone devient note de frais ou demande de congé.
+2. Questions sur un fichier : interrogez l’IA sur son contenu sans quitter l’aperçu.
+3. Appels dans Discussion : enregistrez-les et obtenez un résumé de ce qui a été dit.
+4. Filtres de date : reculez ou avancez d’un jour, d’une semaine ou d’un mois en un clic.
+
+**Légende à publier :**
+
+```text
+Odoo 20, sorti le 24 septembre, ne parle pas qu’aux dirigeants. Plusieurs nouveautés touchent les gestes de tous les jours, quel que soit votre métier.
+
+Depuis le téléphone, partagez un reçu ou un justificatif avec Odoo pour en faire une note de frais, une tâche ou une demande de congé. Pendant l’aperçu d’un document, posez vos questions à l’agent IA sur son contenu ; comme toutes les fonctions d’IA d’Odoo 20, cela nécessite des crédits. Les appels passés dans Discussion, la messagerie d’Odoo, peuvent être enregistrés, avec un résumé de ce qui a été dit pour ceux qui n’y étaient pas. Sur une liste filtrée « Aujourd’hui » ou « Ce mois-ci », des flèches dans la barre de recherche affichent la période d’avant ou d’après.
+
+Vous voulez voir Odoo 20 sur vos propres données ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#Odoo20 #AITEConsulting #TravailEnEquipe #Productivite #ERP
 ```

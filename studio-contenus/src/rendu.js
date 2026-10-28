@@ -909,7 +909,7 @@
     const points = (pub.points || []).filter(p => String(p).trim()).slice(0, 5);
     const n = Math.max(1, points.length);
     const py = tBoite.y + bt.hauteur + (story ? 60 : 40);
-    const basPoints = story ? bloc.y - 170 : H - 185;
+    const basPoints = story ? bloc.y - (pub.appel ? 200 : 170) : H - 185;
     const badge = story ? 64 : 52;
     const ecartMin = story ? 30 : 20;
     const textX = mx + badge + (story ? 28 : 22);
@@ -950,7 +950,11 @@
       globe(ctx, sx + 12, sy + 132, 12, C.mauveTexte);
       ctx.fillText(site, sx + 36, sy + 133);
       // en story, l'appel à l'action prend toute la largeur, entre les points et le bloc violet
-      if (pub.appel) ligneAppel(ctx, typo(pub.appel), W / 2, bloc.y - 112, { taille: 29, largeur: W - 2 * mx, centre: true, fond: C.violet, icone: C.orange, couleur: C.blanc });
+      // au-dessus de la tête quand elle dépasse du bloc, sans remonter sur les points
+      if (pub.appel) {
+        const ya = Math.max(basPoints + 36, Math.min(bloc.y - 112, pl ? pl.haut - 44 : Infinity));
+        ligneAppel(ctx, typo(pub.appel), W / 2, ya, { taille: 29, largeur: W - 2 * mx, centre: true, fond: C.violet, icone: C.orange, couleur: C.blanc });
+      }
     } else {
       const sy = H - 150;
       signature(ctx, sig, mx, sy, { hauteur: 66, retrait: 18, largeur: ph ? 600 : W - mx * 2, tailleNom: 25, tailleFonction: 19, couleurNom: C.violet, couleurFonction: C.gris });
