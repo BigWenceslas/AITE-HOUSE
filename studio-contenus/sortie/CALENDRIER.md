@@ -921,3 +921,51 @@ Votre contrat actuel respecte-t-il ces quatre points ? Diagnostic Digital 360° 
 
 #AITEConsulting #Infogerance #PME #DSI #Douala #Cameroun
 ```
+
+## Odoo 20
+
+### Mercredi 28 octobre — Conseil · nouveautés Odoo 20
+
+![ODOO20-1](ODOO20-1-conseil.jpg)
+
+**Visuel :** Odoo 20 : 4 nouveautés qui comptent au Cameroun
+
+1. Mode hors ligne : vos équipes saisissent et modifient même quand la connexion tombe.
+2. Commissions : calculables sur l’encaissé, pour intéresser vos vendeurs au recouvrement.
+3. Paie : partez du net négocié avec le salarié, Odoo simule le salaire brut correspondant.
+4. Stock : un rapport d’ancienneté repère la marchandise qui dort et gèle la trésorerie.
+
+**Légende à publier :**
+
+```text
+La vitrine d’Odoo 20, sorti le 24 septembre, c’est l’IA. Pour une PME camerounaise, l’essentiel est ailleurs : les notes de version n’annoncent rien pour le Cameroun, l’OHADA ou le SYSCOHADA. Les gains viennent des améliorations générales, dont certaines collent à nos réalités : coupures de connexion, créances qui traînent, salaires souvent négociés en net, stocks qui dorment.
+
+Trois précautions. Les notes ne disent ni quelles applications fonctionnent hors ligne, ni comment se fait la synchronisation : testez avec vos équipes avant d’y compter. La simulation à partir du net suppose que vos règles de paie camerounaises soient paramétrées : Odoo 20 n’en annonce aucune. Et chaque fonction d’IA consomme des crédits achetés à part.
+
+Odoo 20 change-t-il quelque chose pour votre entreprise ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Odoo20 #ERP #PME #Douala #Cameroun
+```
+
+### En réserve — Conseil · nouveautés Odoo 20
+
+![ODOO20-2](ODOO20-2-conseil.jpg)
+
+**Visuel :** Odoo 20 : ce que votre PME doit préparer avant de migrer
+
+1. IA : toutes ses fonctions consomment des crédits achetés à part. Budgétez-les.
+2. Banque : chaque écriture bancaire doit venir d’une transaction. Procédures à revoir.
+3. Plan comptable : comptes parents au lieu des groupes de comptes. Revoyez vos états.
+4. Droits d’accès : leur mécanisme est simplifié. Vérifiez qui voit quoi avant de migrer.
+
+**Légende à publier :**
+
+```text
+Pour une PME sur Odoo Online, passer à Odoo 20 n’est pas toujours un choix : la montée de version majeure y est obligatoire tous les deux ans et, sans action de votre part, Odoo la déclenche lui-même. Et Odoo 17 n’a plus de support standard depuis septembre 2026. La vraie question : qu’est-ce qui changera dans vos habitudes ?
+
+Commencez par une base de test, jamais par la production. Listez vos modules spécifiques : tant qu’ils ne sont pas adaptés à la version 20, la base ne peut pas migrer, et la migration incluse avec Enterprise ne couvre ni les modules hors contrat de maintenance ni le nettoyage des données. Formez les comptables aux statuts de paiement renommés. Chiffrez enfin les crédits d’IA et la hausse de 20 % du plan Custom annoncée par Odoo.
+
+Vous envisagez de passer à Odoo 20 ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Odoo20 #MigrationERP #DAF #Douala #Cameroun
+```
