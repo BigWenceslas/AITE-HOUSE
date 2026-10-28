@@ -75,3 +75,13 @@ Uniquement ces faits, tels qu'écrits (`documentation/AITE_HOUSE_plaquette_comme
 Les autres chiffres cités en exemple dans la stratégie (« une facture validée en 3 h au lieu de
 11 jours », « −60 % pour un exportateur », « 70 % des échecs ERP ») ne sont pas sourcés : ne pas les
 publier sans confirmation du DG.
+
+## Exception : la série « Nouveautés Odoo 20 »
+
+À la demande du DG (28 octobre 2026), les affiches sur les nouveautés d'Odoo 20 s'adressent aussi aux
+métiers (comptables, commerciaux, magasiniers, caissiers, RH, tous les utilisateurs), pas seulement aux
+dirigeants, et **sans contexte Cameroun** : ni Cameroun, ni Douala, ni OHADA dans les textes, pas de
+hashtag local. Chaque nouveauté citée doit figurer dans les notes de version officielles
+(https://www.odoo.com/odoo-20-release-notes) ; ne rien affirmer sur l'édition Community ou Enterprise.
+L'appel à l'action (Diagnostic 360°, WhatsApp) reste.
+
