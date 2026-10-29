@@ -1230,6 +1230,56 @@
         "#Productivite",
         "#ERP"
       ]
+    },
+    {
+      "id": "JEU-1",
+      "serie": "Jeudi 29 octobre",
+      "semaine": null,
+      "jour": "jeudi",
+      "moment": "jeudi 7h30",
+      "modele": "sombre",
+      "theme": "motivation · La double saisie dans Excel n’est pas de la résistance mais le signe d’un besoin",
+      "etiquette": "Motivation du jeudi",
+      "texte": "Une équipe qui ressaisit dans Excel ce qu’elle a déjà saisi dans l’ERP ne fait pas de zèle : elle *contourne un manque*. Ce jeudi, demandez-lui lequel.",
+      "titre": "",
+      "points": [],
+      "numero": null,
+      "photo": "blazer",
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "legende": "La double saisie passe pour de la prudence, ou pour de la résistance au changement. C’est souvent un symptôme : un état que l’ERP ne sort pas, un champ qui manque, un circuit mal paramétré, une formation trop rapide. Tant que ce manque n’est pas nommé, le fichier Excel reste la vraie référence et l’ERP devient une corvée de plus.\n\nAvant vendredi soir, réunissez ceux qui tiennent ces fichiers parallèles et posez une seule question : « Que trouvez-vous dans votre fichier que l’ERP ne vous donne pas ? » Notez chaque réponse, sans reprocher le fichier à personne. Souvent, le manque se comble par un rapport, un filtre ou un paramétrage, sans changer de logiciel.\n\nVos équipes travaillent-elles dans l’ERP, ou à côté ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Motivation",
+        "#ERP",
+        "#Odoo",
+        "#PME",
+        "#Douala"
+      ]
+    },
+    {
+      "id": "JEU-2",
+      "serie": "Jeudi 29 octobre",
+      "semaine": null,
+      "jour": "jeudi",
+      "moment": "jeudi 12h30",
+      "modele": "sombre",
+      "theme": "motivation · Un client à court de trésorerie paie d’abord les factures qu’on lui réclame : av",
+      "etiquette": "Motivation du jeudi",
+      "texte": "Une facture échue que personne ne réclame rejoint, chez votre client, la pile *qui peut attendre*. Ce jeudi, avant la paie d’octobre, réclamez-la.",
+      "titre": "",
+      "points": [],
+      "numero": null,
+      "photo": "boubou",
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "legende": "Un client à court de trésorerie ne règle pas ses fournisseurs dans l’ordre des échéances : il arbitre. Les factures qu’on lui réclame passent devant, celles que personne ne suit glissent d’une semaine à l’autre. Or les salaires se paient avec ce qui est encaissé, pas avec ce qui est facturé.\n\nAvant vendredi soir, sortez la liste des factures échues, classez-les par montant et appelez vous-même les plus importantes : un appel du dirigeant pèse plus qu’un énième rappel par e-mail. Puis tranchez une question : qui relance, et à quel moment ? Dans un ERP bien paramétré, l’échéancier clients se consulte à tout instant et les relances suivent des étapes fixées d’avance, au lieu de dépendre de la mémoire de chacun.\n\nSavez-vous, ce soir, ce que vos clients vous doivent ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Motivation",
+        "#Tresorerie",
+        "#Odoo",
+        "#PME",
+        "#Cameroun"
+      ]
     }
   ]
 }

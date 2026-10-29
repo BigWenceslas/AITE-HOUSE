@@ -1038,3 +1038,41 @@ Vous voulez voir Odoo 20 sur vos propres données ? Diagnostic Digital 360° gra
 
 #Odoo20 #AITEConsulting #TravailEnEquipe #Productivite #ERP
 ```
+
+## Jeudi 29 octobre
+
+### Jeudi 7h30 — Fond sombre · motivation · La double saisie dans Excel n’est pas de la résistance mais le signe d’un besoin
+
+![JEU-1](JEU-1-sombre.jpg)
+
+**Visuel :** Une équipe qui ressaisit dans Excel ce qu’elle a déjà saisi dans l’ERP ne fait pas de zèle : elle contourne un manque. Ce jeudi, demandez-lui lequel.
+
+**Légende à publier :**
+
+```text
+La double saisie passe pour de la prudence, ou pour de la résistance au changement. C’est souvent un symptôme : un état que l’ERP ne sort pas, un champ qui manque, un circuit mal paramétré, une formation trop rapide. Tant que ce manque n’est pas nommé, le fichier Excel reste la vraie référence et l’ERP devient une corvée de plus.
+
+Avant vendredi soir, réunissez ceux qui tiennent ces fichiers parallèles et posez une seule question : « Que trouvez-vous dans votre fichier que l’ERP ne vous donne pas ? » Notez chaque réponse, sans reprocher le fichier à personne. Souvent, le manque se comble par un rapport, un filtre ou un paramétrage, sans changer de logiciel.
+
+Vos équipes travaillent-elles dans l’ERP, ou à côté ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Motivation #ERP #Odoo #PME #Douala
+```
+
+### Jeudi 12h30 — Fond sombre · motivation · Un client à court de trésorerie paie d’abord les factures qu’on lui réclame : av
+
+![JEU-2](JEU-2-sombre.jpg)
+
+**Visuel :** Une facture échue que personne ne réclame rejoint, chez votre client, la pile qui peut attendre. Ce jeudi, avant la paie d’octobre, réclamez-la.
+
+**Légende à publier :**
+
+```text
+Un client à court de trésorerie ne règle pas ses fournisseurs dans l’ordre des échéances : il arbitre. Les factures qu’on lui réclame passent devant, celles que personne ne suit glissent d’une semaine à l’autre. Or les salaires se paient avec ce qui est encaissé, pas avec ce qui est facturé.
+
+Avant vendredi soir, sortez la liste des factures échues, classez-les par montant et appelez vous-même les plus importantes : un appel du dirigeant pèse plus qu’un énième rappel par e-mail. Puis tranchez une question : qui relance, et à quel moment ? Dans un ERP bien paramétré, l’échéancier clients se consulte à tout instant et les relances suivent des étapes fixées d’avance, au lieu de dépendre de la mémoire de chacun.
+
+Savez-vous, ce soir, ce que vos clients vous doivent ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Motivation #Tresorerie #Odoo #PME #Cameroun
+```

@@ -280,6 +280,50 @@
         "#SeSentirBien",
         "#Makepe"
       ]
+    },
+    {
+      "id": "VD-JEU-1",
+      "serie": "Jeudi 29 octobre",
+      "jour": "jeudi",
+      "moment": "jeudi 16h30",
+      "modele": "vd-sombre",
+      "theme": "motivation du jeudi",
+      "etiquette": "Bon jeudi",
+      "titre": "",
+      "texte": "Une semaine se termine mieux quand on l'a portée à plusieurs. Pensez à remercier *ceux qui ont tenu* avec vous.",
+      "points": [],
+      "photo": "tunique",
+      "alcool": false,
+      "legende": "Derrière chaque semaine réussie, il y a un collègue qui a donné un coup de main, un proche qui a patienté, un ami qui a appelé au bon moment. Un merci sincère, dit en face, vaut plus qu'un long message.\n\nVenez le leur dire à La Vérandah, à Makepe, en face de l'église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#Gratitude",
+        "#BonJeudi"
+      ]
+    },
+    {
+      "id": "VD-JEU-2",
+      "serie": "Jeudi 29 octobre",
+      "jour": "jeudi",
+      "moment": "jeudi 7h30",
+      "modele": "vd-sombre",
+      "theme": "motivation du jeudi",
+      "etiquette": "Pensée du jeudi",
+      "titre": "",
+      "texte": "Le jeudi, on est tenté de bâcler pour aller plus vite. Pourtant, on ne se repose vraiment qu'après *un travail bien fini*.",
+      "points": [],
+      "photo": "blazer",
+      "alcool": false,
+      "legende": "Quand la semaine pèse, on a envie d'expédier les dernières tâches. Prenez plutôt le temps de les terminer avec soin : c'est ce qui permet ensuite de souffler l'esprit tranquille, sans rien laisser traîner derrière soi.\n\nPour ce moment de répit, nous vous attendons à La Vérandah, à Makepe, en face de l'église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#TravailBienFait",
+        "#BonJeudi"
+      ]
     }
   ]
 }

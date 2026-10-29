@@ -229,3 +229,37 @@ C'est ce que nous cherchons à vous offrir chaque jour. Venez le ressentir à La
 
 #LaVerandah #CommeALaMaison #SeSentirBien #Makepe
 ```
+
+## Jeudi 29 octobre
+
+### Jeudi 16h30 — Pensée (photo ronde) · motivation du jeudi
+
+![VD-JEU-1](VD-JEU-1-vd-sombre.jpg)
+
+**Visuel :** Bon jeudi — Une semaine se termine mieux quand on l'a portée à plusieurs. Pensez à remercier ceux qui ont tenu avec vous.
+
+**Légende à publier :**
+
+```text
+Derrière chaque semaine réussie, il y a un collègue qui a donné un coup de main, un proche qui a patienté, un ami qui a appelé au bon moment. Un merci sincère, dit en face, vaut plus qu'un long message.
+
+Venez le leur dire à La Vérandah, à Makepe, en face de l'église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #Douala #Makepe #Gratitude #BonJeudi
+```
+
+### Jeudi 7h30 — Pensée (photo ronde) · motivation du jeudi
+
+![VD-JEU-2](VD-JEU-2-vd-sombre.jpg)
+
+**Visuel :** Pensée du jeudi — Le jeudi, on est tenté de bâcler pour aller plus vite. Pourtant, on ne se repose vraiment qu'après un travail bien fini.
+
+**Légende à publier :**
+
+```text
+Quand la semaine pèse, on a envie d'expédier les dernières tâches. Prenez plutôt le temps de les terminer avec soin : c'est ce qui permet ensuite de souffler l'esprit tranquille, sans rien laisser traîner derrière soi.
+
+Pour ce moment de répit, nous vous attendons à La Vérandah, à Makepe, en face de l'église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #Douala #Makepe #TravailBienFait #BonJeudi
+```
