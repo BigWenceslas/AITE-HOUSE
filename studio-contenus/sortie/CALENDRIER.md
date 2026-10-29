@@ -1076,3 +1076,131 @@ Savez-vous, ce soir, ce que vos clients vous doivent ? Diagnostic Digital 360° 
 
 #AITEConsulting #Motivation #Tresorerie #Odoo #PME #Cameroun
 ```
+
+## Citations célèbres
+
+### Au choix — Fond sombre · citation · Abraham Lincoln (lettre à Isham Reavis, 5 novembre 1855)
+
+![CIT-1](CIT-1-sombre.jpg)
+
+**Visuel :** « Gardez toujours à l'esprit que votre propre résolution de réussir est plus importante que toute autre chose. »
+
+**Légende à publier :**
+
+```text
+« Gardez toujours à l’esprit que votre propre résolution de réussir est plus importante que toute autre chose. » Abraham Lincoln donnait ce conseil le 5 novembre 1855, dans une lettre à Isham Reavis.
+
+Dans une entreprise, la résolution du dirigeant se lit moins dans ses discours que dans ce qu’il protège quand tout presse. Un objectif annoncé puis jamais relu en réunion devient vite, pour l’équipe, une option parmi d’autres. Cette semaine, écrivez en une ligne l’objectif qui compte le plus d’ici le 31 décembre, affichez-le, et ouvrez chaque réunion d’équipe par deux minutes sur son avancement.
+
+Votre objectif de fin d’année est-il suivi, ou seulement annoncé ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Motivation #Citation #Leadership #Objectifs #Douala
+```
+
+### Au choix — Fond sombre · citation · Theodore Roosevelt (discours « The Strenuous Life », Chicago, 10 avril 1899)
+
+![CIT-2](CIT-2-sombre.jpg)
+
+**Visuel :** « Il est dur d'échouer, mais il est pire de n'avoir jamais tenté de réussir. »
+
+**Légende à publier :**
+
+```text
+« Il est dur d’échouer, mais il est pire de n’avoir jamais tenté de réussir. » Theodore Roosevelt a prononcé ces mots à Chicago, le 10 avril 1899, dans son discours « The Strenuous Life ».
+
+Une équipe qui voit chaque erreur sanctionnée cesse vite de proposer : elle exécute, et les améliorations attendent. Le risque se maîtrise mieux par la taille de l’essai que par l’absence d’essai. Reprenez une idée restée dans un tiroir, testez-la sur un seul service pendant deux semaines, fixez d’avance le critère qui dira si elle marche, puis décidez sur ce résultat.
+
+Quel projet repoussez-vous faute d’un premier essai ? Parlons-en lors d’un Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Motivation #Citation #Management #Innovation #Cameroun
+```
+
+### Au choix — Fond sombre · citation · Charlie Chaplin (Histoire de ma vie (My Autobiography), 1964)
+
+![CIT-3](CIT-3-sombre.jpg)
+
+**Visuel :** « L'obstination est le chemin de la réussite. »
+
+**Légende à publier :**
+
+```text
+« L’obstination est le chemin de la réussite. » Charlie Chaplin l’écrit dans Histoire de ma vie (My Autobiography), parue en 1964.
+
+L’obstination utile porte sur l’objectif, pas sur la méthode. Beaucoup de projets internes ne s’arrêtent pas sur un échec : ils s’éteignent quand l’enthousiasme du lancement retombe et que plus personne n’en demande des nouvelles. Pour le projet qui traîne chez vous, fixez un rendez-vous de quinze minutes, chaque semaine à la même heure, avec deux questions : qu’est-ce qui a avancé, et qu’est-ce qui bloque ?
+
+Un projet de gestion s’essouffle dans votre entreprise ? Diagnostic Digital 360° gratuit (90 min) : contactez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Motivation #Citation #GestionDeProjet #Perseverance #Douala
+```
+
+### Au choix — Fond sombre · citation · Albert Einstein (entretien avec Samuel J. Woolf, The New York Times Magazine, 18 août 1929)
+
+![CIT-4](CIT-4-sombre.jpg)
+
+**Visuel :** « Si A est la réussite dans la vie, alors A = X + Y + Z : X, c'est le travail ; Y, c'est le jeu ; et Z, c'est savoir tenir sa langue. »
+
+**Légende à publier :**
+
+```text
+« Si A est la réussite dans la vie, alors A = X + Y + Z : X, c’est le travail ; Y, c’est le jeu ; et Z, c’est savoir tenir sa langue. » Albert Einstein a livré cette formule à Samuel J. Woolf, dans un entretien publié par The New York Times Magazine le 18 août 1929.
+
+Pour un dirigeant, tenir sa langue est d’abord une méthode de réunion : quand le chef parle en premier, l’équipe s’aligne sur son avis et les objections restent dans le couloir. À votre prochaine réunion de décision, posez le sujet en une minute, puis laissez chacun s’exprimer avant vous. Vous déciderez avec des informations que vous n’auriez pas eues autrement.
+
+Une décision informatique à préparer ? Diagnostic Digital 360° gratuit (90 min) : un message WhatsApp au (+237) 656 80 10 98 suffit.
+
+#AITEConsulting #Motivation #Citation #Leadership #PriseDeDecision #Cameroun
+```
+
+### Au choix — Fond sombre · citation · Herbert Bayard Swope (journaliste américain, rédacteur en chef du New York World, prix Pulitzer ; prop)
+
+![CIT-5](CIT-5-sombre.jpg)
+
+**Visuel :** « Je ne peux pas vous donner la formule du succès, mais je peux vous donner celle de l'échec : essayez de plaire à tout le monde. »
+
+**Légende à publier :**
+
+```text
+« Je ne peux pas vous donner la formule du succès, mais je peux vous donner celle de l’échec : essayez de plaire à tout le monde. » Herbert Bayard Swope, journaliste américain, rédacteur en chef du New York World et prix Pulitzer, a tenu ces propos en 1950 lors d’un dîner en son honneur ; on les prête souvent, à tort, à Benjamin Franklin.
+
+Dans un projet informatique, vouloir satisfaire chaque demande de chaque service produit un cahier des charges sans fin, des délais qui glissent et un outil compliqué pour tous. Avant votre prochain chantier, classez les demandes en deux colonnes, indispensable et souhaitable, puis refusez par écrit, en expliquant pourquoi, au moins une demande de la seconde.
+
+Vos priorités tiennent-elles sur une page ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Motivation #Citation #Priorites #GestionDeProjet #PME
+```
+
+### Au choix — Fond sombre · citation · Alfred de Musset (Barberine, comédie, acte I, scène 4 (réplique d’un personnage))
+
+![CIT-6](CIT-6-sombre.jpg)
+
+**Visuel :** « Pour réussir dans le monde, retenez bien ces trois maximes : voir, c'est savoir ; vouloir, c'est pouvoir ; oser, c'est avoir. »
+
+**Légende à publier :**
+
+```text
+« Pour réussir dans le monde, retenez bien ces trois maximes : voir, c’est savoir ; vouloir, c’est pouvoir ; oser, c’est avoir. » Alfred de Musset prête ces mots à un personnage de sa comédie Barberine (acte I, scène 4).
+
+Des trois maximes, la première conditionne les deux autres : on ne décide bien que sur ce que l’on voit. Un dirigeant qui doit attendre la fin du mois, ou appeler trois personnes, pour connaître sa trésorerie ou ses impayés pilote avec un temps de retard. Notez les trois chiffres que vous voulez lire chaque lundi matin, puis comptez combien vous en obtenez sans rien demander à personne.
+
+Combien de vos chiffres clés voyez-vous sans attendre ? Diagnostic Digital 360° gratuit (90 min) : envoyez-nous un message WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Motivation #Citation #Pilotage #TableauDeBord #Douala
+```
+
+### Au choix — Fond sombre · citation · Steve Jobs (discours aux diplômés de l’université Stanford, juin 2005 (« Your time is limite)
+
+![CIT-7](CIT-7-sombre.jpg)
+
+**Visuel :** « Votre temps est limité, ne le gâchez pas à vivre la vie de quelqu'un d'autre. »
+
+**Légende à publier :**
+
+```text
+« Votre temps est limité, ne le gâchez pas à vivre la vie de quelqu’un d’autre. » Steve Jobs s’adressait ainsi aux diplômés de l’université Stanford, en juin 2005 : « Your time is limited, so don’t waste it living someone else’s life. »
+
+Pour un dirigeant, vivre la vie de quelqu’un d’autre, c’est souvent passer ses journées dans les urgences des autres : valider des dépenses courantes, refaire un calcul, répondre à la place d’un collaborateur. Ouvrez votre agenda de la semaine passée et comptez les heures consacrées à vos propres priorités. Puis réservez-leur deux heures fixes la semaine prochaine et confiez à un membre de l’équipe une tâche que vous faites encore par habitude.
+
+Où passe le temps de votre direction ? Diagnostic Digital 360° gratuit (90 min) : réservez le vôtre sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Motivation #Citation #GestionDuTemps #Delegation #Cameroun
+```

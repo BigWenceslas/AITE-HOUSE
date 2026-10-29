@@ -263,3 +263,101 @@ Pour ce moment de répit, nous vous attendons à La Vérandah, à Makepe, en fac
 
 #LaVerandah #Douala #Makepe #TravailBienFait #BonJeudi
 ```
+
+## Citations
+
+### Au choix — Pensée (photo ronde) · citation · Albert Einstein (lettre à son fils Eduard, 5 février 1930)
+
+![VD-CIT-1](VD-CIT-1-vd-sombre.jpg)
+
+**Visuel :** Citation — « Il en va de l'homme comme de la bicyclette : ce n'est qu'en roulant qu'il peut garder aisément l'équilibre. »
+
+**Légende à publier :**
+
+```text
+« Il en va de l'homme comme de la bicyclette : ce n'est qu'en roulant qu'il peut garder aisément l'équilibre. » — Albert Einstein, dans une lettre à son fils Eduard (1930). Avancer, même à petit rythme, c'est déjà trouver son équilibre.
+
+Le temps d'une pause, retrouvez-nous à La Vérandah, à Makepe, en face de l'église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98.
+
+#LaVerandah #Douala #Makepe #Motivation #CitationDuJour
+```
+
+### Au choix — Pensée (photo ronde) · citation · Guillaume Apollinaire (Les Mamelles de Tirésias, prologue, 1917)
+
+![VD-CIT-2](VD-CIT-2-vd-sombre.jpg)
+
+**Visuel :** Citation — « Il est grand temps de rallumer les étoiles. »
+
+**Légende à publier :**
+
+```text
+« Il est grand temps de rallumer les étoiles. » — Guillaume Apollinaire, prologue des Mamelles de Tirésias (1917). Chacun porte en soi une petite lumière : à nous de la faire briller de nouveau, pour soi et pour ceux qu'on aime.
+
+Nous vous attendons à La Vérandah, à Makepe, en face de l'église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98.
+
+#LaVerandah #Douala #Makepe #Inspiration #CitationDuJour
+```
+
+### Au choix — Pensée (photo ronde) · citation · Henry David Thoreau (Walden ou la Vie dans les bois, 1854, conclusion)
+
+![VD-CIT-3](VD-CIT-3-vd-sombre.jpg)
+
+**Visuel :** Citation — « Si l'on avance avec confiance dans la direction de ses rêves […], on rencontrera un succès inattendu en temps ordinaire. »
+
+**Légende à publier :**
+
+```text
+« Si l'on avance avec confiance dans la direction de ses rêves […], on rencontrera un succès inattendu en temps ordinaire. » — Henry David Thoreau, Walden ou la Vie dans les bois (1854). Vos rêves méritent qu'on leur fasse confiance, un pas après l'autre.
+
+Pour souffler entre deux étapes, La Vérandah vous accueille à Makepe, en face de l'église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98.
+
+#LaVerandah #Douala #Makepe #Confiance #CitationDuJour
+```
+
+### Au choix — Pensée (photo ronde) · citation · Jacques Salomé (Le Courage d’être soi, 1999)
+
+![VD-CIT-4](VD-CIT-4-vd-sombre.jpg)
+
+**Visuel :** Citation — « Ose ta vie car toi seul(e) la vivras. »
+
+**Légende à publier :**
+
+```text
+« Ose ta vie car toi seul(e) la vivras. » — Jacques Salomé, Le Courage d'être soi (1999). Personne ne peut écrire votre histoire à votre place : prenez-en la plume avec audace et douceur.
+
+Nous serons heureux de vous recevoir à La Vérandah, à Makepe, en face de l'église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98.
+
+#LaVerandah #Douala #Makepe #Audace #CitationDuJour
+```
+
+### Au choix — Pensée (photo ronde) · citation · Sénèque (Lettres à Lucilius, lettre 104)
+
+![VD-CIT-5](VD-CIT-5-vd-sombre.jpg)
+
+**Visuel :** Citation — « Ce n'est pas parce que les choses sont difficiles que nous n'osons pas, c'est parce que nous n'osons pas qu'elles sont difficiles. »
+
+**Légende à publier :**
+
+```text
+« Ce n'est pas parce que les choses sont difficiles que nous n'osons pas, c'est parce que nous n'osons pas qu'elles sont difficiles. » — Sénèque, Lettres à Lucilius (lettre 104). Le premier pas allège souvent la route : osez-le dès aujourd'hui.
+
+Passez nous voir à La Vérandah, à Makepe, en face de l'église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98.
+
+#LaVerandah #Douala #Makepe #Oser #CitationDuJour
+```
+
+### Au choix — Pensée (photo ronde) · citation · Platon (Les Lois, livre I (trad. Victor Cousin))
+
+![VD-CIT-6](VD-CIT-6-vd-sombre.jpg)
+
+**Visuel :** Citation — « La première et la plus excellente des victoires est celle qu'on remporte sur soi-même. »
+
+**Légende à publier :**
+
+```text
+« La première et la plus excellente des victoires est celle qu'on remporte sur soi-même. » — Platon, Les Lois, livre I. Chaque jour offre une occasion de se dépasser un peu, sans bruit et sans se comparer aux autres.
+
+Venez savourer vos petites victoires à La Vérandah, à Makepe, en face de l'église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98.
+
+#LaVerandah #Douala #Makepe #Depassement #CitationDuJour
+```
