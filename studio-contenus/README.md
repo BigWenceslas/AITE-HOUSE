@@ -120,6 +120,9 @@ numérotées (ex. `"serie": "Week-end"`), `moment` indique l'heure conseillée
 `appel` imprime l'appel à l'action dans une pastille en pied de visuel (affiche,
 conseil, fond sombre), par exemple `"Diagnostic 360° gratuit · WhatsApp 656 80 10 98"` :
 le visuel garde son appel même partagé seul, en statut WhatsApp. 50 caractères au plus.
+`auteur` (fond sombre et Pensée de La Vérandah) ajoute « — Auteur » sous le texte : pour
+une citation célèbre, qu'on ne prête jamais au signataire. Vérifier l'attribution avant
+de publier (beaucoup de citations de motivation circulent sous un faux nom).
 
 `modele` vaut `citation`, `affiche`, `conseil`, `sombre` ou `recrutement` ; `photo` est le nom d'un
 fichier de `assets/photos/` sans extension (`boubou`, `blazer`, `tunique`), ou

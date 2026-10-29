@@ -34,3 +34,5 @@ Le studio est dans `studio-contenus/` (lire la section « La Vérandah » de son
 - Ton chaleureux et convivial, français naturel de Douala, sans superlatif mensonger.
   Ce n'est pas AITE Consulting : pas de mention d'AITE ni de son DG.
 - Hashtags : #LaVerandah, #Douala, #Makepe…, en CamelCase sans accents.
+- Citation célèbre : modèle `vd-sombre` avec le champ `auteur` (« — Jean de La Fontaine »),
+  seulement si l'attribution est confirmée par une source fiable ; jamais prêtée au promoteur.

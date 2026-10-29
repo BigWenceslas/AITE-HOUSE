@@ -144,6 +144,10 @@
         <label for="texte"><span id="libelle-texte">Texte affiché</span> <span class="compteur" id="c-texte"></span></label>
         <textarea id="texte" rows="5"></textarea>
       </div>
+      <div id="champ-auteur">
+        <label for="auteur"><span id="libelle-auteur">Auteur</span></label>
+        <input type="text" id="auteur" placeholder="Ex. Nelson Mandela" />
+      </div>
       <div id="champ-points">
         <label for="points"><span id="libelle-points">Points (un par ligne, 3 ou 4)</span></label>
         <textarea id="points" rows="6"></textarea>
@@ -1316,10 +1320,17 @@ window.AITE_MARQUE = {"cle":"verandah","titre":"Studio La Vérandah","sousTitre"
     // un texte de un à trois mots s'écrit nettement plus grand
     const court = typo(pub.texte).replace(/\*/g, '').split(/\s+/).filter(Boolean).length <= 3;
     const max = (story ? 110 : fmt === 'portrait' ? 94 : 90) * (court ? 1.7 : 1);
-    const bloc = ajuster(ctx, pub.texte, boite, {
+    // citation d'un auteur : une ligne « — Auteur » sous le texte, pour ne pas la prêter au signataire
+    const ta = story ? 32 : 26, ha = pub.auteur ? ta * 2.4 : 0;
+    const bloc = ajuster(ctx, pub.texte, { ...boite, h: boite.h - ha }, {
       poids: th.poids, poidsRelief: th.poidsRelief, famille: th.famille, min: 34, max, interligne: 1.3, soigne: true,
     });
-    const ty = boite.y + (boite.h - bloc.hauteur) / 2;
+    const ty = boite.y + (boite.h - bloc.hauteur - ha) / 2;
+    if (pub.auteur) {
+      ctx.font = police(600, ta, th.famille); ctx.fillStyle = th.etiquette; ctx.textBaseline = 'alphabetic';
+      const a = '— ' + typo(pub.auteur), la = ctx.measureText(a).width;
+      ctx.fillText(a, W / 2 - la / 2, ty + bloc.hauteur + ta * 1.75);
+    }
     if (pub.etiquette) {
       const te = story ? 24 : 19;
       ctx.font = police(700, te, TITRE); ctx.fillStyle = th.etiquette;
@@ -1982,7 +1993,7 @@ window.AITE_MARQUE = {"cle":"verandah","titre":"Studio La Vérandah","sousTitre"
     etiquette: ['Ligne manuscrite'], titre: ['Titre en capitales', 28], points: ['Produits, un par ligne (prix facultatif après « | »)'], texte: ['Ligne finale (facultative)', 50],
   } }, carte);
   A.enregistrer('vd-sombre', { nom: 'Pensée (photo ronde)', court: 'Pensée', marque: M, etiquette: '', champs: {
-    etiquette: ['Petit libellé (facultatif)'], texte: ['Pensée (mots clés entre astérisques)', 160], signature: true, photoDG: true,
+    etiquette: ['Petit libellé (facultatif)'], texte: ['Pensée (mots clés entre astérisques)', 160], auteur: ['Auteur, pour une citation célèbre (facultatif)'], signature: true, photoDG: true,
   } }, pensee);
   A.enregistrer('vd-photo', { nom: 'Photo pleine page', court: 'Photo', marque: M, etiquette: 'Vendredi soir', champs: {
     etiquette: ['Petit libellé en capitales'], titre: ['Titre en capitales (mots en gras entre astérisques)', 50], points: ['Programme, une ligne par étape (ex. « 18h : Apéritif »)'],
@@ -2010,7 +2021,7 @@ window.AITE_MARQUE = {"cle":"verandah","titre":"Studio La Vérandah","sousTitre"
     citation: { etiquette: ['Étiquette (facultative)'], texte: ['Texte affiché', 190] },
     affiche: { etiquette: ['Étiquette (facultative)'], titre: ['Accroche (facultative)', 70], texte: ['Texte affiché', 75] },
     conseil: { etiquette: ['Étiquette (facultative)'], titre: ['Titre', 58], points: ['Points (un par ligne, 3 ou 4)'], puces: true, numero: true },
-    sombre: { etiquette: ['Étiquette (facultative)'], texte: ['Texte affiché', 190] },
+    sombre: { etiquette: ['Étiquette (facultative)'], texte: ['Texte affiché', 190], auteur: ['Auteur, pour une citation célèbre (facultatif)'] },
   };
   const champs = m => (window.AITE.MODELES[m] && window.AITE.MODELES[m].champs) || CHAMPS[m] || CHAMPS.citation;
   const modelesMarque = () => Object.entries(window.AITE.MODELES).filter(([, d]) => (d.marque || 'aite') === MARQUE.cle).map(([k]) => k);
@@ -2146,6 +2157,7 @@ window.AITE_MARQUE = {"cle":"verandah","titre":"Studio La Vérandah","sousTitre"
     const lier = (id, f) => $(id).addEventListener('input', () => { f($(id).value); rendre(); compteurs(); });
     lier('etiquette', v => { etat.pub.etiquette = v; });
     lier('texte', v => { etat.pub.texte = v; });
+    lier('auteur', v => { etat.pub.auteur = v; });
     lier('titre', v => { etat.pub.titre = v; });
     lier('points', v => { etat.pub.points = v.split('\n').map(s => s.trim()).filter(Boolean); });
     lier('numero', v => { etat.pub.numero = v ? Number(v) : null; });
@@ -2236,10 +2248,11 @@ window.AITE_MARQUE = {"cle":"verandah","titre":"Studio La Vérandah","sousTitre"
     const ch = champs(p.modele);
     $('carte-signature').hidden = !(AITE_M || ch.signature);
     if (ch.photoDG && !p.photo) p.photo = Object.keys(window.AITE.photos).find(k => window.AITE.photos[k].detouree) || null;
-    for (const k of ['etiquette', 'titre', 'texte', 'points', 'puces', 'numero']) $('champ-' + k).style.display = ch[k] ? '' : 'none';
-    for (const k of ['etiquette', 'titre', 'texte', 'points']) if (ch[k]) $('libelle-' + k).textContent = ch[k][0];
+    for (const k of ['etiquette', 'titre', 'texte', 'points', 'puces', 'numero', 'auteur']) $('champ-' + k).style.display = ch[k] ? '' : 'none';
+    for (const k of ['etiquette', 'titre', 'texte', 'points', 'auteur']) if (ch[k]) $('libelle-' + k).textContent = ch[k][0];
     $('aide-titre').style.display = p.modele === 'affiche' ? '' : 'none';
     $('texte').value = p.texte || '';
+    $('auteur').value = p.auteur || '';
     $('titre').value = p.titre || '';
     $('points').value = (p.points || []).join('\n');
     $('numero').value = p.numero || '';

@@ -476,7 +476,7 @@
     etiquette: ['Ligne manuscrite'], titre: ['Titre en capitales', 28], points: ['Produits, un par ligne (prix facultatif après « | »)'], texte: ['Ligne finale (facultative)', 50],
   } }, carte);
   A.enregistrer('vd-sombre', { nom: 'Pensée (photo ronde)', court: 'Pensée', marque: M, etiquette: '', champs: {
-    etiquette: ['Petit libellé (facultatif)'], texte: ['Pensée (mots clés entre astérisques)', 160], signature: true, photoDG: true,
+    etiquette: ['Petit libellé (facultatif)'], texte: ['Pensée (mots clés entre astérisques)', 160], auteur: ['Auteur, pour une citation célèbre (facultatif)'], signature: true, photoDG: true,
   } }, pensee);
   A.enregistrer('vd-photo', { nom: 'Photo pleine page', court: 'Photo', marque: M, etiquette: 'Vendredi soir', champs: {
     etiquette: ['Petit libellé en capitales'], titre: ['Titre en capitales (mots en gras entre astérisques)', 50], points: ['Programme, une ligne par étape (ex. « 18h : Apéritif »)'],

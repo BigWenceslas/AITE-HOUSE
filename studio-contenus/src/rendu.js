@@ -1088,10 +1088,17 @@
     // un texte de un à trois mots s'écrit nettement plus grand
     const court = typo(pub.texte).replace(/\*/g, '').split(/\s+/).filter(Boolean).length <= 3;
     const max = (story ? 110 : fmt === 'portrait' ? 94 : 90) * (court ? 1.7 : 1);
-    const bloc = ajuster(ctx, pub.texte, boite, {
+    // citation d'un auteur : une ligne « — Auteur » sous le texte, pour ne pas la prêter au signataire
+    const ta = story ? 32 : 26, ha = pub.auteur ? ta * 2.4 : 0;
+    const bloc = ajuster(ctx, pub.texte, { ...boite, h: boite.h - ha }, {
       poids: th.poids, poidsRelief: th.poidsRelief, famille: th.famille, min: 34, max, interligne: 1.3, soigne: true,
     });
-    const ty = boite.y + (boite.h - bloc.hauteur) / 2;
+    const ty = boite.y + (boite.h - bloc.hauteur - ha) / 2;
+    if (pub.auteur) {
+      ctx.font = police(600, ta, th.famille); ctx.fillStyle = th.etiquette; ctx.textBaseline = 'alphabetic';
+      const a = '— ' + typo(pub.auteur), la = ctx.measureText(a).width;
+      ctx.fillText(a, W / 2 - la / 2, ty + bloc.hauteur + ta * 1.75);
+    }
     if (pub.etiquette) {
       const te = story ? 24 : 19;
       ctx.font = police(700, te, TITRE); ctx.fillStyle = th.etiquette;

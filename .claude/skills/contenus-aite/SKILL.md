@@ -48,7 +48,10 @@ une décision d'achat.
   (PME, hôtels, administrations, équipes). Français impeccable, accents sur les
   majuscules, phrases courtes, verbes d'action.
 - Citations **originales** : vérifier qu'aucune citation célèbre, aucun proverbe connu
-  ni aucune formule d'un autre auteur n'est attribué au DG.
+  ni aucune formule d'un autre auteur n'est attribué au DG. Une citation célèbre peut être
+  publiée (modèle `sombre`, champ `auteur` : « — Sénèque, Lettres à Lucilius ») si son
+  attribution est confirmée par une source fiable (œuvre précise, Wikiquote hors
+  « attribuées », Quote Investigator) ; écarter les citations apocryphes.
 - Aucun chiffre, statistique ou nom de client inventé : seuls les références et chiffres
   de la plaquette (liste dans `references/ligne-editoriale.md`) sont publiables. Pas de
   superlatifs, pas de jargon (« synergie », « disruptif », « booster »), pas de clichés de

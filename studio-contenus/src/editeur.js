@@ -19,7 +19,7 @@
     citation: { etiquette: ['Étiquette (facultative)'], texte: ['Texte affiché', 190] },
     affiche: { etiquette: ['Étiquette (facultative)'], titre: ['Accroche (facultative)', 70], texte: ['Texte affiché', 75] },
     conseil: { etiquette: ['Étiquette (facultative)'], titre: ['Titre', 58], points: ['Points (un par ligne, 3 ou 4)'], puces: true, numero: true },
-    sombre: { etiquette: ['Étiquette (facultative)'], texte: ['Texte affiché', 190] },
+    sombre: { etiquette: ['Étiquette (facultative)'], texte: ['Texte affiché', 190], auteur: ['Auteur, pour une citation célèbre (facultatif)'] },
   };
   const champs = m => (window.AITE.MODELES[m] && window.AITE.MODELES[m].champs) || CHAMPS[m] || CHAMPS.citation;
   const modelesMarque = () => Object.entries(window.AITE.MODELES).filter(([, d]) => (d.marque || 'aite') === MARQUE.cle).map(([k]) => k);
@@ -155,6 +155,7 @@
     const lier = (id, f) => $(id).addEventListener('input', () => { f($(id).value); rendre(); compteurs(); });
     lier('etiquette', v => { etat.pub.etiquette = v; });
     lier('texte', v => { etat.pub.texte = v; });
+    lier('auteur', v => { etat.pub.auteur = v; });
     lier('titre', v => { etat.pub.titre = v; });
     lier('points', v => { etat.pub.points = v.split('\n').map(s => s.trim()).filter(Boolean); });
     lier('numero', v => { etat.pub.numero = v ? Number(v) : null; });
@@ -245,10 +246,11 @@
     const ch = champs(p.modele);
     $('carte-signature').hidden = !(AITE_M || ch.signature);
     if (ch.photoDG && !p.photo) p.photo = Object.keys(window.AITE.photos).find(k => window.AITE.photos[k].detouree) || null;
-    for (const k of ['etiquette', 'titre', 'texte', 'points', 'puces', 'numero']) $('champ-' + k).style.display = ch[k] ? '' : 'none';
-    for (const k of ['etiquette', 'titre', 'texte', 'points']) if (ch[k]) $('libelle-' + k).textContent = ch[k][0];
+    for (const k of ['etiquette', 'titre', 'texte', 'points', 'puces', 'numero', 'auteur']) $('champ-' + k).style.display = ch[k] ? '' : 'none';
+    for (const k of ['etiquette', 'titre', 'texte', 'points', 'auteur']) if (ch[k]) $('libelle-' + k).textContent = ch[k][0];
     $('aide-titre').style.display = p.modele === 'affiche' ? '' : 'none';
     $('texte').value = p.texte || '';
+    $('auteur').value = p.auteur || '';
     $('titre').value = p.titre || '';
     $('points').value = (p.points || []).join('\n');
     $('numero').value = p.numero || '';
