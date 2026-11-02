@@ -361,3 +361,26 @@ Venez savourer vos petites victoires à La Vérandah, à Makepe, en face de l'é
 
 #LaVerandah #Douala #Makepe #Depassement #CitationDuJour
 ```
+
+## Novembre bleu
+
+### Novembre — Citation · Novembre bleu · cancer de la prostate
+
+![VD-NB-1](VD-NB-1-vd-campagne.jpg)
+
+**Visuel :** Prenons soin de nous — Novembre bleu — Ensemble, parlons du cancer de la prostate
+
+1. Parlez-en sans tabou autour de vous
+2. Dès 45 ans, demandez conseil à votre médecin
+3. Encouragez votre père et vos amis à consulter
+
+**Légende à publier :**
+
+```text
+💙 Chers amis, novembre se met au bleu ! C’est le mois de sensibilisation au cancer de la prostate, le plus fréquent chez l’homme au Cameroun, selon l’OMS. Un geste simple : en parler sans tabou et, dès 45 ans (40 ans s’il y a des cas dans la famille), demander conseil à son médecin.
+
+Toute la maison pense à ceux qui traversent la maladie et à leurs proches. Prenez soin de vous et de ceux que vous aimez.
+La Vérandah, Makepe, en face de l’église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98.
+
+#NovembreBleu #LaVerandah #Douala #CancerDeLaProstate #Makepe
+```

@@ -16,5 +16,23 @@
     "teteHaut": 12,
     "menton": 384,
     "visageX": 525
+  },
+  "veste-pied": {
+    "nom": "Veste grise, en pied",
+    "teteHaut": 11,
+    "menton": 271,
+    "visageX": 319
+  },
+  "ndop": {
+    "nom": "Tenue ndop",
+    "teteHaut": 10,
+    "menton": 317,
+    "visageX": 388
+  },
+  "ndop-pied": {
+    "nom": "Tenue ndop, en pied",
+    "teteHaut": 11,
+    "menton": 298,
+    "visageX": 288
   }
 }

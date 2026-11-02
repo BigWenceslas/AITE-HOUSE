@@ -1302,7 +1302,7 @@
   const MARQUE_CAMPAGNE = {
     titre: TITRE, texte: TEXTE, signature: null,
     logo: (ctx, x, y, h) => logo(ctx, x, y, h, true),
-    pied: { fond: C.violet, couleur: C.blanc, lignes: ['Appelez-nous : (+237) 656 80 10 98 | 673 37 33 67', 'www.aite-consulting.com'] },
+    pied: { fond: '#061D45', filet: [C.violet, C.orange, C.bleu], couleur: C.blanc, lignes: ['Appelez-nous : (+237) 656 80 10 98 | 673 37 33 67', 'www.aite-consulting.com'] },
   };
 
   // Campagne de sensibilisation (ex. Novembre bleu) : titre sur deux mots, sous-titre,
@@ -1332,7 +1332,7 @@
     const col = story ? W - 2 * mx : W * 0.52 - mx;
     let pl = null, hautRuban = yp;
     if (ph && ph.detouree) {
-      const z = story ? { x1: W * 0.4, x2: W - 10, bas: yp, hautMin: 1130, teteH: 190 }
+      const z = story ? { x1: W * 0.4, x2: W - 10, bas: yp, hautMin: 1110, teteH: 190 }
         : { x1: W * 0.5, x2: W - 6, bas: yp, hautMin: portrait ? 300 : 230, teteH: portrait ? 200 : 168 };
       pl = cadrer(ph, z);
       const tx = pl.x + ph.visageX * pl.e;
@@ -1364,8 +1364,8 @@
     // titre : premier(s) mot(s) en blanc, dernier mot très grand en bleu clair
     const mots = String(pub.titre || 'Novembre bleu').trim().split(/\s+/);
     const fin = mots.pop(), debut = mots.join(' ');
-    const t1 = tailleLigne(ctx, debut, 700, M.titre, story ? 112 : portrait ? 112 : 96, col, 0);
-    const t2 = tailleLigne(ctx, fin.charAt(0).toUpperCase() + fin.slice(1), 700, M.titre, story ? 230 : portrait ? 230 : 190, col, 0);
+    const t1 = tailleLigne(ctx, debut, 700, M.titre, story ? 104 : portrait ? 112 : 96, col, 0);
+    const t2 = tailleLigne(ctx, fin.charAt(0).toUpperCase() + fin.slice(1), 700, M.titre, story ? 210 : portrait ? 230 : 190, col, 0);
     ctx.textBaseline = 'alphabetic';
     if (debut) { ctx.font = police(700, t1, M.titre); ctx.fillStyle = C.blanc; ctx.fillText(debut, mx, y + t1 * 0.9); y += t1 * 1.02; }
     ctx.font = police(700, t2, M.titre); ctx.fillStyle = '#8FCBFF';
@@ -1373,9 +1373,9 @@
 
     // sous-titre
     if (pub.texte) {
-      const b = ajuster(ctx, pub.texte, { l: col, h: story ? 200 : 140 }, { poids: 600, famille: M.texte, min: 24, max: story ? 44 : portrait ? 36 : 32, interligne: 1.25 });
+      const b = ajuster(ctx, pub.texte, { l: col, h: story ? 200 : 140 }, { poids: 600, famille: M.texte, min: 24, max: story ? 40 : portrait ? 36 : 32, interligne: 1.25 });
       ecrire(ctx, b, mx, y + (story ? 20 : 10), { couleur: C.blanc, couleurRelief: '#8FCBFF', largeur: col });
-      y += b.hauteur + (story ? 44 : 34);
+      y += b.hauteur + (story ? 36 : 34);
     }
 
     // gestes cochés, accroche
@@ -1416,8 +1416,13 @@
       ctx.restore();
     }
 
-    // bandeau de contacts
+    // bandeau de contacts : bleu nuit, filet aux couleurs de la marque
     ctx.fillStyle = M.pied.fond; ctx.fillRect(0, yp, W, hp);
+    if (M.pied.filet) {
+      const gf = ctx.createLinearGradient(0, 0, W, 0);
+      M.pied.filet.forEach((c, i) => gf.addColorStop(i / Math.max(1, M.pied.filet.length - 1), c));
+      ctx.fillStyle = gf; ctx.fillRect(0, yp, W, story ? 8 : 6);
+    }
     if (M.pied.dessiner) M.pied.dessiner(ctx, W, yp, hp, fmt);
     else {
       const lignes = M.pied.lignes;

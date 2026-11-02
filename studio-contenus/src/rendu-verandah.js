@@ -475,7 +475,7 @@
       if (img) logoVd(ctx, x + h * img.naturalWidth / img.naturalHeight / 2, y, h * 1.25, 'panneau');
     },
     pied: {
-      fond: VD.rougeFonce,
+      fond: '#061D45', filet: [VD.or, '#F3D99A', VD.or],
       dessiner: (ctx, W, y, h, fmt) => {
         const t = fmt === 'story' ? 30 : fmt === 'portrait' ? 26 : 23;
         const c = coord({});

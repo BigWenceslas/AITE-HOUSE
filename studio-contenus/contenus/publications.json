@@ -1462,6 +1462,35 @@
         "#Delegation",
         "#Cameroun"
       ]
+    },
+    {
+      "id": "NB-1",
+      "serie": "Novembre bleu",
+      "semaine": null,
+      "jour": "",
+      "moment": "novembre",
+      "modele": "campagne",
+      "theme": "Novembre bleu · cancer de la prostate",
+      "etiquette": "Mois de sensibilisation",
+      "titre": "Novembre bleu",
+      "texte": "Prostate : le cancer le plus fréquent chez l’homme au Cameroun",
+      "points": [
+        "Dès 45 ans, consultez votre médecin",
+        "Cas dans la famille ? Parlez-en dès 40 ans",
+        "Signalez au médecin tout trouble urinaire"
+      ],
+      "accroche": "Prendre soin de soi, c’est protéger *les siens*.",
+      "numero": null,
+      "photo": "veste-pied",
+      "legende": "🎗️ AITE Consulting s’associe à Novembre bleu, mois de sensibilisation au cancer de la prostate, car une entreprise repose d’abord sur la santé de ses équipes. À vous, hommes de notre équipe, clients et partenaires : parlons de votre santé.\n\nAu Cameroun, ce cancer est le plus fréquent chez l’homme (estimations du CIRC/OMS). Au début, il ne donne généralement aucun symptôme. Dès 45 ans (40 ans s’il y a des cas dans la famille), parlez avec votre médecin du dépistage, de ses bénéfices et de ses limites, puis décidez ensemble. Envies fréquentes d’uriner la nuit, jet faible, sang dans les urines : ces troubles ont le plus souvent une autre cause que ce cancer, mais méritent une consultation.\n\nParlez-en, prenez rendez-vous et partagez ce message avec les hommes qui comptent pour vous.",
+      "hashtags": [
+        "#NovembreBleu",
+        "#AITEConsulting",
+        "#CancerDeLaProstate",
+        "#Depistage",
+        "#SanteMasculine",
+        "#Cameroun"
+      ]
     }
   ]
 }

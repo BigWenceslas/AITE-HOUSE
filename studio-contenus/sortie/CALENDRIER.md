@@ -1204,3 +1204,27 @@ Où passe le temps de votre direction ? Diagnostic Digital 360° gratuit (90 min
 
 #AITEConsulting #Motivation #Citation #GestionDuTemps #Delegation #Cameroun
 ```
+
+## Novembre bleu
+
+### Novembre — Citation · Novembre bleu · cancer de la prostate
+
+![NB-1](NB-1-campagne.jpg)
+
+**Visuel :** Novembre bleu — Prostate : le cancer le plus fréquent chez l’homme au Cameroun
+
+1. Dès 45 ans, consultez votre médecin
+2. Cas dans la famille ? Parlez-en dès 40 ans
+3. Signalez au médecin tout trouble urinaire
+
+**Légende à publier :**
+
+```text
+🎗️ AITE Consulting s’associe à Novembre bleu, mois de sensibilisation au cancer de la prostate, car une entreprise repose d’abord sur la santé de ses équipes. À vous, hommes de notre équipe, clients et partenaires : parlons de votre santé.
+
+Au Cameroun, ce cancer est le plus fréquent chez l’homme (estimations du CIRC/OMS). Au début, il ne donne généralement aucun symptôme. Dès 45 ans (40 ans s’il y a des cas dans la famille), parlez avec votre médecin du dépistage, de ses bénéfices et de ses limites, puis décidez ensemble. Envies fréquentes d’uriner la nuit, jet faible, sang dans les urines : ces troubles ont le plus souvent une autre cause que ce cancer, mais méritent une consultation.
+
+Parlez-en, prenez rendez-vous et partagez ce message avec les hommes qui comptent pour vous.
+
+#NovembreBleu #AITEConsulting #CancerDeLaProstate #Depistage #SanteMasculine #Cameroun
+```
