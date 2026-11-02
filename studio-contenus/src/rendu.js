@@ -37,6 +37,10 @@
     affiche: { nom: 'Affiche motivation', etiquette: 'Motivation du lundi' },
     conseil: { nom: 'Conseil pratique', etiquette: 'Conseil pratique' },
     sombre: { nom: 'Fond sombre', court: 'Sombre', etiquette: '' },
+    campagne: { nom: 'Campagne (Novembre bleu…)', court: 'Campagne', etiquette: 'Mois de sensibilisation', champs: {
+      etiquette: ['Pastille (ex. Mois de sensibilisation)'], titre: ['Titre : le dernier mot s’écrit en très grand (ex. Novembre bleu)', 24],
+      texte: ['Sous-titre', 70], points: ['Gestes, un par ligne (3)'], accroche: ['Phrase finale (mots en relief entre astérisques)'],
+    } },
     recrutement: { nom: 'Recrutement', court: 'Recrutement', etiquette: 'Nous recrutons', champs: {
       etiquette: ['Pastille (ex. Nous recrutons)'], titre: ['Intitulé du poste', 40], texte: ['Étiquettes, séparées par « · » (ex. Douala · B2B)', 70],
       points: ['Rubriques : « # Vos missions » puis une ligne par point ; la rubrique « # Pour postuler » s’affiche en encadré'],
@@ -1255,6 +1259,179 @@
     ctx.textBaseline = 'alphabetic';
   }
 
+
+  // ───────────────────────── modèle « campagne » (Novembre bleu…) ─────────────────────────
+
+  // Ruban de sensibilisation : la boucle en haut, les deux pans croisés en bas.
+  // Le pan qui part vers la droite passe devant.
+  function ruban(ctx, cx, cy, h, o) {
+    o = o || {};
+    const P = (x, y) => [cx + x * h, cy + y * h];
+    const g = ctx.createLinearGradient(cx - h * 0.3, cy - h * 0.5, cx + h * 0.3, cy + h * 0.5);
+    g.addColorStop(0, o.clair || '#BFE3FF'); g.addColorStop(0.5, o.couleur || '#6CB8F5'); g.addColorStop(1, o.fonce || '#2F86D6');
+    const trace = pts => {
+      ctx.beginPath(); ctx.moveTo(...P(...pts[0]));
+      for (let i = 1; i < pts.length; i += 3) ctx.bezierCurveTo(...P(...pts[i]), ...P(...pts[i + 1]), ...P(...pts[i + 2]));
+    };
+    ctx.save();
+    ctx.lineWidth = h * 0.13; ctx.lineCap = 'butt'; ctx.lineJoin = 'round'; ctx.strokeStyle = g;
+    ctx.shadowColor = 'rgba(0,20,60,.35)'; ctx.shadowBlur = h * 0.04; ctx.shadowOffsetY = h * 0.012;
+    // pan gauche, côté droit de la boucle, sommet
+    trace([[-0.30, 0.50], [-0.18, 0.34], [-0.06, 0.18], [0, 0.06], [0.10, -0.08], [0.24, -0.22], [0.20, -0.36], [0.16, -0.50], [-0.16, -0.50], [-0.20, -0.36]]);
+    ctx.stroke();
+    // côté gauche de la boucle, croisement par-dessus, pan droit
+    trace([[-0.20, -0.36], [-0.24, -0.22], [-0.10, -0.08], [0, 0.06], [0.06, 0.18], [0.18, 0.34], [0.30, 0.50]]);
+    ctx.stroke();
+    // reflet
+    ctx.shadowColor = 'transparent';
+    ctx.lineWidth = h * 0.025; ctx.strokeStyle = 'rgba(255,255,255,.35)';
+    trace([[-0.20, -0.36], [-0.24, -0.22], [-0.10, -0.08], [0, 0.06]]);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function coche(ctx, cx, cy, r, fond, trait) {
+    ctx.save();
+    ctx.fillStyle = fond; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = trait; ctx.lineWidth = r * 0.28; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath(); ctx.moveTo(cx - r * 0.45, cy + r * 0.02); ctx.lineTo(cx - r * 0.1, cy + r * 0.38); ctx.lineTo(cx + r * 0.48, cy - r * 0.34); ctx.stroke();
+    ctx.restore();
+  }
+
+  // Marque AITE pour les campagnes : logo en pastille, bandeau violet avec téléphones et site.
+  const MARQUE_CAMPAGNE = {
+    titre: TITRE, texte: TEXTE, signature: null,
+    logo: (ctx, x, y, h) => logo(ctx, x, y, h, true),
+    pied: { fond: C.violet, couleur: C.blanc, lignes: ['Appelez-nous : (+237) 656 80 10 98 | 673 37 33 67', 'www.aite-consulting.com'] },
+  };
+
+  // Campagne de sensibilisation (ex. Novembre bleu) : titre sur deux mots, sous-titre,
+  // trois gestes cochés, accroche ; la personne devant un grand ruban ; bandeau de contacts.
+  function campagne(ctx, W, H, pub, fmt, marque) {
+    const M = marque || MARQUE_CAMPAGNE;
+    const ph = photo(pub.photo);
+    const story = fmt === 'story', portrait = fmt === 'portrait';
+    const mx = story ? 70 : 56;
+    const sig = pub.signature || M.signature || SIGNATURE;
+
+    // fond bleu et cadres arrondis concentriques
+    const g = ctx.createLinearGradient(0, 0, W, H);
+    g.addColorStop(0, '#0E4DA4'); g.addColorStop(1, '#072F6E');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,255,255,.06)'; ctx.lineWidth = 26;
+    for (let i = 0; i < 4; i++) { const c = 180 + i * 150; ctx.beginPath(); rect(ctx, W * 0.74 - c / 2, H * 0.42 - c / 2, c, c, c * 0.18); ctx.stroke(); }
+    ctx.restore();
+
+    // bandeau de contacts
+    const hp = story ? 120 : portrait ? 104 : 92;
+    const yp = story ? H - 260 - hp : H - hp;
+    if (story) { ctx.fillStyle = M.pied.fond; ctx.fillRect(0, yp, W, H - yp); }
+
+    // la personne, devant le ruban
+    const col = story ? W - 2 * mx : W * 0.52 - mx;
+    let pl = null, hautRuban = yp;
+    if (ph && ph.detouree) {
+      const z = story ? { x1: W * 0.4, x2: W - 10, bas: yp, hautMin: 1130, teteH: 190 }
+        : { x1: W * 0.5, x2: W - 6, bas: yp, hautMin: portrait ? 300 : 230, teteH: portrait ? 200 : 168 };
+      pl = cadrer(ph, z);
+      const tx = pl.x + ph.visageX * pl.e;
+      // le ruban entoure la tête sans mordre sur la colonne de texte
+      const hr = Math.min((yp - pl.haut) * 1.18, story ? Infinity : (tx - mx - col - 16) / 0.34);
+      const cyr = pl.haut - hr * 0.14 + hr * 0.5;
+      hautRuban = cyr - hr * 0.5;
+      ruban(ctx, tx, cyr, hr);
+      silhouette(ctx, ph, pl, yp, 'rgba(0,15,45,.45)');
+      // voile sombre au pied de la photo, pour lire le nom
+      const gv = ctx.createLinearGradient(0, yp - 150, 0, yp);
+      gv.addColorStop(0, 'rgba(5,25,60,0)'); gv.addColorStop(1, 'rgba(5,25,60,.75)');
+      ctx.fillStyle = gv; ctx.fillRect(W * 0.45, yp - 150, W * 0.55, 150);
+    } else {
+      const hr = story ? 760 : portrait ? 720 : 600;
+      ruban(ctx, W * 0.76, yp - hr * 0.55, hr);
+    }
+
+    // logo et étiquette
+    const yl = story ? 160 : 44, hl = story ? 76 : 60;
+    M.logo(ctx, mx + hl * 0.3, yl + hl * 0.1, hl);
+    let y = yl + hl + (story ? 50 : 42);
+    if (pub.etiquette) {
+      const tp = story ? 24 : 19;
+      const pe = pastille(ctx, typo(pub.etiquette).toUpperCase(), mx, y, { taille: tp, fond: 'rgba(255,255,255,.16)', couleur: C.blanc });
+      y += pe.h + (story ? 26 : 16);
+    }
+
+    // titre : premier(s) mot(s) en blanc, dernier mot très grand en bleu clair
+    const mots = String(pub.titre || 'Novembre bleu').trim().split(/\s+/);
+    const fin = mots.pop(), debut = mots.join(' ');
+    const t1 = tailleLigne(ctx, debut, 700, M.titre, story ? 112 : portrait ? 112 : 96, col, 0);
+    const t2 = tailleLigne(ctx, fin.charAt(0).toUpperCase() + fin.slice(1), 700, M.titre, story ? 230 : portrait ? 230 : 190, col, 0);
+    ctx.textBaseline = 'alphabetic';
+    if (debut) { ctx.font = police(700, t1, M.titre); ctx.fillStyle = C.blanc; ctx.fillText(debut, mx, y + t1 * 0.9); y += t1 * 1.02; }
+    ctx.font = police(700, t2, M.titre); ctx.fillStyle = '#8FCBFF';
+    ctx.fillText(fin.charAt(0).toUpperCase() + fin.slice(1), mx - t2 * 0.04, y + t2 * 0.8); y += t2 * 0.92;
+
+    // sous-titre
+    if (pub.texte) {
+      const b = ajuster(ctx, pub.texte, { l: col, h: story ? 200 : 140 }, { poids: 600, famille: M.texte, min: 24, max: story ? 44 : portrait ? 36 : 32, interligne: 1.25 });
+      ecrire(ctx, b, mx, y + (story ? 20 : 10), { couleur: C.blanc, couleurRelief: '#8FCBFF', largeur: col });
+      y += b.hauteur + (story ? 44 : 34);
+    }
+
+    // gestes cochés, accroche
+    const pts = (pub.points || []).filter(Boolean).slice(0, 4);
+    // en story, les gestes prennent toute la largeur au-dessus du ruban
+    const basTexte = story ? (pl ? hautRuban - 30 : yp - 160) : yp - (pub.accroche ? (portrait ? 120 : 96) : 36);
+    const colP = col;
+    let tp = story ? 38 : portrait ? 32 : 29;
+    for (; tp > 18; tp -= 0.5) {
+      ctx.font = police(500, tp, M.texte);
+      const lignesTot = pts.reduce((a, p) => a + ajuster(ctx, p, { l: colP - tp * 1.7, h: 9999 }, { poids: 500, famille: M.texte, min: tp, max: tp, interligne: 1.22, equilibrer: false }).lignes.length, 0);
+      if (lignesTot * tp * 1.22 + pts.length * tp * 0.7 <= basTexte - y) break;
+    }
+    for (const p of pts) {
+      const b = ajuster(ctx, p, { l: colP - tp * 1.7, h: 9999 }, { poids: 500, famille: M.texte, min: tp, max: tp, interligne: 1.22, equilibrer: false });
+      coche(ctx, mx + tp * 0.55, y + tp * 0.62, tp * 0.55, C.blanc, '#1F6FD1');
+      ecrire(ctx, b, mx + tp * 1.6, y - tp * 0.12, { couleur: C.blanc, couleurRelief: '#8FCBFF', largeur: colP });
+      y += b.hauteur + tp * 0.7;
+    }
+    if (pub.accroche) {
+      const ta = story ? 40 : portrait ? 34 : 30;
+      const ya = story ? yp - (pl ? 150 : 90) : yp - (portrait ? 70 : 54);
+      const la = story && pl ? W * 0.38 - mx : col;
+      const b = ajuster(ctx, pub.accroche, { l: la, h: ta * (story ? 4 : 2.6) }, { poids: 600, famille: M.texte, poidsRelief: 800, min: 20, max: ta, interligne: 1.2 });
+      ecrire(ctx, b, mx, ya - b.hauteur / 2, { couleur: '#CFE8FF', couleurRelief: C.blanc, largeur: la });
+    }
+
+    // nom sous la personne
+    if (pl && sig && sig.nom) {
+      const tn = story ? 26 : 19;
+      ctx.save(); ctx.shadowColor = 'rgba(0,10,30,.8)'; ctx.shadowBlur = 10;
+      ctx.font = police(700, tn, M.texte); ctx.fillStyle = C.blanc; ctx.textBaseline = 'alphabetic';
+      const ln = ctx.measureText(sig.nom).width;
+      ctx.fillText(sig.nom, W - mx - ln, yp - (story ? 52 : 40));
+      ctx.font = police(400, tn * 0.8, M.texte);
+      const lf = ctx.measureText(sig.fonction || '').width;
+      ctx.fillText(sig.fonction || '', W - mx - lf, yp - (story ? 52 : 40) + tn * 1.15);
+      ctx.restore();
+    }
+
+    // bandeau de contacts
+    ctx.fillStyle = M.pied.fond; ctx.fillRect(0, yp, W, hp);
+    if (M.pied.dessiner) M.pied.dessiner(ctx, W, yp, hp, fmt);
+    else {
+      const lignes = M.pied.lignes;
+      const tl = tailleLigne(ctx, lignes[0], 600, M.texte, story ? 32 : portrait ? 28 : 25, W - 2 * mx, 0);
+      ctx.font = police(600, tl, M.texte); ctx.fillStyle = M.pied.couleur; ctx.textBaseline = 'middle';
+      lignes.forEach((l, i) => {
+        if (i) ctx.font = police(400, tl * 0.82, M.texte);
+        const ll = ctx.measureText(l).width;
+        ctx.fillText(l, (W - ll) / 2, yp + hp / 2 + (i - (lignes.length - 1) / 2) * tl * 1.3);
+      });
+      ctx.textBaseline = 'alphabetic';
+    }
+  }
+
   // ───────────────────────── point d'entrée ─────────────────────────
 
   function dessiner(canvas, pub, o) {
@@ -1266,7 +1443,7 @@
     const ctx = canvas.getContext('2d');
     ctx.setTransform(echelle, 0, 0, echelle, 0, 0);
     ctx.imageSmoothingQuality = 'high';
-    const modele = { citation, affiche, conseil, sombre, recrutement, ...AUTRES }[pub.modele] || citation;
+    const modele = { citation, affiche, conseil, sombre, recrutement, campagne, ...AUTRES }[pub.modele] || citation;
     modele(ctx, W, H, pub, fmt);
     return canvas;
   }
@@ -1278,7 +1455,7 @@
     MODELES[cle] = definition;
     AUTRES[cle] = fonction;
   }
-  const outils = { police, typo, mots, ajuster, ecrire, rect, remplirRect, espace, largeurEspacee, tailleLigne, trame, photo, cadrer, silhouette, sombre, THEME_SOMBRE };
+  const outils = { police, typo, mots, ajuster, ecrire, rect, remplirRect, espace, largeurEspacee, tailleLigne, trame, photo, cadrer, silhouette, sombre, THEME_SOMBRE, campagne, MARQUE_CAMPAGNE };
 
   global.AITE = { C, FORMATS, MODELES, SIGNATURE, SITE, charger, preparerPhoto, dessiner, typo, photos: R.photos, logos: R.logos, enregistrer, outils };
 })(window);

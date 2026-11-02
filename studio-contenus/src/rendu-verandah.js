@@ -465,6 +465,27 @@
   });
   const pensee = (ctx, W, H, pub, fmt) => sombre(ctx, W, H, pub, fmt, THEME);
 
+  // ───────────── 6. campagne (Novembre bleu…) : le modèle d'AITE, logo et bandeau de La Vérandah ─────────────
+
+  const MARQUE_CAMPAGNE_VD = {
+    titre: COND, texte: MONT,
+    signature: { nom: 'Cyrille Donald ABOLO', fonction: 'La Vérandah · Makepe' },
+    logo: (ctx, x, y, h) => {
+      const img = A.logos.verandah;
+      if (img) logoVd(ctx, x + h * img.naturalWidth / img.naturalHeight / 2, y, h * 1.25, 'panneau');
+    },
+    pied: {
+      fond: VD.rougeFonce,
+      dessiner: (ctx, W, y, h, fmt) => {
+        const t = fmt === 'story' ? 30 : fmt === 'portrait' ? 26 : 23;
+        const c = coord({});
+        adresse(ctx, c.adresse, 56, y + h * 0.32, { taille: t, largeur: W - 112, couleur: VD.blanc, couleurIcone: VD.or });
+        telephone(ctx, 56, y + h * 0.72, { prefixe: 'Appels et WhatsApp : ', numero: c.telephone, taille: t, largeur: W - 112, couleur: VD.blanc });
+      },
+    },
+  };
+  const campagneVd = (ctx, W, H, pub, fmt) => A.outils.campagne(ctx, W, H, pub, fmt, MARQUE_CAMPAGNE_VD);
+
   const M = 'verandah';
   A.enregistrer('vd-annonce', { nom: 'Annonce', marque: M, etiquette: '', champs: {
     titre: ['Ligne manuscrite', 40], texte: ['Grandes capitales (mots en relief en rouge)', 28], points: ['Petite ligne finale (facultative)'],
@@ -475,6 +496,10 @@
   A.enregistrer('vd-carte', { nom: 'La cave', court: 'La cave', marque: M, etiquette: 'Notre cave', champs: {
     etiquette: ['Ligne manuscrite'], titre: ['Titre en capitales', 28], points: ['Produits, un par ligne (prix facultatif après « | »)'], texte: ['Ligne finale (facultative)', 50],
   } }, carte);
+  A.enregistrer('vd-campagne', { nom: 'Campagne (Novembre bleu…)', court: 'Campagne', marque: M, etiquette: 'Mois de sensibilisation', champs: {
+    etiquette: ['Pastille (ex. Mois de sensibilisation)'], titre: ['Titre : le dernier mot s’écrit en très grand (ex. Novembre bleu)', 24],
+    texte: ['Sous-titre', 70], points: ['Gestes, un par ligne (3)'], accroche: ['Phrase finale (mots en relief entre astérisques)'], photoDG: true,
+  } }, campagneVd);
   A.enregistrer('vd-sombre', { nom: 'Pensée (photo ronde)', court: 'Pensée', marque: M, etiquette: '', champs: {
     etiquette: ['Petit libellé (facultatif)'], texte: ['Pensée (mots clés entre astérisques)', 160], auteur: ['Auteur, pour une citation célèbre (facultatif)'], signature: true, photoDG: true,
   } }, pensee);

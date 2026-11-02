@@ -156,6 +156,7 @@
     lier('etiquette', v => { etat.pub.etiquette = v; });
     lier('texte', v => { etat.pub.texte = v; });
     lier('auteur', v => { etat.pub.auteur = v; });
+    lier('accroche', v => { etat.pub.accroche = v; });
     lier('titre', v => { etat.pub.titre = v; });
     lier('points', v => { etat.pub.points = v.split('\n').map(s => s.trim()).filter(Boolean); });
     lier('numero', v => { etat.pub.numero = v ? Number(v) : null; });
@@ -246,11 +247,12 @@
     const ch = champs(p.modele);
     $('carte-signature').hidden = !(AITE_M || ch.signature);
     if (ch.photoDG && !p.photo) p.photo = Object.keys(window.AITE.photos).find(k => window.AITE.photos[k].detouree) || null;
-    for (const k of ['etiquette', 'titre', 'texte', 'points', 'puces', 'numero', 'auteur']) $('champ-' + k).style.display = ch[k] ? '' : 'none';
-    for (const k of ['etiquette', 'titre', 'texte', 'points', 'auteur']) if (ch[k]) $('libelle-' + k).textContent = ch[k][0];
+    for (const k of ['etiquette', 'titre', 'texte', 'points', 'puces', 'numero', 'auteur', 'accroche']) $('champ-' + k).style.display = ch[k] ? '' : 'none';
+    for (const k of ['etiquette', 'titre', 'texte', 'points', 'auteur', 'accroche']) if (ch[k]) $('libelle-' + k).textContent = ch[k][0];
     $('aide-titre').style.display = p.modele === 'affiche' ? '' : 'none';
     $('texte').value = p.texte || '';
     $('auteur').value = p.auteur || '';
+    $('accroche').value = p.accroche || '';
     $('titre').value = p.titre || '';
     $('points').value = (p.points || []).join('\n');
     $('numero').value = p.numero || '';
