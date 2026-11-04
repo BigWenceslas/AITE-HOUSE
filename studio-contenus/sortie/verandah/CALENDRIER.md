@@ -384,3 +384,21 @@ La Vérandah, Makepe, en face de l’église Sainte Monique, Douala. Appels et W
 
 #NovembreBleu #LaVerandah #Douala #CancerDeLaProstate #Makepe
 ```
+
+## Mercredi 4 novembre
+
+### Mercredi 17h — Pensée (photo ronde) · milieu de semaine
+
+![VD-MER-1](VD-MER-1-vd-sombre.jpg)
+
+**Visuel :** Bon mercredi — Au milieu de la semaine, un repas partagé remet souvent les idées en place. Accordez-vous ce temps.
+
+**Légende à publier :**
+
+```text
+Mercredi : la semaine est à moitié faite et la fatigue commence à se faire sentir. Un bon repas, une conversation entre collègues ou entre amis, et l’on repart souvent avec les idées plus claires.
+
+Nous vous attendons à La Vérandah, à Makepe, en face de l’église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #Douala #Makepe #BonMercredi #Partage
+```

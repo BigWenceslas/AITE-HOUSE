@@ -1228,3 +1228,28 @@ Parlez-en, prenez rendez-vous et partagez ce message avec les hommes qui compten
 
 #NovembreBleu #AITEConsulting #CancerDeLaProstate #Depistage #SanteMasculine #Cameroun
 ```
+
+## Mercredi 4 novembre
+
+### Mercredi 12h — Conseil · dématérialisation · erreurs qui font échouer le projet
+
+![MER-1](MER-1-conseil.jpg)
+
+**Visuel :** Dématérialisation : 4 erreurs qui font échouer le projet
+
+1. Ne scannez pas le désordre : triez et nommez avant de numériser.
+2. Revoyez le circuit de validation avant de l’automatiser, pas après.
+3. Désignez un responsable par type de document, archives comprises.
+4. Mesurez le délai de traitement avant le projet, pour prouver le gain.
+
+**Légende à publier :**
+
+```text
+Beaucoup de projets de dématérialisation déçoivent pour une raison simple : on numérise le fonctionnement actuel, avec ses doublons, ses circuits flous et ses dossiers sans propriétaire. Le papier disparaît, mais les lenteurs restent.
+
+Avant de choisir un logiciel, faites trois choses : triez et nommez vos documents selon une règle commune, redessinez le circuit de validation (qui valide quoi, dans quel délai, qui remplace l’absent), et notez combien de jours prend aujourd’hui une facture ou un courrier, de son arrivée à la décision. Sans ce point de départ, impossible de dire si le projet a fait gagner du temps.
+
+Vous préparez la dématérialisation de vos factures, de votre courrier ou de vos archives ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Dematerialisation #GED #TransformationDigitale #PME #Douala
+```

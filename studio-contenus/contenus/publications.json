@@ -1491,6 +1491,36 @@
         "#SanteMasculine",
         "#Cameroun"
       ]
+    },
+    {
+      "id": "MER-1",
+      "serie": "Mercredi 4 novembre",
+      "semaine": null,
+      "jour": "mercredi",
+      "moment": "mercredi 12h",
+      "modele": "conseil",
+      "theme": "dématérialisation · erreurs qui font échouer le projet",
+      "etiquette": "Dématérialisation",
+      "texte": "",
+      "titre": "Dématérialisation : 4 erreurs qui *font échouer* le projet",
+      "points": [
+        "Ne scannez pas le désordre : triez et nommez avant de numériser.",
+        "Revoyez le circuit de validation avant de l’automatiser, pas après.",
+        "Désignez un responsable par type de document, archives comprises.",
+        "Mesurez le délai de traitement avant le projet, pour prouver le gain."
+      ],
+      "numero": null,
+      "photo": "ndop",
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "legende": "Beaucoup de projets de dématérialisation déçoivent pour une raison simple : on numérise le fonctionnement actuel, avec ses doublons, ses circuits flous et ses dossiers sans propriétaire. Le papier disparaît, mais les lenteurs restent.\n\nAvant de choisir un logiciel, faites trois choses : triez et nommez vos documents selon une règle commune, redessinez le circuit de validation (qui valide quoi, dans quel délai, qui remplace l’absent), et notez combien de jours prend aujourd’hui une facture ou un courrier, de son arrivée à la décision. Sans ce point de départ, impossible de dire si le projet a fait gagner du temps.\n\nVous préparez la dématérialisation de vos factures, de votre courrier ou de vos archives ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Dematerialisation",
+        "#GED",
+        "#TransformationDigitale",
+        "#PME",
+        "#Douala"
+      ]
     }
   ]
 }
