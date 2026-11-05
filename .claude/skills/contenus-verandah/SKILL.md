@@ -36,3 +36,10 @@ Le studio est dans `studio-contenus/` (lire la section « La Vérandah » de son
 - Hashtags : #LaVerandah, #Douala, #Makepe…, en CamelCase sans accents.
 - Citation célèbre : modèle `vd-sombre` avec le champ `auteur` (« — Jean de La Fontaine »),
   seulement si l'attribution est confirmée par une source fiable ; jamais prêtée au promoteur.
+
+## Préférence du DG
+
+Proposer **toujours 3 publications au choix**, de préférence des **conseils pratiques sur le
+métier** (service et conservation des vins et champagnes, accords, consommation responsable,
+accueil) : modèle `vd-sombre`, étiquette « Le conseil de la cave », une phrase claire ; mention
+santé sur tout conseil qui parle d'alcool.

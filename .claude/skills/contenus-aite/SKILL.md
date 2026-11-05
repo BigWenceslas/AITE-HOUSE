@@ -65,3 +65,10 @@ une décision d'achat.
 
 Signature par défaut : Cyrille Donald ABOLO, Directeur Général, AITE Consulting
 (champ `signature` de `publications.json`).
+
+## Préférence du DG
+
+Proposer **toujours 3 publications au choix** pour AITE (et 3 pour La Vérandah quand les deux
+marques sont demandées), de préférence des **conseils pratiques sur les domaines d'activité**
+(ERP, stock, paie, réseaux, sécurité, Microsoft 365, dématérialisation…). Le DG a jugé trop
+littéraires les citations anciennes (Boileau, La Fontaine).

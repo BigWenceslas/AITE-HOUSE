@@ -534,6 +534,72 @@
         "#BonJeudi",
         "#Entraide"
       ]
+    },
+    {
+      "serie": "Le conseil de la cave — au choix",
+      "jour": "",
+      "moment": "au choix",
+      "modele": "vd-sombre",
+      "etiquette": "Le conseil de la cave",
+      "titre": "",
+      "points": [],
+      "alcool": true,
+      "id": "VD-CP-1",
+      "photo": "ndop",
+      "theme": "température du vin rouge",
+      "texte": "À Douala, la « température ambiante » est trop chaude pour un vin rouge : quinze minutes au frais, et *il retrouve son équilibre*.",
+      "legende": "Le vin rouge se sert en général entre 14 et 18 °C selon le vin. Dans nos salles à 28 °C, il paraît vite lourd et l’alcool ressort. Quelques minutes au réfrigérateur ou dans un seau d’eau fraîche suffisent pour lui rendre son fruit.\n\nRetrouvez-nous à La Vérandah, à Makepe, en face de l’église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98\nL’abus d’alcool est dangereux pour la santé. À consommer avec modération.",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#ConseilVin",
+        "#Moderation"
+      ]
+    },
+    {
+      "serie": "Le conseil de la cave — au choix",
+      "jour": "",
+      "moment": "au choix",
+      "modele": "vd-sombre",
+      "etiquette": "Le conseil de la cave",
+      "titre": "",
+      "points": [],
+      "alcool": true,
+      "id": "VD-CP-2",
+      "photo": "blazer",
+      "theme": "service du champagne",
+      "texte": "Le champagne se sert entre 8 et 10 °C, dans une flûte tenue *par le pied*.",
+      "legende": "Trop froid, le champagne perd ses arômes ; trop chaud, la mousse déborde. Entre 8 et 10 °C, il est à son meilleur. Et tenir la flûte par le pied évite de réchauffer le vin avec la main.\n\nRetrouvez-nous à La Vérandah, à Makepe, en face de l’église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98\nL’abus d’alcool est dangereux pour la santé. À consommer avec modération.",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Champagne",
+        "#ArtDeRecevoir",
+        "#Moderation"
+      ]
+    },
+    {
+      "serie": "Le conseil de la cave — au choix",
+      "jour": "",
+      "moment": "au choix",
+      "modele": "vd-sombre",
+      "etiquette": "Le conseil de la cave",
+      "titre": "",
+      "points": [],
+      "alcool": true,
+      "id": "VD-CP-3",
+      "photo": "boubou",
+      "theme": "consommation responsable",
+      "texte": "Entre deux verres, un verre d’eau : *le secret* d’une soirée réussie.",
+      "legende": "Un verre d’eau entre deux verres, c’est le geste simple des bonnes soirées : on savoure mieux, on profite plus longtemps de la compagnie, et l’on rentre en forme. Sans oublier la règle d’or : celui qui conduit ne boit pas.\n\nRetrouvez-nous à La Vérandah, à Makepe, en face de l’église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98\nL’abus d’alcool est dangereux pour la santé. À consommer avec modération.",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#Moderation",
+        "#SoireeReussie"
+      ]
     }
   ]
 }

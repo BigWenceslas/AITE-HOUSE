@@ -1273,3 +1273,74 @@ Vos outils de gestion méritent-ils une remise sur le métier ? Diagnostic Digit
 
 #AITEConsulting #Motivation #Citation #AmeliorationContinue #PME #Douala
 ```
+
+## Conseils pratiques — au choix
+
+### Au choix — Conseil · Wi-Fi d’entreprise
+
+![CP-1](CP-1-conseil.jpg)
+
+**Visuel :** Wi-Fi au bureau : 4 règles pour protéger le réseau
+
+1. Créez un réseau invité séparé pour les visiteurs et les téléphones.
+2. Changez le mot de passe d’administration fourni avec la box ou le routeur.
+3. Choisissez le chiffrement WPA2 ou WPA3, jamais un réseau ouvert.
+4. Mettez à jour le logiciel du routeur et changez la clé Wi-Fi au départ d’un employé.
+
+**Légende à publier :**
+
+```text
+Le mot de passe Wi-Fi du bureau circule souvent depuis des années : anciens stagiaires, visiteurs, livreurs. Or celui qui est sur votre réseau peut voir vos imprimantes, vos dossiers partagés, parfois votre caisse ou votre logiciel de gestion.
+
+Quatre réglages suffisent à fermer la porte : un réseau invité séparé, un mot de passe d’administration personnalisé, un chiffrement WPA2 ou WPA3, et un routeur à jour. Changez aussi la clé Wi-Fi quand un collaborateur quitte l’entreprise.
+
+Savez-vous qui est connecté à votre réseau en ce moment ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Reseau #Cybersecurite #WiFi #PME #Douala
+```
+
+### Au choix — Conseil · ordinateurs portables
+
+![CP-2](CP-2-conseil.jpg)
+
+**Visuel :** PC portable volé : 4 précautions à prendre avant
+
+1. Chiffrez le disque (BitLocker sur Windows Pro) pour rendre les données illisibles.
+2. Activez le verrouillage automatique de l’écran après quelques minutes.
+3. Sauvegardez les dossiers de travail dans le cloud de l’entreprise, pas sur le bureau.
+4. Notez le numéro de série et activez la localisation de l’appareil.
+
+**Légende à publier :**
+
+```text
+Un ordinateur portable se remplace. Les données qu’il contient, beaucoup moins : contrats, fichiers clients, accès à la messagerie et aux comptes bancaires. Et un appareil volé sans protection, c’est tout cela entre de mauvaises mains.
+
+Le chiffrement du disque rend les données illisibles sans le mot de passe. Le verrouillage automatique protège l’écran laissé ouvert. La sauvegarde dans le cloud de l’entreprise évite de tout perdre. Et la localisation ou le blocage à distance donnent une chance de réagir vite.
+
+Vos ordinateurs portables sont-ils prêts à être perdus ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Cybersecurite #ProtectionDesDonnees #Microsoft365 #PME #Cameroun
+```
+
+### Au choix — Conseil · inventaire de fin d’année
+
+![CP-3](CP-3-conseil.jpg)
+
+**Visuel :** Inventaire de fin d’année : 4 étapes pour un stock juste
+
+1. Fixez la date et bloquez entrées et sorties pendant le comptage.
+2. Comptez en binôme : l’un compte, l’autre note.
+3. Recomptez les écarts importants avant de valider.
+4. Enregistrez les quantités dans votre logiciel et analysez chaque écart.
+
+**Légende à publier :**
+
+```text
+Fin d’année, l’inventaire approche. C’est le moment où l’on découvre l’écart entre le stock du logiciel et ce qu’il y a vraiment dans le magasin, et où l’on regrette de n’avoir rien préparé.
+
+Un inventaire fiable se prépare : une date annoncée à l’avance, les mouvements bloqués pendant le comptage, des équipes en binôme, un second comptage pour les gros écarts. Ensuite, les quantités sont saisies dans le logiciel et chaque écart est expliqué : erreur de saisie, casse, perte ou vol. C’est cette analyse qui évite de retrouver les mêmes écarts l’an prochain.
+
+Votre stock informatique est-il juste ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Inventaire #GestionDesStocks #Odoo #PME #Douala
+```

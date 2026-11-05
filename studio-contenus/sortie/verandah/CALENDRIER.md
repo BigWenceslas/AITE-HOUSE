@@ -420,3 +420,56 @@ Retrouvons-nous à La Vérandah, à Makepe, en face de l’église Sainte Moniqu
 
 #LaVerandah #Douala #Makepe #BonJeudi #Entraide
 ```
+
+## Le conseil de la cave — au choix
+
+### Au choix — Pensée (photo ronde) · température du vin rouge
+
+![VD-CP-1](VD-CP-1-vd-sombre.jpg)
+
+**Visuel :** Le conseil de la cave — À Douala, la « température ambiante » est trop chaude pour un vin rouge : quinze minutes au frais, et il retrouve son équilibre.
+
+**Légende à publier :**
+
+```text
+Le vin rouge se sert en général entre 14 et 18 °C selon le vin. Dans nos salles à 28 °C, il paraît vite lourd et l’alcool ressort. Quelques minutes au réfrigérateur ou dans un seau d’eau fraîche suffisent pour lui rendre son fruit.
+
+Retrouvez-nous à La Vérandah, à Makepe, en face de l’église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98
+L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
+
+#LaVerandah #Douala #Makepe #ConseilVin #Moderation
+```
+
+### Au choix — Pensée (photo ronde) · service du champagne
+
+![VD-CP-2](VD-CP-2-vd-sombre.jpg)
+
+**Visuel :** Le conseil de la cave — Le champagne se sert entre 8 et 10 °C, dans une flûte tenue par le pied.
+
+**Légende à publier :**
+
+```text
+Trop froid, le champagne perd ses arômes ; trop chaud, la mousse déborde. Entre 8 et 10 °C, il est à son meilleur. Et tenir la flûte par le pied évite de réchauffer le vin avec la main.
+
+Retrouvez-nous à La Vérandah, à Makepe, en face de l’église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98
+L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
+
+#LaVerandah #Douala #Champagne #ArtDeRecevoir #Moderation
+```
+
+### Au choix — Pensée (photo ronde) · consommation responsable
+
+![VD-CP-3](VD-CP-3-vd-sombre.jpg)
+
+**Visuel :** Le conseil de la cave — Entre deux verres, un verre d’eau : le secret d’une soirée réussie.
+
+**Légende à publier :**
+
+```text
+Un verre d’eau entre deux verres, c’est le geste simple des bonnes soirées : on savoure mieux, on profite plus longtemps de la compagnie, et l’on rentre en forme. Sans oublier la règle d’or : celui qui conduit ne boit pas.
+
+Retrouvez-nous à La Vérandah, à Makepe, en face de l’église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98
+L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
+
+#LaVerandah #Douala #Makepe #Moderation #SoireeReussie
+```

@@ -1547,6 +1547,96 @@
         "#PME",
         "#Douala"
       ]
+    },
+    {
+      "serie": "Conseils pratiques — au choix",
+      "semaine": null,
+      "jour": "",
+      "moment": "au choix",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-1",
+      "etiquette": "Conseil réseau",
+      "photo": "ndop-pied",
+      "theme": "Wi-Fi d’entreprise",
+      "titre": "Wi-Fi au bureau : 4 règles pour *protéger le réseau*",
+      "points": [
+        "Créez un réseau invité séparé pour les visiteurs et les téléphones.",
+        "Changez le mot de passe d’administration fourni avec la box ou le routeur.",
+        "Choisissez le chiffrement WPA2 ou WPA3, jamais un réseau ouvert.",
+        "Mettez à jour le logiciel du routeur et changez la clé Wi-Fi au départ d’un employé."
+      ],
+      "legende": "Le mot de passe Wi-Fi du bureau circule souvent depuis des années : anciens stagiaires, visiteurs, livreurs. Or celui qui est sur votre réseau peut voir vos imprimantes, vos dossiers partagés, parfois votre caisse ou votre logiciel de gestion.\n\nQuatre réglages suffisent à fermer la porte : un réseau invité séparé, un mot de passe d’administration personnalisé, un chiffrement WPA2 ou WPA3, et un routeur à jour. Changez aussi la clé Wi-Fi quand un collaborateur quitte l’entreprise.\n\nSavez-vous qui est connecté à votre réseau en ce moment ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Reseau",
+        "#Cybersecurite",
+        "#WiFi",
+        "#PME",
+        "#Douala"
+      ]
+    },
+    {
+      "serie": "Conseils pratiques — au choix",
+      "semaine": null,
+      "jour": "",
+      "moment": "au choix",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-2",
+      "etiquette": "Conseil sécurité",
+      "photo": "veste-pied",
+      "theme": "ordinateurs portables",
+      "titre": "PC portable volé : 4 précautions *à prendre avant*",
+      "points": [
+        "Chiffrez le disque (BitLocker sur Windows Pro) pour rendre les données illisibles.",
+        "Activez le verrouillage automatique de l’écran après quelques minutes.",
+        "Sauvegardez les dossiers de travail dans le cloud de l’entreprise, pas sur le bureau.",
+        "Notez le numéro de série et activez la localisation de l’appareil."
+      ],
+      "legende": "Un ordinateur portable se remplace. Les données qu’il contient, beaucoup moins : contrats, fichiers clients, accès à la messagerie et aux comptes bancaires. Et un appareil volé sans protection, c’est tout cela entre de mauvaises mains.\n\nLe chiffrement du disque rend les données illisibles sans le mot de passe. Le verrouillage automatique protège l’écran laissé ouvert. La sauvegarde dans le cloud de l’entreprise évite de tout perdre. Et la localisation ou le blocage à distance donnent une chance de réagir vite.\n\nVos ordinateurs portables sont-ils prêts à être perdus ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Cybersecurite",
+        "#ProtectionDesDonnees",
+        "#Microsoft365",
+        "#PME",
+        "#Cameroun"
+      ]
+    },
+    {
+      "serie": "Conseils pratiques — au choix",
+      "semaine": null,
+      "jour": "",
+      "moment": "au choix",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-3",
+      "etiquette": "Conseil stock",
+      "photo": "tunique",
+      "theme": "inventaire de fin d’année",
+      "titre": "Inventaire de fin d’année : 4 étapes pour *un stock juste*",
+      "points": [
+        "Fixez la date et bloquez entrées et sorties pendant le comptage.",
+        "Comptez en binôme : l’un compte, l’autre note.",
+        "Recomptez les écarts importants avant de valider.",
+        "Enregistrez les quantités dans votre logiciel et analysez chaque écart."
+      ],
+      "legende": "Fin d’année, l’inventaire approche. C’est le moment où l’on découvre l’écart entre le stock du logiciel et ce qu’il y a vraiment dans le magasin, et où l’on regrette de n’avoir rien préparé.\n\nUn inventaire fiable se prépare : une date annoncée à l’avance, les mouvements bloqués pendant le comptage, des équipes en binôme, un second comptage pour les gros écarts. Ensuite, les quantités sont saisies dans le logiciel et chaque écart est expliqué : erreur de saisie, casse, perte ou vol. C’est cette analyse qui évite de retrouver les mêmes écarts l’an prochain.\n\nVotre stock informatique est-il juste ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Inventaire",
+        "#GestionDesStocks",
+        "#Odoo",
+        "#PME",
+        "#Douala"
+      ]
     }
   ]
 }
