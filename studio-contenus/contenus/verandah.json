@@ -600,6 +600,72 @@
         "#Moderation",
         "#SoireeReussie"
       ]
+    },
+    {
+      "serie": "Le conseil de la cave — au choix",
+      "jour": "",
+      "moment": "au choix",
+      "modele": "vd-sombre",
+      "etiquette": "Le conseil de la cave",
+      "titre": "",
+      "points": [],
+      "alcool": true,
+      "id": "VD-CP-4",
+      "photo": "ndop-pied",
+      "theme": "dégustation du whisky",
+      "texte": "Un whisky se déguste lentement, en petite quantité : quelques gouttes d’eau suffisent à *libérer ses arômes*.",
+      "legende": "Le whisky ne se boit pas d’un trait. Servi en petite quantité, il se découvre à petites gorgées ; une ou deux gouttes d’eau fraîche ouvrent ses arômes. Les glaçons, eux, le refroidissent et le diluent : à chacun de choisir, en connaissance de cause.\n\nRetrouvez-nous à La Vérandah, à Makepe, en face de l’église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98\nL’abus d’alcool est dangereux pour la santé. À consommer avec modération.",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Whisky",
+        "#Degustation",
+        "#Moderation"
+      ]
+    },
+    {
+      "serie": "Le conseil de la cave — au choix",
+      "jour": "",
+      "moment": "au choix",
+      "modele": "vd-sombre",
+      "etiquette": "Le conseil de la cave",
+      "titre": "",
+      "points": [],
+      "alcool": true,
+      "id": "VD-CP-5",
+      "photo": "tunique",
+      "theme": "service de la bière",
+      "texte": "Une bière se sert dans un verre incliné, puis redressé : une belle mousse *garde ses arômes*.",
+      "legende": "Verre incliné au début, pour éviter trop de mousse ; verre redressé à la fin, pour en former un col de deux doigts. Cette mousse protège la bière et garde ses arômes jusqu’à la dernière gorgée. Et un verre bien rincé à l’eau froide fait toute la différence.\n\nRetrouvez-nous à La Vérandah, à Makepe, en face de l’église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98\nL’abus d’alcool est dangereux pour la santé. À consommer avec modération.",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#Biere",
+        "#Moderation"
+      ]
+    },
+    {
+      "serie": "Le conseil de la cave — au choix",
+      "jour": "",
+      "moment": "au choix",
+      "modele": "vd-sombre",
+      "etiquette": "Le conseil de la cave",
+      "titre": "",
+      "points": [],
+      "alcool": true,
+      "id": "VD-CP-6",
+      "photo": "blazer",
+      "theme": "conservation du vin",
+      "texte": "Une bouteille de vin se garde couchée, à l’abri de la chaleur et de *la lumière*.",
+      "legende": "Couchée, la bouteille garde son bouchon humide et étanche. À l’abri de la chaleur et de la lumière, le vin vieillit sans s’abîmer. À Douala, évitez la cuisine et le dessus du réfrigérateur : choisissez l’endroit le plus frais et le plus sombre de la maison.\n\nRetrouvez-nous à La Vérandah, à Makepe, en face de l’église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98\nL’abus d’alcool est dangereux pour la santé. À consommer avec modération.",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#ConseilVin",
+        "#Cave",
+        "#Moderation"
+      ]
     }
   ]
 }

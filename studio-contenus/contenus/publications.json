@@ -1637,6 +1637,96 @@
         "#PME",
         "#Douala"
       ]
+    },
+    {
+      "serie": "Conseils pratiques — au choix",
+      "semaine": null,
+      "jour": "",
+      "moment": "au choix",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-4",
+      "etiquette": "Conseil équipement",
+      "photo": "boubou",
+      "theme": "coupures de courant",
+      "titre": "Coupures de courant : 4 réflexes pour *protéger vos équipements*",
+      "points": [
+        "Branchez serveur, box et caisse sur un onduleur adapté à leur puissance.",
+        "Ajoutez une protection contre les surtensions sur les prises sensibles.",
+        "Programmez l’arrêt automatique du serveur quand la batterie faiblit.",
+        "Testez l’onduleur chaque trimestre : une batterie usée ne protège plus."
+      ],
+      "legende": "Une coupure, puis le courant revient d’un coup : c’est souvent là qu’un disque dur, une box ou une caisse lâche. Sans compter les fichiers corrompus quand un serveur s’éteint brutalement.\n\nL’onduleur laisse le temps d’arrêter proprement les appareils, la protection contre les surtensions absorbe les retours de courant, et l’arrêt automatique évite d’avoir à courir au bureau la nuit. Encore faut-il que la batterie tienne : un test régulier dit si elle est encore bonne.\n\nVos équipements tiendraient-ils la prochaine coupure ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Infrastructure",
+        "#Onduleur",
+        "#ContinuiteDActivite",
+        "#PME",
+        "#Douala"
+      ]
+    },
+    {
+      "serie": "Conseils pratiques — au choix",
+      "semaine": null,
+      "jour": "",
+      "moment": "au choix",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-5",
+      "etiquette": "Conseil messagerie",
+      "photo": "ndop",
+      "theme": "adresse e-mail professionnelle",
+      "titre": "E-mail : 4 raisons d’utiliser *votre nom de domaine*",
+      "points": [
+        "Vos clients reconnaissent l’entreprise, pas une adresse Gmail ou Yahoo.",
+        "Vous gardez les comptes et les échanges quand un employé s’en va.",
+        "Vous créez des adresses par service : facturation, commandes, contact.",
+        "Vous protégez mieux vos comptes : double authentification, règles de sécurité."
+      ],
+      "legende": "Une facture envoyée depuis une adresse Gmail personnelle inspire moins confiance qu’un message signé contact@votre-entreprise. Et le jour où l’employé quitte l’entreprise, ses échanges avec vos clients partent avec lui.\n\nUne messagerie à votre nom de domaine règle les deux : les comptes appartiennent à l’entreprise, vous pouvez créer des adresses par service et appliquer les mêmes règles de sécurité à tous, comme la double authentification.\n\nVos e-mails portent-ils le nom de votre entreprise ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Microsoft365",
+        "#Messagerie",
+        "#TransformationDigitale",
+        "#PME",
+        "#Cameroun"
+      ]
+    },
+    {
+      "serie": "Conseils pratiques — au choix",
+      "semaine": null,
+      "jour": "",
+      "moment": "au choix",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-6",
+      "etiquette": "Conseil sécurité",
+      "photo": "veste-pied",
+      "theme": "vidéosurveillance",
+      "titre": "Vidéosurveillance : 4 points à vérifier *avant d’installer*",
+      "points": [
+        "Filmez les zones qui comptent : entrées, caisse, magasin.",
+        "Fixez la durée de conservation des enregistrements et l’espace nécessaire.",
+        "Changez le mot de passe par défaut de l’enregistreur et des caméras.",
+        "Informez employés et visiteurs par un panneau visible."
+      ],
+      "legende": "Beaucoup de caméras filment le plafond ou un couloir sans intérêt, et l’on découvre le jour d’un incident que les images ont été écrasées au bout de trois jours.\n\nUn bon projet commence par la liste des zones à couvrir, puis la durée de conservation souhaitée, qui détermine la capacité de l’enregistreur. Changez aussi les mots de passe d’usine : une caméra laissée avec son mot de passe par défaut peut être vue depuis Internet. Et prévenez par un panneau : c’est aussi un moyen de dissuasion.\n\nVos caméras filment-elles vraiment ce qui compte ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Videosurveillance",
+        "#Securite",
+        "#ControleDAcces",
+        "#PME",
+        "#Douala"
+      ]
     }
   ]
 }

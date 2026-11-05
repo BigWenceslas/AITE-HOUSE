@@ -1344,3 +1344,72 @@ Votre stock informatique est-il juste ? Diagnostic Digital 360° gratuit (90 min
 
 #AITEConsulting #Inventaire #GestionDesStocks #Odoo #PME #Douala
 ```
+
+### Au choix — Conseil · coupures de courant
+
+![CP-4](CP-4-conseil.jpg)
+
+**Visuel :** Coupures de courant : 4 réflexes pour protéger vos équipements
+
+1. Branchez serveur, box et caisse sur un onduleur adapté à leur puissance.
+2. Ajoutez une protection contre les surtensions sur les prises sensibles.
+3. Programmez l’arrêt automatique du serveur quand la batterie faiblit.
+4. Testez l’onduleur chaque trimestre : une batterie usée ne protège plus.
+
+**Légende à publier :**
+
+```text
+Une coupure, puis le courant revient d’un coup : c’est souvent là qu’un disque dur, une box ou une caisse lâche. Sans compter les fichiers corrompus quand un serveur s’éteint brutalement.
+
+L’onduleur laisse le temps d’arrêter proprement les appareils, la protection contre les surtensions absorbe les retours de courant, et l’arrêt automatique évite d’avoir à courir au bureau la nuit. Encore faut-il que la batterie tienne : un test régulier dit si elle est encore bonne.
+
+Vos équipements tiendraient-ils la prochaine coupure ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Infrastructure #Onduleur #ContinuiteDActivite #PME #Douala
+```
+
+### Au choix — Conseil · adresse e-mail professionnelle
+
+![CP-5](CP-5-conseil.jpg)
+
+**Visuel :** E-mail : 4 raisons d’utiliser votre nom de domaine
+
+1. Vos clients reconnaissent l’entreprise, pas une adresse Gmail ou Yahoo.
+2. Vous gardez les comptes et les échanges quand un employé s’en va.
+3. Vous créez des adresses par service : facturation, commandes, contact.
+4. Vous protégez mieux vos comptes : double authentification, règles de sécurité.
+
+**Légende à publier :**
+
+```text
+Une facture envoyée depuis une adresse Gmail personnelle inspire moins confiance qu’un message signé contact@votre-entreprise. Et le jour où l’employé quitte l’entreprise, ses échanges avec vos clients partent avec lui.
+
+Une messagerie à votre nom de domaine règle les deux : les comptes appartiennent à l’entreprise, vous pouvez créer des adresses par service et appliquer les mêmes règles de sécurité à tous, comme la double authentification.
+
+Vos e-mails portent-ils le nom de votre entreprise ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Microsoft365 #Messagerie #TransformationDigitale #PME #Cameroun
+```
+
+### Au choix — Conseil · vidéosurveillance
+
+![CP-6](CP-6-conseil.jpg)
+
+**Visuel :** Vidéosurveillance : 4 points à vérifier avant d’installer
+
+1. Filmez les zones qui comptent : entrées, caisse, magasin.
+2. Fixez la durée de conservation des enregistrements et l’espace nécessaire.
+3. Changez le mot de passe par défaut de l’enregistreur et des caméras.
+4. Informez employés et visiteurs par un panneau visible.
+
+**Légende à publier :**
+
+```text
+Beaucoup de caméras filment le plafond ou un couloir sans intérêt, et l’on découvre le jour d’un incident que les images ont été écrasées au bout de trois jours.
+
+Un bon projet commence par la liste des zones à couvrir, puis la durée de conservation souhaitée, qui détermine la capacité de l’enregistreur. Changez aussi les mots de passe d’usine : une caméra laissée avec son mot de passe par défaut peut être vue depuis Internet. Et prévenez par un panneau : c’est aussi un moyen de dissuasion.
+
+Vos caméras filment-elles vraiment ce qui compte ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Videosurveillance #Securite #ControleDAcces #PME #Douala
+```

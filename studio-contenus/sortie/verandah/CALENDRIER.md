@@ -473,3 +473,54 @@ L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
 
 #LaVerandah #Douala #Makepe #Moderation #SoireeReussie
 ```
+
+### Au choix — Pensée (photo ronde) · dégustation du whisky
+
+![VD-CP-4](VD-CP-4-vd-sombre.jpg)
+
+**Visuel :** Le conseil de la cave — Un whisky se déguste lentement, en petite quantité : quelques gouttes d’eau suffisent à libérer ses arômes.
+
+**Légende à publier :**
+
+```text
+Le whisky ne se boit pas d’un trait. Servi en petite quantité, il se découvre à petites gorgées ; une ou deux gouttes d’eau fraîche ouvrent ses arômes. Les glaçons, eux, le refroidissent et le diluent : à chacun de choisir, en connaissance de cause.
+
+Retrouvez-nous à La Vérandah, à Makepe, en face de l’église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98
+L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
+
+#LaVerandah #Douala #Whisky #Degustation #Moderation
+```
+
+### Au choix — Pensée (photo ronde) · service de la bière
+
+![VD-CP-5](VD-CP-5-vd-sombre.jpg)
+
+**Visuel :** Le conseil de la cave — Une bière se sert dans un verre incliné, puis redressé : une belle mousse garde ses arômes.
+
+**Légende à publier :**
+
+```text
+Verre incliné au début, pour éviter trop de mousse ; verre redressé à la fin, pour en former un col de deux doigts. Cette mousse protège la bière et garde ses arômes jusqu’à la dernière gorgée. Et un verre bien rincé à l’eau froide fait toute la différence.
+
+Retrouvez-nous à La Vérandah, à Makepe, en face de l’église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98
+L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
+
+#LaVerandah #Douala #Makepe #Biere #Moderation
+```
+
+### Au choix — Pensée (photo ronde) · conservation du vin
+
+![VD-CP-6](VD-CP-6-vd-sombre.jpg)
+
+**Visuel :** Le conseil de la cave — Une bouteille de vin se garde couchée, à l’abri de la chaleur et de la lumière.
+
+**Légende à publier :**
+
+```text
+Couchée, la bouteille garde son bouchon humide et étanche. À l’abri de la chaleur et de la lumière, le vin vieillit sans s’abîmer. À Douala, évitez la cuisine et le dessus du réfrigérateur : choisissez l’endroit le plus frais et le plus sombre de la maison.
+
+Retrouvez-nous à La Vérandah, à Makepe, en face de l’église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98
+L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
+
+#LaVerandah #Douala #ConseilVin #Cave #Moderation
+```
