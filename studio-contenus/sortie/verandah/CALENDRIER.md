@@ -402,3 +402,21 @@ Nous vous attendons à La Vérandah, à Makepe, en face de l’église Sainte Mo
 
 #LaVerandah #Douala #Makepe #BonMercredi #Partage
 ```
+
+## Jeudi 5 novembre
+
+### Jeudi 17h — Pensée (photo ronde) · citation · La Fontaine, L’Âne et le Chien
+
+![VD-JEU-5-11](VD-JEU-5-11-vd-sombre.jpg)
+
+**Visuel :** Bon jeudi — « Il se faut entr’aider, c’est la loi de nature. »
+
+**Légende à publier :**
+
+```text
+« Il se faut entr’aider, c’est la loi de nature. » Le premier vers de la fable « L’Âne et le Chien », de Jean de La Fontaine. Un collègue qui donne un coup de main, un ami qui écoute, un voisin qui rend service : c’est souvent ce qui fait tenir la semaine.
+
+Retrouvons-nous à La Vérandah, à Makepe, en face de l’église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #Douala #Makepe #BonJeudi #Entraide
+```

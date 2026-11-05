@@ -1253,3 +1253,23 @@ Vous préparez la dématérialisation de vos factures, de votre courrier ou de v
 
 #AITEConsulting #Dematerialisation #GED #TransformationDigitale #PME #Douala
 ```
+
+## Jeudi 5 novembre
+
+### Jeudi 7h30 — Fond sombre · citation · Boileau, L’Art poétique (1674)
+
+![JEU-5-11](JEU-5-11-sombre.jpg)
+
+**Visuel :** « Hâtez-vous lentement, et, sans perdre courage, vingt fois sur le métier remettez votre ouvrage. »
+
+**Légende à publier :**
+
+```text
+« Hâtez-vous lentement, et, sans perdre courage, vingt fois sur le métier remettez votre ouvrage. » Nicolas Boileau donnait ce conseil aux écrivains dans L’Art poétique, en 1674. Il vaut pour tout travail qui doit durer.
+
+Dans une entreprise, un outil, une procédure ou un tableau de bord est rarement juste du premier coup. Ce qui le rend fiable, ce sont les retouches : écouter ceux qui l’utilisent, corriger, recommencer. Ce jeudi, demandez à votre équipe ce qui la gêne le plus dans l’outil qu’elle utilise chaque jour, et choisissez une seule amélioration à faire avant la fin du mois.
+
+Vos outils de gestion méritent-ils une remise sur le métier ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Motivation #Citation #AmeliorationContinue #PME #Douala
+```

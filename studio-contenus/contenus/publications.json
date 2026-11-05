@@ -1521,6 +1521,32 @@
         "#PME",
         "#Douala"
       ]
+    },
+    {
+      "id": "JEU-5-11",
+      "serie": "Jeudi 5 novembre",
+      "semaine": null,
+      "jour": "jeudi",
+      "moment": "jeudi 7h30",
+      "modele": "sombre",
+      "theme": "citation · Boileau, L’Art poétique (1674)",
+      "etiquette": "Motivation du jeudi",
+      "texte": "« Hâtez-vous lentement, et, sans perdre courage, vingt fois sur le métier *remettez votre ouvrage*. »",
+      "auteur": "Nicolas Boileau",
+      "titre": "",
+      "points": [],
+      "numero": null,
+      "photo": "veste-pied",
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "legende": "« Hâtez-vous lentement, et, sans perdre courage, vingt fois sur le métier remettez votre ouvrage. » Nicolas Boileau donnait ce conseil aux écrivains dans L’Art poétique, en 1674. Il vaut pour tout travail qui doit durer.\n\nDans une entreprise, un outil, une procédure ou un tableau de bord est rarement juste du premier coup. Ce qui le rend fiable, ce sont les retouches : écouter ceux qui l’utilisent, corriger, recommencer. Ce jeudi, demandez à votre équipe ce qui la gêne le plus dans l’outil qu’elle utilise chaque jour, et choisissez une seule amélioration à faire avant la fin du mois.\n\nVos outils de gestion méritent-ils une remise sur le métier ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Motivation",
+        "#Citation",
+        "#AmeliorationContinue",
+        "#PME",
+        "#Douala"
+      ]
     }
   ]
 }
