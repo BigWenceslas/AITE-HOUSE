@@ -72,3 +72,6 @@ Proposer **toujours 3 publications au choix** pour AITE (et 3 pour La Vérandah 
 marques sont demandées), de préférence des **conseils pratiques sur les domaines d'activité**
 (ERP, stock, paie, réseaux, sécurité, Microsoft 365, dématérialisation…). Le DG a jugé trop
 littéraires les citations anciennes (Boileau, La Fontaine).
+
+Ton : **français camerounais**, chaleureux et direct (« la famille », « on est ensemble », « ça va gâter »,
+« mola », « les gars »…), sans caricature ; pour AITE, visuels sobres et légendes au ton local.

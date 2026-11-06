@@ -531,14 +531,14 @@ L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
 
 ![VD-CP-7](VD-CP-7-vd-sombre.jpg)
 
-**Visuel :** Le conseil de la cave — Ce vendredi, avant de sortir, choisissez celui qui conduira et ne boira pas.
+**Visuel :** Le conseil de la cave — Mola, ce soir on sort. Mais d’abord : qui conduit et ne boit pas ?
 
 **Légende à publier :**
 
 ```text
-Le week-end commence bien quand il finit bien. Avant de sortir entre amis ou entre collègues, décidez qui conduira et restera à l’eau ou aux boissons sans alcool, ou prévoyez un taxi pour le retour. C’est le geste qui permet à chacun de profiter de la soirée l’esprit tranquille.
+C’est vendredi, le week-end est là ! Avant de sortir avec les gars ou les collègues, on décide qui va conduire et rester au jus ou à l’eau, ou bien on prévoit le taxi pour rentrer. Comme ça, tout le monde profite, et tout le monde rentre en forme.
 
-Retrouvez-nous à La Vérandah, à Makepe, en face de l’église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98
+On vous attend à La Vérandah, à Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
 L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
 
 #LaVerandah #Douala #Makepe #BonWeekEnd #Moderation
@@ -548,14 +548,14 @@ L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
 
 ![VD-CP-8](VD-CP-8-vd-sombre.jpg)
 
-**Visuel :** Le conseil de la cave — Pour ouvrir le champagne en douceur, tenez le bouchon et tournez la bouteille.
+**Visuel :** Le conseil de la cave — Le champagne, on ne le fait pas sauter : on tient le bouchon et on tourne la bouteille.
 
 **Légende à publier :**
 
 ```text
-Le bouchon qui saute et la mousse qui déborde, c’est spectaculaire mais risqué. Le geste des professionnels : bouteille inclinée, pouce sur le bouchon, on tourne lentement la bouteille et non le bouchon. Il se libère avec un léger soupir, sans perdre une goutte, et sans viser personne.
+Le bouchon qui part comme une balle et la mousse partout, ça fait le show, mais ça peut blesser quelqu’un et on perd le champagne. Le vrai geste : bouteille penchée, pouce sur le bouchon, on tourne doucement la bouteille, pas le bouchon. Il sort avec un petit « pschitt », sans gâter une goutte.
 
-Retrouvez-nous à La Vérandah, à Makepe, en face de l’église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98
+On vous attend à La Vérandah, à Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
 L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
 
 #LaVerandah #Douala #Champagne #ArtDeRecevoir #Moderation
@@ -565,14 +565,14 @@ L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
 
 ![VD-CP-9](VD-CP-9-vd-sombre.jpg)
 
-**Visuel :** Le conseil de la cave — Avec un poisson grillé, un vin blanc sec bien frais : l’accord qui ne déçoit pas.
+**Visuel :** Le conseil de la cave — Poisson braisé ? Un vin blanc sec bien frais, et c’est validé.
 
 **Légende à publier :**
 
 ```text
-Le poisson grillé aime la fraîcheur et la légèreté. Un vin blanc sec, servi entre 8 et 12 °C, met en valeur sa chair sans l’écraser, là où un rouge puissant le dominerait. Pour un poisson très épicé, un rosé frais est aussi une belle option.
+Le poisson braisé aime la fraîcheur. Un vin blanc sec servi bien frais, entre 8 et 12 °C, relève la chair sans l’écraser, alors qu’un rouge trop fort va tout couvrir. Si le piment est bien chaud, un rosé frais passe aussi très bien.
 
-Retrouvez-nous à La Vérandah, à Makepe, en face de l’église Sainte Monique, Douala. Appels et WhatsApp : 656 80 10 98
+On vous attend à La Vérandah, à Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
 L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
 
 #LaVerandah #Douala #AccordMetsVins #ConseilVin #Moderation

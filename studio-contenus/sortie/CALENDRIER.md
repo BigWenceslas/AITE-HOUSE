@@ -1420,21 +1420,21 @@ Vos caméras filment-elles vraiment ce qui compte ? Diagnostic Digital 360° gra
 
 ![CP-7](CP-7-conseil.jpg)
 
-**Visuel :** Avant le week-end : 4 vérifications avant de partir
+**Visuel :** Vendredi : avant de quitter le bureau, on vérifie d’abord
 
-1. Vérifiez que la sauvegarde de la semaine s’est bien terminée.
-2. Installez les mises à jour en attente avant d’éteindre les postes.
-3. Verrouillez les sessions et rangez les ordinateurs portables.
-4. Débranchez les appareils non essentiels en cas d’orage ou de coupure.
+1. Regardez si la sauvegarde de la semaine a bien tourné.
+2. Lancez les mises à jour avant d’éteindre, pas lundi à 8 h.
+3. Verrouillez les sessions et rangez les portables : rien ne traîne.
+4. Le courant peut partir, l’orage gronder : débranchez ce qui ne sert pas.
 
 **Légende à publier :**
 
 ```text
-Le vendredi soir, on part vite. C’est pourtant le meilleur moment pour éviter les mauvaises surprises du lundi : une sauvegarde qui avait échoué, un poste bloqué par des mises à jour, un portable oublié sur un bureau.
+C’est vendredi, la famille ! On a envie de fermer vite et d’aller se détendre. Mais si on part comme ça, c’est lundi matin que ça gâte : la sauvegarde qui n’a pas tourné, le PC qui bloque sur les mises à jour, le portable oublié sur la table.
 
-Dix minutes suffisent : un coup d’œil au rapport de sauvegarde, les mises à jour lancées avant d’éteindre, les sessions verrouillées et les appareils fragiles débranchés si un orage menace. C’est simple, et c’est souvent ce qui sépare un lundi normal d’un lundi perdu.
+Prenez dix petites minutes : on regarde le rapport de sauvegarde, on lance les mises à jour, on verrouille les sessions et on débranche les appareils fragiles si le courant fait ses histoires ou si l’orage menace. Lundi, vous allez nous remercier.
 
-Votre sauvegarde a-t-elle vraiment tourné cette semaine ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+Votre sauvegarde a-t-elle vraiment tourné cette semaine ? On est ensemble : Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
 
 #AITEConsulting #Sauvegarde #Infogerance #BonnesPratiques #PME #Douala
 ```
@@ -1443,21 +1443,21 @@ Votre sauvegarde a-t-elle vraiment tourné cette semaine ? Diagnostic Digital 36
 
 ![CP-8](CP-8-conseil.jpg)
 
-**Visuel :** Mots de passe : 4 règles pour toute l’équipe
+**Visuel :** Mots de passe : on arrête le même partout
 
-1. Choisissez une phrase de passe longue plutôt qu’un mot court et compliqué.
-2. Utilisez un mot de passe différent pour chaque compte important.
-3. Rangez-les dans un gestionnaire de mots de passe, pas dans un carnet.
-4. Ne transmettez jamais un mot de passe par WhatsApp ou par e-mail.
+1. Prenez une phrase longue, pas « 1234 » ni votre date de naissance.
+2. Un compte, un mot de passe : si l’un tombe, les autres restent fermés.
+3. Rangez-les dans un gestionnaire de mots de passe, pas dans le carnet du tiroir.
+4. Ne les envoyez jamais par WhatsApp, même au collègue de confiance.
 
 **Légende à publier :**
 
 ```text
-« 123456 », le nom de l’entreprise suivi de l’année, le même mot de passe partout, envoyé par WhatsApp au collègue qui en a besoin : ce sont les habitudes qui ouvrent la porte aux pirates, bien plus que des attaques sophistiquées.
+Soyons honnêtes : chez beaucoup d’entre nous, le mot de passe, c’est « 123456 », le nom de la boîte suivi de l’année ou la date de naissance du petit. Et quand un collègue en a besoin, on le lui envoie par WhatsApp. C’est comme ça que les pirates rentrent, pas avec des attaques de film.
 
-Une phrase de passe longue est à la fois plus solide et plus facile à retenir. Un mot de passe par compte évite qu’une fuite ouvre tout le reste. Un gestionnaire de mots de passe fait le travail de mémoire à votre place, et permet de partager un accès sans l’écrire en clair.
+Une phrase longue, c’est plus solide et plus facile à retenir. Un mot de passe différent par compte, et une fuite ne vous coûte pas tout. Un gestionnaire de mots de passe garde tout à votre place et permet de partager un accès sans l’écrire en clair.
 
-Combien de vos comptes partagent le même mot de passe ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+Combien de vos comptes ont le même mot de passe ? Ne restez pas comme ça : Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
 
 #AITEConsulting #Cybersecurite #MotsDePasse #Sensibilisation #PME #Cameroun
 ```
@@ -1466,19 +1466,19 @@ Combien de vos comptes partagent le même mot de passe ? Diagnostic Digital 360�
 
 ![CP-9](CP-9-conseil.jpg)
 
-**Visuel :** Clôture de l’année : 4 chantiers à lancer dès novembre
+**Visuel :** Clôture de l’année : n’attendez pas décembre
 
-1. Mettez à jour les rapprochements bancaires, mois par mois.
-2. Relancez dès maintenant les factures clients échues.
-3. Lettrez les comptes fournisseurs et réclamez les factures manquantes.
-4. Planifiez la date de l’inventaire et les équipes de comptage.
+1. Mettez les rapprochements bancaires à jour, mois après mois.
+2. Relancez maintenant les clients qui traînent avec les factures.
+3. Lettrez les fournisseurs et réclamez les factures qui manquent.
+4. Fixez déjà la date de l’inventaire et qui va compter.
 
 **Légende à publier :**
 
 ```text
-La clôture de l’exercice se joue rarement en décembre : elle se prépare en novembre. Attendre le 31 décembre, c’est découvrir en janvier des relevés non rapprochés, des factures introuvables et des créances qu’il est trop tard pour relancer.
+La fin d’année arrive vite, et c’est toujours la même histoire : en janvier, on court derrière des relevés pas rapprochés, des factures introuvables et des clients qui disent « on va voir ». La clôture, ça se prépare dès novembre.
 
-Quatre chantiers à ouvrir dès maintenant : les rapprochements bancaires à jour, les relances clients, le lettrage des comptes fournisseurs et la date de l’inventaire fixée avec les équipes. Votre comptable, ou votre cabinet, vous dira merci.
+Quatre chantiers à ouvrir maintenant : les rapprochements bancaires à jour, les relances clients, le lettrage des fournisseurs et la date de l’inventaire fixée avec les équipes. Votre comptable va vous dire merci, et vous allez dormir tranquille.
 
 Votre clôture de fin d’année est-elle prête ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
 

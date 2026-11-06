@@ -43,3 +43,6 @@ Proposer **toujours 3 publications au choix**, de préférence des **conseils pr
 métier** (service et conservation des vins et champagnes, accords, consommation responsable,
 accueil) : modèle `vd-sombre`, étiquette « Le conseil de la cave », une phrase claire ; mention
 santé sur tout conseil qui parle d'alcool.
+
+Ton : **français camerounais**, chaleureux et direct (« la famille », « on est ensemble », « ça va gâter »,
+« mola », « les gars »…), sans caricature ; pour AITE, visuels sobres et légendes au ton local.
