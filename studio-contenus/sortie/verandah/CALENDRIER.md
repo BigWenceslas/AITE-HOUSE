@@ -577,3 +577,56 @@ L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
 
 #LaVerandah #Douala #AccordMetsVins #ConseilVin #Moderation
 ```
+
+## Vendredi 6 novembre — au choix (2)
+
+### Vendredi — Pensée (photo ronde) · vin blanc et rosé frais, pas glacés
+
+![VD-CP-10](VD-CP-10-vd-sombre.jpg)
+
+**Visuel :** Le conseil de la cave — Le blanc et le rosé, on les sert frais, pas glacés : trop froid, le goût s’en va.
+
+**Légende à publier :**
+
+```text
+Chez nous, avec la chaleur, on a vite fait de laisser la bouteille dans le congélateur. Mais un vin trop froid ne dit plus rien : les arômes se ferment. Bien frais, autour de 8 à 12 °C, le blanc et le rosé gardent toute leur fraîcheur et tout leur goût.
+
+On vous attend à La Vérandah, à Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
+
+#LaVerandah #Douala #Makepe #ConseilDeLaCave #Moderation
+```
+
+### Vendredi — Pensée (photo ronde) · manger avant de boire
+
+![VD-CP-11](VD-CP-11-vd-sombre.jpg)
+
+**Visuel :** Le conseil de la cave — Mola, on mange d’abord ! Le ventre plein, la soirée dure plus longtemps.
+
+**Légende à publier :**
+
+```text
+Arriver le ventre vide et commencer directement par les verres, c’est le meilleur moyen de rentrer tôt… ou mal. Quelque chose de bon dans l’assiette, un verre d’eau à côté, et la soirée entre amis se savoure jusqu’au bout, tranquillement.
+
+On vous attend à La Vérandah, à Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
+
+#LaVerandah #Douala #Makepe #ConseilDeLaCave #Moderation
+```
+
+### Vendredi — Pensée (photo ronde) · demander conseil avant de choisir
+
+![VD-CP-12](VD-CP-12-vd-sombre.jpg)
+
+**Visuel :** Le conseil de la cave — Tu hésites devant la carte ? Demande conseil : on est là pour ça.
+
+**Légende à publier :**
+
+```text
+Rouge, blanc, rosé, whisky ou champagne : devant le choix, on prend souvent la même chose par habitude. Dites-nous ce que vous aimez, ce que vous mangez et avec qui vous êtes : on vous oriente vers la bouteille qui va avec le moment.
+
+On vous attend à La Vérandah, à Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
+
+#LaVerandah #Douala #Makepe #ConseilDeLaCave #Moderation
+```

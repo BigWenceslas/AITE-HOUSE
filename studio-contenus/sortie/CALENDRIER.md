@@ -1484,3 +1484,74 @@ Votre clôture de fin d’année est-elle prête ? Diagnostic Digital 360° grat
 
 #AITEConsulting #Comptabilite #ClotureAnnuelle #Odoo #PME #Douala
 ```
+
+## Vendredi 6 novembre — au choix (2)
+
+### Vendredi — Conseil · WhatsApp au bureau
+
+![CP-10](CP-10-conseil.jpg)
+
+**Visuel :** WhatsApp au boulot : 4 règles pour ne pas tout mélanger
+
+1. Prenez un numéro WhatsApp Business au nom de l’entreprise.
+2. Classez les clients avec des étiquettes : nouveau, devis envoyé, à relancer.
+3. N’envoyez pas les documents sensibles dans les groupes.
+4. Quand un employé part, le numéro et les clients restent à la société.
+
+**Légende à publier :**
+
+```text
+Chez nous, les affaires se font sur WhatsApp. Le problème, c’est quand tout passe par le téléphone personnel du commercial : le jour où il part, les clients partent avec lui, et personne ne sait où en étaient les devis.
+
+Un compte WhatsApp Business au nom de l’entreprise règle ça : un catalogue, des réponses rapides, des étiquettes pour suivre chaque client, et un numéro qui reste à la société. Ajoutez une règle simple : rien de confidentiel dans les groupes, et chaque conversation importante est notée dans votre logiciel.
+
+Vos clients écrivent-ils à l’entreprise, ou au téléphone de quelqu’un ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #WhatsAppBusiness #RelationClient #CRM #PME #Douala
+```
+
+### Vendredi — Conseil · arnaques au paiement
+
+![CP-11](CP-11-conseil.jpg)
+
+**Visuel :** Avant de payer : 4 réflexes contre les arnaques
+
+1. Un fournisseur change de compte ou de numéro ? Rappelez-le sur l’ancien numéro.
+2. Au-delà d’un montant fixé, deux personnes valident le paiement.
+3. Le « patron » demande un virement urgent par message ? Appelez-le d’abord.
+4. Gardez une trace écrite de chaque paiement et de qui l’a validé.
+
+**Légende à publier :**
+
+```text
+« C’est le patron, envoie vite 500 000 sur ce numéro, je t’explique après. » Ou bien : « Notre compte a changé, payez désormais ici. » Ces messages, beaucoup d’entreprises les ont déjà reçus, et certaines ont payé.
+
+La parade est simple et ne coûte rien : on ne paie jamais sur la seule foi d’un message. On rappelle la personne sur un numéro qu’on connaît déjà, on fait valider à deux au-delà d’un certain montant, et on garde la trace de chaque paiement. L’arnaqueur compte sur l’urgence : prenez le temps de vérifier.
+
+Qui valide les paiements chez vous ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Cybersecurite #Arnaque #MobileMoney #PME #Cameroun
+```
+
+### Vendredi — Conseil · site web d’entreprise
+
+![CP-12](CP-12-conseil.jpg)
+
+**Visuel :** Votre site web : 4 choses que le client cherche d’abord
+
+1. Votre numéro et un bouton WhatsApp, visibles dès l’ouverture.
+2. Votre adresse et un plan, pour qu’on vous trouve sans tourner.
+3. Ce que vous faites, en mots simples, pas en jargon.
+4. Des photos réelles de vos réalisations et de votre équipe.
+
+**Légende à publier :**
+
+```text
+Avant d’appeler, le client vérifie. Il tape votre nom sur Google, ouvre votre site sur son téléphone… et s’il ne trouve pas votre numéro en trois secondes, il appelle le concurrent.
+
+Un bon site d’entreprise, ce n’est pas une vitrine compliquée : c’est un numéro et un bouton WhatsApp bien visibles, une adresse claire avec un plan, vos services expliqués simplement, et de vraies photos de votre travail. Le tout lisible sur téléphone, parce que c’est là que vos clients regardent.
+
+Votre site donne-t-il envie de vous appeler ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #SiteWeb #Visibilite #TransformationDigitale #PME #Douala
+```
