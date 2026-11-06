@@ -1413,3 +1413,74 @@ Vos caméras filment-elles vraiment ce qui compte ? Diagnostic Digital 360° gra
 
 #AITEConsulting #Videosurveillance #Securite #ControleDAcces #PME #Douala
 ```
+
+## Vendredi 6 novembre — au choix
+
+### Vendredi — Conseil · vérifications de fin de semaine
+
+![CP-7](CP-7-conseil.jpg)
+
+**Visuel :** Avant le week-end : 4 vérifications avant de partir
+
+1. Vérifiez que la sauvegarde de la semaine s’est bien terminée.
+2. Installez les mises à jour en attente avant d’éteindre les postes.
+3. Verrouillez les sessions et rangez les ordinateurs portables.
+4. Débranchez les appareils non essentiels en cas d’orage ou de coupure.
+
+**Légende à publier :**
+
+```text
+Le vendredi soir, on part vite. C’est pourtant le meilleur moment pour éviter les mauvaises surprises du lundi : une sauvegarde qui avait échoué, un poste bloqué par des mises à jour, un portable oublié sur un bureau.
+
+Dix minutes suffisent : un coup d’œil au rapport de sauvegarde, les mises à jour lancées avant d’éteindre, les sessions verrouillées et les appareils fragiles débranchés si un orage menace. C’est simple, et c’est souvent ce qui sépare un lundi normal d’un lundi perdu.
+
+Votre sauvegarde a-t-elle vraiment tourné cette semaine ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Sauvegarde #Infogerance #BonnesPratiques #PME #Douala
+```
+
+### Vendredi — Conseil · mots de passe
+
+![CP-8](CP-8-conseil.jpg)
+
+**Visuel :** Mots de passe : 4 règles pour toute l’équipe
+
+1. Choisissez une phrase de passe longue plutôt qu’un mot court et compliqué.
+2. Utilisez un mot de passe différent pour chaque compte important.
+3. Rangez-les dans un gestionnaire de mots de passe, pas dans un carnet.
+4. Ne transmettez jamais un mot de passe par WhatsApp ou par e-mail.
+
+**Légende à publier :**
+
+```text
+« 123456 », le nom de l’entreprise suivi de l’année, le même mot de passe partout, envoyé par WhatsApp au collègue qui en a besoin : ce sont les habitudes qui ouvrent la porte aux pirates, bien plus que des attaques sophistiquées.
+
+Une phrase de passe longue est à la fois plus solide et plus facile à retenir. Un mot de passe par compte évite qu’une fuite ouvre tout le reste. Un gestionnaire de mots de passe fait le travail de mémoire à votre place, et permet de partager un accès sans l’écrire en clair.
+
+Combien de vos comptes partagent le même mot de passe ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Cybersecurite #MotsDePasse #Sensibilisation #PME #Cameroun
+```
+
+### Vendredi — Conseil · préparer la clôture annuelle
+
+![CP-9](CP-9-conseil.jpg)
+
+**Visuel :** Clôture de l’année : 4 chantiers à lancer dès novembre
+
+1. Mettez à jour les rapprochements bancaires, mois par mois.
+2. Relancez dès maintenant les factures clients échues.
+3. Lettrez les comptes fournisseurs et réclamez les factures manquantes.
+4. Planifiez la date de l’inventaire et les équipes de comptage.
+
+**Légende à publier :**
+
+```text
+La clôture de l’exercice se joue rarement en décembre : elle se prépare en novembre. Attendre le 31 décembre, c’est découvrir en janvier des relevés non rapprochés, des factures introuvables et des créances qu’il est trop tard pour relancer.
+
+Quatre chantiers à ouvrir dès maintenant : les rapprochements bancaires à jour, les relances clients, le lettrage des comptes fournisseurs et la date de l’inventaire fixée avec les équipes. Votre comptable, ou votre cabinet, vous dira merci.
+
+Votre clôture de fin d’année est-elle prête ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Comptabilite #ClotureAnnuelle #Odoo #PME #Douala
+```

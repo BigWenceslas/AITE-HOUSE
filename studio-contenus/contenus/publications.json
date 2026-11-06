@@ -1727,6 +1727,96 @@
         "#PME",
         "#Douala"
       ]
+    },
+    {
+      "serie": "Vendredi 6 novembre — au choix",
+      "semaine": null,
+      "jour": "vendredi",
+      "moment": "vendredi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-7",
+      "etiquette": "Conseil du vendredi",
+      "photo": "ndop-pied",
+      "theme": "vérifications de fin de semaine",
+      "titre": "Avant le week-end : 4 vérifications *avant de partir*",
+      "points": [
+        "Vérifiez que la sauvegarde de la semaine s’est bien terminée.",
+        "Installez les mises à jour en attente avant d’éteindre les postes.",
+        "Verrouillez les sessions et rangez les ordinateurs portables.",
+        "Débranchez les appareils non essentiels en cas d’orage ou de coupure."
+      ],
+      "legende": "Le vendredi soir, on part vite. C’est pourtant le meilleur moment pour éviter les mauvaises surprises du lundi : une sauvegarde qui avait échoué, un poste bloqué par des mises à jour, un portable oublié sur un bureau.\n\nDix minutes suffisent : un coup d’œil au rapport de sauvegarde, les mises à jour lancées avant d’éteindre, les sessions verrouillées et les appareils fragiles débranchés si un orage menace. C’est simple, et c’est souvent ce qui sépare un lundi normal d’un lundi perdu.\n\nVotre sauvegarde a-t-elle vraiment tourné cette semaine ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Sauvegarde",
+        "#Infogerance",
+        "#BonnesPratiques",
+        "#PME",
+        "#Douala"
+      ]
+    },
+    {
+      "serie": "Vendredi 6 novembre — au choix",
+      "semaine": null,
+      "jour": "vendredi",
+      "moment": "vendredi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-8",
+      "etiquette": "Conseil sécurité",
+      "photo": "blazer",
+      "theme": "mots de passe",
+      "titre": "Mots de passe : 4 règles pour *toute l’équipe*",
+      "points": [
+        "Choisissez une phrase de passe longue plutôt qu’un mot court et compliqué.",
+        "Utilisez un mot de passe différent pour chaque compte important.",
+        "Rangez-les dans un gestionnaire de mots de passe, pas dans un carnet.",
+        "Ne transmettez jamais un mot de passe par WhatsApp ou par e-mail."
+      ],
+      "legende": "« 123456 », le nom de l’entreprise suivi de l’année, le même mot de passe partout, envoyé par WhatsApp au collègue qui en a besoin : ce sont les habitudes qui ouvrent la porte aux pirates, bien plus que des attaques sophistiquées.\n\nUne phrase de passe longue est à la fois plus solide et plus facile à retenir. Un mot de passe par compte évite qu’une fuite ouvre tout le reste. Un gestionnaire de mots de passe fait le travail de mémoire à votre place, et permet de partager un accès sans l’écrire en clair.\n\nCombien de vos comptes partagent le même mot de passe ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Cybersecurite",
+        "#MotsDePasse",
+        "#Sensibilisation",
+        "#PME",
+        "#Cameroun"
+      ]
+    },
+    {
+      "serie": "Vendredi 6 novembre — au choix",
+      "semaine": null,
+      "jour": "vendredi",
+      "moment": "vendredi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-9",
+      "etiquette": "Conseil comptabilité",
+      "photo": "tunique",
+      "theme": "préparer la clôture annuelle",
+      "titre": "Clôture de l’année : 4 chantiers à lancer *dès novembre*",
+      "points": [
+        "Mettez à jour les rapprochements bancaires, mois par mois.",
+        "Relancez dès maintenant les factures clients échues.",
+        "Lettrez les comptes fournisseurs et réclamez les factures manquantes.",
+        "Planifiez la date de l’inventaire et les équipes de comptage."
+      ],
+      "legende": "La clôture de l’exercice se joue rarement en décembre : elle se prépare en novembre. Attendre le 31 décembre, c’est découvrir en janvier des relevés non rapprochés, des factures introuvables et des créances qu’il est trop tard pour relancer.\n\nQuatre chantiers à ouvrir dès maintenant : les rapprochements bancaires à jour, les relances clients, le lettrage des comptes fournisseurs et la date de l’inventaire fixée avec les équipes. Votre comptable, ou votre cabinet, vous dira merci.\n\nVotre clôture de fin d’année est-elle prête ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Comptabilite",
+        "#ClotureAnnuelle",
+        "#Odoo",
+        "#PME",
+        "#Douala"
+      ]
     }
   ]
 }
