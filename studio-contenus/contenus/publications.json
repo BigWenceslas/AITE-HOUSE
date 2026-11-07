@@ -1907,6 +1907,93 @@
         "#PME",
         "#Douala"
       ]
+    },
+    {
+      "serie": "Week-end 7-8 novembre — au choix",
+      "semaine": null,
+      "jour": "samedi",
+      "moment": "week-end",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-13",
+      "etiquette": "Conseil du week-end",
+      "photo": "tunique",
+      "theme": "protéger son téléphone",
+      "titre": "Ce week-end, on protège *son téléphone*",
+      "points": [
+        "Faites les mises à jour qui attendent depuis des semaines.",
+        "Mettez un code ou l’empreinte : pas de téléphone ouvert à tout le monde.",
+        "Sauvegardez photos et discussions WhatsApp avant qu’il ne tombe.",
+        "Les « promos » et « cadeaux » reçus par message : on ne clique pas."
+      ],
+      "legende": "Le week-end, on a enfin le temps de s’occuper de son téléphone. Pourtant c’est lui qui garde tout : les photos des enfants, les contacts des clients, l’accès à Mobile Money et aux comptes de la boîte. S’il est volé ou piraté, ça gâte vraiment.\n\nQuatre gestes, dix minutes : les mises à jour, un vrai code de verrouillage, une sauvegarde des photos et des discussions WhatsApp, et la règle d’or : on ne clique pas sur les « promos » et les « cadeaux » qui arrivent par message. Bon week-end, la famille !\n\nEt lundi, on parle de la sécurité de votre entreprise ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Cybersecurite",
+        "#Smartphone",
+        "#BonWeekEnd",
+        "#Douala"
+      ]
+    },
+    {
+      "serie": "Week-end 7-8 novembre — au choix",
+      "semaine": null,
+      "jour": "samedi",
+      "moment": "week-end",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-14",
+      "etiquette": "Conseil du dimanche",
+      "photo": "ndop-pied",
+      "theme": "préparer sa semaine",
+      "titre": "Dimanche soir : préparez la semaine *en 15 minutes*",
+      "points": [
+        "Notez les 3 choses qui comptent vraiment cette semaine.",
+        "Regardez votre agenda : rendez-vous, échéances, déplacements.",
+        "Préparez le premier dossier à ouvrir lundi matin.",
+        "Fermez ensuite le téléphone du boulot : le dimanche reste à la famille."
+      ],
+      "legende": "Le lundi qui commence dans le stress, c’est souvent le lundi qu’on n’a pas préparé. Quinze minutes le dimanche soir suffisent à changer la semaine.\n\nOn note les trois priorités, on jette un œil à l’agenda, on prépare le premier dossier du lundi… et après, on ferme le téléphone du boulot. Le reste du dimanche, c’est pour la famille et pour soi.\n\nVos équipes partagent-elles les mêmes priorités et le même agenda ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Organisation",
+        "#Productivite",
+        "#BonDimanche",
+        "#Cameroun"
+      ]
+    },
+    {
+      "serie": "Week-end 7-8 novembre — au choix",
+      "semaine": null,
+      "jour": "samedi",
+      "moment": "week-end",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-15",
+      "etiquette": "Conseil famille",
+      "photo": "boubou",
+      "theme": "enfants et Internet",
+      "titre": "Les enfants et Internet : 4 règles *à la maison*",
+      "points": [
+        "Activez le contrôle parental sur le téléphone et la tablette.",
+        "Gardez les écrans au salon, pas dans la chambre le soir.",
+        "Apprenez-leur à ne jamais donner adresse, école ou photos à un inconnu.",
+        "Parlez avec eux : qu’ils viennent vous voir si quelque chose les choque."
+      ],
+      "legende": "Le week-end, les enfants passent plus de temps sur les téléphones et les tablettes. Jeux, vidéos, réseaux : Internet leur apporte beaucoup, mais ils y croisent aussi des inconnus et des contenus qui ne sont pas de leur âge.\n\nQuatre règles simples protègent déjà beaucoup : le contrôle parental activé, les écrans dans le salon plutôt que dans la chambre, ne jamais donner d’informations personnelles, et surtout le dialogue. Un enfant qui sait qu’il peut tout vous dire est mieux protégé que par n’importe quel logiciel.\n\nBon week-end en famille ! Et pour la sécurité numérique de votre entreprise : Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Parentalite",
+        "#SecuriteEnLigne",
+        "#BonWeekEnd",
+        "#Douala"
+      ]
     }
   ]
 }

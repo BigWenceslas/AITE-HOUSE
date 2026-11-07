@@ -798,6 +798,72 @@
       "theme": "demander conseil avant de choisir",
       "texte": "Tu hésites devant la carte ? Demande conseil : *on est là pour ça*.",
       "legende": "Rouge, blanc, rosé, whisky ou champagne : devant le choix, on prend souvent la même chose par habitude. Dites-nous ce que vous aimez, ce que vous mangez et avec qui vous êtes : on vous oriente vers la bouteille qui va avec le moment.\n\nOn vous attend à La Vérandah, à Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98\nL’abus d’alcool est dangereux pour la santé. À consommer avec modération."
+    },
+    {
+      "serie": "Week-end 7-8 novembre — au choix",
+      "jour": "samedi",
+      "moment": "week-end",
+      "modele": "vd-sombre",
+      "titre": "",
+      "points": [],
+      "id": "VD-CP-13",
+      "photo": "ndop",
+      "theme": "le repas du dimanche",
+      "alcool": false,
+      "etiquette": "Bon dimanche",
+      "texte": "Le dimanche, on ne court pas : un bon repas en famille, ça *se prend tranquillement*.",
+      "legende": "Toute la semaine, on mange vite, entre deux réunions et deux embouteillages. Le dimanche, on s’assoit, on parle, on rit, on prend le temps. Les enfants, les parents, les amis : c’est ça, le vrai repos.\n\nOn vous attend à La Vérandah, à Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#BonDimanche",
+        "#EnFamille"
+      ]
+    },
+    {
+      "serie": "Week-end 7-8 novembre — au choix",
+      "jour": "samedi",
+      "moment": "week-end",
+      "modele": "vd-sombre",
+      "titre": "",
+      "points": [],
+      "id": "VD-CP-14",
+      "photo": "veste-pied",
+      "theme": "rosé au soleil",
+      "alcool": true,
+      "etiquette": "Le conseil de la cave",
+      "texte": "Samedi au soleil ? Un rosé bien frais : léger, il va avec *presque tout*.",
+      "legende": "Grillades, poisson, salade ou plat épicé : le rosé, servi bien frais, s’entend avec presque tout. C’est le compagnon idéal des après-midi chauds du week-end, à savourer tranquillement, entre amis.\n\nOn vous attend à La Vérandah, à Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98\nL’abus d’alcool est dangereux pour la santé. À consommer avec modération.",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#Rose",
+        "#Moderation"
+      ]
+    },
+    {
+      "serie": "Week-end 7-8 novembre — au choix",
+      "jour": "samedi",
+      "moment": "week-end",
+      "modele": "vd-sombre",
+      "titre": "",
+      "points": [],
+      "id": "VD-CP-15",
+      "photo": "blazer",
+      "theme": "conserver le whisky debout",
+      "alcool": true,
+      "etiquette": "Le conseil de la cave",
+      "texte": "Le vin se couche, mais le whisky se garde *debout*.",
+      "legende": "Contrairement au vin, le whisky ne vieillit plus en bouteille. Couché, l’alcool fort finit par abîmer le bouchon et donner un mauvais goût. On le garde donc debout, à l’abri de la lumière et de la chaleur, bien rebouché après chaque service.\n\nOn vous attend à La Vérandah, à Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98\nL’abus d’alcool est dangereux pour la santé. À consommer avec modération.",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Whisky",
+        "#ConseilDeLaCave",
+        "#Moderation"
+      ]
     }
   ]
 }

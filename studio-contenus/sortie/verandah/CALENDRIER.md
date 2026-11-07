@@ -630,3 +630,55 @@ L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
 
 #LaVerandah #Douala #Makepe #ConseilDeLaCave #Moderation
 ```
+
+## Week-end 7-8 novembre — au choix
+
+### Week-end — Pensée (photo ronde) · le repas du dimanche
+
+![VD-CP-13](VD-CP-13-vd-sombre.jpg)
+
+**Visuel :** Bon dimanche — Le dimanche, on ne court pas : un bon repas en famille, ça se prend tranquillement.
+
+**Légende à publier :**
+
+```text
+Toute la semaine, on mange vite, entre deux réunions et deux embouteillages. Le dimanche, on s’assoit, on parle, on rit, on prend le temps. Les enfants, les parents, les amis : c’est ça, le vrai repos.
+
+On vous attend à La Vérandah, à Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #Douala #Makepe #BonDimanche #EnFamille
+```
+
+### Week-end — Pensée (photo ronde) · rosé au soleil
+
+![VD-CP-14](VD-CP-14-vd-sombre.jpg)
+
+**Visuel :** Le conseil de la cave — Samedi au soleil ? Un rosé bien frais : léger, il va avec presque tout.
+
+**Légende à publier :**
+
+```text
+Grillades, poisson, salade ou plat épicé : le rosé, servi bien frais, s’entend avec presque tout. C’est le compagnon idéal des après-midi chauds du week-end, à savourer tranquillement, entre amis.
+
+On vous attend à La Vérandah, à Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
+
+#LaVerandah #Douala #Makepe #Rose #Moderation
+```
+
+### Week-end — Pensée (photo ronde) · conserver le whisky debout
+
+![VD-CP-15](VD-CP-15-vd-sombre.jpg)
+
+**Visuel :** Le conseil de la cave — Le vin se couche, mais le whisky se garde debout.
+
+**Légende à publier :**
+
+```text
+Contrairement au vin, le whisky ne vieillit plus en bouteille. Couché, l’alcool fort finit par abîmer le bouchon et donner un mauvais goût. On le garde donc debout, à l’abri de la lumière et de la chaleur, bien rebouché après chaque service.
+
+On vous attend à La Vérandah, à Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
+
+#LaVerandah #Douala #Whisky #ConseilDeLaCave #Moderation
+```

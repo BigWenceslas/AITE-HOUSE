@@ -1555,3 +1555,74 @@ Votre site donne-t-il envie de vous appeler ? Diagnostic Digital 360° gratuit (
 
 #AITEConsulting #SiteWeb #Visibilite #TransformationDigitale #PME #Douala
 ```
+
+## Week-end 7-8 novembre — au choix
+
+### Week-end — Conseil · protéger son téléphone
+
+![CP-13](CP-13-conseil.jpg)
+
+**Visuel :** Ce week-end, on protège son téléphone
+
+1. Faites les mises à jour qui attendent depuis des semaines.
+2. Mettez un code ou l’empreinte : pas de téléphone ouvert à tout le monde.
+3. Sauvegardez photos et discussions WhatsApp avant qu’il ne tombe.
+4. Les « promos » et « cadeaux » reçus par message : on ne clique pas.
+
+**Légende à publier :**
+
+```text
+Le week-end, on a enfin le temps de s’occuper de son téléphone. Pourtant c’est lui qui garde tout : les photos des enfants, les contacts des clients, l’accès à Mobile Money et aux comptes de la boîte. S’il est volé ou piraté, ça gâte vraiment.
+
+Quatre gestes, dix minutes : les mises à jour, un vrai code de verrouillage, une sauvegarde des photos et des discussions WhatsApp, et la règle d’or : on ne clique pas sur les « promos » et les « cadeaux » qui arrivent par message. Bon week-end, la famille !
+
+Et lundi, on parle de la sécurité de votre entreprise ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Cybersecurite #Smartphone #BonWeekEnd #Douala
+```
+
+### Week-end — Conseil · préparer sa semaine
+
+![CP-14](CP-14-conseil.jpg)
+
+**Visuel :** Dimanche soir : préparez la semaine en 15 minutes
+
+1. Notez les 3 choses qui comptent vraiment cette semaine.
+2. Regardez votre agenda : rendez-vous, échéances, déplacements.
+3. Préparez le premier dossier à ouvrir lundi matin.
+4. Fermez ensuite le téléphone du boulot : le dimanche reste à la famille.
+
+**Légende à publier :**
+
+```text
+Le lundi qui commence dans le stress, c’est souvent le lundi qu’on n’a pas préparé. Quinze minutes le dimanche soir suffisent à changer la semaine.
+
+On note les trois priorités, on jette un œil à l’agenda, on prépare le premier dossier du lundi… et après, on ferme le téléphone du boulot. Le reste du dimanche, c’est pour la famille et pour soi.
+
+Vos équipes partagent-elles les mêmes priorités et le même agenda ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Organisation #Productivite #BonDimanche #Cameroun
+```
+
+### Week-end — Conseil · enfants et Internet
+
+![CP-15](CP-15-conseil.jpg)
+
+**Visuel :** Les enfants et Internet : 4 règles à la maison
+
+1. Activez le contrôle parental sur le téléphone et la tablette.
+2. Gardez les écrans au salon, pas dans la chambre le soir.
+3. Apprenez-leur à ne jamais donner adresse, école ou photos à un inconnu.
+4. Parlez avec eux : qu’ils viennent vous voir si quelque chose les choque.
+
+**Légende à publier :**
+
+```text
+Le week-end, les enfants passent plus de temps sur les téléphones et les tablettes. Jeux, vidéos, réseaux : Internet leur apporte beaucoup, mais ils y croisent aussi des inconnus et des contenus qui ne sont pas de leur âge.
+
+Quatre règles simples protègent déjà beaucoup : le contrôle parental activé, les écrans dans le salon plutôt que dans la chambre, ne jamais donner d’informations personnelles, et surtout le dialogue. Un enfant qui sait qu’il peut tout vous dire est mieux protégé que par n’importe quel logiciel.
+
+Bon week-end en famille ! Et pour la sécurité numérique de votre entreprise : Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Parentalite #SecuriteEnLigne #BonWeekEnd #Douala
+```
