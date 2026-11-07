@@ -1626,3 +1626,53 @@ Bon week-end en famille ! Et pour la sécurité numérique de votre entreprise :
 
 #AITEConsulting #Parentalite #SecuriteEnLigne #BonWeekEnd #Douala
 ```
+
+## Week-end 7-8 novembre
+
+### Samedi 10h — Affiche · repos sans culpabilité
+
+![WE-6](WE-6-affiche.jpg)
+
+**Visuel :** Tu as donné le meilleur de toi cette semaine. Ce week-end, repose-toi sans culpabilité : c’est aussi ça, avancer.
+
+**Légende à publier :**
+
+```text
+Bon week-end à toute la famille ! Tu as donné le meilleur de toi cette semaine. Ces deux jours sont à toi : repose-toi sans culpabilité, c’est aussi ça, avancer. 😊
+
+Et toi, tu fais quoi ce week-end pour te ressourcer ?
+
+#AITEConsulting #BonWeekEnd #Motivation #Douala
+```
+
+### Samedi 17h — Affiche · se construire soi-même
+
+![WE-7](WE-7-affiche.jpg)
+
+**Visuel :** Le week-end, on ne construit pas l’entreprise. On construit celui qui la dirige. Bon repos !
+
+**Légende à publier :**
+
+```text
+Le week-end, l’entreprise peut attendre. Ce qu’on construit ces deux jours-là, c’est le dirigeant : du repos, du temps avec les siens, des idées qui viennent quand on arrête de courir. Bon repos à tous ! 💪
+
+Qu’est-ce qui te recharge le plus : la famille, le sport ou le silence ?
+
+#AITEConsulting #Leadership #BonWeekEnd #Cameroun
+```
+
+### Dimanche 18h — Affiche · revenir avec des idées neuves
+
+![WE-8](WE-8-affiche.jpg)
+
+**Visuel :** Deux jours pour souffler, retrouver les tiens et revenir lundi avec des idées neuves. Bon week-end !
+
+**Légende à publier :**
+
+```text
+Deux jours pour souffler, retrouver les tiens et revenir lundi avec des idées neuves. C’est tout ce qu’on te souhaite ce week-end. ☀️
+
+Quelle est la première chose que tu veux réussir lundi ?
+
+#AITEConsulting #BonDimanche #Motivation #Douala
+```

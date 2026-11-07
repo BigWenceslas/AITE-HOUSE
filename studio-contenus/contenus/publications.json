@@ -1994,6 +1994,72 @@
         "#BonWeekEnd",
         "#Douala"
       ]
+    },
+    {
+      "serie": "Week-end 7-8 novembre",
+      "semaine": null,
+      "modele": "affiche",
+      "etiquette": "Bon week-end",
+      "titre": "",
+      "points": [],
+      "numero": null,
+      "id": "WE-6",
+      "jour": "samedi",
+      "moment": "samedi 10h",
+      "photo": "ndop",
+      "theme": "repos sans culpabilité",
+      "texte": "Tu as donné le meilleur de toi cette semaine. Ce week-end, *repose-toi sans culpabilité* : c’est aussi ça, avancer.",
+      "legende": "Bon week-end à toute la famille ! Tu as donné le meilleur de toi cette semaine. Ces deux jours sont à toi : repose-toi sans culpabilité, c’est aussi ça, avancer. 😊\n\nEt toi, tu fais quoi ce week-end pour te ressourcer ?",
+      "hashtags": [
+        "#AITEConsulting",
+        "#BonWeekEnd",
+        "#Motivation",
+        "#Douala"
+      ]
+    },
+    {
+      "serie": "Week-end 7-8 novembre",
+      "semaine": null,
+      "modele": "affiche",
+      "etiquette": "Bon week-end",
+      "titre": "",
+      "points": [],
+      "numero": null,
+      "id": "WE-7",
+      "jour": "samedi",
+      "moment": "samedi 17h",
+      "photo": "veste-pied",
+      "theme": "se construire soi-même",
+      "texte": "Le week-end, on ne construit pas l’entreprise. On construit *celui qui la dirige*. Bon repos !",
+      "legende": "Le week-end, l’entreprise peut attendre. Ce qu’on construit ces deux jours-là, c’est le dirigeant : du repos, du temps avec les siens, des idées qui viennent quand on arrête de courir. Bon repos à tous ! 💪\n\nQu’est-ce qui te recharge le plus : la famille, le sport ou le silence ?",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Leadership",
+        "#BonWeekEnd",
+        "#Cameroun"
+      ]
+    },
+    {
+      "serie": "Week-end 7-8 novembre",
+      "semaine": null,
+      "modele": "affiche",
+      "etiquette": "Bon week-end",
+      "titre": "",
+      "points": [],
+      "numero": null,
+      "id": "WE-8",
+      "jour": "dimanche",
+      "moment": "dimanche 18h",
+      "photo": "boubou",
+      "theme": "revenir avec des idées neuves",
+      "texte": "Deux jours pour souffler, retrouver les tiens et revenir lundi *avec des idées neuves*. Bon week-end !",
+      "legende": "Deux jours pour souffler, retrouver les tiens et revenir lundi avec des idées neuves. C’est tout ce qu’on te souhaite ce week-end. ☀️\n\nQuelle est la première chose que tu veux réussir lundi ?",
+      "hashtags": [
+        "#AITEConsulting",
+        "#BonDimanche",
+        "#Motivation",
+        "#Douala"
+      ]
     }
   ]
 }

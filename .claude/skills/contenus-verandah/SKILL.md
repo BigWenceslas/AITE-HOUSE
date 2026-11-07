@@ -46,3 +46,8 @@ santé sur tout conseil qui parle d'alcool.
 
 Ton : **français camerounais**, chaleureux et direct (« la famille », « on est ensemble », « ça va gâter »,
 « mola », « les gars »…), sans caricature ; pour AITE, visuels sobres et légendes au ton local.
+
+Week-end (validé par le DG le 7 nov. 2026) : **une phrase, pas une liste**, tutoiement, un emoji au plus,
+une question en fin de légende. AITE : modèle `affiche`, esprit repos et ressourcement. La Vérandah :
+modèle `vd-ambiance` (vendredi, samedi : invitation, « tu viens avec qui ? ») et `vd-sombre` le dimanche ;
+de vraies photos du lieu dès que le DG en fournit. Les conseils numérotés restent pour la semaine.

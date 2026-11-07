@@ -682,3 +682,57 @@ L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
 
 #LaVerandah #Douala #Whisky #ConseilDeLaCave #Moderation
 ```
+
+## Week-end 7-8 novembre
+
+### Vendredi 17h — Ambiance · undefined
+
+![VD-WE-6](VD-WE-6-vd-ambiance.jpg)
+
+**Visuel :** C’est le week-end ! — TU VIENS AVEC QUI CE SOIR ? ON T’ATTEND À MAKEPE
+
+**Légende à publier :**
+
+```text
+C’est le week-end ! 🎉 Tu viens avec qui ce soir : les amis, les collègues, la famille ? Dis-nous en commentaire. On t’attend à La Vérandah.
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
+
+#LaVerandah #Douala #Makepe #BonWeekEnd #Moderation
+```
+
+### Samedi 16h — Ambiance · undefined
+
+![VD-WE-7](VD-WE-7-vd-ambiance.jpg)
+
+**Visuel :** Samedi soir à Douala — L’AMBIANCE EST À LA VÉRANDAH. VIENS VOIR !
+
+**Légende à publier :**
+
+```text
+Samedi soir à Douala, l’ambiance est à La Vérandah. La musique, les amis, la bonne humeur : viens voir par toi-même. 🎶 Tu passes à quelle heure ?
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
+
+#LaVerandah #Douala #Makepe #SamediSoir #Moderation
+```
+
+### Dimanche 11h — Pensée (photo ronde) · undefined
+
+![VD-WE-8](VD-WE-8-vd-sombre.jpg)
+
+**Visuel :** Bon dimanche — Dimanche, on ralentit. Un bon repas, les gens qu’on aime, et rien d’autre.
+
+**Légende à publier :**
+
+```text
+Dimanche, on ralentit. Un bon repas, les gens qu’on aime, et rien d’autre. C’est ça, le vrai repos. Bon dimanche à tous ! 🙏
+
+Avec qui tu passes ton dimanche ?
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #Douala #Makepe #BonDimanche #EnFamille
+```
