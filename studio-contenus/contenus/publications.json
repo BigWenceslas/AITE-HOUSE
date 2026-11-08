@@ -2060,6 +2060,72 @@
         "#Motivation",
         "#Douala"
       ]
+    },
+    {
+      "serie": "Dimanche 8 novembre — au choix",
+      "semaine": null,
+      "jour": "dimanche",
+      "modele": "affiche",
+      "etiquette": "Bon dimanche",
+      "titre": "",
+      "points": [],
+      "numero": null,
+      "id": "DIM-1",
+      "moment": "dimanche 9h",
+      "photo": "tunique",
+      "theme": "dimanche, pause vraie",
+      "texte": "Dimanche : pose le téléphone, *respire*. Le travail te retrouvera lundi, en forme.",
+      "legende": "Dimanche, on coupe. Le téléphone du boulot reste dans le sac, et on respire. Le travail te retrouvera lundi, et il te trouvera en forme. 😌\n\nToi, c’est quoi ton dimanche idéal ?",
+      "hashtags": [
+        "#AITEConsulting",
+        "#BonDimanche",
+        "#Repos",
+        "#Douala"
+      ]
+    },
+    {
+      "serie": "Dimanche 8 novembre — au choix",
+      "semaine": null,
+      "jour": "dimanche",
+      "modele": "affiche",
+      "etiquette": "Bon dimanche",
+      "titre": "",
+      "points": [],
+      "numero": null,
+      "id": "DIM-2",
+      "moment": "dimanche 12h",
+      "photo": "veste-pied",
+      "theme": "merci à ceux qui ont tenu",
+      "texte": "Avant lundi, dis *merci* à ceux qui t’ont aidé cette semaine. Ça change tout.",
+      "legende": "Une semaine, on ne la tient jamais seul. Avant lundi, prends une minute pour dire merci à ceux qui t’ont aidé : un collègue, un proche, un client. Ça ne coûte rien et ça change tout. 🙏\n\nÀ qui tu dis merci aujourd’hui ?",
+      "hashtags": [
+        "#AITEConsulting",
+        "#BonDimanche",
+        "#Gratitude",
+        "#Cameroun"
+      ]
+    },
+    {
+      "serie": "Dimanche 8 novembre — au choix",
+      "semaine": null,
+      "jour": "dimanche",
+      "modele": "affiche",
+      "etiquette": "Bon dimanche",
+      "titre": "",
+      "points": [],
+      "numero": null,
+      "id": "DIM-3",
+      "moment": "dimanche 18h",
+      "photo": "boubou",
+      "theme": "la semaine commence ce soir",
+      "texte": "La semaine ne commence pas lundi matin. Elle commence *ce soir*, dans ta tête, calmement.",
+      "legende": "La semaine ne commence pas lundi matin. Elle commence ce soir, dans ta tête, calmement : trois choses qui comptent, et le reste viendra. Bonne semaine d’avance ! ☀️\n\nQuelle est ta priorité numéro un cette semaine ?",
+      "hashtags": [
+        "#AITEConsulting",
+        "#BonDimanche",
+        "#Motivation",
+        "#Douala"
+      ]
     }
   ]
 }

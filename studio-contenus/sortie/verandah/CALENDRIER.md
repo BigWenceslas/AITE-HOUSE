@@ -736,3 +736,58 @@ La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp 
 
 #LaVerandah #Douala #Makepe #BonDimanche #EnFamille
 ```
+
+## Dimanche 8 novembre — au choix
+
+### Dimanche 10h — Pensée (photo ronde) · undefined
+
+![VD-DIM-1](VD-DIM-1-vd-sombre.jpg)
+
+**Visuel :** Bon dimanche — Le dimanche, le plus beau plat, c’est la table pleine.
+
+**Légende à publier :**
+
+```text
+Le dimanche, le plus beau plat, c’est la table pleine : la famille, les amis, les rires. Tout le reste, c’est du bonus. Bon dimanche ! 🙏
+
+Vous êtes combien à table aujourd’hui ?
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #Douala #Makepe #BonDimanche #EnFamille
+```
+
+### Dimanche 15h — Ambiance · undefined
+
+![VD-DIM-2](VD-DIM-2-vd-ambiance.jpg)
+
+**Visuel :** Dimanche après-midi — VIENS TE POSER, ON PREND LE TEMPS
+
+**Légende à publier :**
+
+```text
+Dimanche après-midi, on ne court plus. Viens te poser à La Vérandah, on prend le temps. 😎 Tu viens avec qui ?
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
+
+#LaVerandah #Douala #Makepe #BonDimanche #Moderation
+```
+
+### Dimanche 19h — Pensée (photo ronde) · undefined
+
+![VD-DIM-3](VD-DIM-3-vd-sombre.jpg)
+
+**Visuel :** Bonne semaine — Merci pour ce week-end avec vous. Rentrez bien, et à très vite.
+
+**Légende à publier :**
+
+```text
+Merci à tous ceux qui sont passés ce week-end. Rentrez bien, reposez-vous, et à très vite à La Vérandah. Bonne semaine ! 🙏
+
+C’était quoi, votre meilleur moment du week-end ?
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #Douala #Makepe #Merci #BonneSemaine
+```

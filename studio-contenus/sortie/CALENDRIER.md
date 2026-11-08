@@ -1676,3 +1676,53 @@ Quelle est la première chose que tu veux réussir lundi ?
 
 #AITEConsulting #BonDimanche #Motivation #Douala
 ```
+
+## Dimanche 8 novembre — au choix
+
+### Dimanche 9h — Affiche · dimanche, pause vraie
+
+![DIM-1](DIM-1-affiche.jpg)
+
+**Visuel :** Dimanche : pose le téléphone, respire. Le travail te retrouvera lundi, en forme.
+
+**Légende à publier :**
+
+```text
+Dimanche, on coupe. Le téléphone du boulot reste dans le sac, et on respire. Le travail te retrouvera lundi, et il te trouvera en forme. 😌
+
+Toi, c’est quoi ton dimanche idéal ?
+
+#AITEConsulting #BonDimanche #Repos #Douala
+```
+
+### Dimanche 12h — Affiche · merci à ceux qui ont tenu
+
+![DIM-2](DIM-2-affiche.jpg)
+
+**Visuel :** Avant lundi, dis merci à ceux qui t’ont aidé cette semaine. Ça change tout.
+
+**Légende à publier :**
+
+```text
+Une semaine, on ne la tient jamais seul. Avant lundi, prends une minute pour dire merci à ceux qui t’ont aidé : un collègue, un proche, un client. Ça ne coûte rien et ça change tout. 🙏
+
+À qui tu dis merci aujourd’hui ?
+
+#AITEConsulting #BonDimanche #Gratitude #Cameroun
+```
+
+### Dimanche 18h — Affiche · la semaine commence ce soir
+
+![DIM-3](DIM-3-affiche.jpg)
+
+**Visuel :** La semaine ne commence pas lundi matin. Elle commence ce soir, dans ta tête, calmement.
+
+**Légende à publier :**
+
+```text
+La semaine ne commence pas lundi matin. Elle commence ce soir, dans ta tête, calmement : trois choses qui comptent, et le reste viendra. Bonne semaine d’avance ! ☀️
+
+Quelle est ta priorité numéro un cette semaine ?
+
+#AITEConsulting #BonDimanche #Motivation #Douala
+```

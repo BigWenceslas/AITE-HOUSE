@@ -926,6 +926,69 @@
         "#BonDimanche",
         "#EnFamille"
       ]
+    },
+    {
+      "serie": "Dimanche 8 novembre — au choix",
+      "jour": "dimanche",
+      "points": [],
+      "etiquette": "Bon dimanche",
+      "titre": "",
+      "id": "VD-DIM-1",
+      "moment": "dimanche 10h",
+      "modele": "vd-sombre",
+      "photo": "ndop",
+      "alcool": false,
+      "texte": "Le dimanche, le plus beau plat, c’est *la table pleine*.",
+      "legende": "Le dimanche, le plus beau plat, c’est la table pleine : la famille, les amis, les rires. Tout le reste, c’est du bonus. Bon dimanche ! 🙏\n\nVous êtes combien à table aujourd’hui ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#BonDimanche",
+        "#EnFamille"
+      ]
+    },
+    {
+      "serie": "Dimanche 8 novembre — au choix",
+      "jour": "dimanche",
+      "points": [],
+      "etiquette": "",
+      "titre": "Dimanche après-midi",
+      "id": "VD-DIM-2",
+      "moment": "dimanche 15h",
+      "modele": "vd-ambiance",
+      "texte": "VIENS TE POSER, *ON PREND LE TEMPS*",
+      "photo": null,
+      "alcool": true,
+      "legende": "Dimanche après-midi, on ne court plus. Viens te poser à La Vérandah, on prend le temps. 😎 Tu viens avec qui ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98\nL’abus d’alcool est dangereux pour la santé. À consommer avec modération.",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#BonDimanche",
+        "#Moderation"
+      ]
+    },
+    {
+      "serie": "Dimanche 8 novembre — au choix",
+      "jour": "dimanche",
+      "points": [],
+      "etiquette": "Bonne semaine",
+      "titre": "",
+      "id": "VD-DIM-3",
+      "moment": "dimanche 19h",
+      "modele": "vd-sombre",
+      "photo": "blazer",
+      "alcool": false,
+      "texte": "Merci pour ce week-end avec vous. Rentrez bien, *et à très vite*.",
+      "legende": "Merci à tous ceux qui sont passés ce week-end. Rentrez bien, reposez-vous, et à très vite à La Vérandah. Bonne semaine ! 🙏\n\nC’était quoi, votre meilleur moment du week-end ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#Merci",
+        "#BonneSemaine"
+      ]
     }
   ]
 }
