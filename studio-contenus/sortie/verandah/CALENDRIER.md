@@ -798,12 +798,12 @@ La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp 
 
 ![VD-LUN-1](VD-LUN-1-vd-sombre.jpg)
 
-**Visuel :** Bon lundi — C’est lundi, mola ! Va gagner ta semaine, ta table t’attend vendredi.
+**Visuel :** Bon lundi — C’est lundi, mola ! Va gagner ta semaine, on se retrouve le soir à La Vérandah.
 
 **Légende à publier :**
 
 ```text
-C’est lundi, la famille ! On ne traîne pas, on va gagner sa semaine. Travaille bien, donne tout : vendredi, ta table t’attend à La Vérandah. 💪
+C’est lundi, la famille ! On ne traîne pas, on va gagner sa semaine. Et le soir, on se retrouve à La Vérandah pour souffler un peu. 💪
 
 Toi, c’est quoi le grand objectif de la semaine ?
 
