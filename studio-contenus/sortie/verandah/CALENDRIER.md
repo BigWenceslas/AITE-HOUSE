@@ -791,3 +791,57 @@ La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp 
 
 #LaVerandah #Douala #Makepe #Merci #BonneSemaine
 ```
+
+## Lundi 9 novembre — au choix
+
+### Lundi 8h — Pensée (photo ronde) · undefined
+
+![VD-LUN-1](VD-LUN-1-vd-sombre.jpg)
+
+**Visuel :** Bon lundi — Bonne semaine ! Travaille bien, on garde ta table pour vendredi.
+
+**Légende à publier :**
+
+```text
+C’est lundi, on repart ! Travaille bien cette semaine, donne tout : nous, on garde ta table pour vendredi. 💪
+
+C’est quoi ton objectif de la semaine ?
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #Douala #Makepe #BonLundi #BonneSemaine
+```
+
+### Lundi 17h — Pensée (photo ronde) · undefined
+
+![VD-CP-16](VD-CP-16-vd-sombre.jpg)
+
+**Visuel :** Le conseil de la cave — Un vin qui sent le carton mouillé ? Il est bouchonné : on le change, on ne le boit pas.
+
+**Légende à publier :**
+
+```text
+Ça arrive même aux meilleures bouteilles : une odeur de carton mouillé ou de cave humide, et le fruit a disparu. Le vin est bouchonné, ce n’est la faute de personne. On ne le boit pas, on le signale, et on vous en ouvre une autre.
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
+
+#LaVerandah #Douala #ConseilDeLaCave #Vin #Moderation
+```
+
+### Lundi 19h — Pensée (photo ronde) · undefined
+
+![VD-CP-17](VD-CP-17-vd-sombre.jpg)
+
+**Visuel :** Le conseil de la cave — Champagne entamé ? Un bouchon hermétique, au frais, et il garde ses bulles jusqu’au lendemain.
+
+**Légende à publier :**
+
+```text
+Pas la peine de finir la bouteille pour « ne pas gâter » : avec un bouchon hermétique à champagne et un passage au réfrigérateur, les bulles tiennent jusqu’au lendemain, parfois deux jours. La petite cuillère dans le goulot, elle, ne sert à rien.
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
+
+#LaVerandah #Douala #Champagne #ConseilDeLaCave #Moderation
+```

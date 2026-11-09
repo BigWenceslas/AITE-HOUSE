@@ -1726,3 +1726,74 @@ Quelle est ta priorité numéro un cette semaine ?
 
 #AITEConsulting #BonDimanche #Motivation #Douala
 ```
+
+## Lundi 9 novembre — au choix
+
+### Lundi — Conseil · réunion du lundi
+
+![CP-16](CP-16-conseil.jpg)
+
+**Visuel :** Réunion du lundi : 4 règles pour qu’elle serve à quelque chose
+
+1. Quinze minutes, debout si possible : on ne refait pas la semaine passée.
+2. Un ordre du jour envoyé la veille, trois points maximum.
+3. On sort avec « qui fait quoi, pour quand », écrit noir sur blanc.
+4. Les décisions vont dans l’outil de suivi, pas dans la mémoire de chacun.
+
+**Légende à publier :**
+
+```text
+Lundi matin, la réunion qui dure une heure et où l’on ressort sans savoir qui fait quoi, on connaît tous. C’est la semaine qui démarre déjà en retard.
+
+Quatre règles changent tout : quinze minutes, un ordre du jour envoyé la veille, trois points maximum, et à la sortie une liste claire : qui fait quoi, pour quand. Les décisions sont notées dans l’outil de suivi des tâches, visible par tous, pas dans un cahier ou dans la tête du chef.
+
+Vos réunions du lundi finissent-elles avec une liste d’actions ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Management #Organisation #BonLundi #PME #Douala
+```
+
+### Lundi — Conseil · être payé plus vite
+
+![CP-17](CP-17-conseil.jpg)
+
+**Visuel :** Facturez le jour même : 4 habitudes pour être payé plus vite
+
+1. La facture part le jour de la livraison, pas en fin de mois.
+2. Une date d’échéance claire sur chaque facture, et un numéro de compte.
+3. Une relance automatique à J+3 après l’échéance, polie mais ferme.
+4. Acceptez Mobile Money et virement : plus c’est simple de payer, plus on paie.
+
+**Légende à publier :**
+
+```text
+Beaucoup de retards de paiement commencent chez nous, pas chez le client : la facture envoyée trois semaines après la livraison, sans date d’échéance, avec un RIB à demander par WhatsApp. Le client a oublié, et nous aussi.
+
+Facturez le jour même, mettez une échéance et un moyen de paiement clairs, programmez une relance automatique quelques jours après l’échéance. Dans un logiciel de gestion comme Odoo, tout ça se règle une fois, et la relance part toute seule.
+
+Combien de vos factures du mois dernier ont été envoyées le jour de la livraison ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Facturation #Tresorerie #Odoo #PME #Cameroun
+```
+
+### Lundi — Conseil · fichiers partagés
+
+![CP-18](CP-18-conseil.jpg)
+
+**Visuel :** Fichiers de l’équipe : 4 règles pour ne plus chercher
+
+1. Un seul espace partagé pour l’entreprise, pas les clés USB de chacun.
+2. Une règle de nommage : Client_Objet_Date, et tout le monde s’y tient.
+3. Des droits par service : la paie n’est pas lisible par tout le bureau.
+4. Plus de « version finale 2 » par e-mail : on travaille sur le même fichier.
+
+**Légende à publier :**
+
+```text
+« C’est quelle version, la bonne ? » « Il est sur l’ordinateur de qui ? » « Envoie-moi encore le fichier. » Chaque jour, des heures partent dans ces questions.
+
+Un espace partagé unique (SharePoint, Google Drive ou la GED de votre ERP), une règle de nommage simple, des droits d’accès par service et une habitude : on travaille sur le même fichier au lieu de s’envoyer des copies. Résultat : on trouve, on ne cherche plus.
+
+Où sont les fichiers de votre entreprise aujourd’hui ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+
+#AITEConsulting #Microsoft365 #GED #Collaboration #PME #Douala
+```

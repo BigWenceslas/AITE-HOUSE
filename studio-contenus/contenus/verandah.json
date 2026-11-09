@@ -989,6 +989,69 @@
         "#Merci",
         "#BonneSemaine"
       ]
+    },
+    {
+      "serie": "Lundi 9 novembre — au choix",
+      "jour": "lundi",
+      "modele": "vd-sombre",
+      "titre": "",
+      "points": [],
+      "id": "VD-LUN-1",
+      "moment": "lundi 8h",
+      "etiquette": "Bon lundi",
+      "photo": "veste-pied",
+      "alcool": false,
+      "texte": "Bonne semaine ! Travaille bien, *on garde ta table* pour vendredi.",
+      "legende": "C’est lundi, on repart ! Travaille bien cette semaine, donne tout : nous, on garde ta table pour vendredi. 💪\n\nC’est quoi ton objectif de la semaine ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#BonLundi",
+        "#BonneSemaine"
+      ]
+    },
+    {
+      "serie": "Lundi 9 novembre — au choix",
+      "jour": "lundi",
+      "modele": "vd-sombre",
+      "titre": "",
+      "points": [],
+      "id": "VD-CP-16",
+      "moment": "lundi 17h",
+      "etiquette": "Le conseil de la cave",
+      "photo": "ndop",
+      "alcool": true,
+      "texte": "Un vin qui sent le carton mouillé ? Il est *bouchonné* : on le change, on ne le boit pas.",
+      "legende": "Ça arrive même aux meilleures bouteilles : une odeur de carton mouillé ou de cave humide, et le fruit a disparu. Le vin est bouchonné, ce n’est la faute de personne. On ne le boit pas, on le signale, et on vous en ouvre une autre.\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98\nL’abus d’alcool est dangereux pour la santé. À consommer avec modération.",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#ConseilDeLaCave",
+        "#Vin",
+        "#Moderation"
+      ]
+    },
+    {
+      "serie": "Lundi 9 novembre — au choix",
+      "jour": "lundi",
+      "modele": "vd-sombre",
+      "titre": "",
+      "points": [],
+      "id": "VD-CP-17",
+      "moment": "lundi 19h",
+      "etiquette": "Le conseil de la cave",
+      "photo": "boubou",
+      "alcool": true,
+      "texte": "Champagne entamé ? Un bouchon hermétique, au frais, et il garde ses bulles *jusqu’au lendemain*.",
+      "legende": "Pas la peine de finir la bouteille pour « ne pas gâter » : avec un bouchon hermétique à champagne et un passage au réfrigérateur, les bulles tiennent jusqu’au lendemain, parfois deux jours. La petite cuillère dans le goulot, elle, ne sert à rien.\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98\nL’abus d’alcool est dangereux pour la santé. À consommer avec modération.",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Champagne",
+        "#ConseilDeLaCave",
+        "#Moderation"
+      ]
     }
   ]
 }
