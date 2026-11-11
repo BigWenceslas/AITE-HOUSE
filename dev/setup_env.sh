@@ -66,14 +66,25 @@ step "3/6 PostgreSQL (hôte : $PG_HOST)"
 #   sudo -u postgres /usr/lib/postgresql/16/bin/initdb -D $ROOT/../pg/data
 #   sudo -u postgres /usr/lib/postgresql/16/bin/pg_ctl -D $ROOT/../pg/data \
 #        -o "-k /tmp -p 5432" -l $ROOT/../pg/pg.log start
-if ! psql -h "$PG_HOST" -p 5432 -U postgres -Atc "select 1" >/dev/null 2>&1 \
-   && ! su postgres -c "psql -h $PG_HOST -p 5432 -Atc 'select 1'" >/dev/null 2>&1; then
+# Requête administrateur : rôle postgres sur $PG_HOST, sinon utilisateur système
+# postgres sur $PG_HOST, sinon sur le socket local par défaut (authentification
+# « peer », sans mot de passe : cas d'un service système fraîchement démarré).
+psql_admin() {
+  case "$PG_MODE" in
+    tcp)  psql -w -h "$PG_HOST" -p 5432 -U postgres -Atc "$1" ;;
+    hote) su postgres -c "psql -w -h '$PG_HOST' -p 5432 -Atc \"$1\"" ;;
+    sock) su postgres -c "psql -w -p 5432 -Atc \"$1\"" ;;
+  esac
+}
+PG_MODE=""
+for m in tcp hote sock; do
+  if [ "$(PG_MODE=$m psql_admin 'select 1' 2>/dev/null)" = 1 ]; then PG_MODE=$m; break; fi
+done
+if [ -z "$PG_MODE" ]; then
   echo "✗ PostgreSQL ne répond pas sur $PG_HOST:5432 — démarrez-le (voir commentaire ci-dessus) puis relancez."; exit 1
 fi
-PSQL="psql -h $PG_HOST -p 5432 -U postgres"
-$PSQL -Atc "select 1" >/dev/null 2>&1 || PSQL="su postgres -c \"psql -h $PG_HOST -p 5432\""
-eval $PSQL -Atc "\"select 1 from pg_roles where rolname='odoo'\"" | grep -q 1 \
-  || eval $PSQL -c "\"create role odoo login createdb password 'odoo'\""
+psql_admin "select 1 from pg_roles where rolname='odoo'" | grep -q 1 \
+  || psql_admin "create role odoo login createdb password 'odoo'" >/dev/null
 echo "rôle odoo prêt"
 
 # ---------------------------------------------------------- 4. odoo.conf
@@ -88,7 +99,7 @@ echo "écrit"
 step "5/6 base $ODOO_DB (fr_FR)"
 MODS="aite_hotel_management,aite_city_tax,aite_guest_registry,aite_housekeeping"
 [ $ALL = 1 ] && MODS="$MODS,aite_slot_booking,aite_website_booking,aite_hotel_pos_link,aite_pos_credit,aite_loyalty,aite_pos_analytics,aite_stock_dashboard,aite_purchase_dashboard,aite_direction_dashboard,aite_exec_dashboard"
-if eval $PSQL -Atc "\"select 1 from pg_database where datname='$ODOO_DB'\"" | grep -q 1; then
+if psql_admin "select 1 from pg_database where datname='$ODOO_DB'" | grep -q 1; then
   echo "base existante — mise à niveau des modules AITE"
   (cd "$ODOO_DIR" && "$PYTHON" odoo-bin -c "$ROOT/dev/odoo.conf" -d "$ODOO_DB" -u "$MODS" --stop-after-init 2>&1 | grep -E "ERROR|CRITICAL|Traceback" || true)
 else
