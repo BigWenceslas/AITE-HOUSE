@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Chapitre 6 — Le cockpit de la direction.
+"""Chapitre 7 — Le cockpit de la direction (fichier c6, numéro historique).
 
 Source : fiche de recette n° 4 « Le cockpit de la direction » (Ventes —
 Analyse AITE, Recouvrement, Stock, Achats & Fournisseurs, Espaces &
@@ -716,7 +716,7 @@ CHAPITRE = {
     'personne': (NOM, ROLE),
     'objectif': "Lire la santé de l'établissement d'un coup d'œil, puis descendre pôle par pôle : ventes, achats, "
                 "espaces, hébergement.",
-    'voix': "Sixième chapitre : la direction. Danielle ne saisit rien : elle lit les chiffres que le terrain vient "
+    'voix': "Septième chapitre : la direction. Danielle ne saisit rien : elle lit les chiffres que le terrain vient "
             "de produire, avec les mêmes montants dans chaque tableau de bord.",
     'app': 'app-c6',
     'ecran': ECRAN,

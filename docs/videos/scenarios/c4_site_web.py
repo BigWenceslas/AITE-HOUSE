@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Chapitre 4 — La réservation en ligne.
+"""Chapitre 5 — La réservation en ligne (fichier c4, numéro historique).
 
 Source : fiche de recette n° 5 « La réservation en ligne » (client sur le
 site public, sans compte : page de réservation, choix d'un espace, créneaux
@@ -118,7 +118,7 @@ CHAPITRE = {
     'personne': (NOM, ROLE),
     'objectif': "Réserver un espace depuis le site public, sans compte, recevoir la confirmation, puis demander "
                 "un séjour.",
-    'voix': "Quatrième chapitre : le client, sur le site web de l'hôtel. Claire réserve un salon sans créer de "
+    'voix': "Cinquième chapitre : le client, sur le site web de l'hôtel. Claire réserve un salon sans créer de "
             "compte, puis demande une chambre.",
     'app': 'app-c4',
     'ecran': ECRAN,

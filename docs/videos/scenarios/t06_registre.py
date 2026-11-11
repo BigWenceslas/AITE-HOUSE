@@ -259,7 +259,7 @@ détaillé par nationalité (sommes égales aux totaux) ; octobre est partiel
    depuis l'interface ; depuis la livraison 4, une période vide le dit en
    jj/mm/aaaa (wizard/police_register_wizard.py:63-69). Ce tutoriel ne le
    montre pas (durée) : il montre le registre des clients (liste) et la
-   fiche imprimée ; le chapitre 7 de la présentation montre le registre
+   fiche imprimée ; le chapitre 8 de la présentation (c7_conformite) montre le registre
    imprimé.
 2. Corrigé dans la livraison 4 (ECARTS n° 54) : la colonne « Registre »
    affichait « Aucune fiche » en rouge sur toutes les réservations pas

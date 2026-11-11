@@ -189,7 +189,7 @@ chambre 201 [CFT] (libre fin octobre au planning de t02_planning.py,
 liste SEJOURS), 2 adultes, du 26 au 28/10/2026 puis au 29/10/2026 ; confirmée
 le 20/10/2026 par la directrice, qui tient l'écran. État mensuel ouvert le
 mois suivant (début novembre) : chiffres fictifs, cohérents avec un 3 ★ à
-3 000 F l'unité ; août et septembre repris du chapitre 7 de la présentation
+3 000 F l'unité ; août et septembre repris du chapitre 8 de la présentation
 (scenarios/c7_conformite.py) ; octobre entièrement facturé ; quelques
 départs de début novembre déjà facturés.
 """
@@ -558,7 +558,8 @@ def pivot(ident, lignes):
 
 
 # Séjours terminés (facturés ou soldés), par mois de départ, au début de novembre : août et septembre
-# repris du chapitre 7 ; octobre entièrement facturé (dont Pélagie Ondobo) ; premiers départs de novembre.
+# repris du chapitre 8 de la présentation (c7_conformite) ; octobre entièrement facturé (dont Pélagie Ondobo) ;
+# premiers départs de novembre.
 MOIS = [(8, 347), (9, 408), (10, 431), (11, 26)]
 # Le panneau de recherche, sous la barre : 74 px du haut de la vue, et plus bas quand la barre passe sur
 # deux lignes (panneau de contrôle de 80 à 118 px, barre de 50 à 90 px).

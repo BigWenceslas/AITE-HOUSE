@@ -3,12 +3,17 @@
 
 La trame suit les **fiches de recette** (docs/GUIDE_RECETTE_UAT.md : six
 scénarios joués poste par poste, 34 étapes, aucun écart), complétées par le
-cahier de recette (recette/cas_de_test.py, domaines N à Q) pour les modules
-de la vague 1 : taxe de séjour, registre des clients, gouvernante et
-maintenance, indicateurs RevPAR / pickup / pace.
+cahier de recette (recette/cas_de_test.py) : domaines D et E pour le bar et
+le restaurant (caisse, note de chambre), domaines N à Q pour les modules de
+la vague 1 (taxe de séjour, registre des clients, gouvernante et
+maintenance, indicateurs RevPAR / pickup / pace).
 
 Chaque chapitre vit dans son module (``scenarios/cN_<poste>.py``) : l'écran
-rejoué, ses libellés et leurs sources, les gestes et la voix.
+rejoué, ses libellés et leurs sources, les gestes et la voix. Huit chapitres :
+la réception, la gouvernante, le bar et le restaurant (le point de vente,
+``c3_bar_restaurant``), les ardoises (``c3_caisse``), le site web, le
+magasin, la direction, la conformité. Les noms de fichiers gardent leur
+numéro historique ; l'ordre est celui de ``CHAPITRES``.
 
 Chiffres de la carte « La solution » : 16 modules livrés (``addons/``) ;
 874 tests automatisés, recomptés pour la livraison 4 (``def test_`` dans
@@ -24,8 +29,12 @@ moteur.py:671) : elle réunit le CSS propre à chaque chapitre
 
 import importlib
 
-CHAPITRES = ['c1_reception', 'c2_gouvernante', 'c3_caisse', 'c4_site_web', 'c5_magasin', 'c6_direction',
-             'c7_conformite']
+# Les chapitres, dans l'ordre de cette liste, qui fait foi : il ne suit pas la carte « Le parcours » (le site web
+# y vient en premier, la gouvernante après le bar) ; le bar et le restaurant suivent la gouvernante. Les fichiers
+# gardent leur numéro historique (c3_bar_restaurant, ajouté en troisième, passe devant c3_caisse) ; chaque voix
+# de carte annonce le rang en toutes lettres.
+CHAPITRES = ['c1_reception', 'c2_gouvernante', 'c3_bar_restaurant', 'c3_caisse', 'c4_site_web', 'c5_magasin',
+             'c6_direction', 'c7_conformite']
 
 
 def _chapitres():

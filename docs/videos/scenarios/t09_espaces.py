@@ -156,7 +156,7 @@ Ndjock, Linda Ewané, Rachel Bilong, Yves Tchana, Boris Kamga, Carine Ndongo)
 sont fictifs et propres à ce tutoriel ; le journal du 15/10 du tutoriel 11
 reprend ses prestations réalisées, avec les mêmes montants et références
 (t11_fidelite.py, JOURNAL, lignes du 15/10). Ressources, catalogue et
-tarifs sont fictifs (salons Wouri, Sanaga, Bonabéri comme au chapitre 6,
+tarifs sont fictifs (salons Wouri, Sanaga, Bonabéri comme au chapitre 7 de la présentation,
 c6_direction.py:349-353). La journée rejouée est le jeudi 15/10/2026 ;
 toutes les réservations du jour sont prises au comptoir (colonne
 « Origine »). Le soir, Boris Kamga (Fauteuil homme 1, 17:00-17:30) est le

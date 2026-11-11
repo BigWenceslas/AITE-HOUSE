@@ -2,9 +2,10 @@
 
 Une vidéo motion design qui présente la suite hôtelière complète, poste par
 poste, à partir des **fiches de recette** (`docs/GUIDE_RECETTE_UAT.md`) et du
-cahier de recette (`recette/cas_de_test.py`, domaines N à Q pour la
-vague 1). L'interface d'Odoo 18 y est **rejouée en HTML** avec les couleurs
-et les libellés exacts du code — jamais filmée, jamais capturée — puis rendue
+cahier de recette (`recette/cas_de_test.py`, domaines D et E pour le bar et
+le restaurant, N à Q pour la vague 1). L'interface d'Odoo 18 y est
+**rejouée en HTML** avec les couleurs et les libellés exacts du code —
+jamais filmée, jamais capturée — puis rendue
 en MP4 par [HyperFrames](https://hyperframes.heygen.com), avec une voix off
 française féminine.
 
@@ -72,18 +73,22 @@ Les écarts relevés entre la recette, les règles du projet et le code, en
 2. **La solution** — trois verbes (accueillir, servir, piloter) et quatre faits.
 3. **Le parcours** — d'un client, du site web à la direction.
 4. **Se connecter** — identifiant, mot de passe ; le profil décide des menus.
-5. **Sept chapitres**, chacun annoncé par sa carte (poste, personne, objectif),
-   puis rejoué étape par étape dans l'application, avec sa légende :
+5. **Huit chapitres**, chacun annoncé par sa carte (poste, personne, objectif),
+   puis rejoué étape par étape dans l'application, avec sa légende. L'ordre
+   est celui de `presentation.CHAPITRES` (le bar et le restaurant suivent la
+   gouvernante) ; les fichiers `scenarios/cN_<poste>.py` gardent leur numéro
+   historique :
 
-   | Chapitre | Source | Étapes |
-   |---|---|---|
-   | 1. La journée de la réception | fiche UAT 1, cas O01 / N02 | 7 |
-   | 2. Le tour des chambres | fiche UAT 2, domaine P | 6 |
-   | 3. Ardoises clients et recouvrement | fiche UAT 3 | 6 |
-   | 4. La réservation en ligne | fiche UAT 5 | 6 |
-   | 5. Stock, ruptures et réapprovisionnement | fiche UAT 6 | 5 |
-   | 6. Le cockpit de la direction | fiche UAT 4, domaine Q | 7 |
-   | 7. La conformité, sans saisie de plus | domaines N et O | 6 |
+   | Chapitre | Fichier | Source | Étapes |
+   |---|---|---|---|
+   | 1. La journée de la réception | `c1_reception` | fiche UAT 1, cas O01 / N02 | 7 |
+   | 2. Le tour des chambres | `c2_gouvernante` | fiche UAT 2, domaine P | 6 |
+   | 3. Le bar et le restaurant | `c3_bar_restaurant` | domaines D et E (D01-D04, E01) | 6 |
+   | 4. Ardoises clients et recouvrement | `c3_caisse` | fiche UAT 3 | 6 |
+   | 5. La réservation en ligne | `c4_site_web` | fiche UAT 5 | 6 |
+   | 6. Stock, ruptures et réapprovisionnement | `c5_magasin` | fiche UAT 6 | 5 |
+   | 7. Le cockpit de la direction | `c6_direction` | fiche UAT 4, domaine Q | 7 |
+   | 8. La conformité, sans saisie de plus | `c7_conformite` | domaines N et O | 6 |
 
 6. **À retenir**, puis la **fin** (logo, renvoi au cahier de recette).
 
@@ -177,7 +182,7 @@ du scénario de référence (`demo.py`, `t13_stock.AGREGATS`, `t14_achats.py`,
 « 7 commandes · 6 réceptions », quand le tutoriel 14, le 16/10, en compte
 1 850 000 et 8 · 6 (une commande est datée du 15/10).
 
-Deux chiffres ne concordent pas encore d'une vidéo à l'autre. Les aligner
+Quatre points ne concordent pas encore d'une vidéo à l'autre. Les aligner
 veut dire recalibrer et refaire plusieurs vidéos ensemble : c'est à décider
 avant de toucher aux données.
 
@@ -191,6 +196,18 @@ avant de toucher aux données.
   au 14/10, dont 8 055 venus des folios. La fidélité (t11) n'en compte que
   21 734 depuis novembre 2025, dont 18 556 venus des folios : la quinzaine
   pèse près de la moitié de l'année.
+- **Carte du bar.** La caisse du bar de t04 et t10, reprise au chapitre 3
+  de la présentation, n'a ni vin ni spiritueux ; t12 en fait vendre au bar
+  (Vin rouge 75 cl, Champagne brut, Whisky 12 ans, Gin…), et au restaurant
+  des articles qu'aucune des deux cartes ne propose (Koki, Okok, Kondrè, Porc
+  braisé…). Le chapitre 3 ne met les vins qu'à la carte du restaurant, sans
+  dire que le bar n'en vend pas (`ECARTS.md`, ligne « Série, chapitre 3 »).
+- **Numéros de session.** La série compte environ une session par jour,
+  toutes caisses confondues (00122 le 01/10 et 00131 le 10/10 dans t12,
+  00135 le 14/10 dans t04 et t10, 00137 le 16/10 dans t11) ; le suivi
+  « 402 » du restaurant, au chapitre 3, suppose une session 00134 ouverte
+  avant celle du bar, ce qui ne laisse que 00132 à 00134 pour les deux
+  caisses du 11 au 14/10.
 
 Son : voix, bruitages et musique ramenés à −16 LUFS, passe-bas à 15 kHz et
 limiteur sur-échantillonné à −3 dBFS avant l'AAC 128 kb/s, pour que les

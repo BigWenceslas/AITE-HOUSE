@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Chapitre 5 — Stock, ruptures et réapprovisionnement.
+"""Chapitre 6 — Stock, ruptures et réapprovisionnement (fichier c5, numéro historique).
 
 Source : fiche de recette n° 6 « Stock, ruptures et réapprovisionnement »
 (magasin : tableau de bord Stock — valorisation, références, ruptures,
@@ -156,7 +156,7 @@ CHAPITRE = {
     'titre': 'Stock, ruptures et réapprovisionnement',
     'personne': (NOM, ROLE),
     'objectif': "Repérer les ruptures et les articles sous seuil, savoir quoi commander, et suivre la valeur du stock.",
-    'voix': "Cinquième chapitre : le magasin. Serge veille à ce que le bar ne manque de rien, sans immobiliser "
+    'voix': "Sixième chapitre : le magasin. Serge veille à ce que le bar ne manque de rien, sans immobiliser "
             "trop d'argent dans les réserves.",
     'app': 'app-c5',
     'ecran': ECRAN,

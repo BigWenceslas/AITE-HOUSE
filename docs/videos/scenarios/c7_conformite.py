@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Chapitre 7 — La conformité, sans saisie de plus.
+"""Chapitre 8 — La conformité, sans saisie de plus (fichier c7, numéro historique).
 
 Source : cahier de recette, domaines N (taxe de séjour : N01 barème sur la
 fiche hôtel, N02 ligne ajoutée seule, N05 état mensuel, N08 nouvelle loi de
@@ -301,7 +301,7 @@ CHAPITRE = {
     'personne': (NOM, ROLE),
     'objectif': "Taxe de séjour, registre de police et statistiques d'hébergement : réglés une fois, puis produits "
                 "tout seuls à partir des séjours.",
-    'voix': "Septième chapitre : la conformité. La taxe de séjour, le registre des clients et les statistiques du "
+    'voix': "Huitième chapitre : la conformité. La taxe de séjour, le registre des clients et les statistiques du "
             "ministère se font à partir des séjours, sans rien saisir de plus.",
     'app': 'app-c7',
     'ecran': ECRAN,

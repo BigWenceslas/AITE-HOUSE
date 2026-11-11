@@ -22,7 +22,11 @@ Conditions du monde rejoué (aite_hotel_pos_link 18.0.1.0.2, aite_pos_credit
   (aite_hotel_pos_link/models/pos_order.py:143-228). Corrigé (ECARTS n° 10) :
   avant 18.0.1.0.1, il fallait donner au caissier le profil « Réception »
   pour que le ticket se synchronise ; ce contournement et sa bulle ont été
-  retirés. Symétrique depuis la livraison 4 : la réception tranche la file
+  retirés. Rouvert depuis (ECARTS n° 78, relevé au chapitre 3 de la
+  présentation) : 18.0.1.0.2 a ajouté pos.order.aite_folio_line_ids, que la
+  caisse relit à chaque synchronisation ; un caissier sans profil hôtel ne
+  valide plus aucune vente (capture ref_muk/720). Ce tutoriel, rendu avant,
+  montre l'écran tel qu'il est avec le contournement. Symétrique depuis la livraison 4 : la réception tranche la file
   sans droit sur la caisse (lecture du ticket en sudo(),
   models/roomcharge_pending.py:81-84) ;
 - aite_pos_credit est installé, comme au tutoriel 10 : application « POS

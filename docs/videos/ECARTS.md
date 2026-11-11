@@ -19,13 +19,23 @@ le moteur vidéo ne figurent pas dans ces tableaux.
 | # | Où | Constat | Règle ou source contredite | Dans la vidéo |
 |---|---|---|---|---|
 | 1 | `aite_housekeeping/views/menus.xml` — menu « Répartir les chambres du jour » | Le menu porte `groups="aite_hotel_management.group_hotel_user"` (Réception) : le profil **Gouvernante** ne le voit pas. | Cas P02 du cahier de recette et `tests/vague1/scenario_housekeeping.py` : c'est la gouvernante qui répartit les chambres. | Geste non montré au chapitre 2. |
-| 2 | `aite_exec_dashboard` — sous-titre de « Chiffre d'affaires total » (`'Période ' + state.dateFrom + ' → ' + state.dateTo`) | Dates affichées au format ISO : « Période 2026-10-01 → 2026-10-15 ». | Règle 6 : dates au format `%d/%m/%Y`. | Rejoué tel quel (chapitre 6). |
-| 3 | `aite_slot_booking` — titre « Planning du <jour> » (`state.day`) | « Planning du 2026-10-15 ». | Règle 6. | Rejoué tel quel (chapitre 6). |
-| 4 | `aite_city_tax` (`city_tax_report.py`) et `aite_guest_registry` (`guest_stats.py`) — champ `month` | Les lignes des pivots « Taxe de séjour — état mensuel » et « Statistiques d'hébergement » s'intitulent « 2026-10 » (`to_char(…, 'YYYY-MM')`). | Règle 6 (un mois lisible : « octobre 2026 » ou « 10/2026 »). | Rejoué tel quel (chapitre 7). |
-| 5 | `aite_pos_analytics/static/src/js/services/utils.js` — `fmtPct` | Pourcentages au point décimal et sans espace : « 56.0% », « Taux: 56.0% ». | Règle 6 (format français : « 56,0 % »), comme les autres tableaux de bord AITE. | Rejoué tel quel (chapitre 6). |
+| 2 | `aite_exec_dashboard` — sous-titre de « Chiffre d'affaires total » (`'Période ' + state.dateFrom + ' → ' + state.dateTo`) | Dates affichées au format ISO : « Période 2026-10-01 → 2026-10-15 ». | Règle 6 : dates au format `%d/%m/%Y`. | Rejoué tel quel (chapitre 7, `c6_direction`). |
+| 3 | `aite_slot_booking` — titre « Planning du <jour> » (`state.day`) | « Planning du 2026-10-15 ». | Règle 6. | Rejoué tel quel (chapitre 7, `c6_direction`). |
+| 4 | `aite_city_tax` (`city_tax_report.py`) et `aite_guest_registry` (`guest_stats.py`) — champ `month` | Les lignes des pivots « Taxe de séjour — état mensuel » et « Statistiques d'hébergement » s'intitulent « 2026-10 » (`to_char(…, 'YYYY-MM')`). | Règle 6 (un mois lisible : « octobre 2026 » ou « 10/2026 »). | Rejoué tel quel (chapitre 8, `c7_conformite`). |
+| 5 | `aite_pos_analytics/static/src/js/services/utils.js` — `fmtPct` | Pourcentages au point décimal et sans espace : « 56.0% », « Taux: 56.0% ». | Règle 6 (format français : « 56,0 % »), comme les autres tableaux de bord AITE. | Rejoué tel quel (chapitre 7, `c6_direction`). |
 | 6 | `aite_purchase_dashboard` — carte « En retard de paiement » (`negMoney`) | Quand rien n'est en retard, la carte affiche « −0 FCFA » (capture de recette `r4-direction-04`). | Lisibilité (règle 4 : une phrase d'état lisible). | La vidéo montre un montant en retard non nul : le défaut n'apparaît pas. |
-| 7 | `aite_city_tax/models/hotel_hotel.py` (`city_tax_help`) et `city_tax_rate.py` (libellé du barème) | La devise est écrite par son code ISO : « 3 000 XAF par personne et par nuit », « Cameroun — 3 ★ : 3 000 XAF ». | Règle 6 : montants en FCFA (le symbole de la devise, `currency_id.symbol`, donnerait « FCFA »). | Rejoué tel quel (chapitre 7). |
+| 7 | `aite_city_tax/models/hotel_hotel.py` (`city_tax_help`) et `city_tax_rate.py` (libellé du barème) | La devise est écrite par son code ISO : « 3 000 XAF par personne et par nuit », « Cameroun — 3 ★ : 3 000 XAF ». | Règle 6 : montants en FCFA (le symbole de la devise, `currency_id.symbol`, donnerait « FCFA »). | Rejoué tel quel (chapitre 8, `c7_conformite`). |
 | 8 | `docs/captures_uat/` (recette UAT) | Les captures de la recette navigateur sont en anglais (« Access Error », « Close », « Point of Sale », « My Company ») : la base de recette n'était pas en français. | Règle 6 (« pas d'anglais résiduel ») — vaut pour la base livrée, pas pour le code. | La vidéo rejoue l'interface en français, comme sur la base `fr_FR` du client. |
+| 78 | **Bloquant.** `aite_hotel_pos_link` 18.0.1.0.2 — `models/pos_order.py:39-42` (`aite_folio_line_ids`, One2many vers `aite.hotel.folio.line`, sans `groups=`) ; `odoo18/addons/point_of_sale/models/pos_order.py:1206-1212` (`read_pos_data`) ; `pos_load_mixin.py:9-11` | Un caissier au seul profil « Point de Vente / Utilisateur » ne peut valider **aucune** vente, même en espèces : à chaque synchronisation, `sync_from_ui` → `read_pos_data` relit tous les champs de la commande (`pos.order` ne restreint pas `_load_pos_data_fields`), dont ce One2many ; la lecture lève « Erreur d'accès … 'Ligne de folio' … Gestion Hôtelière/Réception » (capture `ref_muk/720`), et chaque essai consomme un numéro de commande. Le test `test_cashier_without_hotel_profile_posts_to_folio` crée la commande par l'ORM et ne joue pas cette relecture. **Rouvre le n° 10** (corrigé en 18.0.1.0.1, le champ est venu en 18.0.1.0.2). | `CLAUDE.md` (« Les écritures techniques … passent en `sudo()` : la réception et le responsable hôtel n'ont pas — et n'ont pas à avoir — les droits ») ; recette D02, E01 | Chapitre 3 (`c3_bar_restaurant`) : les ventes sont montrées validées, comme dans t04 ; l'écran de la caisse est le même avec le contournement (profil Réception ajouté au caissier). Correction proposée : `groups='aite_hotel_management.group_hotel_user'` sur le champ (`read()` sans liste de champs ignore alors un champ inaccessible), avec un test qui passe par `sync_from_ui` sous un caissier sans profil hôtel. |
+| 79 | `aite_pos_credit` — `static/src/scss/pos_credit_pos.scss:3-6` | « Mettre sur ardoise » est violet `#714B67` codé en dur, et non la couleur primaire de l'interface : sur Odoo Community (`#71639E`) comme sous le thème MuK, c'est le seul bouton de cette teinte. | Charte (`DESIGN.md` : `#714B67` est la couleur des tableaux de bord AITE, pas des boutons) | Rejoué tel quel (chapitre 3). |
+| 80 | `recette/cas_de_test.py:279-284` (E01) | Le cas attend que « le ticket mentionne la chambre » ; le reçu d'un ticket « Note de chambre » ne mentionne ni chambre ni folio (capture `ref_muk/710`), et la caisse ne signale pas le report. | Recette E01 | Rejoué tel quel (chapitre 3) : le reçu montre la ligne « Note de chambre 13 500 FCFA », la voix dit que le dîner part sur le folio une fois le ticket validé. |
+
+Le chapitre 3 (« Le bar et le restaurant », ajouté le 11/11/2026) rejoue aussi
+des comportements d'Odoo standard sans les relever ici : monnaie négative à
+l'écran de paiement et positive au reçu, « e.g. john.doe@mail.com » non
+traduit, « Orange Money Nombre » (« Count »), avertissement « soldes dûs »
+(n° 43). Ses écarts de série (cartes, numéros de session, reçu de t10) sont
+sous « Demandes sur le moteur vidéo », ligne « Série, chapitre 3 ».
 
 **Confirmés par les tutoriels.** n° 1 par t07 (le profil Gouvernante n'a pas
 non plus « Conforme » / « À refaire », voir n° 52) ; n° 2 par t15 ; n° 3 par
@@ -54,6 +64,12 @@ ou phrases fausses.
 > (n° 11, 14, 15, 16, 19, 30), `aite_purchase_dashboard` 18.0.1.0.4,
 > `aite_direction_dashboard` 18.0.1.1.1, `aite_exec_dashboard` 18.0.1.1.1,
 > `aite_pos_analytics` 18.0.2.1.2 (n° 13, 22, 23, 24, 25, 26, 27 analyse).
+>
+> **Rouvert le 11/11/2026 : n° 10.** Le report « Note de chambre » passe bien
+> en `sudo()`, mais `aite_hotel_pos_link` 18.0.1.0.2 a ajouté
+> `aite_folio_line_ids`, que la caisse relit à chaque synchronisation : un
+> caissier sans profil hôtel ne valide plus aucune vente (n° 78). Le tutoriel
+> 4, qui dit « Corrigé (ECARTS n° 10) », renvoie désormais à ce n° 78.
 >
 > **Restent à trancher par l'équipe** (non corrigés ou corrigés selon un
 > choix à valider) :
@@ -228,7 +244,12 @@ clients : N fiche(s) à compléter » après le check-in (O01), la sévérité
 « Réglée » d'une ardoise soldée, les refus d'accès de la gouvernante (folios),
 de la caisse (réservations) et du magasin (ardoises), et les chiffres repris à
 l'identique d'un tableau de bord à l'autre (restauration = analyse des ventes,
-encours des ardoises, valeur du stock).
+encours des ardoises, valeur du stock). Chapitre 3 : le fond proposé à
+l'ouverture est le montant compté à la dernière clôture
+(`pos_session.py:381-383`) ; le report en note de chambre suit la validation
+du ticket (`aite_hotel_pos_link/models/pos_order.py:142-156`) ; un écart de
+caisse de −500 FCFA est listé « Modéré » dans « Écarts de caisse »
+(`aite_pos_analytics/models/pos_dashboard.py:654-687`).
 
 Tutoriels :
 
@@ -263,6 +284,7 @@ Tutoriels :
 - Moteur : un « personnage » par étape (nom, rôle, initiale, couleur de la pastille `#tu-perso`), au lieu du CSS `::before` / `::after` copié dans t04, t06, t08, t11.
 - `moteur.montrer` : gestes « basculer », « réafficher » et « afficher / masquer sans réserver la place » ; `immediateRender` fait disparaître un élément visible au départ (t06, t14, t15).
 - `demo.py` : numéros manifestement fictifs (+237 6 00 00 00 xx) à la place de `CLIENT_TEL` ; solde de RES/2026/0214 dans `ARRIVEES` (57 000 FCFA après l'acompte) ; table unique des ressources de créneaux et coordonnées de Claire Durand ; prénoms d'équipières différents des comptes `amina` / `rose` ; jeu de stock partagé (`demo.STOCK`) (t01, t02, t07, t08, t13).
+- Série, chapitre 3 de la présentation (`c3_bar_restaurant`, arbitrage) : (a) la carte du bar de t04 et t10 n'a ni vin ni spiritueux, alors que t12 fait vendre au bar Vin rouge 75 cl (10), Champagne brut (10), Whisky 12 ans (11), Gin (13), Cognac, Rhum, Cocktail maison…, et au restaurant des articles absents des deux cartes (Koki, Okok, Kondrè, Porc braisé, Maquereau braisé, Riz blanc, Frites de pomme, Citronnade, Jus de gingembre, Eau minérale 1,5 L) ; dans Odoo, une catégorie commune aux deux caisses montre les mêmes articles (`pos_config.py:779-804`) : le chapitre garde la carte de t04 et ne met les vins qu'au restaurant (catégorie « Vins & spiritueux »), sans dire que le bar n'en vend pas ; (b) numéros de session : environ une session par jour, toutes caisses confondues (00122 le 01/10, 00131 le 10/10 dans t12 ; 00135 le 14/10 dans t04 et t10 ; 00137 le 16/10 dans t11) ; le suivi « 402 » du restaurant suppose une session 00134 ouverte avant 00135, ce qui laisse 00132 à 00134 pour les sessions des deux caisses du 11 au 14/10 (sessions de plusieurs jours) ; (c) reçu de t10 : « Tél. : +237… » avec une espace (le produit écrit « Tél. :+237… », `receipt_header.xml:12`) et la référence sans « Commande » (`fr.po:4928-4929`) ; (d) `ecrans.MENUS_MUK['point_de_vente_caisse']` omet « Analyse », que le caissier voit (`ref_muk/701b`) ; (e) la caisse trie les tuiles par nom (`product_screen.js:417-419`), t04 et t10 par catégorie (t04, t10, t11, t12).
 - Série (arbitrage, pas moteur) : TVA de la nuitée (t05 contre les autres), chambre de Martin Ebode, folio de Brigitte Essomba et report du massage RES/26/0158, tuile fidélité et chiffres de stock de t15, prix de la Bière blonde 65 cl dans t12 (t02, t03, t04, t09, t11, t12, t13, t15).
 - `ecrans.py`, listes et recherche : ligne éditable, facettes de champ et de regroupement (icône calques), panneau Filtres / Regrouper par / Favoris, groupes repliables avec agrégats, engrenage et colonnes optionnelles (t01, t05, t06, t08, t11).
 - `ecrans.py`, barre et fiches : sous-menus de la barre MuK (identifiant par menu, alignement à droite), fiche sans en-tête, discussion sous la feuille, suivi « ancien → nouveau (champ) », chatter sans « Activités », boutons intelligents qui apparaissent, ruban (Payé, Partiel…), totaux de facture, fiche contact `res.partner`, champ date avec saisie, liste déroulante many2one, infobulle d'aide (t03, t04, t05, t07, t09, t11, t12).

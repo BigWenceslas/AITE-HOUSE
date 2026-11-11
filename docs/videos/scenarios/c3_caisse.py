@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Chapitre 3 — Ardoises clients et recouvrement.
+"""Chapitre 4 — Ardoises clients et recouvrement (fichier c3, numéro historique).
 
 Source : fiche de recette n° 3 « Ardoises clients et recouvrement » (caisse :
 tableau de bord Recouvrement, liste des ardoises, filtre « Ouvertes », fiche,
@@ -232,12 +232,12 @@ ECRAN = fenetre('app-c3', 'POS Crédit', MENUS, [RECOUVREMENT, ARDOISES, FICHE],
 CSS = '.c3-aide { color: var(--o-lien); font-size: 13px; margin-left: 3px; font-weight: 700; }'
 
 CHAPITRE = {
-    'court': 'Caisse',
+    'court': 'Ardoises',                # « Caisse » : depuis l'ajout de c3_bar_restaurant, la caisse est le chapitre 3
     'poste': 'Caisse du bar',
     'titre': 'Ardoises clients et recouvrement',
     'personne': (NOM, ROLE),
     'objectif': "Suivre l'encours des clients, ouvrir une ardoise, enregistrer un remboursement et vérifier le solde.",
-    'voix': "Troisième chapitre : la caisse du bar. Les clients habitués consomment à crédit sur une ardoise ; "
+    'voix': "Quatrième chapitre : les ardoises. Les habitués du bar consomment à crédit sur une ardoise ; "
             "Hervé suit l'encours et encaisse les remboursements.",
     'app': 'app-c3',
     'ecran': ECRAN,
