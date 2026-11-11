@@ -400,6 +400,28 @@ class TestRoomCharge(RoomChargeCommon):
         self.assertTrue(order.aite_folio_line_id)
         self.assertEqual(order.aite_folio_line_id.folio_id, folio)
 
+    def test_cashier_without_hotel_profile_reads_back_order(self):
+        """Écart n° 78 : après chaque vente, la caisse relit le ticket.
+
+        ``sync_from_ui`` se termine par ``read_pos_data``, qui relit tous
+        les champs de ``pos.order`` sous les droits du caissier. Un champ
+        vers les lignes de folio qu'il ne peut pas lire bloquait toute
+        vente (« Vous n'êtes pas autorisé à accéder aux enregistrements
+        'Ligne de folio' »), même payée en espèces.
+        """
+        cashier = self._cashier()
+        self._folio()
+        for payments, partner in (
+                ([(self.method_cash, 12000.0)], None),
+                ([(self.method_room, 12000.0)], self.guest)):
+            self.env.invalidate_all()
+            order = self._pos_order_as(cashier, payments, partner=partner)
+            self.env.invalidate_all()
+            data = order.with_user(cashier).read_pos_data(
+                [{'session_id': self.session.id}], self.pos_config.id)
+            self.assertEqual([o['id'] for o in data['pos.order']], order.ids)
+            self.assertNotIn('aite_folio_line_ids', data['pos.order'][0])
+
     def test_cashier_without_hotel_profile_feeds_the_queue(self):
         """Ticket anonyme d'un caissier pur : il entre dans la file."""
         cashier = self._cashier()

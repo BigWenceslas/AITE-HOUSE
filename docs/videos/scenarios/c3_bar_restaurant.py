@@ -182,8 +182,8 @@ Société sans TVA (DESIGN.md) : ni ligne « Taxes » à l'écran de vente, ni
 bloc des taxes au reçu. Base mono-société : le nom de la société dans la
 barre, rien de réservé à base.group_multi_company.
 
-Écarts du produit relevés en écrivant ce chapitre (signalés, rien n'est
-corrigé ; captures de référence ref_muk/701 à 720, base aite_demo ; repris
+Écarts du produit relevés en écrivant ce chapitre (signalés ; le n° 78 est
+corrigé depuis, les autres non ; captures de référence ref_muk/701 à 720, base aite_demo ; repris
 dans ECARTS.md : n° 78, 79, 80, et la ligne « Série, chapitre 3 ») :
 1. BLOQUANT (ECARTS n° 78, qui rouvre le n° 10) — aite_hotel_pos_link 18.0.1.0.2 : un caissier au seul profil
    « Point de Vente / Utilisateur » ne peut valider AUCUNE vente, même en
@@ -198,7 +198,11 @@ dans ECARTS.md : n° 78, 79, 80, et la ligne « Série, chapitre 3 ») :
    (t04_note_chambre.py, « Conditions ») : l'écran de la caisse est le même
    avec le contournement (profil Réception ajouté au caissier). Le test
    test_cashier_without_hotel_profile_posts_to_folio crée la commande par
-   l'ORM et ne joue pas cette relecture.
+   l'ORM et ne joue pas cette relecture. Corrigé dans aite_hotel_pos_link
+   18.0.1.0.3 (livraison 5) : le champ est réservé au profil Réception, et
+   test_cashier_without_hotel_profile_reads_back_order joue read_pos_data
+   sous un caissier sans profil hôtel. Le chapitre montre donc le produit
+   tel qu'il est, sans contournement.
 2. aite_pos_credit (ECARTS n° 79) : « Mettre sur ardoise » est violet #714B67 codé en dur
    (pos_credit_pos.scss:3-6), et non la couleur primaire de l'interface : sur
    Odoo Community (#71639E) comme sous le thème MuK, c'est le seul bouton de

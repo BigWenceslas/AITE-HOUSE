@@ -36,9 +36,16 @@ class PosOrder(models.Model):
     # Un ticket peut donner plusieurs lignes de folio (une par jeu de
     # taxes) ; ``aite_folio_line_id`` garde la première (idempotence et
     # compatibilité), celle-ci les donne toutes.
+    # Réservé au profil Réception (écart n° 78) : après chaque vente, la
+    # caisse relit tous les champs du ticket sous les droits du caissier
+    # (``sync_from_ui`` → ``read_pos_data``). Un caissier sans profil hôtel
+    # ne peut pas lire les lignes de folio : sans ``groups``, cette lecture
+    # échouait et aucune vente ne se validait. Avec ``groups``, ``read()``
+    # passe le champ. Le code du report, lui, travaille en ``sudo()``.
     aite_folio_line_ids = fields.One2many(
         'aite.hotel.folio.line', 'aite_pos_order_id',
         string="Lignes de folio (note de chambre)", readonly=True,
+        groups='aite_hotel_management.group_hotel_user',
     )
 
     # ------------------------------------------------------------------

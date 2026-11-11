@@ -25,7 +25,7 @@ AITE_HOUSE/
 | aite_hotel_management | 18.0.1.0.7 | **Socle hôtelier** : chambres, réservations, séjours, folios, main courante, facturation |
 | aite_slot_booking | 18.0.1.0.5 | Espaces & prestations réservables au créneau (salles, piscine, billard…) |
 | aite_website_booking | 18.0.1.0.2 | Réservation en ligne depuis le site web, acompte |
-| aite_hotel_pos_link | 18.0.1.0.2 | **Note de chambre** : report des consommations du bar sur le folio |
+| aite_hotel_pos_link | 18.0.1.0.3 | **Note de chambre** : report des consommations du bar sur le folio |
 | aite_pos_credit | 18.0.2.0.5 | Crédit clients (ardoises) : plafonds, encours, recouvrement |
 | aite_loyalty | 18.0.1.0.3 | Fidélité : points, niveaux VIP & VVIP |
 | aite_pos_analytics | 18.0.2.1.4 | Analyses des ventes : heures de pointe, marges, CMV |

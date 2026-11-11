@@ -4,7 +4,7 @@
 AITE Consulting SARL
 
 Ce guide explique comment **monter un environnement de test**, **exécuter
-les 874 tests automatisés**, **rejouer la recette utilisateur** et
+les 875 tests automatisés**, **rejouer la recette utilisateur** et
 **régénérer le jeu d'essai**. Le cahier de recette illustré, avec ses
 captures d'écran, fait l'objet d'un document séparé :
 [`GUIDE_RECETTE_UAT.md`](GUIDE_RECETTE_UAT.md).
@@ -33,14 +33,14 @@ La suite compte trois niveaux de vérification, chacun avec son rôle.
 | `aite_pos_analytics` | 61 | Coût figé à la vente, marge, agrégats de session, écarts de caisse et leur sévérité, API du tableau de bord |
 | `aite_loyalty` | 51 | Barème de points, grand livre, segmentation VIP / VVIP, fenêtre glissante, rétrogradation |
 | `aite_stock_dashboard` | 42 | Couverture, seuils, quantité à commander, statuts d'alerte, valorisation, rotation |
-| `aite_hotel_pos_link` | 39 | Note de chambre, décisions de rattachement, file d'attente, idempotence |
+| `aite_hotel_pos_link` | 40 | Note de chambre, décisions de rattachement, file d'attente, idempotence, relecture du ticket par un caissier sans profil hôtel |
 | `aite_purchase_dashboard` | 22 | API du tableau de bord Achats, consignes fournisseurs |
 | `aite_exec_dashboard` | 22 | Consolidation des trois pôles, mix d'activité, RevPAR / pickup / pace / N-1 (F06) |
 | `aite_direction_dashboard` | 31 | Cohérence du cockpit avec les quatre moteurs, balance âgée en miroir, rangée Hébergement (F06), accès de l'administrateur |
 | `aite_housekeeping` | 26 | Tableau des chambres, pannes et remise en vente, technicien, inspection « Conforme », objets trouvés |
 | `aite_guest_registry` | 12 | Pré-remplissage de la fiche, « Mémoriser sur la fiche client », impression du registre de police |
 | `aite_city_tax` | 14 | Article de taxe créé à la première confirmation, quel que soit le profil |
-| **Total** | **874** | |
+| **Total** | **875** | |
 
 Les tests sont marqués par des **étiquettes** (`aite_hotel`, `aite_credit`,
 `aite_slot`, …) pour pouvoir n'en jouer qu'une partie.
@@ -121,7 +121,7 @@ aite_exec,aite_demo,aite_journey
 Résultat attendu, en fin de journal :
 
 ```
-odoo.tests.result: 0 failed, 0 error(s) of 874 tests
+odoo.tests.result: 0 failed, 0 error(s) of 875 tests
 ```
 
 ### 3.2 Un seul module

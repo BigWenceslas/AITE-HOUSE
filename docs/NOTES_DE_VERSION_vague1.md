@@ -230,6 +230,29 @@ pour chaque utilisateur. Ne rien désinstaller.
   fournisseurs (âge de facture ou retard) ; un seul mot pour une vente en
   caisse (ticket, commande, transaction).
 
+## Livraison 5 (11 novembre 2026) — correctif bloquant de la caisse
+
+Relevé en tournant le chapitre « Le bar et le restaurant » de la vidéo de
+présentation (écart n° 78 de `docs/videos/ECARTS.md`, qui rouvrait le
+n° 10).
+
+| Module | Version | Ce qui change pour l'utilisateur |
+|---|---|---|
+| `aite_hotel_pos_link` | 18.0.1.0.3 | un caissier qui n'a que le profil « Point de Vente / Utilisateur » valide de nouveau ses ventes ; en 18.0.1.0.2, chaque validation échouait sur « Vous n'êtes pas autorisé à accéder aux enregistrements 'Ligne de folio' », même en espèces |
+
+Cause : après chaque vente, la caisse relit le ticket avec les droits du
+caissier. Cette relecture prend tous les champs du ticket, et le lien vers
+les lignes de folio, ajouté en 18.0.1.0.2, lui était interdit. Ce lien est
+désormais réservé au profil Réception. La caisse ne le relit plus. Le report
+« Note de chambre » sur le folio est inchangé.
+
+### Mise à jour
+Fermer les sessions de caisse ; déposer le dossier `aite_hotel_pos_link` à
+la place de l'ancien ; redémarrer ; Apps → Mettre à jour la liste →
+**Mettre à niveau** `aite_hotel_pos_link` ; Ctrl+F5 sur chaque caisse. Le
+contournement éventuel (profil Réception donné aux caissiers) peut être
+retiré.
+
 ## Installation / mise à jour
 1. Déposer les 4 dossiers de `addons/` à côté des autres modules AITE
    (remplacer `aite_hotel_management`).

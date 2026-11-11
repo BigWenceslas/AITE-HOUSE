@@ -25,8 +25,10 @@ Conditions du monde rejoué (aite_hotel_pos_link 18.0.1.0.2, aite_pos_credit
   retirés. Rouvert depuis (ECARTS n° 78, relevé au chapitre 3 de la
   présentation) : 18.0.1.0.2 a ajouté pos.order.aite_folio_line_ids, que la
   caisse relit à chaque synchronisation ; un caissier sans profil hôtel ne
-  valide plus aucune vente (capture ref_muk/720). Ce tutoriel, rendu avant,
-  montre l'écran tel qu'il est avec le contournement. Symétrique depuis la livraison 4 : la réception tranche la file
+  valide plus aucune vente (capture ref_muk/720). Recorrigé en 18.0.1.0.3
+  (livraison 5 : champ réservé au profil Réception). Ce tutoriel montre
+  l'écran tel qu'il est sans contournement depuis ce correctif.
+  Symétrique depuis la livraison 4 : la réception tranche la file
   sans droit sur la caisse (lecture du ticket en sudo(),
   models/roomcharge_pending.py:81-84) ;
 - aite_pos_credit est installé, comme au tutoriel 10 : application « POS
