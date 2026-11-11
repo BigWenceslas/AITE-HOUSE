@@ -1059,19 +1059,19 @@
       "modele": "vd-sombre",
       "titre": "",
       "points": [],
-      "id": "VD-CP-18",
-      "moment": "mercredi 17h",
-      "etiquette": "Le conseil de la cave",
+      "id": "VD-MER-2",
+      "moment": "mercredi 12h",
+      "etiquette": "Bon mercredi",
       "photo": "tunique",
-      "alcool": true,
-      "texte": "Mola, le verre de vin, on le tient par le pied : ta main chauffe le vin. *Le nyanga, c’est aussi ça*.",
-      "legende": "Mola, écoute-moi bien : quand tu tiens le verre par le ballon, ta main chauffe le vin et tes doigts salissent sa belle robe. Par le pied, le vin reste frais, et toi tu fais ton nyanga tranquille. Même sur la photo, ça sort propre. Milieu de semaine, on se fait plaisir, doucement.\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98\nL’abus d’alcool est dangereux pour la santé. À consommer avec modération.",
+      "alcool": false,
+      "texte": "C’est mercredi, mola ! La semaine est déjà cassée en deux, *on se retrouve ce soir* à La Vérandah.",
+      "legende": "Mercredi déjà ! Tu as tenu jusqu’ici, tu mérites ta pause. Après le boulot, passe nous voir : la table est prête, l’ambiance aussi. Tu viens avec qui ce soir ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
       "hashtags": [
         "#LaVerandah",
         "#Douala",
-        "#ConseilDeLaCave",
-        "#Vin",
-        "#Moderation"
+        "#Makepe",
+        "#BonMercredi",
+        "#AfterWork"
       ]
     },
     {
@@ -1080,19 +1080,19 @@
       "modele": "vd-sombre",
       "titre": "",
       "points": [],
-      "id": "VD-CP-19",
-      "moment": "mercredi 19h",
-      "etiquette": "Le conseil de la cave",
+      "id": "VD-MER-3",
+      "moment": "mercredi 17h",
+      "etiquette": "Bon mercredi",
       "photo": "veste-pied",
-      "alcool": true,
-      "texte": "Mbom, le verre de vin, on ne le remplit pas jusqu’en haut : *un tiers seulement*, le vin doit respirer. On te ressert, ya pas drap !",
-      "legende": "Mbom, ce n’est pas qu’on te sert petit, hein ! Le verre au tiers, c’est pour que le vin respire et sorte tous ses arômes quand tu le fais tourner. À ras bord, il étouffe, et au premier fou rire tout est par terre. Tu en veux encore ? On te ressert, ya pas drap.\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98\nL’abus d’alcool est dangereux pour la santé. À consommer avec modération.",
+      "alcool": false,
+      "texte": "Mi-semaine, la fatigue commence à parler ? Viens *souffler un peu* à La Vérandah, la famille.",
+      "legende": "Le boulot ne finit jamais, mais toi tu as le droit de souffler. Viens te poser à La Vérandah après le travail, entre amis, en famille. On t’attend à quelle heure ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
       "hashtags": [
         "#LaVerandah",
         "#Douala",
-        "#ConseilDeLaCave",
-        "#Vin",
-        "#Moderation"
+        "#Makepe",
+        "#BonMercredi",
+        "#AfterWork"
       ]
     },
     {
@@ -1101,18 +1101,18 @@
       "modele": "vd-sombre",
       "titre": "",
       "points": [],
-      "id": "VD-CP-20",
-      "moment": "mercredi 21h",
+      "id": "VD-MER-4",
+      "moment": "mercredi 19h",
       "etiquette": "Le conseil de la cave",
       "photo": "blazer",
       "alcool": true,
-      "texte": "Djo, une poignée de glaçons dans ton whisky ? Mais *tu bois l’eau* ! Un seul gros glaçon, et le goût reste.",
-      "legende": "Djo, tu mets une poignée de glaçons dans ton whisky ? Dix minutes après, c’est l’eau que tu bois, le goût est parti. Un seul gros glaçon fond doucement et garde le whisky comme il faut. Et entre deux verres, un grand verre d’eau pour toi aussi : on est ensemble.\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98\nL’abus d’alcool est dangereux pour la santé. À consommer avec modération.",
+      "texte": "Mola, le verre de vin, on le tient par le pied. Viens *goûter comme les connaisseurs* à La Vérandah !",
+      "legende": "Petit geste, grande classe : par le pied, ta main ne chauffe pas le vin. À ce soir à La Vérandah ? Rouge ou blanc pour toi ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98\nL’abus d’alcool est dangereux pour la santé. À consommer avec modération.",
       "hashtags": [
         "#LaVerandah",
         "#Douala",
         "#ConseilDeLaCave",
-        "#Whisky",
+        "#Vin",
         "#Moderation"
       ]
     }

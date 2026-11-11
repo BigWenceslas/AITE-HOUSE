@@ -1,0 +1,12 @@
+.venv-tts/
+cache/
+apercu/
+polices/
+logo.png
+dg.webp
+package.json
+package-lock.json
+node_modules/
+plan.json
+*.mp4
+essais/
