@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Site web → Configuration → Paramètres : bloc « WhatsApp », placé
+         juste après le bloc « Général » et réglé pour le site choisi en
+         tête de l'écran. -->
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.aite.website.whatsapp</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="website.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@id='website_info_settings']" position="after">
+                <block title="WhatsApp" id="aite_whatsapp_settings" invisible="not website_id">
+                    <setting id="aite_whatsapp_button_setting"
+                             string="Bouton WhatsApp"
+                             help="Affiche sur toutes les pages du site un bouton qui ouvre directement une discussion WhatsApp avec vous.">
+                        <field name="x_aite_wa_active"/>
+                        <div class="content-group" invisible="not x_aite_wa_active">
+                            <div class="row mt16">
+                                <label for="x_aite_wa_phone" string="Numéro" class="col-lg-3 o_light_label"/>
+                                <field name="x_aite_wa_phone"
+                                       placeholder="+237 6 73 37 33 67"
+                                       required="x_aite_wa_active"/>
+                            </div>
+                            <div class="row">
+                                <label for="x_aite_wa_message" string="Message" class="col-lg-3 o_light_label"/>
+                                <field name="x_aite_wa_message"
+                                       placeholder="Bonjour, je souhaite avoir des informations."/>
+                            </div>
+                            <div class="row">
+                                <label for="x_aite_wa_label" string="Accroche" class="col-lg-3 o_light_label"/>
+                                <field name="x_aite_wa_label"
+                                       placeholder="Une question ? Écrivez-nous"/>
+                            </div>
+                            <div class="mt8">
+                                <field name="x_aite_wa_left"/>
+                                <label for="x_aite_wa_left" string="Placer le bouton en bas à gauche" class="o_light_label"/>
+                            </div>
+                            <div class="mt8 text-muted small">
+                                Numéro au format international, indicatif pays compris.
+                                Le message est pré-saisi pour le visiteur, qui peut le modifier avant l'envoi.
+                            </div>
+                            <div class="mt8" invisible="not x_aite_wa_link">
+                                <span class="o_form_label me-2">Tester :</span>
+                                <field name="x_aite_wa_link" widget="url" class="w-auto"/>
+                            </div>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

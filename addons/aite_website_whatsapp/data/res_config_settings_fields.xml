@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Miroirs des réglages du site dans l'écran Paramètres : champs
+         liés à website_id, le site sélectionné en tête de l'écran — comme
+         les réglages standards du module Site web. -->
+
+    <record id="field_res_config_settings__x_aite_wa_active" model="ir.model.fields">
+        <field name="name">x_aite_wa_active</field>
+        <field name="model">res.config.settings</field>
+        <field name="model_id" ref="base.model_res_config_settings"/>
+        <field name="ttype">boolean</field>
+        <field name="field_description">Bouton WhatsApp</field>
+        <field name="related">website_id.x_aite_wa_active</field>
+        <field name="readonly" eval="False"/>
+    </record>
+
+    <record id="field_res_config_settings__x_aite_wa_phone" model="ir.model.fields">
+        <field name="name">x_aite_wa_phone</field>
+        <field name="model">res.config.settings</field>
+        <field name="model_id" ref="base.model_res_config_settings"/>
+        <field name="ttype">char</field>
+        <field name="field_description">Numéro WhatsApp</field>
+        <field name="related">website_id.x_aite_wa_phone</field>
+        <field name="readonly" eval="False"/>
+    </record>
+
+    <record id="field_res_config_settings__x_aite_wa_message" model="ir.model.fields">
+        <field name="name">x_aite_wa_message</field>
+        <field name="model">res.config.settings</field>
+        <field name="model_id" ref="base.model_res_config_settings"/>
+        <field name="ttype">char</field>
+        <field name="field_description">Message pré-rempli</field>
+        <field name="related">website_id.x_aite_wa_message</field>
+        <field name="readonly" eval="False"/>
+    </record>
+
+    <record id="field_res_config_settings__x_aite_wa_label" model="ir.model.fields">
+        <field name="name">x_aite_wa_label</field>
+        <field name="model">res.config.settings</field>
+        <field name="model_id" ref="base.model_res_config_settings"/>
+        <field name="ttype">char</field>
+        <field name="field_description">Texte d'accroche</field>
+        <field name="related">website_id.x_aite_wa_label</field>
+        <field name="readonly" eval="False"/>
+    </record>
+
+    <record id="field_res_config_settings__x_aite_wa_left" model="ir.model.fields">
+        <field name="name">x_aite_wa_left</field>
+        <field name="model">res.config.settings</field>
+        <field name="model_id" ref="base.model_res_config_settings"/>
+        <field name="ttype">boolean</field>
+        <field name="field_description">Bouton à gauche</field>
+        <field name="related">website_id.x_aite_wa_left</field>
+        <field name="readonly" eval="False"/>
+    </record>
+
+    <record id="field_res_config_settings__x_aite_wa_link" model="ir.model.fields">
+        <field name="name">x_aite_wa_link</field>
+        <field name="model">res.config.settings</field>
+        <field name="model_id" ref="base.model_res_config_settings"/>
+        <field name="ttype">char</field>
+        <field name="field_description">Lien WhatsApp</field>
+        <field name="related">website_id.x_aite_wa_link</field>
+        <field name="readonly" eval="True"/>
+    </record>
+
+</odoo>

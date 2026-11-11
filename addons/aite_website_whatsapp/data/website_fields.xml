@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Réglages du bouton, portés par chaque site web (multi-sites).
+
+         Les champs sont déclarés en données (ir.model.fields, préfixe x_)
+         plutôt qu'en Python : le module reste importable sur Odoo Online,
+         où seul le code de données est accepté. Ils sont supprimés avec
+         le module à la désinstallation. -->
+
+    <record id="field_website__x_aite_wa_active" model="ir.model.fields">
+        <field name="name">x_aite_wa_active</field>
+        <field name="model">website</field>
+        <field name="model_id" ref="website.model_website"/>
+        <field name="ttype">boolean</field>
+        <field name="field_description">Bouton WhatsApp</field>
+        <field name="help">Affiche le bouton WhatsApp sur toutes les pages du site.</field>
+    </record>
+
+    <record id="field_website__x_aite_wa_phone" model="ir.model.fields">
+        <field name="name">x_aite_wa_phone</field>
+        <field name="model">website</field>
+        <field name="model_id" ref="website.model_website"/>
+        <field name="ttype">char</field>
+        <field name="field_description">Numéro WhatsApp</field>
+        <field name="help">Numéro au format international, indicatif pays compris (ex. : +237 6 73 37 33 67). Espaces, tirets, points et parenthèses sont acceptés.</field>
+    </record>
+
+    <record id="field_website__x_aite_wa_message" model="ir.model.fields">
+        <field name="name">x_aite_wa_message</field>
+        <field name="model">website</field>
+        <field name="model_id" ref="website.model_website"/>
+        <field name="ttype">char</field>
+        <field name="translate">standard</field>
+        <field name="field_description">Message pré-rempli</field>
+        <field name="help">Texte déjà saisi dans la discussion à l'ouverture ; le visiteur peut le modifier avant l'envoi. Laisser vide pour une discussion vierge.</field>
+    </record>
+
+    <record id="field_website__x_aite_wa_label" model="ir.model.fields">
+        <field name="name">x_aite_wa_label</field>
+        <field name="model">website</field>
+        <field name="model_id" ref="website.model_website"/>
+        <field name="ttype">char</field>
+        <field name="translate">standard</field>
+        <field name="field_description">Texte d'accroche</field>
+        <field name="help">Court texte affiché à côté du bouton sur ordinateur (ex. : « Une question ? Écrivez-nous »). Laisser vide pour n'afficher que l'icône.</field>
+    </record>
+
+    <record id="field_website__x_aite_wa_left" model="ir.model.fields">
+        <field name="name">x_aite_wa_left</field>
+        <field name="model">website</field>
+        <field name="model_id" ref="website.model_website"/>
+        <field name="ttype">boolean</field>
+        <field name="field_description">Bouton à gauche</field>
+        <field name="help">Place le bouton en bas à gauche de l'écran plutôt qu'en bas à droite (utile si le chat en direct d'Odoo occupe déjà le coin droit).</field>
+    </record>
+
+    <!-- Lien wa.me calculé à partir du numéro saisi : seuls les chiffres
+         sont conservés, et le préfixe international « 00 » est retiré
+         (wa.me attend « 237673373367 », sans « + » ni « 00 »). -->
+    <record id="field_website__x_aite_wa_link" model="ir.model.fields">
+        <field name="name">x_aite_wa_link</field>
+        <field name="model">website</field>
+        <field name="model_id" ref="website.model_website"/>
+        <field name="ttype">char</field>
+        <field name="field_description">Lien WhatsApp</field>
+        <field name="readonly" eval="True"/>
+        <field name="store" eval="False"/>
+        <field name="depends">x_aite_wa_phone</field>
+        <field name="compute"><![CDATA[
+for record in self:
+    digits = ''
+    for char in (record.x_aite_wa_phone or ''):
+        if char in '0123456789':
+            digits += char
+    if digits.startswith('00'):
+        digits = digits[2:]
+    record['x_aite_wa_link'] = ('https://wa.me/' + digits) if digits else False
+]]></field>
+    </record>
+
+</odoo>

@@ -35,6 +35,12 @@ AITE_HOUSE/
 | aite_hotel_gantt | 18.0.1.0.0 | **Enterprise uniquement** : planning Gantt des chambres (auto-installé) |
 | aite_demo_data | 18.0.1.2.1 | Jeu de démonstration (établissement complet pré-chargé) |
 
+> `addons/aite_website_whatsapp` ne fait **pas** partie de la suite : c'est
+> un module indépendant pour **Odoo 19** (bouton WhatsApp sur toutes les
+> pages du site web), à installer séparément. Son zip prêt à importer sur
+> Odoo Online est dans `dist/` — voir son
+> [README](addons/aite_website_whatsapp/README.md).
+
 ## 3. Prérequis
 
 - Odoo 18 (Community ou Enterprise), PostgreSQL, accès au serveur.
