@@ -7,15 +7,20 @@ room = env['aite.hotel.room'].search([('name', '=', '202'), ('hotel_id', '=', ho
 guest = env['res.partner'].search([('name', '=', "Ngo Bikaï Solange")], limit=1)
 guest.write({'country_id': cm.id, 'nationality_id': cm.id, 'guest_id_type': 'cni', 'guest_id_number': '113366998', 'street': 'Bonapriso', 'city': 'Douala'})
 Res = env['aite.hotel.reservation']
-old = Res.search([('partner_id', '=', guest.id), ('state', 'in', ('confirmed', 'checked_in'))])
-for r in old:
-    if r.state == 'confirmed': r.action_cancel()
-cin = Res._default_checkin()
-res = Res.create({'hotel_id': hotel.id, 'partner_id': guest.id, 'checkin_date': cin, 'checkout_date': cin + timedelta(days=3),
-                  'line_ids': [(0, 0, {'room_type_id': rtype.id, 'room_id': room.id, 'adults': 2})]})
-res.action_confirm(); res.action_checkin()
-env['aite.guest.registration'].create({'reservation_id': res.id, 'reservation_line_id': res.line_ids[0].id,
-    'last_name': "Durand", 'first_name': "Paul", 'nationality_id': fr.id, 'country_id': fr.id,
-    'id_type': 'passport', 'id_number': '19AB12345', 'coming_from': "Paris", 'going_to': "Kribi"})
+# Rejouable (dev/setup_env.sh relancé sur une base existante) : un séjour en
+# cours de la cliente est repris tel quel ; sinon, son séjour confirmé est
+# annulé et un séjour en cours est créé en chambre 202.
+res = Res.search([('partner_id', '=', guest.id), ('state', '=', 'checked_in')], limit=1)
+if not res:
+    for r in Res.search([('partner_id', '=', guest.id), ('state', '=', 'confirmed')]):
+        r.action_cancel()
+    cin = Res._default_checkin()
+    res = Res.create({'hotel_id': hotel.id, 'partner_id': guest.id, 'checkin_date': cin, 'checkout_date': cin + timedelta(days=3),
+                      'line_ids': [(0, 0, {'room_type_id': rtype.id, 'room_id': room.id, 'adults': 2})]})
+    res.action_confirm(); res.action_checkin()
+if not res.registration_ids.filtered(lambda f: f.last_name == "Durand"):
+    env['aite.guest.registration'].create({'reservation_id': res.id, 'reservation_line_id': res.line_ids[0].id,
+        'last_name': "Durand", 'first_name': "Paul", 'nationality_id': fr.id, 'country_id': fr.id,
+        'id_type': 'passport', 'id_number': '19AB12345', 'coming_from': "Paris", 'going_to': "Kribi"})
 env.cr.commit()
 print("RES_ID", res.id, "REG_MAIN", res.registration_ids.filtered('is_main_guest').id)

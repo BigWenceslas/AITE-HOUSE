@@ -13,7 +13,11 @@ Task = env['aite.hotel.housekeeping']
 for n, u in (("101", amina), ("102", rose)):
     t = rooms[n].today_task_id or Task.create({'room_id': rooms[n].id, 'task_type': 'checkout_clean'})
     t.assigned_to = u
-Task.create({'room_id': rooms["201"].id, 'task_type': 'inspection', 'assigned_to': amina.id})
-w = env['aite.hk.report.issue.wizard'].create({'room_id': rooms["202"].id, 'name': "Climatiseur en panne", 'blocks_room': False, 'priority': '2'}); w.action_submit()
-env['aite.hk.lost.found'].create({'name': "Téléphone Samsung noir", 'room_id': rooms["202"].id, 'place': "sous le lit", 'storage': "casier 2"})
+# Rejouable : l'inspection, la panne et l'objet trouvé ne sont créés qu'une fois.
+if not Task.search_count([('room_id', '=', rooms["201"].id), ('task_type', '=', 'inspection')]):
+    Task.create({'room_id': rooms["201"].id, 'task_type': 'inspection', 'assigned_to': amina.id})
+if not env['maintenance.request'].search_count([('name', 'ilike', "Climatiseur en panne")]):
+    w = env['aite.hk.report.issue.wizard'].create({'room_id': rooms["202"].id, 'name': "Climatiseur en panne", 'blocks_room': False, 'priority': '2'}); w.action_submit()
+if not env['aite.hk.lost.found'].search_count([('name', '=', "Téléphone Samsung noir")]):
+    env['aite.hk.lost.found'].create({'name': "Téléphone Samsung noir", 'room_id': rooms["202"].id, 'place': "sous le lit", 'storage': "casier 2"})
 env.cr.commit(); print("seed3 OK")
