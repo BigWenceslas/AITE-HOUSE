@@ -2216,6 +2216,96 @@
         "#PME",
         "#Douala"
       ]
+    },
+    {
+      "serie": "Mercredi 11 novembre — au choix",
+      "semaine": null,
+      "jour": "mercredi",
+      "moment": "mercredi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-19",
+      "etiquette": "Conseil achats",
+      "photo": "boubou",
+      "theme": "circuit de validation des achats",
+      "titre": "Achats : 4 règles pour un *circuit de validation* clair",
+      "points": [
+        "Pas de bon de commande, pas d’achat : même pour les petites dépenses.",
+        "Un seuil par montant : au-delà, c’est le DAF ou le DG qui valide.",
+        "Trois devis au-dessus d’un montant fixé, gardés avec la commande.",
+        "On paie la facture seulement si elle colle à la commande et à la livraison."
+      ],
+      "legende": "Le fournisseur appelle pour son argent, mais personne ne sait qui a commandé, à quel prix, ni si la marchandise est vraiment arrivée. Là, ça commence à gâter.\n\nUn projet ERP échoue rarement sur le logiciel : il échoue sur le circuit de validation. Posez-le d’abord sur papier : un bon de commande pour chaque achat, un seuil au-delà duquel le DAF ou le DG valide, trois devis pour les gros montants, et une règle simple : on ne paie que si la facture correspond à la commande et au bon de réception. Ensuite seulement, on le paramètre dans Odoo.\n\nChez vous, qui valide un achat de 500 000 FCFA ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Achats",
+        "#ControleInterne",
+        "#Odoo",
+        "#PME",
+        "#Douala"
+      ]
+    },
+    {
+      "serie": "Mercredi 11 novembre — au choix",
+      "semaine": null,
+      "jour": "mercredi",
+      "moment": "mercredi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-20",
+      "etiquette": "Conseil IA",
+      "photo": "veste-pied",
+      "theme": "IA au bureau et données",
+      "titre": "IA au bureau : 4 règles pour *protéger vos données*",
+      "points": [
+        "Jamais de salaires, contrats ou fichiers clients dans une IA gratuite.",
+        "Le compte professionnel de l’entreprise, pas le compte personnel.",
+        "On relit tout : l’IA peut inventer un chiffre avec beaucoup d’assurance.",
+        "Une charte d’une page : quels outils, pour quoi faire, ce qui est interdit."
+      ],
+      "legende": "Le stagiaire colle tout le fichier des salaires dans une IA gratuite pour « faire un beau tableau ». Le tableau est joli. Mais vos données sont parties, mola.\n\nL’IA fait vraiment gagner du temps au bureau : résumer un rapport, rédiger un courrier, préparer une présentation. Mais les versions grand public peuvent se servir de vos conversations pour s’améliorer, sauf si vous le désactivez. Pour le travail, on passe par un compte professionnel (Copilot avec le compte Microsoft 365 de l’entreprise, ou l’offre entreprise de ChatGPT, Gemini ou Claude), on relit tout, et on écrit une charte simple pour toute l’équipe.\n\nVotre équipe utilise déjà l’IA : savez-vous laquelle, et avec quelles données ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#IA",
+        "#Cybersecurite",
+        "#Microsoft365",
+        "#PME",
+        "#Cameroun"
+      ]
+    },
+    {
+      "serie": "Mercredi 11 novembre — au choix",
+      "semaine": null,
+      "jour": "mercredi",
+      "moment": "mercredi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-21",
+      "etiquette": "Conseil sécurité",
+      "photo": "ndop",
+      "theme": "mises à jour et Windows 10",
+      "titre": "Mises à jour : 4 règles pour *ne plus reporter*",
+      "points": [
+        "Mises à jour automatiques activées sur tous les postes et téléphones.",
+        "On redémarre au moins une fois par semaine : la mise à jour s’installe.",
+        "Windows 10 : plus de correctifs gratuits. Listez vos postes concernés.",
+        "Logiciel piraté, pas de correctifs : la licence coûte moins que la panne."
+      ],
+      "legende": "« Rappeler plus tard » : on clique dessus depuis des mois. Pendant ce temps, la faille que la mise à jour devait fermer reste grande ouverte. Les gars, c’est souvent comme ça que les virus rentrent.\n\nActivez les mises à jour automatiques, redémarrez les postes au moins une fois par semaine, et n’oubliez pas le routeur, les caméras et les téléphones. Faites aussi la liste de vos ordinateurs encore sous Windows 10 : Microsoft n’y publie plus de correctifs gratuits depuis octobre 2025, seule une extension de sécurité payante les prolonge. Et un logiciel piraté ne reçoit aucun correctif.\n\nCombien de vos postes tournent encore sous Windows 10 ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Cybersecurite",
+        "#Windows",
+        "#Infogerance",
+        "#PME",
+        "#Douala"
+      ]
     }
   ]
 }

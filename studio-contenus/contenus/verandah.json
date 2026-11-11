@@ -1052,6 +1052,69 @@
         "#ConseilDeLaCave",
         "#Moderation"
       ]
+    },
+    {
+      "serie": "Mercredi 11 novembre — au choix",
+      "jour": "mercredi",
+      "modele": "vd-sombre",
+      "titre": "",
+      "points": [],
+      "id": "VD-CP-18",
+      "moment": "mercredi 17h",
+      "etiquette": "Le conseil de la cave",
+      "photo": "tunique",
+      "alcool": true,
+      "texte": "Le verre de vin, on le tient par le pied, mola : ta main chauffe le vin et *cache sa couleur*.",
+      "legende": "Petit geste, grande classe. Quand tu tiens le verre par le ballon, la chaleur de ta main réchauffe le vin, et les traces de doigts cachent sa belle robe. Par le pied, le vin garde sa bonne température, et sur la photo aussi, tu fais propre. Milieu de semaine, on se fait plaisir, doucement.\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98\nL’abus d’alcool est dangereux pour la santé. À consommer avec modération.",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#ConseilDeLaCave",
+        "#Vin",
+        "#Moderation"
+      ]
+    },
+    {
+      "serie": "Mercredi 11 novembre — au choix",
+      "jour": "mercredi",
+      "modele": "vd-sombre",
+      "titre": "",
+      "points": [],
+      "id": "VD-CP-19",
+      "moment": "mercredi 19h",
+      "etiquette": "Le conseil de la cave",
+      "photo": "veste-pied",
+      "alcool": true,
+      "texte": "On ne remplit pas le verre de vin à ras bord : *un tiers suffit*, le vin a besoin d’air.",
+      "legende": "Ce n’est pas qu’on te sert petit, la famille ! Un verre rempli au tiers laisse la place de faire tourner le vin, et c’est là qu’il libère ses arômes. À ras bord, il ne respire pas, et il se renverse au premier éclat de rire. Tu en veux encore ? On ressert, pas de wahala.\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98\nL’abus d’alcool est dangereux pour la santé. À consommer avec modération.",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#ConseilDeLaCave",
+        "#Vin",
+        "#Moderation"
+      ]
+    },
+    {
+      "serie": "Mercredi 11 novembre — au choix",
+      "jour": "mercredi",
+      "modele": "vd-sombre",
+      "titre": "",
+      "points": [],
+      "id": "VD-CP-20",
+      "moment": "mercredi 21h",
+      "etiquette": "Le conseil de la cave",
+      "photo": "blazer",
+      "alcool": true,
+      "texte": "Whisky avec glaçon ? Un seul gros glaçon, pas une poignée : il fond moins vite et *ne noie pas* ton whisky.",
+      "legende": "Le whisky avec des glaçons, c’est permis, mola. Mais une poignée de petits glaçons fond vite et ton verre devient de l’eau. Un seul gros glaçon rafraîchit doucement et garde le goût plus longtemps. Et entre deux verres, un grand verre d’eau, pour toi aussi.\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98\nL’abus d’alcool est dangereux pour la santé. À consommer avec modération.",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#ConseilDeLaCave",
+        "#Whisky",
+        "#Moderation"
+      ]
     }
   ]
 }
