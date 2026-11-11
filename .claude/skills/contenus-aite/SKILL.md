@@ -80,3 +80,7 @@ Week-end (validé par le DG le 7 nov. 2026) : **une phrase, pas une liste**, tut
 une question en fin de légende. AITE : modèle `affiche`, esprit repos et ressourcement. La Vérandah :
 modèle `vd-ambiance` (vendredi, samedi : invitation, « tu viens avec qui ? ») et `vd-sombre` le dimanche ;
 de vraies photos du lieu dès que le DG en fournit. Les conseils numérotés restent pour la semaine.
+
+## Vidéos « Astuce IA »
+
+Série de vidéos verticales (1080 × 1920, 40 à 50 s, voix off française, sous-titres incrustés) sur des astuces concrètes d’IA au bureau, tous outils confondus (ChatGPT, Gemini, Copilot, Claude, Le Chat de Mistral). Outil et méthode : `studio-contenus/videos-astuce-ia/README.md`. Chaque fonction montrée vient de la page d’aide officielle de l’éditeur, vérifiée le jour même ; prononciation contrôlée par retranscription.
