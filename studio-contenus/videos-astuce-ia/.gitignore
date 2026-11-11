@@ -10,3 +10,8 @@ node_modules/
 plan.json
 *.mp4
 essais/
+*-ev.json
+*-musique.wav
+*-bruitages.wav
+v1/
+ctrl/

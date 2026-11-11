@@ -20,11 +20,15 @@ const plan = JSON.parse(fs.readFileSync(path.join(V, 'plan.json')))[nom];
     const buf = await p.screenshot({ type: 'jpeg', quality: 92 });
     if (!ff.stdin.write(buf)) await new Promise(r => ff.stdin.once('drain', r));
   }
-  ff.stdin.end(); await new Promise(r => ff.on('close', r)); await b.close();
-  // voix : chaque phrase posée 0,3 s après le début de sa scène
-  const args = ['-v', 'error', '-y', '-i', video]; const filt = [];
-  plan.scenes.forEach((s, i) => { args.push('-i', s.audio); const d = Math.round((s.debut + 0.3) * 1000); filt.push(`[${i + 1}]adelay=${d}|${d}[a${i}]`); });
-  filt.push(plan.scenes.map((_, i) => `[a${i}]`).join('') + `amix=inputs=${plan.scenes.length}:normalize=0,apad,atrim=0:${plan.total},loudnorm=I=-16:TP=-2[a]`);
+  ff.stdin.end(); await new Promise(r => ff.on('close', r));
+  // sons : musique et bruitages synthétisés, puis voix posée 0,3 s après le début de chaque scène
+  const evs = await p.evaluate(() => window.EVENEMENTS); fs.writeFileSync(path.join(V, nom + '-ev.json'), JSON.stringify(evs));
+  const mus = path.join(V, nom + '-musique.wav'), bru = path.join(V, nom + '-bruitages.wav');
+  execFileSync(path.join(V, '.venv-tts/bin/python'), [path.join(V, 'sons.py'), path.join(V, nom + '-ev.json'), String(plan.total), mus, bru]);
+  const args = ['-v', 'error', '-y', '-i', video, '-i', mus, '-i', bru]; const filt = [];
+  plan.scenes.forEach((s, i) => { args.push('-i', s.audio); const d = Math.round((s.debut + 0.3) * 1000); filt.push(`[${i + 3}]adelay=${d}|${d}[a${i}]`); });
+  filt.push(plan.scenes.map((_, i) => `[a${i}]`).join('') + `amix=inputs=${plan.scenes.length}:normalize=0,apad,atrim=0:${plan.total}[voix]`);
+  filt.push(`[1]volume=0.11[m]`, `[2]volume=0.55[b]`, `[voix][m][b]amix=inputs=3:normalize=0,loudnorm=I=-16:TP=-2[a]`);
   args.push('-filter_complex', filt.join(';'), '-map', '0:v', '-map', '[a]', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '160k', '-ar', '48000', '-movflags', '+faststart', path.join(V, nom + '.mp4'));
-  execFileSync('ffmpeg', args); fs.unlinkSync(video); console.log('ok', nom, n, 'images');
+  execFileSync('ffmpeg', args); fs.unlinkSync(video); await b.close(); console.log('ok', nom, n, 'images');
 })();

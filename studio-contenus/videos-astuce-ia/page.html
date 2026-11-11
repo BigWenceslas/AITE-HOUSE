@@ -4,189 +4,299 @@
 @font-face{font-family:PX;font-weight:400;src:url(polices/ibm-plex-sans-latin-400-normal.woff2)}
 @font-face{font-family:PX;font-weight:500;src:url(polices/ibm-plex-sans-latin-500-normal.woff2)}
 @font-face{font-family:PX;font-weight:600;src:url(polices/ibm-plex-sans-latin-600-normal.woff2)}
-:root{--v:#8E2A8E;--vf:#6A1E6C;--vn:#43124A;--o:#F0921F;--ot:#F8A63E;--b:#2E8CB2;--e:#1C1620;--g:#6E6675;--m:#F6ECF6}
+:root{--v:#8E2A8E;--vf:#6A1E6C;--vn:#43124A;--o:#F0921F;--e:#1C1620;--g:#6E6675;--m:#F6ECF6;--fond:#F4F1F7}
 *{box-sizing:border-box;margin:0;padding:0}
 body{width:1080px;height:1920px;overflow:hidden;background:#000}
-#root{position:relative;width:1080px;height:1920px;overflow:hidden;font-family:PX;color:#fff;
- background:radial-gradient(1200px 900px at 85% 10%,#A8399F 0%,transparent 60%),linear-gradient(165deg,#9C319C 0%,#7A2179 45%,#3E1046 100%)}
-.cercle{position:absolute;border-radius:50%;border:2px solid rgba(255,255,255,.08)}
-#entete{position:absolute;left:60px;right:60px;top:70px;height:110px;display:flex;align-items:center;justify-content:space-between}
-#logo{background:#fff;border-radius:26px;padding:16px 26px;height:100px;display:flex;align-items:center}
-#logo img{height:66px}
-#badge{font-family:SG;font-size:34px;letter-spacing:2px;text-transform:uppercase;background:var(--o);color:#fff;padding:18px 30px;border-radius:60px}
-#prog{position:absolute;left:60px;right:60px;top:212px;height:8px;border-radius:8px;background:rgba(255,255,255,.18)}
-#prog i{display:block;height:100%;width:0;border-radius:8px;background:var(--o)}
-.scene{position:absolute;left:0;top:250px;width:1080px;height:1290px;opacity:0}
-#sous{position:absolute;left:50px;right:50px;top:1560px;min-height:220px;display:flex;align-items:center;justify-content:center;
- background:rgba(20,6,24,.72);border-radius:34px;padding:26px 40px;text-align:center;font-weight:600;font-size:46px;line-height:1.25}
-#pied{position:absolute;left:0;right:0;bottom:44px;text-align:center;font-size:30px;color:rgba(255,255,255,.7);letter-spacing:1px}
-.kicker{font-family:SG;font-size:40px;color:var(--ot);text-transform:uppercase;letter-spacing:3px}
-.grand{font-family:SG;font-size:112px;line-height:1.02;letter-spacing:-1px}
-.grand b,.moyen b{color:var(--ot);font-weight:700}
-.moyen{font-family:SG;font-size:76px;line-height:1.08}
-.carte{background:#fff;color:var(--e);border-radius:36px;box-shadow:0 30px 80px rgba(0,0,0,.35)}
-.chip{display:inline-flex;align-items:center;gap:18px;font-family:SG;font-size:56px;padding:26px 40px;border-radius:80px;background:#fff;color:var(--vf);margin:14px 0}
-.chip .n{width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:40px}
-.tag{display:inline-block;font-family:SG;font-size:26px;color:#fff;padding:6px 16px;border-radius:30px;margin-right:10px;vertical-align:middle}
-.seg{border-radius:10px;padding:2px 6px}
-.curseur{position:absolute;width:56px;height:56px;z-index:9}
-.cit{display:inline-flex;align-items:center;justify-content:center;min-width:40px;height:40px;border-radius:12px;background:#E9DDF4;color:var(--vf);font-size:26px;font-weight:600;margin-left:8px;vertical-align:middle}
+#root{position:relative;width:1080px;height:1920px;overflow:hidden;font-family:PX;color:var(--e);background:var(--fond)}
+#grille{position:absolute;inset:0;background-image:radial-gradient(rgba(142,42,142,.13) 2.2px,transparent 2.6px);background-size:44px 44px}
+#entete{position:absolute;left:56px;right:56px;top:64px;height:96px;display:flex;align-items:center;justify-content:space-between;z-index:20}
+#logo{height:84px}
+#badge{font-family:SG;font-size:30px;letter-spacing:2px;text-transform:uppercase;color:var(--v);border:3px solid var(--v);padding:12px 26px;border-radius:60px;background:#fff}
+#prog{position:absolute;left:56px;right:56px;top:184px;height:6px;border-radius:6px;background:rgba(142,42,142,.15);z-index:20}
+#prog i{display:block;height:100%;width:0;border-radius:6px;background:var(--v)}
+#scenes{position:absolute;inset:0}
+.scene{position:absolute;inset:0;opacity:0;overflow:hidden}
+.vue{position:absolute;left:0;top:220px;width:1080px;height:1350px;overflow:hidden}
+.cam{position:absolute;left:0;top:0;width:1080px;height:1340px;transform-origin:0 0}
+#sous{position:absolute;left:48px;right:48px;top:1590px;height:210px;display:flex;align-items:center;justify-content:center;z-index:20;
+ background:#fff;border-radius:34px;box-shadow:0 18px 50px rgba(67,18,74,.16);padding:22px 40px;text-align:center;font-weight:600;font-size:44px;line-height:1.28;color:#9a8fa3}
+#sous span.dit{color:var(--e)} #sous span.mot{color:var(--v)}
+#pied{position:absolute;left:0;right:0;bottom:40px;text-align:center;font-size:28px;color:var(--g);letter-spacing:1px;z-index:20}
+#volet{position:absolute;inset:0;background:var(--v);z-index:30;transform:translateX(110%)}
+#volet i{position:absolute;left:-60px;top:0;bottom:0;width:60px;background:var(--o)}
+.mask{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.08em}
+.mask>span{display:inline-block}
+.grand{font-family:SG;font-size:108px;line-height:1.04;letter-spacing:-1.5px;color:var(--vn)}
+.grand .r{color:var(--o)}
+.kicker{font-family:SG;font-size:34px;color:var(--v);text-transform:uppercase;letter-spacing:4px}
+.carte{background:#fff;border-radius:34px;box-shadow:0 26px 70px rgba(67,18,74,.18)}
+.pop{will-change:transform}
+.outil{position:absolute;display:flex;align-items:center;gap:14px;background:#fff;border-radius:60px;padding:16px 28px 16px 16px;font-family:SG;font-size:36px;box-shadow:0 14px 40px rgba(67,18,74,.16)}
+.outil i{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-style:normal;font-size:28px}
+.curseur{position:absolute;width:64px;height:64px;z-index:15;left:0;top:0;transform-origin:8px 6px}
+.onde{position:absolute;width:30px;height:30px;border-radius:50%;border:5px solid var(--o);z-index:14;opacity:0}
+.cit{display:inline-flex;align-items:center;justify-content:center;min-width:42px;height:42px;border-radius:12px;background:#EBDDF0;color:var(--vf);font-size:26px;font-weight:600;margin-left:8px;vertical-align:middle}
+.caret{display:inline-block;width:4px;height:1.05em;background:var(--v);vertical-align:-0.15em;margin-left:2px}
+.voile{position:absolute;inset:0;background:rgba(28,22,32,.45);opacity:0}
 </style></head><body><div id="root">
-<div class="cercle" style="width:1400px;height:1400px;left:-700px;top:1100px"></div>
-<div class="cercle" style="width:900px;height:900px;left:620px;top:-420px"></div>
-<div id="entete"><div id="logo"><img src="logo.png"></div><div id="badge"></div></div>
+<div id="grille"></div>
+<div id="entete"><img id="logo" src="logo.png"><div id="badge"></div></div>
 <div id="prog"><i></i></div>
 <div id="scenes"></div>
 <div id="sous"></div>
 <div id="pied">www.aite-consulting.com</div>
+<div id="volet"><i></i></div>
 </div>
 <script>
+// ------------------------------------------------------------------ outils
 const COUL=['#8E2A8E','#F0921F','#2E8CB2','#3E9B5A'];
-const cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)), eo=x=>1-Math.pow(1-cl(x),3);
-const ap=(t,d,l=.45)=>eo((t-d)/l);
-const rel=s=>s.replace(/\*(.+?)\*/g,'<b>$1</b>');
+const OUTILS=[['ChatGPT','#10A37F'],['Gemini','#4A7CF7'],['Copilot','#2E8CB2'],['Claude','#D97757'],['Le Chat','#F26B21']];
+const cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)), lerp=(a,b,p)=>a+(b-a)*p;
+const eo=x=>1-Math.pow(1-cl(x),3), eio=x=>{x=cl(x);return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2};
+const eb=x=>{x=cl(x);const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)};   // rebond (overshoot)
+const ap=(t,d,l=.5)=>eo((t-d)/l), bp=(t,d,l=.55)=>eb((t-d)/l);
 const h=(html)=>{const d=document.createElement('div');d.innerHTML=html.trim();return d.firstChild};
-const CURSEUR='<svg class="curseur" viewBox="0 0 24 24"><path d="M3 2l7 19 2.6-7.4L20 11z" fill="#fff" stroke="#1C1620" stroke-width="1.4" stroke-linejoin="round"/></svg>';
-function tape(el,txt,p){el.textContent=txt.slice(0,Math.round(txt.length*cl(p)))}
+const rel=s=>s.replace(/\*(.+?)\*/g,'<span class="r">$1</span>');
+const EV=[]; let DEBUT=0;   // évènements sonores : [temps absolu, type]
+const ev=(t,type)=>EV.push([+(DEBUT+t).toFixed(3),type]);
+// titre révélé mot à mot dans un masque (le mot monte depuis sa ligne)
+function motsMasques(el,html){const tmp=h('<div>'+html+'</div>');const out=[];
+ tmp.childNodes.forEach(n=>{const r=n.nodeType==3?'':n.className;(n.textContent).split(/\s+/).filter(Boolean).forEach(w=>{const m=h(`<span class="mask"><span class="${r}">${w}</span></span>`);el.appendChild(m);el.appendChild(document.createTextNode(' '));out.push(m.firstChild)})});return out}
+function revelerMots(mots,t,d0,pas=.09){mots.forEach((m,i)=>{const p=ap(t,d0+i*pas,.55);m.style.transform=`translateY(${(1-p)*105}%) rotate(${(1-p)*6}deg)`})}
+// lettres qui apparaissent une à une (logo, nom de produit)
+function lettres(el,txt){return [...txt].map(c=>{const s=h(`<span style="display:inline-block;white-space:pre">${c}</span>`);el.appendChild(s);return s})}
+function revelerLettres(ls,t,d0,pas=.045){ls.forEach((s,i)=>{const p=bp(t,d0+i*pas,.45);s.style.opacity=cl((t-d0-i*pas)/.15);s.style.transform=`translateY(${(1-p)*40}px) scale(${.6+.4*p})`})}
+function taper(el,txt,p,caret=true){const n=Math.round(txt.length*cl(p));el.innerHTML=txt.slice(0,n).replace(/</g,'&lt;')+(caret&&p<1.02?'<span class="caret"></span>':'')}
+const CURSEUR='<svg class="curseur" viewBox="0 0 24 24"><path d="M3 2l7 19 2.6-7.4L20 11z" fill="#1C1620" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg>';
+// curseur : trajet courbe + appui ; onde de clic
+function curseur(cur,onde,t,a,b,t0,dur,tc){const p=eio((t-t0)/dur);const x=lerp(a[0],b[0],p),y=lerp(a[1],b[1],p)-Math.sin(Math.PI*p)*120;
+ cur.style.transform=`translate(${x}px,${y}px) scale(${t>tc&&t<tc+.18?.82:1})`;
+ const q=(t-tc)/.6;onde.style.opacity=q>0&&q<1?1-q:0;onde.style.transform=`translate(${b[0]-15}px,${b[1]-15}px) scale(${1+q*4})`}
+// caméra : interpolation entre deux cadrages {s,x,y} (x,y = point visé, en coordonnées de la scène)
+function camera(cam,a,b,p){const s=lerp(a.s,b.s,p),x=lerp(a.x,b.x,p),y=lerp(a.y,b.y,p);cam.style.transform=`translate(${540-x*s}px,${670-y*s}px) scale(${s})`}
+const C0={s:1,x:540,y:670};
 const B={};
-// ---------- titre (intro avec photo du DG)
-B.titre=(s)=>{const el=h(`<div class="scene"><div style="position:absolute;left:70px;top:70px;width:640px">
- <div class="kicker">${s.kicker}</div><div class="grand" style="margin-top:30px">${rel(s.titre)}</div></div>
- <img src="dg.webp" style="position:absolute;right:-40px;bottom:-260px;height:1250px">
- <div style="position:absolute;left:70px;top:900px"><div style="font-family:SG;font-size:40px">Cyrille Donald ABOLO</div><div style="font-size:30px;opacity:.8;margin-top:6px">Directeur Général, AITE Consulting</div></div></div>`);
- const [txt,img,nom]=el.children;
- return {el,u(t){txt.style.transform=`translateY(${(1-ap(t,0))*60}px)`;txt.style.opacity=ap(t,0);img.style.opacity=ap(t,.15,.6);img.style.transform=`translateX(${(1-ap(t,.15,.7))*120}px)`;nom.style.opacity=ap(t,.6)}}};
-// ---------- chips
-B.chips=(s)=>{const el=h(`<div class="scene"><div style="padding:120px 80px 0"><div class="moyen">${rel(s.titre)}</div><div class="liste" style="margin-top:60px;display:flex;flex-direction:column;align-items:flex-start"></div></div></div>`);
+// ------------------------------------------------------------- ouverture
+B.titre=(s,deb)=>{const el=h(`<div class="scene"><div class="vue"><div class="cam">
+ <div class="rond" style="position:absolute;left:500px;top:640px;width:660px;height:660px;border-radius:50%;background:linear-gradient(160deg,#9C319C,#5A1760)"></div>
+ <img class="dg" src="dg.webp" style="position:absolute;left:560px;top:450px;height:1050px">
+ <div style="position:absolute;left:64px;top:40px;width:960px"><div class="kicker">${s.kicker}</div><div class="grand t" style="margin-top:26px"></div></div>
+ <div class="nom" style="position:absolute;left:64px;top:1060px"><div style="font-family:SG;font-size:38px;color:var(--vn)">Cyrille Donald ABOLO</div><div style="font-size:28px;color:var(--g);margin-top:4px">Directeur Général, AITE Consulting</div></div>
+ </div></div>`);
+ const T=el.querySelector('.t'),mots=motsMasques(T,rel(s.titre)),rond=el.querySelector('.rond'),dg=el.querySelector('.dg'),nom=el.querySelector('.nom'),kick=el.querySelector('.kicker');
+ const fl=(s.flottants||OUTILS.map(o=>o[0])).map((n,i)=>{const o=OUTILS.find(x=>x[0]==n)||[n,COUL[i%4]];const c=h(`<div class="outil pop"><i style="background:${o[1]}">${s.icones?s.icones[i]:'✦'}</i>${n}</div>`);el.firstChild.appendChild(c);return c});
+ const POS=[[40,560],[40,720],[250,640],[60,880],[250,800]];
+ ev(.15,'pop');ev(.9,'pop');
+ return {el,u(t,d){kick.style.opacity=ap(t,0,.4);revelerMots(mots,t,.1);
+  const r=bp(t,.25,.7);rond.style.transform=`scale(${r})`;dg.style.transform=`translateY(${(1-ap(t,.35,.8))*500}px)`;dg.style.opacity=ap(t,.35,.3);
+  nom.style.opacity=ap(t,1.2);nom.style.transform=`translateX(${(1-ap(t,1.2))*-40}px)`;
+  fl.forEach((c,i)=>{const p=bp(t,.9+i*.14,.5),[x,y]=POS[i%5];c.style.opacity=cl((t-.9-i*.14)/.15);c.style.transform=`translate(${x+Math.sin(t*1.3+i)*10}px,${y+Math.cos(t*1.1+i*2)*12}px) scale(${p})`});
+  el.firstChild.style.transform=`scale(${1+.04*cl(t/d)})`;el.firstChild.style.transformOrigin='540px 600px'}}};
+// --------------------------------------------------------- cartes numérotées
+B.chips=(s)=>{const el=h(`<div class="scene"><div class="vue"><div class="cam"><div style="position:absolute;left:64px;top:110px;width:950px" class="grand t"></div><div class="liste"></div></div></div>`);
+ const mots=motsMasques(el.querySelector('.t'),rel(s.titre));el.querySelector('.t').style.fontSize='84px';
  const L=el.querySelector('.liste');
- const items=s.items.map((x,i)=>{const c=h(`<div class="chip">${s.outils?'<span class="n" style="background:'+['#10A37F','#4A7CF7','#2E8CB2','#D97757','#F26B21'][i]+'">✓</span>':'<span class="n" style="background:'+COUL[i]+'">'+(i+1)+'</span>'}${x}</div>`);L.appendChild(c);return c});
- return {el,u(t,d){const pas=Math.min(.7,(d*.6)/items.length);items.forEach((c,i)=>{const p=ap(t,.3+i*pas,.4);c.style.opacity=p;c.style.transform=`translateX(${(1-p)*-80}px)`})}}};
-// ---------- chat (formule du prompt)
+ const items=s.items.map((x,i)=>{const c=h(`<div class="carte pop" style="position:absolute;left:${i%2?560:64}px;top:${440+Math.floor(i/2)*330}px;width:456px;height:290px;padding:34px;display:flex;flex-direction:column;justify-content:space-between">
+  <div style="width:84px;height:84px;border-radius:24px;background:${COUL[i]};color:#fff;font-family:SG;font-size:50px;display:flex;align-items:center;justify-content:center">${i+1}</div>
+  <div style="font-family:SG;font-size:58px;color:var(--vn)">${x}</div></div>`);L.appendChild(c);return c});
+ items.forEach((c,i)=>ev(.6+i*.35,'pop'));
+ return {el,u(t,d){revelerMots(mots,t,0);items.forEach((c,i)=>{const p=bp(t,.6+i*.35,.55);c.style.opacity=cl((t-.6-i*.35)/.12);c.style.transform=`translateY(${(1-p)*120}px) scale(${.7+.3*p}) rotate(${(1-p)*(i%2?4:-4)}deg)`})}}};
+// ----------------------------------------------------------- outils en orbite
+B.outils=(s)=>{const el=h(`<div class="scene"><div class="vue"><div class="cam">
+ <div style="position:absolute;left:64px;top:90px;width:950px" class="grand t"></div>
+ <div class="centre carte pop" style="position:absolute;left:240px;top:560px;width:600px;padding:40px;text-align:center">
+  <div style="font-size:30px;color:var(--g)">La formule</div><div style="font-family:SG;font-size:46px;color:var(--vn);margin-top:10px;line-height:1.25">Rôle · Tâche<br>Contexte · Format</div></div></div></div>`);
+ const T=el.querySelector('.t');T.style.fontSize='84px';const mots=motsMasques(T,rel(s.titre)),ce=el.querySelector('.centre');
+ const POS=[[70,420],[640,430],[30,960],[620,980],[330,1130]];
+ const ch=OUTILS.map((o,i)=>{const c=h(`<div class="outil pop"><i style="background:${o[1]}">✓</i>${o[0]}${o[0]=='Le Chat'?' (Mistral)':''}</div>`);el.firstChild.appendChild(c);return c});
+ ev(.3,'pop');ch.forEach((c,i)=>ev(.9+i*.4,'pop'));
+ return {el,u(t){revelerMots(mots,t,0);const p=bp(t,.3,.6);ce.style.transform=`scale(${p})`;ce.style.opacity=cl((t-.3)/.1);
+  ch.forEach((c,i)=>{const q=bp(t,.9+i*.4,.5),[x,y]=POS[i];c.style.opacity=cl((t-.9-i*.4)/.12);c.style.transform=`translate(${x+Math.sin(t*1.4+i)*12}px,${y+Math.cos(t*1.2+i)*12}px) scale(${q})`})}}};
+// ------------------------------------------------------------ prompt (chat)
 const SEG=['Tu es mon assistant de direction. ','Rédige une relance pour un client. ','Il doit 2 factures depuis 45 jours, mais c’est un bon client depuis 5 ans : cordial mais ferme. ','Format : un message WhatsApp de 5 lignes maximum.'];
 const NOMS=['Rôle','Tâche','Contexte','Format'];
-B.chat=(s)=>{const el=h(`<div class="scene"><div style="padding:60px 60px 0">
- <div class="pills" style="display:flex;gap:14px;flex-wrap:wrap"></div>
- <div class="carte" style="margin-top:44px;padding:40px 44px">
-  <div style="display:flex;align-items:center;gap:16px;font-family:SG;font-size:34px;color:var(--g)"><span style="width:22px;height:22px;border-radius:50%;background:#3E9B5A;display:inline-block"></span>Votre IA · nouvelle conversation</div>
-  <div class="zone" style="margin-top:34px;border:3px solid #E7E3EC;border-radius:28px;padding:30px;font-size:50px;line-height:1.42;min-height:560px"></div>
-  <div style="display:flex;justify-content:flex-end;margin-top:26px"><div class="env" style="background:var(--v);color:#fff;font-family:SG;font-size:34px;padding:16px 34px;border-radius:40px">Envoyer ➜</div></div>
- </div></div></div>`);
- const P=el.querySelector('.pills'),Z=el.querySelector('.zone');
- const pills=NOMS.map((n,i)=>{const p=h(`<div style="font-family:SG;font-size:38px;padding:14px 28px;border-radius:50px;border:3px solid #fff">${i+1}. ${n}</div>`);P.appendChild(p);return p});
- const segs=SEG.map((x,i)=>{const sp=h(`<span class="seg"></span>`);Z.appendChild(sp);return sp});
- return {el,u(t,d,e){pills.forEach((p,i)=>{const act=i==e,fait=i<e;p.style.background=act?'#fff':fait?'rgba(255,255,255,.25)':'transparent';p.style.color=act?COUL[i]:'#fff';p.style.borderColor=act?'#fff':'rgba(255,255,255,.6)';p.style.opacity=i<=e?1:.45;p.style.transform=act?`scale(${1+.08*Math.sin(Math.PI*cl(t/.5))})`:''});
-  segs.forEach((sp,i)=>{if(i<e){sp.textContent=SEG[i]}else if(i==e){tape(sp,SEG[i],(t-.3)/(d*.6))}else sp.textContent='';
-   sp.style.background=i==e?COUL[i]+'26':'transparent';sp.style.color=i==e?'#1C1620':'#6E6675';sp.style.boxShadow=i==e?`inset 0 -6px 0 ${COUL[i]}`:'none'})}}};
-// ---------- mail (Copilot dans Outlook)
-const MSG=[['AN','Aline N.','Re: Livraison chantier Bonapriso','On ne peut pas livrer le 12, le camion…'],['PK','Paul K.','Re: Livraison chantier Bonapriso','Si on décale au 20, il faut prévenir…'],['MT','Marc T.','Re: Livraison chantier Bonapriso','Le client accepte, mais il veut garder…'],['AN','Aline N.','Re: Livraison chantier Bonapriso','Je relance le transporteur demain…']];
+B.chat=(s)=>{const el=h(`<div class="scene"><div class="vue"><div class="cam">
+ <div class="pills" style="position:absolute;left:64px;top:60px;display:flex;gap:14px"></div>
+ <div class="carte fen" style="position:absolute;left:56px;top:200px;width:968px;height:1020px;padding:40px 44px">
+  <div style="display:flex;align-items:center;gap:16px;font-family:SG;font-size:32px;color:var(--g)"><span style="width:20px;height:20px;border-radius:50%;background:#3E9B5A"></span>Votre IA · nouvelle conversation</div>
+  <div class="zone" style="margin-top:34px;border:3px solid #E7E3EC;border-radius:28px;padding:34px;font-size:52px;line-height:1.42;height:760px"></div>
+  <div class="env" style="position:absolute;right:44px;bottom:36px;background:var(--v);color:#fff;font-family:SG;font-size:36px;padding:18px 38px;border-radius:44px">Envoyer ➜</div>
+ </div>${CURSEUR}<div class="onde"></div></div></div>`);
+ const cam=el.querySelector('.cam'),P=el.querySelector('.pills'),Z=el.querySelector('.zone'),env=el.querySelector('.env'),cur=el.querySelector('.curseur'),onde=el.querySelector('.onde');
+ const pills=NOMS.map((n,i)=>{const p=h(`<div style="font-family:SG;font-size:36px;padding:14px 26px;border-radius:50px;border:3px solid ${COUL[i]};color:${COUL[i]};background:#fff">${i+1}. ${n}</div>`);P.appendChild(p);return p});
+ const segs=SEG.map(()=>{const sp=h(`<span style="border-radius:10px;padding:0 4px"></span>`);Z.appendChild(sp);return sp});
+ // cadrages : on s'approche du segment en cours
+ const CAD=[{s:1.12,x:540,y:470},{s:1.12,x:540,y:540},{s:1.1,x:540,y:680},{s:1.06,x:540,y:760}];
+ if(s.dernier)ev(s.duree-1.25,'clic');
+ if(s.etape==0){ev(0,'pop')}
+ return {el,u(t,d,e){
+  const fin=e==SEG.length-1;const prev=e==0?C0:CAD[e-1];let p=eio((t)/.8);let cad=CAD[e];
+  if(fin&&t>d-1.9){const q=eio((t-(d-1.9))/.7);camera(cam,CAD[e],C0,q)}else camera(cam,e==0?{s:1,x:540,y:670}:prev,cad,e==0?eio((t-.4)/.9):p);
+  if(e==0){el.querySelector('.fen').style.transform=`translateY(${(1-bp(t,0,.7))*300}px)`;P.style.opacity=ap(t,.2)}else el.querySelector('.fen').style.transform='';
+  pills.forEach((x,i)=>{const act=i==e;x.style.background=act?COUL[i]:i<e?'#fff':'#fff';x.style.color=act?'#fff':COUL[i];x.style.opacity=i<=e?1:.35;x.style.transform=act?`scale(${1+.12*Math.sin(Math.PI*cl(t/.45))})`:''});
+  segs.forEach((sp,i)=>{if(i<e){sp.textContent=SEG[i]}else if(i==e){taper(sp,SEG[i],(t-.35)/(Math.max(1.2,d*.62)))}else sp.textContent='';
+   sp.style.background=i==e?COUL[i]+'22':'transparent';sp.style.color=i==e?'#1C1620':'#8a8190'});
+  cur.style.opacity=fin&&t>d-2.2?1:0;onde.style.opacity=0;
+  if(fin){curseur(cur,onde,t,[980,1350],[880,1185],d-2.2,.9,d-1.25);env.style.transform=t>d-1.25&&t<d-1.05?'scale(.92)':'';}
+ }}};
+// ------------------------------------------------------------ messagerie
+const MSG=[['AN','Aline N.','On ne peut pas livrer le 12, le camion…'],['PK','Paul K.','Si on décale au 20, il faut prévenir…'],['MT','Marc T.','Le client accepte, mais il veut garder…'],['AN','Aline N.','Je relance le transporteur demain…']];
 const RES=[['La livraison passe du 12 au 20 novembre.',2],['Le client accepte si la remise de 5 % reste.',3],['Aline relance le transporteur demain.',4]];
-B.mail=(s)=>{const el=h(`<div class="scene"><div style="padding:40px 50px 0;position:relative">
- <div class="carte" style="padding:34px 36px;position:relative">
-  <div style="font-family:SG;font-size:40px">Livraison chantier Bonapriso</div><div style="font-size:30px;color:var(--g);margin-top:6px">40 messages · 6 participants</div>
+B.mail=(s)=>{const el=h(`<div class="scene"><div class="vue"><div class="cam">
+ <div class="carte fen" style="position:absolute;left:50px;top:40px;width:980px;padding:36px 38px">
+  <div style="font-family:SG;font-size:42px;color:var(--vn)">Livraison chantier Bonapriso</div><div style="font-size:30px;color:var(--g);margin-top:6px">40 messages · 6 participants</div>
   <div class="barre" style="margin-top:26px;border-radius:24px;border:3px solid #D9C6EC;background:linear-gradient(90deg,#F3EAFB,#EAF2FB);padding:22px 26px">
-   <div style="display:flex;align-items:center;gap:16px;font-size:36px;font-weight:600;color:#5B2A86"><span style="font-size:40px">✦</span>Résumé par Copilot</div>
+   <div style="display:flex;align-items:center;gap:16px;font-size:38px;font-weight:600;color:#5B2A86"><span style="font-size:42px">✦</span>Résumé par Copilot</div>
    <div class="res" style="overflow:hidden;height:0"></div></div>
   <div class="msgs" style="margin-top:20px"></div>
-  <div class="pj" style="margin-top:18px;display:flex;align-items:center;gap:20px;border:3px solid #E7E3EC;border-radius:22px;padding:18px 22px;opacity:0">
-   <div style="width:70px;height:84px;border-radius:10px;background:#D93F3F;color:#fff;font-weight:600;font-size:24px;display:flex;align-items:center;justify-content:center">PDF</div>
-   <div style="flex:1"><div style="font-size:32px;font-weight:600">Planning_livraison.pdf</div><div style="font-size:26px;color:var(--g)">pièce jointe · 2,4 Mo</div></div>
-   <div class="bf" style="font-size:28px;font-weight:600;color:#5B2A86;border:3px solid #D9C6EC;border-radius:40px;padding:12px 22px">✦ Résumer un fichier</div></div>
- </div>${CURSEUR}</div></div>`);
- const M=el.querySelector('.msgs'),R=el.querySelector('.res'),barre=el.querySelector('.barre'),pj=el.querySelector('.pj'),bf=el.querySelector('.bf'),cur=el.querySelector('.curseur');
- const msgs=MSG.map((m,i)=>{const d=h(`<div style="display:flex;gap:22px;padding:20px 8px;border-top:2px solid #EEE;border-radius:16px"><div style="width:70px;height:70px;border-radius:50%;background:${COUL[i%4]};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:28px;flex:none">${m[0]}</div><div><div style="font-size:32px;font-weight:600">${m[1]} <span style="font-weight:400;color:var(--g);font-size:26px">· message ${i+1}</span></div><div style="font-size:30px;color:var(--g)">${m[3]}</div></div></div>`);M.appendChild(d);return d});
- const lignes=RES.map(r=>{const d=h(`<div style="font-size:34px;line-height:1.35;margin-top:16px;display:flex;gap:14px"><span style="color:#5B2A86">•</span><span>${r[0]}<span class="cit">${r[1]}</span></span></div>`);R.appendChild(d);return d});
- const pos=(x,y)=>{cur.style.left=x+'px';cur.style.top=y+'px'};
+ </div>
+ <div class="voile"></div>
+ <div class="modal carte" style="position:absolute;left:90px;top:330px;width:900px;padding:40px;opacity:0">
+  <div style="display:flex;align-items:center;gap:22px"><div style="width:84px;height:100px;border-radius:12px;background:#D93F3F;color:#fff;font-weight:600;font-size:28px;display:flex;align-items:center;justify-content:center">PDF</div>
+  <div><div style="font-size:38px;font-weight:600">Planning_livraison.pdf</div><div style="font-size:28px;color:var(--g)">pièce jointe · 2,4 Mo</div></div></div>
+  <div class="bf" style="display:inline-block;margin-top:30px;font-size:34px;font-weight:600;color:#5B2A86;border:3px solid #D9C6EC;border-radius:44px;padding:16px 30px">✦ Résumer un fichier</div>
+  <div class="rf" style="margin-top:26px;font-size:32px;line-height:1.45;color:var(--e)"></div></div>
+ ${CURSEUR}<div class="onde"></div></div></div>`);
+ const cam=el.querySelector('.cam'),M=el.querySelector('.msgs'),R=el.querySelector('.res'),barre=el.querySelector('.barre'),cur=el.querySelector('.curseur'),onde=el.querySelector('.onde'),voile=el.querySelector('.voile'),modal=el.querySelector('.modal'),bf=el.querySelector('.bf'),rf=el.querySelector('.rf'),fen=el.querySelector('.fen');
+ const msgs=MSG.map((m,i)=>{const d=h(`<div style="display:flex;gap:22px;padding:22px 10px;border-top:2px solid #EEE;border-radius:18px"><div style="width:74px;height:74px;border-radius:50%;background:${COUL[i%4]};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:28px;flex:none">${m[0]}</div><div><div style="font-size:34px;font-weight:600">${m[1]} <span style="font-weight:400;color:var(--g);font-size:28px">· message ${i+1}</span></div><div style="font-size:32px;color:var(--g)">${m[2]}</div></div></div>`);M.appendChild(d);return d});
+ const lignes=RES.map(r=>{const d=h(`<div style="font-size:36px;line-height:1.35;margin-top:16px;display:flex;gap:14px"><span style="color:#5B2A86">•</span><span>${r[0]}<span class="cit">${r[1]}</span></span></div>`);R.appendChild(d);return d});
+ const CAD=[C0,{s:1.3,x:470,y:300},{s:1.08,x:540,y:440},{s:1.2,x:560,y:470},C0];
+ const e=s.etape;
+ if(e==0)msgs.forEach((m,i)=>ev(.25+i*.18,'pop'));
+ if(e==1)ev(1.45,'clic'); if(e==2)lignes.forEach((l,i)=>ev(.45+i*.5,'pop')); if(e==3)ev(.9,'clic'); if(e==4){ev(.25,'pop');ev(1.7,'clic')}
  return {el,u(t,d,e){
-  msgs.forEach((m,i)=>{m.style.display=(e==2||e==3)&&i>1?'none':'flex';m.style.opacity=e==0?ap(t,.2+i*.18):1;m.style.background=(e==3&&i==1&&t>.6)?'#F6ECF6':'transparent'});
-  const ouvert=e>=2?(e==2?ap(t,.1,.6):1):0; R.style.height=(ouvert*290)+'px';
-  lignes.forEach((l,i)=>{l.style.opacity=e==2?ap(t,.4+i*.45):e>2?1:0});
-  const c2=R.querySelectorAll('.cit')[0]; c2.style.background=(e==3)?'#F0921F':'#E9DDF4'; c2.style.color=(e==3)?'#fff':'#6A1E6C'; c2.style.transform=e==3?`scale(${1+.25*Math.sin(Math.PI*cl((t-.2)/.5))})`:'';
-  barre.style.boxShadow=(e==1&&t>1)?`0 0 0 ${8*Math.sin(Math.PI*cl((t-1)/.5))}px rgba(142,42,142,.25)`:'none';
-  pj.style.opacity=e==4?ap(t,.1):0; if(e==4){R.style.height='0px';lignes.forEach(l=>l.style.opacity=0)}
-  bf.style.background=(e==4&&t>1.6)?'#F3EAFB':'transparent';
-  cur.style.opacity=(e==1||e==3||e==4)?1:0;
-  if(e==1){const p=ap(t,.2,.9);pos(760-p*440,900-p*700)}
-  if(e==3){const p=ap(t,.1,.6);pos(500+p*300,560-p*0)}
-  if(e==4){const p=ap(t,.4,1);pos(400+p*420,1100-p*(1100-(pj.offsetTop+70)))}
+  camera(cam,e==0?C0:CAD[e-1],CAD[e],e==0?1:eio(t/.8));
+  if(e==0)fen.style.transform=`translateY(${(1-bp(t,0,.7))*260}px)`;else fen.style.transform='';
+  msgs.forEach((m,i)=>{const p=e==0?bp(t,.25+i*.18,.5):1;m.style.opacity=e==0?cl((t-.25-i*.18)/.15):1;m.style.transform=`translateX(${(1-p)*-80}px)`;m.style.display=(e==2||e==3)&&i>1?'none':'flex';m.style.background=(e==3&&i==1&&t>1)?'#FCEFDF':'transparent'});
+  const ouv=e>=2&&e<4?(e==2?eio((t-.1)/.6):1):0;R.style.height=(ouv*300)+'px';
+  lignes.forEach((l,i)=>{const p=e==2?bp(t,.45+i*.5,.5):e==3?1:0;l.style.opacity=e==2?cl((t-.45-i*.5)/.15):e==3?1:0;l.style.transform=`translateX(${(1-p)*-50}px)`});
+  const c2=R.querySelector('.cit');const on=e==3&&t>.9;c2.style.background=on?'#F0921F':'#EBDDF0';c2.style.color=on?'#fff':'#6A1E6C';c2.style.transform=e==3?`scale(${1+.35*Math.sin(Math.PI*cl((t-.9)/.4))})`:'';
+  barre.style.transform=(e==1&&t>1.45&&t<1.65)?'scale(.97)':'';barre.style.boxShadow=(e==1&&t>1.45)?`0 0 0 ${10*Math.sin(Math.PI*cl((t-1.45)/.6))}px rgba(240,146,31,.35)`:'none';
+  cur.style.opacity=(e==1||e==3||e==4)?1:0;onde.style.opacity=0;
+  if(e==1)curseur(cur,onde,t,[900,900],[330,250],.2,1.1,1.45);
+  if(e==3)curseur(cur,onde,t,[800,700],[648,342],0,.75,.9);
+  voile.style.opacity=e==4?.9*ap(t,0,.4):0;
+  if(e==4){const p=bp(t,.25,.6);modal.style.opacity=cl((t-.25)/.15);modal.style.transform=`translateY(${(1-p)*120}px) scale(${.85+.15*p})`;
+   curseur(cur,onde,t,[800,1300],[330,590],.6,.9,1.7);bf.style.background=t>1.7?'#F3EAFB':'#fff';
+   taper(rf,'• Livraison prévue le 20 novembre, en 2 rotations.\n• Le transporteur confirme 48 h avant.',(t-2)/1.6,false);rf.innerHTML=rf.innerHTML.replace(/\n/g,'<br>')}
+  else modal.style.opacity=0;
  }}};
-// ---------- téléphone
-B.telephone=(s)=>{const el=h(`<div class="scene"><div style="position:absolute;left:290px;top:60px;width:500px;height:1000px;border-radius:70px;background:#1C1620;padding:26px">
- <div style="background:#fff;border-radius:50px;height:100%;position:relative;overflow:hidden;color:var(--e)">
-  <div style="padding:70px 34px 0;font-family:SG;font-size:32px">Livraison chantier Bonapriso</div>
-  <div style="padding:20px 34px;font-size:24px;color:var(--g);line-height:1.5">Aline N. · On ne peut pas livrer le 12…<br>Paul K. · Si on décale au 20…<br>Marc T. · Le client accepte…</div>
-  <div class="bar" style="position:absolute;left:0;right:0;bottom:0;height:120px;border-top:2px solid #EEE;display:flex;align-items:center;justify-content:space-around;font-size:40px;color:var(--g)">
-   <span>↩</span><span>⤳</span><span class="ic" style="width:84px;height:84px;border-radius:24px;display:flex;align-items:center;justify-content:center;color:#5B2A86">✦</span><span>⋯</span></div>
-  <div class="res" style="position:absolute;left:24px;right:24px;top:300px;border-radius:24px;background:linear-gradient(90deg,#F3EAFB,#EAF2FB);padding:22px;font-size:26px;line-height:1.4;opacity:0"><b style="color:#5B2A86">✦ Résumé par Copilot</b><br>• Livraison décalée au 20 novembre.<br>• Remise de 5 % maintenue.</div>
- </div></div></div>`);
- const ic=el.querySelector('.ic'),res=el.querySelector('.res'),tel=el.firstChild;
- return {el,u(t,d){tel.style.transform=`translateY(${(1-ap(t,0,.6))*120}px)`;const k=Math.sin(Math.PI*cl((t-1)/.6));ic.style.background=t>1?'#E9DDF4':'transparent';ic.style.transform=`scale(${1+.3*k})`;res.style.opacity=ap(t,1.7)}}};
-// ---------- renommage NotebookLM → Gemini Notebook
-B.renomme=(s)=>{const el=h(`<div class="scene"><div style="padding:200px 80px 0;text-align:center">
- <div class="a" style="font-family:SG;font-size:70px;opacity:.7;text-decoration:line-through;text-decoration-thickness:6px">NotebookLM</div>
- <div class="f" style="font-size:90px;margin:30px 0">↓</div>
- <div class="b carte" style="display:inline-block;font-family:SG;font-size:86px;padding:40px 60px;color:var(--vf)">Gemini Notebook</div>
- <div class="c" style="font-size:38px;margin-top:50px;opacity:.85">Nouveau nom depuis juillet 2026, même outil de Google</div></div></div>`);
- const [a,f,b,c]=el.firstChild.children;
- return {el,u(t){a.style.opacity=.7*ap(t,0);f.style.opacity=ap(t,.6);b.style.opacity=ap(t,.9);b.style.transform=`scale(${.85+.15*ap(t,.9,.6)})`;c.style.opacity=ap(t,1.5)}}};
-// ---------- notebook
+// ------------------------------------------------------------- téléphone 3D
+B.telephone=(s)=>{const el=h(`<div class="scene"><div class="vue"><div class="cam" style="perspective:1600px">
+ <div class="rond" style="position:absolute;left:190px;top:200px;width:700px;height:700px;border-radius:50%;background:#E6DAEE"></div>
+ <div class="tel" style="position:absolute;left:300px;top:60px;width:480px;height:980px;border-radius:72px;background:#1C1620;padding:22px;transform-style:preserve-3d;box-shadow:0 40px 90px rgba(28,22,32,.35)">
+  <div style="background:#fff;border-radius:54px;height:100%;position:relative;overflow:hidden">
+   <div style="padding:80px 34px 0;font-family:SG;font-size:32px;color:var(--vn)">Livraison chantier Bonapriso</div>
+   <div style="padding:20px 34px;font-size:24px;color:var(--g);line-height:1.6">Aline N. · On ne peut pas livrer le 12…<br>Paul K. · Si on décale au 20…<br>Marc T. · Le client accepte…</div>
+   <div class="feuille" style="position:absolute;left:0;right:0;bottom:120px;border-radius:30px 30px 0 0;background:linear-gradient(180deg,#F3EAFB,#fff);padding:30px 30px;font-size:26px;line-height:1.5;box-shadow:0 -10px 30px rgba(0,0,0,.08);transform:translateY(120%)"><b style="color:#5B2A86;font-size:28px">✦ Résumé par Copilot</b><br>• Livraison décalée au 20 novembre.<br>• Remise de 5 % maintenue.<br>• Le transporteur sera relancé demain.</div>
+   <div style="position:absolute;left:0;right:0;bottom:0;height:120px;background:#fff;border-top:2px solid #EEE;display:flex;align-items:center;justify-content:space-around;font-size:40px;color:var(--g)">
+    <span>↩</span><span>⤳</span><span class="ic" style="width:84px;height:84px;border-radius:24px;display:flex;align-items:center;justify-content:center;color:#5B2A86">✦</span><span>⋯</span></div>
+  </div></div><div class="onde"></div></div></div>`);
+ const tel=el.querySelector('.tel'),ic=el.querySelector('.ic'),f=el.querySelector('.feuille'),rond=el.querySelector('.rond'),onde=el.querySelector('.onde');
+ ev(.1,'souffle');ev(1.3,'clic');ev(1.6,'pop');
+ return {el,u(t,d){const p=eo((t)/1.1);tel.style.transform=`translateY(${(1-p)*300}px) rotateY(${(1-p)*-70+Math.sin(t*.8)*4}deg) rotateZ(${(1-p)*12}deg)`;rond.style.transform=`scale(${bp(t,.2,.7)})`;
+  const k=Math.sin(Math.PI*cl((t-1.3)/.4));ic.style.background=t>1.3?'#EBDDF0':'transparent';ic.style.transform=`scale(${1+.35*k})`;
+  const q=(t-1.3)/.6;onde.style.opacity=q>0&&q<1?1-q:0;onde.style.transform=`translate(${300+22+238-15}px,${60+980-22-60-15}px) scale(${1+q*4})`;
+  f.style.transform=`translateY(${(1-bp(t,1.6,.6))*120}%)`}}};
+// ------------------------------------------------- renommage (lettres)
+B.renomme=(s)=>{const el=h(`<div class="scene"><div class="vue"><div class="cam">
+ <div class="d1" style="position:absolute;left:-200px;top:20px;width:340px;height:340px;border-radius:50%;background:var(--v)"></div>
+ <div class="d2" style="position:absolute;right:-200px;top:930px;width:400px;height:400px;border-radius:50%;background:var(--o)"></div>
+ <div style="position:absolute;left:0;right:0;top:330px;text-align:center"><div class="a" style="display:inline-block;position:relative;font-family:SG;font-size:76px;color:var(--g)"></div><div class="barre" style="height:8px;background:var(--o);width:0;margin:-50px auto 0;position:relative"></div></div>
+ <div style="position:absolute;left:0;right:0;top:600px;text-align:center"><div class="b" style="font-family:SG;font-size:110px;color:var(--vn);letter-spacing:-1px"></div>
+ <div class="c" style="font-size:38px;color:var(--g);margin-top:30px">Nouveau nom depuis juillet 2026,<br>même outil de Google</div></div></div></div>`);
+ const la=lettres(el.querySelector('.a'),'NotebookLM'),lb=lettres(el.querySelector('.b'),'Gemini Notebook'),barre=el.querySelector('.barre'),c=el.querySelector('.c'),d1=el.querySelector('.d1'),d2=el.querySelector('.d2');
+ ev(1.1,'souffle');ev(1.5,'pop');
+ return {el,u(t){revelerLettres(la,t,0,.04);barre.style.width=(eio((t-.8)/.5)*440)+'px';revelerLettres(lb,t,1.4,.05);c.style.opacity=ap(t,2.4);
+  d1.style.transform=`translateX(${bp(t,.1,.8)*140}px) rotate(${t*20}deg)`;d2.style.transform=`translateX(${-bp(t,.3,.8)*140}px)`}}};
+// ----------------------------------------------------------- notebook
 const SRC=[['PDF','#D93F3F','Appel_offres_DAO.pdf'],['DOC','#4A7CF7','Cahier des charges (Google Docs)'],['WEB','#3E9B5A','Page web du maître d’ouvrage']];
-B.notebook=(s)=>{const el=h(`<div class="scene"><div style="padding:30px 50px 0">
- <div class="carte" style="padding:30px 34px"><div style="font-family:SG;font-size:34px;color:var(--g)">Sources</div><div class="srcs"></div></div>
- <div class="carte chat" style="margin-top:28px;padding:30px 34px;min-height:500px;position:relative">
-  <div class="q" style="margin-left:auto;max-width:760px;background:var(--m);border-radius:28px 28px 6px 28px;padding:22px 28px;font-size:36px"></div>
-  <div class="r" style="margin-top:24px;font-size:35px;line-height:1.45"></div>
-  <div class="ext" style="margin-top:22px;border-left:8px solid var(--o);background:#FFF5E8;border-radius:12px;padding:16px 22px;font-size:28px;color:#5a4a3a;opacity:0">[1] Appel_offres_DAO.pdf, p. 12 : « Le dossier comprend : la caution de soumission, l’attestation de non-faillite, les références… »</div>
-  <div class="audio" style="position:absolute;inset:30px 34px;background:#fff;opacity:0">
-   <div style="font-family:SG;font-size:34px;color:var(--g)">Studio</div>
-   <div style="margin-top:24px;display:flex;align-items:center;gap:20px;border:3px solid #D9C6EC;border-radius:26px;padding:24px 28px;background:#F3EAFB"><span style="font-size:48px">🎧</span><div><div style="font-size:40px;font-weight:600;color:#5B2A86">Résumé audio</div><div style="font-size:28px;color:var(--g)">Langue : Français · Format : Briefing</div></div></div>
-   <div class="onde" style="margin-top:50px;height:200px;display:flex;align-items:center;gap:10px;justify-content:center"></div></div>
- </div></div></div>`);
- const S_=el.querySelector('.srcs'),q=el.querySelector('.q'),r=el.querySelector('.r'),ext=el.querySelector('.ext'),au=el.querySelector('.audio'),onde=el.querySelector('.onde');
- const srcs=SRC.map(x=>{const d=h(`<div style="display:flex;align-items:center;gap:20px;margin-top:18px"><div style="width:76px;height:56px;border-radius:10px;background:${x[1]};color:#fff;font-weight:600;font-size:22px;display:flex;align-items:center;justify-content:center">${x[0]}</div><div style="font-size:32px">${x[2]}</div><div style="margin-left:auto;color:#3E9B5A;font-size:34px">✓</div></div>`);S_.appendChild(d);return d});
- const bars=[...Array(34)].map(()=>{const b=h('<i style="display:block;width:14px;border-radius:7px;background:#8E2A8E"></i>');onde.appendChild(b);return b});
+B.notebook=(s)=>{const el=h(`<div class="scene"><div class="vue"><div class="cam">
+ <div class="carte srcb" style="position:absolute;left:50px;top:30px;width:980px;padding:30px 36px"><div style="font-family:SG;font-size:34px;color:var(--g)">Sources</div><div class="srcs"></div></div>
+ <div class="carte chat" style="position:absolute;left:50px;top:400px;width:980px;height:820px;padding:34px 36px">
+  <div class="q" style="margin-left:auto;max-width:800px;background:var(--m);border-radius:30px 30px 6px 30px;padding:24px 30px;font-size:38px;min-height:60px"></div>
+  <div class="r" style="margin-top:28px;font-size:38px;line-height:1.45"></div></div>
+ <div class="voile"></div>
+ <div class="ext carte" style="position:absolute;left:80px;top:520px;width:920px;padding:36px;opacity:0"><div style="font-size:30px;color:var(--g)">Source 1 · Appel_offres_DAO.pdf · page 12</div><div style="margin-top:18px;font-size:36px;line-height:1.45;border-left:10px solid var(--o);padding-left:24px">« Le dossier comprend : <span style="background:#FCE3C3">la caution de soumission, l’attestation de non-faillite, les références</span>… »</div></div>
+ <div class="audio carte" style="position:absolute;left:50px;top:400px;width:980px;height:820px;padding:40px;opacity:0">
+  <div style="font-family:SG;font-size:36px;color:var(--g)">Studio</div>
+  <div style="margin-top:26px;display:flex;align-items:center;gap:24px;border:3px solid #D9C6EC;border-radius:28px;padding:28px;background:#F3EAFB"><div class="play" style="width:96px;height:96px;border-radius:50%;background:var(--v);color:#fff;font-size:44px;display:flex;align-items:center;justify-content:center">▶</div><div><div style="font-size:44px;font-weight:600;color:#5B2A86">Résumé audio</div><div style="font-size:30px;color:var(--g)">Langue : Français · Format : Briefing</div></div></div>
+  <div class="ondes" style="margin-top:80px;height:260px;display:flex;align-items:center;gap:12px;justify-content:center"></div></div>
+ ${CURSEUR}<div class="onde"></div></div></div>`);
+ const cam=el.querySelector('.cam'),S_=el.querySelector('.srcs'),q=el.querySelector('.q'),r=el.querySelector('.r'),ext=el.querySelector('.ext'),au=el.querySelector('.audio'),ondes=el.querySelector('.ondes'),voile=el.querySelector('.voile'),cur=el.querySelector('.curseur'),onde=el.querySelector('.onde'),play=el.querySelector('.play'),srcb=el.querySelector('.srcb'),chat=el.querySelector('.chat');
+ const srcs=SRC.map(x=>{const d=h(`<div style="display:flex;align-items:center;gap:22px;margin-top:20px"><div style="width:84px;height:62px;border-radius:12px;background:${x[1]};color:#fff;font-weight:600;font-size:24px;display:flex;align-items:center;justify-content:center">${x[0]}</div><div style="font-size:34px">${x[2]}</div><div class="ok" style="margin-left:auto;color:#3E9B5A;font-size:38px">✓</div></div>`);S_.appendChild(d);return d});
+ const bars=[...Array(30)].map(()=>{const b=h('<i style="display:block;width:16px;border-radius:8px;background:#8E2A8E"></i>');ondes.appendChild(b);return b});
  const Q='Quelles pièces faut-il fournir ? Quelle est la date limite ?';
- const RT=['Il faut fournir la caution de soumission, l’attestation de non-faillite et vos références ','. Date limite de dépôt : le 28 novembre à 12 h '];
- return {el,u(t,d,e){srcs.forEach((x,i)=>{x.style.opacity=e==0?ap(t,.4+i*.9):1;x.style.transform=e==0?`translateX(${(1-ap(t,.4+i*.9))*-60}px)`:''});
-  if(e==0){q.style.opacity=0;r.innerHTML=''}
-  if(e>=1){q.style.opacity=1;tape(q,Q,e==1?(t-.2)/1.6:1)}
+ const RT='Il faut fournir la caution de soumission, l’attestation de non-faillite et vos références [1]. Date limite de dépôt : le 28 novembre à 12 h [2].';
+ const CAD=[{s:1.08,x:540,y:330},{s:1.08,x:540,y:560},{s:1.04,x:540,y:640},C0];
+ const e=s.etape;
+ if(e==0)srcs.forEach((x,i)=>ev(.5+i*.9,'pop')); if(e==2){ev(2.2,'clic');ev(2.4,'pop')} if(e==3){ev(.2,'pop');ev(1.1,'clic')}
+ return {el,u(t,d,e){
+  camera(cam,e==0?{s:1,x:540,y:670}:CAD[e-1],CAD[e],e==0?eio((t-.2)/.8):eio(t/.8));
+  if(e==0){srcb.style.transform=`translateY(${(1-bp(t,0,.6))*-200}px)`;chat.style.opacity=ap(t,.3)}else{srcb.style.transform='';chat.style.opacity=1}
+  srcs.forEach((x,i)=>{const p=e==0?bp(t,.5+i*.9,.55):1;x.style.opacity=e==0?cl((t-.5-i*.9)/.12):1;x.style.transform=`translateX(${(1-p)*-160}px)`;x.querySelector('.ok').style.opacity=e==0?ap(t,1+i*.9):1});
+  if(e==0){q.innerHTML='';q.style.opacity=0;r.innerHTML=''}
+  if(e>=1){q.style.opacity=1;taper(q,Q,e==1?(t-.2)/1.8:1,e==1)}
   if(e==1)r.innerHTML='';
-  if(e>=2){const p=e==2?cl((t-.1)/1.6):1;const tot=RT[0].length+RT[1].length,n=Math.round(tot*p);
-   const a=RT[0].slice(0,n),b=n>RT[0].length?RT[1].slice(0,n-RT[0].length):'';r.innerHTML=a+(n>=RT[0].length?'<span class="cit" style="background:'+(e==2&&t>2?'#F0921F':'#E9DDF4')+';color:'+(e==2&&t>2?'#fff':'#6A1E6C')+'">1</span>':'')+b+(p>=1?'<span class="cit">2</span>':'')}
-  ext.style.opacity=e==2?ap(t,2.1):0;
-  au.style.opacity=e==3?ap(t,.1):0; bars.forEach((b,i)=>{b.style.height=(e==3?30+120*Math.abs(Math.sin(t*5+i*.7)*Math.sin(i*.4+t*1.3)):30)+'px'})}}};
-// ---------- alerte
-B.alerte=(s)=>{const el=h(`<div class="scene"><div style="padding:170px 80px 0;text-align:center">
- <div class="ic" style="font-size:170px">🔒</div>
- <div class="moyen" style="margin-top:40px">Document confidentiel ?</div>
- <div class="carte" style="margin-top:60px;padding:40px;font-size:44px;line-height:1.4;text-align:left">✓ Compte <b style="color:var(--v)">professionnel</b> de l’entreprise<br><span style="color:#B3261E">✗ Jamais un compte personnel</span></div></div></div>`);
- const [ic,ti,ca]=el.firstChild.children;
- return {el,u(t){ic.style.transform=`scale(${.6+.4*ap(t,0,.5)})`;ti.style.opacity=ap(t,.3);ca.style.opacity=ap(t,.8);ca.style.transform=`translateY(${(1-ap(t,.8))*50}px)`}}};
-// ---------- fin
-B.fin=(s)=>{const el=h(`<div class="scene">
- <img src="dg.webp" style="position:absolute;left:-60px;bottom:-250px;height:1150px">
- <div class="txt" style="position:absolute;left:520px;right:60px;top:120px">
-  <div class="kicker">Astuce IA</div>
-  <div class="moyen" style="margin-top:20px;font-size:68px">L’IA au travail, <b>pas au hasard</b>.</div>
-  <div style="margin-top:50px;font-family:SG;font-size:38px">Cyrille Donald ABOLO</div><div style="font-size:28px;opacity:.85">Directeur Général, AITE Consulting</div></div>
- <div class="cta" style="position:absolute;left:60px;right:60px;top:1020px;background:#fff;color:var(--vf);border-radius:40px;padding:34px 40px;display:flex;align-items:center;gap:26px">
-  <div style="width:96px;height:96px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;flex:none"><svg width="56" height="56" viewBox="0 0 24 24"><path fill="#fff" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-3.2-.8-2.7-1.1-4.4-3.9-4.5-4.1-.1-.2-1.1-1.5-1.1-2.8s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.3 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.6-.1 1.2z"/></svg></div>
-  <div><div style="font-family:SG;font-size:44px">Diagnostic 360° gratuit</div><div style="font-size:40px;font-weight:600;color:var(--e)">WhatsApp (+237) 656 80 10 98</div></div></div></div>`);
- const [img,txt,cta]=el.children;
- return {el,u(t){img.style.opacity=ap(t,0,.6);img.style.transform=`translateX(${(1-ap(t,0,.7))*-120}px)`;txt.style.opacity=ap(t,.3);cta.style.opacity=ap(t,.8);cta.style.transform=`translateY(${(1-ap(t,.8))*60}px) scale(${1+.03*Math.sin(Math.max(0,t-1.5)*4)})`}}};
-// ---------- montage
-let PLAN,OBJ=[];
+  if(e>=2){const p=e==2?(t-.1)/1.6:1;const n=Math.round(RT.length*cl(p));r.innerHTML=RT.slice(0,n).replace(/\[(\d)\]/g,(m,k)=>`<span class="cit"${k==1&&e==2&&t>2.2?' style="background:#F0921F;color:#fff"':''}>${k}</span>`).replace(/\[\d?$/,'')}
+  voile.style.opacity=e==2?.9*ap(t,2.3,.4):0;
+  const pe=bp(t,2.4,.6);ext.style.opacity=e==2?cl((t-2.4)/.15):0;ext.style.transform=`translateY(${(1-pe)*100}px) scale(${.85+.15*pe})`;
+  cur.style.opacity=(e==2&&t>1.3&&t<2.6)||e==3?1:0;onde.style.opacity=0;
+  if(e==2)curseur(cur,onde,t,[900,1200],[688,722],1.3,.8,2.2);
+  au.style.opacity=e==3?cl((t)/.25):0;au.style.transform=e==3?`scale(${.9+.1*bp(t,0,.5)})`:'';
+  if(e==3){curseur(cur,onde,t,[900,1200],[160,604],.3,.7,1.1);play.textContent=t>1.1?'❚❚':'▶'}
+  bars.forEach((b,i)=>{const a=e==3&&t>1.2;b.style.height=(a?30+170*Math.abs(Math.sin(t*5.2+i*.7)*Math.sin(i*.37+t*1.4)):24)+'px'})}}};
+// --------------------------------------------------------------- alerte
+B.alerte=(s)=>{const el=h(`<div class="scene"><div class="vue"><div class="cam">
+ <div class="cad" style="position:absolute;left:390px;top:120px;width:300px;height:300px;border-radius:50%;background:var(--v);display:flex;align-items:center;justify-content:center"><svg width="150" height="150" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+ <div class="grand t" style="position:absolute;left:0;right:0;top:500px;text-align:center;font-size:84px"></div>
+ <div class="l1 carte" style="position:absolute;left:80px;right:80px;top:740px;padding:34px 40px;font-size:44px;display:flex;gap:22px;align-items:center"><span style="width:64px;height:64px;border-radius:50%;background:#3E9B5A;color:#fff;display:flex;align-items:center;justify-content:center">✓</span>Le compte <b style="color:var(--v)">&nbsp;professionnel</b></div>
+ <div class="l2 carte" style="position:absolute;left:80px;right:80px;top:900px;padding:34px 40px;font-size:44px;display:flex;gap:22px;align-items:center;color:#B3261E"><span style="width:64px;height:64px;border-radius:50%;background:#B3261E;color:#fff;display:flex;align-items:center;justify-content:center">✗</span>Jamais un compte personnel</div></div></div>`);
+ const cad=el.querySelector('.cad'),mots=motsMasques(el.querySelector('.t'),'Document *confidentiel* ?'.replace(/\*(.+?)\*/g,'<span class="r">$1</span>')),l1=el.querySelector('.l1'),l2=el.querySelector('.l2');
+ ev(0,'pop');ev(1.2,'pop');ev(1.8,'pop');
+ return {el,u(t){const p=bp(t,0,.6);cad.style.transform=`scale(${p}) rotate(${Math.sin(Math.max(0,t-.6)*9)*Math.exp(-Math.max(0,t-.6)*3)*12}deg)`;revelerMots(mots,t,.4);
+  [l1,l2].forEach((l,i)=>{const q=bp(t,1.2+i*.6,.5);l.style.opacity=cl((t-1.2-i*.6)/.12);l.style.transform=`translateX(${(1-q)*(i?200:-200)}px)`})}}};
+// ------------------------------------------------------------------ fin
+B.fin=(s)=>{const el=h(`<div class="scene"><div class="bg" style="position:absolute;left:540px;top:1100px;width:3000px;height:3000px;margin:-1500px 0 0 -1500px;border-radius:50%;background:linear-gradient(160deg,#9C319C,#43124A)"></div><div class="vue" style="overflow:visible"><div class="cam">
+ <img class="dg" src="dg.webp" style="position:absolute;left:-40px;top:420px;height:1100px">
+ <div class="pil" style="position:absolute;left:340px;top:60px;background:#fff;border-radius:30px;padding:20px 34px"><img src="logo.png" style="height:110px;display:block"></div>
+ <div class="tg" style="position:absolute;left:0;right:0;top:300px;text-align:center;font-family:SG;font-size:66px;color:#fff"></div>
+ <div class="nom" style="position:absolute;left:520px;top:560px;color:#fff"><div style="font-family:SG;font-size:40px">Cyrille Donald ABOLO</div><div style="font-size:28px;opacity:.85;margin-top:4px">Directeur Général<br>AITE Consulting</div></div>
+ <div class="cta" style="position:absolute;left:60px;right:60px;top:1060px;background:#fff;border-radius:40px;padding:34px 40px;display:flex;align-items:center;gap:26px;box-shadow:0 26px 70px rgba(0,0,0,.3)">
+  <div style="width:100px;height:100px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;flex:none"><svg width="58" height="58" viewBox="0 0 24 24"><path fill="#fff" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-3.2-.8-2.7-1.1-4.4-3.9-4.5-4.1-.1-.2-1.1-1.5-1.1-2.8s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.3 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.6-.1 1.2z"/></svg></div>
+  <div><div style="font-family:SG;font-size:46px;color:var(--vf)">Diagnostic 360° gratuit</div><div style="font-size:40px;font-weight:600">WhatsApp (+237) 656 80 10 98</div></div></div>
+ ${CURSEUR}<div class="onde"></div></div></div>`);
+ const bg=el.querySelector('.bg'),dg=el.querySelector('.dg'),pil=el.querySelector('.pil'),tg=lettres(el.querySelector('.tg'),'L’IA au travail, pas au hasard.'),nom=el.querySelector('.nom'),cta=el.querySelector('.cta'),cur=el.querySelector('.curseur'),onde=el.querySelector('.onde');
+ ev(0,'souffle');ev(.5,'pop');ev(2.1,'pop');ev(s.duree-1.6,'clic');
+ return {el,u(t,d){bg.style.transform=`scale(${eio(t/.9)})`;const p=bp(t,.5,.6);pil.style.transform=`scale(${p})`;pil.style.opacity=cl((t-.5)/.1);
+  revelerLettres(tg,t,.9,.03);dg.style.opacity=ap(t,.6,.4);dg.style.transform=`translateX(${(1-ap(t,.6,.8))*-200}px)`;nom.style.opacity=ap(t,1.6);
+  const q=bp(t,2.1,.6);cta.style.opacity=cl((t-2.1)/.15);cta.style.transform=`translateY(${(1-q)*150}px) scale(${t>d-1.6&&t<d-1.4?.96:1})`;
+  cur.style.opacity=t>d-2.6?1:0;onde.style.opacity=0;curseur(cur,onde,t,[1000,1400],[860,1130],d-2.6,.9,d-1.6)}}};
+// --------------------------------------------------------------- montage
+let PLAN,OBJ=[],MOTS=[];
 window.charger=(plan)=>{PLAN=plan;document.getElementById('badge').textContent='Astuce IA · n°'+plan.numero;
  const C=document.getElementById('scenes');const grp={};
- plan.scenes.forEach((s,i)=>{let o;if(s.groupe&&grp[s.groupe])o=grp[s.groupe];else{o=B[s.type](s);C.appendChild(o.el);if(s.groupe)grp[s.groupe]=o}OBJ.push(o)});
+ plan.scenes.forEach((s,i)=>{s.dernier=s.groupe&&!(plan.scenes[i+1]&&plan.scenes[i+1].groupe==s.groupe);DEBUT=s.debut;let o;
+  if(s.groupe&&grp[s.groupe]){o=grp[s.groupe];const tmp=B[s.type](s);}  // on recrée pour enregistrer les sons de l'étape
+  else{o=B[s.type](s);C.appendChild(o.el);if(s.groupe)grp[s.groupe]=o}
+  OBJ.push(o)});
+ // transitions : volet violet entre deux scènes qui ne sont pas du même groupe
+ plan.scenes.forEach((s,i)=>{if(i>0&&!(s.groupe&&plan.scenes[i-1].groupe==s.groupe)&&s.type!='fin')EV.push([+(s.debut-.25).toFixed(3),'souffle'])});
+ window.EVENEMENTS=EV;
  return document.fonts.ready.then(()=>Promise.all([...document.images].map(im=>im.decode().catch(()=>0))))};
 window.seek=(T)=>{const sc=PLAN.scenes;document.querySelector('#prog i').style.width=(100*cl(T/PLAN.total))+'%';
  let k=sc.findIndex(s=>T>=s.debut&&T<s.debut+s.duree);if(k<0)k=sc.length-1;const s=sc[k],t=T-s.debut;
- OBJ.forEach(o=>o.el.style.opacity=0);
- const o=OBJ[k];const g=s.groupe,prevSame=k>0&&sc[k-1].groupe&&sc[k-1].groupe==g,nextSame=k<sc.length-1&&sc[k+1].groupe&&sc[k+1].groupe==g;
- const fin=k==sc.length-1;
- const inn=prevSame?1:ap(t,0,.35),out=(nextSame||fin)?1:1-cl((t-(s.duree-.3))/.3);
- o.el.style.opacity=Math.min(inn,out);o.el.style.transform=prevSame?'':`translateY(${(1-inn)*40}px)`;
- o.u(t,s.duree,s.etape);
- const so=document.getElementById('sous');if(so.dataset.k!=k){so.textContent=s.sous;so.dataset.k=k}
- so.style.opacity=Math.min(ap(t,0,.25),fin?1:1-cl((t-(s.duree-.2))/.2))};
+ OBJ.forEach(o=>o.el.style.opacity=0);OBJ[k].el.style.opacity=1;document.getElementById('entete').style.opacity=s.type=='fin'?1-ap(t,.2,.4):1;document.getElementById('pied').style.color=s.type=='fin'&&t>.5?'rgba(255,255,255,.75)':'';OBJ[k].u(t,s.duree,s.etape);
+ // volet : entre en fin de scène, sort au début de la suivante
+ const vol=document.getElementById('volet');let x=110;
+ const same=(a,b)=>a&&b&&a.groupe&&a.groupe==b.groupe;
+ const nx=sc[k+1],pv=sc[k-1];
+ if(nx&&!same(s,nx)&&nx.type!='fin'&&t>s.duree-.32)x=110-110*eio((t-(s.duree-.32))/.32);
+ if(pv&&!same(pv,s)&&s.type!='fin'&&t<.36)x=-110*eio(t/.36);
+ vol.style.transform=`translateX(${x}%)`;
+ // sous-titres « karaoké » : le mot dit passe en noir, le mot en cours en violet
+ const so=document.getElementById('sous');if(so.dataset.k!=k){so.innerHTML='<div>'+s.sous.split(' ').map(w=>`<span>${w}</span>`).join(' ')+'</div>';so.dataset.k=k}
+ const sp=so.firstChild.children,n=sp.length,len=[...sp].map(x=>x.textContent.length+1),tot=len.reduce((a,b)=>a+b,0);
+ const p=cl((t-.3)/Math.max(.5,s.vdur)) * tot;let acc=0;[...sp].forEach((w,i)=>{acc+=len[i];w.className=acc<=p?'dit':(acc-len[i]<=p?'mot':'')});
+ so.style.opacity=ap(t,0,.2)};
 </script></body></html>
