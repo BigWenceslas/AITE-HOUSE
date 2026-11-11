@@ -136,7 +136,11 @@ l'entend pas : elle est à valider à l'oreille.
 
 Les captures de référence du thème MuK (modèle visuel, jamais incrustées)
 se prennent sur une base de démonstration où `muk_web_theme` est installé,
-hors du dépôt (`../aite-videos/ref_muk`).
+hors du dépôt (`../aite-videos/ref_muk`). `dev/setup_env.sh --all --muk`
+clone les modules MuK IT (branche 18.0, LGPL-3) à côté du dépôt, les ajoute à
+l'`addons_path` et installe le thème ; il habille l'interface sans changer
+les modules AITE et ne fait pas partie de la livraison (sur Odoo Enterprise,
+l'équivalent est `muk_web_enterprise_theme`).
 
 ### La série livrée (`docs/guides/videos/`)
 

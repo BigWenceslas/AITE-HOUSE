@@ -31,6 +31,7 @@ captures/          captures d'écran de la vague 1 (documentation, plaquette)
 
 ```bash
 dev/setup_env.sh            # clone Odoo 18 à côté (../odoo18), deps, base aite_dev en fr_FR, seeds
+dev/setup_env.sh --all --muk   # + les 11 autres modules, + thème MuK (../muk_addons, muk_web_theme)
 dev/srv.sh start            # http://localhost:8069 — admin / admin (amina, rose, gouv : mdp = login)
 dev/run_tests.sh            # tests purs + 4 scénarios + audit des menus → doit finir par « TOUT EST VERT »
 ```

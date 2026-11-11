@@ -13,8 +13,12 @@
 #
 # Usage :  dev/setup_env.sh              socle + vague 1 (rapide, ~3 min)
 #          dev/setup_env.sh --all        + les 11 autres modules (POS, stock…)
+#          dev/setup_env.sh --muk        + thème MuK (muk_web_theme, Odoo Community) : barre
+#                                        des applications, couleurs ; c'est l'habillage des
+#                                        vidéos et des captures de référence (docs/videos/)
 # Variables : PYTHON (interpréteur, ex. venv Python 3.12), ODOO_DIR (clone), PG_HOST (défaut : /tmp = socket local ;
-#             mettre localhost pour un service système), ODOO_DB (aite_dev)
+#             mettre localhost pour un service système), ODOO_DB (aite_dev), MUK_DIR (clone des
+#             modules MuK IT, LGPL-3 ; défaut : à côté de ce dossier)
 # ============================================================================
 set -euo pipefail
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
@@ -22,9 +26,10 @@ ODOO_DIR=${ODOO_DIR:-$ROOT/../odoo18}
 PG_HOST=${PG_HOST:-/tmp}
 ODOO_DB=${ODOO_DB:-aite_dev}
 PYTHON=${PYTHON:-python3}
-ALL=0
+MUK_DIR=${MUK_DIR:-$ROOT/../muk_addons}
+ALL=0; MUK=0
 for a in "$@"; do
-  case "$a" in --all) ALL=1 ;; esac
+  case "$a" in --all) ALL=1 ;; --muk) MUK=1 ;; esac
 done
 PIPFLAGS=""; "$PYTHON" -m pip install --help 2>/dev/null | grep -q break-system-packages && PIPFLAGS="--break-system-packages"
 
@@ -37,12 +42,20 @@ if [ ! -f "$ODOO_DIR/odoo-bin" ]; then
 else
   echo "déjà présent"
 fi
+# Thème MuK : dépôt public de MuK IT (muk-it/odoo-modules), branche 18.0. Seul
+# muk_web_theme est installé (avec ses dépendances muk_web_appsbar, _chatter,
+# _colors, _dialog) ; sur Odoo Enterprise, le module équivalent est
+# muk_web_enterprise_theme. Le thème habille l'interface sans rien changer aux
+# modules AITE : il ne fait pas partie de la livraison (addons/).
+if [ $MUK = 1 ] && [ ! -f "$MUK_DIR/muk_web_theme/__manifest__.py" ]; then
+  git clone --depth 1 --branch 18.0 https://github.com/muk-it/odoo-modules.git "$MUK_DIR"
+fi
 
 # ------------------------------------------------------- 2. dépendances Python
 step "2/6 dépendances Python"
 # Les épingles de requirements.txt visent des distributions précises ; on les
 # retire (sauf exclusions connues) pour installer ce que pip trouve.
-sed -E 's/[=<>~!;].*//' "$ODOO_DIR/requirements.txt" | grep -viE '^(ofxparse|rl-renderpm|psycopg2|python-ldap|pypiwin32|\s*)$' | sort -u > /tmp/aite_req.txt
+sed -E 's/[[:space:]]*[=<>~!;].*//' "$ODOO_DIR/requirements.txt" | grep -viE '^(ofxparse|rl-renderpm|psycopg2|python-ldap|pypiwin32|\s*)$' | sort -u > /tmp/aite_req.txt
 "$PYTHON" -m pip install -q $PIPFLAGS -r /tmp/aite_req.txt psycopg2-binary lxml_html_clean openpyxl
 python3 -c "import odoo" 2>/dev/null || true
 echo "ok"
@@ -67,6 +80,7 @@ echo "rôle odoo prêt"
 step "4/6 dev/odoo.conf"
 sed -e "s#__ODOO_DIR__#$ODOO_DIR#g" -e "s#__ROOT__#$ROOT#g" -e "s#__PG_HOST__#$PG_HOST#g" \
     "$ROOT/dev/odoo.conf.example" > "$ROOT/dev/odoo.conf"
+[ $MUK = 1 ] && sed -i "s#^addons_path = \(.*\)#addons_path = \1,$MUK_DIR#" "$ROOT/dev/odoo.conf"
 mkdir -p "$ROOT/dev/filestore"
 echo "écrit"
 
@@ -90,6 +104,12 @@ env.cr.commit()
 print("langue fr_FR, admin/admin")
 EOF
 )
+fi
+if [ $MUK = 1 ]; then
+  # -i : installe le thème s'il manque, le met à niveau sinon.
+  (cd "$ODOO_DIR" && "$PYTHON" odoo-bin -c "$ROOT/dev/odoo.conf" -d "$ODOO_DB" -i muk_web_theme \
+      --stop-after-init 2>&1 | grep -E "ERROR|CRITICAL|Traceback" || true)
+  echo "thème MuK installé"
 fi
 
 # ---------------------------------------------------------- 7. seeds
