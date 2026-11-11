@@ -845,3 +845,56 @@ L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
 
 #LaVerandah #Douala #Champagne #ConseilDeLaCave #Moderation
 ```
+
+## Mercredi 11 novembre — au choix
+
+### Mercredi 17h — Pensée (photo ronde) · undefined
+
+![VD-CP-18](VD-CP-18-vd-sombre.jpg)
+
+**Visuel :** Le conseil de la cave — Mola, le verre de vin, on le tient par le pied : ta main chauffe le vin. Le nyanga, c’est aussi ça.
+
+**Légende à publier :**
+
+```text
+Mola, écoute-moi bien : quand tu tiens le verre par le ballon, ta main chauffe le vin et tes doigts salissent sa belle robe. Par le pied, le vin reste frais, et toi tu fais ton nyanga tranquille. Même sur la photo, ça sort propre. Milieu de semaine, on se fait plaisir, doucement.
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
+
+#LaVerandah #Douala #ConseilDeLaCave #Vin #Moderation
+```
+
+### Mercredi 19h — Pensée (photo ronde) · undefined
+
+![VD-CP-19](VD-CP-19-vd-sombre.jpg)
+
+**Visuel :** Le conseil de la cave — Mbom, le verre de vin, on ne le remplit pas jusqu’en haut : un tiers seulement, le vin doit respirer. On te ressert, ya pas drap !
+
+**Légende à publier :**
+
+```text
+Mbom, ce n’est pas qu’on te sert petit, hein ! Le verre au tiers, c’est pour que le vin respire et sorte tous ses arômes quand tu le fais tourner. À ras bord, il étouffe, et au premier fou rire tout est par terre. Tu en veux encore ? On te ressert, ya pas drap.
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
+
+#LaVerandah #Douala #ConseilDeLaCave #Vin #Moderation
+```
+
+### Mercredi 21h — Pensée (photo ronde) · undefined
+
+![VD-CP-20](VD-CP-20-vd-sombre.jpg)
+
+**Visuel :** Le conseil de la cave — Djo, une poignée de glaçons dans ton whisky ? Mais tu bois l’eau ! Un seul gros glaçon, et le goût reste.
+
+**Légende à publier :**
+
+```text
+Djo, tu mets une poignée de glaçons dans ton whisky ? Dix minutes après, c’est l’eau que tu bois, le goût est parti. Un seul gros glaçon fond doucement et garde le whisky comme il faut. Et entre deux verres, un grand verre d’eau pour toi aussi : on est ensemble.
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
+
+#LaVerandah #Douala #ConseilDeLaCave #Whisky #Moderation
+```
