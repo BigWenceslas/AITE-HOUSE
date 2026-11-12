@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+from lxml import html as lxml_html
+
 from odoo.tests import HttpCase, new_test_user, tagged
 
 WA_HREF = 'href="https://wa.me/237699000000?text=Bonjour%2C%20une%20question"'
-WA_CLASS = 'o_aite_wa_button o_bottom_fixed_element o_aite_wa_button_'
+WA_CLASS = 'o_aite_wa_button o_aite_wa_button_'
 
 
 @tagged('post_install', '-at_install', 'aite_whatsapp')
@@ -36,14 +38,17 @@ class TestWhatsappButton(HttpCase):
                 self.assertIn('Écrivez-nous', html)
 
     def test_button_inside_wrapwrap(self):
-        # Dans #wrapwrap : les fenêtres modales et le menu mobile, qui y
-        # sont aussi, passent au-dessus du bouton.
+        # Enfant direct de #wrapwrap, après le pied de page : les fenêtres
+        # modales et le menu mobile, qui y sont aussi, passent au-dessus.
         self.website.write(self.website_values)
-        html = self._get('/')
-        wrapwrap = html.index('id="wrapwrap"')
-        button = html.index(WA_HREF)
-        self.assertLess(wrapwrap, button)
-        self.assertLess(html.index('<footer'), button)
+        doc = lxml_html.fromstring(self._get('/'))
+        button_xpath = "contains(concat(' ', normalize-space(@class), ' '), ' o_aite_wa_button ')"
+        buttons = doc.xpath(f"//div[@id='wrapwrap']/a[{button_xpath}]")
+        self.assertEqual(len(buttons), 1)
+        self.assertEqual(buttons[0].get('href'),
+                         'https://wa.me/237699000000?text=Bonjour%2C%20une%20question')
+        self.assertTrue(buttons[0].xpath("preceding-sibling::footer[@id='bottom']"))
+        self.assertFalse(doc.xpath(f"//a[{button_xpath}][not(ancestor::div[@id='wrapwrap'])]"))
 
     def test_button_in_customer_portal(self):
         self.website.write(self.website_values)

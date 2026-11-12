@@ -141,9 +141,37 @@ $o-aite-wa-offset: 1.25rem;
     }
 }
 
+// Mises en page « encadrée », « cadre » et « carte postale » (Site Web →
+// Thème) : Odoo transforme chaque enfant direct de #wrapwrap en conteneur
+// (« #wrapwrap > * » : largeur 100 %, largeur max., marges). On les annule
+// pour le bouton — sélecteur plus fort, quel que soit l'ordre du bundle.
+#wrapwrap > .o_aite_wa_button {
+    width: auto;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+}
+
+// En-tête « barre latérale » (Site Web → Thème → En-tête) : sur grand écran
+// la barre est fixée sur un côté, au-dessus du bouton. Le bouton placé du
+// même côté est décalé de la largeur de la barre, réglée par site.
+@if function-exists('o-website-value') {
+    @if o-website-value('header-template') == 'sidebar' {
+        $-aite-wa-side: if(o-website-value('hamburger-position') == 'right', right, left);
+
+        @media (min-width: 992px) {
+            #wrapwrap:has(> header) > .o_aite_wa_button_#{$-aite-wa-side} {
+                #{$-aite-wa-side}: calc(#{o-website-value('sidebar-width')} + #{$o-aite-wa-offset} + env(safe-area-inset-#{$-aite-wa-side}, 0px));
+            }
+        }
+    }
+}
+
 // Masqué pendant l'édition de la page (Odoo pose « editor_enable » sur le
-// body de la page en cours d'édition) et à l'impression.
-body.editor_enable .o_aite_wa_button {
+// body de la page en cours d'édition), tant qu'une fenêtre modale est
+// ouverte, et à l'impression.
+body.editor_enable .o_aite_wa_button,
+body.modal-open .o_aite_wa_button {
     display: none !important;
 }
 

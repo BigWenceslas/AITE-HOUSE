@@ -38,7 +38,9 @@
                                        options="{'horizontal': true}"/>
                             </div>
                             <div class="mt8 text-muted small">
-                                Numéro international, ou local s'il est du pays de la société.
+                                Numéro au format international (+237 6 99 00 00 00). Un numéro local n'est
+                                complété par l'indicatif du pays de la société que si la bibliothèque
+                                phonenumbers est installée sur le serveur.
                                 Le message est pré-saisi pour le visiteur, qui peut le modifier avant l'envoi.
                             </div>
                             <div class="mt8" invisible="not aite_whatsapp_url">

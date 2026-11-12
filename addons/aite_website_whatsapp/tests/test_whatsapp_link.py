@@ -65,7 +65,17 @@ class TestWhatsappLink(TransactionCase):
         # qu'un lien vers un mauvais correspondant (wa.me/699000000).
         with patch.object(phone_validation, 'phone_format', _phone_format_without_lib), \
                 self.assertRaises(ValidationError):
-            self.website.aite_whatsapp_number = '699 00 00 00'
+            self.website.write({'aite_whatsapp_enabled': True,
+                                'aite_whatsapp_number': '699 00 00 00'})
+
+    def test_pasted_number_with_invisible_marks(self):
+        # Copié depuis WhatsApp ou les contacts : marques de sens d'écriture
+        # invisibles autour du numéro, « ＋ » pleine chasse.
+        with patch.object(phone_validation, 'phone_format', _phone_format_without_lib):
+            for number in ('\u202a+237 699 00 00 00\u202c', '\u200e+237 699 00 00 00',
+                           '＋237 699 00 00 00'):
+                with self.subTest(number=repr(number)):
+                    self.assertEqual(self._link(number), WA_LINK)
 
     def test_international_number_without_company_country(self):
         self.website.company_id.country_id = False
@@ -110,7 +120,21 @@ class TestWhatsappLink(TransactionCase):
     def test_unrecognised_too_short_or_too_long_number_rejected(self):
         for number in ('12345', '+12345', '+1 234 567 890 123 456'):
             with self.subTest(number=number), self.assertRaises(ValidationError):
-                self.website.aite_whatsapp_number = number
+                self.website.write({'aite_whatsapp_enabled': True,
+                                    'aite_whatsapp_number': number})
+
+    def test_button_can_always_be_switched_off(self):
+        # Bouton actif avec un numéro devenu non reconnu (reprise d'une
+        # ancienne version, bibliothèque retirée…) : le désactiver doit
+        # rester possible.
+        self.env.cr.execute(
+            "UPDATE website SET aite_whatsapp_enabled = TRUE,"
+            " aite_whatsapp_number = '699 00 00 00' WHERE id = %s",
+            [self.website.id])
+        self.website.invalidate_recordset()
+        with patch.object(phone_validation, 'phone_format', _phone_format_without_lib):
+            self.website.aite_whatsapp_enabled = False
+        self.assertFalse(self.website.aite_whatsapp_enabled)
 
     def test_disabled_without_number_is_allowed(self):
         self.website.write({'aite_whatsapp_enabled': False,

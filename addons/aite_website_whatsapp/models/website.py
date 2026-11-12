@@ -96,7 +96,11 @@ class Website(models.Model):
         except UserError:
             pass
         digits = re.sub(r'[^0-9]', '', number)
-        if re.match(r'[\s(]*\+', number):
+        # Premier signe significatif : « + » (ou « ＋ » pleine chasse),
+        # quels que soient les espaces, parenthèses ou marques invisibles
+        # de sens d'écriture qu'ajoute souvent un copier-coller.
+        first = re.search(r'[0-9+＋]', number)
+        if first and first.group() in '+＋':
             return digits
         if digits.startswith('00'):
             return digits[2:]
@@ -113,6 +117,11 @@ class Website(models.Model):
                         "pour afficher le bouton.",
                         website=website.name,
                     ))
+                continue
+            if not website.aite_whatsapp_enabled:
+                # Bouton éteint : on peut toujours le désactiver, même si le
+                # numéro enregistré n'est plus reconnu (pays de la société
+                # changé, bibliothèque phonenumbers retirée…).
                 continue
             digits = website._aite_whatsapp_digits()
             if not WHATSAPP_MIN_DIGITS <= len(digits) <= WHATSAPP_MAX_DIGITS:

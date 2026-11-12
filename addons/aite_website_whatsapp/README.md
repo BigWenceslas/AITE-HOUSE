@@ -19,10 +19,11 @@ avec votre message d'accueil déjà saisi.
 - Le lien est un simple lien `https://wa.me/…`, sans script : il marche
   dès l'affichage de la page, sur tous les navigateurs.
 - Connecté ou non, vous le voyez comme vos visiteurs. Il s'efface pendant
-  l'édition d'une page, à l'impression, et — comme la bulle du chat en
-  direct d'Odoo — tant qu'une fenêtre ou la bannière des cookies est
-  ouverte, ou quand, tout en bas de page, il couvrirait un lien du pied de
-  page.
+  l'édition d'une page, tant qu'une fenêtre modale est ouverte, et à
+  l'impression. La bannière des cookies, les popups et le menu mobile
+  passent au-dessus de lui. Il s'adapte aux mises en page du thème
+  (pleine largeur, encadrée, carte postale) et à l'en-tête en barre
+  latérale.
 
 ## Installation sur le VPS
 
@@ -49,6 +50,11 @@ service (ligne `User=`).
 - **La ligne `addons_path` s'affiche** et contient un dossier pour vos
   propres modules (ni celui d'Odoo ni celui d'Enterprise, par exemple
   `/opt/odoo/custom-addons`) : c'est là que va le module.
+- **La ligne s'affiche mais ne contient que le dossier d'Odoo** (par
+  exemple `/usr/lib/python3/dist-packages/odoo/addons`) : faire l'étape 2
+  avec `/opt/odoo/custom-addons`, puis ajouter
+  `,/opt/odoo/custom-addons` **à la fin de cette même ligne**
+  (`sudo nano /etc/odoo/odoo.conf`).
 - **Rien ne s'affiche** — cas normal d'une installation `.deb` : il faut
   créer ce dossier. Faire l'étape 2 avec `/opt/odoo/custom-addons`, puis
   ajouter dans `/etc/odoo/odoo.conf`, sous `[options]`
@@ -60,6 +66,9 @@ service (ligne `User=`).
 
   Le premier chemin est celui des modules d'Odoo (et d'Enterprise) dans le
   paquet `.deb` ; il doit rester en tête.
+
+Le fichier ne doit contenir qu'**une seule** ligne `addons_path` active :
+une deuxième empêcherait le service de démarrer.
 
 **2. Déposer le module**
 
@@ -100,9 +109,10 @@ Apps**, retirer le filtre « Apps » de la recherche, chercher « WhatsApp »
 
 **Facultatif — numéros saisis au format local.** Pour que `699 00 00 00`
 soit complété automatiquement en `+237 699 00 00 00`, Odoo s'appuie sur
-la bibliothèque Python `phonenumbers`. Sans elle, le module fonctionne
-aussi, mais un numéro local est refusé : il faut le saisir avec
-l'indicatif. Pour l'installer : `sudo apt install python3-phonenumbers`
+la bibliothèque Python `phonenumbers` et sur le **pays de la société** du
+site (Paramètres → Sociétés → Pays). Sans l'une ou l'autre, le module
+fonctionne aussi, mais un numéro local est refusé : il faut le saisir
+avec l'indicatif. Pour l'installer : `sudo apt install python3-phonenumbers`
 (installation `.deb`), ou `pip install phonenumbers` dans l'environnement
 Python d'Odoo (installation depuis les sources), puis redémarrer le
 service.
@@ -138,24 +148,34 @@ l'écran Paramètres).
   non renseignée affiche le texte anglais (tant qu'aucune version anglaise
   n'a été saisie : le premier texte enregistré). Vider le message ou
   l'accroche l'efface dans toutes les langues.
-- **Numéro refusé** (« n'est pas reconnu ») : numéro local sans la
-  bibliothèque `phonenumbers`, ou numéro de moins de 7 ou de plus de 15
-  chiffres, indicatif compris. Le saisir au format `+237 …`.
+- **Numéro refusé** (« n'est pas reconnu ») : numéro local alors que la
+  bibliothèque `phonenumbers` est absente, que la société du site n'a pas
+  de pays ou que le numéro n'est pas valide pour ce pays ; ou numéro de
+  moins de 7 ou de plus de 15 chiffres, indicatif compris. Le saisir au
+  format `+237 …`.
 
 ## Mise à jour d'une installation existante
 
 Faire d'abord une **sauvegarde** de la base : gestionnaire des bases
 (`https://votre-site/web/database/manager` → *Backup*), ou
 `sudo -u odoo pg_dump -Fc NOM_DE_LA_BASE -f /tmp/sauvegarde.dump`. La
-mise à jour se fait **service arrêté** : un
-redémarrage sur le nouveau code avant la mise à niveau du module
-provoquerait des erreurs sur tout le site.
+mise à jour se fait **service arrêté** : un redémarrage sur le nouveau
+code avant la mise à niveau du module provoquerait des erreurs sur tout
+le site.
 
 ```bash
 sudo systemctl stop odoo
 ```
 
-Remplacer le dossier du module (étape 2 de l'installation), puis :
+Retirer l'ancien dossier (pour ne garder aucun fichier de l'ancienne
+version) :
+
+```bash
+sudo rm -rf /opt/odoo/custom-addons/aite_website_whatsapp
+```
+
+Déposer le nouveau, comme à l'étape 2 de l'installation (`scp`, `unzip`,
+`chown`), puis mettre le module à niveau :
 
 ```bash
 sudo -u odoo odoo -c /etc/odoo/odoo.conf -d NOM_DE_LA_BASE -u aite_website_whatsapp --stop-after-init
@@ -167,7 +187,10 @@ sudo systemctl start odoo
 
 (`odoo` est la commande des installations `.deb` ; depuis les sources :
 `python3 odoo-bin` dans le dossier d'Odoo.) Les réglages déjà saisis dans
-la version 19.0.1 sont repris.
+la version 19.0.1 sont repris ; un numéro qu'elle acceptait sans « + »
+(`237 6 99 …`) le reçoit. Si un numéro n'est plus reconnu, le journal de
+la mise à jour le signale (« n'est pas reconnu ; le bouton reste
+masqué ») : le ressaisir au format `+237 …` dans les Paramètres.
 
 Si le service a déjà été redémarré sur le nouveau code et que le site
 affiche « column … does not exist », le remède est le même : arrêter le
@@ -176,14 +199,15 @@ service, lancer la commande `-u` ci-dessus, redémarrer.
 **Cas particulier — version 19.0.1 installée par « Apps → Importer un
 module ».** Ne **pas** déposer le nouveau dossier tant qu'elle est
 installée : Odoo chargerait le nouveau code sans pouvoir mettre le module
-à niveau, et le site afficherait des erreurs. Ordre à suivre : Apps →
-« Bouton WhatsApp » → ⋮ → **Désinstaller**, puis l'installation complète
+à niveau, et le site afficherait des erreurs. Ordre à suivre : Apps → retirer le filtre
+« Apps » de la recherche → chercher « Bouton WhatsApp » → ⋮ →
+**Désinstaller**, puis l'installation complète
 ci-dessus, puis ressaisir les réglages. Si le dossier a déjà été déposé :
 le retirer, redémarrer, désinstaller, puis le déposer à nouveau.
 
 ## Tests automatisés
 
-22 tests : lien, numéro, contrôles, écran Paramètres, affichage page par
+24 tests : lien, numéro, contrôles, écran Paramètres, affichage page par
 page. Ils créent une base de test, avec l'identifiant `admin` / mot de
 passe `admin`.
 
@@ -206,7 +230,7 @@ sudo -u odoo odoo -c /etc/odoo/odoo.conf -d aite_wa_test -i aite_website_whatsap
 production (processus multiples, filtre de base, port déjà occupé par le
 service), qui feraient échouer les tests d'affichage. Résultat attendu en
 fin de journal (ou dans le fichier `logfile` de la configuration) :
-`0 failed, 0 error(s) of 22 tests`. Sans `phonenumbers`, un de ces tests
+`0 failed, 0 error(s) of 24 tests`. Sans `phonenumbers`, un de ces tests
 est ignoré (numéro local). Si la ligne annonce **0 tests**, la base
 existait déjà avec le module : relancer avec une nouvelle base.
 
@@ -222,7 +246,8 @@ sudo rm -rf /var/lib/odoo/.local/share/Odoo/filestore/aite_wa_test
 
 ## Désinstallation
 
-Apps → « Bouton WhatsApp » → ⋮ → **Désinstaller**. Le bouton disparaît
+Apps → retirer le filtre « Apps » de la recherche → chercher « Bouton
+WhatsApp » → ⋮ → **Désinstaller**. Le bouton disparaît
 et les réglages sont supprimés.
 
 ## Contenu technique
@@ -240,7 +265,7 @@ et les réglages sont supprimés.
 Reconstruire le zip, depuis la racine du dépôt :
 
 ```bash
-cd addons && zip -r ../dist/aite_website_whatsapp.zip aite_website_whatsapp -x '*/__pycache__/*'
+cd addons && rm -f ../dist/aite_website_whatsapp.zip && zip -r ../dist/aite_website_whatsapp.zip aite_website_whatsapp -x '*/__pycache__/*'
 ```
 
 ---
