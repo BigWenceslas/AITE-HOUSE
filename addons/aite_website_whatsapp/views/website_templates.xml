@@ -2,33 +2,31 @@
 <odoo>
 
     <!-- Bouton flottant, ajouté à la mise en page commune du site
-         (website.layout) : il figure donc sur toutes les pages publiques —
-         pages créées dans l'éditeur, boutique, blog, espace client,
-         connexion — y compris celles qui seront créées plus tard.
+         (website.layout) : il figure donc sur toutes les pages — pages
+         créées dans l'éditeur, boutique, blog, espace client, connexion,
+         page 404 — y compris celles qui seront créées plus tard.
 
          Simple lien HTML, sans JavaScript : il fonctionne dès le
-         chargement de la page. Masqué dans l'éditeur et en mode
-         traduction, pour ne pas gêner la mise en page. -->
+         chargement de la page. Il reste visible pour les utilisateurs
+         connectés (administrateurs compris) ; seule l'édition de la page
+         le masque, côté feuille de style (body.editor_enable), car Odoo
+         ne la signale pas au rendu serveur : la variable « editable » y
+         vaut vrai pour tout concepteur du site, qu'il édite ou non. -->
     <template id="whatsapp_button" name="AITE — Bouton WhatsApp" inherit_id="website.layout">
         <xpath expr="//div[@id='wrapwrap']" position="after">
-            <t t-if="website and website.x_aite_wa_active and website.x_aite_wa_link and not editable and not translatable">
-                <t t-set="aite_wa_message" t-value="website.x_aite_wa_message"/>
-                <t t-set="aite_wa_label" t-value="website.x_aite_wa_label"/>
-                <!-- quote_plus encode les espaces en « + » : on les rend en
-                     « %20 », la forme que wa.me attend. Les « + » saisis
-                     par l'utilisateur, eux, sont déjà encodés en « %2B ». -->
-                <a t-att-href="website.x_aite_wa_link + ('?text=' + quote_plus(aite_wa_message).replace('+', '%20') if aite_wa_message else '')"
-                   t-attf-class="o_aite_wa_button #{'o_aite_wa_button_left' if website.x_aite_wa_left else 'o_aite_wa_button_right'}"
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   title="Discuter avec nous sur WhatsApp"
-                   aria-label="Discuter avec nous sur WhatsApp">
-                    <span t-if="aite_wa_label" class="o_aite_wa_label" t-out="aite_wa_label"/>
-                    <span class="o_aite_wa_icon" aria-hidden="true">
-                        <i class="fa fa-whatsapp"/>
-                    </span>
-                </a>
-            </t>
+            <t t-set="aite_wa_url" t-value="website and website.aite_whatsapp_enabled and website.aite_whatsapp_url"/>
+            <a t-if="aite_wa_url"
+               t-att-href="aite_wa_url"
+               t-attf-class="o_aite_wa_button o_aite_wa_button_#{website.aite_whatsapp_position or 'right'}"
+               target="_blank"
+               rel="noopener noreferrer"
+               title="Discuter avec nous sur WhatsApp"
+               aria-label="Discuter avec nous sur WhatsApp">
+                <span t-if="website.aite_whatsapp_label" class="o_aite_wa_label" t-out="website.aite_whatsapp_label"/>
+                <span class="o_aite_wa_icon" aria-hidden="true">
+                    <i class="fa fa-whatsapp"/>
+                </span>
+            </a>
         </xpath>
     </template>
 

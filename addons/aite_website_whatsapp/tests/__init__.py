@@ -1,0 +1,3 @@
+# -*- coding: utf-8 -*-
+from . import test_whatsapp_link
+from . import test_whatsapp_button

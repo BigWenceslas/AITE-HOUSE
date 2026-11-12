@@ -37,8 +37,8 @@ AITE_HOUSE/
 
 > `addons/aite_website_whatsapp` ne fait **pas** partie de la suite : c'est
 > un module indépendant pour **Odoo 19** (bouton WhatsApp sur toutes les
-> pages du site web), à installer séparément. Son zip prêt à importer sur
-> Odoo Online est dans `dist/` — voir son
+> pages du site web), à installer séparément. Son zip, à déposer dans
+> l'`addons_path` du serveur, est dans `dist/` — voir son
 > [README](addons/aite_website_whatsapp/README.md).
 
 ## 3. Prérequis

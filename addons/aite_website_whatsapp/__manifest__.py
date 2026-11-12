@@ -8,32 +8,27 @@ AITE — Bouton WhatsApp
 ======================
 
 Affiche sur **toutes les pages du site web** (accueil, pages, boutique,
-blog, espace client, connexion…) un bouton flottant aux couleurs de
-WhatsApp. Un clic ouvre une discussion avec votre numéro, dans
+blog, espace client, connexion, page 404…) un bouton flottant aux couleurs
+de WhatsApp. Un clic ouvre une discussion avec votre numéro, dans
 l'application sur mobile et dans WhatsApp Web sur ordinateur, avec le
 message d'accueil de votre choix déjà saisi.
 
 Réglages : Site web → Configuration → Paramètres → bloc « WhatsApp » :
 
 * activation du bouton, par site web (multi-sites) ;
-* numéro au format international, saisi librement (+237 6 73 37 33 67) ;
+* numéro saisi librement : format international (+237 6 99 00 00 00) ou
+  local (699 00 00 00), complété par l'indicatif du pays de la société ;
 * message pré-rempli et texte d'accroche, traduisibles ;
-* position du bouton : à droite (par défaut) ou à gauche ;
+* position du bouton : en bas à droite ou en bas à gauche ;
 * lien de test, pour vérifier le numéro en un clic.
-
-Module de données, sans code Python : il s'installe aussi bien sur
-Odoo Online (Applications → Importer un module) que sur Odoo.sh ou sur
-un serveur hébergé.
 """,
     'author': "AITE CONSULTING",
     'website': "https://aite-consulting.com",
     'category': 'Website/Website',
-    'version': '19.0.1.0.0',
+    'version': '19.0.2.0.0',
     'license': 'LGPL-3',
-    'depends': ['website'],
+    'depends': ['website', 'phone_validation'],
     'data': [
-        'data/website_fields.xml',
-        'data/res_config_settings_fields.xml',
         'views/res_config_settings_views.xml',
         'views/website_templates.xml',
     ],

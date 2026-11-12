@@ -124,6 +124,12 @@ $o-aite-wa-offset: 1.25rem;
     }
 }
 
+// Masqué pendant l'édition de la page (Odoo pose « editor_enable » sur le
+// body de la page en cours d'édition) et à l'impression.
+body.editor_enable .o_aite_wa_button {
+    display: none !important;
+}
+
 @media print {
     .o_aite_wa_button {
         display: none !important;
