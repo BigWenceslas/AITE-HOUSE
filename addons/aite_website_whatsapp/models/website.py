@@ -22,9 +22,10 @@ class Website(models.Model):
     )
     aite_whatsapp_number = fields.Char(
         string="Numéro WhatsApp",
-        help="Numéro au format international (+237 6 99 00 00 00) ou local "
-             "(699 00 00 00) : un numéro local est complété par l'indicatif "
-             "du pays de la société du site.",
+        help="Numéro au format international (+237 6 99 00 00 00). Un "
+             "numéro local (699 00 00 00) est complété par l'indicatif du "
+             "pays de la société du site quand la bibliothèque phonenumbers "
+             "est installée sur le serveur.",
     )
     aite_whatsapp_message = fields.Char(
         string="Message pré-rempli",
@@ -75,10 +76,11 @@ class Website(models.Model):
 
         Un numéro local est complété par l'indicatif du pays de la société
         du site, via la bibliothèque ``phonenumbers`` quand elle est
-        installée. Faute de pouvoir l'analyser, on garde les chiffres
-        saisis : la saisie n'est jamais bloquée par des métadonnées
-        téléphoniques périmées, et la contrainte de longueur reste le
-        garde-fou.
+        installée. Faute de pouvoir l'analyser (bibliothèque absente,
+        métadonnées périmées, société sans pays), seul un numéro saisi au
+        format international (« +… » ou « 00… ») est retenu tel quel : un
+        numéro local renvoie une chaîne vide, que la contrainte refuse,
+        plutôt qu'un lien vers un mauvais correspondant.
         """
         self.ensure_one()
         number = (self.aite_whatsapp_number or '').strip()
@@ -86,6 +88,7 @@ class Website(models.Model):
             return ''
         country = self.company_id.sudo().country_id
         try:
+            # Sans phonenumbers, phone_format renvoie la saisie inchangée.
             number = phone_validation.phone_format(
                 number, country.code or None, country.phone_code or None,
                 force_format='E164',
@@ -93,24 +96,29 @@ class Website(models.Model):
         except UserError:
             pass
         digits = re.sub(r'[^0-9]', '', number)
-        if not number.startswith('+') and digits.startswith('00'):
-            digits = digits[2:]
-        return digits
+        if re.match(r'[\s(]*\+', number):
+            return digits
+        if digits.startswith('00'):
+            return digits[2:]
+        return ''
 
     @api.constrains('aite_whatsapp_enabled', 'aite_whatsapp_number')
     def _check_aite_whatsapp_number(self):
         for website in self:
+            number = (website.aite_whatsapp_number or '').strip()
+            if not number:
+                if website.aite_whatsapp_enabled:
+                    raise ValidationError(self.env._(
+                        "Renseignez le numéro WhatsApp du site « %(website)s » "
+                        "pour afficher le bouton.",
+                        website=website.name,
+                    ))
+                continue
             digits = website._aite_whatsapp_digits()
-            if website.aite_whatsapp_enabled and not digits:
+            if not WHATSAPP_MIN_DIGITS <= len(digits) <= WHATSAPP_MAX_DIGITS:
                 raise ValidationError(self.env._(
-                    "Renseignez le numéro WhatsApp du site « %(website)s » "
-                    "pour afficher le bouton.",
-                    website=website.name,
-                ))
-            if digits and not WHATSAPP_MIN_DIGITS <= len(digits) <= WHATSAPP_MAX_DIGITS:
-                raise ValidationError(self.env._(
-                    "Le numéro WhatsApp « %(number)s » n'est pas valide : "
-                    "saisissez-le avec l'indicatif du pays, par exemple "
-                    "+237 6 99 00 00 00.",
+                    "Le numéro WhatsApp « %(number)s » n'est pas reconnu : "
+                    "saisissez-le au format international, avec l'indicatif "
+                    "du pays, par exemple +237 6 99 00 00 00.",
                     number=website.aite_whatsapp_number,
                 ))

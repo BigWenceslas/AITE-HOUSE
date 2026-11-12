@@ -1,20 +1,23 @@
 // AITE — Bouton WhatsApp flottant (toutes les pages du site).
 //
 // Pastille ronde aux couleurs de WhatsApp, fixée en bas de l'écran.
-// Le texte d'accroche, facultatif, s'affiche à côté sur ordinateur et
-// disparaît sur mobile pour ne pas masquer le contenu.
+// Le texte d'accroche, facultatif, s'affiche à côté sur ordinateur ; sur
+// mobile il est masqué visuellement (pour ne pas couvrir le contenu) mais
+// reste lu par les lecteurs d'écran.
 
 $o-aite-wa-green: #25D366;
 $o-aite-wa-green-dark: #1DA851;
+$o-aite-wa-focus: #075E54;
 $o-aite-wa-size: 3.5rem;
 $o-aite-wa-offset: 1.25rem;
 
 .o_aite_wa_button {
     position: fixed;
     bottom: calc(#{$o-aite-wa-offset} + env(safe-area-inset-bottom, 0px));
-    // Au-dessus de l'en-tête collant, sous les fenêtres modales et la
-    // bannière des cookies.
-    z-index: 1040;
+    // Juste sous l'en-tête du site ($zindex-fixed, 1030) : les fenêtres
+    // modales, la bannière des cookies, les popups et le menu mobile
+    // passent au-dessus du bouton.
+    z-index: 1029;
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -36,11 +39,13 @@ $o-aite-wa-offset: 1.25rem;
         text-decoration: none;
     }
 
+    // Anneau de focus clavier en deux tons (blanc puis vert foncé) : lisible
+    // sur fond clair comme sur fond sombre.
     &:focus-visible {
         outline: none;
 
         .o_aite_wa_icon {
-            box-shadow: 0 0 0 0.25rem rgba($o-aite-wa-green, 0.45), 0 0.35rem 1rem rgba(0, 0, 0, 0.25);
+            box-shadow: 0 0 0 3px #FFFFFF, 0 0 0 6px $o-aite-wa-focus, 0 0.35rem 1rem rgba(0, 0, 0, 0.25);
         }
     }
 
@@ -67,25 +72,37 @@ $o-aite-wa-offset: 1.25rem;
     transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+// Mobile : masqué visuellement, toujours lu (même technique que la classe
+// « visually-hidden » de Bootstrap).
 .o_aite_wa_label {
-    display: none;
-    max-width: 16rem;
-    padding: 0.5rem 0.9rem;
-    border-radius: 1.25rem;
-    background-color: #FFFFFF;
-    color: #1F2A30;
-    font-size: 0.9rem;
-    font-weight: 500;
-    line-height: 1.3;
-    white-space: nowrap;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
     overflow: hidden;
-    text-overflow: ellipsis;
-    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.18);
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
 @media (min-width: 768px) {
     .o_aite_wa_label {
-        display: block;
+        position: static;
+        width: auto;
+        height: auto;
+        margin: 0;
+        clip: auto;
+        max-width: 16rem;
+        padding: 0.5rem 0.9rem;
+        border-radius: 1.25rem;
+        background-color: #FFFFFF;
+        color: #1F2A30;
+        font-size: 0.9rem;
+        font-weight: 500;
+        line-height: 1.3;
+        text-overflow: ellipsis;
+        box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.18);
     }
 }
 

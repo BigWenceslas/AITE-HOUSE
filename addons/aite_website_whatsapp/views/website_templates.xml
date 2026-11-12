@@ -7,22 +7,36 @@
          page 404 — y compris celles qui seront créées plus tard.
 
          Simple lien HTML, sans JavaScript : il fonctionne dès le
-         chargement de la page. Il reste visible pour les utilisateurs
-         connectés (administrateurs compris) ; seule l'édition de la page
-         le masque, côté feuille de style (body.editor_enable), car Odoo
-         ne la signale pas au rendu serveur : la variable « editable » y
-         vaut vrai pour tout concepteur du site, qu'il édite ou non. -->
+         chargement de la page.
+
+         - Placé à la fin de #wrapwrap, avec la classe standard
+           « o_bottom_fixed_element » (celle de la bulle du chat en direct) :
+           Odoo l'efface tant qu'une fenêtre modale ou la bannière des
+           cookies est ouverte, ou quand, en bas de page, il couvrirait un
+           lien du pied de page. Les fenêtres et le menu mobile passent
+           au-dessus de lui.
+         - Visible pour les utilisateurs connectés, administrateurs compris :
+           il ne dépend pas de « editable », qu'Odoo met à vrai pour tout
+           concepteur du site, même hors édition. L'édition de la page le
+           masque côté feuille de style (body.editor_enable).
+         - Nom accessible : le texte d'accroche quand il y en a un (masqué
+           visuellement sur mobile, mais toujours lu), suivi de « WhatsApp » ;
+           « WhatsApp » seul sinon — un nom de marque, le même dans toutes
+           les langues. -->
     <template id="whatsapp_button" name="AITE — Bouton WhatsApp" inherit_id="website.layout">
-        <xpath expr="//div[@id='wrapwrap']" position="after">
+        <xpath expr="//div[@id='wrapwrap']" position="inside">
             <t t-set="aite_wa_url" t-value="website and website.aite_whatsapp_enabled and website.aite_whatsapp_url"/>
             <a t-if="aite_wa_url"
                t-att-href="aite_wa_url"
-               t-attf-class="o_aite_wa_button o_aite_wa_button_#{website.aite_whatsapp_position or 'right'}"
+               t-attf-class="o_aite_wa_button o_bottom_fixed_element o_aite_wa_button_#{website.aite_whatsapp_position or 'right'}"
                target="_blank"
                rel="noopener noreferrer"
-               title="Discuter avec nous sur WhatsApp"
-               aria-label="Discuter avec nous sur WhatsApp">
-                <span t-if="website.aite_whatsapp_label" class="o_aite_wa_label" t-out="website.aite_whatsapp_label"/>
+               title="WhatsApp">
+                <span t-if="website.aite_whatsapp_label" class="o_aite_wa_label">
+                    <t t-out="website.aite_whatsapp_label"/>
+                    <span class="visually-hidden">(WhatsApp)</span>
+                </span>
+                <span t-else="" class="visually-hidden">WhatsApp</span>
                 <span class="o_aite_wa_icon" aria-hidden="true">
                     <i class="fa fa-whatsapp"/>
                 </span>

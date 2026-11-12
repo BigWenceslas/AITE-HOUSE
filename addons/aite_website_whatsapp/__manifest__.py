@@ -16,8 +16,9 @@ message d'accueil de votre choix déjà saisi.
 Réglages : Site web → Configuration → Paramètres → bloc « WhatsApp » :
 
 * activation du bouton, par site web (multi-sites) ;
-* numéro saisi librement : format international (+237 6 99 00 00 00) ou
-  local (699 00 00 00), complété par l'indicatif du pays de la société ;
+* numéro au format international (+237 6 99 00 00 00) ; un numéro local
+  (699 00 00 00) est complété par l'indicatif du pays de la société quand
+  la bibliothèque phonenumbers est installée ;
 * message pré-rempli et texte d'accroche, traduisibles ;
 * position du bouton : en bas à droite ou en bas à gauche ;
 * lien de test, pour vérifier le numéro en un clic.

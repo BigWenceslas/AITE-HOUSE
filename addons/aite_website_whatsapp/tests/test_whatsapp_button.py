@@ -2,6 +2,7 @@
 from odoo.tests import HttpCase, new_test_user, tagged
 
 WA_HREF = 'href="https://wa.me/237699000000?text=Bonjour%2C%20une%20question"'
+WA_CLASS = 'o_aite_wa_button o_bottom_fixed_element o_aite_wa_button_'
 
 
 @tagged('post_install', '-at_install', 'aite_whatsapp')
@@ -30,9 +31,19 @@ class TestWhatsappButton(HttpCase):
         for url in ('/', '/contactus', '/web/login', '/aite-page-introuvable'):
             with self.subTest(url=url):
                 html = self._get(url)
-                self.assertIn('o_aite_wa_button o_aite_wa_button_right', html)
+                self.assertIn(WA_CLASS + 'right', html)
                 self.assertIn(WA_HREF, html)
                 self.assertIn('Écrivez-nous', html)
+
+    def test_button_inside_wrapwrap(self):
+        # Dans #wrapwrap : les fenêtres modales et le menu mobile, qui y
+        # sont aussi, passent au-dessus du bouton.
+        self.website.write(self.website_values)
+        html = self._get('/')
+        wrapwrap = html.index('id="wrapwrap"')
+        button = html.index(WA_HREF)
+        self.assertLess(wrapwrap, button)
+        self.assertLess(html.index('<footer'), button)
 
     def test_button_in_customer_portal(self):
         self.website.write(self.website_values)
@@ -56,8 +67,10 @@ class TestWhatsappButton(HttpCase):
                                 aite_whatsapp_position='left',
                                 aite_whatsapp_label=False))
         html = self._get('/')
-        self.assertIn('o_aite_wa_button o_aite_wa_button_left', html)
+        self.assertIn(WA_CLASS + 'left', html)
         self.assertNotIn('o_aite_wa_label', html)
+        # Sans accroche, le lien garde un nom pour les lecteurs d'écran.
+        self.assertIn('<span class="visually-hidden">WhatsApp</span>', html)
 
     def test_saved_settings_show_without_waiting_for_page_cache(self):
         # Les pages servies aux visiteurs anonymes sont mises en cache : un
