@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Récapitulatif du matin : une fois par jour, à 6 h UTC (7 h à Douala).
+         L'heure et l'activation se règlent dans CRM → Configuration →
+         Paramètres ; noupdate pour qu'une mise à jour du module ne les
+         écrase pas. -->
+    <data noupdate="1">
+        <record id="ir_cron_crm_activity_digest" model="ir.cron">
+            <field name="name">CRM : récapitulatif quotidien des activités</field>
+            <field name="model_id" ref="model_aite_crm_activity_digest"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_send_daily_digest()</field>
+            <field name="active" eval="True"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="nextcall" eval="(DateTime.now().replace(hour=6, minute=0, second=0) + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        </record>
+    </data>
+
+</odoo>

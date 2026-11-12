@@ -1,0 +1,53 @@
+// CRM → Suivi des activités
+
+.o_aite_cad {
+    background-color: $o-webclient-background-color;
+
+    .o_aite_cad_kpi {
+        cursor: pointer;
+        transition: box-shadow 0.15s ease, transform 0.15s ease;
+
+        &:hover,
+        &:focus-visible {
+            transform: translateY(-1px);
+            box-shadow: $box-shadow !important;
+        }
+
+        &.o_aite_cad_kpi_active {
+            outline: 2px solid $o-action;
+            outline-offset: -2px;
+        }
+    }
+
+    .o_aite_cad_kpi_value {
+        font-size: 1.9rem;
+        font-weight: 700;
+        line-height: 1.1;
+    }
+
+    .o_aite_cad_dot {
+        display: inline-block;
+        width: 0.6rem;
+        height: 0.6rem;
+        margin-right: 0.35rem;
+        border-radius: 50%;
+        background-color: $gray-400;
+
+        &.o_aite_cad_dot_overdue { background-color: $danger; }
+        &.o_aite_cad_dot_today { background-color: $warning; }
+        &.o_aite_cad_dot_planned { background-color: $info; }
+        &.o_aite_cad_dot_done { background-color: $success; }
+    }
+
+    .o_aite_cad_state_overdue td:first-child {
+        color: $danger;
+    }
+
+    .o_aite_cad_summary {
+        max-width: 22rem;
+    }
+
+    .o_aite_cad_by_user tbody tr {
+        cursor: pointer;
+    }
+}

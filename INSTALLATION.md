@@ -35,12 +35,17 @@ AITE_HOUSE/
 | aite_hotel_gantt | 18.0.1.0.0 | **Enterprise uniquement** : planning Gantt des chambres (auto-installé) |
 | aite_demo_data | 18.0.1.2.1 | Jeu de démonstration (établissement complet pré-chargé) |
 
-> `addons/aite_website_whatsapp` ne fait **pas** partie de la suite : c'est
-> un module indépendant pour **Odoo 19** (bouton WhatsApp sur toutes les
-> pages du site web), à installer séparément. Son zip est dans `dist/` :
-> le **décompresser** (pas le copier tel quel) dans le dossier des modules
-> personnalisés déclaré dans `addons_path` — voir son
-> [README](addons/aite_website_whatsapp/README.md).
+> Deux modules ne font **pas** partie de la suite : ce sont des modules
+> indépendants pour **Odoo 19**, à installer séparément.
+>
+> - `addons/aite_website_whatsapp` — bouton WhatsApp sur toutes les pages
+>   du site web ([README](addons/aite_website_whatsapp/README.md)) ;
+> - `addons/aite_crm_activity` — suivi des activités CRM : tableau de bord
+>   et récapitulatif du matin ([README](addons/aite_crm_activity/README.md)).
+>
+> Leurs zips sont dans `dist/` : les **décompresser** (pas les copier tels
+> quels) dans le dossier des modules personnalisés déclaré dans
+> `addons_path`.
 
 ## 3. Prérequis
 

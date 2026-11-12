@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- CRM → Configuration → Paramètres : bloc « Suivi des activités ». -->
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.aite.crm.activity</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="crm.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='crm']" position="inside">
+                <block title="Suivi des activités" id="aite_crm_activity_settings">
+                    <setting id="aite_crm_digest_setting"
+                             string="Récapitulatif du matin"
+                             help="Chaque matin, chaque utilisateur reçoit par e-mail la liste de ses activités en cours sur les opportunités : en retard, du jour et à venir.">
+                        <field name="aite_crm_digest_active"/>
+                        <div class="content-group" invisible="not aite_crm_digest_active">
+                            <div class="row mt16">
+                                <label for="aite_crm_digest_hour" string="Heure d'envoi" class="col-lg-5 o_light_label"/>
+                                <field name="aite_crm_digest_hour" widget="float_time" class="w-auto"/>
+                            </div>
+                            <div class="row">
+                                <label for="aite_crm_digest_upcoming_days" string="Activités à venir (jours)" class="col-lg-5 o_light_label"/>
+                                <field name="aite_crm_digest_upcoming_days" class="w-auto"/>
+                            </div>
+                            <div class="mt8 text-muted small">
+                                Heure de votre fuseau horaire. 0 jour : seulement les activités en retard et du jour.
+                                Chaque utilisateur peut se désabonner dans ses préférences.
+                            </div>
+                            <div class="mt8">
+                                <button name="action_aite_send_my_digest" type="object"
+                                        string="M'envoyer mon récapitulatif maintenant"
+                                        icon="fa-envelope-o" class="btn-link"/>
+                            </div>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

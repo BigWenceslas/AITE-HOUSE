@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="aite_crm_activity.Dashboard">
+        <div class="o_action o_aite_cad h-100 overflow-auto">
+            <div class="container-fluid py-3 px-4">
+
+                <!-- En-tête et filtres -->
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                    <h2 class="me-auto mb-0">Suivi des activités</h2>
+                    <t t-if="data">
+                        <select class="form-select form-select-sm w-auto o_aite_cad_filter_user"
+                                aria-label="Commercial"
+                                t-on-change="(ev) => this.onFilterChange('user_id', ev)">
+                            <option value="" t-att-selected="!state.filters.user_id">Tous les commerciaux</option>
+                            <t t-foreach="data.options.users" t-as="u" t-key="u.id">
+                                <option t-att-value="u.id" t-att-selected="state.filters.user_id === u.id" t-esc="u.name"/>
+                            </t>
+                        </select>
+                        <select class="form-select form-select-sm w-auto o_aite_cad_filter_team"
+                                aria-label="Équipe commerciale"
+                                t-on-change="(ev) => this.onFilterChange('team_id', ev)">
+                            <option value="" t-att-selected="!state.filters.team_id">Toutes les équipes</option>
+                            <t t-foreach="data.options.teams" t-as="t" t-key="t.id">
+                                <option t-att-value="t.id" t-att-selected="state.filters.team_id === t.id" t-esc="t.name"/>
+                            </t>
+                        </select>
+                        <select class="form-select form-select-sm w-auto o_aite_cad_filter_type"
+                                aria-label="Type d'activité"
+                                t-on-change="(ev) => this.onFilterChange('activity_type_id', ev)">
+                            <option value="" t-att-selected="!state.filters.activity_type_id">Tous les types</option>
+                            <t t-foreach="data.options.activity_types" t-as="at" t-key="at.id">
+                                <option t-att-value="at.id" t-att-selected="state.filters.activity_type_id === at.id" t-esc="at.name"/>
+                            </t>
+                        </select>
+                        <button class="btn btn-sm btn-light" title="Actualiser" aria-label="Actualiser"
+                                t-on-click="() => this.load()">
+                            <i t-attf-class="fa fa-refresh #{state.loading ? 'fa-spin' : ''}"/>
+                        </button>
+                    </t>
+                </div>
+
+                <t t-if="data">
+                    <!-- Indicateurs -->
+                    <div class="row g-3 mb-3">
+                        <t t-foreach="kpiCards" t-as="card" t-key="card.key">
+                            <div class="col-6 col-md-4 col-xl">
+                                <button type="button"
+                                        t-attf-class="o_aite_cad_kpi o_aite_cad_kpi_#{card.key} card w-100 h-100 text-start border-0 shadow-sm #{state.filters.bucket === card.key ? 'o_aite_cad_kpi_active' : ''}"
+                                        t-on-click="() => this.onKpiClick(card)">
+                                    <div class="card-body py-3">
+                                        <div t-attf-class="d-flex align-items-center gap-2 text-#{card.tone}">
+                                            <i t-attf-class="fa #{card.icon}"/>
+                                            <span class="small fw-semibold" t-esc="card.label"/>
+                                        </div>
+                                        <div class="o_aite_cad_kpi_value mt-1" t-esc="card.value"/>
+                                    </div>
+                                </button>
+                            </div>
+                        </t>
+                    </div>
+
+                    <div class="row g-3">
+                        <!-- Activités -->
+                        <div class="col-12">
+                            <div class="card shadow-sm border-0 h-100">
+                                <div class="card-header bg-transparent d-flex flex-wrap align-items-center gap-2">
+                                    <h5 class="mb-0 me-auto">Activités</h5>
+                                    <div class="btn-group btn-group-sm" role="group" aria-label="Sélection des activités">
+                                        <t t-foreach="bucketTabs" t-as="tab" t-key="tab.key">
+                                            <button type="button"
+                                                    t-attf-class="btn o_aite_cad_tab o_aite_cad_tab_#{tab.key} #{state.filters.bucket === tab.key ? 'btn-primary' : 'btn-outline-secondary'}"
+                                                    t-on-click="() => this.selectBucket(tab.key)">
+                                                <t t-esc="tab.label"/>
+                                                <span class="badge rounded-pill text-bg-light ms-1" t-esc="tab.count"/>
+                                            </button>
+                                        </t>
+                                    </div>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div t-if="!data.activities.records.length" class="text-center text-muted py-5 o_aite_cad_empty">
+                                        <i class="fa fa-check-circle fa-2x d-block mb-2 text-success"/>
+                                        Aucune activité dans cette sélection.
+                                    </div>
+                                    <div t-else="" class="table-responsive">
+                                        <table class="table table-hover align-middle mb-0 o_aite_cad_activities">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Échéance</th>
+                                                    <th>Activité</th>
+                                                    <th>Opportunité</th>
+                                                    <th class="text-end">Montant</th>
+                                                    <th>Assignée à</th>
+                                                    <th class="text-end">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="data.activities.records" t-as="act" t-key="act.id">
+                                                    <tr t-attf-class="o_aite_cad_activity o_aite_cad_state_#{act.state}" t-att-data-activity-id="act.id">
+                                                        <td class="text-nowrap">
+                                                            <span t-attf-class="o_aite_cad_dot o_aite_cad_dot_#{act.state}"/>
+                                                            <span t-esc="formatDate(act.date_deadline)"/>
+                                                            <div class="small text-muted" t-esc="deadlineLabel(act)"/>
+                                                        </td>
+                                                        <td>
+                                                            <i t-attf-class="fa #{act.icon} text-muted me-1"/>
+                                                            <strong t-esc="act.type"/>
+                                                            <div t-if="act.summary" class="small text-muted text-truncate o_aite_cad_summary" t-esc="act.summary"/>
+                                                        </td>
+                                                        <td>
+                                                            <t t-if="act.lead">
+                                                                <a href="#" class="fw-semibold o_aite_cad_lead_link"
+                                                                   t-on-click.prevent="() => this.openLead(act.lead.id)" t-esc="act.lead.name"/>
+                                                                <div class="small text-muted">
+                                                                    <t t-esc="act.lead.partner"/><t t-if="act.lead.partner and act.lead.stage"> · </t><t t-esc="act.lead.stage"/>
+                                                                </div>
+                                                            </t>
+                                                            <span t-else="" class="text-muted" t-esc="act.res_name"/>
+                                                        </td>
+                                                        <td class="text-end text-nowrap" t-esc="formatAmount(act.lead)"/>
+                                                        <td class="text-nowrap"><t t-if="act.user" t-esc="act.user"/><span t-else="" class="text-muted fst-italic">Non assignée</span></td>
+                                                        <td class="text-end text-nowrap">
+                                                            <t t-if="act.state !== 'done'">
+                                                                <button class="btn btn-sm btn-success o_aite_cad_done"
+                                                                        t-att-disabled="state.busyId === act.id"
+                                                                        title="Marquer comme fait"
+                                                                        t-on-click="() => this.markDone(act)">
+                                                                    <i class="fa fa-check"/> Fait
+                                                                </button>
+                                                                <select t-if="act.can_write"
+                                                                        class="form-select form-select-sm d-inline-block w-auto ms-1 o_aite_cad_reschedule"
+                                                                        aria-label="Reporter"
+                                                                        t-att-disabled="state.busyId === act.id"
+                                                                        t-on-change="(ev) => this.onReschedule(act, ev)">
+                                                                    <option value="">Reporter…</option>
+                                                                    <option value="tomorrow">À demain</option>
+                                                                    <option value="monday">À lundi prochain</option>
+                                                                    <option value="week">Dans une semaine</option>
+                                                                    <option value="custom">À une date…</option>
+                                                                </select>
+                                                                <select t-if="act.can_write and data.options.assignable_users.length"
+                                                                        class="form-select form-select-sm d-inline-block w-auto ms-1 o_aite_cad_reassign"
+                                                                        aria-label="Réassigner"
+                                                                        t-att-disabled="state.busyId === act.id"
+                                                                        t-on-change="(ev) => this.onReassign(act, ev)">
+                                                                    <option value="">Réassigner…</option>
+                                                                    <t t-foreach="data.options.assignable_users" t-as="u" t-key="u.id">
+                                                                        <option t-att-value="u.id" t-esc="u.name"/>
+                                                                    </t>
+                                                                </select>
+                                                            </t>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div t-if="data.activities.total > data.activities.records.length"
+                                         class="small text-muted px-3 py-2 border-top">
+                                        <t t-esc="data.activities.records.length"/> premières activités affichées sur
+                                        <t t-esc="data.activities.total"/> : affinez les filtres pour voir les autres.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Par commercial -->
+                        <div class="col-12 col-xl-5">
+                            <div class="card shadow-sm border-0 h-100">
+                                <div class="card-header bg-transparent">
+                                    <h5 class="mb-0">Par commercial</h5>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div t-if="!data.by_user.length" class="text-center text-muted py-4">Aucune donnée.</div>
+                                    <table t-else="" class="table table-sm table-hover align-middle mb-0 o_aite_cad_by_user">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Commercial</th>
+                                                <th class="text-end" title="En retard">Retard</th>
+                                                <th class="text-end" title="Aujourd'hui">Jour</th>
+                                                <th class="text-end" title="À venir">À venir</th>
+                                                <th class="text-end" title="Réalisées">Faites</th>
+                                                <th class="text-end" title="Opportunités sans activité">Sans act.</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="data.by_user" t-as="row" t-key="row.user_id or 0">
+                                                <tr role="button" t-att-class="state.filters.user_id and state.filters.user_id === row.user_id ? 'table-active' : ''"
+                                                    t-on-click="() => this.filterOnUser(row.user_id)">
+                                                    <td class="text-truncate" t-esc="row.name"/>
+                                                    <td t-attf-class="text-end #{row.overdue ? 'text-danger fw-bold' : 'text-muted'}" t-esc="row.overdue"/>
+                                                    <td t-attf-class="text-end #{row.today ? 'text-warning fw-bold' : 'text-muted'}" t-esc="row.today"/>
+                                                    <td class="text-end" t-esc="row.upcoming"/>
+                                                    <td class="text-end text-success" t-esc="row.done"/>
+                                                    <td t-attf-class="text-end #{row.stalled ? 'fw-bold' : 'text-muted'}" t-esc="row.stalled"/>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Opportunités sans activité -->
+                        <div class="col-12 col-xl-7 o_aite_cad_stalled">
+                            <div class="card shadow-sm border-0 h-100">
+                                <div class="card-header bg-transparent d-flex align-items-center">
+                                    <h5 class="mb-0 me-auto">Opportunités sans activité planifiée</h5>
+                                    <span class="badge text-bg-secondary" t-esc="data.stalled.total"/>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div t-if="!data.stalled.records.length" class="text-center text-muted py-4">
+                                        Toutes les opportunités ouvertes ont une prochaine activité.
+                                    </div>
+                                    <div t-else="" class="table-responsive">
+                                        <table class="table table-hover align-middle mb-0 o_aite_cad_stalled_table">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Opportunité</th>
+                                                    <th>Étape</th>
+                                                    <th class="text-end">Montant</th>
+                                                    <th>Commercial</th>
+                                                    <th class="text-end" title="Jours depuis le dernier changement d'étape">Inactive</th>
+                                                    <th class="text-end">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="data.stalled.records" t-as="lead" t-key="lead.id">
+                                                    <tr class="o_aite_cad_stalled_row" t-att-data-lead-id="lead.id">
+                                                        <td>
+                                                            <a href="#" class="fw-semibold" t-on-click.prevent="() => this.openLead(lead.id)" t-esc="lead.name"/>
+                                                            <div t-if="lead.partner" class="small text-muted" t-esc="lead.partner"/>
+                                                        </td>
+                                                        <td t-esc="lead.stage"/>
+                                                        <td class="text-end text-nowrap" t-esc="formatAmount(lead)"/>
+                                                        <td t-esc="lead.user"/>
+                                                        <td class="text-end text-nowrap">
+                                                            <t t-if="lead.idle_days !== false"><t t-esc="lead.idle_days"/> j</t>
+                                                        </td>
+                                                        <td class="text-end text-nowrap">
+                                                            <button class="btn btn-sm btn-primary o_aite_cad_schedule"
+                                                                    t-on-click="() => this.scheduleActivity(lead)">
+                                                                <i class="fa fa-clock-o"/> Planifier
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div t-if="data.stalled.total > data.stalled.records.length"
+                                         class="small text-muted px-3 py-2 border-top">
+                                        <t t-esc="data.stalled.records.length"/> premières opportunités affichées sur
+                                        <t t-esc="data.stalled.total"/>.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+                <div t-elif="state.loading" class="text-center text-muted py-5">
+                    <i class="fa fa-circle-o-notch fa-spin fa-2x"/>
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="aite_crm_activity.DoneDialog">
+        <Dialog title="'Marquer comme fait'" size="'md'">
+            <p class="mb-2">
+                <strong t-esc="props.activity.type"/>
+                <t t-if="props.activity.summary"> — <t t-esc="props.activity.summary"/></t>
+                <t t-if="props.activity.lead"><br/><span class="text-muted" t-esc="props.activity.lead.name"/></t>
+            </p>
+            <label class="form-label" for="aite_cad_feedback">Compte rendu (facultatif)</label>
+            <textarea id="aite_cad_feedback" class="form-control o_aite_cad_feedback" rows="4"
+                      placeholder="Ex. : client rappelé, devis à envoyer vendredi."
+                      t-model="state.feedback"/>
+            <t t-set-slot="footer">
+                <button class="btn btn-primary o_aite_cad_confirm_done" t-att-disabled="state.busy" t-on-click="confirm">
+                    Marquer comme fait
+                </button>
+                <button class="btn btn-secondary" t-on-click="props.close">Annuler</button>
+            </t>
+        </Dialog>
+    </t>
+
+    <t t-name="aite_crm_activity.DateDialog">
+        <Dialog title="'Reporter l\'activité'" size="'sm'">
+            <label class="form-label" for="aite_cad_date">Nouvelle échéance</label>
+            <input id="aite_cad_date" type="date" class="form-control o_aite_cad_date" t-model="state.date"/>
+            <t t-set-slot="footer">
+                <button class="btn btn-primary o_aite_cad_confirm_date" t-att-disabled="state.busy or !state.date" t-on-click="confirm">
+                    Reporter
+                </button>
+                <button class="btn btn-secondary" t-on-click="props.close">Annuler</button>
+            </t>
+        </Dialog>
+    </t>
+
+</templates>
