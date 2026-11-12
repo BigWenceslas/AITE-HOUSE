@@ -1115,6 +1115,69 @@
         "#Vin",
         "#Moderation"
       ]
+    },
+    {
+      "serie": "Mercredi 18 novembre — au choix",
+      "jour": "mercredi",
+      "modele": "vd-sombre",
+      "titre": "",
+      "points": [],
+      "id": "VD-MER-5",
+      "moment": "mercredi 12h",
+      "etiquette": "Bon mercredi",
+      "photo": "boubou",
+      "alcool": false,
+      "texte": "Mercredi, mola ! On a déjà fait la moitié du chemin, *viens fêter ça* ce soir à La Vérandah.",
+      "legende": "Mi-semaine : on ne lâche rien, mais on se fait plaisir aussi. Après le travail, passe nous voir, la table est prête. Tu viens avec qui ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#BonMercredi",
+        "#AfterWork"
+      ]
+    },
+    {
+      "serie": "Mercredi 18 novembre — au choix",
+      "jour": "mercredi",
+      "modele": "vd-sombre",
+      "titre": "",
+      "points": [],
+      "id": "VD-MER-6",
+      "moment": "mercredi 17h",
+      "etiquette": "Bon mercredi",
+      "photo": "ndop",
+      "alcool": false,
+      "texte": "Après le bureau, ne va pas te jeter dans les embouteillages. *Viens d’abord te poser* à La Vérandah, la famille.",
+      "legende": "Pourquoi passer deux heures dans les bouchons quand tu peux attendre qu’ils se calment, assis tranquille avec les amis ? Passe à La Vérandah après le bureau. À quelle heure on t’attend ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#AfterWork",
+        "#Embouteillages"
+      ]
+    },
+    {
+      "serie": "Mercredi 18 novembre — au choix",
+      "jour": "mercredi",
+      "modele": "vd-sombre",
+      "titre": "",
+      "points": [],
+      "id": "VD-MER-7",
+      "moment": "mercredi 19h",
+      "etiquette": "Le conseil de la cave",
+      "photo": "veste-pied",
+      "alcool": true,
+      "texte": "Mola, le vin rouge, on ne le met pas au congélateur ! Un peu frais, *pas glacé* : c’est là qu’il a du goût.",
+      "legende": "Avec la chaleur de Douala, on a envie de tout glacer. Mais un vin rouge trop froid perd son goût. Un peu frais, autour de 16 degrés, c’est parfait. Rouge ou blanc pour toi ce soir ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98\nL’abus d’alcool est dangereux pour la santé. À consommer avec modération.",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#ConseilDeLaCave",
+        "#Vin",
+        "#Moderation"
+      ]
     }
   ]
 }

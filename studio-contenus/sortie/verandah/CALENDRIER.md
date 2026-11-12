@@ -896,3 +896,54 @@ L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
 
 #LaVerandah #Douala #ConseilDeLaCave #Vin #Moderation
 ```
+
+## Mercredi 18 novembre — au choix
+
+### Mercredi 12h — Pensée (photo ronde) · undefined
+
+![VD-MER-5](VD-MER-5-vd-sombre.jpg)
+
+**Visuel :** Bon mercredi — Mercredi, mola ! On a déjà fait la moitié du chemin, viens fêter ça ce soir à La Vérandah.
+
+**Légende à publier :**
+
+```text
+Mi-semaine : on ne lâche rien, mais on se fait plaisir aussi. Après le travail, passe nous voir, la table est prête. Tu viens avec qui ?
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #Douala #Makepe #BonMercredi #AfterWork
+```
+
+### Mercredi 17h — Pensée (photo ronde) · undefined
+
+![VD-MER-6](VD-MER-6-vd-sombre.jpg)
+
+**Visuel :** Bon mercredi — Après le bureau, ne va pas te jeter dans les embouteillages. Viens d’abord te poser à La Vérandah, la famille.
+
+**Légende à publier :**
+
+```text
+Pourquoi passer deux heures dans les bouchons quand tu peux attendre qu’ils se calment, assis tranquille avec les amis ? Passe à La Vérandah après le bureau. À quelle heure on t’attend ?
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #Douala #Makepe #AfterWork #Embouteillages
+```
+
+### Mercredi 19h — Pensée (photo ronde) · undefined
+
+![VD-MER-7](VD-MER-7-vd-sombre.jpg)
+
+**Visuel :** Le conseil de la cave — Mola, le vin rouge, on ne le met pas au congélateur ! Un peu frais, pas glacé : c’est là qu’il a du goût.
+
+**Légende à publier :**
+
+```text
+Avec la chaleur de Douala, on a envie de tout glacer. Mais un vin rouge trop froid perd son goût. Un peu frais, autour de 16 degrés, c’est parfait. Rouge ou blanc pour toi ce soir ?
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
+
+#LaVerandah #Douala #ConseilDeLaCave #Vin #Moderation
+```

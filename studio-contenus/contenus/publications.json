@@ -2306,6 +2306,96 @@
         "#PME",
         "#Douala"
       ]
+    },
+    {
+      "serie": "Mercredi 18 novembre — au choix",
+      "semaine": null,
+      "jour": "mercredi",
+      "moment": "mercredi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-22",
+      "etiquette": "Conseil paie",
+      "photo": "tunique",
+      "theme": "contrôles de la paie",
+      "titre": "Paie : 4 contrôles *avant de virer* les salaires",
+      "points": [
+        "Absences, heures sup et primes arrêtées à une date fixe chaque mois.",
+        "On compare avec le mois dernier : chaque écart a son explication.",
+        "Deux personnes valident : celle qui prépare n’est pas celle qui paie.",
+        "Bulletins remis à chacun, jamais dans le groupe WhatsApp de l’équipe."
+      ],
+      "legende": "Le 28, tout le monde attend son salaire. Et là, on découvre une prime oubliée, un agent parti en août encore payé, ou une formule cassée dans le fichier Excel. Ça gâte l’ambiance, et parfois la trésorerie.\n\nQuatre contrôles suffisent : des variables arrêtées à date fixe, une comparaison avec le mois précédent, une double validation avant le virement, et des bulletins remis à chacun en privé. Un logiciel de paie comme Odoo garde l’historique et fait les comparaisons à votre place.\n\nChez vous, qui vérifie la paie avant le virement ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Paie",
+        "#RH",
+        "#Odoo",
+        "#PME",
+        "#Douala"
+      ]
+    },
+    {
+      "serie": "Mercredi 18 novembre — au choix",
+      "semaine": null,
+      "jour": "mercredi",
+      "moment": "mercredi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-23",
+      "etiquette": "Conseil ventes",
+      "photo": "blazer",
+      "theme": "devis signés plus vite",
+      "titre": "Devis : 4 règles pour qu’il *se signe plus vite*",
+      "points": [
+        "Le devis part dans les 24 heures : après, le client en a déjà vu un autre.",
+        "Une date de validité claire, et les conditions de paiement écrites.",
+        "Une relance programmée trois jours après, par téléphone ou WhatsApp.",
+        "Signature en ligne : le client valide depuis son téléphone."
+      ],
+      "legende": "Le client demande un devis lundi. On l’envoie vendredi, sans date de validité. Le temps de relancer, il a déjà signé ailleurs. Les gars, le marché n’attend pas.\n\nEnvoyez le devis dans les 24 heures, avec une date de validité et des conditions de paiement claires. Programmez une relance trois jours après, et laissez le client signer en ligne depuis son téléphone. Dans Odoo, le devis se signe en ligne et la relance se planifie en un clic.\n\nCombien de temps vous faut-il aujourd’hui pour envoyer un devis ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Ventes",
+        "#CRM",
+        "#Odoo",
+        "#PME",
+        "#Cameroun"
+      ]
+    },
+    {
+      "serie": "Mercredi 18 novembre — au choix",
+      "semaine": null,
+      "jour": "mercredi",
+      "moment": "mercredi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-24",
+      "etiquette": "Conseil stock",
+      "photo": "ndop-pied",
+      "theme": "ruptures de stock et réapprovisionnement",
+      "titre": "Ruptures de stock : 4 réglages pour *ne plus être surpris*",
+      "points": [
+        "Un stock minimum par article, calculé sur les ventes réelles.",
+        "Le délai du fournisseur renseigné : on commande avant d’être à zéro.",
+        "Une alerte automatique quand le seuil est atteint, pas un coup de fil.",
+        "Un petit inventaire chaque semaine sur les articles qui tournent le plus."
+      ],
+      "legende": "« Patron, il n’y a plus. » La phrase qu’on entend toujours au mauvais moment, quand le client est déjà au comptoir. Une vente perdue, et parfois un client perdu.\n\nFixez pour chaque article un stock minimum basé sur vos ventes réelles, renseignez le délai de livraison du fournisseur, et laissez le logiciel vous alerter, ou même préparer la commande, dès que le seuil est atteint : dans Odoo, ce sont les règles de réapprovisionnement. Et pour que les chiffres restent justes, un petit inventaire chaque semaine sur les articles qui tournent le plus.\n\nCombien de ruptures avez-vous eues ce mois-ci ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Stock",
+        "#Logistique",
+        "#Odoo",
+        "#PME",
+        "#Douala"
+      ]
     }
   ]
 }
