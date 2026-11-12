@@ -1,10 +1,13 @@
 import { registry } from "@web/core/registry";
 
 /**
- * Parcours du tableau de bord « Suivi des activités » :
- * marquer une activité comme faite (avec compte rendu), puis en reporter
- * une autre. Les données sont créées par tests/test_ui.py ; les libellés
- * se terminent par « (tour) » pour ne viser qu'elles.
+ * Parcours du tableau de bord « Suivi des activités » : marquer une
+ * activité comme faite (avec compte rendu), en reporter une autre, en
+ * réassigner une troisième, puis planifier une activité sur une
+ * opportunité qui n'en avait pas. Les données sont créées par
+ * tests/test_ui.py ; les libellés se terminent par « (tour) » pour ne viser
+ * qu'elles. Les fenêtres d'Odoo s'affichent hors du tableau de bord : on
+ * vérifie leur fermeture sur body.
  */
 registry.category("web_tour.tours").add("aite_crm_activity_dashboard_tour", {
     steps: () => [
@@ -33,8 +36,8 @@ registry.category("web_tour.tours").add("aite_crm_activity_dashboard_tour", {
             run: "click",
         },
         {
-            content: "L'activité a quitté la liste",
-            trigger: ".o_aite_cad:not(:has(.modal)):not(:has(tr.o_aite_cad_activity:contains('Rappeler le client (tour)')))",
+            content: "La fenêtre est fermée et l'activité a quitté la liste",
+            trigger: "body:not(:has(.modal)) .o_aite_cad:not(:has(tr.o_aite_cad_activity:contains('Rappeler le client (tour)')))",
         },
         {
             content: "Onglet « Aujourd'hui »",
@@ -42,16 +45,45 @@ registry.category("web_tour.tours").add("aite_crm_activity_dashboard_tour", {
             run: "click",
         },
         {
-            content: "Reporter l'activité du jour à demain",
+            content: "Ouvrir le menu « Reporter » de l'activité du jour",
             trigger: ".o_aite_cad_tab_today.btn-primary",
         },
         {
-            trigger: "tr.o_aite_cad_activity:contains('Envoyer le devis (tour)') select.o_aite_cad_reschedule",
-            run: "select tomorrow",
+            trigger: "tr.o_aite_cad_activity:contains('Envoyer le devis (tour)') .o_aite_cad_reschedule",
+            run: "click",
+        },
+        {
+            content: "Reporter à demain",
+            trigger: ".o-dropdown--menu .o_aite_cad_reschedule_tomorrow",
+            run: "click",
         },
         {
             content: "L'activité reportée n'est plus « du jour »",
             trigger: ".o_aite_cad:not(:has(tr.o_aite_cad_activity:contains('Envoyer le devis (tour)')))",
+        },
+        {
+            content: "Onglet « À venir »",
+            trigger: ".o_aite_cad_tab_upcoming",
+            run: "click",
+        },
+        {
+            content: "Réassigner une activité à venir",
+            trigger: "tr.o_aite_cad_activity:contains('Préparer la réunion (tour)') .o_aite_cad_reassign",
+            run: "click",
+        },
+        {
+            content: "Choisir la personne",
+            trigger: ".modal select.o_aite_cad_reassign_user",
+            run: "selectByLabel Collègue (tour)",
+        },
+        {
+            content: "Confirmer la réassignation",
+            trigger: ".modal .o_aite_cad_confirm_reassign:enabled",
+            run: "click",
+        },
+        {
+            content: "L'activité est assignée à la collègue",
+            trigger: "body:not(:has(.modal)) tr.o_aite_cad_activity:contains('Préparer la réunion (tour)'):contains('Collègue (tour)')",
         },
         {
             content: "Planifier une activité sur l'opportunité sans suite",
@@ -60,15 +92,18 @@ registry.category("web_tour.tours").add("aite_crm_activity_dashboard_tour", {
         },
         {
             content: "La fenêtre de planification d'Odoo s'ouvre",
-            trigger: ".modal .o_form_view",
+            trigger: ".modal .o_form_view .o_field_widget[name='summary'] input",
+            // Pas de parenthèse finale : l'outil de parcours la retirerait.
+            run: "edit Relancer le client - tour",
         },
         {
-            trigger: ".modal .btn-close",
+            content: "Enregistrer l'activité",
+            trigger: ".modal button[name='action_schedule_activities']",
             run: "click",
         },
         {
-            content: "Retour au tableau de bord",
-            trigger: ".o_aite_cad:not(:has(.modal)) .o_aite_cad_kpi",
+            content: "Retour au tableau de bord : l'opportunité a maintenant une activité",
+            trigger: "body:not(:has(.modal)) .o_aite_cad:not(:has(tr.o_aite_cad_stalled_row:contains('Opportunité à relancer (tour)'))) .o_aite_cad_kpi",
         },
     ],
 });

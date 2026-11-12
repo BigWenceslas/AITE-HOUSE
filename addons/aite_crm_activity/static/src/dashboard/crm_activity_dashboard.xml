@@ -2,8 +2,9 @@
 <templates xml:space="preserve">
 
     <t t-name="aite_crm_activity.Dashboard">
-        <div class="o_action o_aite_cad h-100 overflow-auto">
-            <div class="container-fluid py-3 px-4">
+        <div class="o_action o_aite_cad" t-ref="root">
+          <div class="o_content">
+            <div class="container-fluid py-3 px-3 px-md-4">
 
                 <!-- En-tête et filtres -->
                 <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
@@ -16,6 +17,7 @@
                             <t t-foreach="data.options.users" t-as="u" t-key="u.id">
                                 <option t-att-value="u.id" t-att-selected="state.filters.user_id === u.id" t-esc="u.name"/>
                             </t>
+                            <option t-att-value="UNASSIGNED" t-att-selected="state.filters.user_id === UNASSIGNED">Non assigné</option>
                         </select>
                         <select class="form-select form-select-sm w-auto o_aite_cad_filter_team"
                                 aria-label="Équipe commerciale"
@@ -66,7 +68,9 @@
                             <div class="card shadow-sm border-0 h-100">
                                 <div class="card-header bg-transparent d-flex flex-wrap align-items-center gap-2">
                                     <h5 class="mb-0 me-auto">Activités</h5>
-                                    <div class="btn-group btn-group-sm" role="group" aria-label="Sélection des activités">
+                                    <!-- Sur téléphone, les onglets défilent horizontalement. -->
+                                    <div class="mw-100 overflow-x-auto">
+                                    <div class="btn-group btn-group-sm text-nowrap" role="group" aria-label="Sélection des activités">
                                         <t t-foreach="bucketTabs" t-as="tab" t-key="tab.key">
                                             <button type="button"
                                                     t-attf-class="btn o_aite_cad_tab o_aite_cad_tab_#{tab.key} #{state.filters.bucket === tab.key ? 'btn-primary' : 'btn-outline-secondary'}"
@@ -75,6 +79,7 @@
                                                 <span class="badge rounded-pill text-bg-light ms-1" t-esc="tab.count"/>
                                             </button>
                                         </t>
+                                    </div>
                                     </div>
                                 </div>
                                 <div class="card-body p-0">
@@ -122,32 +127,31 @@
                                                         <td class="text-end text-nowrap">
                                                             <t t-if="act.state !== 'done'">
                                                                 <button class="btn btn-sm btn-success o_aite_cad_done"
-                                                                        t-att-disabled="state.busyId === act.id"
+                                                                        t-att-disabled="isBusy(act)"
                                                                         title="Marquer comme fait"
                                                                         t-on-click="() => this.markDone(act)">
                                                                     <i class="fa fa-check"/> Fait
                                                                 </button>
-                                                                <select t-if="act.can_write"
-                                                                        class="form-select form-select-sm d-inline-block w-auto ms-1 o_aite_cad_reschedule"
-                                                                        aria-label="Reporter"
-                                                                        t-att-disabled="state.busyId === act.id"
-                                                                        t-on-change="(ev) => this.onReschedule(act, ev)">
-                                                                    <option value="">Reporter…</option>
-                                                                    <option value="tomorrow">À demain</option>
-                                                                    <option value="monday">À lundi prochain</option>
-                                                                    <option value="week">Dans une semaine</option>
-                                                                    <option value="custom">À une date…</option>
-                                                                </select>
-                                                                <select t-if="act.can_write and data.options.assignable_users.length"
-                                                                        class="form-select form-select-sm d-inline-block w-auto ms-1 o_aite_cad_reassign"
-                                                                        aria-label="Réassigner"
-                                                                        t-att-disabled="state.busyId === act.id"
-                                                                        t-on-change="(ev) => this.onReassign(act, ev)">
-                                                                    <option value="">Réassigner…</option>
-                                                                    <t t-foreach="data.options.assignable_users" t-as="u" t-key="u.id">
-                                                                        <option t-att-value="u.id" t-esc="u.name"/>
-                                                                    </t>
-                                                                </select>
+                                                                <t t-if="act.can_write">
+                                                                    <Dropdown disabled="isBusy(act)" position="'bottom-end'">
+                                                                        <button class="btn btn-sm btn-light ms-1 o_aite_cad_reschedule" title="Reporter l'échéance">
+                                                                            <i class="fa fa-calendar"/> Reporter
+                                                                        </button>
+                                                                        <t t-set-slot="content">
+                                                                            <DropdownItem class="'o_aite_cad_reschedule_tomorrow'" onSelected="() => this.reschedule(act, 'tomorrow')">À demain</DropdownItem>
+                                                                            <DropdownItem class="'o_aite_cad_reschedule_monday'" onSelected="() => this.reschedule(act, 'monday')">À lundi prochain</DropdownItem>
+                                                                            <DropdownItem class="'o_aite_cad_reschedule_week'" onSelected="() => this.reschedule(act, 'week')">Dans une semaine</DropdownItem>
+                                                                            <DropdownItem class="'o_aite_cad_reschedule_date'" onSelected="() => this.rescheduleOnDate(act)">À une date…</DropdownItem>
+                                                                        </t>
+                                                                    </Dropdown>
+                                                                    <button t-if="data.options.assignable_users.length"
+                                                                            class="btn btn-sm btn-light ms-1 o_aite_cad_reassign"
+                                                                            title="Réassigner l'activité"
+                                                                            t-att-disabled="isBusy(act)"
+                                                                            t-on-click="() => this.reassign(act)">
+                                                                        <i class="fa fa-user"/> Réassigner
+                                                                    </button>
+                                                                </t>
                                                             </t>
                                                         </td>
                                                     </tr>
@@ -172,7 +176,8 @@
                                 </div>
                                 <div class="card-body p-0">
                                     <div t-if="!data.by_user.length" class="text-center text-muted py-4">Aucune donnée.</div>
-                                    <table t-else="" class="table table-sm table-hover align-middle mb-0 o_aite_cad_by_user">
+                                    <div t-else="" class="table-responsive">
+                                    <table class="table table-sm table-hover align-middle mb-0 o_aite_cad_by_user">
                                         <thead class="table-light">
                                             <tr>
                                                 <th>Commercial</th>
@@ -184,10 +189,18 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <t t-foreach="data.by_user" t-as="row" t-key="row.user_id or 0">
-                                                <tr role="button" t-att-class="state.filters.user_id and state.filters.user_id === row.user_id ? 'table-active' : ''"
-                                                    t-on-click="() => this.filterOnUser(row.user_id)">
-                                                    <td class="text-truncate" t-esc="row.name"/>
+                                            <t t-foreach="data.by_user" t-as="row" t-key="row.user_id">
+                                                <tr role="button" tabindex="0"
+                                                    t-attf-class="o_aite_cad_by_user_row #{state.filters.user_id === row.user_id ? 'table-active fw-semibold' : ''}"
+                                                    t-att-aria-pressed="state.filters.user_id === row.user_id ? 'true' : 'false'"
+                                                    t-on-click="() => this.filterOnUser(row.user_id)"
+                                                    t-on-keydown="(ev) => this.onUserRowKeydown(ev, row.user_id)">
+                                                    <td>
+                                                        <div class="text-truncate o_aite_cad_by_user_name" t-att-title="row.name">
+                                                            <span t-if="row.user_id === UNASSIGNED" class="fst-italic" t-esc="row.name"/>
+                                                            <t t-else="" t-esc="row.name"/>
+                                                        </div>
+                                                    </td>
                                                     <td t-attf-class="text-end #{row.overdue ? 'text-danger fw-bold' : 'text-muted'}" t-esc="row.overdue"/>
                                                     <td t-attf-class="text-end #{row.today ? 'text-warning fw-bold' : 'text-muted'}" t-esc="row.today"/>
                                                     <td class="text-end" t-esc="row.upcoming"/>
@@ -197,6 +210,7 @@
                                             </t>
                                         </tbody>
                                     </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -262,6 +276,7 @@
                     <i class="fa fa-circle-o-notch fa-spin fa-2x"/>
                 </div>
             </div>
+          </div>
         </div>
     </t>
 
@@ -288,10 +303,40 @@
     <t t-name="aite_crm_activity.DateDialog">
         <Dialog title="'Reporter l\'activité'" size="'sm'">
             <label class="form-label" for="aite_cad_date">Nouvelle échéance</label>
-            <input id="aite_cad_date" type="date" class="form-control o_aite_cad_date" t-model="state.date"/>
+            <input id="aite_cad_date" type="date" class="form-control o_aite_cad_date"
+                   t-att-min="props.minDate" t-model="state.date"/>
+            <div t-if="state.date and !isValid" class="form-text text-danger">
+                Choisissez une date à partir d'aujourd'hui.
+            </div>
             <t t-set-slot="footer">
-                <button class="btn btn-primary o_aite_cad_confirm_date" t-att-disabled="state.busy or !state.date" t-on-click="confirm">
+                <button class="btn btn-primary o_aite_cad_confirm_date" t-att-disabled="state.busy or !isValid" t-on-click="confirm">
                     Reporter
+                </button>
+                <button class="btn btn-secondary" t-on-click="props.close">Annuler</button>
+            </t>
+        </Dialog>
+    </t>
+
+    <t t-name="aite_crm_activity.ReassignDialog">
+        <Dialog title="'Réassigner l\'activité'" size="'md'">
+            <p class="mb-2">
+                <strong t-esc="props.activity.type"/>
+                <t t-if="props.activity.summary"> — <t t-esc="props.activity.summary"/></t>
+                <t t-if="props.activity.lead"><br/><span class="text-muted" t-esc="props.activity.lead.name"/></t>
+            </p>
+            <label class="form-label" for="aite_cad_reassign_user">Nouvelle personne assignée</label>
+            <select id="aite_cad_reassign_user" class="form-select o_aite_cad_reassign_user" t-model="state.userId">
+                <option value="">Choisir…</option>
+                <t t-foreach="props.users" t-as="u" t-key="u.id">
+                    <option t-att-value="u.id" t-esc="u.name"/>
+                </t>
+            </select>
+            <div class="form-text">
+                Elle est prévenue par Odoo et devient abonnée de l'opportunité.
+            </div>
+            <t t-set-slot="footer">
+                <button class="btn btn-primary o_aite_cad_confirm_reassign" t-att-disabled="state.busy or !selectedUser" t-on-click="confirm">
+                    Réassigner
                 </button>
                 <button class="btn btn-secondary" t-on-click="props.close">Annuler</button>
             </t>

@@ -47,7 +47,11 @@
         max-width: 22rem;
     }
 
-    .o_aite_cad_by_user tbody tr {
+    .o_aite_cad_by_user_row {
         cursor: pointer;
+    }
+
+    .o_aite_cad_by_user_name {
+        max-width: 12rem;
     }
 }

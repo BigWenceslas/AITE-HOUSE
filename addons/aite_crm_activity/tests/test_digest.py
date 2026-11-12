@@ -1,11 +1,18 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
+from unittest.mock import patch
+
 import pytz
 
 from odoo import fields
-from odoo.tests import tagged
+from odoo.tests import new_test_user, tagged
 
 from .common import AiteCrmActivityCase
+
+
+def _fake_send_ok(self, **kwargs):
+    """ Remplace l'envoi SMTP (désactivé pendant les tests) : réussi. """
+    self.write({'state': 'sent'})
 
 
 @tagged('post_install', '-at_install', 'aite_crm_activity')
@@ -37,6 +44,34 @@ class TestCrmActivityDigest(AiteCrmActivityCase):
     def test_user_without_email_is_skipped(self):
         self.bob.email = False
         self.assertNotIn(self.bob, self.Digest._get_recipients())
+
+    def test_recipient_skipped_only_for_its_own_day(self):
+        # Le « déjà envoyé » suit la journée de l'utilisateur, pas la date UTC.
+        self.alice.tz = 'Pacific/Kiritimati'  # UTC+14
+        local_today = self.Digest._user_today(self.alice)
+        self.alice.aite_crm_digest_last_sent = local_today - timedelta(days=1)
+        self.assertIn(self.alice, self.Digest._get_recipients())
+        self.alice.aite_crm_digest_last_sent = local_today
+        self.assertNotIn(self.alice, self.Digest._get_recipients())
+
+    def test_non_crm_user_gets_digest_without_dashboard(self):
+        # Une activité confiée à une personne sans droits sur le CRM : elle
+        # la reçoit (Odoo la lui montre), sans lien qu'elle ne pourrait pas
+        # ouvrir.
+        clerk = new_test_user(self.env, login='aite_cad_clerk', groups='base.group_user',
+                              name="Comptable", email='clerk@aite.example', tz='UTC')
+        self._activity(self.lead_alice, clerk, 0, self.type_todo, "Vérifier la facture")
+        self.assertIn(clerk, self.Digest._get_recipients())
+        digest = self.Digest._get_user_digest(clerk)
+        self.assertFalse(digest['can_open_dashboard'])
+        row = digest['sections']['today'][0]
+        self.assertEqual(row['lead_name'], "Opportunité Alice")
+        self.assertFalse(row['url'])
+        body = str(self.Digest._prepare_mail_values(clerk, digest)['body_html'])
+        self.assertIn("Vérifier la facture", body)
+        self.assertNotIn("/odoo/suivi-activites", body)
+        self.assertNotIn("/mail/view", body)
+        self.assertTrue(self.Digest._get_user_digest(self.alice)['can_open_dashboard'])
 
     # Contenu -----------------------------------------------------------
 
@@ -108,10 +143,19 @@ class TestCrmActivityDigest(AiteCrmActivityCase):
         before = self._our_mails()
         self.assertEqual(self.Digest._cron_send_daily_digest(), 0)
         self.assertEqual(self._our_mails(), before)
-        self.assertEqual(self.alice.aite_crm_digest_last_sent, fields.Date.today())
+        self.assertEqual(self.alice.aite_crm_digest_last_sent, self.Digest._user_today(self.alice))
         # Le bouton « M'envoyer mon récapitulatif » reste disponible.
-        action = self.Digest.with_user(self.alice).action_send_my_digest()
+        with patch.object(type(self.env['mail.mail']), '_send', _fake_send_ok):
+            action = self.Digest.with_user(self.alice).action_send_my_digest()
         self.assertEqual(action['params']['type'], 'success')
+
+    def test_cron_wakes_up_the_mail_queue(self):
+        # La file d'attente des e-mails ne passe qu'une fois par heure : la
+        # tâche la réveille pour un envoi dans les minutes qui suivent.
+        queue = self.env.ref('mail.ir_cron_mail_scheduler_action')
+        with patch.object(type(self.env['ir.cron']), '_trigger', autospec=True) as trigger:
+            self.Digest._cron_send_daily_digest()
+        self.assertIn(queue, [call.args[0] for call in trigger.call_args_list])
 
     def test_cron_record_points_to_digest(self):
         cron = self.env.ref('aite_crm_activity.ir_cron_crm_activity_digest')
@@ -120,10 +164,27 @@ class TestCrmActivityDigest(AiteCrmActivityCase):
         self.assertEqual(cron.interval_number, 1)
 
     def test_send_my_digest_button(self):
-        action = self.Digest.with_user(self.alice).action_send_my_digest()
+        with patch.object(type(self.env['mail.mail']), '_send', _fake_send_ok):
+            action = self.Digest.with_user(self.alice).action_send_my_digest()
         self.assertEqual(action['params']['type'], 'success')
+        self.assertIn(self.alice.email, action['params']['message'])
         action = self.Digest.with_user(self.manager).action_send_my_digest()
         self.assertEqual(action['params']['type'], 'info')
+        self.bob.email = False
+        action = self.Digest.with_user(self.bob).action_send_my_digest()
+        self.assertEqual(action['params']['type'], 'warning')
+
+    def test_send_my_digest_reports_a_failed_send(self):
+        # Pas de serveur de messagerie joignable : le bouton doit le dire,
+        # pas annoncer un envoi réussi.
+        MailServer = type(self.env['ir.mail_server'])
+        with patch.object(MailServer, '_connect__', side_effect=ConnectionRefusedError("Connection refused")):
+            action = self.Digest.with_user(self.alice).action_send_my_digest()
+        self.assertEqual(action['params']['type'], 'danger')
+        self.assertIn("Connection refused", action['params']['message'])
+        self.assertIn("Serveurs de messagerie sortants", action['params']['message'])
+        mail = self._our_mails().filtered(lambda m: m.email_to == self.alice.email_formatted)
+        self.assertEqual(mail.state, 'exception')
 
     # Réglages ----------------------------------------------------------
 
@@ -148,6 +209,37 @@ class TestCrmActivityDigest(AiteCrmActivityCase):
 
         Settings.create({'aite_crm_digest_active': False, 'aite_crm_digest_hour': 7.5}).execute()
         self.assertFalse(cron.active)
+
+    def test_settings_timezone(self):
+        cron = self.env.ref('aite_crm_activity.ir_cron_crm_activity_digest')
+        Settings = self.env['res.config.settings'].with_user(self.env.ref('base.user_admin'))
+        Settings.create({
+            'aite_crm_digest_active': True,
+            'aite_crm_digest_hour': 6.0,
+            'aite_crm_digest_tz': 'Asia/Tokyo',
+        }).execute()
+        self.assertEqual(self.Digest._get_tz_name(), 'Asia/Tokyo')
+        local = pytz.utc.localize(cron.nextcall).astimezone(pytz.timezone('Asia/Tokyo'))
+        self.assertEqual((local.hour, local.minute), (6, 0))
+
+    def test_daily_reschedule_keeps_the_local_hour(self):
+        # Odoo avance une tâche quotidienne dans le fuseau de son utilisateur
+        # (Europe/Brussels pour l'utilisateur système) : sans correction, le
+        # récapitulatif de 7 h à Douala partirait à 6 h l'été, ou à 8 h l'hiver.
+        cron = self.env.ref('aite_crm_activity.ir_cron_crm_activity_digest')
+        self.env.user.tz = 'Europe/Brussels'
+        self.env['ir.config_parameter'].sudo().set_param('aite_crm_activity.digest_tz', 'Africa/Douala')
+        # Point de départ six mois plus tôt, à 7 h à Douala (6 h UTC) : de
+        # l'autre côté d'un changement d'heure européen.
+        start = datetime.combine(fields.Date.today() - timedelta(days=182), datetime.min.time())
+        start += timedelta(hours=6)
+        self.env['ir.cron']._reschedule_later({
+            'id': cron.id, 'nextcall': start, 'interval_type': 'days', 'interval_number': 1,
+        })
+        cron.invalidate_recordset(['nextcall'])
+        local = pytz.utc.localize(cron.nextcall).astimezone(pytz.timezone('Africa/Douala'))
+        self.assertEqual((local.hour, local.minute), (7, 0))
+        self.assertGreater(cron.nextcall, fields.Datetime.now())
 
     def test_subscription_is_a_self_writeable_preference(self):
         self.bob.with_user(self.bob).write({'aite_crm_digest_subscribed': False})

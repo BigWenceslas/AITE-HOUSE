@@ -12,9 +12,9 @@ class ResUsers(models.Model):
              "cours sur les opportunités (en retard, du jour et à venir).",
     )
 
-    # Date (UTC) du dernier récapitulatif mis en file : la tâche planifiée
-    # peut être relancée par Odoo après une interruption, sans renvoyer
-    # deux fois le même e-mail dans la journée.
+    # Journée (dans le fuseau de l'utilisateur) du dernier récapitulatif
+    # mis en file : la tâche planifiée peut être relancée par Odoo après
+    # une interruption, sans renvoyer deux fois le même e-mail.
     aite_crm_digest_last_sent = fields.Date(
         string="Dernier récapitulatif CRM", readonly=True, copy=False)
 

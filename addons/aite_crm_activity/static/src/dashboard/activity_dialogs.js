@@ -41,6 +41,7 @@ export class AiteActivityDateDialog extends Component {
     static props = {
         activity: Object,
         defaultDate: String,
+        minDate: String,
         onConfirm: Function,
         close: Function,
     };
@@ -49,13 +50,57 @@ export class AiteActivityDateDialog extends Component {
         this.state = useState({ date: this.props.defaultDate, busy: false });
     }
 
+    /** Une date (AAAA-MM-JJ) à partir d'aujourd'hui. */
+    get isValid() {
+        return Boolean(this.state.date) && this.state.date >= this.props.minDate;
+    }
+
     async confirm() {
-        if (this.state.busy || !this.state.date) {
+        if (this.state.busy || !this.isValid) {
             return;
         }
         this.state.busy = true;
         try {
             await this.props.onConfirm(this.state.date);
+            this.props.close();
+        } finally {
+            this.state.busy = false;
+        }
+    }
+}
+
+/**
+ * « Réassigner » : choix de la personne, puis confirmation explicite (la
+ * personne est notifiée et devient abonnée de l'opportunité, ce qui ne
+ * s'annule pas en réassignant de nouveau).
+ */
+export class AiteActivityReassignDialog extends Component {
+    static template = "aite_crm_activity.ReassignDialog";
+    static components = { Dialog };
+    static props = {
+        activity: Object,
+        users: Array,
+        onConfirm: Function,
+        close: Function,
+    };
+
+    setup() {
+        this.state = useState({ userId: "", busy: false });
+    }
+
+    get selectedUser() {
+        const userId = parseInt(this.state.userId);
+        return this.props.users.find((u) => u.id === userId);
+    }
+
+    async confirm() {
+        const user = this.selectedUser;
+        if (this.state.busy || !user) {
+            return;
+        }
+        this.state.busy = true;
+        try {
+            await this.props.onConfirm(user);
             this.props.close();
         } finally {
             this.state.busy = false;

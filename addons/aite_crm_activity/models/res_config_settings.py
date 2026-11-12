@@ -4,11 +4,10 @@ from datetime import datetime, timedelta
 import pytz
 
 from odoo import api, fields, models
+from odoo.addons.base.models.res_partner import _tz_get
 
-from .crm_activity_digest import DEFAULT_UPCOMING_DAYS, PARAM_UPCOMING_DAYS
-
-DIGEST_CRON_XMLID = 'aite_crm_activity.ir_cron_crm_activity_digest'
-DEFAULT_TZ = 'Africa/Douala'
+from .crm_activity_digest import DEFAULT_TZ, DEFAULT_UPCOMING_DAYS, PARAM_TZ, PARAM_UPCOMING_DAYS
+from .ir_cron import DIGEST_CRON_XMLID
 
 
 class ResConfigSettings(models.TransientModel):
@@ -21,8 +20,16 @@ class ResConfigSettings(models.TransientModel):
     )
     aite_crm_digest_hour = fields.Float(
         string="Heure d'envoi",
-        help="Heure locale d'envoi du récapitulatif (fuseau horaire de "
-             "l'utilisateur qui fait le réglage).",
+        help="Heure d'envoi du récapitulatif, dans le fuseau horaire choisi. "
+             "Elle est la même pour tous les utilisateurs.",
+    )
+    aite_crm_digest_tz = fields.Selection(
+        _tz_get,
+        string="Fuseau horaire de l'envoi",
+        config_parameter=PARAM_TZ,
+        default=DEFAULT_TZ,
+        help="Fuseau horaire de l'heure d'envoi. L'envoi garde la même heure "
+             "locale toute l'année, changements d'heure compris.",
     )
     aite_crm_digest_upcoming_days = fields.Integer(
         string="Activités à venir incluses",
@@ -38,7 +45,7 @@ class ResConfigSettings(models.TransientModel):
 
     @api.model
     def _aite_digest_tz(self):
-        return pytz.timezone(self.env.user.tz or DEFAULT_TZ)
+        return pytz.timezone(self.env['aite.crm.activity.digest']._get_tz_name())
 
     @api.model
     def get_values(self):
@@ -54,6 +61,8 @@ class ResConfigSettings(models.TransientModel):
         return res
 
     def set_values(self):
+        # Le fuseau (paramètre système) est enregistré par super() : l'heure
+        # ci-dessous est ensuite interprétée dans ce fuseau.
         super().set_values()
         cron = self._aite_digest_cron()
         if not cron:

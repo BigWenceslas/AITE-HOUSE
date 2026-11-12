@@ -19,11 +19,16 @@
                                 <field name="aite_crm_digest_hour" widget="float_time" class="w-auto"/>
                             </div>
                             <div class="row">
+                                <label for="aite_crm_digest_tz" string="Fuseau horaire" class="col-lg-5 o_light_label"/>
+                                <field name="aite_crm_digest_tz" class="w-auto"/>
+                            </div>
+                            <div class="row">
                                 <label for="aite_crm_digest_upcoming_days" string="Activités à venir (jours)" class="col-lg-5 o_light_label"/>
                                 <field name="aite_crm_digest_upcoming_days" class="w-auto"/>
                             </div>
                             <div class="mt8 text-muted small">
-                                Heure de votre fuseau horaire. 0 jour : seulement les activités en retard et du jour.
+                                Une seule heure pour tout le monde. Les e-mails partent dans les minutes qui suivent.
+                                0 jour : seulement les activités en retard et du jour.
                                 Chaque utilisateur peut se désabonner dans ses préférences.
                             </div>
                             <div class="mt8">

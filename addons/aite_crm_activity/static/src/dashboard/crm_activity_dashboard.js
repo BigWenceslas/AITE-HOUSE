@@ -1,15 +1,24 @@
-import { Component, onWillStart, useState } from "@odoo/owl";
+import { Component, onWillStart, useRef, useState } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { deserializeDate, formatDate, serializeDate } from "@web/core/l10n/dates";
+import { Dropdown } from "@web/core/dropdown/dropdown";
+import { DropdownItem } from "@web/core/dropdown/dropdown_item";
 import { formatMonetary } from "@web/views/fields/formatters";
+import { useSetupAction } from "@web/search/action_hook";
 import { standardActionServiceProps } from "@web/webclient/actions/action_service";
-import { AiteActivityDateDialog, AiteActivityDoneDialog } from "./activity_dialogs";
+import {
+    AiteActivityDateDialog,
+    AiteActivityDoneDialog,
+    AiteActivityReassignDialog,
+} from "./activity_dialogs";
 
 const { DateTime } = luxon;
 
 const DASHBOARD_MODEL = "aite.crm.activity.dashboard";
+// Valeur du filtre « Commercial » pour ce qui n'est assigné à personne.
+const UNASSIGNED = "unassigned";
 
 /**
  * CRM → Suivi des activités.
@@ -21,6 +30,7 @@ const DASHBOARD_MODEL = "aite.crm.activity.dashboard";
  */
 export class AiteCrmActivityDashboard extends Component {
     static template = "aite_crm_activity.Dashboard";
+    static components = { Dropdown, DropdownItem };
     static props = { ...standardActionServiceProps };
 
     setup() {
@@ -28,11 +38,21 @@ export class AiteCrmActivityDashboard extends Component {
         this.action = useService("action");
         this.dialog = useService("dialog");
         this.notification = useService("notification");
+        this.UNASSIGNED = UNASSIGNED;
+        this.rootRef = useRef("root");
+        // Retour par le fil d'Ariane : on retrouve ses filtres (et la
+        // position de défilement, gérée par Odoo via .o_content).
+        const restored = this.props.state?.filters;
         this.state = useState({
             data: null,
-            filters: {},
+            filters: restored ? { ...restored } : {},
             loading: true,
-            busyId: null,
+            busyIds: {},
+        });
+        this.lastRequest = 0;
+        useSetupAction({
+            rootRef: this.rootRef,
+            getLocalState: () => ({ filters: { ...this.state.filters } }),
         });
         onWillStart(() => this.load());
     }
@@ -41,17 +61,28 @@ export class AiteCrmActivityDashboard extends Component {
     // Chargement
     // ------------------------------------------------------------------
 
+    /**
+     * Recharge le tableau avec les filtres modifiés. Les filtres sont
+     * appliqués tout de suite (deux changements rapprochés se cumulent) et
+     * seule la réponse à la dernière demande est affichée.
+     */
     async load(changes = {}) {
+        const filters = { ...this.state.filters, ...changes };
+        this.state.filters = filters;
+        const request = ++this.lastRequest;
         this.state.loading = true;
         try {
-            const filters = { ...this.state.filters, ...changes };
             const data = await this.orm.call(DASHBOARD_MODEL, "get_dashboard_data", [], {
                 filters,
             });
-            this.state.data = data;
-            this.state.filters = { ...data.filters };
+            if (request === this.lastRequest) {
+                this.state.data = data;
+                this.state.filters = { ...data.filters };
+            }
         } finally {
-            this.state.loading = false;
+            if (request === this.lastRequest) {
+                this.state.loading = false;
+            }
         }
     }
 
@@ -81,13 +112,23 @@ export class AiteCrmActivityDashboard extends Component {
         ];
     }
 
+    isBusy(activity) {
+        return Boolean(this.state.busyIds[activity.id]);
+    }
+
     // ------------------------------------------------------------------
     // Filtres
     // ------------------------------------------------------------------
 
     onFilterChange(key, ev) {
         const value = ev.target.value;
-        this.load({ [key]: value ? parseInt(value) : false });
+        let parsed = false;
+        if (value === UNASSIGNED) {
+            parsed = UNASSIGNED;
+        } else if (value) {
+            parsed = parseInt(value);
+        }
+        this.load({ [key]: parsed });
     }
 
     selectBucket(bucket) {
@@ -96,14 +137,25 @@ export class AiteCrmActivityDashboard extends Component {
 
     onKpiClick(card) {
         if (card.key === "stalled") {
-            document.querySelector(".o_aite_cad_stalled")?.scrollIntoView({ behavior: "smooth" });
+            this.rootRef.el
+                ?.querySelector(".o_aite_cad_stalled")
+                ?.scrollIntoView({ behavior: "smooth" });
             return;
         }
         this.selectBucket(card.key);
     }
 
+    /** Clic sur une ligne « Par commercial » : filtre sur lui, ou retire
+     * le filtre si la ligne était déjà sélectionnée. */
     filterOnUser(userId) {
-        this.load({ user_id: userId || false });
+        this.load({ user_id: this.state.filters.user_id === userId ? false : userId });
+    }
+
+    onUserRowKeydown(ev, userId) {
+        if (ev.key === "Enter" || ev.key === " ") {
+            ev.preventDefault();
+            this.filterOnUser(userId);
+        }
     }
 
     // ------------------------------------------------------------------
@@ -141,14 +193,19 @@ export class AiteCrmActivityDashboard extends Component {
     // Actions
     // ------------------------------------------------------------------
 
+    /**
+     * Appelle une action du serveur sur une activité, puis recharge.
+     * `message` peut être une fonction recevant le résultat de l'action.
+     */
     async runAction(activity, method, args, message) {
-        this.state.busyId = activity.id;
+        this.state.busyIds[activity.id] = true;
         try {
-            await this.orm.call(DASHBOARD_MODEL, method, args);
-            this.notification.add(message, { type: "success" });
+            const result = await this.orm.call(DASHBOARD_MODEL, method, args);
+            const text = typeof message === "function" ? message(result) : message;
+            this.notification.add(text, { type: "success" });
             await this.load();
         } finally {
-            this.state.busyId = null;
+            delete this.state.busyIds[activity.id];
         }
     }
 
@@ -161,43 +218,33 @@ export class AiteCrmActivityDashboard extends Component {
         });
     }
 
-    onReschedule(activity, ev) {
-        const choice = ev.target.value;
-        ev.target.value = "";
-        const today = DateTime.fromISO(this.data.today);
-        let date;
-        if (choice === "tomorrow") {
-            date = today.plus({ days: 1 });
-        } else if (choice === "monday") {
-            date = today.plus({ weeks: 1 }).startOf("week");
-        } else if (choice === "week") {
-            date = today.plus({ days: 7 });
-        } else if (choice === "custom") {
-            this.dialog.add(AiteActivityDateDialog, {
-                activity,
-                defaultDate: serializeDate(today.plus({ days: 1 })),
-                onConfirm: (value) =>
-                    this.runAction(activity, "action_reschedule", [activity.id, value],
-                        _t("Activité reportée au %s.", this.formatDate(value))),
-            });
-            return;
-        } else {
-            return;
-        }
-        const value = serializeDate(date);
-        this.runAction(activity, "action_reschedule", [activity.id, value],
-            _t("Activité reportée au %s.", this.formatDate(value)));
+    /**
+     * Nouvelle échéance : 'tomorrow', 'monday' ou 'week' (calculés par le
+     * serveur sur la date du jour), ou une date AAAA-MM-JJ.
+     */
+    reschedule(activity, value) {
+        return this.runAction(activity, "action_reschedule", [activity.id, value],
+            (date) => _t("Nouvelle échéance : %s.", this.formatDate(date)));
     }
 
-    onReassign(activity, ev) {
-        const userId = parseInt(ev.target.value);
-        ev.target.value = "";
-        if (!userId || userId === activity.user_id) {
-            return;
-        }
-        const user = this.data.options.assignable_users.find((u) => u.id === userId);
-        this.runAction(activity, "action_reassign", [activity.id, userId],
-            _t("Activité réassignée à %s.", user ? user.name : ""));
+    rescheduleOnDate(activity) {
+        const today = DateTime.local().startOf("day");
+        this.dialog.add(AiteActivityDateDialog, {
+            activity,
+            defaultDate: serializeDate(today.plus({ days: 1 })),
+            minDate: serializeDate(today),
+            onConfirm: (value) => this.reschedule(activity, value),
+        });
+    }
+
+    reassign(activity) {
+        this.dialog.add(AiteActivityReassignDialog, {
+            activity,
+            users: this.data.options.assignable_users.filter((u) => u.id !== activity.user_id),
+            onConfirm: (user) =>
+                this.runAction(activity, "action_reassign", [activity.id, user.id],
+                    _t("Activité réassignée à %s.", user.name)),
+        });
     }
 
     openLead(leadId) {

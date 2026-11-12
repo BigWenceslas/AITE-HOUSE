@@ -3,12 +3,16 @@ import logging
 from datetime import timedelta
 from urllib.parse import urlencode
 
+import pytz
+
 from odoo import api, fields, models, tools
 
 _logger = logging.getLogger(__name__)
 
 PARAM_UPCOMING_DAYS = 'aite_crm_activity.digest_upcoming_days'
 DEFAULT_UPCOMING_DAYS = 3
+PARAM_TZ = 'aite_crm_activity.digest_tz'
+DEFAULT_TZ = 'Africa/Douala'
 MAX_ROWS_PER_SECTION = 50
 
 
@@ -32,15 +36,31 @@ class AiteCrmActivityDigest(models.AbstractModel):
             return DEFAULT_UPCOMING_DAYS
 
     @api.model
+    def _user_today(self, user, now=None):
+        """ Date du jour dans le fuseau horaire de l'utilisateur. """
+        return fields.Date.context_today(self.with_context(tz=user.tz or 'UTC'), timestamp=now)
+
+    @api.model
+    def _get_tz_name(self):
+        """ Fuseau horaire de l'heure d'envoi (Paramètres du CRM). """
+        value = self.env['ir.config_parameter'].sudo().get_param(PARAM_TZ)
+        return value if value in pytz.all_timezones_set else DEFAULT_TZ
+
+    @api.model
     def _get_recipients(self):
         """ Utilisateurs internes actifs, abonnés, ayant une adresse e-mail et
         au moins une activité ouverte sur une piste ou opportunité dont
         l'échéance tombe dans la fenêtre du récapitulatif, et qui n'ont pas
-        encore reçu celui du jour. La fenêtre est élargie d'un jour pour
-        couvrir les fuseaux horaires ; chaque utilisateur est ensuite filtré
-        selon sa propre date du jour. """
-        today = fields.Date.today()
-        horizon = today + timedelta(days=self._get_upcoming_days() + 1)
+        encore reçu celui de leur journée (date de leur propre fuseau
+        horaire). La fenêtre est élargie d'un jour pour couvrir les fuseaux
+        horaires ; chaque utilisateur est ensuite filtré selon sa propre
+        date du jour.
+
+        Une personne sans droits sur le CRM à qui une activité a été
+        confiée sur une opportunité reçoit aussi le récapitulatif (Odoo lui
+        montre ces activités) ; l'e-mail ne lui propose alors pas le
+        tableau de bord. """
+        horizon = fields.Date.today() + timedelta(days=self._get_upcoming_days() + 1)
         groups = self.env['mail.activity'].sudo()._read_group(
             [('res_model', '=', 'crm.lead'), ('date_deadline', '<=', horizon),
              ('user_id', '!=', False)],
@@ -49,7 +69,7 @@ class AiteCrmActivityDigest(models.AbstractModel):
         users = self.env['res.users'].sudo().union(*(user for (user,) in groups))
         return users.filtered(
             lambda u: u.active and not u.share and u.email and u.aite_crm_digest_subscribed
-            and u.aite_crm_digest_last_sent != today
+            and u.aite_crm_digest_last_sent != self._user_today(u)
         )
 
     # ------------------------------------------------------------------
@@ -65,7 +85,7 @@ class AiteCrmActivityDigest(models.AbstractModel):
         """
         env = self.with_user(user).with_context(
             lang=user.lang or self.env.lang or 'en_US', tz=user.tz or 'UTC').env
-        today = fields.Date.context_today(self.with_env(env), timestamp=now)
+        today = self._user_today(user, now=now)
         horizon = today + timedelta(days=self._get_upcoming_days())
         activities = env['mail.activity'].search([
             ('res_model', '=', 'crm.lead'),
@@ -76,7 +96,9 @@ class AiteCrmActivityDigest(models.AbstractModel):
             return None
 
         leads = env['crm.lead'].browse(activities.mapped('res_id'))
-        readable = {lead.id: lead for lead in leads._filtered_access('read')}
+        # Droit de lecture vérifié sur l'opportunité, libellés lus en sudo
+        # (comme dans le tableau de bord).
+        readable = {lead.id: lead for lead in leads._filtered_access('read').sudo()}
         base_url = self.get_base_url()
 
         sections = {'overdue': [], 'today': [], 'upcoming': []}
@@ -94,8 +116,10 @@ class AiteCrmActivityDigest(models.AbstractModel):
                 'stage': lead.stage_id.name if lead else '',
                 'revenue': tools.format_amount(env, lead.expected_revenue, lead.company_currency)
                            if lead and lead.expected_revenue else '',
+                # Lien seulement vers une opportunité que l'utilisateur peut
+                # ouvrir (sinon Odoo le renverrait vers Discussion).
                 'url': '%s/mail/view?%s' % (base_url, urlencode({
-                    'model': 'crm.lead', 'res_id': activity.res_id})),
+                    'model': 'crm.lead', 'res_id': activity.res_id})) if lead else False,
             })
         counts = {key: len(rows) for key, rows in sections.items()}
         for key in sections:
@@ -111,6 +135,8 @@ class AiteCrmActivityDigest(models.AbstractModel):
             'upcoming_days': self._get_upcoming_days(),
             'max_rows': MAX_ROWS_PER_SECTION,
             'dashboard_url': '%s/odoo/suivi-activites' % base_url,
+            # Le tableau de bord est réservé aux utilisateurs du CRM.
+            'can_open_dashboard': user.has_group('sales_team.group_sale_salesman'),
         }
 
     @api.model
@@ -154,7 +180,6 @@ class AiteCrmActivityDigest(models.AbstractModel):
     @api.model
     def _cron_send_daily_digest(self):
         users = self._get_recipients()
-        today = fields.Date.today()
         in_cron = bool(self.env.context.get('ir_cron_progress_id'))
         if in_cron:
             self.env['ir.cron']._commit_progress(remaining=len(users))
@@ -164,11 +189,20 @@ class AiteCrmActivityDigest(models.AbstractModel):
                 with self.env.cr.savepoint():
                     if self._send_to_user(user):
                         sent += 1
-                    user.sudo().aite_crm_digest_last_sent = today
+                    # Date de la journée de l'utilisateur : une relance de la
+                    # tâche le même jour ne renvoie rien, l'envoi du lendemain
+                    # passe même si l'heure d'envoi tombe juste après minuit.
+                    user.sudo().aite_crm_digest_last_sent = self._user_today(user)
             except Exception:
                 _logger.exception("Récapitulatif CRM : échec pour l'utilisateur %s", user.id)
             if in_cron:
                 self.env['ir.cron']._commit_progress(1)
+        if sent:
+            # Les e-mails partent avec la file d'attente d'Odoo, qui ne passe
+            # qu'une fois par heure : on la réveille pour un envoi immédiat.
+            queue = self.env.ref('mail.ir_cron_mail_scheduler_action', raise_if_not_found=False)
+            if queue:
+                queue.sudo()._trigger()
         _logger.info("Récapitulatif CRM : %s e-mail(s) mis en file sur %s destinataire(s).",
                      sent, len(users))
         return sent
@@ -176,21 +210,39 @@ class AiteCrmActivityDigest(models.AbstractModel):
     @api.model
     def action_send_my_digest(self):
         """ Bouton des Paramètres : envoie tout de suite son propre
-        récapitulatif à l'utilisateur, pour voir à quoi il ressemble. """
+        récapitulatif à l'utilisateur, pour voir à quoi il ressemble — et
+        vérifier que l'envoi des e-mails fonctionne. """
         user = self.env.user
-        mail = self._send_to_user(user) if user.email else self.env['mail.mail']
-        if mail:
-            mail.send(raise_exception=False)
-            message = self.env._("Récapitulatif envoyé à %(email)s.", email=user.email)
-            kind = 'success'
-        elif not user.email:
+        sticky = False
+        if not user.email:
             message = self.env._("Renseignez votre adresse e-mail dans vos préférences.")
             kind = 'warning'
         else:
-            message = self.env._("Aucune activité en cours : rien à envoyer pour l'instant.")
-            kind = 'info'
+            mail = self._send_to_user(user)
+            if not mail:
+                message = self.env._("Aucune activité en cours : rien à envoyer pour l'instant.")
+                kind = 'info'
+            else:
+                mail.send(raise_exception=False)
+                mail = mail.exists()
+                if not mail or mail.state == 'sent':
+                    # Envoyé (puis supprimé : auto_delete).
+                    message = self.env._("Récapitulatif envoyé à %(email)s.", email=user.email)
+                    kind = 'success'
+                elif mail.state == 'exception':
+                    message = self.env._(
+                        "L'envoi à %(email)s a échoué : %(reason)s. Vérifiez le serveur de "
+                        "messagerie sortant (Paramètres → Technique → E-mail → Serveurs de "
+                        "messagerie sortants).",
+                        email=user.email, reason=mail.failure_reason or self.env._("erreur inconnue"))
+                    kind = 'danger'
+                    sticky = True
+                else:
+                    message = self.env._(
+                        "Récapitulatif mis en file d'attente pour %(email)s.", email=user.email)
+                    kind = 'info'
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
-            'params': {'message': message, 'type': kind, 'sticky': False},
+            'params': {'message': message, 'type': kind, 'sticky': sticky},
         }

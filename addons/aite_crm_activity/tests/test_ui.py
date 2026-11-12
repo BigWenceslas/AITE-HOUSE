@@ -2,7 +2,7 @@
 from datetime import timedelta
 
 from odoo import fields
-from odoo.tests import HttpCase, tagged
+from odoo.tests import HttpCase, new_test_user, tagged
 
 
 @tagged('post_install', '-at_install', 'aite_crm_activity')
@@ -12,13 +12,17 @@ class TestCrmActivityDashboardUi(HttpCase):
     def test_dashboard_tour(self):
         admin = self.env.ref('base.user_admin')
         admin.tz = 'UTC'
+        colleague = new_test_user(
+            self.env, login='aite_cad_tour_colleague', groups='sales_team.group_sale_salesman',
+            name="Collègue (tour)", tz='UTC')
         today = fields.Date.context_today(admin.with_context(tz='UTC'))
         env = self.env(context=dict(self.env.context, mail_activity_quick_update=True))
         Lead = env['crm.lead']
         lead = Lead.create({'name': "Opportunité suivie (tour)", 'type': 'opportunity',
                             'user_id': admin.id})
-        Lead.create({'name': "Opportunité à relancer (tour)", 'type': 'opportunity',
-                     'user_id': admin.id, 'priority': '3', 'expected_revenue': 10 ** 12})
+        quiet_lead = Lead.create({'name': "Opportunité à relancer (tour)", 'type': 'opportunity',
+                                  'user_id': admin.id, 'priority': '3',
+                                  'expected_revenue': 10 ** 12})
 
         def activity(days, summary):
             return env['mail.activity'].create({
@@ -32,9 +36,12 @@ class TestCrmActivityDashboardUi(HttpCase):
 
         overdue = activity(-1, "Rappeler le client (tour)")
         today_activity = activity(0, "Envoyer le devis (tour)")
+        upcoming = activity(2, "Préparer la réunion (tour)")
 
         self.start_tour('/odoo/suivi-activites', 'aite_crm_activity_dashboard_tour', login='admin')
 
         self.assertFalse(overdue.active, "Marquée comme faite depuis le tableau de bord")
         self.assertEqual(overdue.feedback, "Client rappelé, devis vendredi")
         self.assertEqual(today_activity.date_deadline, today + timedelta(days=1))
+        self.assertEqual(upcoming.user_id, colleague, "Réassignée après confirmation")
+        self.assertEqual(quiet_lead.activity_ids.mapped('summary'), ["Relancer le client - tour"])
