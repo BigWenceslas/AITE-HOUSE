@@ -1,3 +1,164 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+
+    <!-- Analyse des activités CRM (modèle aite.crm.activity.report) :
+         tableau croisé, graphique et liste en lecture seule. -->
+
+    <record id="crm_activity_report_view_pivot" model="ir.ui.view">
+        <field name="name">aite.crm.activity.report.pivot</field>
+        <field name="model">aite.crm.activity.report</field>
+        <field name="arch" type="xml">
+            <pivot string="Analyse des activités" sample="1">
+                <field name="user_id" type="row"/>
+                <field name="state" type="col"/>
+                <field name="nbr" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="crm_activity_report_view_graph" model="ir.ui.view">
+        <field name="name">aite.crm.activity.report.graph</field>
+        <field name="model">aite.crm.activity.report</field>
+        <field name="arch" type="xml">
+            <graph string="Analyse des activités" type="bar" stacked="1" sample="1">
+                <field name="date_deadline" interval="week"/>
+                <field name="state"/>
+                <field name="nbr" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="crm_activity_report_view_list" model="ir.ui.view">
+        <field name="name">aite.crm.activity.report.list</field>
+        <field name="model">aite.crm.activity.report</field>
+        <field name="arch" type="xml">
+            <list string="Analyse des activités" create="0" edit="0" delete="0"
+                  action="action_open_lead" type="object" sample="1">
+                <field name="date_deadline"/>
+                <field name="state" widget="badge"
+                       decoration-danger="state == 'overdue'"
+                       decoration-warning="state == 'today'"
+                       decoration-info="state == 'planned'"
+                       decoration-success="state == 'done'"/>
+                <field name="severity" widget="badge" optional="show"
+                       decoration-danger="severity == 'critical'"
+                       decoration-warning="severity == 'high'"/>
+                <field name="days_late" optional="show"/>
+                <field name="activity_type_id"/>
+                <field name="summary"/>
+                <field name="lead_id"/>
+                <field name="partner_id" optional="show"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+                <field name="lead_user_id" widget="many2one_avatar_user" optional="hide"/>
+                <field name="team_id" optional="hide"/>
+                <field name="stage_id" optional="hide"/>
+                <field name="date_done" optional="show"/>
+                <field name="create_date" optional="hide"/>
+                <field name="won_status" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="nbr" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="crm_activity_report_view_search" model="ir.ui.view">
+        <field name="name">aite.crm.activity.report.search</field>
+        <field name="model">aite.crm.activity.report</field>
+        <field name="arch" type="xml">
+            <search string="Analyse des activités">
+                <field name="user_id"/>
+                <field name="lead_id"/>
+                <field name="partner_id"/>
+                <field name="lead_user_id"/>
+                <field name="team_id"/>
+                <field name="activity_type_id"/>
+                <field name="stage_id"/>
+                <field name="summary"/>
+                <separator/>
+                <filter string="En retard" name="overdue" domain="[('state', '=', 'overdue')]"/>
+                <filter string="Aujourd'hui" name="today" domain="[('state', '=', 'today')]"/>
+                <filter string="À venir" name="planned" domain="[('state', '=', 'planned')]"/>
+                <filter string="Réalisées" name="done" domain="[('state', '=', 'done')]"/>
+                <separator/>
+                <filter string="Mes activités" name="my_activities" domain="[('user_id', '=', uid)]"/>
+                <filter string="Mes opportunités" name="my_leads" domain="[('lead_user_id', '=', uid)]"/>
+                <separator/>
+                <filter string="Retard élevé ou critique" name="late_high"
+                        domain="[('severity', 'in', ['high', 'critical'])]"/>
+                <filter string="Retard critique" name="late_critical"
+                        domain="[('severity', '=', 'critical')]"/>
+                <separator/>
+                <filter string="Réalisées ce mois-ci" name="done_this_month"
+                        domain="[('date_done', '&gt;=', 'today =1d'), ('date_done', '&lt;=', 'today')]"/>
+                <separator/>
+                <filter string="Échéance" name="filter_date_deadline" date="date_deadline"/>
+                <filter string="Date de réalisation" name="filter_date_done" date="date_done"/>
+                <separator groups="crm.group_use_lead"/>
+                <filter string="Pistes" name="lead" domain="[('lead_type', '=', 'lead')]"
+                        groups="crm.group_use_lead"/>
+                <filter string="Opportunités" name="opportunity" domain="[('lead_type', '=', 'opportunity')]"
+                        groups="crm.group_use_lead"/>
+                <separator/>
+                <filter string="Opportunités en cours" name="pending" domain="[('won_status', '=', 'pending')]"/>
+                <filter string="Opportunités gagnées" name="won" domain="[('won_status', '=', 'won')]"/>
+                <filter string="Opportunités perdues" name="lost" domain="[('won_status', '=', 'lost')]"/>
+                <group>
+                    <filter string="Assignée à" name="group_by_user" context="{'group_by': 'user_id'}"/>
+                    <filter string="Commercial de l'opportunité" name="group_by_lead_user"
+                            context="{'group_by': 'lead_user_id'}"/>
+                    <filter string="Équipe commerciale" name="group_by_team" context="{'group_by': 'team_id'}"/>
+                    <filter string="Type d'activité" name="group_by_activity_type"
+                            context="{'group_by': 'activity_type_id'}"/>
+                    <filter string="État" name="group_by_state" context="{'group_by': 'state'}"/>
+                    <filter string="Gravité du retard" name="group_by_severity" context="{'group_by': 'severity'}"/>
+                    <filter string="Étape" name="group_by_stage" context="{'group_by': 'stage_id'}"/>
+                    <filter string="Opportunité" name="group_by_lead" context="{'group_by': 'lead_id'}"/>
+                    <filter string="Client" name="group_by_partner" context="{'group_by': 'partner_id'}"/>
+                    <separator/>
+                    <filter string="Échéance" name="group_by_date_deadline"
+                            context="{'group_by': 'date_deadline:week'}"/>
+                    <filter string="Date de réalisation" name="group_by_date_done"
+                            context="{'group_by': 'date_done:month'}"/>
+                    <filter string="Société" name="group_by_company" context="{'group_by': 'company_id'}"
+                            groups="base.group_multi_company"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_crm_activity_report" model="ir.actions.act_window">
+        <field name="name">Suivi des activités (analyse)</field>
+        <field name="res_model">aite.crm.activity.report</field>
+        <field name="path">analyse-activites</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="search_view_id" ref="crm_activity_report_view_search"/>
+        <field name="context">{
+            'pivot_measures': ['nbr'],
+            'pivot_row_groupby': ['user_id'],
+            'pivot_column_groupby': ['state'],
+            'graph_mode': 'bar',
+            'graph_measure': 'nbr',
+            'graph_groupbys': ['date_deadline:week', 'state'],
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucune activité à analyser
+            </p>
+            <p>
+                Chaque activité planifiée sur une opportunité apparaît ici, en cours ou
+                réalisée : par personne, par type, par étape ou par semaine d'échéance.
+                Les activités en cours des opportunités perdues n'y figurent pas ;
+                celles qui ont été réalisées restent comptées.
+            </p>
+        </field>
+    </record>
+
+    <!-- CRM → Analyse, juste après « Activités » (séquence 4) d'Odoo. -->
+    <menuitem id="menu_crm_activity_report"
+              name="Suivi des activités (analyse)"
+              parent="crm.crm_menu_report"
+              action="action_crm_activity_report"
+              sequence="5"
+              groups="sales_team.group_sale_salesman"/>
+
 </odoo>

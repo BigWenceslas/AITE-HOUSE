@@ -1,1 +1,2 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_aite_crm_activity_report_salesman,aite.crm.activity.report.salesman,model_aite_crm_activity_report,sales_team.group_sale_salesman,1,0,0,0
