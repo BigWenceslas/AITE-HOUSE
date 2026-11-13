@@ -162,7 +162,7 @@ Ordre recommandé : ~~F06~~ (livré) → **F05 → F07 → F08 → F09** (du plu
 | Taxe de séjour | Articles CGI exacts, clé de répartition 80/20 commune/État, calendrier de la taxation en temps réel | F04 / F15 — texte légal dans l'onglet |
 | Édition Odoo | ✅ Réglé : le socle s'installe sur Community (planning calendrier) ; `aite_hotel_gantt` ajoute le Gantt sur Enterprise | — |
 | Plaquette | Mentions légales page Contact : RC/DLA/2022/A/80 · NUI P029416901505B (ancienne brochure) ou RC/DLA/2019/B/1043 · NUI M021912751893C (offre 2025) ? | Documentation commerciale |
-| Restaurant (service à table) | Demande d'un client reçue le 12/11, hors des 26 fonctionnalités : périmètre, lots et questions dans `docs/PERIMETRE_FONCTIONNEL_RESTAURANT.md`. Arbitrage à rendre avec la fin de la vague 1 ; deux corrections à prévoir avant toute activation (ardoise sur commande non réglée, nom du vendeur dans les analyses) | Nouvelle ligne « Restaurant » ; `aite_pos_credit`, `aite_pos_analytics` |
+| Restaurant (service à table) | Demande d'un client reçue le 12/11, hors des 26 fonctionnalités : périmètre, lots et questions dans `docs/PERIMETRE_FONCTIONNEL_RESTAURANT.md` (mis à jour le 13/11 : restaurant seul, avec pizzas, café, petits déjeuners, bar et cuisine ; sans hôtel, 5 modules sur 16 s'installent, constaté par installation à froid). Arbitrage à rendre avec la fin de la vague 1 ; deux corrections à prévoir avant toute activation (ardoise sur commande non réglée, nom du vendeur dans les analyses) | Nouvelle ligne « Restaurant » ; `aite_pos_credit`, `aite_pos_analytics` |
 | POS LAVERANDAH | Impression du ticket : les 4 informations de diagnostic n'ont pas été reçues (modèle d'imprimante, mode d'impression, navigateur, message d'erreur) | Support client |
 
 ---
