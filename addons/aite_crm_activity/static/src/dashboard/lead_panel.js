@@ -4,13 +4,15 @@ import {
     onWillStart,
     onWillUnmount,
     onWillUpdateProps,
+    useEffect,
     useRef,
     useState,
 } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { useService } from "@web/core/utils/hooks";
-import { useHotkey } from "@web/core/hotkeys/hotkey_hook";
+import { getActiveHotkey } from "@web/core/hotkeys/hotkey_service";
 import { RPCError } from "@web/core/network/rpc";
+import { SIZES, getFirstAndLastTabableElements } from "@web/core/ui/ui_service";
 import { Dropdown } from "@web/core/dropdown/dropdown";
 import { DropdownItem } from "@web/core/dropdown/dropdown_item";
 import {
@@ -35,6 +37,11 @@ import {
  * Fermeture : bouton « Fermer » ou touche Échap (une fenêtre ou un menu
  * ouvert par-dessus se ferme d'abord, Odoo donnant la touche au dernier
  * élément ouvert).
+ *
+ * Sous 992 px, le panneau couvre toute la page (voir le SCSS) : il se
+ * comporte alors en fenêtre modale (aria-modal, focus gardé dans le
+ * panneau, raccourcis d'Odoo limités au panneau). Sur ordinateur, il reste
+ * un panneau latéral : la page à côté reste utilisable au clavier.
  */
 export class AiteLeadPanel extends Component {
     static template = "aite_crm_activity.LeadPanel";
@@ -55,10 +62,24 @@ export class AiteLeadPanel extends Component {
 
     setup() {
         this.orm = useService("orm");
+        this.hotkey = useService("hotkey");
+        this.uiService = useService("ui");
+        // Suit la largeur de l'écran (passage plein écran / panneau latéral).
+        this.ui = useState(this.uiService);
+        this.panelRef = useRef("panel");
         this.closeRef = useRef("close");
         this.state = useState({ lead: null, loading: true, error: false });
         this.lastRequest = 0;
-        useHotkey("escape", () => this.props.onClose());
+        useEffect(
+            (el, modal) => (el && modal ? this.activateModal(el) : undefined),
+            () => [this.panelRef.el, this.isModal]
+        );
+        // Échap, inscrite après le passage en modale : Odoo la rattache à
+        // l'élément actif du moment (le panneau plein écran, ou la page).
+        useEffect(
+            () => this.hotkey.add("escape", () => this.props.onClose()),
+            () => [this.isModal]
+        );
         // Pas d'attente : le panneau s'ouvre tout de suite, avec son
         // indicateur de chargement et son bouton « Fermer ».
         onWillStart(() => {
@@ -100,11 +121,14 @@ export class AiteLeadPanel extends Component {
             if (request !== this.lastRequest) {
                 return;
             }
+            // Message dans le panneau, avec « Réessayer », quelle que soit
+            // l'erreur (connexion perdue comprise, qu'Odoo signale aussi).
+            const message = error instanceof RPCError ? error.data?.message : null;
+            this.state.lead = null;
+            this.state.error = message || _t("L'aperçu n'a pas pu être chargé.");
             if (!(error instanceof RPCError)) {
                 throw error;
             }
-            this.state.lead = null;
-            this.state.error = error.data?.message || _t("L'aperçu n'a pas pu être chargé.");
         } finally {
             if (request === this.lastRequest) {
                 this.state.loading = false;
@@ -114,6 +138,51 @@ export class AiteLeadPanel extends Component {
 
     retry() {
         this.fetch(this.props.leadId, { reset: true });
+    }
+
+    /** Plein écran (téléphone, tablette) : le panneau masque la page. */
+    get isModal() {
+        return this.ui.size < SIZES.LG;
+    }
+
+    /**
+     * Panneau plein écran : il devient l'élément actif d'Odoo, et Tab /
+     * Maj+Tab bouclent sur ses boutons et liens au lieu de partir vers la
+     * page cachée derrière (comme dans les fenêtres d'Odoo). Renvoie la
+     * fonction qui rétablit le comportement de panneau latéral.
+     */
+    activateModal(el) {
+        const trapFocus = (ev) => {
+            const hotkey = getActiveHotkey(ev);
+            if (hotkey !== "tab" && hotkey !== "shift+tab") {
+                return;
+            }
+            const [first, last] = getFirstAndLastTabableElements(el);
+            let target = null;
+            if (!first) {
+                target = el;
+            } else if (hotkey === "tab" && document.activeElement === last) {
+                target = first;
+            } else if (hotkey === "shift+tab" && document.activeElement === first) {
+                target = last;
+            }
+            if (target) {
+                ev.preventDefault();
+                ev.stopPropagation();
+                if (target !== el) {
+                    target.focus();
+                }
+            }
+        };
+        this.uiService.activateElement(el);
+        el.addEventListener("keydown", trapFocus);
+        if (!el.contains(document.activeElement)) {
+            this.closeRef.el?.focus();
+        }
+        return () => {
+            el.removeEventListener("keydown", trapFocus);
+            this.uiService.deactivateElement(el);
+        };
     }
 
     get lead() {

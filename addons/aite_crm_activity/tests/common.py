@@ -4,6 +4,13 @@ from datetime import timedelta
 from odoo import fields
 from odoo.tests import TransactionCase, new_test_user
 
+from ..models.crm_activity_params import (
+    PARAM_CRITICAL_DAYS, PARAM_DASHBOARD_UPCOMING_DAYS, PARAM_DORMANT_DAYS, PARAM_HIGH_DAYS,
+)
+
+# Fenêtres et seuils partagés, réglés dans les Paramètres du CRM.
+THRESHOLD_PARAMS = (PARAM_DASHBOARD_UPCOMING_DAYS, PARAM_HIGH_DAYS, PARAM_CRITICAL_DAYS, PARAM_DORMANT_DAYS)
+
 
 class AiteCrmActivityCase(TransactionCase):
     """ Jeu d'essai isolé dans sa propre équipe commerciale, pour que les
@@ -17,6 +24,11 @@ class AiteCrmActivityCase(TransactionCase):
     - lead_won     : opportunité gagnée sans activité (pas « à relancer ») ;
     - act_on_bob_for_alice : activité assignée à Alice sur l'opportunité
       de Bob, qu'elle ne peut pas ouvrir.
+
+    Les fenêtres et seuils des Paramètres repartent de leurs valeurs par
+    défaut (3 j élevé, 7 j critique, 7 j à venir, 14 j dormante), comme sur
+    une base neuve : un enregistrement des Paramètres sur la base de test
+    ne doit pas changer les résultats attendus.
     """
 
     @classmethod
@@ -24,6 +36,7 @@ class AiteCrmActivityCase(TransactionCase):
         super().setUpClass()
         cls.env = cls.env(context=dict(cls.env.context, mail_activity_quick_update=True,
                                        mail_create_nolog=True, tracking_disable=True))
+        cls.env['ir.config_parameter'].sudo().search([('key', 'in', THRESHOLD_PARAMS)]).unlink()
         # Les utilisateurs de test sont en UTC : « aujourd'hui » est le même pour tous.
         cls.today = fields.Date.context_today(cls.env['res.users'].with_context(tz='UTC'))
         cls.manager = new_test_user(

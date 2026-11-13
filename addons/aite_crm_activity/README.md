@@ -58,7 +58,11 @@ opportunité, ouverte ou réalisée, à analyser en tableau croisé, graphique
 ou liste (export Excel possible). Mesures : nombre, en retard, jours de
 retard, taux d'activités faites à temps. Filtres prêts : en retard,
 aujourd'hui, à venir, réalisées, mes activités, retard critique, réalisées
-ce mois-ci… Les mêmes règles de visibilité que le CRM s'appliquent.
+ce mois-ci… Les mêmes règles de visibilité que le CRM s'appliquent : sur
+une activité qui lui est assignée sur l'opportunité d'un collègue, un
+commercial « mes documents » ne voit que le nom de l'opportunité (client,
+étape, commercial et issue restent vides, export compris). L'export
+demande le droit « Export : autorisé » (Paramètres → Utilisateurs).
 
 ## Le récapitulatif du matin
 
@@ -151,13 +155,18 @@ Pour une **mise à jour** du module, procéder comme pour le module WhatsApp
 
 ## Tests automatisés
 
-47 tests : indicateurs, droits par profil, filtres, actions, contenu et
-destinataires du récapitulatif, fuseaux horaires, échec d'envoi,
-réglages, et un parcours complet dans un navigateur. À lancer sur un
-**serveur de test** (mêmes précautions que pour le module WhatsApp, voir
-son README).
+144 tests : indicateurs, droits par profil, filtres, actions, période et
+comparaison, opportunités perdues, gravité des retards et montants en
+jeu, plan de charge, tendances, aperçu d'une opportunité, rapport
+d'analyse (nombres, droits, export), contenu et destinataires du
+récapitulatif, fuseaux horaires, échec d'envoi, réglages, et deux
+parcours dans un navigateur (tableau de bord complet, lien « activités
+en retard »). À lancer sur un **serveur de test** (mêmes précautions que
+pour le module WhatsApp, voir son README) ; les résultats ne dépendent ni
+des données déjà présentes (démonstration comprise) ni des Paramètres
+déjà enregistrés.
 
-Le parcours dans le navigateur demande Chromium et le module Python
+Les parcours dans le navigateur demandent Chromium et le module Python
 `websocket-client` :
 
 ```bash
@@ -170,11 +179,11 @@ Puis :
 sudo -u odoo odoo -c /etc/odoo/odoo.conf -d aite_cad_test -i aite_crm_activity --test-tags aite_crm_activity --workers 0 --max-cron-threads 0 --db-filter '^aite_cad_test$' --http-port 8079 --stop-after-init
 ```
 
-Résultat attendu : `0 failed, 0 error(s) of 47 tests`. Ce total compte
-aussi un test **ignoré** : si le log contient « skipped » pour
-`test_dashboard_tour`, ou « Chrome executable not found » ou
-« websocket-client module is not installed », le parcours dans le
-navigateur n'a pas tourné.
+Résultat attendu : `0 failed, 0 error(s) of 144 tests`. Ce total compte
+aussi les tests **ignorés** : si le log contient « skipped » pour
+`test_dashboard_tour` ou `test_overdue_link_tour`, ou « Chrome executable
+not found » ou « websocket-client module is not installed », les parcours
+dans le navigateur n'ont pas tourné.
 
 Supprimer ensuite la base de test et ses fichiers :
 

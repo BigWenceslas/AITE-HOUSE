@@ -334,11 +334,19 @@ class TestCrmActivityDigestPriorities(AiteCrmActivityCase):
                          {'overdue': 0, 'today': 0, 'upcoming': 1})
 
     def test_cron_sends_nothing_for_lost_opportunities_only(self):
+        """ Seuls les utilisateurs du jeu d'essai sont vérifiés : la tâche
+        écrit aussi aux autres utilisateurs de la base qui ont des activités
+        (données de démonstration, base du client), et le nombre total
+        d'e-mails dépend donc de la base et du jour. """
         (self.lead_alice | self.lead_bob).action_set_lost()
+        fixture_users = self.alice | self.bob | self.manager
+        self.assertFalse(self.Digest._get_recipients() & fixture_users)
         before = self.env['mail.mail'].sudo().search([('email_to', 'ilike', '@aite.example')])
-        self.assertEqual(self.Digest._cron_send_daily_digest(), 0)
+        self.Digest._cron_send_daily_digest()
         after = self.env['mail.mail'].sudo().search([('email_to', 'ilike', '@aite.example')])
         self.assertEqual(after, before)
+        self.assertFalse(any(fixture_users.mapped('aite_crm_digest_last_sent')),
+                         "Aucun récapitulatif traité pour eux")
 
     # Gravité des retards -----------------------------------------------
 

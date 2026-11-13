@@ -23,6 +23,15 @@ Règles de calcul, alignées sur le tableau de bord :
 Une vue SQL échappe aux contrôles propres à mail.activity : les règles
 d'accès du fichier security/aite_crm_activity_security.xml (copiées de
 celles des opportunités) sont donc indispensables.
+
+Un commercial « mes documents » garde dans le rapport les activités qui
+lui sont assignées sur l'opportunité d'un collègue, comme dans ses
+activités Odoo, mais rien de plus sur cette opportunité que son nom (ce
+qu'Odoo lui montre) : client, étape, commercial, piste ou opportunité,
+issue et archivage restent vides sur ces lignes, en liste comme en
+regroupement, filtre ou export. L'équipe et la société restent
+renseignées : le tableau de bord filtre déjà ces activités par équipe, et
+la société sert à la règle multi-société.
 """
 from odoo import api, fields, models
 from odoo.exceptions import AccessError
@@ -79,20 +88,24 @@ class AiteCrmActivityReport(models.Model):
     state = fields.Selection(STATES, string="État", readonly=True)
     severity = fields.Selection(SEVERITIES, string="Gravité du retard", readonly=True)
 
-    # Opportunité
+    # Opportunité. Les champs marqués « depends_context » sont vides sur les
+    # lignes d'une opportunité que l'utilisateur ne peut pas lire (voir
+    # _table_query) : leur valeur dépend de qui lit le rapport, et le cache
+    # ne doit pas la partager entre utilisateurs, ni avec le mode sudo.
     lead_id = fields.Many2one('crm.lead', string="Opportunité", readonly=True)
-    lead_user_id = fields.Many2one('res.users', string="Commercial de l'opportunité", readonly=True)
+    lead_user_id = fields.Many2one(
+        'res.users', string="Commercial de l'opportunité", readonly=True, depends_context=('uid',))
     team_id = fields.Many2one('crm.team', string="Équipe commerciale", readonly=True)
-    stage_id = fields.Many2one('crm.stage', string="Étape", readonly=True)
-    partner_id = fields.Many2one('res.partner', string="Client", readonly=True)
+    stage_id = fields.Many2one('crm.stage', string="Étape", readonly=True, depends_context=('uid',))
+    partner_id = fields.Many2one('res.partner', string="Client", readonly=True, depends_context=('uid',))
     company_id = fields.Many2one('res.company', string="Société", readonly=True)
     lead_type = fields.Selection(
         [('lead', "Piste"), ('opportunity', "Opportunité")], string="Piste ou opportunité",
-        readonly=True)
+        readonly=True, depends_context=('uid',))
     won_status = fields.Selection(
         [('won', "Gagnée"), ('lost', "Perdue"), ('pending', "En cours")],
-        string="Issue de l'opportunité", readonly=True)
-    lead_active = fields.Boolean(string="Opportunité active", readonly=True)
+        string="Issue de l'opportunité", readonly=True, depends_context=('uid',))
+    lead_active = fields.Boolean(string="Opportunité active", readonly=True, depends_context=('uid',))
 
     # Mesures
     nbr = fields.Integer(string="Nombre d'activités", readonly=True, aggregator='sum')
@@ -114,7 +127,15 @@ class AiteCrmActivityReport(models.Model):
     def _table_query(self):
         """ Requête évaluée à chaque lecture : la date du jour et les seuils
         des Paramètres sont ceux du moment (et non ceux de l'installation,
-        comme le ferait une vue créée dans ``init()``). """
+        comme le ferait une vue créée dans ``init()``).
+
+        Elle l'est aussi avec les droits de qui lit le rapport : les détails
+        d'une opportunité qu'il ne peut pas lire (activité qui lui est
+        assignée sur l'opportunité d'un collègue) sont vidés. Le commercial
+        de l'opportunité n'est vidé que sur les lignes assignées au lecteur :
+        sur les autres, la règle d'accès « mes activités et mes
+        opportunités » s'évalue sur sa vraie valeur (vide, il ouvrirait les
+        lignes à tous comme « opportunité sans commercial »). """
         thresholds = get_thresholds(self.env)
         return SQL(
             """
@@ -128,14 +149,15 @@ class AiteCrmActivityReport(models.Model):
                 r.date_done,
                 r.create_date,
                 r.lead_id,
-                r.lead_user_id,
+                CASE WHEN r.lead_readable OR r.user_id IS DISTINCT FROM %(uid)s
+                    THEN r.lead_user_id END AS lead_user_id,
                 r.team_id,
-                r.stage_id,
-                r.partner_id,
+                CASE WHEN r.lead_readable THEN r.stage_id END AS stage_id,
+                CASE WHEN r.lead_readable THEN r.partner_id END AS partner_id,
                 r.company_id,
-                r.lead_type,
-                r.won_status,
-                r.lead_active,
+                CASE WHEN r.lead_readable THEN r.lead_type END AS lead_type,
+                CASE WHEN r.lead_readable THEN r.won_status END AS won_status,
+                CASE WHEN r.lead_readable THEN r.lead_active END AS lead_active,
                 CASE
                     WHEN NOT r.is_open THEN 'done'
                     WHEN r.date_deadline < r.today THEN 'overdue'
@@ -183,7 +205,8 @@ class AiteCrmActivityReport(models.Model):
                     l.company_id,
                     l.type AS lead_type,
                     l.won_status,
-                    l.active AS lead_active
+                    l.active AS lead_active,
+                    %(lead_readable)s AS lead_readable
                 FROM mail_activity a
                 LEFT JOIN crm_lead l ON l.id = a.res_id
                 WHERE a.res_model = 'crm.lead'
@@ -195,7 +218,58 @@ class AiteCrmActivityReport(models.Model):
             critical=thresholds['critical_days'],
             high=thresholds['high_days'],
             now=fields.Datetime.now(),
+            uid=self.env.uid,
+            lead_readable=self._lead_readable_sql(),
         )
+
+    def _lead_readable_sql(self):
+        """ Condition SQL sur ``l`` (crm_lead) : l'utilisateur peut lire
+        cette piste ou opportunité, archivée (perdue) comprise. Ce sont les
+        règles d'accès d'Odoo sur crm.lead qui en décident. """
+        if self.env.su:
+            return SQL("TRUE")
+        leads = self.env['crm.lead'].with_context(active_test=False)
+        if not leads.has_access('read'):
+            return SQL("FALSE")
+        return SQL("l.id IN %s", leads._search([]).subselect())
+
+    # ------------------------------------------------------------------
+    # Export
+    # ------------------------------------------------------------------
+
+    def export_data(self, fields_to_export):
+        """ Export (liste → Actions → Exporter) : la colonne « Opportunité »
+        donne le nom de l'opportunité, comme la liste.
+
+        Une ligne peut porter sur l'opportunité d'un collègue que
+        l'utilisateur ne peut pas lire (activité qui lui est assignée) :
+        Odoo refuserait alors tout l'export, faute de pouvoir lire le nom de
+        cette opportunité. Ce nom est donc lu en sudo, comme le fait la liste
+        (web_read) ; l'export passe par les droits de l'utilisateur pour tout
+        le reste, détails de l'opportunité compris (lead_id/…). """
+        name_columns = [
+            index for index, path in enumerate(fields_to_export)
+            if path in ('lead_id', 'lead_id/display_name')
+        ]
+        if not name_columns:
+            return super().export_data(fields_to_export)
+        # Identifiant de l'opportunité à la place de son nom (aucune lecture
+        # de crm.lead), remplacé ensuite par le nom.
+        paths = [
+            'lead_id/.id' if index in name_columns else path
+            for index, path in enumerate(fields_to_export)
+        ]
+        result = super().export_data(paths)
+        lead_ids = {int(row[index]) for row in result['datas'] for index in name_columns if row[index]}
+        names = {
+            lead.id: lead.display_name
+            for lead in self.env['crm.lead'].sudo().with_context(active_test=False).browse(lead_ids)
+        }
+        for row in result['datas']:
+            for index in name_columns:
+                if row[index]:
+                    row[index] = names.get(int(row[index]), '')
+        return result
 
     # ------------------------------------------------------------------
     # Actions

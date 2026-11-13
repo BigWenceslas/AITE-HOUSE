@@ -155,6 +155,11 @@ export class AiteCrmActivityDashboard extends Component {
      * appliqués tout de suite (deux changements rapprochés se cumulent) et
      * seule la réponse à la dernière demande est affichée. Les tendances
      * sont rechargées si elles sont affichées et concernées.
+     *
+     * Si la dernière demande échoue (erreur du serveur, connexion perdue,
+     * proxy en 502/504), les filtres reviennent à ceux des chiffres
+     * affichés : jamais de nouveaux filtres au-dessus d'anciens chiffres.
+     * Odoo affiche l'erreur (l'exception est relancée).
      */
     async load(changes = {}) {
         const filters = { ...this.state.filters, ...changes };
@@ -170,6 +175,16 @@ export class AiteCrmActivityDashboard extends Component {
                 this.state.data = data;
                 this.state.filters = { ...data.filters };
             }
+        } catch (error) {
+            if (request === this.lastRequest && this.state.data) {
+                this.state.filters = { ...this.state.data.filters };
+                // Tendances : à recharger avec ces filtres-là.
+                this.trendStale = true;
+                if (this.state.tab === "trends") {
+                    this.loadTrends();
+                }
+            }
+            throw error;
         } finally {
             if (request === this.lastRequest) {
                 this.state.loading = false;
@@ -216,11 +231,13 @@ export class AiteCrmActivityDashboard extends Component {
                 return;
             }
             this.trendStale = true;
+            // Message dans l'onglet, avec « Réessayer », quelle que soit
+            // l'erreur (connexion perdue comprise, qu'Odoo signale aussi).
+            const message = error instanceof RPCError ? error.data?.message : null;
+            this.state.trendError = message || _t("Les tendances n'ont pas pu être chargées.");
             if (!(error instanceof RPCError)) {
                 throw error;
             }
-            this.state.trendError =
-                error.data?.message || _t("Les tendances n'ont pas pu être chargées.");
         } finally {
             if (request === this.lastTrendRequest) {
                 this.state.trendLoading = false;
@@ -763,6 +780,8 @@ export class AiteCrmActivityDashboard extends Component {
         // Le focus revient sur le dernier lien utilisé à la fermeture.
         this.previewOpener = ev?.currentTarget || this.previewOpener;
         if (this.state.preview?.leadId === leadId) {
+            // Même opportunité : l'aperçu est rechargé (utile après un échec).
+            this.state.preview.refreshKey++;
             return;
         }
         this.state.preview = { leadId, refreshKey: 0 };

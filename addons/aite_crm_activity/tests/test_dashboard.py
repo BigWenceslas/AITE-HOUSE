@@ -42,7 +42,7 @@ from odoo.addons.aite_crm_activity.models.crm_activity_params import (
     PARAM_CRITICAL_DAYS, PARAM_DASHBOARD_UPCOMING_DAYS, PARAM_DORMANT_DAYS, PARAM_HIGH_DAYS,
     get_thresholds,
 )
-from .common import AiteCrmActivityCase
+from .common import THRESHOLD_PARAMS, AiteCrmActivityCase
 
 
 class DashboardCase(AiteCrmActivityCase):
@@ -1308,6 +1308,11 @@ class TestDashboardSettings(DashboardCase):
         self.assertEqual((settings.aite_crm_dashboard_upcoming_days, settings.aite_crm_dormant_days), (10, 30))
 
     def test_invalid_values_are_refused(self):
+        """ Rien n'est enregistré, que les Paramètres aient déjà été
+        enregistrés une fois ou non. """
+        params = self.env['ir.config_parameter'].sudo()
+        stored = {key: params.get_param(key) for key in THRESHOLD_PARAMS}
+        self.assertEqual(stored, dict.fromkeys(THRESHOLD_PARAMS, False), "Base neuve (tests/common.py)")
         cases = {
             "fenêtre à 0": {'aite_crm_dashboard_upcoming_days': 0},
             "fenêtre trop longue": {'aite_crm_dashboard_upcoming_days': 366},
@@ -1317,14 +1322,24 @@ class TestDashboardSettings(DashboardCase):
             "élevé = critique": {'aite_crm_late_high_days': 5, 'aite_crm_late_critical_days': 5},
             "élevé > critique": {'aite_crm_late_high_days': 8, 'aite_crm_late_critical_days': 5},
         }
-        for label, values in cases.items():
-            with self.subTest(case=label), self.assertRaises(ValidationError):
-                self.env['res.config.settings'].create(values).set_values()
-        self.assertEqual(get_thresholds(self.env), {
-            'upcoming_days': 7, 'high_days': 3, 'critical_days': 7, 'dormant_days': 14},
-            "Rien n'a été enregistré")
-        params = self.env['ir.config_parameter'].sudo()
-        self.assertFalse(params.get_param(PARAM_HIGH_DAYS))
+        defaults = {'upcoming_days': 7, 'high_days': 3, 'critical_days': 7, 'dormant_days': 14}
+
+        def assert_refused():
+            for label, values in cases.items():
+                with self.subTest(case=label), self.assertRaises(ValidationError):
+                    self.env['res.config.settings'].create(values).set_values()
+            self.assertEqual(get_thresholds(self.env), defaults, "Rien n'a été enregistré")
+            self.assertEqual({key: params.get_param(key) for key in THRESHOLD_PARAMS}, stored)
+
+        assert_refused()
+        # Paramètres enregistrés une fois sans rien changer (bouton
+        # « Enregistrer ») : les valeurs par défaut sont alors stockées.
+        self.env['res.config.settings'].create({}).set_values()
+        stored = {key: params.get_param(key) for key in THRESHOLD_PARAMS}
+        self.assertEqual(stored, {
+            PARAM_DASHBOARD_UPCOMING_DAYS: '7', PARAM_HIGH_DAYS: '3',
+            PARAM_CRITICAL_DAYS: '7', PARAM_DORMANT_DAYS: '14'})
+        assert_refused()
 
     def test_fields_are_in_the_activity_block(self):
         arch = self.env['res.config.settings'].get_view(view_type='form')['arch']

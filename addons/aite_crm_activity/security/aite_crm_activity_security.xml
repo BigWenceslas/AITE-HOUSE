@@ -7,7 +7,10 @@
          - société : seulement les opportunités des sociétés actives ;
          - commercial (mes documents) : ses activités, celles de ses
            opportunités et celles des opportunités sans commercial, comme
-           dans la liste des activités d'Odoo ;
+           dans la liste des activités d'Odoo. Sur l'opportunité d'un
+           collègue, ses lignes ne montrent que le nom de l'opportunité
+           (client, étape, commercial, issue vidés par la requête du
+           rapport, models/crm_activity_report.py) ;
          - tous les documents : tout. -->
     <data noupdate="1">
 

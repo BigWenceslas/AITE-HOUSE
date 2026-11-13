@@ -20,7 +20,9 @@ import { registry } from "@web/core/registry";
  * par « (tour) » pour ne viser qu'elles. Les fenêtres d'Odoo s'affichent
  * hors du tableau de bord : on vérifie leur fermeture sur body. Le texte
  * d'une action « run » ne doit pas finir par une parenthèse (l'outil de
- * parcours la retirerait).
+ * parcours la retirerait) : un libellé qui en contient une se met entre
+ * apostrophes (« selectByLabel 'Collègue (tour)' »), sans quoi l'option
+ * visée ne serait pas trouvée et la dernière de la liste serait choisie.
  */
 const LEAD_LINK = "tr.o_aite_cad_activity:contains('Préparer la réunion (tour)') .o_aite_cad_lead_link";
 const NO_PANEL = ".o_aite_cad:not(:has(.o_aite_cad_panel))";
@@ -95,7 +97,11 @@ registry.category("web_tour.tours").add("aite_crm_activity_dashboard_tour", {
         {
             content: "Choisir la personne",
             trigger: ".modal select.o_aite_cad_reassign_user",
-            run: "selectByLabel Collègue (tour)",
+            run: "selectByLabel 'Collègue (tour)'",
+        },
+        {
+            content: "C'est bien la collègue qui est choisie (d'autres commerciaux sont listés)",
+            trigger: ".modal select.o_aite_cad_reassign_user:has(option:selected:text('Collègue (tour)'))",
         },
         {
             content: "Confirmer la réassignation",

@@ -19,13 +19,18 @@ Règles vérifiées :
   rapport, une activité réalisée y reste ;
 - R7 : vues, filtres, action (chemin analyse-activites) et menu se
   chargent et répondent aux appels du tableau croisé, du graphique et de
-  la liste.
+  la liste ;
+- R8 : sur une ligne de l'opportunité d'un collègue qu'il ne peut pas lire,
+  le commercial ne voit que le nom de l'opportunité (client, étape,
+  commercial, issue restent vides, en liste, regroupement, filtre et
+  export), et l'export de ses lignes fonctionne.
 """
 from datetime import datetime, time, timedelta
 
 from freezegun import freeze_time
 from lxml import etree
 
+from odoo import Command
 from odoo.exceptions import AccessError
 from odoo.tests import new_test_user, tagged
 from odoo.tools import SQL
@@ -417,6 +422,85 @@ class TestCrmActivityReport(AiteCrmActivityCase):
         with self.assertRaises(AccessError):
             row.action_open_lead()
 
+    # R8 : opportunité d'un collègue -----------------------------------
+
+    def test_colleague_lead_details_stay_hidden(self):
+        """ Activité assignée à Alice sur l'opportunité de Bob, qu'elle ne
+        peut pas ouvrir : la ligne reste dans son rapport avec le nom de
+        l'opportunité (ce que lui montre Odoo), mais rien d'autre sur elle,
+        même une fois l'activité faite et l'opportunité perdue. """
+        secret = self.env['res.partner'].create({'name': "Client confidentiel"})
+        self.lead_bob.partner_id = secret
+        self.assertFalse(self.lead_bob.with_user(self.alice)._filtered_access('read'))
+        domain = [('activity_id', '=', self.act_on_bob_for_alice.id)]
+        hidden = ['lead_active', 'lead_type', 'lead_user_id', 'partner_id', 'stage_id', 'won_status']
+
+        # Lu d'abord en sudo et par le responsable (qui voient tout), dans la
+        # même transaction : le cache ne doit rien en passer à Alice.
+        raw = self.report().sudo().search(domain)
+        self.assertEqual((raw.partner_id, raw.lead_user_id, raw.won_status), (secret, self.bob, 'pending'))
+        manager_row = self.report(self.manager).search(domain)
+        self.assertEqual((manager_row.partner_id, manager_row.stage_id), (secret, self.lead_bob.stage_id))
+
+        Report = self.report(self.alice)
+        row = Report.search(domain)
+        self.assertEqual((row.lead_id, row.user_id, row.team_id, row.state),
+                         (self.lead_bob, self.alice, self.team, 'planned'))
+        [values] = row.read(hidden)
+        self.assertEqual({fname: values[fname] for fname in hidden}, dict.fromkeys(hidden, False))
+
+        # Ni en regroupement, ni en filtre.
+        groups = Report.formatted_read_group([('user_id', '=', self.alice.id)], ['partner_id'], ['__count'])
+        self.assertNotIn(secret.id, [group['partner_id'] and group['partner_id'][0] for group in groups])
+        self.assertEqual(Report.search_count([('partner_id', '=', secret.id)]), 0)
+        self.assertEqual(Report.search_count(domain + [('lead_user_id', '=', self.bob.id)]), 0)
+
+        # Les lignes de Bob sur son opportunité restent invisibles pour Alice
+        # (la règle d'accès lit toujours le vrai commercial).
+        self.assertNotIn(self.act_bob.id, self.rows(self.alice))
+        self.assertEqual(self.rows(self.bob)[self.act_on_bob_for_alice.id].partner_id, secret)
+
+        # Activité faite, puis opportunité perdue : Alice ne l'apprend pas
+        # par le rapport.
+        self.act_on_bob_for_alice.action_feedback(feedback="Fait")
+        self.lead_bob.action_set_lost()
+        self.env.invalidate_all()
+        row = Report.search(domain)
+        self.assertEqual((row.state, row.won_status, row.partner_id.id), ('done', False, False))
+        self.assertEqual(Report.search_count(self.team_domain() + [('won_status', '=', 'lost')]), 0)
+        self.assertEqual(self.report(self.manager).search(domain).won_status, 'lost')
+
+    def test_export_with_rows_on_a_colleague_lead(self):
+        """ Liste → Exporter, pour Alice dont une ligne porte sur
+        l'opportunité de Bob : l'export se fait, avec le nom de
+        l'opportunité comme dans la liste et sans son client. Le détail de
+        l'opportunité de Bob, lui, reste refusé. """
+        # « Export : autorisé » (Paramètres → Utilisateurs), exigé par Odoo 19.
+        (self.alice | self.manager).write({
+            'group_ids': [Command.link(self.env.ref('base.group_allow_export').id)]})
+        secret = self.env['res.partner'].create({'name': "Client confidentiel"})
+        self.lead_bob.partner_id = secret
+        rows = self.report(self.alice).search(self.team_domain())
+        self.assertIn(self.act_on_bob_for_alice, rows.activity_id)
+
+        for lead_path in ('lead_id', 'lead_id/display_name'):
+            with self.subTest(path=lead_path):
+                datas = rows.export_data(['summary', lead_path, 'partner_id', 'user_id'])['datas']
+                by_summary = {line[0]: line[1:] for line in datas}
+                self.assertEqual(len(datas), 7)
+                self.assertEqual(by_summary["Aider Bob"], ["Opportunité Bob", '', "Alice Commerciale"])
+                self.assertEqual(by_summary["Rappeler le client"],
+                                 ["Opportunité Alice", "Client Test", "Alice Commerciale"])
+                self.assertEqual(by_summary["Qualifier"], ["Opportunité sans commercial", '', "Bob Commercial"])
+        # Import compatible (identifiants externes) : déjà permis par Odoo.
+        rows.with_context(import_compat=True).export_data(['lead_id/id'])
+        with self.assertRaises(AccessError):
+            rows.export_data(['summary', 'lead_id/expected_revenue'])
+
+        manager_rows = self.report(self.manager).search(self.team_domain())
+        datas = manager_rows.export_data(['summary', 'lead_id', 'partner_id'])['datas']
+        self.assertIn(["Aider Bob", "Opportunité Bob", "Client confidentiel"], datas)
+
     # R7 : vues, action, menu -------------------------------------------
 
     def test_action_and_menu(self):
@@ -487,8 +571,10 @@ class TestCrmActivityReport(AiteCrmActivityCase):
             'my_activities': 6, 'my_leads': 6,
             'late_high': 1, 'late_critical': 1,
             'done_this_month': 1,
-            'lead': 0, 'opportunity': 8,
-            'pending': 8, 'won': 0, 'lost': 0,
+            # « Aider Bob » (opportunité de Bob) : Alice n'en voit ni le type
+            # ni l'issue (R8).
+            'lead': 0, 'opportunity': 7,
+            'pending': 7, 'won': 0, 'lost': 0,
         }
         self.assertEqual(set(filters), set(expected))
         Report = self.report(self.alice)
