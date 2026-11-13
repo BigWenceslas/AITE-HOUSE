@@ -77,13 +77,17 @@
                            t-att-id="uid + '_date_from'"
                            t-att-value="state.filters.date_from"
                            t-att-max="data.today"
-                           t-on-change="(ev) => this.onCustomDateChange('date_from', ev)"/>
+                           t-on-change="(ev) => this.onCustomDateChange('date_from', ev)"
+                           t-on-blur="(ev) => this.onCustomDateCommit('date_from', ev)"
+                           t-on-keydown="(ev) => this.onCustomDateCommit('date_from', ev)"/>
                     <label class="input-group-text" t-att-for="uid + '_date_to'">au</label>
                     <input type="date" class="form-control o_aite_cad_date_to"
                            t-att-id="uid + '_date_to'"
                            t-att-value="state.filters.date_to"
                            t-att-max="data.today"
-                           t-on-change="(ev) => this.onCustomDateChange('date_to', ev)"/>
+                           t-on-change="(ev) => this.onCustomDateChange('date_to', ev)"
+                           t-on-blur="(ev) => this.onCustomDateCommit('date_to', ev)"
+                           t-on-keydown="(ev) => this.onCustomDateCommit('date_to', ev)"/>
                 </div>
                 <button type="button" class="btn btn-sm btn-light o_aite_cad_refresh"
                         title="Actualiser" aria-label="Actualiser"
@@ -317,6 +321,8 @@
                                                         title="Aperçu de l'opportunité"
                                                         t-on-click="(ev) => this.openPreview(lead.id, ev)"
                                                         t-esc="lead.name"/>
+                                                <span t-if="lead.dormant" class="badge text-bg-warning ms-1 d-md-none o_aite_cad_dormant_mobile"
+                                                      t-att-title="dormantTitle">dormante</span>
                                                 <div t-if="lead.partner" class="small text-muted" t-esc="lead.partner"/>
                                             </td>
                                             <td t-esc="lead.stage"/>

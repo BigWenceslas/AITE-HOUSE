@@ -1220,6 +1220,22 @@ class TestLeadPreview(DashboardCase):
              'date_done': self._days(-3).isoformat(), 'feedback': "Devis envoyé & relancé", 'user': "Bob Commercial"},
         ])
 
+    def test_preview_feedback_is_plain_text(self):
+        """ mail.activity.feedback est un champ Text : « < » et « > » saisis
+        par l'utilisateur et les retours à la ligne sont rendus tels quels. """
+        done = self._done_activity(self.lead_alice, self.alice, self._days(-2), self._days(-2),
+                                   self.type_call, "Appel")
+        Dashboard = self.Dashboard.with_user(self.manager)
+        for feedback, expected in (
+            ("Rappeler <Jean>\nsuite : devis", "Rappeler <Jean>\nsuite : devis"),
+            ("Premier point\nDeuxième ligne <b>gras</b>  ", "Premier point\nDeuxième ligne <b>gras</b>"),
+            ("<p>Devis <b>envoyé</b></p>", "Devis envoyé"),
+        ):
+            with self.subTest(feedback=feedback):
+                done.feedback = feedback
+                data = Dashboard.get_lead_preview(self.lead_alice.id)
+                self.assertEqual(data['done_activities'][0]['feedback'], expected)
+
     def test_preview_open_activity_severity(self):
         late = self._activity(self.lead_alice, self.alice, -8, self.type_call, "Très en retard")
         data = self.Dashboard.with_user(self.manager).get_lead_preview(self.lead_alice.id)

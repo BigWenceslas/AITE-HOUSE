@@ -1,4 +1,12 @@
-import { Component, onMounted, onWillStart, onWillUpdateProps, useRef, useState } from "@odoo/owl";
+import {
+    Component,
+    onMounted,
+    onWillStart,
+    onWillUnmount,
+    onWillUpdateProps,
+    useRef,
+    useState,
+} from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { useService } from "@web/core/utils/hooks";
 import { useHotkey } from "@web/core/hotkeys/hotkey_hook";
@@ -63,7 +71,12 @@ export class AiteLeadPanel extends Component {
                 this.fetch(nextProps.leadId);
             }
         });
-        onMounted(() => this.closeRef.el?.focus());
+        onMounted(() => {
+            // Les notifications se décalent à gauche du panneau (voir le SCSS).
+            document.body.classList.add("o_aite_cad_panel_open");
+            this.closeRef.el?.focus();
+        });
+        onWillUnmount(() => document.body.classList.remove("o_aite_cad_panel_open"));
     }
 
     /**

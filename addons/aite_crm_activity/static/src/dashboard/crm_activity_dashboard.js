@@ -1,4 +1,12 @@
-import { Component, onMounted, onPatched, onWillStart, useRef, useState } from "@odoo/owl";
+import {
+    Component,
+    onMounted,
+    onPatched,
+    onWillStart,
+    onWillUnmount,
+    useRef,
+    useState,
+} from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
@@ -37,6 +45,18 @@ const FILTER_KEYS = ["user_id", "team_id", "activity_type_id", "bucket", "period
 const TREND_FILTER_KEYS = ["user_id", "team_id", "activity_type_id"];
 // Niveaux de couleur du plan de charge (classes o_aite_cad_heat_1 … 4).
 const HEAT_LEVELS = 4;
+// Dates « Du / au » de la période personnalisée : Chrome signale un
+// changement à chaque chiffre tapé au clavier (l'année passe par 0002,
+// 0020, 0202…). Une date n'est envoyée au serveur que complète (année
+// 1900 ou plus, comme le serveur), et après une courte pause de saisie,
+// à la sortie du champ ou sur Entrée.
+const CUSTOM_DATE_DELAY = 700;
+const CUSTOM_DATE_MIN_YEAR = 1900;
+
+function isCompleteDate(value) {
+    const match = /^(\d{4})-\d{2}-\d{2}$/.exec(value || "");
+    return Boolean(match) && parseInt(match[1]) >= CUSTOM_DATE_MIN_YEAR;
+}
 
 let nextInstanceId = 0;
 
@@ -112,6 +132,9 @@ export class AiteCrmActivityDashboard extends Component {
         this.pendingScroll = null;
         this.pendingFocus = null;
         this.previewOpener = null;
+        // Dates personnalisées saisies, pas encore envoyées.
+        this.pendingDates = {};
+        this.customDateTimer = null;
 
         useSetupAction({
             rootRef: this.rootRef,
@@ -120,6 +143,7 @@ export class AiteCrmActivityDashboard extends Component {
         onWillStart(() => this.load());
         onMounted(() => this.afterRender());
         onPatched(() => this.afterRender());
+        onWillUnmount(() => clearTimeout(this.customDateTimer));
     }
 
     // ------------------------------------------------------------------
@@ -498,12 +522,51 @@ export class AiteCrmActivityDashboard extends Component {
         }
     }
 
+    /** Saisie d'une date « Du » ou « au » : gardée en attente, puis
+     * envoyée après une pause (voir CUSTOM_DATE_DELAY). Une date
+     * incomplète n'est jamais envoyée. */
     onCustomDateChange(key, ev) {
-        const value = ev.target.value;
-        if (!value) {
+        clearTimeout(this.customDateTimer);
+        this.customDateTimer = null;
+        if (isCompleteDate(ev.target.value)) {
+            this.pendingDates[key] = ev.target.value;
+        } else {
+            delete this.pendingDates[key];
+        }
+        if (Object.keys(this.pendingDates).length) {
+            this.customDateTimer = setTimeout(() => this.commitCustomDates(), CUSTOM_DATE_DELAY);
+        }
+    }
+
+    /** Sortie du champ ou touche Entrée : envoi immédiat. Une date restée
+     * incomplète à la sortie du champ est remplacée par celle en vigueur. */
+    onCustomDateCommit(key, ev) {
+        if (ev.type === "keydown" && ev.key !== "Enter") {
             return;
         }
-        this.load({ period: "custom", [key]: value });
+        this.commitCustomDates();
+        if (ev.type === "blur") {
+            // Après coup : Chrome valide la saisie en cours après « blur ».
+            const input = ev.target;
+            setTimeout(() => {
+                if (document.activeElement !== input && !isCompleteDate(input.value)) {
+                    input.value = this.state.filters[key] || "";
+                }
+            });
+        }
+    }
+
+    commitCustomDates() {
+        clearTimeout(this.customDateTimer);
+        this.customDateTimer = null;
+        const changes = this.pendingDates;
+        this.pendingDates = {};
+        const changed = Object.entries(changes).some(
+            ([key, value]) => this.state.filters[key] !== value
+        );
+        if (changed && this.state.filters.period === "custom") {
+            this.load({ period: "custom", ...changes });
+        }
     }
 
     selectBucket(bucket) {

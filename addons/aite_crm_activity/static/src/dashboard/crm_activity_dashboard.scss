@@ -360,6 +360,27 @@ $o-aite-cad-warning-text: mix($warning, $body-color, 45%);
         max-width: 12rem;
     }
 
+    // Téléphone : les classements tiennent dans la carte, le pourcentage
+    // « À temps » (le chiffre clé) reste visible sans défilement.
+    @include media-breakpoint-down(md) {
+        .o_aite_cad_rate_col {
+            width: auto;
+            min-width: 0;
+        }
+
+        .o_aite_cad_rate_bar {
+            display: none;
+        }
+
+        .o_aite_cad_rate_value {
+            min-width: 0;
+        }
+
+        .o_aite_cad_ranking_name {
+            max-width: 9rem;
+        }
+    }
+
     // ------------------------------------------------------------------
     // Aperçu d'une opportunité : panneau à droite, plein écran sur
     // téléphone et tablette (là où c'est .o_action qui défile).
@@ -381,9 +402,12 @@ $o-aite-cad-warning-text: mix($warning, $body-color, 45%);
             border-left: $border-width solid $border-color;
         }
 
-        @include media-breakpoint-down(md) {
+        // Sous 992 px (téléphones, tablettes, téléphone à l'horizontale) :
+        // plein écran, le relais exact de la règle « up(lg) » ci-dessus.
+        @include media-breakpoint-down(lg) {
             position: fixed;
             inset: 0;
+            overflow-y: auto;
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -415,5 +439,14 @@ $o-aite-cad-warning-text: mix($warning, $body-color, 45%);
     to {
         opacity: 1;
         transform: none;
+    }
+}
+
+// Aperçu ouvert sur ordinateur : les notifications (« Activité marquée comme
+// faite »…) s'affichent à gauche du panneau au lieu de couvrir son en-tête
+// et son bouton « Fermer ».
+@include media-breakpoint-up(lg) {
+    body.o_aite_cad_panel_open .o_notification_manager {
+        right: calc(28rem + #{$o-notification-margin});
     }
 }

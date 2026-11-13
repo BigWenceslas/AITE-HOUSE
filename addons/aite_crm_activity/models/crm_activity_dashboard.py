@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+import re
 from collections import defaultdict
 from datetime import date, datetime, time, timedelta
 
 import pytz
 from dateutil.relativedelta import MO, relativedelta
+from markupsafe import Markup
 
 from odoo import api, fields, models
 from odoo.exceptions import AccessError, UserError
@@ -883,10 +885,14 @@ class AiteCrmActivityDashboard(models.AbstractModel):
 
     @api.model
     def _plain_text(self, text):
-        """ Compte rendu en texte brut (balises HTML retirées si besoin). """
+        """ Compte rendu d'une activité, en texte brut. mail.activity.feedback
+        est un champ Text : le texte saisi est rendu tel quel (« < » et « > »
+        compris, retours à la ligne gardés). Seul un contenu réellement HTML
+        (valeur Markup, ou texte qui commence par une balise comme <p>) est
+        converti. """
         if not text:
             return ''
-        if '<' in text and '>' in text:
+        if isinstance(text, Markup) or re.match(r'\s*<(p|div|br|ul|ol|span|b|strong|i|em)\b', text, re.I):
             return html_to_inner_content(text)
         return text.strip()
 
