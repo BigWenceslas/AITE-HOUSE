@@ -150,8 +150,50 @@ détail des cas) :
 Le récapitulatif est actif dès l'installation, à 7 h (heure de Douala) :
 le régler ou le couper dans les Paramètres du CRM.
 
-Pour une **mise à jour** du module, procéder comme pour le module WhatsApp
-(service arrêté, puis `-u aite_crm_activity`).
+## Mise à jour d'une installation existante (19.0.1 → 19.0.2)
+
+Faire d'abord une **sauvegarde** de la base : gestionnaire des bases
+(`https://votre-site/web/database/manager` → *Backup*), ou
+`sudo -u odoo pg_dump -Fc NOM_DE_LA_BASE -f /tmp/sauvegarde.dump`. La
+mise à jour se fait **service arrêté**.
+
+```bash
+sudo systemctl stop odoo
+```
+
+Retirer l'ancien dossier, puis déposer le nouveau (étape 1 de
+l'installation : `unzip`, `chown`) :
+
+```bash
+sudo rm -rf /opt/odoo/custom-addons/aite_crm_activity
+```
+
+```bash
+sudo unzip -o /tmp/aite_crm_activity.zip -d /opt/odoo/custom-addons/
+```
+
+```bash
+sudo chown -R odoo:odoo /opt/odoo/custom-addons
+```
+
+Mettre le module à niveau, puis redémarrer :
+
+```bash
+sudo -u odoo odoo -c /etc/odoo/odoo.conf -d NOM_DE_LA_BASE -u aite_crm_activity --stop-after-init
+```
+
+```bash
+sudo systemctl start odoo
+```
+
+(`odoo` est la commande des installations `.deb` ; depuis les sources :
+`python3 odoo-bin` dans le dossier d'Odoo.) Les réglages du récapitulatif
+(heure, fuseau, fenêtre « à venir », désabonnements) et l'heure de
+l'action planifiée sont conservés ; les nouveaux seuils prennent leurs
+valeurs par défaut (7 jours à venir, retard élevé à 3 jours, critique à
+7 jours, opportunité dormante à 14 jours), modifiables dans les
+Paramètres du CRM. Recharger ensuite la page dans le navigateur
+(Ctrl+Maj+R) pour obtenir le nouveau tableau de bord.
 
 ## Tests automatisés
 
