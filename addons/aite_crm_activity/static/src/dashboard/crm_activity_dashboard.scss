@@ -1,7 +1,75 @@
 // CRM → Suivi des activités
+//
+// Uniquement des variables d'Odoo et de Bootstrap (aucune couleur écrite en
+// dur) : le thème sombre d'Odoo recompile ce fichier avec ses propres
+// valeurs.
+
+// Échelle du plan de charge : 4 niveaux d'une même teinte, du plus clair au
+// plus foncé, mélangée au fond des cartes.
+$o-aite-cad-heat-color: $o-action;
+$o-aite-cad-surface: $o-view-background-color;
+// Texte « orange » lisible : la couleur d'alerte mêlée à celle du texte
+// (foncée sur fond clair, claire sur fond sombre).
+$o-aite-cad-warning-text: mix($warning, $body-color, 45%);
 
 .o_aite_cad {
+    position: relative;
     background-color: $o-webclient-background-color;
+
+    // Couleurs du graphique des tendances, lues par trend_chart.js.
+    // « À temps » / « en retard » : bleu et rouge, distincts aussi pour les
+    // daltoniens ; la légende, les infobulles et le tableau des chiffres
+    // ne reposent pas sur la seule couleur.
+    --o-aite-cad-chart-on-time: #{$info};
+    --o-aite-cad-chart-late: #{$danger};
+    --o-aite-cad-chart-created: #{$o-action};
+    --o-aite-cad-chart-text: #{$text-muted};
+    --o-aite-cad-chart-grid: #{rgba($body-color, 0.12)};
+    --o-aite-cad-chart-surface: #{$o-aite-cad-surface};
+
+    // ------------------------------------------------------------------
+    // En-tête et filtres
+    // ------------------------------------------------------------------
+
+    .o_aite_cad_filter {
+        width: auto;
+        max-width: 100%;
+    }
+
+    .o_aite_cad_custom_period {
+        width: auto;
+
+        input[type="date"] {
+            min-width: 8.5rem;
+        }
+    }
+
+    @include media-breakpoint-down(md) {
+        .o_aite_cad_header h2 {
+            width: 100%;
+        }
+
+        .o_aite_cad_filters {
+            width: 100%;
+        }
+
+        .o_aite_cad_filter {
+            flex: 1 1 40%;
+            min-width: 0;
+        }
+
+        .o_aite_cad_custom_period {
+            flex: 1 1 100%;
+
+            input[type="date"] {
+                min-width: 0;
+            }
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Indicateurs
+    // ------------------------------------------------------------------
 
     .o_aite_cad_kpi {
         cursor: pointer;
@@ -17,6 +85,15 @@
             outline: 2px solid $o-action;
             outline-offset: -2px;
         }
+
+        @media (prefers-reduced-motion: reduce) {
+            transition: none;
+
+            &:hover,
+            &:focus-visible {
+                transform: none;
+            }
+        }
     }
 
     .o_aite_cad_kpi_value {
@@ -25,8 +102,41 @@
         line-height: 1.1;
     }
 
+    .o_aite_cad_amount_chip {
+        max-width: 100%;
+        white-space: normal;
+        text-align: start;
+        font-weight: 600;
+        color: $body-color;
+        background-color: rgba($o-action, 0.1);
+        border: $border-width solid rgba($o-action, 0.25);
+    }
+
+    // ------------------------------------------------------------------
+    // Onglets (défilent horizontalement sur téléphone)
+    // ------------------------------------------------------------------
+
+    .o_aite_cad_tablist {
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: thin;
+
+        .nav-link {
+            font-weight: 600;
+        }
+
+        .nav-link:not(.active) {
+            color: $text-muted;
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Activités et opportunités sans activité
+    // ------------------------------------------------------------------
+
     .o_aite_cad_dot {
         display: inline-block;
+        flex: 0 0 auto;
         width: 0.6rem;
         height: 0.6rem;
         margin-right: 0.35rem;
@@ -39,19 +149,235 @@
         &.o_aite_cad_dot_done { background-color: $success; }
     }
 
-    .o_aite_cad_state_overdue td:first-child {
+    .o_aite_cad_activities .o_aite_cad_state_overdue td:first-child {
         color: $danger;
+    }
+
+    .o_aite_cad_text_warning {
+        color: $o-aite-cad-warning-text;
     }
 
     .o_aite_cad_summary {
         max-width: 22rem;
     }
 
-    .o_aite_cad_by_user_row {
+    .o_aite_cad_lead_link {
+        --btn-font-weight: #{$font-weight-semibold};
+        text-decoration: none;
+
+        &:hover,
+        &:focus-visible {
+            text-decoration: underline;
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Équipe : par commercial
+    // ------------------------------------------------------------------
+
+    .o_aite_cad_by_user_name {
+        display: inline-block;
+        max-width: 12rem;
+        vertical-align: middle;
+        color: $body-color;
+    }
+
+    .o_aite_cad_load_col {
+        width: 20%;
+        min-width: 6rem;
+    }
+
+    .o_aite_cad_load {
+        height: 0.5rem;
+        min-width: 0.25rem;
+        background-color: transparent;
+    }
+
+    // Nombre cliquable (vers « À traiter »).
+    .o_aite_cad_drill {
+        --btn-padding-y: 0;
+        --btn-padding-x: #{map-get($spacers, 2)};
+        --btn-color: #{$body-color};
+        --btn-bg: transparent;
+        --btn-border-color: transparent;
+        --btn-hover-color: #{$body-color};
+        --btn-hover-bg: #{rgba($o-action, 0.12)};
+        --btn-hover-border-color: transparent;
+        --btn-active-bg: #{rgba($o-action, 0.2)};
+        --btn-active-border-color: transparent;
+        min-width: 2rem;
+        font-weight: 600;
+        text-decoration: underline dotted;
+        text-underline-offset: 0.2em;
+
+        &.o_aite_cad_drill_tone_overdue {
+            --btn-color: #{$danger};
+            --btn-hover-color: #{$danger};
+        }
+
+        &.o_aite_cad_drill_tone_today {
+            --btn-color: #{$o-aite-cad-warning-text};
+            --btn-hover-color: #{$o-aite-cad-warning-text};
+        }
+    }
+
+    .o_aite_cad_total {
+        border-top: 2px solid $border-color;
+    }
+
+    .o_aite_cad_swatch {
+        display: inline-block;
+        width: 0.6rem;
+        height: 0.6rem;
+        border-radius: 2px;
+        vertical-align: middle;
+    }
+
+    // ------------------------------------------------------------------
+    // Équipe : plan de charge
+    // ------------------------------------------------------------------
+
+    .o_aite_cad_workload {
+        th,
+        td {
+            min-width: 3rem;
+        }
+
+        .o_aite_cad_wl_name {
+            max-width: 12rem;
+        }
+
+        .o_aite_cad_wl_weekend {
+            background-color: rgba($body-color, 0.035);
+        }
+
+        thead .o_aite_cad_wl_today {
+            color: $o-action;
+            box-shadow: inset 0 -2px 0 $o-action;
+        }
+    }
+
+    .o_aite_cad_wl_cell {
+        --btn-padding-y: #{map-get($spacers, 1) * 0.5};
+        --btn-padding-x: #{map-get($spacers, 2)};
+        --btn-color: #{$body-color};
+        --btn-bg: transparent;
+        --btn-border-color: transparent;
+        --btn-hover-border-color: #{$o-action};
+        --btn-active-border-color: #{$o-action};
+        min-width: 2.25rem;
+        font-weight: 600;
+    }
+
+    @for $level from 1 through 4 {
+        $bg: mix($o-aite-cad-heat-color, $o-aite-cad-surface, 15% + ($level - 1) * 23%);
+        $fg: color-contrast($bg);
+        .o_aite_cad_heat_#{$level} {
+            --btn-color: #{$fg};
+            --btn-bg: #{$bg};
+            --btn-hover-color: #{$fg};
+            --btn-hover-bg: #{$bg};
+            --btn-active-color: #{$fg};
+            --btn-active-bg: #{$bg};
+        }
+    }
+
+    .o_aite_cad_wl_overdue {
+        $bg: mix($danger, $o-aite-cad-surface, 15%);
+        --btn-color: #{color-contrast($bg)};
+        --btn-bg: #{$bg};
+        --btn-hover-color: #{color-contrast($bg)};
+        --btn-hover-bg: #{$bg};
+        --btn-hover-border-color: #{$danger};
+        --btn-active-bg: #{$bg};
+        --btn-active-border-color: #{$danger};
+    }
+
+    // ------------------------------------------------------------------
+    // Tendances
+    // ------------------------------------------------------------------
+
+    .o_aite_cad_chart {
+        position: relative;
+        height: 18rem;
+    }
+
+    .o_aite_cad_trend_details summary {
         cursor: pointer;
     }
 
-    .o_aite_cad_by_user_name {
+    .o_aite_cad_rate_col {
+        width: 40%;
+        min-width: 8rem;
+    }
+
+    .o_aite_cad_rate_bar {
+        height: 0.4rem;
+    }
+
+    .o_aite_cad_rate_value {
+        min-width: 3.5rem;
+        text-align: end;
+    }
+
+    .o_aite_cad_ranking_name {
         max-width: 12rem;
+    }
+
+    // ------------------------------------------------------------------
+    // Aperçu d'une opportunité : panneau à droite, plein écran sur
+    // téléphone et tablette (là où c'est .o_action qui défile).
+    // ------------------------------------------------------------------
+
+    .o_aite_cad_panel {
+        z-index: $zindex-offcanvas;
+        color: $body-color;
+        background-color: $o-aite-cad-surface;
+        animation: o_aite_cad_panel_in 0.18s ease-out;
+
+        @include media-breakpoint-up(lg) {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 28rem;
+            max-width: 100%;
+            border-left: $border-width solid $border-color;
+        }
+
+        @include media-breakpoint-down(md) {
+            position: fixed;
+            inset: 0;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            animation: none;
+        }
+    }
+
+    .o_aite_cad_panel_details {
+        dt,
+        dd {
+            margin-bottom: map-get($spacers, 1);
+        }
+    }
+
+    .o_aite_cad_panel_done_item {
+        border-color: $border-color !important;
+    }
+
+    .o_aite_cad_feedback_text {
+        white-space: pre-line;
+    }
+}
+
+@keyframes o_aite_cad_panel_in {
+    from {
+        opacity: 0;
+        transform: translateX(1.5rem);
+    }
+    to {
+        opacity: 1;
+        transform: none;
     }
 }

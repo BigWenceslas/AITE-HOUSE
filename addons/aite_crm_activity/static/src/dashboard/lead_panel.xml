@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- Aperçu d'une opportunité (panneau latéral, plein écran sur téléphone) -->
+    <t t-name="aite_crm_activity.LeadPanel">
+        <section class="o_aite_cad_panel d-flex flex-column shadow-lg"
+                 role="dialog" aria-modal="false" t-att-aria-labelledby="titleId"
+                 t-att-aria-busy="state.loading ? 'true' : 'false'">
+            <header class="o_aite_cad_panel_header d-flex align-items-start gap-2 px-3 py-2 border-bottom">
+                <div class="flex-grow-1 min-w-0">
+                    <div class="small text-muted">Aperçu de l'opportunité</div>
+                    <h2 class="h5 mb-0 text-break o_aite_cad_panel_title" t-att-id="titleId">
+                        <t t-if="lead" t-esc="lead.name"/>
+                        <t t-elif="state.loading">Chargement…</t>
+                        <t t-else="">Opportunité</t>
+                    </h2>
+                    <div t-if="lead and lead.partner" class="text-muted text-break" t-esc="lead.partner"/>
+                </div>
+                <i t-if="state.loading and lead" class="fa fa-circle-o-notch fa-spin text-muted mt-2" aria-hidden="true"/>
+                <button type="button" class="btn btn-light btn-sm o_aite_cad_panel_close" t-ref="close"
+                        title="Fermer (Échap)" aria-label="Fermer l'aperçu"
+                        t-on-click="() => this.props.onClose()">
+                    <i class="fa fa-times" aria-hidden="true"/>
+                </button>
+            </header>
+
+            <div class="o_aite_cad_panel_body flex-grow-1 overflow-auto px-3 py-3">
+                <div t-if="state.error" class="alert alert-danger o_aite_cad_panel_error" role="alert">
+                    <p class="mb-2" t-esc="state.error"/>
+                    <button type="button" class="btn btn-sm btn-danger" t-on-click="retry">Réessayer</button>
+                </div>
+                <div t-elif="!lead" class="text-center text-muted py-5">
+                    <i class="fa fa-circle-o-notch fa-spin fa-2x" aria-hidden="true"/>
+                    <span class="visually-hidden">Chargement…</span>
+                </div>
+                <t t-else="">
+                    <!-- Fiche -->
+                    <dl class="row small mb-3 o_aite_cad_panel_details">
+                        <t t-if="lead.expected_revenue">
+                            <dt class="col-5 text-muted fw-normal">Montant attendu</dt>
+                            <dd class="col-7 fw-semibold" t-esc="formatAmount(lead)"/>
+                        </t>
+                        <dt class="col-5 text-muted fw-normal">Probabilité</dt>
+                        <dd class="col-7" t-esc="formatProbability(lead.probability)"/>
+                        <dt class="col-5 text-muted fw-normal">Priorité</dt>
+                        <dd class="col-7" t-att-title="priorityLabel">
+                            <span class="visually-hidden" t-esc="priorityLabel"/>
+                            <t t-foreach="stars" t-as="on" t-key="on_index">
+                                <i t-attf-class="fa #{on ? 'fa-star text-warning' : 'fa-star-o text-muted'}" aria-hidden="true"/>
+                            </t>
+                        </dd>
+                        <t t-if="lead.stage">
+                            <dt class="col-5 text-muted fw-normal">Étape</dt>
+                            <dd class="col-7" t-esc="lead.stage"/>
+                        </t>
+                        <t t-if="lead.date_deadline">
+                            <dt class="col-5 text-muted fw-normal">Clôture prévue</dt>
+                            <dd class="col-7" t-esc="formatDay(lead.date_deadline)"/>
+                        </t>
+                        <t t-if="lead.user">
+                            <dt class="col-5 text-muted fw-normal">Commercial</dt>
+                            <dd class="col-7" t-esc="lead.user"/>
+                        </t>
+                        <t t-if="lead.team">
+                            <dt class="col-5 text-muted fw-normal">Équipe</dt>
+                            <dd class="col-7" t-esc="lead.team"/>
+                        </t>
+                        <t t-if="lead.phone">
+                            <dt class="col-5 text-muted fw-normal">Téléphone</dt>
+                            <dd class="col-7 text-break"><a t-attf-href="tel:#{lead.phone}" t-esc="lead.phone"/></dd>
+                        </t>
+                        <t t-if="lead.email">
+                            <dt class="col-5 text-muted fw-normal">E-mail</dt>
+                            <dd class="col-7 text-break"><a t-attf-href="mailto:#{lead.email}" t-esc="lead.email"/></dd>
+                        </t>
+                        <dt class="col-5 text-muted fw-normal">Dernière action</dt>
+                        <dd class="col-7 o_aite_cad_panel_last_action" t-esc="idleText"/>
+                    </dl>
+
+                    <!-- Activités à faire -->
+                    <h3 class="h6 d-flex align-items-center gap-2 mb-2">
+                        Activités à faire
+                        <span class="badge rounded-pill text-bg-secondary" t-esc="lead.open_activities.length"/>
+                    </h3>
+                    <p t-if="!lead.open_activities.length" class="small text-muted fst-italic mb-3">
+                        Aucune activité planifiée.
+                    </p>
+                    <ul t-else="" class="list-unstyled mb-3 o_aite_cad_panel_open">
+                        <t t-foreach="lead.open_activities" t-as="raw" t-key="raw.id">
+                            <t t-set="act" t-value="asActivity(raw)"/>
+                            <li t-attf-class="o_aite_cad_panel_activity o_aite_cad_state_#{act.state} border rounded p-2 mb-2" t-att-data-activity-id="act.id">
+                                <div class="d-flex align-items-start gap-2">
+                                    <span t-attf-class="o_aite_cad_dot o_aite_cad_dot_#{act.state} mt-2" aria-hidden="true"/>
+                                    <div class="flex-grow-1 min-w-0">
+                                        <div>
+                                            <i t-attf-class="fa #{act.icon} text-muted me-1" aria-hidden="true"/>
+                                            <strong t-esc="act.type"/>
+                                            <t t-set="badge" t-value="severityBadge(act.severity)"/>
+                                            <span t-if="badge" t-attf-class="badge #{badge.class} ms-1" t-esc="badge.label"/>
+                                        </div>
+                                        <div t-if="act.summary" class="small text-break" t-esc="act.summary"/>
+                                        <div class="small text-muted">
+                                            <t t-esc="formatDay(act.date_deadline)"/> · <t t-esc="deadlineLabel(act)"/>
+                                            <t t-if="act.user"> · <t t-esc="act.user"/></t>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-wrap justify-content-end gap-1 mt-2">
+                                    <t t-call="aite_crm_activity.ActivityButtons">
+                                        <t t-set="canReassign" t-value="props.canReassign"/>
+                                        <t t-set="onMarkDone" t-value="props.onMarkDone"/>
+                                        <t t-set="onReschedule" t-value="props.onReschedule"/>
+                                        <t t-set="onRescheduleOnDate" t-value="props.onRescheduleOnDate"/>
+                                        <t t-set="onReassign" t-value="props.onReassign"/>
+                                    </t>
+                                </div>
+                            </li>
+                        </t>
+                    </ul>
+
+                    <!-- Dernières activités réalisées -->
+                    <h3 class="h6 mb-2">Dernières activités réalisées</h3>
+                    <p t-if="!lead.done_activities.length" class="small text-muted fst-italic mb-0">
+                        Aucune activité réalisée.
+                    </p>
+                    <ul t-else="" class="list-unstyled mb-0 o_aite_cad_panel_done">
+                        <t t-foreach="lead.done_activities" t-as="done" t-key="done_index">
+                            <li class="o_aite_cad_panel_done_item border-start border-3 ps-2 mb-3">
+                                <div class="small text-muted">
+                                    <t t-esc="formatDay(done.date_done)"/>
+                                    <t t-if="done.user"> · <t t-esc="done.user"/></t>
+                                </div>
+                                <div>
+                                    <i t-attf-class="fa #{done.icon} text-muted me-1" aria-hidden="true"/>
+                                    <strong t-esc="done.type"/>
+                                    <t t-if="done.summary"> — <span t-esc="done.summary"/></t>
+                                </div>
+                                <div t-if="done.feedback" class="small text-break o_aite_cad_feedback_text" t-esc="done.feedback"/>
+                            </li>
+                        </t>
+                    </ul>
+                </t>
+            </div>
+
+            <footer class="o_aite_cad_panel_footer d-flex flex-wrap gap-2 px-3 py-2 border-top">
+                <button type="button" class="btn btn-primary btn-sm o_aite_cad_panel_open_form"
+                        t-att-disabled="!lead" t-on-click="openLead">
+                    <i class="fa fa-external-link me-1" aria-hidden="true"/>Ouvrir la fiche
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm o_aite_cad_panel_schedule"
+                        t-att-disabled="!lead" t-on-click="schedule">
+                    <i class="fa fa-clock-o me-1" aria-hidden="true"/>Planifier une activité
+                </button>
+                <button type="button" class="btn btn-light btn-sm ms-auto o_aite_cad_panel_close_footer"
+                        t-on-click="() => this.props.onClose()">
+                    Fermer
+                </button>
+            </footer>
+        </section>
+    </t>
+
+</templates>

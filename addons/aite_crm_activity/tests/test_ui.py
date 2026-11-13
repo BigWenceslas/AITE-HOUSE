@@ -7,9 +7,22 @@ from odoo.tests import HttpCase, new_test_user, tagged
 
 @tagged('post_install', '-at_install', 'aite_crm_activity')
 class TestCrmActivityDashboardUi(HttpCase):
-    """ Le tableau de bord dans un vrai navigateur (tour JS). """
+    """ Le tableau de bord dans un vrai navigateur (tours JS de
+    static/tests/tours/crm_activity_dashboard_tour.js). """
+
+    def _activity(self, env, lead, user, days, summary):
+        today = fields.Date.context_today(user.with_context(tz='UTC'))
+        return env['mail.activity'].create({
+            'res_model_id': env['ir.model']._get_id('crm.lead'),
+            'res_id': lead.id,
+            'user_id': user.id,
+            'activity_type_id': env.ref('mail.mail_activity_data_todo').id,
+            'summary': summary,
+            'date_deadline': today + timedelta(days=days),
+        })
 
     def test_dashboard_tour(self):
+        """ Actions directes, aperçu, période, onglets Équipe et Tendances. """
         admin = self.env.ref('base.user_admin')
         admin.tz = 'UTC'
         colleague = new_test_user(
@@ -24,19 +37,9 @@ class TestCrmActivityDashboardUi(HttpCase):
                                   'user_id': admin.id, 'priority': '3',
                                   'expected_revenue': 10 ** 12})
 
-        def activity(days, summary):
-            return env['mail.activity'].create({
-                'res_model_id': env['ir.model']._get_id('crm.lead'),
-                'res_id': lead.id,
-                'user_id': admin.id,
-                'activity_type_id': env.ref('mail.mail_activity_data_todo').id,
-                'summary': summary,
-                'date_deadline': today + timedelta(days=days),
-            })
-
-        overdue = activity(-1, "Rappeler le client (tour)")
-        today_activity = activity(0, "Envoyer le devis (tour)")
-        upcoming = activity(2, "Préparer la réunion (tour)")
+        overdue = self._activity(env, lead, admin, -1, "Rappeler le client (tour)")
+        today_activity = self._activity(env, lead, admin, 0, "Envoyer le devis (tour)")
+        upcoming = self._activity(env, lead, admin, 2, "Préparer la réunion (tour)")
 
         self.start_tour('/odoo/suivi-activites', 'aite_crm_activity_dashboard_tour', login='admin')
 
@@ -45,3 +48,16 @@ class TestCrmActivityDashboardUi(HttpCase):
         self.assertEqual(today_activity.date_deadline, today + timedelta(days=1))
         self.assertEqual(upcoming.user_id, colleague, "Réassignée après confirmation")
         self.assertEqual(quiet_lead.activity_ids.mapped('summary'), ["Relancer le client - tour"])
+
+    def test_overdue_link_tour(self):
+        """ /odoo/activites-en-retard ouvre le tableau de bord sur « En retard »
+        (paramètres de l'action aite_crm_activity.action_crm_activity_dashboard_overdue). """
+        admin = self.env.ref('base.user_admin')
+        admin.tz = 'UTC'
+        env = self.env(context=dict(self.env.context, mail_activity_quick_update=True))
+        lead = env['crm.lead'].create({'name': "Opportunité du lien (tour)", 'type': 'opportunity',
+                                       'user_id': admin.id})
+        self._activity(env, lead, admin, -3, "Relance en retard (tour)")
+        self._activity(env, lead, admin, 0, "Appel du jour (tour)")
+
+        self.start_tour('/odoo/activites-en-retard', 'aite_crm_activity_overdue_link_tour', login='admin')
