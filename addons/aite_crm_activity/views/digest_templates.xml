@@ -75,7 +75,8 @@
                                         <strong style="color: #B42318;"><t t-out="counts['overdue']"/> en retard</strong><t t-if="critical_count"> (dont <t t-out="critical_label"/>)</t>,
                                         <strong style="color: #B54708;"><t t-out="counts['today']"/> pour aujourd'hui</strong>
                                         <t t-if="upcoming_days">et <strong><t t-out="counts['upcoming']"/> à venir</strong>
-                                            sur les <t t-out="upcoming_days"/> prochains jours</t>.
+                                            <t t-if="upcoming_days == 1">demain</t>
+                                            <t t-else="">sur les <t t-out="upcoming_days"/> prochains jours</t></t>.
                                     </p>
                                     <!-- Revenu attendu des opportunités en retard que l'utilisateur
                                          peut lire (chacune une seule fois), un montant par devise ;

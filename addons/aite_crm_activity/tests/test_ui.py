@@ -10,6 +10,14 @@ class TestCrmActivityDashboardUi(HttpCase):
     """ Le tableau de bord dans un vrai navigateur (tours JS de
     static/tests/tours/crm_activity_dashboard_tour.js). """
 
+    def _clear_open_activities(self, env):
+        """ La liste du tableau de bord s'arrête aux 80 premières activités
+        (les plus anciennes d'abord) : sur une base qui en a déjà beaucoup
+        (données de démonstration, copie d'une base réelle), celles du
+        parcours n'y figureraient pas. Les autres activités ouvertes sont
+        donc supprimées le temps du test (tout est annulé à la fin). """
+        env['mail.activity'].search([('res_model', '=', 'crm.lead')]).unlink()
+
     def _activity(self, env, lead, user, days, summary):
         today = fields.Date.context_today(user.with_context(tz='UTC'))
         return env['mail.activity'].create({
@@ -30,6 +38,7 @@ class TestCrmActivityDashboardUi(HttpCase):
             name="Collègue (tour)", tz='UTC')
         today = fields.Date.context_today(admin.with_context(tz='UTC'))
         env = self.env(context=dict(self.env.context, mail_activity_quick_update=True))
+        self._clear_open_activities(env)
         Lead = env['crm.lead']
         lead = Lead.create({'name': "Opportunité suivie (tour)", 'type': 'opportunity',
                             'user_id': admin.id})
@@ -55,6 +64,7 @@ class TestCrmActivityDashboardUi(HttpCase):
         admin = self.env.ref('base.user_admin')
         admin.tz = 'UTC'
         env = self.env(context=dict(self.env.context, mail_activity_quick_update=True))
+        self._clear_open_activities(env)
         lead = env['crm.lead'].create({'name': "Opportunité du lien (tour)", 'type': 'opportunity',
                                        'user_id': admin.id})
         self._activity(env, lead, admin, -3, "Relance en retard (tour)")

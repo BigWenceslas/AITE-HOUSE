@@ -807,6 +807,10 @@ export class AiteCrmActivityDashboard extends Component {
     /**
      * Appelle une action du serveur sur une activité, puis recharge.
      * `message` peut être une fonction recevant le résultat de l'action.
+     *
+     * En cas d'échec (activité déjà faite ou supprimée par un collègue,
+     * droits retirés…), Odoo affiche l'erreur et le tableau est quand même
+     * rechargé : la ligne périmée disparaît ou se met à jour.
      */
     async runAction(activity, method, args, message) {
         this.state.busyIds[activity.id] = true;
@@ -815,6 +819,11 @@ export class AiteCrmActivityDashboard extends Component {
             const text = typeof message === "function" ? message(result) : message;
             this.notification.add(text, { type: "success" });
             await this.reload();
+        } catch (error) {
+            // Rechargement en arrière-plan ; s'il échoue aussi (connexion
+            // perdue), l'erreur déjà affichée suffit.
+            this.reload().catch(() => {});
+            throw error;
         } finally {
             delete this.state.busyIds[activity.id];
         }

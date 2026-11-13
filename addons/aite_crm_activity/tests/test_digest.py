@@ -563,6 +563,14 @@ class TestCrmActivityDigestPriorities(AiteCrmActivityCase):
                 digest, subject, body = self._render(user)
                 self.assertEqual(re.findall(r'\b(?:False|None)\b', subject + body), [])
 
+    def test_upcoming_window_wording(self):
+        body = self._render(self.alice)[2]
+        self.assertIn("sur les 3 prochains jours", body)
+        self.ICP.set_param('aite_crm_activity.digest_upcoming_days', 1)
+        body = self._render(self.alice)[2]
+        self.assertNotIn("prochains jours", body, "Pas de « sur les 1 prochains jours »")
+        self.assertRegex(body, r"à venir</strong>\s*demain")
+
     def test_digest_counts_match_the_dashboard(self):
         # Mêmes « en retard » et « aujourd'hui » que le tableau de bord
         # d'Alice (le tableau de bord a sa propre fenêtre « à venir »).
