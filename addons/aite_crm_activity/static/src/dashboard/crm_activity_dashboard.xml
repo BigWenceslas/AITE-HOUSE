@@ -286,7 +286,7 @@
                                 <i class="fa fa-money me-1" aria-hidden="true"/><t t-esc="amount"/>
                             </span>
                         </t>
-                        <span class="badge rounded-pill text-bg-secondary" title="Nombre d'opportunités" t-esc="data.stalled.total"/>
+                        <span class="badge rounded-pill text-bg-light border" title="Nombre d'opportunités" t-esc="data.stalled.total"/>
                         <div t-if="data.filter_notes.stalled_ignores_type" class="w-100 small text-muted fst-italic o_aite_cad_stalled_note">
                             <i class="fa fa-info-circle me-1" aria-hidden="true"/>Le filtre Type ne s'applique pas ici : ces opportunités n'ont justement aucune activité.
                         </div>

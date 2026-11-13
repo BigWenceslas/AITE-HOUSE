@@ -80,7 +80,7 @@
                     <!-- Activités à faire -->
                     <h3 class="h6 d-flex align-items-center gap-2 mb-2">
                         Activités à faire
-                        <span class="badge rounded-pill text-bg-secondary" t-esc="lead.open_activities.length"/>
+                        <span class="badge rounded-pill text-bg-light border" t-esc="lead.open_activities.length"/>
                     </h3>
                     <p t-if="!lead.open_activities.length" class="small text-muted fst-italic mb-3">
                         Aucune activité planifiée.
