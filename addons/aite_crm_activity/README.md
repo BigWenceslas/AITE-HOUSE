@@ -1,27 +1,38 @@
 # AITE — Suivi des activités CRM
 
-**Odoo 19 (Enterprise & Community) · module `aite_crm_activity` · version 19.0.1.0.0**
+**Odoo 19 (Enterprise & Community) · module `aite_crm_activity` · version 19.0.2.0.0**
 
-Deux outils pour que plus aucune opportunité ne reste sans suite :
+Trois outils pour que plus aucune opportunité ne reste sans suite :
 
 1. un **tableau de bord** qui suit et gère les tâches et activités
    (appels, e-mails, rendez-vous, à faire…) planifiées sur les
    opportunités ;
 2. un **récapitulatif envoyé chaque matin** par e-mail à chaque
-   utilisateur, avec la liste de ses activités en cours.
+   utilisateur, avec la liste de ses activités en cours ;
+3. un **rapport d'analyse** (tableau croisé, graphique, liste) des
+   activités ouvertes et réalisées.
 
 ## Le tableau de bord
 
 **CRM → Suivi des activités**
 
+En haut, les **filtres** : commercial (ou « Non assigné »), équipe
+commerciale, type d'activité et **période** (7 derniers jours, ce mois,
+mois dernier, ce trimestre ou dates au choix). Ils sont conservés quand on
+revient d'une opportunité par le fil d'Ariane.
+
 | Zone | Contenu |
 |---|---|
-| Indicateurs | Activités **en retard**, **du jour**, **à venir** (7 jours), **réalisées** (7 derniers jours), **opportunités sans activité** planifiée. Un clic filtre la liste. |
-| Activités | La liste à traiter, triée par échéance, avec l'opportunité, le client, l'étape, le montant et la personne assignée. Onglets : En cours, En retard, Aujourd'hui, À venir, Réalisées. |
-| Actions directes | **Fait** (avec un compte rendu facultatif, publié dans l'historique de l'opportunité), **Reporter** (menu : à demain, lundi prochain, dans une semaine ou à une date), **Réassigner** (choix de la personne puis confirmation ; elle est prévenue par Odoo), clic sur l'opportunité pour l'ouvrir. |
-| Par commercial | Pour chaque commercial : retards, activités du jour, à venir, réalisées, opportunités sans activité. Un clic filtre le tableau sur lui, un second clic retire le filtre. La ligne « Non assigné » regroupe ce qui n'est assigné à personne. |
-| Opportunités sans activité planifiée | Les opportunités ouvertes (ni gagnées ni perdues) qui n'ont plus aucune activité à faire, y compris celles dont la dernière activité vient d'être marquée comme faite, avec le bouton **Planifier**. |
-| Filtres | Commercial (ou « Non assigné »), équipe commerciale, type d'activité. Ils sont conservés quand on revient d'une opportunité par le fil d'Ariane. |
+| Alertes | Un bandeau signale les retards **critiques** et les opportunités **dormantes** ; son bouton affiche la liste concernée. |
+| Indicateurs | Activités **en retard** (dont critiques, nombre d'opportunités et **montant en jeu**), **du jour**, **à venir**, **réalisées** sur la période (avec la **comparaison avec la période précédente** de même durée et le taux d'activités faites **à temps**), **opportunités sans activité** (avec leur montant). Un clic filtre la liste. |
+| Onglet **À traiter** | La liste des activités, triée par échéance (badge « élevé » ou « critique » selon le retard), avec les actions **Fait** (compte rendu facultatif publié dans l'historique), **Reporter** (demain, lundi prochain, dans une semaine ou une date) et **Réassigner** (avec confirmation). Puis les **opportunités sans activité planifiée**, avec la date de la dernière action, le badge « dormante » et le bouton **Planifier**. |
+| Onglet **Équipe** | Le tableau **par commercial** (retards, jour, à venir, réalisées, sans activité, avec une ligne « Total équipe » et une barre de charge) : un clic sur un chiffre affiche les activités correspondantes. Puis le **plan de charge** : activités en retard et à faire jour par jour, par commercial. |
+| Onglet **Tendances** | Les 12 dernières semaines : activités faites à temps, faites en retard et créées ; classements par type d'activité et par commercial ; lien vers le rapport d'analyse. |
+| Aperçu d'une opportunité | Un clic sur une opportunité ouvre un panneau latéral : client et coordonnées, étape, montant, activités à faire (avec les mêmes actions) et dernières activités réalisées avec leur compte rendu ; « Ouvrir la fiche » pour aller plus loin. |
+
+Une activité sur une opportunité **perdue** ne compte plus dans les
+activités à faire (Odoo la laisse ouverte) ; si elle avait été faite, elle
+reste comptée dans les réalisées.
 
 **Qui voit quoi.** Les droits d'Odoo s'appliquent (Paramètres →
 Utilisateurs → droits « Ventes ») :
@@ -29,11 +40,25 @@ Utilisateurs → droits « Ventes ») :
 - **Utilisateur : mes documents seulement** : le tableau s'ouvre sur ses
   propres activités ; il voit aussi celles qu'on lui a assignées sur
   l'opportunité d'un collègue (sans le détail de l'opportunité). Il ne
-  peut pas réassigner.
+  peut pas réassigner (refusé aussi par le serveur).
 - **Utilisateur : tous les documents** et **Administrateur** : le tableau
   s'ouvre sur les activités de tout le monde, et ils peuvent réassigner.
 
-Le tableau de bord est réservé aux utilisateurs du CRM.
+Le tableau de bord et le rapport sont réservés aux utilisateurs du CRM.
+
+**Lien direct** : `/odoo/activites-en-retard` ouvre le tableau de bord sur
+les activités en retard (c'est le lien du récapitulatif du matin quand on
+a des retards).
+
+## Le rapport d'analyse
+
+**CRM → Analyse → Suivi des activités (analyse)** (lien direct
+`/odoo/analyse-activites`) : une ligne par activité sur une piste ou
+opportunité, ouverte ou réalisée, à analyser en tableau croisé, graphique
+ou liste (export Excel possible). Mesures : nombre, en retard, jours de
+retard, taux d'activités faites à temps. Filtres prêts : en retard,
+aujourd'hui, à venir, réalisées, mes activités, retard critique, réalisées
+ce mois-ci… Les mêmes règles de visibilité que le CRM s'appliquent.
 
 ## Le récapitulatif du matin
 
@@ -44,7 +69,10 @@ cours sur des opportunités reçoit un e-mail :
   jour** et **à venir** sur les prochains jours ;
 - pour chacune : l'échéance, le type, le résumé, l'opportunité (lien
   direct), le client, l'étape et le montant ;
-- un bouton vers son tableau de bord.
+- un badge « élevé » ou « critique » selon le retard, et le **montant en
+  jeu** des opportunités en retard ;
+- un bouton vers son tableau de bord (directement sur ses retards s'il en
+  a).
 
 Un utilisateur sans activité en cours ne reçoit rien. La date « du jour »
 suit le fuseau horaire de chaque utilisateur, et l'e-mail est rédigé dans
@@ -61,6 +89,15 @@ activités** :
 | Heure d'envoi | 7:00 | Une seule heure pour tout le monde, dans le fuseau ci-dessous |
 | Fuseau horaire | Africa/Douala | L'envoi garde la même heure locale toute l'année |
 | Activités à venir (jours) | 3 | Jours à venir inclus en plus des retards et du jour ; 0 = seulement retards et jour |
+
+Dans le même bloc, **Tableau de bord et seuils de retard** :
+
+| Réglage | Par défaut | Rôle |
+|---|---|---|
+| Tableau de bord : activités à venir (jours) | 7 | Fenêtre « À venir » et largeur du plan de charge (14 jours au plus) |
+| Retard élevé à partir de (jours) | 3 | Badge « élevé » |
+| Retard critique à partir de (jours) | 7 | Badge « critique » et alerte ; doit être supérieur au retard élevé |
+| Opportunité dormante après (jours) | 14 | Opportunité sans activité ni action depuis ce nombre de jours |
 
 Le bouton **M'envoyer mon récapitulatif maintenant** envoie l'e-mail tout
 de suite : il permet de le voir et de vérifier que l'envoi des e-mails
@@ -149,16 +186,33 @@ sudo -u odoo dropdb aite_cad_test
 sudo rm -rf /var/lib/odoo/.local/share/Odoo/filestore/aite_cad_test
 ```
 
+## Note technique — dates et fuseaux horaires
+
+- « Aujourd'hui », les périodes et les reports rapides du tableau de bord
+  suivent le fuseau horaire de l'utilisateur (ses préférences Odoo), pas
+  l'horloge du navigateur.
+- Le récapitulatif calcule « aujourd'hui » dans le fuseau de chaque
+  destinataire ; l'heure d'envoi suit le fuseau choisi dans les Paramètres.
+- La date « réalisée » d'une activité est enregistrée par Odoo en date
+  UTC : une activité marquée faite entre minuit et 1 h à Douala compte pour
+  la veille.
+- Le rapport d'analyse calcule le retard dans le fuseau de la personne
+  assignée.
+
 ## Contenu technique
 
 | Fichier | Rôle |
 |---|---|
-| `models/crm_activity_dashboard.py` | Données (`get_dashboard_data`) et actions (`action_mark_done`, `action_reschedule`, `action_reassign`) du tableau de bord, avec les droits de l'utilisateur |
+| `models/crm_activity_params.py` | Réglages partagés (fenêtres, seuils, gravité du retard) et règle des opportunités perdues |
+| `models/crm_activity_dashboard.py` | Données (`get_dashboard_data`, `get_trend_data`, `get_lead_preview`) et actions (`action_mark_done`, `action_reschedule`, `action_reassign`) du tableau de bord, avec les droits de l'utilisateur |
+| `models/crm_activity_report.py`, `report/` | Rapport d'analyse (vue SQL) et ses vues |
+| `security/` | Droits et règles d'accès du rapport (mêmes règles que le CRM) |
 | `models/crm_activity_digest.py` | Récapitulatif : destinataires, contenu par utilisateur (droits, fuseau, langue), envoi par la tâche planifiée |
-| `models/res_config_settings.py` | Réglages : activation, heure et fuseau horaire (tâche planifiée), fenêtre des activités à venir |
+| `models/res_config_settings.py` | Réglages : récapitulatif (activation, heure, fuseau), fenêtres et seuils du tableau de bord |
 | `models/ir_cron.py` | Garde l'heure d'envoi locale d'un jour à l'autre, changements d'heure compris |
 | `models/res_users.py` | Préférence « Récapitulatif CRM du matin », modifiable par chacun |
-| `static/src/dashboard/` | Le tableau de bord (OWL) |
+| `static/src/dashboard/` | Le tableau de bord (OWL), ses onglets, le graphique et le panneau d'aperçu |
+| `views/dashboard_views.xml` | Actions (dont le lien direct « activités en retard ») et menu |
 | `views/digest_templates.xml` | L'e-mail du récapitulatif |
 | `data/ir_cron_data.xml` | Tâche planifiée quotidienne |
 | `tests/` | Tests automatisés (étiquette `aite_crm_activity`) et parcours navigateur |

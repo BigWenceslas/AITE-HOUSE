@@ -2,26 +2,32 @@
 {
     'name': "AITE — Suivi des activités CRM",
     'summary': "Tableau de bord des tâches et activités sur les opportunités, "
-               "et récapitulatif envoyé chaque matin à chaque commercial.",
+               "analyse, et récapitulatif envoyé chaque matin à chaque commercial.",
     'description': """
 AITE — Suivi des activités CRM
 ==============================
 
 **Tableau de bord** (CRM → Suivi des activités) :
 
-* indicateurs : activités en retard, du jour, à venir, réalisées sur
-  7 jours, opportunités sans activité planifiée ;
-* tableau par commercial ;
-* liste des activités à traiter, avec actions directes : marquer comme
-  fait (avec compte rendu), reporter, réassigner, ouvrir l'opportunité ;
-* opportunités sans activité planifiée, avec planification en un clic ;
-* filtres par commercial, équipe commerciale et type d'activité.
+* indicateurs : activités en retard (gravité, montant en jeu), du jour,
+  à venir, réalisées sur une période au choix avec comparaison à la période
+  précédente et taux « à temps », opportunités sans activité planifiée ;
+* onglet « À traiter » : liste des activités avec actions directes
+  (fait avec compte rendu, reporter, réassigner) et opportunités sans
+  activité ;
+* onglet « Équipe » : tableau par commercial et plan de charge ;
+* onglet « Tendances » : 12 dernières semaines et classements ;
+* aperçu d'une opportunité dans un panneau latéral ;
+* filtres par commercial, équipe, type d'activité et période.
+
+**Rapport d'analyse** (CRM → Analyse) : tableau croisé, graphique et liste
+des activités ouvertes et réalisées.
 
 **Récapitulatif du matin** : chaque jour, à l'heure choisie, chaque
 utilisateur reçoit par e-mail la liste de ses activités en cours sur les
-opportunités — en retard, du jour et à venir — avec un lien vers chacune.
-Réglages dans CRM → Configuration → Paramètres ; chaque utilisateur peut
-s'en désabonner dans ses préférences.
+opportunités — en retard (avec leur gravité), du jour et à venir — avec un
+lien vers chacune. Réglages dans CRM → Configuration → Paramètres ; chaque
+utilisateur peut s'en désabonner dans ses préférences.
 
 Les droits d'accès d'Odoo s'appliquent partout : chacun ne voit que les
 opportunités qu'il a le droit de voir.
