@@ -379,7 +379,7 @@ class TestCrmActivityReport(AiteCrmActivityCase):
         for activity in (self.act_overdue, self.act_today, self.act_far, self.act_bob_on_alice):
             self.assertNotIn(activity.id, rows, f"{activity.summary} : opportunité perdue, plus à faire")
         done = rows[self.act_done_late.id]
-        self.assertEqual((done.state, done.lead_active, done.won_status), ('done', False, 'lost'))
+        self.assertEqual((done.state, done.lead_active, done.won_status), ('done', 'archived', 'lost'))
         self.assertEqual(self.counts_by_state(self.manager), {'planned': 3, 'done': 2})
 
         # Même règle que actionable_activity_domain (tableau de bord, récapitulatif).
@@ -404,7 +404,7 @@ class TestCrmActivityReport(AiteCrmActivityCase):
              row.stage_id, row.company_id, row.activity_type_id, row.summary),
             (self.lead_alice, self.alice, self.alice, self.team, self.partner,
              self.lead_alice.stage_id, self.lead_alice.company_id, self.type_call, "Rappeler le client"))
-        self.assertEqual((row.lead_type, row.won_status, row.lead_active, row.nbr), ('opportunity', 'pending', True, 1))
+        self.assertEqual((row.lead_type, row.won_status, row.lead_active, row.nbr), ('opportunity', 'pending', 'active', 1))
         self.assertEqual(row.create_date, self.today)
         self.assertEqual(row.display_name, "Rappeler le client")
         free = rows[self.act_free.id]
@@ -454,6 +454,11 @@ class TestCrmActivityReport(AiteCrmActivityCase):
         self.assertNotIn(secret.id, [group['partner_id'] and group['partner_id'][0] for group in groups])
         self.assertEqual(Report.search_count([('partner_id', '=', secret.id)]), 0)
         self.assertEqual(Report.search_count(domain + [('lead_user_id', '=', self.bob.id)]), 0)
+        # Opportunité active de Bob : ni « active » ni « archivée » pour Alice
+        # (une case à cocher vide la classait parmi les archivées).
+        self.assertEqual(Report.search_count(domain + [('lead_active', 'in', ['active', 'archived'])]), 0)
+        groups = Report.formatted_read_group(domain, ['lead_active'], ['__count'])
+        self.assertEqual([(group['lead_active'], group['__count']) for group in groups], [(False, 1)])
 
         # Les lignes de Bob sur son opportunité restent invisibles pour Alice
         # (la règle d'accès lit toujours le vrai commercial).
@@ -466,9 +471,11 @@ class TestCrmActivityReport(AiteCrmActivityCase):
         self.lead_bob.action_set_lost()
         self.env.invalidate_all()
         row = Report.search(domain)
-        self.assertEqual((row.state, row.won_status, row.partner_id.id), ('done', False, False))
+        self.assertEqual((row.state, row.won_status, row.lead_active, row.partner_id.id), ('done', False, False, False))
         self.assertEqual(Report.search_count(self.team_domain() + [('won_status', '=', 'lost')]), 0)
-        self.assertEqual(self.report(self.manager).search(domain).won_status, 'lost')
+        self.assertEqual(Report.search_count(self.team_domain() + [('lead_active', '=', 'archived')]), 0)
+        manager_row = self.report(self.manager).search(domain)
+        self.assertEqual((manager_row.won_status, manager_row.lead_active), ('lost', 'archived'))
 
     def test_export_with_rows_on_a_colleague_lead(self):
         """ Liste → Exporter, pour Alice dont une ligne porte sur

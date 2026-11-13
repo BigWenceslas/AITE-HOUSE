@@ -4,7 +4,7 @@
     <!-- Aperçu d'une opportunité (panneau latéral, plein écran sur téléphone) -->
     <t t-name="aite_crm_activity.LeadPanel">
         <section class="o_aite_cad_panel d-flex flex-column shadow-lg" t-ref="panel"
-                 role="dialog" t-att-aria-modal="isModal ? 'true' : 'false'" t-att-aria-labelledby="titleId"
+                 role="dialog" t-att-aria-modal="state.modal ? 'true' : 'false'" t-att-aria-labelledby="titleId"
                  t-att-aria-busy="state.loading ? 'true' : 'false'">
             <header class="o_aite_cad_panel_header d-flex align-items-start gap-2 px-3 py-2 border-bottom">
                 <div class="flex-grow-1 min-w-0">
@@ -112,6 +112,7 @@
                                         <t t-set="onReschedule" t-value="props.onReschedule"/>
                                         <t t-set="onRescheduleOnDate" t-value="props.onRescheduleOnDate"/>
                                         <t t-set="onReassign" t-value="props.onReassign"/>
+                                        <t t-set="onMenuToggle" t-value="() => this.onMenuToggle()"/>
                                     </t>
                                 </div>
                             </li>

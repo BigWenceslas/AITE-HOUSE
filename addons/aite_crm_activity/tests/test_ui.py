@@ -71,3 +71,23 @@ class TestCrmActivityDashboardUi(HttpCase):
         self._activity(env, lead, admin, 0, "Appel du jour (tour)")
 
         self.start_tour('/odoo/activites-en-retard', 'aite_crm_activity_overdue_link_tour', login='admin')
+
+    def test_panel_modal_tour(self):
+        """ Aperçu plein écran : une fenêtre ou un menu ouvert depuis l'aperçu
+        garde Échap et le focus quand la largeur change, et le focus revient
+        à l'aperçu après une action refusée (activité supprimée ailleurs). """
+        admin = self.env.ref('base.user_admin')
+        admin.tz = 'UTC'
+        today = fields.Date.context_today(admin.with_context(tz='UTC'))
+        env = self.env(context=dict(self.env.context, mail_activity_quick_update=True))
+        self._clear_open_activities(env)
+        lead = env['crm.lead'].create({'name': "Opportunité de l'aperçu (tour)", 'type': 'opportunity',
+                                       'user_id': admin.id})
+        call = self._activity(env, lead, admin, -1, "Appeler (tour)")
+        stale = self._activity(env, lead, admin, -2, "Relancer (tour)")
+
+        self.start_tour('/odoo/activites-en-retard', 'aite_crm_activity_panel_modal_tour', login='admin')
+
+        self.assertTrue(call.active, "Fenêtre « Fait » et menu fermés par Échap : rien n'est fait")
+        self.assertEqual(call.date_deadline, today - timedelta(days=1))
+        self.assertFalse(stale.exists(), "Supprimée pendant le parcours, report refusé")

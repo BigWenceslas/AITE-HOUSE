@@ -364,7 +364,8 @@
 
     <!-- Boutons d'une activité ouverte (liste et panneau d'aperçu).
          Variables : act, canReassign, onMarkDone, onReschedule,
-         onRescheduleOnDate, onReassign. -->
+         onRescheduleOnDate, onReassign, et onMenuToggle (facultative :
+         menu « Reporter » ouvert ou fermé). -->
     <t t-name="aite_crm_activity.ActivityButtons">
         <t t-set="busy" t-value="isBusy(act)"/>
         <button type="button" class="btn btn-sm btn-success o_aite_cad_done"
@@ -374,7 +375,7 @@
             <i class="fa fa-check" aria-hidden="true"/> Fait
         </button>
         <t t-if="act.can_write">
-            <Dropdown disabled="busy" position="'bottom-end'">
+            <Dropdown disabled="busy" position="'bottom-end'" onStateChanged="onMenuToggle">
                 <button type="button" class="btn btn-sm btn-light ms-1 o_aite_cad_reschedule" title="Reporter l'échéance">
                     <i class="fa fa-calendar" aria-hidden="true"/> Reporter
                 </button>

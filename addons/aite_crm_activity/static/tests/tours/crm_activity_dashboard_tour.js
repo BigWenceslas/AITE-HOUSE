@@ -1,4 +1,5 @@
 import { registry } from "@web/core/registry";
+import { SIZES } from "@web/core/ui/ui_service";
 
 /**
  * Parcours du tableau de bord « Suivi des activités ».
@@ -357,6 +358,185 @@ registry.category("web_tour.tours").add("aite_crm_activity_overdue_link_tour", {
         {
             content: "… mais pas celle du jour",
             trigger: ".o_aite_cad:not(:has(tr.o_aite_cad_activity:contains('Appel du jour (tour)')))",
+        },
+    ],
+});
+
+/**
+ * Aperçu plein écran (sous 992 px) et changement de largeur pendant qu'une
+ * fenêtre ou le menu « Reporter » est ouvert depuis l'aperçu ; focus après
+ * une action refusée.
+ *
+ * La largeur est simulée en changeant la taille d'écran d'Odoo (comme une
+ * tablette qu'on tourne) : l'aperçu change de comportement, la page garde
+ * sa mise en page d'ordinateur. Données créées par tests/test_ui.py.
+ */
+const uiService = () => odoo.__WOWL_DEBUG__.root.env.services.ui;
+
+/** Change la taille d'écran, puis attend le rendu qui suit. */
+async function setScreenSize(size) {
+    uiService().size = size;
+    await new Promise((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(resolve)))
+    );
+}
+
+function check(condition, message) {
+    if (!condition) {
+        throw new Error(message);
+    }
+}
+
+const PREVIEW_LINK = "tr.o_aite_cad_activity:contains('Appeler (tour)') .o_aite_cad_lead_link";
+const CALL_ITEM = ".o_aite_cad_panel_activity:contains('Appeler (tour)')";
+const STALE_ITEM = ".o_aite_cad_panel_activity:contains('Relancer (tour)')";
+
+registry.category("web_tour.tours").add("aite_crm_activity_panel_modal_tour", {
+    steps: () => [
+        // 1. Fenêtre « Fait » ouverte pendant le passage en plein écran -----
+        {
+            content: "Ouvrir l'aperçu (ordinateur : panneau latéral)",
+            trigger: PREVIEW_LINK,
+            run: "click",
+        },
+        {
+            content: "Marquer comme fait depuis l'aperçu",
+            trigger: `.o_aite_cad_panel[aria-modal='false'] ${CALL_ITEM} .o_aite_cad_done`,
+            run: "click",
+        },
+        {
+            content: "Saisir le compte rendu",
+            trigger: ".modal .o_aite_cad_feedback",
+            run: "edit Client rappelé",
+        },
+        {
+            content: "Passage sous 992 px pendant la saisie",
+            trigger: ".modal .o_aite_cad_feedback:focus",
+            run: () => setScreenSize(SIZES.MD),
+        },
+        {
+            content: "La saisie garde le focus ; l'aperçu attend la fermeture de la fenêtre",
+            trigger: "body:has(.o_aite_cad_panel[aria-modal='false']) .modal .o_aite_cad_feedback:focus",
+            run() {
+                check(uiService().activeElement.contains(this.anchor), "La fenêtre doit rester l'élément actif");
+            },
+        },
+        {
+            content: "Échap ferme la fenêtre, pas l'aperçu",
+            trigger: ".modal .o_aite_cad_feedback:focus",
+            run: "press Escape",
+        },
+        {
+            content: "L'aperçu reste ouvert et devient une fenêtre modale",
+            trigger: "body:not(:has(.modal)) .o_aite_cad_panel[aria-modal='true']",
+            run() {
+                check(uiService().activeElement === this.anchor, "L'aperçu doit être l'élément actif");
+                check(this.anchor.contains(document.activeElement), "Le focus doit être dans l'aperçu");
+            },
+        },
+        {
+            content: "Échap ferme maintenant l'aperçu",
+            trigger: ".o_aite_cad_panel[aria-modal='true'] .o_aite_cad_panel_title:contains('Opportunité de l')",
+            run: "press Escape",
+        },
+        {
+            content: "L'aperçu est fermé",
+            trigger: NO_PANEL,
+        },
+
+        // 2. Menu « Reporter » ouvert pendant le retour au panneau latéral ---
+        {
+            content: "Rouvrir l'aperçu, plein écran",
+            trigger: PREVIEW_LINK,
+            run: "click",
+        },
+        {
+            content: "Ouvrir le menu « Reporter » de l'aperçu",
+            trigger: `.o_aite_cad_panel[aria-modal='true'] ${CALL_ITEM} .o_aite_cad_reschedule`,
+            run: "click",
+        },
+        {
+            content: "Passage au-dessus de 992 px, menu ouvert",
+            trigger: ".o-dropdown--menu .o_aite_cad_reschedule_tomorrow",
+            run: () => setScreenSize(SIZES.XL),
+        },
+        {
+            content: "Échap ferme le menu, pas l'aperçu",
+            trigger: ".o-dropdown--menu .o_aite_cad_reschedule_tomorrow",
+            run: "press Escape",
+        },
+        {
+            content: "L'aperçu reste ouvert et redevient un panneau latéral",
+            trigger: "body:not(:has(.o-dropdown--menu)) .o_aite_cad_panel[aria-modal='false']",
+            run() {
+                check(uiService().activeElement === document, "La page doit redevenir l'élément actif");
+            },
+        },
+        {
+            content: "Échap ferme l'aperçu",
+            trigger: ".o_aite_cad_panel[aria-modal='false'] .o_aite_cad_panel_title:contains('Opportunité de l')",
+            run: "press Escape",
+        },
+        {
+            content: "L'aperçu est fermé ; repasser sous 992 px",
+            trigger: NO_PANEL,
+            run: () => setScreenSize(SIZES.MD),
+        },
+
+        // 3. Action refusée depuis l'aperçu plein écran ---------------------
+        {
+            content: "Rouvrir l'aperçu, plein écran",
+            trigger: PREVIEW_LINK,
+            run: "click",
+        },
+        {
+            content: "Une autre session supprime l'activité « Relancer »",
+            trigger: `.o_aite_cad_panel[aria-modal='true'] ${STALE_ITEM}`,
+            async run() {
+                const orm = odoo.__WOWL_DEBUG__.root.env.services.orm;
+                await orm.unlink("mail.activity", [parseInt(this.anchor.dataset.activityId)]);
+            },
+        },
+        {
+            content: "La reporter à demain depuis l'aperçu",
+            trigger: `.o_aite_cad_panel ${STALE_ITEM} .o_aite_cad_reschedule`,
+            run: "click",
+        },
+        {
+            trigger: ".o-dropdown--menu .o_aite_cad_reschedule_tomorrow",
+            run: "click",
+        },
+        {
+            content: "Odoo refuse l'action ; l'aperçu rechargé n'a plus l'activité",
+            trigger: `body:not(:has(${STALE_ITEM})) .modal:contains('existe plus')`,
+        },
+        {
+            content: "Fermer le message par Échap",
+            trigger: ".modal:contains('existe plus')",
+            run: "press Escape",
+        },
+        {
+            content: "Le focus revient à l'aperçu (le bouton qui avait ouvert le menu a disparu)",
+            trigger: "body:not(:has(.modal)) .o_aite_cad_panel[aria-modal='true'] .o_aite_cad_panel_close:focus",
+        },
+        {
+            content: "Focus perdu sur la page : Tab revient dans l'aperçu",
+            trigger: ".o_aite_cad_panel .o_aite_cad_panel_close:focus",
+            async run(helpers) {
+                document.activeElement.blur();
+                check(document.activeElement === document.body, "Le focus doit être sur la page");
+                await helpers.press("Tab");
+            },
+        },
+        {
+            content: "Tab est resté dans l'aperçu ; Échap le ferme",
+            trigger: ".o_aite_cad_panel .o_aite_cad_panel_close:focus",
+            run: "press Escape",
+        },
+        {
+            content: "L'aperçu est fermé ; largeur d'ordinateur rétablie",
+            trigger: NO_PANEL,
+            run: () => setScreenSize(SIZES.XL),
         },
     ],
 });

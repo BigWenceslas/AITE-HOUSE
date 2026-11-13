@@ -4,13 +4,15 @@ import {
     onWillStart,
     onWillUnmount,
     onWillUpdateProps,
+    status,
     useEffect,
     useRef,
     useState,
 } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
-import { useService } from "@web/core/utils/hooks";
+import { useBus, useService } from "@web/core/utils/hooks";
 import { getActiveHotkey } from "@web/core/hotkeys/hotkey_service";
+import { useHotkey } from "@web/core/hotkeys/hotkey_hook";
 import { RPCError } from "@web/core/network/rpc";
 import { SIZES, getFirstAndLastTabableElements } from "@web/core/ui/ui_service";
 import { Dropdown } from "@web/core/dropdown/dropdown";
@@ -41,7 +43,11 @@ import {
  * Sous 992 px, le panneau couvre toute la page (voir le SCSS) : il se
  * comporte alors en fenêtre modale (aria-modal, focus gardé dans le
  * panneau, raccourcis d'Odoo limités au panneau). Sur ordinateur, il reste
- * un panneau latéral : la page à côté reste utilisable au clavier.
+ * un panneau latéral : la page à côté reste utilisable au clavier. Si la
+ * largeur change (rotation d'une tablette, fenêtre redimensionnée) pendant
+ * qu'une fenêtre ou le menu « Reporter » est ouvert depuis le panneau, le
+ * passage d'un mode à l'autre attend sa fermeture : elle garde Échap et le
+ * focus.
  */
 export class AiteLeadPanel extends Component {
     static template = "aite_crm_activity.LeadPanel";
@@ -62,24 +68,38 @@ export class AiteLeadPanel extends Component {
 
     setup() {
         this.orm = useService("orm");
-        this.hotkey = useService("hotkey");
         this.uiService = useService("ui");
         // Suit la largeur de l'écran (passage plein écran / panneau latéral).
         this.ui = useState(this.uiService);
         this.panelRef = useRef("panel");
         this.closeRef = useRef("close");
-        this.state = useState({ lead: null, loading: true, error: false });
+        this.state = useState({
+            lead: null,
+            loading: true,
+            error: false,
+            // Fenêtre modale en ce moment : suit isModal (voir syncModal).
+            modal: this.isModal && !this.hasOverlay,
+        });
         this.lastRequest = 0;
         useEffect(
             (el, modal) => (el && modal ? this.activateModal(el) : undefined),
-            () => [this.panelRef.el, this.isModal]
+            () => [this.panelRef.el, this.state.modal]
         );
-        // Échap, inscrite après le passage en modale : Odoo la rattache à
-        // l'élément actif du moment (le panneau plein écran, ou la page).
+        // Changement de largeur. Un passage différé (fenêtre ou menu ouvert)
+        // est refait à la fermeture d'une fenêtre d'Odoo, ou du menu (voir
+        // onMenuToggle).
         useEffect(
-            () => this.hotkey.add("escape", () => this.props.onClose()),
+            () => this.syncModal(),
             () => [this.isModal]
         );
+        useBus(this.uiService.bus, "active-element-changed", () => this.syncModal());
+        // Échap, inscrite une seule fois : une fenêtre ou un menu ouvert
+        // ensuite par-dessus, inscrit après, la reçoit d'abord. Le panneau
+        // ne la prend que si rien n'est ouvert au-dessus de lui.
+        useHotkey("escape", () => this.props.onClose(), {
+            global: true,
+            isAvailable: () => this.isOnTop,
+        });
         // Pas d'attente : le panneau s'ouvre tout de suite, avec son
         // indicateur de chargement et son bouton « Fermer ».
         onWillStart(() => {
@@ -146,24 +166,76 @@ export class AiteLeadPanel extends Component {
     }
 
     /**
+     * Une fenêtre d'Odoo (Fait, Réassigner, erreur…) ou le menu « Reporter »
+     * du panneau est ouvert par-dessus lui. Le menu ne devient pas l'élément
+     * actif d'Odoo : ses raccourcis restent rattachés à celui de son
+     * ouverture.
+     */
+    get hasOverlay() {
+        const el = this.panelRef.el;
+        if (el?.querySelector(".o-dropdown.show")) {
+            return true;
+        }
+        const top = this.uiService.activeElement;
+        return !(top === document || top === el || (el && top.contains(el)));
+    }
+
+    /** Rien n'est ouvert au-dessus du panneau : Échap lui revient. */
+    get isOnTop() {
+        const top = this.uiService.activeElement;
+        return top === document || top === this.panelRef.el;
+    }
+
+    /**
+     * Passe en fenêtre modale ou en panneau latéral selon la largeur, mais
+     * pas sous une fenêtre ou un menu ouvert : changer l'élément actif
+     * d'Odoo lui prendrait Échap et le focus. Refait à sa fermeture.
+     */
+    syncModal() {
+        if (this.state.modal !== this.isModal && !this.hasOverlay) {
+            this.state.modal = this.isModal;
+        }
+    }
+
+    /** Menu « Reporter » ouvert ou fermé (après la mise à jour de sa classe). */
+    onMenuToggle() {
+        Promise.resolve().then(() => {
+            if (status(this) === "mounted") {
+                this.syncModal();
+            }
+        });
+    }
+
+    /**
      * Panneau plein écran : il devient l'élément actif d'Odoo, et Tab /
      * Maj+Tab bouclent sur ses boutons et liens au lieu de partir vers la
-     * page cachée derrière (comme dans les fenêtres d'Odoo). Renvoie la
-     * fonction qui rétablit le comportement de panneau latéral.
+     * page cachée derrière (comme dans les fenêtres d'Odoo), y compris quand
+     * le focus n'est plus nulle part (bouton retiré par un rechargement).
+     * Renvoie la fonction qui rétablit le comportement de panneau latéral.
      */
     activateModal(el) {
+        const ui = this.uiService;
         const trapFocus = (ev) => {
             const hotkey = getActiveHotkey(ev);
-            if (hotkey !== "tab" && hotkey !== "shift+tab") {
+            if ((hotkey !== "tab" && hotkey !== "shift+tab") || ui.activeElement !== el) {
+                return;
+            }
+            const focused = document.activeElement;
+            const inside = el.contains(focused);
+            if (!inside && focused?.closest(".o-overlay-container")) {
+                // Menu « Reporter » du panneau, affiché hors de lui.
                 return;
             }
             const [first, last] = getFirstAndLastTabableElements(el);
             let target = null;
             if (!first) {
                 target = el;
-            } else if (hotkey === "tab" && document.activeElement === last) {
+            } else if (!inside) {
+                // Focus sur la page cachée derrière, ou nulle part.
+                target = hotkey === "tab" ? first : last;
+            } else if (hotkey === "tab" && focused === last) {
                 target = first;
-            } else if (hotkey === "shift+tab" && document.activeElement === first) {
+            } else if (hotkey === "shift+tab" && focused === first) {
                 target = last;
             }
             if (target) {
@@ -174,14 +246,34 @@ export class AiteLeadPanel extends Component {
                 }
             }
         };
-        this.uiService.activateElement(el);
-        el.addEventListener("keydown", trapFocus);
+        // Une fenêtre ouverte depuis le panneau se ferme : Odoo rend le focus
+        // au bouton qui l'a ouverte, sauf si un rechargement l'a retiré
+        // entre-temps (action refusée, activité disparue). Il revient alors au
+        // bouton « Fermer » du panneau.
+        let timer;
+        const recoverFocus = () => {
+            if (ui.activeElement !== el) {
+                return;
+            }
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+                const focused = document.activeElement;
+                if (ui.activeElement === el && (!focused || focused === document.body)) {
+                    this.closeRef.el?.focus();
+                }
+            });
+        };
+        ui.activateElement(el);
+        document.addEventListener("keydown", trapFocus);
+        ui.bus.addEventListener("active-element-changed", recoverFocus);
         if (!el.contains(document.activeElement)) {
             this.closeRef.el?.focus();
         }
         return () => {
-            el.removeEventListener("keydown", trapFocus);
-            this.uiService.deactivateElement(el);
+            clearTimeout(timer);
+            ui.bus.removeEventListener("active-element-changed", recoverFocus);
+            document.removeEventListener("keydown", trapFocus);
+            ui.deactivateElement(el);
         };
     }
 

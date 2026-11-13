@@ -105,7 +105,11 @@ class AiteCrmActivityReport(models.Model):
     won_status = fields.Selection(
         [('won', "Gagnée"), ('lost', "Perdue"), ('pending', "En cours")],
         string="Issue de l'opportunité", readonly=True, depends_context=('uid',))
-    lead_active = fields.Boolean(string="Opportunité active", readonly=True, depends_context=('uid',))
+    # Sélection plutôt que case à cocher : vide, elle se lit « inconnu » ;
+    # une case vide se lirait « archivée ».
+    lead_active = fields.Selection(
+        [('active', "Active"), ('archived', "Archivée")], string="Archivage de l'opportunité",
+        readonly=True, depends_context=('uid',))
 
     # Mesures
     nbr = fields.Integer(string="Nombre d'activités", readonly=True, aggregator='sum')
@@ -157,7 +161,9 @@ class AiteCrmActivityReport(models.Model):
                 r.company_id,
                 CASE WHEN r.lead_readable THEN r.lead_type END AS lead_type,
                 CASE WHEN r.lead_readable THEN r.won_status END AS won_status,
-                CASE WHEN r.lead_readable THEN r.lead_active END AS lead_active,
+                CASE WHEN r.lead_readable THEN
+                    CASE r.lead_active WHEN TRUE THEN 'active' WHEN FALSE THEN 'archived' END
+                END AS lead_active,
                 CASE
                     WHEN NOT r.is_open THEN 'done'
                     WHEN r.date_deadline < r.today THEN 'overdue'
