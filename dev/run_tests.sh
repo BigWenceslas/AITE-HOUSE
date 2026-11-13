@@ -1,7 +1,8 @@
 #!/bin/bash
 # ============================================================================
 # AITE HOUSE — lance toute la batterie de tests
-#   1. tests purs (sans Odoo)        : tests/vague1/test_*.py, tests/socle/test_*.py
+#   1. tests purs (sans Odoo)        : tests/vague1/test_*.py, tests/socle/test_*.py,
+#                                      tests/restaurant/test_*.py
 #   2. scénarios « utilisateur novice » joués dans odoo-bin shell sur la base
 #      de développement (chaque scénario fait un rollback à la fin)
 #   3. audit des menus (chaque écran s'ouvre, chaque état vide explique quoi faire)
@@ -28,6 +29,10 @@ shell() {  # joue un script dans odoo-bin shell, affiche la sortie utile
 if [ "$WHAT" = all ] || [ "$WHAT" = pure ]; then
   printf '\n\033[1;35m▶ Tests purs — vague 1\033[0m\n'
   (cd "$ROOT" && "$PYTHON" -m unittest discover -s tests/vague1 -p "test_*.py" 2>&1 | tail -3) || FAIL=1
+  printf '\n\033[1;35m▶ Tests purs — restaurant\033[0m\n'
+  r=$(cd "$ROOT" && "$PYTHON" -m unittest discover -s tests/restaurant -p "test_*.py" 2>&1 | tail -3)
+  echo "$r"
+  echo "$r" | tail -1 | grep -q '^OK' || FAIL=1
   printf '\n\033[1;35m▶ Tests purs — socle (12 modules)\033[0m\n'
   for f in "$ROOT"/tests/socle/test_*.py; do
     r=$(cd "$ROOT/tests/socle" && "$PYTHON" -m unittest "$(basename "${f%.py}")" 2>&1 | tail -1)

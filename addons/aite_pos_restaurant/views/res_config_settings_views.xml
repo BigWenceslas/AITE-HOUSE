@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Réglages du Point de Vente, bloc « Restaurant » : la case « Service à
+         table contrôlé » et sa phrase « ce qui va se passer » (partie 4.3).
+
+         Place : juste après « Est un bar/restaurant ». La phrase dit
+         « ci-dessous » : le partage et l'impression de l'addition suivent
+         dans ce bloc, la connexion par code, le contrôle des prix et les
+         remises sont dans les blocs plus bas.
+         Visible tant qu'elle est cochée, même si « Est un bar/restaurant »
+         vient d'être décoché : R31 demande alors de la décocher d'abord.
+
+         La vue hérite de celle du Point de Vente (et non de celle de
+         pos_restaurant, comme le disait la partie 4.3) : elle vise aussi
+         les listes de pos_hr, qui ne seraient pas encore posées si
+         pos_restaurant avait été installé avant pos_hr ; héritée de la vue
+         de base, elle passe après les deux (ordre des identifiants).
+
+         En mode, la caisse ignore les listes « droits de base / avancés » de
+         pos_hr et l'option « Ignorer l'écran de prévisualisation » : elles
+         sont masquées. -->
+    <record id="res_config_settings_view_form_aite_restaurant" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.aite.restaurant</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="point_of_sale.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@id='restaurant_section']//field[@name='pos_module_pos_restaurant']/.." position="after">
+                <setting id="aite_mode_restaurant" string="Service à table contrôlé"
+                         invisible="not pos_module_pos_restaurant and not pos_aite_mode_restaurant"
+                         help="Coché : chaque employé tape son code à 4 chiffres pour ouvrir une table, encaisser ou annuler ; la caisse applique les quatre niveaux (serveur, caissière, chef de salle, manager), revient au plan après chaque envoi, verrouille ce qui est parti en cuisine ou au bar et garde la trace des saisies et des annulations. Cocher règle aussi, ci-dessous : connexion par code, contrôle des prix, remises désactivées, partage et impression de l'addition. Décocher arrête tout cela sur cette caisse. Se change seulement caisse fermée.">
+                    <field name="pos_aite_mode_restaurant" readonly="pos_has_active_session"/>
+                </setting>
+            </xpath>
+            <xpath expr="//field[@name='pos_basic_employee_ids']/.." position="attributes">
+                <attribute name="invisible">pos_aite_mode_restaurant</attribute>
+            </xpath>
+            <xpath expr="//field[@name='pos_advanced_employee_ids']/.." position="attributes">
+                <attribute name="invisible">pos_aite_mode_restaurant</attribute>
+            </xpath>
+            <xpath expr="//field[@name='pos_iface_print_skip_screen']/.." position="attributes">
+                <attribute name="invisible">pos_aite_mode_restaurant</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

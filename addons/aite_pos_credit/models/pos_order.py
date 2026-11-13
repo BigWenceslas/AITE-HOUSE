@@ -107,8 +107,15 @@ class PosOrder(models.Model):
 
         Le montant de l'ardoise = somme des paiements via méthode ardoise
         (donc la part crédit d'un paiement mixte, pas le total commande).
+
+        Seule une commande réglée ouvre une ardoise (AH-01) : le service à
+        table enregistre l'addition encore ouverte, avec les paiements déjà
+        saisis, à chaque envoi en cuisine ; une addition ensuite annulée ne
+        doit laisser aucune dette au client.
         """
         for order in self:
+            if order.state not in ('paid', 'done', 'invoiced'):
+                continue
             if order.credit_id:
                 continue
             credit_amount = order._aite_credit_amount()
@@ -133,6 +140,26 @@ class PosOrder(models.Model):
                 "(payé comptant : %s).",
                 credit.name, credit_amount, order.name or order.id,
                 order.amount_paid_direct)
+
+    def action_pos_order_cancel(self):
+        """Une addition annulée emporte son ardoise ouverte (AH-01).
+
+        Seule l'ardoise encore ouverte et sans remboursement est annulée ;
+        une ardoise déjà remboursée en partie reste telle quelle (le
+        remboursement est à annuler d'abord, depuis l'ardoise). Aucune
+        erreur n'est levée ici : l'annulation vient aussi de la caisse, où
+        une erreur bloquerait les synchronisations suivantes du poste.
+        Écriture technique en ``sudo()`` : le compte de la caisse n'a pas
+        de droit sur les ardoises.
+        """
+        res = super().action_pos_order_cancel()
+        annulees = self.filtered(lambda o: o.state == 'cancel')
+        credits = self.env['aite.pos.credit'].sudo().search([
+            ('order_id', 'in', annulees.ids),
+            ('state', '=', 'open'),
+        ])
+        credits.filtered(lambda c: not c.amount_paid).action_cancel()
+        return res
 
     # ------------------------------------------------------------------
     # Chemin manuel (rattrapage backend)

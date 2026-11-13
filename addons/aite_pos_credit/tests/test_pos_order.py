@@ -3,7 +3,7 @@
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 
-from .common import CreditCommon
+from .common import ArdoiseCaisseCommon, CreditCommon
 
 
 @tagged('post_install', '-at_install', 'aite_credit')
@@ -73,6 +73,10 @@ class TestPosOrderCredit(CreditCommon):
                 'payment_method_id': method.id,
                 'amount': amount,
             })
+        # L'ardoise ne naît que d'une commande réglée (AH-01) : la commande
+        # passe à « payée », comme dans test_ecarts_caisse.py. Une commande
+        # encore ouverte (service à table) n'ouvre plus d'ardoise.
+        order.write({'state': 'paid'})
         order.invalidate_recordset()
         order._aite_create_credit_if_needed()
         return order
@@ -171,3 +175,59 @@ class TestPosOrderCredit(CreditCommon):
         order = self._order([(self.method_cash, 50000.0)])
         with self.assertRaises(UserError):
             order.action_put_on_credit(down_payment=50000.0)
+
+
+@tagged('post_install', '-at_install', 'aite_credit')
+class TestArdoiseCommandeOuverte(ArdoiseCaisseCommon):
+    """AH-01 : l'ardoise naît seulement d'une commande réglée, et s'annule
+    avec elle.
+
+    Le service à table enregistre l'addition encore ouverte (état
+    « brouillon ») à chaque envoi, avec les paiements déjà saisis : une
+    ardoise ne doit pas en naître. Les commandes passent par ``sync_from_ui``,
+    le chemin de la caisse, et non par un ``create`` direct.
+    """
+
+    def test_commande_ouverte_n_ouvre_pas_d_ardoise(self):
+        order, _uuid = self._synchroniser('draft')
+        self.assertEqual(order.state, 'draft')
+        self.assertTrue(order.payment_ids, "le paiement ardoise est enregistré")
+        self.assertFalse(order.credit_id)
+        self.assertFalse(self._ardoises(order))
+
+    def test_la_meme_commande_reglee_ouvre_une_ardoise(self):
+        order, uuid = self._synchroniser('draft')
+        order, _uuid = self._synchroniser('paid', uuid=uuid)
+        self.assertEqual(order.state, 'paid')
+        self.assertEqual(len(self._ardoises(order)), 1)
+        self.assertEqual(order.credit_id.amount_total, 50000.0)
+        self.assertEqual(order.credit_id.state, 'open')
+
+    def test_commande_ouverte_annulee_laisse_aucune_ardoise_ouverte(self):
+        order, _uuid = self._synchroniser('draft')
+        order.action_pos_order_cancel()
+        self.assertEqual(order.state, 'cancel')
+        self.assertFalse(self._ardoises(order).filtered(
+            lambda c: c.state == 'open'))
+
+    def test_ardoise_existante_annulee_avec_sa_commande(self):
+        """Données d'avant la correction : une ardoise ouverte sur une
+        addition encore ouverte. Annuler l'addition annule l'ardoise."""
+        order, _uuid = self._synchroniser('draft')
+        credit = self._credit(50000.0, order_id=order.id)
+        order.credit_id = credit
+        order.action_pos_order_cancel()
+        self.assertEqual(order.state, 'cancel')
+        self.assertEqual(credit.state, 'cancelled')
+
+    def test_ardoise_deja_remboursee_reste_ouverte_sans_erreur(self):
+        """Une ardoise qui a déjà reçu un remboursement n'est pas annulée,
+        et l'annulation de l'addition ne lève aucune erreur."""
+        order, _uuid = self._synchroniser('draft')
+        credit = self._credit(50000.0, order_id=order.id)
+        order.credit_id = credit
+        self._repay(credit, 10000.0)  # validé d'office
+        self.assertGreater(credit.amount_paid, 0)
+        order.action_pos_order_cancel()
+        self.assertEqual(order.state, 'cancel')
+        self.assertEqual(credit.state, 'open')

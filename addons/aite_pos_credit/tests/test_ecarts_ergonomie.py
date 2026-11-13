@@ -8,7 +8,7 @@ l'installation).
 from datetime import date
 from unittest.mock import patch
 
-from odoo.tests import tagged
+from odoo.tests import Form, tagged
 
 from .common import CreditCommon
 from .. import hooks
@@ -149,3 +149,36 @@ class TestCreditEcartsErgonomie(CreditCommon):
         debtor = next(r for r in top if r['partner_id'] == self.client_b.id)
         self.assertFalse(debtor['last_payment'])
         self.assertEqual(debtor['last_payment_label'], "")
+
+
+@tagged('post_install', '-at_install', 'aite_credit')
+class TestReglagesArdoiseSansAvertissement(CreditCommon):
+    """Les réglages de l'ardoise dans la page du Point de Vente (constat de
+    revue n° 10, restaurant, incrément 1).
+
+    Ils s'appelaient ``pos_credit_*`` : Odoo prend tout réglage qui commence
+    par « pos_ » pour un réglage de la caisse, et écrivait à chaque
+    enregistrement trois avertissements « … is not properly saved to the
+    pos_config_id field ». Les valeurs vont toujours à la société.
+    """
+
+    LOGGER = 'odoo.addons.point_of_sale.models.res_config_settings'
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.config = cls.env['pos.config'].create({'name': "Caisse réglages ardoise"})
+
+    def test_enregistrer_les_reglages_sans_avertissement(self):
+        with self.assertNoLogs(self.LOGGER, level='WARNING'):
+            with Form(self.env['res.config.settings']) as reglages:
+                reglages.pos_config_id = self.config
+
+    def test_les_reglages_vont_a_la_societe(self):
+        journal = self.cash_journal
+        with Form(self.env['res.config.settings']) as reglages:
+            reglages.pos_config_id = self.config
+            reglages.aite_credit_auto_entries = True
+            reglages.aite_credit_journal_id = journal
+        self.assertTrue(self.company.pos_credit_auto_entries)
+        self.assertEqual(self.company.pos_credit_journal_id, journal)

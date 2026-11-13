@@ -17,10 +17,17 @@ class ResConfigSettings(models.TransientModel):
     Ces réglages restent optionnels : si rien n'est défini, le module se
     rabat sur les comptes par défaut d'Odoo (compte client de la fiche
     partenaire, journal de banque/caisse).
+
+    Les réglages s'appellent ``aite_credit_*`` (et non ``pos_credit_*``) :
+    dans la page du Point de Vente, Odoo prend tout réglage qui commence par
+    « pos_ » pour un réglage de la caisse, et écrivait à chaque
+    enregistrement un avertissement par réglage (« … is not properly saved
+    to the pos_config_id field »). Les champs de la société gardent leur
+    nom : aucune donnée à migrer.
     """
     _inherit = 'res.config.settings'
 
-    pos_credit_account_id = fields.Many2one(
+    aite_credit_account_id = fields.Many2one(
         'account.account',
         string="Compte client (ardoises)",
         related='company_id.pos_credit_account_id',
@@ -28,7 +35,7 @@ class ResConfigSettings(models.TransientModel):
         domain="[('account_type', '=', 'asset_receivable')]",
         help="Compte 411 utilisé pour porter l'encours des ardoises POS.",
     )
-    pos_credit_journal_id = fields.Many2one(
+    aite_credit_journal_id = fields.Many2one(
         'account.journal',
         string="Journal des remboursements",
         related='company_id.pos_credit_journal_id',
@@ -36,7 +43,7 @@ class ResConfigSettings(models.TransientModel):
         domain="[('type', 'in', ('bank', 'cash'))]",
         help="Journal utilisé pour comptabiliser les remboursements d'ardoise.",
     )
-    pos_credit_auto_entries = fields.Boolean(
+    aite_credit_auto_entries = fields.Boolean(
         string="Comptabiliser les remboursements",
         related='company_id.pos_credit_auto_entries',
         readonly=False,

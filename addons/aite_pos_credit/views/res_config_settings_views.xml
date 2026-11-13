@@ -25,7 +25,9 @@
         </field>
     </record>
 
-    <!-- Bloc de paramètres comptables du module (Réglages POS) -->
+    <!-- Bloc de paramètres comptables du module (Réglages POS). Les réglages
+         s'appellent aite_credit_* : un réglage « pos_* » serait pris par Odoo
+         pour un réglage de la caisse (avertissement à chaque enregistrement). -->
     <record id="res_config_settings_view_form_aite_credit" model="ir.ui.view">
         <field name="name">res.config.settings.view.form.aite.credit</field>
         <field name="model">res.config.settings</field>
@@ -35,15 +37,15 @@
                 <block title="Ardoises / Crédit POS" id="aite_credit_section">
                     <setting id="aite_credit_auto_entries"
                              help="Génère l'écriture comptable (411) à la validation d'un remboursement d'ardoise.">
-                        <field name="pos_credit_auto_entries"/>
+                        <field name="aite_credit_auto_entries"/>
                     </setting>
                     <setting id="aite_credit_account"
                              help="Compte client (411) portant l'encours des ardoises.">
-                        <field name="pos_credit_account_id"/>
+                        <field name="aite_credit_account_id"/>
                     </setting>
                     <setting id="aite_credit_journal"
                              help="Journal d'encaissement des remboursements.">
-                        <field name="pos_credit_journal_id"/>
+                        <field name="aite_credit_journal_id"/>
                     </setting>
                 </block>
             </xpath>

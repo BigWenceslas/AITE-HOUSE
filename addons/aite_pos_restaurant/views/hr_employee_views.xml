@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Fiche employé : le niveau en caisse et le code, sur la première page,
+         sous le poste et le responsable (spécification, partie 4.3). Le code
+         (champ « pin » d'Odoo) est déplacé depuis l'onglet « Paramètres ». -->
+    <record id="view_employee_form_aite_restaurant" model="ir.ui.view">
+        <field name="name">hr.employee.form.aite.restaurant</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='coach_id']/../.." position="after">
+                <group string="Caisse du restaurant" name="aite_caisse_restaurant"
+                       groups="hr.group_hr_user">
+                    <field name="aite_niveau_caisse"/>
+                    <div class="text-muted" colspan="2">
+                        Serveur : ouvre ses tables, commande, envoie, imprime
+                        l'addition ; n'encaisse pas et n'annule pas ce qui est
+                        envoyé. Caissière : en plus, ouvre la caisse et encaisse
+                        toutes les tables. Chef de salle ou superviseur : en
+                        plus, annule ce qui est envoyé (avec un motif), sort des
+                        espèces et ferme la caisse. Manager : tout, y compris les
+                        prix et les remboursements. Vide : l'employé n'apparaît
+                        pas sur la caisse.
+                    </div>
+                </group>
+            </xpath>
+            <xpath expr="//group[@name='aite_caisse_restaurant']" position="inside">
+                <xpath expr="//field[@name='pin']" position="move"/>
+            </xpath>
+            <xpath expr="//group[@name='aite_caisse_restaurant']/field[@name='pin']"
+                   position="attributes">
+                <attribute name="string">Code caisse</attribute>
+            </xpath>
+            <xpath expr="//group[@name='aite_caisse_restaurant']" position="inside">
+                <div class="text-muted" colspan="2">
+                    4 chiffres, propres à cet employé. Il le tape sur la caisse
+                    pour ouvrir une table, encaisser ou annuler : la caisse sait
+                    ainsi qui a fait quoi. Deux employés ne peuvent pas avoir le
+                    même code. Proposé d'office quand vous choisissez un niveau ;
+                    ne le communiquez qu'à l'employé.
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
