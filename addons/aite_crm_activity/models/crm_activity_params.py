@@ -69,7 +69,18 @@ def severity(days_late, thresholds):
 
 
 def actionable_activity_domain(env):
-    """ Domaine (sur mail.activity) restreignant aux activités sur lesquelles
-    on peut encore agir. Contrat partagé par le tableau de bord et le
-    récapitulatif : voir l'implémentation pour la règle retenue. """
-    return []
+    """ Domaine à ajouter aux recherches d'activités OUVERTES sur crm.lead :
+    seulement celles des pistes et opportunités actives.
+
+    Dans Odoo 19, « Marquer comme perdue » archive l'opportunité sans fermer
+    ses activités : elles resteraient « en retard » indéfiniment alors que
+    personne ne les traitera. Elles sortent donc des activités à faire
+    (tableau de bord, plan de charge, récapitulatif, rapport). Les activités
+    réalisées (archivées) ne passent pas par ce domaine : une activité faite
+    reste comptée même si l'opportunité a été perdue ensuite.
+
+    Ne pas y mettre de condition sur ``active`` (celui de mail.activity) :
+    la seule mention de ce champ désactiverait le filtre automatique des
+    activités archivées. """
+    active_leads = env['crm.lead'].sudo().with_context(active_test=True)._search([])
+    return [('res_id', 'in', active_leads)]
