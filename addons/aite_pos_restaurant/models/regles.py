@@ -85,3 +85,61 @@ def code_libre(codes_pris, rng):
             "Les 10 000 codes à 4 chiffres sont tous pris : archivez les "
             "employés partis pour libérer leur code.")
     return rng.choice(libres)
+
+
+def _nombre(valeur):
+    """Une quantité reçue (None, False, entier, décimal) en décimal."""
+    try:
+        return float(valeur or 0)
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def bilan_ligne(envoyee, prep_avant, prep, qte_avant, qte, deplacement):
+    """Ce que le serveur conclut d'une ligne d'addition à une synchronisation
+    (T9, T19 ; partie 4.2).
+
+    - ``envoyee`` : ce que le serveur sait être parti et pas encore annulé
+      (``aite_qte_envoyee``) ;
+    - ``prep_avant``, ``prep`` : la quantité de préparation de la ligne avant
+      et après la synchronisation (``last_order_preparation_change``) ; seule
+      sa **hausse** (un nouvel envoi) augmente ce qui est parti : une copie de
+      poste en retard ne relève pas le verrou après une annulation ;
+    - ``qte_avant``, ``qte`` : la quantité de la ligne avant et après (0 pour
+      une ligne neuve ou retirée) ;
+    - ``deplacement`` : division ou réunion (ni saisie, ni retrait).
+
+    Rend ``(saisie, retrait, nouvelle_envoyee)`` : la quantité ajoutée à
+    écrire au journal des saisies, la quantité partie retirée sans code (au
+    journal des annulations), et ce qui reste parti sur la ligne.
+    """
+    envoyee, prep_avant, prep = _nombre(envoyee), _nombre(prep_avant), _nombre(prep)
+    qte_avant, qte = _nombre(qte_avant), _nombre(qte)
+    partie = max(envoyee, 0.0) + max(prep - prep_avant, 0.0)
+    reste = max(qte, 0.0)
+    nouvelle = min(partie, reste)
+    if deplacement:
+        saisie = retrait = 0.0
+    else:
+        saisie = max(qte - qte_avant, 0.0)
+        retrait = max(partie - reste, 0.0)
+    return round(saisie, 6), round(retrait, 6), round(nouvelle, 6)
+
+
+def compteurs(personnes, part, remboursement):
+    """Ce qu'une addition réglée compte dans « Personnes et tables »
+    (partie 5.2) : ``(tables, personnes, sans_table)``.
+
+    Une table (ou un numéro tapé) compte pour une table et ses personnes ; une
+    part née d'une division (« 12B ») n'a pas de personne et ne compte pas,
+    sauf portée sur une table libre (elle a alors ses personnes) ; une vente
+    sans table compte à part (Q76) ; un remboursement ne compte pas.
+    """
+    personnes = int(_nombre(personnes))
+    if remboursement:
+        return 0, 0, 0
+    if personnes >= 1:
+        return 1, personnes, 0
+    if part:
+        return 0, 0, 0
+    return 0, 0, 1

@@ -1,5 +1,7 @@
 /* global posmodel */
 /** Incrément 2 : le code et le plan verrouillé (spécification, partie 6.3).
+ * Depuis l'incrément 3, la première ouverture d'une table libre passe par
+ * l'étape « personnes » (`Aite.personnes`).
  * AiteVerrouTour, AiteOuvertureTour, AiteDroitsTour, AitePaiementTour, et
  * AiteArdoiseTour (AH-02, joué seulement si aite_pos_credit est installé) ;
  * puis les tours des correctifs de la revue (prise en main au paiement,
@@ -24,6 +26,8 @@ registry.category("web_tour.tours").add("AiteVerrouTour", {
             ...Aite.taperCode("9999"),
             ...Aite.codeInconnu(),
             ...Aite.taperCode("1111"),
+            // Table libre : le nombre de personnes (incrément 3).
+            ...Aite.personnes("4"),
             ...Aite.ecranCommande(),
             Aite.identifie("Awa"),
             { content: "le nom d'Awa en haut", trigger: ".pos-rightheader .cashier-name" },
@@ -31,7 +35,7 @@ registry.category("web_tour.tours").add("AiteVerrouTour", {
             Aite.jEnvoie(),
             // Après « J'envoie » : le plan, verrouillé, et la notification.
             ...Aite.planVerrouille(),
-            Aite.notificationQuiCommencePar("Envoyé : "),
+            Aite.notificationQuiCommencePar("Envoyé\u00a0: "),
             { content: "plus de nom en haut", trigger: ".pos-rightheader:not(:has(.cashier-name))" },
             // La table demande de nouveau le code ; « Retour » laisse le plan.
             FloorScreen.clickTable("5"),
@@ -140,6 +144,7 @@ registry.category("web_tour.tours").add("AiteDroitsTour", {
         [
             FloorScreen.clickTable("5"),
             ...Aite.taperCode("1111"),
+            ...Aite.personnes("4"),
             ProductScreen.clickDisplayedProduct("Coca-Cola"),
             // Une serveuse touche « J'encaisse » : le code de qui encaisse.
             Aite.jEncaisse(),
@@ -246,6 +251,7 @@ registry.category("web_tour.tours").add("AitePaiementTour", {
         [
             FloorScreen.clickTable("5"),
             ...Aite.taperCode("1111"),
+            ...Aite.personnes("4"),
             ProductScreen.clickDisplayedProduct("Coca-Cola"),
             Aite.jEnvoie(),
             ...Aite.planVerrouille(),
@@ -295,6 +301,7 @@ registry.category("web_tour.tours").add("AiteArdoiseTour", {
         [
             FloorScreen.clickTable("5"),
             ...Aite.taperCode("3333"),
+            ...Aite.personnes("4"),
             ProductScreen.clickDisplayedProduct("Coca-Cola"),
             Aite.jEncaisse(),
             PaymentScreen.isShown(),
@@ -331,15 +338,20 @@ function modeReserve(present) {
 
 /** Prendre la main par le nom en haut sur l'écran de paiement : une
  * serveuse revient à l'écran de commande (REST-03) ; la caissière qui
- * reprend la main au manager ne voit plus le mode réservé (AH-02). */
+ * reprend la main au manager ne voit plus le mode réservé (AH-02).
+ * Incrément 3 : la table est ouverte par Awa (« ouverte par ») ; sur la
+ * table d'un collègue, une serveuse serait renvoyée au plan (R4). */
 registry.category("web_tour.tours").add("AitePriseEnMainTour", {
     steps: () =>
         [
-            // Fanta (manager) encaisse : le mode réservé est proposé.
+            // Awa ouvre la table ; Fanta (manager) encaisse : le mode réservé
+            // est proposé.
             FloorScreen.clickTable("5"),
-            ...Aite.taperCode("5555"),
+            ...Aite.taperCode("1111"),
+            ...Aite.personnes("4"),
             ProductScreen.clickDisplayedProduct("Coca-Cola"),
             Aite.jEncaisse(),
+            ...Aite.taperCode("5555"),
             PaymentScreen.isShown(),
             Aite.identifie("Fanta"),
             modeReserve(true),
@@ -365,6 +377,7 @@ registry.category("web_tour.tours").add("AiteTransfertApresAbandonTour", {
         [
             FloorScreen.clickTable("5"),
             ...Aite.taperCode("1111"),
+            ...Aite.personnes("4"),
             ProductScreen.clickDisplayedProduct("Coca-Cola"),
             ...Aite.deplacer(),
             Aite.verifier("5 minutes sans activité", () => posmodel.idleTimeout[0].action() === false),
@@ -424,6 +437,7 @@ registry.category("web_tour.tours").add("AiteOngletTour", {
             ...NumberPopup.enterValue("99"),
             Dialog.confirm(),
             ...Aite.taperCode("1111"),
+            ...Aite.personnes("2"),
             ...Aite.ecranCommande(),
             Aite.identifie("Awa"),
             ProductScreen.clickDisplayedProduct("Coca-Cola"),
@@ -463,6 +477,7 @@ registry.category("web_tour.tours").add("AiteRetardCodeTour", {
             Aite.verifier("la caisse est ouverte", () => posmodel.session.state === "opened"),
             FloorScreen.clickTable("5"),
             ...Aite.taperCode("1111"),
+            ...Aite.personnes("4"),
             ...Aite.ecranCommande(),
         ].flat(),
 });
@@ -478,6 +493,7 @@ registry.category("web_tour.tours").add("AiteRetardTableTour", {
             Aite.autrePosteOuvreLaCaisse("3333"),
             FloorScreen.clickTable("5"),
             ...Aite.taperCode("1111"),
+            ...Aite.personnes("4"),
             ...Aite.ecranCommande(),
             Aite.identifie("Awa"),
             Aite.pasDeNotification("R3"),

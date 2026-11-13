@@ -42,18 +42,43 @@ Incrément 2 (le code et le plan verrouillé ; les gestes réservés) :
 * « J'envoie », « J'encaisse », « J'ouvre la caisse », « Entrée ou sortie
   d'espèces », « Retour » ; pas de « + » (vente sans table) sur la caisse.
 
+Incrément 3 (la table) :
+
+* une table libre demande le nombre de personnes, dans la même fenêtre que le
+  code (huit gros boutons, « 9 et plus », pas de zéro) ; l'addition est
+  enregistrée aussitôt, sans produit : la table est occupée sur tous les
+  postes ; « 4 personnes » sur l'écran de commande change le nombre en deux
+  touches ;
+* « Ouverte par », « Heure d'ouverture » (horloge du serveur) et « Encaissée
+  par » sur la fiche de l'addition ; une division garde les personnes sur
+  l'origine (la part « 12B » en a 0), une réunion les additionne et garde
+  l'heure la plus ancienne ;
+* le journal des saisies : qui a ajouté chaque produit, à quelle heure
+  (bouton « Saisies » de la fiche) ; ni la division ni la réunion ne sont
+  des saisies ; ce qui est parti en cuisine ou au bar est tenu par le
+  serveur ;
+* un numéro tapé qui n'est pas sur le plan ouvre une table à ce nom ; le
+  réglage « Autoriser la vente sans table » (décoché d'office, se change
+  caisse fermée) fait paraître le « + » (caissière et au-dessus) ;
+* « Addition », « Diviser l'addition », « Déplacer ou réunir », « Annuler la
+  table » ; « Liste de prix » retirée de la caisse.
+
 Aucune dépendance au socle hôtelier.
 """,
-    'version': '18.0.1.0.1',
+    'version': '18.0.1.0.2',
     'author': "AITE Consulting",
     'website': "https://aiteconsulting.com",
     'category': 'Point of Sale',
     'license': 'LGPL-3',
     'depends': ['pos_restaurant', 'pos_hr'],
     'data': [
+        'security/restaurant_security.xml',
+        'security/ir.model.access.csv',
         'views/hr_employee_views.xml',
         'views/res_config_settings_views.xml',
+        'views/pos_order_views.xml',
         'views/pos_session_views.xml',
+        'views/restaurant_saisie_views.xml',
     ],
     'assets': {
         'point_of_sale._assets_pos': ['aite_pos_restaurant/static/src/**/*'],

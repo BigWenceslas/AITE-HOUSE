@@ -475,3 +475,46 @@ class TestCorrectifsSession(RestaurantCommon):
             session.with_user(self.compte_caisse).try_cash_in_out,
             'out', 1000.0, "Glace", {'translatedType': 'out', 'employee_id': self.paul.id}), R15)
         self.assertFalse(session.statement_line_ids)
+
+    # --- La clé « écriture du serveur » posée par la caisse (revue de
+    # l'incrément 3, constat bloquant n° 1) --------------------------------
+
+    def test_cle_du_serveur_forgee_n_ouvre_pas_la_caisse(self):
+        """Le compte de la caisse pose lui-même la clé dans son appel : il
+        ne s'autorise pas « par Awa » (serveuse) à ouvrir la caisse, et
+        n'écrit ni l'état ni « ouverte par »."""
+        session, caisse = self._session_en_controle()
+        forgee = caisse.with_context(aite_ecriture_serveur=True)
+        forgee.write({'aite_autorisation_id': self.awa.id,
+                      'aite_ouverte_par_id': self.awa.id})
+        self.assertFalse(session.aite_autorisation_id)
+        self.assertFalse(session.aite_ouverte_par_id)
+        self.assertEqual(self._refus(forgee.set_opening_control, 0, None), R3)
+        self.assertEqual(self._refus(forgee.write, {'state': 'opened'}), R3)
+        self.assertEqual(session.state, 'opening_control')
+
+    def test_cle_du_serveur_forgee_ne_ferme_pas_la_caisse(self):
+        session = self._ouvrir_session()
+        forgee = session.with_user(self.compte_caisse).with_context(aite_ecriture_serveur=True)
+        forgee.write({'aite_autorisation_id': self.awa.id, 'aite_fermee_par_id': self.awa.id})
+        self.assertFalse(session.aite_autorisation_id)
+        self.assertFalse(session.aite_fermee_par_id)
+        self.assertEqual(self._refus(forgee.post_closing_cash_details, 0), R13)
+        self.assertEqual(self._refus(forgee.write, {'state': 'closed'}), R13)
+        self.assertEqual(session.state, 'opened')
+
+    def test_cle_du_serveur_forgee_a_la_creation_de_session(self):
+        autre = self.other_currency_config
+        autre.write({'module_pos_restaurant': True, 'module_pos_hr': True,
+                     'aite_mode_restaurant': True})
+        session = self.env['pos.session'].with_user(self.compte_caisse).with_context(
+            aite_ecriture_serveur=True).create({
+                'config_id': autre.id,
+                'user_id': self.compte_caisse.id,
+                'state': 'opened',
+                'aite_ouverte_par_id': self.awa.id,
+                'aite_autorisation_id': self.awa.id,
+            })
+        self.assertEqual(session.state, 'opening_control')
+        self.assertFalse(session.aite_ouverte_par_id)
+        self.assertFalse(session.aite_autorisation_id)

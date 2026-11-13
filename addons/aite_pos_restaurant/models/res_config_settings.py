@@ -11,6 +11,8 @@ class ResConfigSettings(models.TransientModel):
 
     pos_aite_mode_restaurant = fields.Boolean(
         related='pos_config_id.aite_mode_restaurant', readonly=False)
+    pos_aite_vente_sans_table = fields.Boolean(
+        related='pos_config_id.aite_vente_sans_table', readonly=False)
 
     @api.onchange('pos_aite_mode_restaurant')
     def _onchange_pos_aite_mode_restaurant(self):

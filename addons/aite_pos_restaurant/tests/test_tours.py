@@ -13,6 +13,11 @@ installé). Chaque tour est suivi de vérifications côté serveur.
 
 Correctifs de la revue de l'incrément 2 (``TestToursCorrectifs``) : chaque
 tour reproduit un défaut trouvé par la revue, écrit avant sa correction.
+
+Incrément 3 : la table (``TestToursTable``) — personnes, numéro inconnu,
+vente sans table, réunion ; et, depuis sa revue, l'addition quittée par un
+onglet enregistrée au nom de qui l'a remplie (T19, ``AiteSaisieOngletTour``).
+Les tours de l'incrément 2 vérifient aussi le journal des saisies.
 """
 from odoo.tests import tagged
 
@@ -86,6 +91,13 @@ class AiteToursModeCommon(AiteToursCommon):
             ('table_id', '=', self.main_floor_table_5.id),
         ], order='id desc', limit=1)
 
+    def _saisies(self, additions):
+        """Le journal des saisies des additions : (produit, quantité, employé),
+        dans l'ordre où le serveur l'a écrit."""
+        saisies = self.env['aite.restaurant.saisie'].search(
+            [('order_id', 'in', additions.ids)], order='id')
+        return [(s.produit_nom, s.quantite, s.employe_nom) for s in saisies]
+
 
 @tagged('post_install', '-at_install', 'aite_pos_restaurant')
 class TestToursVerrou(AiteToursModeCommon):
@@ -97,10 +109,11 @@ class TestToursVerrou(AiteToursModeCommon):
         addition = self._addition_table_5()
         self.assertEqual(addition.state, 'draft')
         self.assertEqual(addition.lines.product_id.mapped('name'), ["Coca-Cola"])
-        # L'envoi est enregistré sur le serveur, au nom d'Awa (le journal
-        # des saisies arrive à l'incrément 3).
+        # L'envoi est enregistré sur le serveur, au nom d'Awa : le journal
+        # des saisies (incrément 3) et l'employé de l'addition.
         self.assertIn(addition.lines.uuid, addition.last_order_preparation_change)
         self.assertEqual(addition.employee_id, self.employes["Awa"])
+        self.assertEqual(self._saisies(addition), [("Coca-Cola", 1.0, "Awa")])
         # Le déplacement abandonné n'a rien porté sur la table 2.
         self.assertFalse(self.env['pos.order'].search_count([
             ('config_id', '=', self.pos_config.id),
@@ -128,10 +141,12 @@ class TestToursVerrou(AiteToursModeCommon):
         self.start_pos_tour('AitePaiementTour', login='pos_user')
         addition = self._addition_table_5()
         self.assertEqual(addition.state, 'paid')
-        # « Encaissée par » : l'employé identifié à la validation (pos_hr) ;
-        # les champs AITE « ouverte par » et « encaissée par » arrivent à
-        # l'incrément 3.
+        # REST-02 critère 1 : « encaissée par » est la caissière identifiée à
+        # la validation, « ouverte par » reste la serveuse (incrément 3).
         self.assertEqual(addition.employee_id, self.employes["Carine"])
+        self.assertEqual(addition.aite_encaissee_par_id, self.employes["Carine"])
+        self.assertEqual(addition.aite_ouverte_par_id, self.employes["Awa"])
+        self.assertEqual(self._saisies(addition), [("Coca-Cola", 1.0, "Awa")])
 
     def test_ardoise_reservee_au_manager(self):
         """AH-02 : le bouton « Mettre sur ardoise » et le mode « Ardoise
@@ -169,6 +184,9 @@ class TestToursCorrectifs(AiteToursModeCommon):
             ('state', 'in', ('paid', 'done', 'invoiced'))]))
         self.assertFalse(self.env['pos.payment'].search_count([
             ('payment_method_id', '=', ardoise.id)]))
+        # T19 : le Coca-Cola d'Awa est enregistré à son nom avant que Fanta
+        # tape son code sur « J'encaisse ».
+        self.assertEqual(self._saisies(self._addition_table_5()), [("Coca-Cola", 1.0, "Awa")])
 
     def test_deplacement_apres_un_abandon(self):
         self._ouvrir_la_caisse()
@@ -217,3 +235,119 @@ class TestToursCorrectifs(AiteToursModeCommon):
         self.assertFalse(session.aite_fermee_par_id)
         self.assertFalse(session.message_ids.filtered(
             lambda m: "Caisse fermée par" in (m.body or '')))
+
+
+@tagged('post_install', '-at_install', 'aite_pos_restaurant')
+class TestToursTable(AiteToursModeCommon):
+    """Incrément 3 : la table — personnes, qui a ouvert, saisi ; numéro
+    inconnu, vente sans table (PROF-04-P1)."""
+
+    def _additions(self, domaine):
+        return self.env['pos.order'].search(
+            [('config_id', '=', self.pos_config.id)] + domaine, order='id')
+
+    def test_personnes(self):
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AitePersonnesTour', login='pos_user')
+        awa = self.employes["Awa"]
+
+        def table(numero, etat='draft'):
+            return self._additions([('table_id.table_number', '=', numero),
+                                    ('state', '=', etat)])
+
+        # Table 5 : ouverte à 4, passée à 6, divisée ; l'origine garde 6 personnes.
+        table_5 = table(5)
+        self.assertEqual(len(table_5), 1)
+        self.assertEqual(table_5.customer_count, 6)
+        self.assertEqual(table_5.aite_ouverte_par_id, awa)
+        self.assertTrue(table_5.aite_heure_ouverture)
+        self.assertEqual(table_5.lines.product_id.mapped('name'), ["Water"])
+        # La part « 5B » : 0 personne, l'origine, son heure et « ouverte par ».
+        part = self._additions([('aite_origine_uuid', '=', table_5.uuid)])
+        self.assertEqual(len(part), 1)
+        self.assertEqual(part.floating_order_name, "5B")
+        self.assertEqual(part.customer_count, 0)
+        self.assertEqual(part.aite_heure_ouverture, table_5.aite_heure_ouverture)
+        self.assertEqual(part.aite_ouverte_par_id, awa)
+        self.assertEqual(part.lines.product_id.mapped('name'), ["Coca-Cola"])
+        self.assertEqual(part.lines.qty, 2)
+        # Réunion 3 + 4 : la table 2 a 7 personnes et l'heure de la table la
+        # plus ancienne (la table 4, ouverte avant elle).
+        table_2 = table(2)
+        table_4 = table(4, 'cancel')
+        self.assertEqual(table_2.customer_count, 7)
+        self.assertEqual(len(table_4), 1)
+        self.assertEqual(table_2.aite_heure_ouverture, table_4.aite_heure_ouverture)
+        self.assertEqual(sorted(table_2.lines.product_id.mapped('name')), ["Coca-Cola", "Water"])
+        # Journal des saisies : ce qu'Awa a ajouté, une fois ; ni la division
+        # ni la réunion ne sont des saisies.
+        saisies = self.env['aite.restaurant.saisie'].search(
+            [('config_id', '=', self.pos_config.id)])
+        self.assertEqual(saisies.employe_id, awa)
+        self.assertEqual(sum(saisies.mapped('quantite')), 5)
+        self.assertFalse(saisies.filtered(lambda s: s.order_id == part))
+        self.assertEqual(saisies.filtered(lambda s: s.order_id == table_2).mapped(
+            'produit_nom'), ["Coca-Cola"])
+
+    def test_vente_sans_table_decochee(self):
+        self.assertFalse(self.pos_config.aite_vente_sans_table)
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteVenteSansTableTour', login='pos_user')
+        numero = self._additions([('floating_order_name', '=', "99")])
+        self.assertEqual(len(numero), 1)
+        self.assertEqual(numero.state, 'draft')
+        self.assertFalse(numero.table_id)
+        self.assertEqual(numero.customer_count, 2)
+        self.assertEqual(numero.aite_ouverte_par_id, self.employes["Awa"])
+        self.assertTrue(numero.aite_heure_ouverture)
+        self.assertFalse(self._additions([('floating_order_name', '=', "98")]))
+
+    def test_vente_sans_table_cochee(self):
+        self.pos_config.aite_vente_sans_table = True
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteVenteSansTableCocheeTour', login='pos_user')
+        vente = self._additions([('table_id', '=', False)])
+        self.assertEqual(len(vente), 1)
+        self.assertEqual(vente.customer_count, 0)
+        self.assertEqual(vente.aite_ouverte_par_id, self.employes["Carine"])
+        self.assertEqual(vente.lines.product_id.mapped('name'), ["Coca-Cola"])
+
+    def test_reunion(self):
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteReunionTour', login='pos_user')
+
+        def table(numero):
+            return self._additions([('table_id.table_number', '=', numero),
+                                    ('state', '=', 'draft')])
+
+        # R19 : rien n'a été réuni à la table de Carine.
+        table_2 = table(2)
+        self.assertEqual(table_2.aite_ouverte_par_id, self.employes["Carine"])
+        self.assertEqual(table_2.customer_count, 2)
+        self.assertEqual(table_2.lines.product_id.mapped('name'), ["Coca-Cola"])
+        table_5 = table(5)
+        self.assertEqual(table_5.customer_count, 4)
+        self.assertEqual(table_5.lines.product_id.mapped('name'), ["Coca-Cola"])
+        # La part « 5B » portée sur la table 4 : 2 personnes, son origine,
+        # l'heure de la table 5 ; jamais enregistrée à table à 0 personne.
+        part = table(4)
+        self.assertEqual(part.aite_origine_uuid, table_5.uuid)
+        self.assertEqual(part.customer_count, 2)
+        self.assertEqual(part.aite_heure_ouverture, table_5.aite_heure_ouverture)
+        self.assertEqual(part.lines.product_id.mapped('name'), ["Water"])
+        self.assertFalse(part.message_ids.filtered(lambda m: "0 personne" in (m.body or '')))
+        self.assertFalse(self.env['aite.restaurant.saisie'].search_count(
+            [('order_id', '=', part.id)]))
+
+    def test_saisie_quittee_par_un_onglet(self):
+        """T19 (revue de l'incrément 3, constat bloquant n° 2) : l'addition
+        quittée par un onglet est enregistrée au nom de qui l'a remplie, et
+        rien ne passe au nom de Carine quand elle touche « Table »."""
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteSaisieOngletTour', login='pos_user')
+        table_5 = self._addition_table_5()
+        self.assertEqual(sorted(table_5.lines.product_id.mapped('name')), ["Coca-Cola", "Water"])
+        self.assertEqual(self._saisies(table_5), [("Coca-Cola", 1.0, "Awa"), ("Water", 1.0, "Paul")])
+        self.assertFalse(self.env['aite.restaurant.saisie'].search_count(
+            [('config_id', '=', self.pos_config.id), ('employe_nom', '=', "Carine")]))
+

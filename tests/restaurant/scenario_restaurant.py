@@ -19,6 +19,10 @@ Incrément 2 : ouverture et fermeture par code vérifié par le serveur (« ouve
 par » et « fermée par » écrits à l'ouverture et à la fermeture effectives, un
 second poste resté sur la caisse fermée n'est pas refusé), espèces réservées au
 chef de salle, modes « payer plus tard » réservés au manager (AH-02).
+Incrément 3 : la table (personnes, « ouverte par » figé, heure posée par le
+serveur, « encaissée par »), le journal des saisies (qui a saisi quoi, ni la
+division ni la réunion ne comptent), la quantité verrouillée à l'envoi, le
+numéro qui n'est pas sur le plan, la vente sans table fermée d'office.
 """
 import contextlib
 import sys
@@ -27,7 +31,7 @@ from uuid import uuid4
 from lxml import etree
 
 from odoo import fields
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tests import Form
 
 ok_count = 0
@@ -62,6 +66,16 @@ def refus_utilisateur(fonction):
     except UserError as erreur:
         return erreur.args[0]
     return None
+
+
+def refus_acces(fonction):
+    """Vrai si Odoo refuse l'accès (AccessError)."""
+    try:
+        with env.cr.savepoint():
+            fonction()
+    except AccessError:
+        return True
+    return False
 
 
 company = env.company
@@ -391,6 +405,218 @@ if ardoise:
           table.state == 'paid' and Ardoises.search([('order_id', '=', table.id)]).amount_total == 2000)
 else:
     print("\n(aite_pos_credit absent : vérifications de l'ardoise sautées)")
+
+print("\n═══ 10. Le manager règle la vente sans table et dessine ses tables (incrément 3) ═══")
+reglage = vue.xpath("//setting[@id='aite_vente_sans_table']")
+check("le réglage « Autoriser la vente sans table » porte sa phrase « ce qui va se passer »",
+      bool(reglage) and "le bouton « + » n'apparaît pas" in (reglage[0].get('help') or ''))
+check("la vente sans table est fermée d'office (le « + » n'apparaît pas)",
+      not restaurant.aite_vente_sans_table)
+# Les postes gardent la valeur chargée à l'ouverture : la case se change
+# caisse fermée, comme celle du service à table contrôlé (revue de
+# l'incrément 3).
+check("la phrase dit que la case se change seulement caisse fermée",
+      bool(reglage) and "Se change seulement caisse fermée." in (reglage[0].get('help') or ''))
+message = refus_utilisateur(lambda: restaurant.write({'aite_vente_sans_table': True}))
+check("pendant le service, cocher la vente sans table est refusé",
+      bool(message) and not restaurant.aite_vente_sans_table, message)
+# Le plan se dessine dans la gestion (Point de Vente → Configuration → Plans de salle).
+Tables = env['restaurant.table'].with_user(manager)
+salle = restaurant.floor_ids[:1]
+table_12 = Tables.create({'floor_id': salle.id, 'table_number': 12, 'seats': 4})
+table_7 = Tables.create({'floor_id': salle.id, 'table_number': 7, 'seats': 4})
+check("le manager ajoute les tables 7 et 12 à la salle",
+      {7, 12} <= set(salle.table_ids.mapped('table_number')))
+castel = env['product.product'].search([('name', '=', "Castel")], limit=1) or \
+    env['product.product'].create({'name': "Castel", 'type': 'consu', 'available_in_pos': True,
+                                   'list_price': 1000, 'taxes_id': [(5, 0, 0)]})
+especes = restaurant.payment_method_ids.filtered(lambda m: m.name == "Espèces")
+
+
+def nouvelle_addition(table=None, personnes=4, ouverte_par=None, nom=False):
+    """La copie d'une addition sur un poste de la caisse."""
+    return {
+        'uuid': str(uuid4()), 'lignes': {}, 'supprimees': [],
+        'preparation': {'lines': {}, 'metadata': {}, 'generalNote': '', 'sittingMode': 'dine in'},
+        'valeurs': {'table_id': table.id if table else False, 'customer_count': personnes,
+                    'aite_ouverte_par_id': ouverte_par.id if ouverte_par else False,
+                    'employee_id': ouverte_par.id if ouverte_par else False,
+                    'floating_order_name': nom, 'aite_heure_ouverture': False,
+                    'aite_origine_uuid': False},
+    }
+
+
+def ajouter(addition, produit, qty):
+    cle = str(uuid4())
+    addition['lignes'][cle] = {'id': False, 'produit': produit, 'qty': qty, 'modifiee': True}
+    return cle
+
+
+def envoyer(addition):
+    """« J'envoie » : la caisse note ce qui est parti."""
+    addition['preparation']['lines'] = {
+        cle: {'uuid': cle, 'product_id': l['produit'].id, 'name': l['produit'].name,
+              'note': '', 'quantity': l['qty']} for cle, l in addition['lignes'].items()}
+    addition['preparation']['metadata'] = {
+        'serverDate': fields.Datetime.to_string(fields.Datetime.now())}
+
+
+def caisse_envoie(addition, employe, etat='draft', deplacement=False, payer=None):
+    """Ce que la caisse envoie (sync_from_ui), sous le compte de la caisse,
+    avec la personne identifiée sur le poste ; la copie reprend la réponse."""
+    import json
+    maintenant = fields.Datetime.to_string(fields.Datetime.now())
+    addition['valeurs']['employee_id'] = employe.id
+    lignes, total = [], 0
+    for cle, l in addition['lignes'].items():
+        valeurs = {'uuid': cle, 'product_id': l['produit'].id, 'qty': l['qty'],
+                   'price_unit': l['produit'].lst_price, 'discount': 0, 'tax_ids': [(6, 0, [])],
+                   'price_subtotal': l['produit'].lst_price * l['qty'],
+                   'price_subtotal_incl': l['produit'].lst_price * l['qty']}
+        total += l['produit'].lst_price * l['qty']
+        if not l['id']:
+            lignes.append([0, 0, valeurs])
+        elif l['modifiee']:
+            lignes.append([1, l['id'], valeurs])
+    lignes += [[2, i] for i in addition['supprimees']]
+    donnees = {
+        'uuid': addition['uuid'], 'name': "Commande %s" % addition['uuid'], 'session_id': session.id,
+        'state': etat, 'user_id': caisse.id, 'pricelist_id': restaurant.pricelist_id.id or False,
+        'fiscal_position_id': False, 'sequence_number': 1, 'to_invoice': False,
+        'date_order': maintenant, 'amount_tax': 0, 'amount_total': total,
+        'amount_paid': total if payer else 0, 'amount_return': 0,
+        'last_order_preparation_change': json.dumps(addition['preparation']),
+        'lines': lignes, **addition['valeurs'],
+        'payment_ids': [[0, 0, {'amount': total, 'name': maintenant,
+                                'payment_method_id': payer.id}]] if payer else [],
+    }
+    reponse = env['pos.order'].with_user(caisse).with_context(
+        config_id=restaurant.id, aite_employee_id=employe.id,
+        aite_deplacement=deplacement).sync_from_ui([donnees])
+    lu = reponse['pos.order'][0]
+    par_cle = {l['uuid']: l['id'] for l in reponse['pos.order.line']}
+    for cle, l in addition['lignes'].items():
+        l.update(id=par_cle.get(cle, l['id']), modifiee=False)
+    addition['supprimees'] = []
+    addition['preparation'] = json.loads(lu['last_order_preparation_change'] or '{}')
+    for champ in ('customer_count', 'aite_ouverte_par_id', 'aite_origine_uuid'):
+        addition['valeurs'][champ] = lu.get(champ)
+    heure = lu.get('aite_heure_ouverture')
+    addition['valeurs']['aite_heure_ouverture'] = (
+        fields.Datetime.to_string(heure) if heure and not isinstance(heure, str) else heure)
+    return env['pos.order'].browse(lu['id'])
+
+
+Saisies = env['aite.restaurant.saisie']
+
+print("\n═══ 11. Awa ouvre la table 12 : 4 personnes (incrément 3) ═══")
+# Sur la caisse : la table 12, son code, « 4 » ; l'addition part aussitôt au serveur.
+avant = fields.Datetime.now()
+t12 = nouvelle_addition(table_12, 4, awa)
+table = caisse_envoie(t12, awa)
+check("l'addition de la table 12 est enregistrée à 4 personnes, sans produit",
+      table.state == 'draft' and table.customer_count == 4 and not table.lines,
+      (table.state, table.customer_count, len(table.lines)))
+check("« Ouverte par » : Awa", table.aite_ouverte_par_id == awa, table.aite_ouverte_par_id.name)
+check("l'heure d'ouverture est posée par le serveur",
+      bool(table.aite_heure_ouverture) and avant <= table.aite_heure_ouverture <= fields.Datetime.now(),
+      table.aite_heure_ouverture)
+t12['valeurs']['aite_ouverte_par_id'] = moussa.id
+caisse_envoie(t12, moussa)
+check("« Ouverte par » ne change plus ensuite (Moussa renvoyé par un poste)",
+      table.aite_ouverte_par_id == awa, table.aite_ouverte_par_id.name)
+t1 = nouvelle_addition(restaurant.floor_ids.table_ids.filtered(lambda t: t.table_number == 1), 0, awa)
+table_1 = caisse_envoie(t1, awa)
+check("une table arrivée à 0 personne est ramenée à 1, et c'est noté",
+      table_1.customer_count == 1 and any("0 personne" in (m.body or '')
+                                           for m in table_1.message_ids), table_1.customer_count)
+table_1.with_user(caisse).action_pos_order_cancel()
+
+print("\n═══ 12. Awa saisit 3 Castel et les envoie (incrément 3) ═══")
+c12 = ajouter(t12, castel, 3)
+caisse_envoie(t12, awa)
+saisie = Saisies.search([('order_id', '=', table.id)])
+check("le journal des saisies : 3 Castel, par Awa, à l'heure",
+      len(saisie) == 1 and saisie.quantite == 3 and saisie.produit_nom == "Castel"
+      and saisie.employe_nom == "Awa" and bool(saisie.date), saisie.read(['quantite', 'employe_nom']))
+check("pas encore envoyé : rien n'est verrouillé", table.lines.aite_qte_envoyee == 0)
+envoyer(t12)
+caisse_envoie(t12, awa)
+check("« J'envoie » : 3 Castel verrouillées", table.lines.aite_qte_envoyee == 3,
+      table.lines.aite_qte_envoyee)
+
+print("\n═══ 13. Paul complète la table 12 (incrément 3) ═══")
+t12['lignes'][c12].update(qty=4, modifiee=True)
+caisse_envoie(t12, paul)
+saisies = Saisies.search([('order_id', '=', table.id)], order='id')
+check("1 Castel ajoutée sous le code de Paul : une saisie à son nom",
+      saisies.mapped('employe_nom') == ["Awa", "Paul"] and saisies.mapped('quantite') == [3, 1],
+      saisies.mapped('employe_nom'))
+envoyer(t12)
+caisse_envoie(t12, paul)
+
+print("\n═══ 14. Division et réunion : pas des saisies (incrément 3) ═══")
+# Division : 1 Castel dans la part « 12B » (même personne, même heure).
+part = nouvelle_addition(None, 0, awa, "12B")
+part['valeurs']['aite_origine_uuid'] = table.uuid
+part['valeurs']['aite_heure_ouverture'] = t12['valeurs']['aite_heure_ouverture']
+c_part = ajouter(part, castel, 1)
+part['preparation']['lines'] = {c_part: {'uuid': c_part, 'product_id': castel.id, 'quantity': 1, 'note': ''}}
+t12['lignes'][c12].update(qty=3, modifiee=True)
+t12['preparation']['lines'][c12]['quantity'] = 3
+caisse_envoie(t12, awa, deplacement=True)
+part_12b = caisse_envoie(part, awa, deplacement=True)
+check("la part « 12B » : 0 personne, l'origine et l'heure de la table 12",
+      part_12b.customer_count == 0 and part_12b.aite_origine_uuid == table.uuid
+      and part_12b.aite_heure_ouverture == table.aite_heure_ouverture)
+check("la table 12 garde ses 4 personnes", table.customer_count == 4)
+# Réunion : la table 7 (2 personnes, 2 Castel envoyées) versée dans la table 12.
+t7 = nouvelle_addition(table_7, 2, awa)
+ajouter(t7, castel, 2)
+envoyer(t7)
+table_7_cmd = caisse_envoie(t7, awa)
+t12['lignes'][c12].update(qty=5, modifiee=True)
+t12['preparation']['lines'][c12]['quantity'] = 5
+t12['valeurs']['customer_count'] = 6
+caisse_envoie(t12, awa, deplacement=True)
+table_7_cmd.with_user(caisse).action_pos_order_cancel()
+check("réunion : la table 12 a 6 personnes et 5 Castel verrouillées",
+      table.customer_count == 6 and table.lines.aite_qte_envoyee == 5,
+      (table.customer_count, table.lines.aite_qte_envoyee))
+check("ni la division ni la réunion ne sont des saisies",
+      Saisies.search_count([('order_id', 'in', (table | part_12b).ids)]) == 2)
+
+print("\n═══ 15. La caissière encaisse (incrément 3) ═══")
+caisse_envoie(t12, carine, etat='paid', payer=especes)
+check("la table 12 est encaissée", table.state == 'paid', table.state)
+check("« Encaissée par » : Carine ; « Ouverte par » : toujours Awa (REST-02 critère 1)",
+      table.aite_encaissee_par_id == carine and table.aite_ouverte_par_id == awa,
+      (table.aite_encaissee_par_id.name, table.aite_ouverte_par_id.name))
+caisse_envoie(part, carine, etat='paid', payer=especes)
+check("la part « 12B » est encaissée par Carine",
+      part_12b.state == 'paid' and part_12b.aite_encaissee_par_id == carine)
+fiche = table.with_user(manager)
+action = fiche.action_aite_saisies()
+check("le manager ouvre les saisies depuis la fiche de l'addition (bouton « Saisies »)",
+      Saisies.with_user(manager).search_count(action['domain']) == 2)
+vue_fiche = etree.fromstring(env['pos.order'].with_user(manager).get_view(view_type='form')['arch'])
+check("la fiche de l'addition montre « Ouverte par », « Heure d'ouverture », « Encaissée par »",
+      all(vue_fiche.xpath("//field[@name='%s']" % champ) for champ in
+          ('aite_ouverte_par_id', 'aite_heure_ouverture', 'aite_encaissee_par_id')))
+check("le compte de la caisse ne lit pas le journal des saisies",
+      refus_acces(lambda: Saisies.with_user(caisse).search([])))
+
+print("\n═══ 16. Un numéro qui n'est pas sur le plan (incrément 3) ═══")
+t99 = nouvelle_addition(None, 2, awa, "99")
+numero = caisse_envoie(t99, awa)
+check("« 99 » ouvre une table à ce nom, à 2 personnes, ouverte par Awa",
+      numero.floating_order_name == "99" and numero.customer_count == 2
+      and numero.aite_ouverte_par_id == awa and bool(numero.aite_heure_ouverture))
+ajouter(t99, castel, 1)
+caisse_envoie(t99, carine, etat='paid', payer=especes)
+check("encaissée : ce n'est pas une vente sans table (pas de note)",
+      numero.state == 'paid' and not any("vente sans table" in (m.body or '')
+                                         for m in numero.message_ids))
 
 print("\n═══ 9. Fermeture de la caisse par code (incrément 2) ═══")
 R13 = "Seul un chef de salle ou le manager ferme la caisse."

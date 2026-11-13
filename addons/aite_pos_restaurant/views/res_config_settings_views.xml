@@ -31,6 +31,15 @@
                          help="Coché : chaque employé tape son code à 4 chiffres pour ouvrir une table, encaisser ou annuler ; la caisse applique les quatre niveaux (serveur, caissière, chef de salle, manager), revient au plan après chaque envoi, verrouille ce qui est parti en cuisine ou au bar et garde la trace des saisies et des annulations. Cocher règle aussi, ci-dessous : connexion par code, contrôle des prix, remises désactivées, partage et impression de l'addition. Décocher arrête tout cela sur cette caisse. Se change seulement caisse fermée.">
                     <field name="pos_aite_mode_restaurant" readonly="pos_has_active_session"/>
                 </setting>
+                <!-- Incrément 3 : la vente sans table (PROF-04-P1), fermée
+                     d'office ; visible seulement au service à table contrôlé ;
+                     se change caisse fermée, comme la case du mode (les
+                     postes gardent la valeur chargée à l'ouverture). -->
+                <setting id="aite_vente_sans_table" string="Autoriser la vente sans table"
+                         invisible="not pos_aite_mode_restaurant"
+                         help="Décoché : chaque vente se fait sur une table ; le bouton « + » n'apparaît pas. Un numéro de table tapé qui n'est pas sur le plan ouvre une table à ce nom, avec son nombre de personnes. Coché : le bouton « + » ouvre une vente au comptoir ou à emporter, sans table ni nombre de personnes ; elle compte 0 personne et n'entre pas dans le nombre de tables. Seuls la caissière, le chef de salle et le manager peuvent l'ouvrir. Se change seulement caisse fermée.">
+                    <field name="pos_aite_vente_sans_table" readonly="pos_has_active_session"/>
+                </setting>
             </xpath>
             <xpath expr="//field[@name='pos_basic_employee_ids']/.." position="attributes">
                 <attribute name="invisible">pos_aite_mode_restaurant</attribute>

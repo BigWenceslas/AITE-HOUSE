@@ -141,5 +141,75 @@ class TestCodeLibre(unittest.TestCase):
         self.assertNotEqual(code, '1234')
 
 
+class TestBilanLigne(unittest.TestCase):
+    """Ce que le serveur conclut d'une ligne à chaque synchronisation
+    (incrément 3 ; partie 6.1) :
+    bilan_ligne(envoyee, prep_avant, prep, qte_avant, qte, deplacement)
+    → (saisie, retrait, nouvelle_envoyee).
+
+    Recopié de la partie 6.1, cas par cas. La saisie et l'envoi servent à
+    l'incrément 3 (journal des saisies, quantité verrouillée) ; le retrait
+    sert au journal des annulations de l'incrément 4."""
+
+    CAS = [
+        # (envoyee, prep_avant, prep, qte_avant, qte, deplacement) → attendu, pourquoi
+        ((3, 3, 3, 3, 3, False), (0, 0, 3), "rien n'a changé"),
+        ((3, 3, 4, 3, 4, False), (1, 0, 4), "saisie et envoi"),
+        ((3, 3, 3, 3, 4, False), (1, 0, 3), "saisi, pas envoyé"),
+        ((4, 4, 4, 4, 3, False), (0, 1, 3), "retrait sans code"),
+        ((4, 4, 3, 4, 3, True), (0, 0, 3), "division, côté origine"),
+        ((0, 0, 2, 0, 2, True), (0, 0, 2), "part née d'une division"),
+        ((2, 3, 3, 3, 3, False), (0, 0, 2),
+         "annulation autorisée, réponse perdue : la copie du poste ne relève pas le verrou"),
+        ((2, 3, 2, 3, 2, False), (0, 0, 2), "annulation appliquée"),
+        ((3, 3, 0, 3, 0, False), (0, 3, 0), "ligne supprimée"),
+        ((0, 0, 0, 0, 2, False), (2, 0, 0), "ligne neuve, pas envoyée"),
+    ]
+
+    def test_les_cas_de_la_specification(self):
+        for args, attendu, pourquoi in self.CAS:
+            with self.subTest(pourquoi, args=args):
+                self.assertEqual(tuple(regles.bilan_ligne(*args)), attendu)
+
+    def test_une_reunion_n_est_pas_une_saisie(self):
+        # Les lignes de la table absorbée arrivent sur la table d'arrivée.
+        self.assertEqual(tuple(regles.bilan_ligne(2, 2, 5, 2, 5, True)), (0, 0, 5))
+
+    def test_quantites_decimales(self):
+        saisie, retrait, envoyee = regles.bilan_ligne(0.5, 0.5, 0.5, 0.5, 0.75, False)
+        self.assertAlmostEqual(saisie, 0.25)
+        self.assertEqual(retrait, 0)
+        self.assertAlmostEqual(envoyee, 0.5)
+
+    def test_ligne_de_remboursement(self):
+        # Quantité négative : ni saisie, ni retrait, rien d'envoyé.
+        self.assertEqual(tuple(regles.bilan_ligne(0, 0, 0, 0, -1, False)), (0, 0, 0))
+
+    def test_valeurs_vides(self):
+        self.assertEqual(tuple(regles.bilan_ligne(None, False, None, None, 2, False)),
+                         (2, 0, 0))
+
+
+class TestCompteurs(unittest.TestCase):
+    """Personnes et tables d'une addition (partie 5.2) :
+    compteurs(personnes, part, remboursement) → (tables, personnes, sans_table)."""
+
+    CAS = [
+        ((4, False, False), (1, 4, 0), "table ouverte à 4"),
+        ((0, True, False), (0, 0, 0), "part 12B : les personnes restent sur l'origine"),
+        ((0, False, False), (0, 0, 1), "vente sans table"),
+        ((2, True, False), (1, 2, 0), "part portée sur une table libre"),
+        ((3, False, True), (0, 0, 0), "remboursement"),
+    ]
+
+    def test_les_cas_de_la_specification(self):
+        for args, attendu, pourquoi in self.CAS:
+            with self.subTest(pourquoi, args=args):
+                self.assertEqual(tuple(regles.compteurs(*args)), attendu)
+
+    def test_personnes_vides(self):
+        self.assertEqual(tuple(regles.compteurs(None, False, False)), (0, 0, 1))
+
+
 if __name__ == '__main__':
     unittest.main()

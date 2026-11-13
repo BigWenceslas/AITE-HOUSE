@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- Écran de commande (partie 1.1 C ; incrément 3) : une phrase d'état en
+         tête de l'addition, « Table 12 · ouverte par Awa · 35 min ». La durée
+         se compte depuis l'heure d'ouverture posée par le serveur ; elle
+         paraît une fois l'addition enregistrée. La marque « aite-mode » sert à la
+         feuille de style (rangée de boutons plus serrée). -->
+    <t t-name="aite_pos_restaurant.ProductScreen" t-inherit="point_of_sale.ProductScreen" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('product-screen')]" position="attributes">
+            <attribute name="t-att-class">{'aite-mode': pos.aiteActif}</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('leftpane')]/OrderSummary" position="before">
+            <div t-if="pos.aiteActif and pos.get_order()"
+                 class="aite-commande-etat px-2 py-1 mb-1 fs-5 fw-bold border-bottom"
+                 t-esc="pos.aiteEtatCommande(pos.get_order())"/>
+        </xpath>
+    </t>
+
+</templates>

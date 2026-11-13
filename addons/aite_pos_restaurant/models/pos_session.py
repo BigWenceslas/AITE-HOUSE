@@ -19,10 +19,28 @@ from odoo.exceptions import UserError
 from . import regles
 
 # Écrits par le serveur seul (requêtes à code) : retirés de toute écriture
-# reçue, sauf sous ce contexte.
+# reçue, sauf quand notre propre code serveur écrit (``contexte_serveur``).
 CHAMPS_PROTEGES = ('aite_ouverte_par_id', 'aite_fermee_par_id', 'aite_autorisation_id')
 CONTEXTE_SERVEUR = 'aite_ecriture_serveur'
 ETATS_DE_FERMETURE = ('closing_control', 'closed')
+
+# Le contexte d'une requête de la caisse est transmis tel quel au serveur :
+# une clé de contexte, quelle que soit sa valeur, peut donc venir du compte de
+# la caisse lui-même (revue de l'incrément 3). La clé ne vaut que si elle
+# porte ce jeton, un objet Python comparé par identité : une requête n'apporte
+# que des textes, des nombres, des listes et des dictionnaires, jamais lui.
+_JETON_SERVEUR = object()
+
+
+def contexte_serveur():
+    """Le contexte sous lequel notre code serveur écrit les champs protégés
+    (``record.with_context(**contexte_serveur())``)."""
+    return {CONTEXTE_SERVEUR: _JETON_SERVEUR}
+
+
+def ecrit_par_le_serveur(env):
+    """Vrai si l'écriture vient de notre code serveur, jamais d'une requête."""
+    return env.context.get(CONTEXTE_SERVEUR) is _JETON_SERVEUR
 
 
 class PosSession(models.Model):
@@ -65,7 +83,7 @@ class PosSession(models.Model):
     def create(self, vals_list):
         """Une session au service à table contrôlé commence toujours en
         contrôle d'ouverture, sans « ouverte par » (requête forgée)."""
-        if not self.env.context.get(CONTEXTE_SERVEUR):
+        if not ecrit_par_le_serveur(self.env):
             controle = self._aite_controle_de_caisse()
             propres = []
             for vals in vals_list:
@@ -79,7 +97,7 @@ class PosSession(models.Model):
         return super().create(vals_list)
 
     def write(self, vals):
-        if not self.env.context.get(CONTEXTE_SERVEUR):
+        if not ecrit_par_le_serveur(self.env):
             vals = {champ: valeur for champ, valeur in vals.items()
                     if champ not in CHAMPS_PROTEGES}
             if 'state' in vals and self._aite_controle_de_caisse():
@@ -175,7 +193,7 @@ class PosSession(models.Model):
         self._message_log(body=texte, author_id=employe.work_contact_id.id or None)
 
     def _aite_autoriser(self, employe):
-        self.with_context(**{CONTEXTE_SERVEUR: True}).write(
+        self.with_context(**contexte_serveur()).write(
             {'aite_autorisation_id': employe.id if employe else False})
 
     def aite_ouvrir_caisse(self, code):
@@ -266,7 +284,7 @@ class PosSession(models.Model):
         if not employe:
             raise UserError(self._aite_r3())
         res = super()._set_opening_control_data(cashbox_value, notes)
-        self.with_context(**{CONTEXTE_SERVEUR: True}).write({
+        self.with_context(**contexte_serveur()).write({
             'aite_ouverte_par_id': employe.id, 'aite_autorisation_id': False})
         self._aite_noter(_("Caisse ouverte par %s", employe.name), employe)
         return res
@@ -289,7 +307,7 @@ class PosSession(models.Model):
         res = super().close_session_from_ui(bank_payment_method_diff_pairs)
         if self.config_id._aite_actif() and self.state == 'closed' and self.aite_autorisation_id:
             employe = self.sudo().aite_autorisation_id
-            self.with_context(**{CONTEXTE_SERVEUR: True}).write({
+            self.with_context(**contexte_serveur()).write({
                 'aite_fermee_par_id': employe.id, 'aite_autorisation_id': False})
             self._aite_noter(_("Caisse fermée par %s", employe.name), employe)
         return res

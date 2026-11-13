@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Journal des saisies (incrément 3) : chaque société ne voit que les
+         siennes, comme le rapport journalier d'aite_pos_analytics. Personne
+         n'a l'écriture : le serveur l'écrit en sudo() (partie 3.4). Le groupe
+         « Restaurant : lecture des rapports » arrive à l'incrément 4. -->
+    <record id="rule_restaurant_saisie_company" model="ir.rule">
+        <field name="name">Saisies du restaurant : sociétés autorisées</field>
+        <field name="model_id" ref="model_aite_restaurant_saisie"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+</odoo>

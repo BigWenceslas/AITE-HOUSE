@@ -155,6 +155,21 @@ class TestInstallation(RestaurantCommon):
             self.config.aite_mode_restaurant = False
         self.assertTrue(self.config.aite_mode_restaurant)
 
+    def test_la_vente_sans_table_ne_change_pas_pendant_une_session(self):
+        """Revue de l'incrément 3, constat n° 11 : les postes gardent la
+        valeur chargée à l'ouverture, le serveur juge les ventes sans table
+        sur la valeur enregistrée ; la case se change donc caisse fermée,
+        comme celle du mode."""
+        self._ouvrir_session()
+        with self.assertRaises(UserError):
+            self.config.aite_vente_sans_table = True
+        self.assertFalse(self.config.aite_vente_sans_table)
+        arch = self.env['res.config.settings'].get_view(view_type='form')['arch']
+        reglage = etree.fromstring(arch).xpath("//setting[@id='aite_vente_sans_table']")[0]
+        self.assertEqual(reglage.xpath(".//field[@name='pos_aite_vente_sans_table']/@readonly"),
+                         ['pos_has_active_session'])
+        self.assertIn("Se change seulement caisse fermée.", reglage.get('help'))
+
     def test_listes_de_pos_hr_ignorees_mais_pas_videes(self):
         self.config.basic_employee_ids = [(6, 0, self.awa.ids)]
         donnees = self._charger_caisse()

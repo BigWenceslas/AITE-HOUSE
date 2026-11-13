@@ -16,6 +16,21 @@ function message(cle) {
     return odoo.loader.modules.get("@aite_pos_restaurant/utils/messages").MESSAGES[cle];
 }
 
+/** Un titre de la fenêtre du code (`TITRES`, partie 1.4), calculé au moment
+ * de l'étape : `titre("personnes", 5)` rend une fonction, que les étapes
+ * ci-dessous appellent. Les titres portent des espaces insécables. */
+export function titre(cle, ...valeurs) {
+    return () => {
+        const modele = odoo.loader.modules.get("@aite_pos_restaurant/utils/messages").TITRES[cle];
+        return typeof modele === "function" ? modele(...valeurs.map(valeur)) : modele;
+    };
+}
+
+/** Une valeur donnée à une étape, ou calculée au moment de l'étape. */
+function valeur(v) {
+    return typeof v === "function" ? v() : v;
+}
+
 const POPUP = ".modal:not(.o_inactive_modal) .aite-code-popup";
 
 /** Une étape qui vérifie l'état de la caisse : `test()` doit rendre vrai,
@@ -100,14 +115,16 @@ export function codeInconnu() {
 }
 
 /** Une notification « danger » qui porte exactement le message `cle`
- * (« R3 »…) ; elle est fermée ensuite, pour qu'une vérification suivante ne
- * la retrouve pas. */
-export function notificationDanger(cle) {
+ * (« R3 »…, ou « R19 » avec ses `valeurs`) ; elle est fermée ensuite, pour
+ * qu'une vérification suivante ne la retrouve pas. */
+export function notificationDanger(cle, ...valeurs) {
     return verifier(`notification ${cle}`, () => {
+        const modele = message(cle);
+        const attendu = typeof modele === "function" ? modele(...valeurs.map(valeur)) : modele;
         for (const contenu of document.querySelectorAll(".o_notification_content")) {
             const notification = contenu.closest(".o_notification");
             if (
-                contenu.textContent.trim() === message(cle) &&
+                contenu.textContent.trim() === attendu &&
                 notification.querySelector(".o_notification_bar.bg-danger")
             ) {
                 notification.querySelector(".o_notification_close")?.click();
@@ -291,3 +308,101 @@ export function commandesPayees() {
         },
     ];
 }
+
+// ----------------------------------------------------------------------
+// Incrément 3 : l'étape « personnes », l'écran de commande
+// ----------------------------------------------------------------------
+
+/** Le titre de la fenêtre du code est `attendu` (un texte, ou `titre(…)`). */
+export function titreDeLaFenetre(attendu) {
+    return verifier("titre de la fenêtre", () => {
+        const texte = document.querySelector(`${POPUP} .aite-code-titre`)?.textContent;
+        return texte?.trim() === valeur(attendu) || JSON.stringify(texte);
+    });
+}
+
+/** L'étape « personnes » est affichée (huit gros boutons, « 9 et plus »),
+ * avec le titre `attendu` s'il est donné (`titre("personnes", 5)`). */
+export function popupPersonnes(attendu = null) {
+    return [
+        {
+            content: "l'étape « personnes » est ouverte",
+            trigger: `${POPUP} .aite-personnes [data-aite-personnes="8"]`,
+        },
+        ...(attendu ? [titreDeLaFenetre(attendu)] : []),
+    ];
+}
+
+/** Toucher un des huit gros boutons (1 à 8) : il valide. */
+export function personnes(nombre) {
+    return [
+        ...popupPersonnes(),
+        {
+            content: `${nombre} personnes`,
+            trigger: `${POPUP} [data-aite-personnes="${nombre}"]`,
+            run: "click",
+        },
+    ];
+}
+
+export function pasDePopupPersonnes() {
+    return { content: "pas d'étape « personnes »", trigger: "body:not(:has(.aite-personnes))" };
+}
+
+/** Le bouton « {p} personnes » de l'écran de commande. */
+export function boutonPersonnes(libelle) {
+    return {
+        content: `le bouton « ${libelle} »`,
+        trigger: `.control-buttons .aite-personnes-btn:contains("${libelle}")`,
+    };
+}
+
+export function toucherBoutonPersonnes() {
+    return {
+        content: "toucher le bouton des personnes",
+        trigger: ".control-buttons .aite-personnes-btn",
+        run: "click",
+    };
+}
+
+/** La phrase d'état de l'écran de commande commence par `debut`. */
+export function etatCommande(debut) {
+    return verifier(`phrase d'état « ${debut}… »`, () => {
+        const texte = document.querySelector(".product-screen .aite-commande-etat")?.textContent;
+        return texte?.trim().startsWith(debut) || texte;
+    });
+}
+
+/** La table `numero` est occupée sur le plan (fond coloré, pas le gris des
+ * tables libres), même sans produit. */
+export function tableOccupee(numero) {
+    return {
+        content: `la table ${numero} est occupée`,
+        trigger: `.floor-map .table:has(.label:contains("${numero}")):not([style*="00000020"]):not([style*="rgba(0, 0, 0, 0.12"])`,
+    };
+}
+
+/** L'onglet d'une addition sans table (barre du haut), désigné par son
+ * libellé. */
+export function onglet(libelle) {
+    return {
+        content: `l'onglet « ${libelle} »`,
+        trigger: `.pos-leftheader .list-container-items button:contains('${libelle}')`,
+        run: "click",
+    };
+}
+
+/** Les boutons d'« Actions » ne proposent pas « Modifier le nom de la
+ * commande » d'Odoo (partie 1.1 C). La fenêtre est fermée ensuite. */
+export function actionsSansRenommer() {
+    return [
+        ouvrirActions(),
+        { content: "les boutons d'« Actions »", trigger: ".modal .control-buttons-modal" },
+        verifier(
+            "pas de « Modifier le nom de la commande »",
+            () => !document.querySelector(".modal .control-buttons-modal .fa-pencil-square-o")
+        ),
+        fermerFenetre(),
+    ];
+}
+

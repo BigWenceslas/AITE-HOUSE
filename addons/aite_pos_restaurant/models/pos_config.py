@@ -30,7 +30,18 @@ REGLAGES_DU_MODE = {
     'iface_printbill': True,           # Q58 : addition imprimée avant paiement
     'order_edit_tracking': False,      # T18 : le journal AITE est la trace
     'iface_print_skip_screen': False,  # partie 4.3 : retour au plan après paiement
+    'aite_vente_sans_table': False,    # PROF-04-P1 : pas de « + »
 }
+
+AIDE_VENTE_SANS_TABLE = (
+    "Décoché : chaque vente se fait sur une table ; le bouton « + » "
+    "n'apparaît pas. Un numéro de table tapé qui n'est pas sur le plan ouvre "
+    "une table à ce nom, avec son nombre de personnes. Coché : le bouton "
+    "« + » ouvre une vente au comptoir ou à emporter, sans table ni nombre de "
+    "personnes ; elle compte 0 personne et n'entre pas dans le nombre de "
+    "tables. Seuls la caissière, le chef de salle et le manager peuvent "
+    "l'ouvrir. Se change seulement caisse fermée."
+)
 
 NOM_CAISSE = "Restaurant"
 NOM_SALLE = "Salle"
@@ -43,6 +54,9 @@ class PosConfig(models.Model):
 
     aite_mode_restaurant = fields.Boolean(
         string="Service à table contrôlé", default=False, help=AIDE_MODE)
+    aite_vente_sans_table = fields.Boolean(
+        string="Autoriser la vente sans table", default=False,
+        help=AIDE_VENTE_SANS_TABLE)
 
     def _aite_actif(self):
         """Vrai si la caisse est au service à table contrôlé (même règle que
@@ -64,8 +78,11 @@ class PosConfig(models.Model):
                     "codes personnels, la caisse ne saurait plus qui fait quoi."))
 
     def _get_forbidden_change_fields(self):
-        # Aucune addition en cours ne change de règle en plein service.
-        return super()._get_forbidden_change_fields() + ['aite_mode_restaurant']
+        # Aucune addition en cours ne change de règle en plein service : les
+        # postes gardent les réglages chargés à l'ouverture, le serveur juge
+        # sur ceux qui sont enregistrés.
+        return super()._get_forbidden_change_fields() + [
+            'aite_mode_restaurant', 'aite_vente_sans_table']
 
     # ------------------------------------------------------------------
     # La caisse « Restaurant » posée d'office (partie 4.4)

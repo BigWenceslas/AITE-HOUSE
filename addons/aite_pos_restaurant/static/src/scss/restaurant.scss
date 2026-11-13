@@ -39,3 +39,45 @@
         display: none !important;
     }
 }
+
+// Incrément 3 : l'étape « personnes » (huit gros boutons, « 9 et plus ») et
+// la phrase d'état de l'écran de commande.
+.aite-code-popup {
+    .aite-personnes-boutons {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.5rem;
+    }
+    .aite-personne {
+        min-height: 4.5rem;
+        font-size: 2rem;
+    }
+    .aite-personnes-plus,
+    .aite-personnes-valider,
+    .aite-personnes .aite-code-retour {
+        min-height: 3.25rem;
+        font-size: 1.25rem;
+    }
+    // Pavé de « 9 et plus » : plus petit, pour que la fenêtre tienne en
+    // hauteur sur une tablette (huit boutons, pavé, « Valider », « Retour »).
+    .aite-personnes .aite-code-pave .aite-touche {
+        min-height: 3rem;
+        font-size: 1.5rem;
+    }
+}
+
+.product-screen {
+    .aite-commande-etat {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    // Rangée principale : « 4 personnes », « Addition », « Client », « Note
+    // cuisine », « Actions » sur une ligne à 1 280 px.
+    &.aite-mode .pads .control-buttons .btn {
+        font-size: 1rem;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        white-space: nowrap;
+    }
+}

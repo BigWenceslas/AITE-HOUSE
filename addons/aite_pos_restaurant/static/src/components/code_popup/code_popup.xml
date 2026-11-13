@@ -2,34 +2,73 @@
 <templates id="template" xml:space="preserve">
 
     <!-- La fenêtre du code : sans en-tête d'Odoo (sa croix ferait un second
-         « Retour ») ; le titre dit le geste (partie 1.4). Sélecteurs des
-         tours : classes aite-* et attributs data-aite-chiffre. -->
+         « Retour ») ; le titre dit le geste (partie 1.4). Deux étapes dans la
+         même fenêtre : le code, puis, pour une table libre, le nombre de
+         personnes. Sélecteurs des tours : classes aite-* et attributs
+         data-aite-chiffre (code), data-aite-personnes (1 à 8, « plus ») et
+         data-aite-nombre (pavé de « 9 et plus »). -->
     <t t-name="aite_pos_restaurant.AiteCodePopup">
         <Dialog header="false" footer="false" size="'sm'" contentClass="'aite-code-popup'">
-            <h4 class="aite-code-titre text-center mb-2" t-esc="props.titre"/>
-            <div t-if="props.sousTitre" class="aite-code-sous-titre text-center text-muted mb-2"
-                 t-esc="props.sousTitre"/>
-            <div class="aite-code-points d-flex justify-content-center gap-3 my-3">
-                <t t-foreach="[0, 1, 2, 3]" t-as="rang" t-key="rang">
-                    <span class="aite-point" t-att-class="{'aite-point-plein': rang lt state.code.length}"/>
-                </t>
-            </div>
-            <div t-if="state.erreur" class="aite-code-erreur text-danger text-center fw-bold mb-2"
-                 t-esc="state.erreur"/>
-            <div class="aite-code-pave">
-                <t t-foreach="touches" t-as="chiffre" t-key="chiffre">
-                    <button class="btn btn-light btn-lg aite-touche" t-att-data-aite-chiffre="chiffre"
+            <h4 class="aite-code-titre text-center mb-2" t-esc="state.titre"/>
+            <t t-if="state.etape === 'code'">
+                <div t-if="props.sousTitre" class="aite-code-sous-titre text-center text-muted mb-2"
+                     t-esc="props.sousTitre"/>
+                <div class="aite-code-points d-flex justify-content-center gap-3 my-3">
+                    <t t-foreach="[0, 1, 2, 3]" t-as="rang" t-key="rang">
+                        <span class="aite-point" t-att-class="{'aite-point-plein': rang lt state.code.length}"/>
+                    </t>
+                </div>
+                <div t-if="state.erreur" class="aite-code-erreur text-danger text-center fw-bold mb-2"
+                     t-esc="state.erreur"/>
+                <div class="aite-code-pave">
+                    <t t-foreach="touches" t-as="chiffre" t-key="chiffre">
+                        <button class="btn btn-light btn-lg aite-touche" t-att-data-aite-chiffre="chiffre"
+                                t-att-disabled="state.verification"
+                                t-on-click="() => this.toucher(chiffre)" t-esc="chiffre"/>
+                    </t>
+                    <button class="btn btn-secondary btn-lg aite-touche aite-code-retour"
+                            t-on-click="() => this.props.close()" t-esc="textes.retour"/>
+                    <button class="btn btn-light btn-lg aite-touche" data-aite-chiffre="0"
                             t-att-disabled="state.verification"
-                            t-on-click="() => this.toucher(chiffre)" t-esc="chiffre"/>
+                            t-on-click="() => this.toucher('0')">0</button>
+                    <button class="btn btn-light btn-lg aite-touche aite-code-effacer"
+                            t-att-disabled="state.verification"
+                            t-on-click="() => this.effacer()">⌫</button>
+                </div>
+            </t>
+            <div t-else="" class="aite-personnes">
+                <div class="aite-personnes-boutons">
+                    <t t-foreach="boutonsPersonnes" t-as="nombre" t-key="nombre">
+                        <button class="btn btn-primary btn-lg aite-touche aite-personne"
+                                t-att-data-aite-personnes="nombre"
+                                t-on-click="() => this.choisir(nombre)" t-esc="nombre"/>
+                    </t>
+                </div>
+                <button t-if="!state.plus" class="btn btn-light btn-lg w-100 mt-2 aite-touche aite-personnes-plus"
+                        data-aite-personnes="plus" t-on-click="() => this.ouvrirPlus()"
+                        t-esc="textes.neufEtPlus"/>
+                <t t-else="">
+                    <div class="aite-personnes-nombre text-center fs-2 fw-bold my-2"
+                         t-esc="state.nombre or '—'"/>
+                    <div t-if="erreurPersonnes" class="aite-personnes-erreur text-danger text-center fw-bold mb-2"
+                         t-esc="erreurPersonnes"/>
+                    <div class="aite-code-pave">
+                        <t t-foreach="touches" t-as="chiffre" t-key="chiffre">
+                            <button class="btn btn-light btn-lg aite-touche" t-att-data-aite-nombre="chiffre"
+                                    t-on-click="() => this.toucherNombre(chiffre)" t-esc="chiffre"/>
+                        </t>
+                        <span/>
+                        <button class="btn btn-light btn-lg aite-touche" data-aite-nombre="0"
+                                t-on-click="() => this.toucherNombre('0')">0</button>
+                        <button class="btn btn-light btn-lg aite-touche aite-nombre-effacer"
+                                t-on-click="() => this.effacerNombre()">⌫</button>
+                    </div>
+                    <button class="btn btn-primary btn-lg w-100 mt-2 aite-touche aite-personnes-valider"
+                            t-att-disabled="!nombreValide" t-on-click="() => this.validerNombre()"
+                            t-esc="textes.valider"/>
                 </t>
-                <button class="btn btn-secondary btn-lg aite-touche aite-code-retour"
+                <button class="btn btn-secondary btn-lg w-100 mt-2 aite-touche aite-code-retour"
                         t-on-click="() => this.props.close()" t-esc="textes.retour"/>
-                <button class="btn btn-light btn-lg aite-touche" data-aite-chiffre="0"
-                        t-att-disabled="state.verification"
-                        t-on-click="() => this.toucher('0')">0</button>
-                <button class="btn btn-light btn-lg aite-touche aite-code-effacer"
-                        t-att-disabled="state.verification"
-                        t-on-click="() => this.effacer()">⌫</button>
             </div>
         </Dialog>
     </t>

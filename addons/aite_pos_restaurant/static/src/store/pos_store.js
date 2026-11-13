@@ -1,4 +1,4 @@
-/* global Sha1 */
+/* global Sha1, luxon */
 /** Caisse du restaurant AITE : le cœur, patch de PosStore (spécification,
  * partie 4.1).
  *
@@ -16,11 +16,28 @@
  *   paiement réservé) ;
  * - les gestes réservés : ouvrir et fermer la caisse (code vérifié par le
  *   serveur), espèces, encaisser, imprimer le rapport.
+ *
+ * Incrément 3 — la table :
+ * - une table libre demande le nombre de personnes, dans la même fenêtre que
+ *   le code, après avoir relu l'état des tables sur le serveur ; l'addition
+ *   est enregistrée aussitôt, sans produit, « ouverte par » la personne
+ *   identifiée ;
+ * - l'addition quittée (retour au plan, autre table, autre code, onglet,
+ *   liste des commandes, numéro tapé, « + ») est enregistrée au nom de la
+ *   personne qui l'a remplie, avant tout changement d'identité (T19) ; la
+ *   caisse envoie au serveur la personne identifiée et le déplacement en
+ *   cours (division, réunion), pour le journal des saisies ;
+ * - « Déplacer ou réunir » : la table d'un collègue (R19), les personnes qui
+ *   s'additionnent et l'heure la plus ancienne, une part portée sur une table
+ *   libre (étape personnes) ;
+ * - un numéro qui n'est pas sur le plan ouvre une table à ce nom (code,
+ *   personnes) ; la vente sans table (« + ») suit la case de la caisse.
  */
 import { patch } from "@web/core/utils/patch";
 import { PosStore } from "@point_of_sale/app/store/pos_store";
 import { makeAwaitable } from "@point_of_sale/app/store/make_awaitable_dialog";
 import { ConnectionLostError, RPCError } from "@web/core/network/rpc";
+import { deserializeDateTime } from "@web/core/l10n/dates";
 // Fixe l'ordre des patchs : ceux de pos_hr et du restaurant d'abord.
 import "@pos_hr/overrides/models/pos_store";
 import "@pos_restaurant/overrides/models/pos_store";
@@ -73,13 +90,14 @@ patch(PosStore.prototype, {
         return this.models["hr.employee"].find((employe) => employe._pin === empreinte);
     },
 
-    /** Ouvre la fenêtre du code ; la personne reconnue devient l'employé du
-     * poste (`set_cashier`) et son code est gardé jusqu'au verrou suivant
-     * (T3). `verifier(employe, code)`, s'il est donné, peut refuser la
-     * personne : la fenêtre reste alors ouverte pour un autre code. Rend
-     * l'employé, ou faux (« Retour »). Une seule fenêtre à la fois : un
-     * second appel pendant qu'elle est ouverte rend faux. */
-    async aiteIdentifier({ titre, sousTitre = "", verifier = null } = {}) {
+    /** Ouvre la fenêtre du code, sans identifier personne. `verifier(employe,
+     * code)`, s'il est donné, peut refuser la personne : la fenêtre reste
+     * alors ouverte pour un autre code. `personnes(employe)`, s'il est donné,
+     * est appelé une fois le code reconnu : s'il rend un titre, la même
+     * fenêtre passe à l'étape « personnes » (table libre). Rend
+     * `{employe, code, personnes}`, ou faux (« Retour »). Une seule fenêtre à
+     * la fois : un second appel pendant qu'elle est ouverte rend faux. */
+    async aiteDemanderCode({ titre, sousTitre = "", verifier = null, personnes = null } = {}) {
         if (this.aiteIdentificationEnCours) {
             return false;
         }
@@ -98,16 +116,176 @@ patch(PosStore.prototype, {
                     }
                     return employe;
                 },
+                ...(personnes ? { etapePersonnes: personnes } : {}),
             });
-            if (!resultat?.employe) {
-                return false;
-            }
-            this.set_cashier(resultat.employe);
-            this.aiteCodeVisite = resultat.code;
-            return resultat.employe;
+            return resultat?.employe ? resultat : false;
         } finally {
             this.aiteIdentificationEnCours = false;
         }
+    },
+
+    /** La fenêtre du code ; la personne reconnue devient l'employé du poste
+     * (`aiteDevenir`). Rend l'employé, ou faux (« Retour »). */
+    async aiteIdentifier(options = {}) {
+        const resultat = await this.aiteDemanderCode(options);
+        if (!resultat) {
+            return false;
+        }
+        await this.aiteDevenir(resultat.employe, resultat.code);
+        return resultat.employe;
+    },
+
+    /** `employe` devient l'employé du poste (`set_cashier`) et son code est
+     * gardé jusqu'au verrou suivant (T3). Si une autre personne était
+     * identifiée, l'addition en cours est d'abord enregistrée à son nom
+     * (T19) : ce qu'elle a saisi ne passe pas au nom de la suivante. */
+    async aiteDevenir(employe, code) {
+        if (this.cashier && this.cashier.id !== employe.id) {
+            await this.aiteQuitterAddition();
+        }
+        this.set_cashier(employe);
+        this.aiteCodeVisite = code;
+    },
+
+    /** L'étape « personnes » seule (bouton « 4 personnes », table libre
+     * touchée depuis l'écran de commande, part portée sur une table libre,
+     * numéro tapé) : rend un entier ≥ 1, ou faux (« Retour »). */
+    async aiteDemanderPersonnes(titre) {
+        if (this.aiteIdentificationEnCours) {
+            return false;
+        }
+        this.aiteIdentificationEnCours = true;
+        try {
+            const resultat = await makeAwaitable(this.dialog, AiteCodePopup, {
+                titre,
+                etape: "personnes",
+            });
+            return resultat?.personnes || false;
+        } finally {
+            this.aiteIdentificationEnCours = false;
+        }
+    },
+
+    // ------------------------------------------------------------------
+    // L'addition enregistrée au nom de qui l'a remplie (T19)
+    // ------------------------------------------------------------------
+
+    /** Vrai si l'addition a changé depuis son dernier enregistrement sur le
+     * serveur (ou n'y a jamais été enregistrée alors qu'elle est ouverte). */
+    aiteAModifier(order) {
+        if (!order || order.finalized) {
+            return false;
+        }
+        if (typeof order.id !== "number") {
+            return Boolean(order.isBooked || order.lines.length);
+        }
+        const commandes = this.models.commands || {};
+        if (
+            this.pendingOrder.write.has(order.id) ||
+            commandes["pos.order"]?.update.has(order.id) ||
+            order.getCommand("delete", "lines") ||
+            order.getCommand("unlink", "lines")
+        ) {
+            return true;
+        }
+        return order.lines.some(
+            (line) =>
+                typeof line.id !== "number" || commandes["pos.order.line"]?.update.has(line.id)
+        );
+    },
+
+    /** Attend la fin d'une synchronisation déjà en cours de l'addition : Odoo
+     * écarterait la suivante (`syncAllOrders` ne reprend pas une addition en
+     * cours d'envoi). */
+    async aiteAttendreSynchro(order) {
+        const fin = Date.now() + 10000;
+        while (order && this.syncingOrders.has(order.id) && Date.now() < fin) {
+            await new Promise((resolve) => setTimeout(resolve, 50));
+        }
+    },
+
+    /** Enregistre l'addition sur le serveur, au nom de la personne identifiée
+     * à l'instant de l'appel (`employe`) : le serveur écrit le journal des
+     * saisies à ce nom. `deplacement` : division ou réunion en cours (ni
+     * saisie, ni retrait). */
+    async aiteSynchroniser(
+        order,
+        { employe = this.cashier, deplacement = this.aiteDeplacementEnCours } = {}
+    ) {
+        if (!order) {
+            return;
+        }
+        const context = {
+            aite_employee_id: employe?.id || false,
+            aite_deplacement: Boolean(deplacement),
+        };
+        await this.aiteAttendreSynchro(order);
+        return this.syncAllOrders({ orders: [order], context });
+    },
+
+    /** Avant tout verrou, tout changement d'addition courante et toute
+     * nouvelle identification : l'addition quittée, si elle a changé, est
+     * enregistrée au nom de la personne identifiée à l'instant de l'appel
+     * (T19), même si le poste se verrouille aussitôt après. Une
+     * synchronisation déjà en cours est d'abord attendue : si elle a tout
+     * emporté, rien n'est renvoyé. */
+    async aiteQuitterAddition(order = this.get_order()) {
+        if (!this.aiteActif || !this.aiteAModifier(order)) {
+            return;
+        }
+        const employe = this.cashier || null; // pris à l'appel, avant tout verrou
+        await this.aiteAttendreSynchro(order);
+        if (!this.aiteAModifier(order)) {
+            return;
+        }
+        return this.aiteSynchroniser(order, { employe, deplacement: false });
+    },
+
+    /** L'addition courante change (onglet, liste des commandes, sélecteur
+     * « Table », numéro tapé, « + », prise de la table suivante) : celle qu'on
+     * quitte est enregistrée au nom de la personne identifiée (T19, revue de
+     * l'incrément 3). Sinon elle partirait plus tard, avec la synchronisation
+     * de toutes les additions d'Odoo, au nom de la personne identifiée à ce
+     * moment-là. Rien pendant « Déplacer ou réunir » ni une division, qui
+     * enregistrent elles-mêmes ce qui a été saisi avant le déplacement ; rien
+     * sur le plan verrouillé (l'addition a été enregistrée au verrou). */
+    aiteAvantChangementDAddition(nouvelle) {
+        const precedente = this.get_order();
+        if (
+            this.aiteActif &&
+            this.cashier &&
+            precedente &&
+            precedente.uuid !== nouvelle?.uuid &&
+            !this.aiteDeplacementEnCours &&
+            !this.isOrderTransferMode
+        ) {
+            this.aiteQuitterAddition(precedente);
+        }
+    },
+
+    set_order(order) {
+        this.aiteAvantChangementDAddition(order);
+        return super.set_order(...arguments);
+    },
+
+    add_new_order() {
+        this.aiteAvantChangementDAddition(null);
+        return super.add_new_order(...arguments);
+    },
+
+    /** La personne identifiée et le déplacement en cours, envoyés avec chaque
+     * synchronisation (journal des saisies). Une valeur passée par l'appelant
+     * (`aiteSynchroniser`) l'emporte. */
+    getSyncAllOrdersContext(orders, options = {}) {
+        const context = super.getSyncAllOrdersContext(...arguments);
+        if (!this.aiteActif) {
+            return context;
+        }
+        return {
+            aite_employee_id: this.cashier?.id || false,
+            aite_deplacement: Boolean(this.aiteDeplacementEnCours),
+            ...context,
+        };
     },
 
     aiteVerrouiller() {
@@ -229,6 +407,9 @@ patch(PosStore.prototype, {
         }
         if (name === "FloorScreen") {
             if (!this.isOrderTransferMode) {
+                // L'addition quittée est enregistrée au nom de qui l'a remplie
+                // (la personne est prise à l'appel), puis le poste se verrouille.
+                this.aiteQuitterAddition();
                 this.aiteVerrouiller();
             }
             return super.showScreen(name, props);
@@ -280,9 +461,10 @@ patch(PosStore.prototype, {
     aiteEcranPermis(name, order) {
         const ouvertePar = order?.aite_ouverte_par_id;
         if (ouvertePar && ouvertePar.id !== this.cashier.id && !this.aitePeut("table_collegue")) {
-            this.notification.add(MESSAGES.R4(this.aiteNomAddition(order), ouvertePar.name), {
-                type: "danger",
-            });
+            const message = this.aiteEstVenteSansTable(order)
+                ? MESSAGES.R4vente(order.getFloatingOrderName(), ouvertePar.name)
+                : MESSAGES.R4(this.aiteNomAddition(order), ouvertePar.name);
+            this.notification.add(message, { type: "danger" });
             return "FloorScreen";
         }
         if (name === "PaymentScreen" && !this.aitePeut("encaisser")) {
@@ -347,9 +529,26 @@ patch(PosStore.prototype, {
         );
     },
 
+    /** Une vente sans table (« + ») : ni table, ni nom (numéro tapé, part
+     * « 12B »), ni personne. Son onglet porte son numéro de suivi, qu'Odoo
+     * donne à toute addition : ce n'est pas un numéro de table (revue de
+     * l'incrément 3). */
+    aiteEstVenteSansTable(order) {
+        return Boolean(
+            order &&
+                !order.table_id &&
+                !order.floating_order_name &&
+                !order.aite_origine_uuid &&
+                !(order.customer_count >= 1)
+        );
+    },
+
     aiteTitreEcran(name, order) {
         if (name === "TicketScreen") {
             return TITRES.commandes;
+        }
+        if (this.aiteEstVenteSansTable(order)) {
+            return TITRES.venteSansTable(order.getFloatingOrderName());
         }
         const numero = this.aiteNomAddition(order);
         return numero ? TITRES.table(numero) : TITRES.prendreLaMain;
@@ -565,9 +764,18 @@ patch(PosStore.prototype, {
 
     /** Toucher une table depuis le plan demande toujours le code (T1), sauf
      * la table d'arrivée d'un « Déplacer ou réunir ». Avant l'ouverture de
-     * la caisse : R3, après avoir relu l'état sur le serveur. Depuis l'écran de commande (sélecteur « Table »), la
-     * personne identifiée continue ; `showScreen` contrôle la table d'un
-     * collègue. */
+     * la caisse : R3, après avoir relu l'état sur le serveur. Depuis l'écran
+     * de commande (sélecteur « Table »), la personne identifiée continue,
+     * après avoir enregistré l'addition qu'elle quitte ; `showScreen`
+     * contrôle la table d'un collègue.
+     *
+     * Une table libre (incrément 3) : l'état des tables est relu sur le
+     * serveur (un autre poste a pu l'ouvrir), puis le nombre de personnes est
+     * demandé — dans la fenêtre du code depuis le plan, seul depuis l'écran
+     * de commande ; « Retour » n'ouvre rien. L'addition est alors posée à ce
+     * nombre, « ouverte par » la personne identifiée, réservée (occupée sur
+     * tous les postes, même sans produit) et enregistrée aussitôt : le
+     * serveur pose l'heure d'ouverture. */
     async setTableFromUi(table, orderUuid = null) {
         if (!this.aiteActif) {
             return super.setTableFromUi(...arguments);
@@ -586,6 +794,11 @@ patch(PosStore.prototype, {
                 this.aiteRelectureEnCours = false;
             }
         }
+        if (this.aiteRetourApresTransfert) {
+            return this.aiteRevenirApresTransfert();
+        }
+        const tete = table.parent_id ? table.getParent() : table;
+        let personnes = 0;
         if (this.mainScreen.component?.name === "FloorScreen") {
             if (this.aiteSuiteTransfert) {
                 this.aiteSuiteTransfert = false;
@@ -593,17 +806,103 @@ patch(PosStore.prototype, {
                 if (this.aiteIdentificationEnCours) {
                     return; // second toucher pendant que la fenêtre est ouverte
                 }
-                const tete = table.parent_id ? table.getParent() : table;
                 this.aiteVerrouiller();
-                const employe = await this.aiteIdentifier({
+                const resultat = await this.aiteDemanderCode({
                     titre: TITRES.table(tete.table_number),
+                    personnes: () => this.aiteEtapePersonnes(tete),
                 });
-                if (!employe) {
+                if (!resultat) {
                     return;
+                }
+                await this.aiteDevenir(resultat.employe, resultat.code);
+                personnes = resultat.personnes;
+            }
+        } else {
+            if (this.aiteIdentificationEnCours) {
+                return;
+            }
+            await this.aiteQuitterAddition();
+            const titre = await this.aiteEtapePersonnes(tete);
+            if (titre) {
+                personnes = await this.aiteDemanderPersonnes(titre);
+                if (!personnes) {
+                    return; // « Retour » : on reste sur l'addition en cours
                 }
             }
         }
-        return super.setTableFromUi(...arguments);
+        const resultat = await super.setTableFromUi(...arguments);
+        if (personnes) {
+            await this.aiteOuvrirLAddition(this.get_order(), personnes, tete);
+        }
+        return resultat;
+    },
+
+    /** Vrai si la table (ou sa table parente) n'a aucune addition ouverte sur
+     * ce poste. */
+    aiteTableLibre(tete) {
+        return !this.getActiveOrdersOnTable(tete).length;
+    },
+
+    /** Avant l'étape « personnes » : la table semble libre ? L'état des
+     * tables est relu sur le serveur (Odoo ne l'attend pas), et l'étape n'a
+     * lieu que si elle l'est toujours, hors déplacement. Rend le titre de
+     * l'étape, ou faux. Si la relecture échoue (hors connexion), l'état
+     * connu du poste fait foi. */
+    async aiteEtapePersonnes(tete) {
+        if (this.isOrderTransferMode || !this.aiteTableLibre(tete)) {
+            return false;
+        }
+        try {
+            await this.deviceSync.readDataFromServer();
+        } catch (erreur) {
+            console.warn("Restaurant : relecture des tables impossible", erreur);
+        }
+        return this.aiteTableLibre(tete) ? TITRES.personnes(tete.table_number) : false;
+    },
+
+    /** Une addition qui s'ouvre (table libre, numéro tapé, part portée sur une
+     * table libre) : son nombre de personnes, « ouverte par » la personne
+     * identifiée, réservée, puis enregistrée aussitôt. */
+    async aiteOuvrirLAddition(order, personnes, tete = null) {
+        if (!order || order.finalized || (tete && order.table_id?.id !== tete.id)) {
+            return;
+        }
+        order.setCustomerCount(personnes);
+        if (!order.aite_ouverte_par_id) {
+            order.update({ aite_ouverte_par_id: this.cashier });
+        }
+        order.setBooked(true);
+        await this.aiteSynchroniser(order);
+    },
+
+    /** Odoo reprend, pour une table touchée, une addition sans table et sans
+     * produit : en mode, seulement une addition résiduelle (jamais
+     * enregistrée, jamais réservée, sans nom), pas un numéro tapé, une vente
+     * sans table ni une part encore vides. Sinon une addition neuve est
+     * posée sur la table, et Odoo la retrouve. */
+    async setTable(table, orderUuid = null) {
+        if (
+            this.aiteActif &&
+            table &&
+            !table.orders.some((o) => o.uuid === orderUuid || !o.finalized)
+        ) {
+            const residuelle = this.models["pos.order"].find(
+                (o) =>
+                    !o.table_id &&
+                    !o.finalized &&
+                    o.lines.length === 0 &&
+                    !o.isBooked &&
+                    !o.floating_order_name &&
+                    !o.aite_ouverte_par_id
+            );
+            if (residuelle) {
+                residuelle.update({ table_id: table });
+            } else {
+                this.selectedTable = table;
+                this.add_new_order();
+            }
+        }
+        return super.setTable(...arguments);
     },
 
     /** « Déplacer ou réunir » : la table d'arrivée s'ouvre sans code (la
@@ -612,7 +911,17 @@ patch(PosStore.prototype, {
      * place, et la table touchée ensuite sur le plan verrouillé recevrait
      * l'addition. Le drapeau d'abandon ne vaut que pour ce premier toucher :
      * il est retombé si ce toucher n'est pas une table, et à chaque nouveau
-     * déplacement (control_buttons.js). */
+     * déplacement (control_buttons.js).
+     *
+     * Incrément 3 :
+     * - la table d'un collègue (R19) : rien n'est réuni, retour à l'addition ;
+     * - ce qui a été saisi est d'abord enregistré (journal des saisies), puis
+     *   le déplacement est signalé au serveur : ni saisie, ni retrait ;
+     * - table d'arrivée occupée : les personnes s'additionnent et l'heure
+     *   d'ouverture la plus ancienne est gardée (Q29) ;
+     * - une addition sans table et sans personne (part « 12B », vente sans
+     *   table) portée sur une table libre : l'étape personnes seule ;
+     *   « Retour » : rien n'est déplacé. */
     async transferOrder(orderUuid, destinationTable) {
         if (!this.aiteActif) {
             return super.transferOrder(...arguments);
@@ -623,7 +932,172 @@ patch(PosStore.prototype, {
             this.aiteTransfertAbandonne = false;
             return;
         }
-        await super.transferOrder(...arguments);
+        const order = this.models["pos.order"].getBy("uuid", orderUuid);
+        const destination = this.getActiveOrdersOnTable(destinationTable)[0];
+        const reunion = Boolean(destination && order && destination !== order);
+        const collegue = reunion ? destination.aite_ouverte_par_id : null;
+        if (collegue && collegue.id !== this.cashier?.id && !this.aitePeut("table_collegue")) {
+            this.notification.add(MESSAGES.R19(destinationTable.table_number, collegue.name), {
+                type: "danger",
+            });
+            this.aiteRetourApresTransfert = orderUuid;
+            return;
+        }
+        let personnes = 0;
+        if (order && !destination && !order.table_id && !(order.customer_count >= 1)) {
+            personnes = await this.aiteDemanderPersonnes(
+                TITRES.personnes(destinationTable.table_number)
+            );
+            if (!personnes) {
+                this.aiteRetourApresTransfert = orderUuid;
+                return;
+            }
+        }
+        await this.aiteQuitterAddition(order);
+        const personnesSource = order?.customer_count || 0;
+        const heureSource = order?.aite_heure_ouverture;
+        if (personnes) {
+            // Avant Odoo, qui enregistre l'addition sur sa nouvelle table : le
+            // serveur ne la reçoit jamais à table avec 0 personne.
+            order.setCustomerCount(personnes);
+        }
+        this.aiteDeplacementEnCours = true;
+        try {
+            await super.transferOrder(...arguments);
+            if (reunion) {
+                destination.setCustomerCount((destination.customer_count || 0) + personnesSource);
+                if (
+                    heureSource &&
+                    (!destination.aite_heure_ouverture ||
+                        heureSource < destination.aite_heure_ouverture)
+                ) {
+                    destination.update({ aite_heure_ouverture: heureSource });
+                }
+                await this.aiteSynchroniser(destination, { deplacement: true });
+            }
+        } finally {
+            this.aiteDeplacementEnCours = false;
+        }
         this.aiteSuiteTransfert = true;
+    },
+
+    /** Après un déplacement refusé (R19) ou abandonné (« Retour » à l'étape
+     * personnes), Odoo touche la table d'arrivée : on revient à l'addition
+     * de départ, avec la même personne. */
+    aiteRevenirApresTransfert() {
+        const uuid = this.aiteRetourApresTransfert;
+        this.aiteRetourApresTransfert = null;
+        const order = this.models["pos.order"].getBy("uuid", uuid);
+        if (!order || order.finalized || !this.cashier) {
+            return this.showScreen("FloorScreen");
+        }
+        this.selectedTable = order.table_id || null;
+        this.set_order(order);
+        return this.showScreen("ProductScreen");
+    },
+
+    // ------------------------------------------------------------------
+    // Numéro qui n'est pas sur le plan, vente sans table (incrément 3)
+    // ------------------------------------------------------------------
+
+    /** Un numéro tapé qui n'est pas sur le plan ouvre une table à ce nom
+     * (Q25, T11) : avant l'ouverture de la caisse, R3 ; sur le plan
+     * verrouillé, le code puis le nombre de personnes, dans la même fenêtre ;
+     * depuis l'écran de commande, le nombre seul. « Retour » : l'addition
+     * neuve est retirée ; depuis l'écran de commande, la même personne
+     * revient à l'addition d'avant (`precedente`, celle qui était affichée
+     * quand « Table » a été touché), comme pour une table libre du
+     * sélecteur ; depuis le plan, le plan reste verrouillé. Puis `ouvrir()`
+     * (l'écran de commande d'Odoo). */
+    async aiteOuvrirNumero(order, ouvrir, precedente = null) {
+        const numero = order.floating_order_name;
+        const abandonner = () => {
+            this.removeOrder(order, false);
+            const avant = precedente && this.models["pos.order"].getBy("uuid", precedente.uuid);
+            if (this.cashier && avant && !avant.finalized) {
+                this.selectedTable = avant.table_id || null;
+                this.set_order(avant);
+                return this.showScreen("ProductScreen");
+            }
+            this.showScreen("FloorScreen");
+        };
+        if (!(await this.aiteCaisseOuverte())) {
+            this.notification.add(MESSAGES.R3, { type: "danger" });
+            return abandonner();
+        }
+        let personnes;
+        if (!this.cashier) {
+            const resultat = await this.aiteDemanderCode({
+                titre: TITRES.table(numero),
+                personnes: async () => TITRES.personnes(numero),
+            });
+            if (!resultat) {
+                return abandonner();
+            }
+            await this.aiteDevenir(resultat.employe, resultat.code);
+            personnes = resultat.personnes;
+        } else {
+            personnes = await this.aiteDemanderPersonnes(TITRES.personnes(numero));
+        }
+        if (!personnes) {
+            return abandonner();
+        }
+        await this.aiteOuvrirLAddition(order, personnes);
+        return ouvrir();
+    },
+
+    /** Le « + » (case « Autoriser la vente sans table » cochée) : le code si
+     * personne n'est identifié ; il faut le droit « vente_sans_table »
+     * (caissière et au-dessus), sinon R17. La vente compte 0 personne (Q76). */
+    aiteVenteSansTable(ouvrir) {
+        return this.aiteGeste({
+            titre: TITRES.prendreLaMain,
+            geste: "vente_sans_table",
+            refus: MESSAGES.R17,
+            action: () => {
+                // pos_restaurant ne rend pas l'addition créée : c'est la courante.
+                const order = ouvrir() || this.get_order();
+                if (order) {
+                    order.setCustomerCount(0);
+                    order.update({ aite_ouverte_par_id: this.cashier });
+                }
+                return order;
+            },
+        });
+    },
+
+    // ------------------------------------------------------------------
+    // L'écran de commande : phrase d'état
+    // ------------------------------------------------------------------
+
+    /** Minutes écoulées depuis l'heure d'ouverture posée par le serveur, ou
+     * `null` (pas encore enregistrée). */
+    aiteMinutesOuverte(order) {
+        const heure = order?.aite_heure_ouverture;
+        if (!heure) {
+            return null;
+        }
+        const debut = typeof heure === "string" ? deserializeDateTime(heure) : heure;
+        if (!debut?.isValid) {
+            return null;
+        }
+        return Math.max(0, Math.floor(luxon.DateTime.now().diff(debut, "minutes").minutes));
+    },
+
+    /** « Table 12 · ouverte par Awa · 35 min ». */
+    aiteEtatCommande(order) {
+        if (!order) {
+            return "";
+        }
+        const nom = order.table_id?.table_number ?? order.floating_order_name;
+        const parties = [nom ? TEXTES.table(nom) : TEXTES.venteSansTable];
+        if (order.aite_ouverte_par_id?.name) {
+            parties.push(TEXTES.ouvertePar(order.aite_ouverte_par_id.name));
+        }
+        const minutes = this.aiteMinutesOuverte(order);
+        if (minutes !== null) {
+            parties.push(TEXTES.duree(minutes));
+        }
+        return parties.join(" · ");
     },
 });

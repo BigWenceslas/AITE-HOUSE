@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- « Split Order » devient « Créer l'addition à part » (partie 1.2),
+         en mode seulement ; visé par sa place dans le bouton de division. -->
+    <t t-name="aite_pos_restaurant.SplitBillScreen" t-inherit="pos_restaurant.SplitBillScreen" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('pay-button')]/div/span" position="attributes">
+            <attribute name="t-if">!pos.aiteActif</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('pay-button')]/div/span" position="after">
+            <span t-if="pos.aiteActif" t-esc="aiteTextes.creerLaPart"/>
+        </xpath>
+    </t>
+
+</templates>

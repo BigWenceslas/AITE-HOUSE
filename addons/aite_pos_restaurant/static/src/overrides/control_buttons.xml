@@ -1,11 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates id="template" xml:space="preserve">
 
-    <!-- « Remboursement » n'apparaît que pour le manager (REST-03 ; R16 dans
-         clickRefund). Hors mode, aitePeut rend toujours vrai. -->
+    <!-- Boutons de l'écran de commande, en mode (partie 1.1 C) :
+         - « Remboursement » n'apparaît que pour le manager (REST-03 ; R16
+           dans clickRefund). Hors mode, aitePeut rend toujours vrai ;
+         - incrément 3 : « {p} personnes » et « Addition » sur la rangée
+           principale (avant « Client » et « Note cuisine » d'Odoo), retirés
+           d'« Actions » ; sur petit écran, où la rangée n'est pas affichée,
+           ils restent dans « Actions » ;
+         - « Actions » : « Diviser l'addition », « Déplacer ou réunir »,
+           « Annuler la table » remplacent les boutons d'Odoo (visés par leur
+           icône, jamais par leur texte) ; « Liste de prix » disparaît.
+         Hors mode, les boutons d'Odoo restent tels quels. -->
+    <!-- Sans icône : à 1 280 px, la rangée principale tient en une ligne avec
+         « Client », « Note cuisine » et « Actions » (restaurant.scss). -->
+    <t t-name="aite_pos_restaurant.BoutonsTable">
+        <button t-if="currentOrder?.table_id or currentOrder?.customer_count"
+                t-att-class="buttonClass" class="aite-personnes-btn"
+                t-on-click="() => this.clickTableGuests()"
+                t-esc="aiteTextes.personnes(currentOrder.customer_count || 0)"/>
+        <button t-if="pos.config.iface_printbill" t-att-class="buttonClass" class="aite-addition-btn"
+                t-att-disabled="!pos.get_order()?.get_orderlines()?.length"
+                t-on-click="() => this.clickPrintBill()" t-esc="aiteTextes.addition"/>
+    </t>
+
     <t t-name="aite_pos_restaurant.ControlButtons" t-inherit="point_of_sale.ControlButtons" t-inherit-mode="extension">
         <xpath expr="//t[@t-if='props.showRemainingButtons']//button[i[hasclass('fa-undo')]]" position="attributes">
             <attribute name="t-if">pos.aitePeut('rembourser')</attribute>
+        </xpath>
+        <!-- Rangée principale (grand écran). -->
+        <xpath expr="//SelectPartnerButton" position="before">
+            <t t-if="pos.aiteActif and !props.showRemainingButtons" t-call="aite_pos_restaurant.BoutonsTable"/>
+        </xpath>
+        <!-- « Actions » : personnes et addition sur petit écran seulement. -->
+        <xpath expr="//t[@t-if='props.showRemainingButtons']/div/OrderlineNoteButton[1]" position="before">
+            <t t-if="pos.aiteActif and ui.isSmall" t-call="aite_pos_restaurant.BoutonsTable"/>
+        </xpath>
+        <xpath expr="//button[@t-on-click='clickTableGuests']" position="attributes">
+            <attribute name="t-if">!pos.aiteActif</attribute>
+        </xpath>
+        <xpath expr="//button[@t-on-click='clickPrintBill']" position="attributes">
+            <attribute name="t-if">!pos.aiteActif</attribute>
+        </xpath>
+        <xpath expr="//button[hasclass('o_pricelist_button')]" position="attributes">
+            <attribute name="t-if">!pos.aiteActif</attribute>
+        </xpath>
+        <xpath expr="//button[i[hasclass('fa-files-o')]]" position="attributes">
+            <attribute name="t-if" add="!pos.aiteActif" separator=" and "/>
+        </xpath>
+        <xpath expr="//button[i[hasclass('fa-files-o')]]" position="after">
+            <button t-if="pos.aiteActif and pos.config.iface_splitbill"
+                    class="btn btn-secondary btn-lg py-5"
+                    t-att-disabled="pos.get_order()?.get_orderlines()?.reduce((sum, line) => sum + line.qty, 0) lt 2"
+                    t-on-click="() => pos.showScreen('SplitBillScreen')">
+                <i class="fa fa-files-o me-1" role="img" aria-label="Diviser" title="Diviser"/>
+                <t t-esc="aiteTextes.diviser"/>
+            </button>
+        </xpath>
+        <xpath expr="//button[i[hasclass('oi-arrow-right')]]" position="attributes">
+            <attribute name="t-if">!pos.aiteActif</attribute>
+        </xpath>
+        <xpath expr="//button[i[hasclass('oi-arrow-right')]]" position="after">
+            <button t-if="pos.aiteActif" class="btn btn-secondary btn-lg py-5"
+                    t-on-click.stop="() => this.clickTransferOrder()">
+                <i class="oi oi-arrow-right me-1" role="img" aria-label="Déplacer" title="Déplacer"/>
+                <t t-esc="aiteTextes.deplacer"/>
+            </button>
+        </xpath>
+        <!-- « Modifier le nom de la commande » (numéro tapé, part, vente sans
+             table) n'est pas dans la liste d'« Actions » : renommer changerait
+             le nom repris par les titres et par R4 (nom libre : REST-08, lot 2). -->
+        <xpath expr="//button[i[hasclass('fa-pencil-square-o')]]" position="attributes">
+            <attribute name="t-if" add="!pos.aiteActif" separator=" and "/>
+        </xpath>
+        <xpath expr="//button[i[hasclass('fa-trash')]]" position="attributes">
+            <attribute name="t-if">!pos.aiteActif</attribute>
+        </xpath>
+        <xpath expr="//button[i[hasclass('fa-trash')]]" position="after">
+            <button t-if="pos.aiteActif" class="btn btn-secondary btn-lg py-5"
+                    t-on-click="() => this.pos.onDeleteOrder(this.pos.get_order())">
+                <i class="fa fa-trash me-1" role="img" aria-label="Annuler" title="Annuler"/>
+                <t t-esc="aiteTextes.annulerLaTable"/>
+            </button>
         </xpath>
     </t>
 
