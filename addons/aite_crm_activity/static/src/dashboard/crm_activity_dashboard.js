@@ -411,7 +411,7 @@ export class AiteCrmActivityDashboard extends Component {
             count: previous,
         });
         if (delta === null || delta === undefined) {
-            return { text: _t("aucune du %s", range), class: "text-muted", title };
+            return { text: _t("aucune sur la période précédente"), class: "text-muted", title };
         }
         const value = formatRate(Math.abs(delta));
         if (delta > 0) {

@@ -237,7 +237,7 @@
                                                 <strong t-esc="act.type"/>
                                                 <div t-if="act.summary" class="small text-muted text-truncate o_aite_cad_summary" t-esc="act.summary"/>
                                             </td>
-                                            <td>
+                                            <td class="o_aite_cad_lead_cell">
                                                 <t t-if="act.lead">
                                                     <button type="button"
                                                             class="btn btn-link p-0 fw-semibold text-start o_aite_cad_lead_link"
@@ -286,7 +286,7 @@
                                 <i class="fa fa-money me-1" aria-hidden="true"/><t t-esc="amount"/>
                             </span>
                         </t>
-                        <span class="badge text-bg-secondary" t-esc="data.stalled.total"/>
+                        <span class="badge rounded-pill text-bg-secondary" title="Nombre d'opportunités" t-esc="data.stalled.total"/>
                         <div t-if="data.filter_notes.stalled_ignores_type" class="w-100 small text-muted fst-italic o_aite_cad_stalled_note">
                             <i class="fa fa-info-circle me-1" aria-hidden="true"/>Le filtre Type ne s'applique pas ici : ces opportunités n'ont justement aucune activité.
                         </div>
@@ -310,7 +310,7 @@
                                 <tbody>
                                     <t t-foreach="data.stalled.records" t-as="lead" t-key="lead.id">
                                         <tr t-attf-class="o_aite_cad_stalled_row #{isPreviewed(lead.id) ? 'table-active' : ''}" t-att-data-lead-id="lead.id">
-                                            <td>
+                                            <td class="o_aite_cad_lead_cell">
                                                 <button type="button"
                                                         class="btn btn-link p-0 fw-semibold text-start o_aite_cad_lead_link"
                                                         aria-haspopup="dialog"
@@ -468,11 +468,11 @@
                                 </tfoot>
                             </table>
                         </div>
-                        <div t-if="data.by_user.rows.length" class="small text-muted px-3 py-2 border-top o_aite_cad_legend">
-                            <span class="o_aite_cad_swatch bg-danger" aria-hidden="true"/> En retard
-                            <span class="o_aite_cad_swatch bg-warning ms-3" aria-hidden="true"/> Aujourd'hui
-                            <span class="o_aite_cad_swatch bg-info ms-3" aria-hidden="true"/> À venir
-                            <span class="ms-3">· Faites : <t t-esc="data.period.label"/></span>
+                        <div t-if="data.by_user.rows.length" class="d-flex flex-wrap column-gap-3 row-gap-1 small text-muted px-3 py-2 border-top o_aite_cad_legend">
+                            <span class="text-nowrap"><span class="o_aite_cad_swatch bg-danger me-1" aria-hidden="true"/>En retard</span>
+                            <span class="text-nowrap"><span class="o_aite_cad_swatch bg-warning me-1" aria-hidden="true"/>Aujourd'hui</span>
+                            <span class="text-nowrap"><span class="o_aite_cad_swatch bg-info me-1" aria-hidden="true"/>À venir</span>
+                            <span class="text-nowrap">Faites : <t t-esc="data.period.label"/></span>
                         </div>
                     </div>
                 </div>
@@ -571,7 +571,7 @@
                                 </div>
                             </div>
                             <i t-if="state.trendLoading" class="fa fa-circle-o-notch fa-spin text-muted" aria-hidden="true"/>
-                            <span class="badge rounded-pill text-bg-light border o_aite_cad_trend_rate"
+                            <span t-if="state.trend.on_time_rate !== null" class="badge rounded-pill o_aite_cad_amount_chip o_aite_cad_trend_rate"
                                   title="Part des activités réalisées au plus tard le jour de leur échéance">
                                 <t t-esc="formatRate(state.trend.on_time_rate)"/> à temps
                             </span>

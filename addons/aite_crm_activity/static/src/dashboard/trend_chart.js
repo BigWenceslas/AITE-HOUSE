@@ -115,7 +115,9 @@ export class AiteTrendChart extends Component {
                     x: {
                         stacked: true,
                         grid: { display: false },
-                        ticks: { color: colors.text },
+                        // Sur téléphone, des semaines sautées plutôt que des
+                        // libellés penchés.
+                        ticks: { color: colors.text, maxRotation: 0, autoSkip: true },
                         border: { color: colors.grid },
                     },
                     y: {
@@ -130,7 +132,14 @@ export class AiteTrendChart extends Component {
                     legend: {
                         position: "top",
                         align: "start",
-                        labels: { color: colors.text, usePointStyle: true, boxWidth: 8, boxHeight: 8 },
+                        labels: {
+                            color: colors.text,
+                            usePointStyle: true,
+                            boxWidth: 8,
+                            boxHeight: 8,
+                            // Ordre des séries, pas leur ordre de dessin.
+                            sort: (a, b) => a.datasetIndex - b.datasetIndex,
+                        },
                     },
                     tooltip: {
                         callbacks: {

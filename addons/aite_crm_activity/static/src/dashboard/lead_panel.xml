@@ -17,7 +17,7 @@
                     <div t-if="lead and lead.partner" class="text-muted text-break" t-esc="lead.partner"/>
                 </div>
                 <i t-if="state.loading and lead" class="fa fa-circle-o-notch fa-spin text-muted mt-2" aria-hidden="true"/>
-                <button type="button" class="btn btn-light btn-sm o_aite_cad_panel_close" t-ref="close"
+                <button type="button" class="btn btn-light o_aite_cad_panel_close" t-ref="close"
                         title="Fermer (Échap)" aria-label="Fermer l'aperçu"
                         t-on-click="() => this.props.onClose()">
                     <i class="fa fa-times" aria-hidden="true"/>
@@ -151,7 +151,7 @@
                         t-att-disabled="!lead" t-on-click="schedule">
                     <i class="fa fa-clock-o me-1" aria-hidden="true"/>Planifier une activité
                 </button>
-                <button type="button" class="btn btn-light btn-sm ms-auto o_aite_cad_panel_close_footer"
+                <button type="button" class="btn btn-light btn-sm ms-auto d-none d-lg-inline-block o_aite_cad_panel_close_footer"
                         t-on-click="() => this.props.onClose()">
                     Fermer
                 </button>

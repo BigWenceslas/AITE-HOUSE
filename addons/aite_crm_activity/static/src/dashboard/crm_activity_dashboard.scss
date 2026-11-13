@@ -102,6 +102,17 @@ $o-aite-cad-warning-text: mix($warning, $body-color, 45%);
         line-height: 1.1;
     }
 
+    // Téléphone : cartes plus compactes, pour voir la liste plus tôt.
+    @include media-breakpoint-down(md) {
+        .o_aite_cad_kpi .card-body {
+            padding: map-get($spacers, 2) map-get($spacers, 3) !important;
+        }
+
+        .o_aite_cad_kpi_value {
+            font-size: 1.5rem;
+        }
+    }
+
     .o_aite_cad_amount_chip {
         max-width: 100%;
         white-space: normal;
@@ -159,6 +170,31 @@ $o-aite-cad-warning-text: mix($warning, $body-color, 45%);
 
     .o_aite_cad_summary {
         max-width: 22rem;
+    }
+
+    .o_aite_cad_lead_cell {
+        min-width: 12rem;
+    }
+
+    // Téléphone : les tableaux gardent des lignes compactes et défilent
+    // horizontalement dans leur cadre (.table-responsive), plutôt que de
+    // replier chaque cellule sur plusieurs lignes.
+    @include media-breakpoint-down(md) {
+        .o_aite_cad_activities {
+            min-width: 60rem;
+        }
+
+        .o_aite_cad_summary {
+            max-width: 14rem;
+        }
+
+        .o_aite_cad_stalled_table {
+            min-width: 48rem;
+        }
+
+        .o_aite_cad_by_user {
+            min-width: 40rem;
+        }
     }
 
     .o_aite_cad_lead_link {
