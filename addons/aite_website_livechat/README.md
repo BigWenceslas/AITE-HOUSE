@@ -87,8 +87,9 @@ mêmes.
     navigateur) ;
   - les autres conversations suivent la règle d'Odoo.
 - **Installation.** Si le site n'a pas encore de chat, le module crée le
-  canal **« Chat du site »** (bulle « Une question ? Écrivez-nous », message
-  d'accueil « Bonjour 👋 Comment pouvons-nous vous aider ? », opérateur :
+  canal **« Chat du site »** (texte de la bulle « Une question ? Écrivez-nous »,
+  affiché à côté d'elle seulement si la règle du canal est « Afficher avec
+  notification » ; message d'accueil « Bonjour 👋 Comment pouvons-nous vous aider ? », opérateur :
   l'administrateur — s'il est archivé, le premier responsable du Live Chat
   ou, à défaut, le premier administrateur actif —, affiché sur toutes les
   pages, toujours joignable,
