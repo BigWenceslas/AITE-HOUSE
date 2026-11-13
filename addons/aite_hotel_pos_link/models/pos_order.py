@@ -245,8 +245,20 @@ class PosOrder(models.Model):
             self._aite_process_room_charge()
         return res
 
+    # Liens hôtel écrits par le serveur seul (report en note de chambre). La
+    # caisse charge tous les champs du ticket et les renvoie à chaque
+    # enregistrement, vides (leur modèle n'est pas chargé en caisse) : sur
+    # une addition déjà enregistrée (restaurant, commandes partagées entre
+    # postes), réécrire ``aite_folio_line_ids``, réservé au profil Réception,
+    # était refusé à un caissier sans profil hôtel, et toutes les
+    # synchronisations suivantes du poste échouaient, paiement compris.
+    _AITE_CHAMPS_SERVEUR = (
+        'aite_folio_line_ids', 'aite_folio_line_id', 'aite_roomcharge_pending_id')
+
     @api.model
     def _process_order(self, order, existing_order):
+        for champ in self._AITE_CHAMPS_SERVEUR:
+            order.pop(champ, None)
         order_id = super()._process_order(order, existing_order)
         if order_id:
             self.browse(order_id)._aite_process_room_charge()

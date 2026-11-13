@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- « Remboursement » n'apparaît que pour le manager (REST-03 ; R16 dans
+         clickRefund). Hors mode, aitePeut rend toujours vrai. -->
+    <t t-name="aite_pos_restaurant.ControlButtons" t-inherit="point_of_sale.ControlButtons" t-inherit-mode="extension">
+        <xpath expr="//t[@t-if='props.showRemainingButtons']//button[i[hasclass('fa-undo')]]" position="attributes">
+            <attribute name="t-if">pos.aitePeut('rembourser')</attribute>
+        </xpath>
+    </t>
+
+</templates>

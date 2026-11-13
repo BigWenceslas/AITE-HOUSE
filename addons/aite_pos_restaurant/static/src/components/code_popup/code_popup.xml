@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- La fenêtre du code : sans en-tête d'Odoo (sa croix ferait un second
+         « Retour ») ; le titre dit le geste (partie 1.4). Sélecteurs des
+         tours : classes aite-* et attributs data-aite-chiffre. -->
+    <t t-name="aite_pos_restaurant.AiteCodePopup">
+        <Dialog header="false" footer="false" size="'sm'" contentClass="'aite-code-popup'">
+            <h4 class="aite-code-titre text-center mb-2" t-esc="props.titre"/>
+            <div t-if="props.sousTitre" class="aite-code-sous-titre text-center text-muted mb-2"
+                 t-esc="props.sousTitre"/>
+            <div class="aite-code-points d-flex justify-content-center gap-3 my-3">
+                <t t-foreach="[0, 1, 2, 3]" t-as="rang" t-key="rang">
+                    <span class="aite-point" t-att-class="{'aite-point-plein': rang lt state.code.length}"/>
+                </t>
+            </div>
+            <div t-if="state.erreur" class="aite-code-erreur text-danger text-center fw-bold mb-2"
+                 t-esc="state.erreur"/>
+            <div class="aite-code-pave">
+                <t t-foreach="touches" t-as="chiffre" t-key="chiffre">
+                    <button class="btn btn-light btn-lg aite-touche" t-att-data-aite-chiffre="chiffre"
+                            t-att-disabled="state.verification"
+                            t-on-click="() => this.toucher(chiffre)" t-esc="chiffre"/>
+                </t>
+                <button class="btn btn-secondary btn-lg aite-touche aite-code-retour"
+                        t-on-click="() => this.props.close()" t-esc="textes.retour"/>
+                <button class="btn btn-light btn-lg aite-touche" data-aite-chiffre="0"
+                        t-att-disabled="state.verification"
+                        t-on-click="() => this.toucher('0')">0</button>
+                <button class="btn btn-light btn-lg aite-touche aite-code-effacer"
+                        t-att-disabled="state.verification"
+                        t-on-click="() => this.effacer()">⌫</button>
+            </div>
+        </Dialog>
+    </t>
+
+</templates>

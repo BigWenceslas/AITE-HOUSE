@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- Sous la barre du plan : la phrase d'état, ou le bandeau « caisse
+         fermée » le matin (partie 1.4). Pas de « Obtenir des codes QR » :
+         moins de boutons sur l'écran de repos (partie 1.1 A). -->
+    <t t-name="aite_pos_restaurant.FloorScreen" t-inherit="pos_restaurant.FloorScreen" t-inherit-mode="extension">
+        <!-- Marque du mode sur le plan : la feuille de style y masque le
+             bouton « Obtenir des codes QR » de pos_self_order (installé
+             d'office avec le restaurant, sans être une dépendance). -->
+        <xpath expr="//div[hasclass('floor-screen')]" position="attributes">
+            <attribute name="t-att-class">{'aite-mode': pos.aiteActif}</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('floor-selector')]/.." position="after">
+            <t t-if="pos.aiteActif">
+                <div t-if="aiteCaisseFermee"
+                     class="aite-caisse-fermee alert alert-warning d-flex flex-wrap align-items-center justify-content-between gap-2 m-2 mb-0 fs-5">
+                    <span t-esc="aiteTextes.caisseFermee"/>
+                    <button class="btn btn-primary btn-lg aite-ouvrir-caisse"
+                            t-on-click="() => this.aiteOuvrirLaCaisse()" t-esc="aiteTextes.ouvrirLaCaisse"/>
+                </div>
+                <div t-else="" class="aite-plan-etat px-3 py-2 fs-5 border-bottom bg-light"
+                     t-esc="aiteTextes.planEtat"/>
+            </t>
+        </xpath>
+    </t>
+
+</templates>

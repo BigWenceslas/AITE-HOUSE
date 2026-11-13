@@ -11,8 +11,10 @@ function verifierMode(attendu) {
             trigger: ".pos",
         },
         {
+            // body : en mode, la fenêtre du code d'ouverture couvre la caisse
+            // (incrément 2) ; une étape ne peut agir sous une fenêtre.
             content: `le mode « Service à table contrôlé » vaut ${attendu}`,
-            trigger: ".pos",
+            trigger: "body",
             run: () => {
                 if (posmodel.aiteActif !== attendu) {
                     throw new Error(

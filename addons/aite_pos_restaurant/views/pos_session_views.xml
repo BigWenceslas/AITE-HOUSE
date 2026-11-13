@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Fiche de session : qui a ouvert et qui a fermé la caisse, d'après le
+         code vérifié par le serveur (spécification, parties 3.1 et 5.1).
+         Vides pour une caisse hors service à table contrôlé. -->
+    <record id="view_pos_session_form_aite_restaurant" model="ir.ui.view">
+        <field name="name">pos.session.form.aite.restaurant</field>
+        <field name="model">pos.session</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_session_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='stop_at']" position="after">
+                <field name="aite_ouverte_par_id" invisible="not aite_ouverte_par_id"
+                       options="{'no_open': True}"/>
+                <field name="aite_fermee_par_id" invisible="not aite_fermee_par_id"
+                       options="{'no_open': True}"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -96,3 +96,62 @@ class TestChargement(RestaurantCommon):
         self.assertNotIn('_aite_niveau', employes["Awa"])
         self.assertTrue(employes["Awa"]['_barcode'], "le badge reste lu hors mode")
         self.assertNotIn('_aite_droits', donnees['pos.session']['data'][0])
+
+
+@tagged('post_install', '-at_install', 'aite_pos_restaurant')
+class TestModesReserves(RestaurantCommon):
+    """AH-02 (incrément 2) : les modes « payer plus tard » sont réservés au
+    manager en caisse. ``is_room_charge`` (note de chambre d'
+    ``aite_hotel_pos_link``) n'étant pas chargé en caisse, c'est le serveur
+    qui marque chaque mode (``_aite_reserve_manager``)."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        Methode = cls.env['pos.payment.method']
+        cls.ardoise = Methode.create({'name': "Ardoise client", 'company_id': cls.company.id})
+        cls.methodes = cls.ardoise
+        cls.note_de_chambre = Methode
+        if 'is_room_charge' in Methode._fields:
+            cls.note_de_chambre = Methode.create({
+                'name': "Note de chambre", 'is_room_charge': True,
+                'company_id': cls.company.id})
+            cls.methodes |= cls.note_de_chambre
+        cls.config.payment_method_ids = [(4, m.id) for m in cls.methodes]
+
+    def _modes(self, config=None):
+        config = config or self.config
+        config.open_ui()
+        donnees = config.current_session_id.with_user(self.compte_caisse).load_data(
+            ['pos.config', 'pos.payment.method'])
+        return {m['id']: m for m in donnees['pos.payment.method']['data']}
+
+    def test_l_ardoise_est_reservee_au_manager(self):
+        self.assertEqual(self.ardoise.type, 'pay_later')
+        modes = self._modes()
+        self.assertIs(modes[self.ardoise.id]['_aite_reserve_manager'], True)
+
+    def test_seuls_les_modes_payer_plus_tard_sont_reserves(self):
+        """Espèces, banque : proposés à toute personne qui encaisse ; tout
+        mode « payer plus tard » (ici aussi « Pay Later » de la caisse de
+        test d'Odoo) : réservé, sauf la note de chambre."""
+        modes = self._modes()
+        reserves = self.config.payment_method_ids.filtered(
+            lambda m: m.type == 'pay_later') - self.note_de_chambre
+        self.assertIn(self.ardoise, reserves)
+        self.assertTrue(self.config.payment_method_ids - reserves - self.note_de_chambre)
+        for methode in self.config.payment_method_ids:
+            with self.subTest(mode=methode.name):
+                self.assertIs(modes[methode.id]['_aite_reserve_manager'],
+                              methode in reserves)
+
+    def test_la_note_de_chambre_reste_proposee(self):
+        if not self.note_de_chambre:
+            self.skipTest("aite_hotel_pos_link n'est pas installé")
+        modes = self._modes()
+        self.assertIs(modes[self.note_de_chambre.id]['_aite_reserve_manager'], False)
+
+    def test_hors_mode_aucune_marque(self):
+        self.config.aite_mode_restaurant = False
+        modes = self._modes()
+        self.assertNotIn('_aite_reserve_manager', modes[self.ardoise.id])

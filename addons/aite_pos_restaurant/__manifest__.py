@@ -24,9 +24,27 @@ Incrément 1 du lot 1 (spécification « Restaurant, lot 1 », partie 7) :
 * les messages de la caisse (ouverture, espèces) ne demandent plus de
   courriel aux employés.
 
+Incrément 2 (le code et le plan verrouillé ; les gestes réservés) :
+
+* le plan de salle est l'écran de repos de chaque poste, toujours
+  verrouillé : toucher une table demande le code à 4 chiffres (validé seul au
+  quatrième chiffre), et tout retour au plan fait oublier l'employé (après
+  « J'envoie », après l'encaissement, après 5 minutes sans toucher l'écran) ;
+  plus d'écran « Déverrouiller la caisse » ni d'écran de veille ;
+* ouvrir et fermer la caisse : le code d'une caissière (ouverture) ou d'un
+  chef de salle (fermeture), vérifié par le serveur ; « Caisse ouverte par »
+  et « Caisse fermée par » sur la fiche de session, écrits à l'ouverture et à
+  la fermeture effectives ; un poste resté sur la caisse fermée n'est pas
+  refusé quand un autre poste l'a ouverte ;
+* encaisser (caissière et au-dessus ; le code est demandé sur « J'encaisse »),
+  sortir ou entrer des espèces (chef de salle), imprimer le rapport
+  (caissière), rembourser et mettre sur ardoise (manager) ;
+* « J'envoie », « J'encaisse », « J'ouvre la caisse », « Entrée ou sortie
+  d'espèces », « Retour » ; pas de « + » (vente sans table) sur la caisse.
+
 Aucune dépendance au socle hôtelier.
 """,
-    'version': '18.0.1.0.0',
+    'version': '18.0.1.0.1',
     'author': "AITE Consulting",
     'website': "https://aiteconsulting.com",
     'category': 'Point of Sale',
@@ -35,6 +53,7 @@ Aucune dépendance au socle hôtelier.
     'data': [
         'views/hr_employee_views.xml',
         'views/res_config_settings_views.xml',
+        'views/pos_session_views.xml',
     ],
     'assets': {
         'point_of_sale._assets_pos': ['aite_pos_restaurant/static/src/**/*'],

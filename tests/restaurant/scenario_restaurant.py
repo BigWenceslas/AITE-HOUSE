@@ -15,6 +15,10 @@ caisse. Tout est annulé à la fin (rollback).
 Il sert de spécification : chaque incrément y ajoute ses vérifications
 (spécification, partie 6.5). Incrément 1 : installation, comptes, équipe,
 réglage de la case, messages sans courriel, ardoise réglée (AH-01).
+Incrément 2 : ouverture et fermeture par code vérifié par le serveur (« ouverte
+par » et « fermée par » écrits à l'ouverture et à la fermeture effectives, un
+second poste resté sur la caisse fermée n'est pas refusé), espèces réservées au
+chef de salle, modes « payer plus tard » réservés au manager (AH-02).
 """
 import contextlib
 import sys
@@ -23,7 +27,7 @@ from uuid import uuid4
 from lxml import etree
 
 from odoo import fields
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tests import Form
 
 ok_count = 0
@@ -46,6 +50,16 @@ def refus(fonction):
         with env.cr.savepoint():
             fonction()
     except ValidationError as erreur:
+        return erreur.args[0]
+    return None
+
+
+def refus_utilisateur(fonction):
+    """Le message d'un refus de la caisse (UserError), ou None."""
+    try:
+        with env.cr.savepoint():
+            fonction()
+    except UserError as erreur:
         return erreur.args[0]
     return None
 
@@ -258,16 +272,44 @@ check("seule Fanta (manager) a le rôle manager d'Odoo",
 check("la caisse reçoit le tableau des droits",
       donnees['pos.session']['data'][0].get('_aite_droits', {}).get('encaisser') == 'caissiere')
 
-print("\n═══ 6. La caissière ouvre la caisse, sans courriel (incrément 1) ═══")
-session.employee_id = carine  # ce que pos_hr écrit quand Carine tape son code
+print("\n═══ 6. La caissière ouvre la caisse, sans courriel (incréments 1 et 2) ═══")
+# La caisse demande un code ; le serveur le vérifie (aite_ouvrir_caisse).
+R3 = ("La caisse n'est pas encore ouverte. La caissière ou un chef de salle "
+      "doit l'ouvrir avec son code.")
+poste = session.with_user(caisse)
+reponse = poste.aite_ouvrir_caisse(awa.pin)
+check("Awa (serveuse) tape son code pour ouvrir : refusé (R3)",
+      reponse == {'erreur': R3}, reponse)
+message = refus_utilisateur(lambda: poste.set_opening_control(0, None))
+check("ouvrir sans code (contrôle d'ouverture d'Odoo seul) : refusé (R3)",
+      message == R3, message)
+check("la caisse n'est toujours pas ouverte", session.state == 'opening_control',
+      session.state)
+session.employee_id = awa  # ce qu'un autre poste écrit quand Awa tape son code
+reponse = poste.aite_ouvrir_caisse('3333')
+check("Carine tape son code pour ouvrir : accepté", reponse.get('id') == carine.id, reponse)
+check("tant que le fond de caisse n'est pas validé, personne n'a « ouvert » la caisse",
+      not session.aite_ouverte_par_id and not session.message_ids.filtered(
+          lambda m: "Caisse ouverte par" in (m.body or '')), session.aite_ouverte_par_id.name)
 try:
     with env.cr.savepoint():
-        session.with_user(caisse).set_opening_control(0, None)
+        session.employee_id = carine  # ce que pos_hr écrit sur ce poste
+        poste.set_opening_control(0, None)
     erreur = None
 except Exception as exc:  # noqa: BLE001 — l'erreur est le constat
     erreur = exc
-check("la caisse s'ouvre alors que Carine n'a pas de courriel", erreur is None, erreur)
+check("le fond de caisse validé : la caisse s'ouvre, sans courriel", erreur is None, erreur)
 check("la session est ouverte", session.state == 'opened', session.state)
+check("« Caisse ouverte par » : Carine, vérifiée par le serveur",
+      session.aite_ouverte_par_id == carine, session.aite_ouverte_par_id.name)
+check("l'historique de la session dit « Caisse ouverte par Carine »",
+      bool(session.message_ids.filtered(
+          lambda m: "Caisse ouverte par Carine" in (m.body or ''))))
+reponse = poste.aite_ouvrir_caisse(awa.pin)
+check("un second poste, resté sur la caisse fermée : Awa tape son code, la caisse "
+      "lui répond qu'elle est déjà ouverte (pas R3)", reponse == {'deja_ouverte': True}, reponse)
+check("« Caisse ouverte par » reste Carine", session.aite_ouverte_par_id == carine,
+      session.aite_ouverte_par_id.name)
 
 print("\n═══ 7. Paul sort des espèces, sans courriel (incrément 1) ═══")
 try:
@@ -286,6 +328,22 @@ check("l'historique de la session dit « Tiroir-caisse ouvert », signé Paul",
       bool(session.message_ids.filtered(
           lambda m: m.author_id == paul.work_contact_id
           and "Tiroir-caisse ouvert" in (m.body or ''))))
+R15 = "Seul un chef de salle ou le manager peut sortir ou entrer des espèces."
+for qui in (awa, carine):
+    message = refus_utilisateur(lambda: poste.try_cash_in_out(
+        'out', 1000, "Monnaie", {'translatedType': 'out', 'employee_id': qui.id}))
+    check("%s sort des espèces : refusé (R15)" % qui.name, message == R15, message)
+check("toujours une seule sortie d'espèces", len(session.statement_line_ids) == 1)
+
+print("\n═══ 7 bis. Ce que la caisse sait des modes de paiement (AH-02, incrément 2) ═══")
+modes = session.with_user(caisse).load_data(['pos.config', 'pos.payment.method'])
+marques = {m['name']: m.get('_aite_reserve_manager') for m in modes['pos.payment.method']['data']
+           if m['id'] in restaurant.payment_method_ids.ids}
+check("Espèces et Mobile Money : proposés à toute personne qui encaisse",
+      marques.get("Espèces") is False and marques.get("Mobile Money") is False, marques)
+if ardoise:
+    check("« Ardoise client » : réservé au manager en caisse",
+          marques.get(ardoise.name) is True, marques)
 
 if ardoise:
     print("\n═══ 8. Ardoise sur une table encore ouverte (AH-01, incrément 1) ═══")
@@ -333,6 +391,37 @@ if ardoise:
           table.state == 'paid' and Ardoises.search([('order_id', '=', table.id)]).amount_total == 2000)
 else:
     print("\n(aite_pos_credit absent : vérifications de l'ardoise sautées)")
+
+print("\n═══ 9. Fermeture de la caisse par code (incrément 2) ═══")
+R13 = "Seul un chef de salle ou le manager ferme la caisse."
+message = refus_utilisateur(lambda: poste.post_closing_cash_details(0))
+check("fermer sans code (fenêtre de fermeture d'Odoo seule) : refusé (R13)",
+      message == R13, message)
+check("la session reste ouverte", session.state == 'opened', session.state)
+reponse = poste.aite_fermer_caisse('3333')
+check("Carine (caissière) tape son code pour fermer : refusé (R13)",
+      reponse == {'erreur': R13}, reponse)
+session.employee_id = awa  # un autre poste : Awa vient de taper son code
+reponse = poste.aite_fermer_caisse(paul.pin)
+check("Paul (chef de salle) tape son code : accepté", reponse.get('id') == paul.id, reponse)
+check("tant que la caisse n'est pas fermée, elle n'est pas « fermée par Paul »",
+      not session.aite_fermee_par_id and not session.message_ids.filtered(
+          lambda m: "Caisse fermée par" in (m.body or '')), session.aite_fermee_par_id.name)
+try:
+    with env.cr.savepoint():
+        resultat = poste.post_closing_cash_details(session.cash_register_balance_end)
+        poste.update_closing_control_state_session("Fin du service")
+        resultat = poste.close_session_from_ui()
+    erreur = None if resultat.get('successful') else resultat
+except Exception as exc:  # noqa: BLE001
+    erreur = exc
+check("la caisse se ferme alors que le dernier code tapé ailleurs est celui d'Awa",
+      erreur is None and session.state == 'closed', erreur or session.state)
+check("« Caisse fermée par » : Paul", session.aite_fermee_par_id == paul,
+      session.aite_fermee_par_id.name)
+check("l'historique de la session dit une fois « Caisse fermée par Paul »",
+      len(session.message_ids.filtered(
+          lambda m: "Caisse fermée par Paul" in (m.body or ''))) == 1)
 
 env.cr.rollback()
 print("\n══════════════════════════════════════")

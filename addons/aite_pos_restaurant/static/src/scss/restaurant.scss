@@ -1,0 +1,41 @@
+// Caisse du restaurant AITE : la fenêtre du code et le plan verrouillé
+// (spécification, partie 1.1). Gros boutons pour la tablette.
+
+.aite-code-popup {
+    .aite-code-titre {
+        font-weight: 600;
+    }
+    .aite-code-pave {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+    }
+    .aite-touche {
+        min-height: 4.5rem;
+        font-size: 1.75rem;
+        font-weight: 600;
+    }
+    .aite-code-retour {
+        font-size: 1.15rem;
+    }
+    .aite-point {
+        display: inline-block;
+        width: 1.2rem;
+        height: 1.2rem;
+        border-radius: 50%;
+        border: 2px solid var(--bs-gray-600, #6c757d);
+    }
+    .aite-point-plein {
+        background-color: var(--bs-gray-800, #343a40);
+        border-color: var(--bs-gray-800, #343a40);
+    }
+}
+
+.floor-screen {
+    .aite-plan-etat {
+        font-weight: 500;
+    }
+    &.aite-mode .qr-order-button {
+        display: none !important;
+    }
+}

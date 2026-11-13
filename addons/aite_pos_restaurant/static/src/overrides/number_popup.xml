@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- « Discard » est écrit en littéral dans le gabarit d'Odoo : jamais
+         traduit (règle 6 de CLAUDE.md). Il devient « Retour » dans toutes les
+         fenêtres numériques. Le sélecteur de table du restaurant hérite de
+         ce gabarit en mode « primary » : il reçoit les extensions déclarées
+         avant lui, pas la nôtre (chargée après pos_restaurant) ; il a donc sa
+         propre extension, sur le même bouton. Le bouton est visé par sa
+         place (le bouton « cancel » du pied de la fenêtre), pas par son
+         texte. -->
+    <t t-name="aite_pos_restaurant.NumberPopup" t-inherit="point_of_sale.NumberPopup" t-inherit-mode="extension">
+        <xpath expr="//t[@t-set-slot='footer']//button[@t-on-click='cancel']/t" position="attributes">
+            <attribute name="t-esc">'Retour'</attribute>
+        </xpath>
+    </t>
+
+    <t t-name="aite_pos_restaurant.TableSelector" t-inherit="pos_restaurant.TableSelector" t-inherit-mode="extension">
+        <xpath expr="//t[@t-set-slot='footer']//button[@t-on-click='cancel']/t" position="attributes">
+            <attribute name="t-esc">'Retour'</attribute>
+        </xpath>
+    </t>
+
+</templates>

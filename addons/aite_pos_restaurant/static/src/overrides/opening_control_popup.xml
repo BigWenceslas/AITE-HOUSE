@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- « Open Register » devient « J'ouvre la caisse » en mode (partie 1.4) ;
+         hors mode, le libellé d'Odoo (traduit) reste : il est le contenu par
+         défaut de t-out. -->
+    <t t-name="aite_pos_restaurant.OpeningControlPopup" t-inherit="point_of_sale.OpeningControlPopup" t-inherit-mode="extension">
+        <xpath expr="//t[@t-set-slot='footer']/button[hasclass('btn-primary')]" position="attributes">
+            <attribute name="t-out">pos.aiteActif ? "J'ouvre la caisse" : undefined</attribute>
+        </xpath>
+    </t>
+
+</templates>

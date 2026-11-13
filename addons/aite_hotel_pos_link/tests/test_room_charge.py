@@ -422,6 +422,53 @@ class TestRoomCharge(RoomChargeCommon):
             self.assertEqual([o['id'] for o in data['pos.order']], order.ids)
             self.assertNotIn('aite_folio_line_ids', data['pos.order'][0])
 
+    def _ui_draft_order(self, uuid, qty, user):
+        """Une addition « en cours » telle que la caisse l'envoie : la caisse
+        renvoie tous les champs du ticket qu'elle a chargés, liens hôtel
+        compris (valeurs vides : leur modèle n'est pas chargé en caisse)."""
+        return {
+            'uuid': uuid,
+            'name': "Commande %s" % uuid,
+            'session_id': self.session.id,
+            'company_id': self.company.id,
+            'user_id': user.id,
+            'partner_id': False,
+            'state': 'draft',
+            'amount_tax': 0.0,
+            'amount_total': 12000.0 * qty,
+            'amount_paid': 0.0,
+            'amount_return': 0.0,
+            'lines': [(0, 0, {
+                'product_id': self.drink.id,
+                'qty': qty,
+                'price_unit': 12000.0,
+                'price_subtotal': 12000.0 * qty,
+                'price_subtotal_incl': 12000.0 * qty,
+                'tax_ids': [],
+            })],
+            'payment_ids': [],
+            'aite_folio_line_ids': [],
+            'aite_folio_line_id': False,
+            'aite_roomcharge_pending_id': False,
+        }
+
+    def test_cashier_without_hotel_profile_saves_an_open_order_twice(self):
+        """Restaurant (et toute caisse qui partage ses commandes) : une
+        addition ouverte est enregistrée plusieurs fois avant d'être réglée.
+        La caisse renvoie alors ``aite_folio_line_ids``, réservé au profil
+        Réception : le second enregistrement échouait (« Access Denied …
+        write … aite_folio_line_ids ») et bloquait les synchronisations
+        suivantes du poste, paiement compris."""
+        cashier = self._cashier()
+        Order = self.env(user=cashier)['pos.order']
+        Order.sync_from_ui([self._ui_draft_order('aite-resto-1', 1, cashier)])
+        order = self.env['pos.order'].search([('uuid', '=', 'aite-resto-1')])
+        self.assertEqual(order.state, 'draft')
+        update = self._ui_draft_order('aite-resto-1', 2, cashier)
+        update['lines'] = [(1, order.lines.id, {'qty': 2})]
+        Order.sync_from_ui([update])
+        self.assertEqual(order.lines.qty, 2)
+
     def test_cashier_without_hotel_profile_feeds_the_queue(self):
         """Ticket anonyme d'un caissier pur : il entre dans la file."""
         cashier = self._cashier()

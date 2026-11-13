@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- Barre de la caisse en mode (partie 1.1 A) :
+         - pas de nom d'employé tant que personne n'est identifié ;
+         - pas de cadenas (le plan est toujours verrouillé) ;
+         - « Fermer la caisse » toujours dans le menu (pos_hr le réserve au
+           rôle manager ; le contrôle est fait dans closeSession, code vérifié
+           par le serveur) ; visé par son texte comme le fait pos_hr
+           (exception de la partie 2.4) ;
+         - « Installer l'application » et « Changer de vue de salle » masqués ;
+         - « Cash In/Out » devient « Entrée ou sortie d'espèces » (partie 1.1 A),
+           comme le titre de la fenêtre du code de ce geste.
+         Les conditions sont ajoutées à celles d'Odoo (add, separator) ; les
+         entrées sont visées par leur action, pas par leur texte, sauf « Close
+         Register » (comme pos_hr). -->
+    <t t-name="aite_pos_restaurant.Navbar" t-inherit="point_of_sale.Navbar" t-inherit-mode="extension">
+        <xpath expr="//CashierName" position="attributes">
+            <attribute name="t-if" add="(!pos.aiteActif or pos.cashier)" separator=" and "/>
+        </xpath>
+        <xpath expr="//button[hasclass('lock-screen')]" position="attributes">
+            <attribute name="t-if" add="!pos.aiteActif" separator=" and "/>
+        </xpath>
+        <xpath expr="//DropdownItem[@onSelected='() => this.pos.showLoginScreen()']" position="attributes">
+            <attribute name="t-if" add="!pos.aiteActif" separator=" and "/>
+        </xpath>
+        <xpath expr="//DropdownItem[contains(text(), 'Close Register')]" position="attributes">
+            <attribute name="t-if" add="pos.aiteActif" separator=" or "/>
+        </xpath>
+        <xpath expr="//DropdownItem[@t-if='!isDisplayStandalone']" position="attributes">
+            <attribute name="t-if" add="!pos.aiteActif" separator=" and "/>
+        </xpath>
+        <xpath expr="//DropdownItem[@onSelected='() => this.onSwitchButtonClick()']" position="attributes">
+            <attribute name="t-if" add="!pos.aiteActif" separator=" and "/>
+        </xpath>
+        <xpath expr="//DropdownItem[@onSelected='() => this.pos.cashMove()']" position="attributes">
+            <attribute name="t-if" add="!pos.aiteActif" separator=" and "/>
+        </xpath>
+        <xpath expr="//DropdownItem[@onSelected='() => this.pos.cashMove()']" position="after">
+            <DropdownItem t-if="showCashMoveButton and pos.aiteActif" onSelected="() => this.pos.cashMove()">
+                Entrée ou sortie d'espèces
+            </DropdownItem>
+        </xpath>
+    </t>
+
+</templates>

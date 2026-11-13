@@ -75,12 +75,18 @@ class RestaurantCommon(TestPoSCommon):
     # Aides
     # ------------------------------------------------------------------
 
-    def _ouvrir_session(self, config=None):
-        """Session ouverte comme le fait la caisse (contrôle d'ouverture)."""
+    def _ouvrir_session(self, config=None, code='3333'):
+        """Session ouverte comme le fait la caisse : en mode, le code d'une
+        personne qui peut ouvrir (Carine par défaut) est vérifié par le
+        serveur (``aite_ouvrir_caisse``), puis le contrôle d'ouverture
+        d'Odoo est validé (incrément 2)."""
         config = config or self.config
         config.open_ui()
         session = config.current_session_id
-        session.with_user(self.compte_caisse).set_opening_control(0, None)
+        caisse = session.with_user(self.compte_caisse)
+        if config._aite_actif():
+            self.assertNotIn('erreur', caisse.aite_ouvrir_caisse(code))
+        caisse.set_opening_control(0, None)
         return session
 
     def _charger_caisse(self, config=None, user=None):

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- « Order » devient « J'envoie », « Payment » devient « J'encaisse »
+         (partie 1.4). Le libellé « Order » est un <t> sans classe : il est
+         visé par sa position sous button.submit-order (exception de la
+         partie 2.4). Hors mode, les libellés d'Odoo restent (contenu par
+         défaut de t-out pour « Payment »). -->
+    <t t-name="aite_pos_restaurant.ActionpadWidget" t-inherit="point_of_sale.ActionpadWidget" t-inherit-mode="extension">
+        <xpath expr="//button[hasclass('submit-order')]/t[1]" position="attributes">
+            <attribute name="t-if">!pos.aiteActif and (!(ui.isSmall or displayCategoryCount.length > 2) or (!displayCategoryCount.length and ui.isSmall))</attribute>
+        </xpath>
+        <xpath expr="//button[hasclass('submit-order')]/t[1]" position="before">
+            <t t-if="pos.aiteActif and (!(ui.isSmall or displayCategoryCount.length > 2) or (!displayCategoryCount.length and ui.isSmall))">J'envoie</t>
+        </xpath>
+        <xpath expr="//div[hasclass('validation')]/div//button[hasclass('pay-order-button')]" position="attributes">
+            <attribute name="t-out">pos.aiteActif ? "J'encaisse" : undefined</attribute>
+        </xpath>
+    </t>
+
+</templates>
