@@ -4,10 +4,23 @@ from datetime import datetime, timedelta
 import pytz
 
 from odoo import api, fields, models
+from odoo.exceptions import ValidationError
 from odoo.addons.base.models.res_partner import _tz_get
 
 from .crm_activity_digest import DEFAULT_TZ, DEFAULT_UPCOMING_DAYS, PARAM_TZ, PARAM_UPCOMING_DAYS
+from .crm_activity_params import (
+    DEFAULT_CRITICAL_DAYS, DEFAULT_DASHBOARD_UPCOMING_DAYS, DEFAULT_DORMANT_DAYS, DEFAULT_HIGH_DAYS,
+    MAX_DAYS, PARAM_CRITICAL_DAYS, PARAM_DASHBOARD_UPCOMING_DAYS, PARAM_DORMANT_DAYS, PARAM_HIGH_DAYS,
+)
 from .ir_cron import DIGEST_CRON_XMLID
+
+# Réglages du tableau de bord et des seuils, validés à l'enregistrement.
+ACTIVITY_DAY_FIELDS = (
+    'aite_crm_dashboard_upcoming_days',
+    'aite_crm_late_high_days',
+    'aite_crm_late_critical_days',
+    'aite_crm_dormant_days',
+)
 
 
 class ResConfigSettings(models.TransientModel):
@@ -38,6 +51,35 @@ class ResConfigSettings(models.TransientModel):
         help="Nombre de jours à venir inclus dans le récapitulatif, en plus "
              "des activités en retard et du jour.",
     )
+    aite_crm_dashboard_upcoming_days = fields.Integer(
+        string="Tableau de bord : activités à venir (jours)",
+        config_parameter=PARAM_DASHBOARD_UPCOMING_DAYS,
+        default=DEFAULT_DASHBOARD_UPCOMING_DAYS,
+        help="Fenêtre « À venir » du tableau de bord : de demain à aujourd'hui "
+             "plus ce nombre de jours. Le plan de charge en montre au plus 14.",
+    )
+    aite_crm_late_high_days = fields.Integer(
+        string="Retard élevé à partir de (jours)",
+        config_parameter=PARAM_HIGH_DAYS,
+        default=DEFAULT_HIGH_DAYS,
+        help="Une activité en retard d'au moins ce nombre de jours est signalée "
+             "« élevé » (orange).",
+    )
+    aite_crm_late_critical_days = fields.Integer(
+        string="Retard critique à partir de (jours)",
+        config_parameter=PARAM_CRITICAL_DAYS,
+        default=DEFAULT_CRITICAL_DAYS,
+        help="Une activité en retard d'au moins ce nombre de jours est signalée "
+             "« critique » (rouge) et déclenche une alerte sur le tableau de bord.",
+    )
+    aite_crm_dormant_days = fields.Integer(
+        string="Opportunité dormante après (jours)",
+        config_parameter=PARAM_DORMANT_DAYS,
+        default=DEFAULT_DORMANT_DAYS,
+        help="Une opportunité sans activité planifiée dont la dernière action "
+             "(activité réalisée ou changement d'étape) date d'au moins ce nombre "
+             "de jours est dite « dormante ».",
+    )
 
     @api.model
     def _aite_digest_cron(self):
@@ -60,7 +102,28 @@ class ResConfigSettings(models.TransientModel):
             )
         return res
 
+    def _aite_check_activity_days(self):
+        """ Contrôle serveur des fenêtres et seuils : chaque valeur de 1 à 365
+        jours, et le retard élevé strictement inférieur au retard critique. """
+        for record in self:
+            for fname in ACTIVITY_DAY_FIELDS:
+                value = record[fname]
+                if not 1 <= value <= MAX_DAYS:
+                    raise ValidationError(self.env._(
+                        "« %(setting)s » : saisissez un nombre de jours entre 1 et %(max)s "
+                        "(valeur saisie : %(value)s).",
+                        setting=record._fields[fname]._description_string(self.env),
+                        max=MAX_DAYS, value=value))
+            if record.aite_crm_late_high_days >= record.aite_crm_late_critical_days:
+                raise ValidationError(self.env._(
+                    "Le retard élevé (%(high)s j) doit commencer avant le retard critique "
+                    "(%(critical)s j).",
+                    high=record.aite_crm_late_high_days,
+                    critical=record.aite_crm_late_critical_days))
+
     def set_values(self):
+        # Rien n'est enregistré si un seuil est incohérent.
+        self._aite_check_activity_days()
         # Le fuseau (paramètre système) est enregistré par super() : l'heure
         # ci-dessous est ensuite interprétée dans ce fuseau.
         super().set_values()

@@ -38,6 +38,33 @@
                             </div>
                         </div>
                     </setting>
+                    <setting id="aite_crm_dashboard_thresholds_setting"
+                             string="Tableau de bord et seuils de retard"
+                             help="Fenêtre « À venir » du tableau de bord, gravité des retards et délai après lequel une opportunité sans action est dite dormante.">
+                        <div class="content-group">
+                            <div class="row mt16">
+                                <label for="aite_crm_dashboard_upcoming_days" class="col-lg-7 o_light_label"/>
+                                <field name="aite_crm_dashboard_upcoming_days" class="w-auto"/>
+                            </div>
+                            <div class="row">
+                                <label for="aite_crm_late_high_days" class="col-lg-7 o_light_label"/>
+                                <field name="aite_crm_late_high_days" class="w-auto"/>
+                            </div>
+                            <div class="row">
+                                <label for="aite_crm_late_critical_days" class="col-lg-7 o_light_label"/>
+                                <field name="aite_crm_late_critical_days" class="w-auto"/>
+                            </div>
+                            <div class="row">
+                                <label for="aite_crm_dormant_days" class="col-lg-7 o_light_label"/>
+                                <field name="aite_crm_dormant_days" class="w-auto"/>
+                            </div>
+                            <div class="mt8 text-muted small">
+                                De 1 à 365 jours ; le retard élevé doit commencer avant le retard critique.
+                                Une opportunité est dormante quand sa dernière action (activité réalisée
+                                ou changement d'étape) est plus ancienne que ce délai.
+                            </div>
+                        </div>
+                    </setting>
                 </block>
             </xpath>
         </field>
