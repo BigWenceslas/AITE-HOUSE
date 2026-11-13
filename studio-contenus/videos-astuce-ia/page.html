@@ -75,6 +75,8 @@ function curseur(cur,onde,t,a,b,t0,dur,tc){const p=eio((t-t0)/dur);const x=lerp(
 // caméra : interpolation entre deux cadrages {s,x,y} (x,y = point visé, en coordonnées de la scène)
 function camera(cam,a,b,p){const s=lerp(a.s,b.s,p),x=lerp(a.x,b.x,p),y=lerp(a.y,b.y,p);cam.style.transform=`translate(${540-x*s}px,${670-y*s}px) scale(${s})`}
 const C0={s:1,x:540,y:670};
+// centre d'un élément, en coordonnées de la caméra (les décalages ignorent les transformations)
+function ctr(e,cam){let x=0,y=0,n=e;while(n&&n!==cam){x+=n.offsetLeft;y+=n.offsetTop;n=n.offsetParent}return [x+e.offsetWidth/2-6,y+e.offsetHeight/2-4]}
 const B={};
 // ------------------------------------------------------------- ouverture
 B.titre=(s,deb)=>{const el=h(`<div class="scene"><div class="vue"><div class="cam">
@@ -204,10 +206,10 @@ B.renomme=(s)=>{const el=h(`<div class="scene"><div class="vue"><div class="cam"
  <div class="d2" style="position:absolute;right:-200px;top:930px;width:400px;height:400px;border-radius:50%;background:var(--o)"></div>
  <div style="position:absolute;left:0;right:0;top:330px;text-align:center"><div class="a" style="display:inline-block;position:relative;font-family:SG;font-size:76px;color:var(--g)"></div><div class="barre" style="height:8px;background:var(--o);width:0;margin:-50px auto 0;position:relative"></div></div>
  <div style="position:absolute;left:0;right:0;top:600px;text-align:center"><div class="b" style="font-family:SG;font-size:110px;color:var(--vn);letter-spacing:-1px"></div>
- <div class="c" style="font-size:38px;color:var(--g);margin-top:30px">Nouveau nom depuis juillet 2026,<br>même outil de Google</div></div></div></div>`);
- const la=lettres(el.querySelector('.a'),'NotebookLM'),lb=lettres(el.querySelector('.b'),'Gemini Notebook'),barre=el.querySelector('.barre'),c=el.querySelector('.c'),d1=el.querySelector('.d1'),d2=el.querySelector('.d2');
+ <div class="c" style="font-size:38px;color:var(--g);margin-top:30px">${s.note||'Nouveau nom depuis juillet 2026,<br>même outil de Google'}</div></div></div></div>`);
+ const la=lettres(el.querySelector('.a'),s.ancien||'NotebookLM'),lb=lettres(el.querySelector('.b'),s.nouveau||'Gemini Notebook'),barre=el.querySelector('.barre'),c=el.querySelector('.c'),d1=el.querySelector('.d1'),d2=el.querySelector('.d2');
  ev(1.1,'souffle');ev(1.5,'pop');
- return {el,u(t){revelerLettres(la,t,0,.04);barre.style.width=(eio((t-.8)/.5)*440)+'px';revelerLettres(lb,t,1.4,.05);c.style.opacity=ap(t,2.4);
+ return {el,u(t){revelerLettres(la,t,0,.04);barre.style.width=(eio((t-.8)/.5)*(el.querySelector('.a').offsetWidth+30))+'px';revelerLettres(lb,t,1.4,.05);c.style.opacity=ap(t,2.4);
   d1.style.transform=`translateX(${bp(t,.1,.8)*140}px) rotate(${t*20}deg)`;d2.style.transform=`translateX(${-bp(t,.3,.8)*140}px)`}}};
 // ----------------------------------------------------------- notebook
 const SRC=[['PDF','#D93F3F','Appel_offres_DAO.pdf'],['DOC','#4A7CF7','Cahier des charges (Google Docs)'],['WEB','#3E9B5A','Page web du maître d’ouvrage']];
@@ -250,9 +252,9 @@ B.notebook=(s)=>{const el=h(`<div class="scene"><div class="vue"><div class="cam
 B.alerte=(s)=>{const el=h(`<div class="scene"><div class="vue"><div class="cam">
  <div class="cad" style="position:absolute;left:390px;top:120px;width:300px;height:300px;border-radius:50%;background:var(--v);display:flex;align-items:center;justify-content:center"><svg width="150" height="150" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
  <div class="grand t" style="position:absolute;left:0;right:0;top:500px;text-align:center;font-size:84px"></div>
- <div class="l1 carte" style="position:absolute;left:80px;right:80px;top:740px;padding:34px 40px;font-size:44px;display:flex;gap:22px;align-items:center"><span style="width:64px;height:64px;border-radius:50%;background:#3E9B5A;color:#fff;display:flex;align-items:center;justify-content:center">✓</span>Le compte <b style="color:var(--v)">&nbsp;professionnel</b></div>
- <div class="l2 carte" style="position:absolute;left:80px;right:80px;top:900px;padding:34px 40px;font-size:44px;display:flex;gap:22px;align-items:center;color:#B3261E"><span style="width:64px;height:64px;border-radius:50%;background:#B3261E;color:#fff;display:flex;align-items:center;justify-content:center">✗</span>Jamais un compte personnel</div></div></div>`);
- const cad=el.querySelector('.cad'),mots=motsMasques(el.querySelector('.t'),'Document *confidentiel* ?'.replace(/\*(.+?)\*/g,'<span class="r">$1</span>')),l1=el.querySelector('.l1'),l2=el.querySelector('.l2');
+ <div class="l1 carte" style="position:absolute;left:80px;right:80px;top:740px;padding:34px 40px;font-size:44px;display:flex;gap:22px;align-items:center"><span style="width:64px;height:64px;border-radius:50%;background:#3E9B5A;color:#fff;display:flex;align-items:center;justify-content:center">✓</span>${s.ok||'Le compte <b style="color:var(--v)">&nbsp;professionnel</b>'}</div>
+ <div class="l2 carte" style="position:absolute;left:80px;right:80px;top:900px;padding:34px 40px;font-size:44px;display:flex;gap:22px;align-items:center;color:#B3261E"><span style="width:64px;height:64px;border-radius:50%;background:#B3261E;color:#fff;display:flex;align-items:center;justify-content:center">✗</span>${s.non||'Jamais un compte personnel'}</div></div></div>`);
+ const cad=el.querySelector('.cad'),mots=motsMasques(el.querySelector('.t'),(s.titre||'Document *confidentiel* ?').replace(/\*(.+?)\*/g,'<span class="r">$1</span>')),l1=el.querySelector('.l1'),l2=el.querySelector('.l2');
  ev(0,'pop');ev(1.2,'pop');ev(1.8,'pop');
  return {el,u(t){const p=bp(t,0,.6);cad.style.transform=`scale(${p}) rotate(${Math.sin(Math.max(0,t-.6)*9)*Math.exp(-Math.max(0,t-.6)*3)*12}deg)`;revelerMots(mots,t,.4);
   [l1,l2].forEach((l,i)=>{const q=bp(t,1.2+i*.6,.5);l.style.opacity=cl((t-1.2-i*.6)/.12);l.style.transform=`translateX(${(1-q)*(i?200:-200)}px)`})}}};
@@ -272,6 +274,140 @@ B.fin=(s)=>{const el=h(`<div class="scene"><div class="bg" style="position:absol
   revelerLettres(tg,t,.9,.03);dg.style.opacity=ap(t,.6,.4);dg.style.transform=`translateX(${(1-ap(t,.6,.8))*-200}px)`;nom.style.opacity=ap(t,1.6);
   const q=bp(t,2.1,.6);cta.style.opacity=cl((t-2.1)/.15);cta.style.transform=`translateY(${(1-q)*150}px) scale(${t>d-1.6&&t<d-1.4?.96:1})`;
   cur.style.opacity=t>d-2.6?1:0;onde.style.opacity=0;curseur(cur,onde,t,[1000,1400],[860,1130],d-2.6,.9,d-1.6)}}};
+
+// ------------------------------------------------------- tableur (Excel)
+const LIG=[['6061','Carburant',1200000,1450000],['6132','Loyer',3000000,3000000],['6041','Fournitures',400000,310000]];
+const fmt=n=>(n<0?'−':'')+Math.abs(Math.round(n)).toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+const pct=x=>(x<0?'−':'')+Math.abs(x).toFixed(1).replace('.',',')+' %';
+B.excel=(s)=>{const W=[28,54,110,94,94,82,72],X=[];let acc=10;W.forEach(w=>{X.push(acc);acc+=w});
+ const cell=(c,r,txt,st='')=>`<div class="c${c}-${r}" style="position:absolute;left:${X[c]}px;top:${34+r*46}px;width:${W[c]}px;height:46px;border-right:1px solid #E3E3E3;border-bottom:1px solid #E3E3E3;font-size:19px;line-height:46px;padding:0 6px;white-space:nowrap;overflow:hidden;${st}">${txt}</div>`;
+ let g='';['','A','B','C','D','E','F'].forEach((l,c)=>{g+=`<div style="position:absolute;left:${X[c]}px;top:0;width:${W[c]}px;height:34px;background:#F3F3F3;border-right:1px solid #DDD;border-bottom:1px solid #DDD;font-size:16px;color:#777;text-align:center;line-height:34px">${l}</div>`});
+ for(let r=0;r<14;r++){g+=cell(0,r,r+1,'background:#F3F3F3;color:#777;font-size:16px;text-align:center')}
+ ['Cpte','Libellé','Budget','Réalisé','Écart','Écart %'].forEach((t,i)=>{g+=cell(i+1,0,t,'font-weight:600;background:#F7F4F9'+(i>3?';opacity:0':''))});
+ LIG.forEach((l,r)=>{g+=cell(1,r+1,l[0])+cell(2,r+1,l[1])+cell(3,r+1,fmt(l[2]),'text-align:right')+cell(4,r+1,fmt(l[3]),'text-align:right')+cell(5,r+1,'','text-align:right')+cell(6,r+1,'','text-align:right')});
+ for(let r=4;r<14;r++)for(let c=1;c<7;c++)g+=cell(c,r,'');
+ const el=h(`<div class="scene"><div class="vue"><div class="cam">
+ <div class="carte fen" style="position:absolute;left:20px;top:30px;width:1040px;height:1240px;overflow:hidden;border-radius:26px">
+  <div style="height:56px;background:#2F6B4F;color:#fff;font-size:22px;line-height:56px;padding-left:24px">Budget 2026 – Réalisé T3.xlsx</div>
+  <div style="height:44px;border-bottom:1px solid #E3E3E3;font-size:20px;color:#555;line-height:44px;padding-left:24px;word-spacing:14px">Fichier Accueil Insertion Formules Données Révision</div>
+  <div style="height:46px;border-bottom:1px solid #E3E3E3;display:flex;align-items:center;gap:14px;padding-left:16px;font-size:20px"><span class="nb" style="border:1px solid #DDD;padding:2px 12px;min-width:60px">A1</span><i style="color:#999">fx</i><span class="fx" style="font-family:monospace;font-size:21px"></span></div>
+  <div class="grille" style="position:absolute;left:0;top:156px;width:520px;height:1000px">${g}<div class="sel" style="position:absolute;border:3px solid #2F6B4F;opacity:0"></div></div>
+  <div style="position:absolute;left:0;right:0;bottom:0;height:52px;background:#F3F3F3;border-top:1px solid #DDD"></div>
+  <div class="ico" style="position:absolute;right:22px;bottom:6px;width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#8E2A8E,#2E8CB2);color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center">✦</div>
+  <div class="vol" style="position:absolute;left:548px;top:156px;width:492px;height:1030px;background:#fff;border-left:2px solid #E7E3EC;box-shadow:-14px 0 40px rgba(67,18,74,.10);padding:22px">
+   <div style="display:flex;align-items:center;gap:14px"><span style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#8E2A8E,#2E8CB2);color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center">✦</span>
+    <span class="mode" style="border:2px solid #D9C6EC;border-radius:30px;padding:8px 20px;font-size:24px;font-weight:600;color:#5B2A86;min-width:110px;text-align:center">⋯</span></div>
+   <div class="menu carte" style="position:absolute;left:80px;top:80px;width:260px;padding:14px;opacity:0;z-index:3">
+    <div style="height:22px;border-radius:8px;background:#EEE;margin:12px 8px"></div><div class="mp" style="font-size:26px;font-weight:600;padding:10px 12px;border-radius:12px;color:#5B2A86">Plan</div><div style="height:22px;border-radius:8px;background:#EEE;margin:12px 8px"></div></div>
+   <div class="fil" style="position:absolute;left:22px;right:22px;top:100px;bottom:120px"></div>
+   <div style="position:absolute;left:22px;right:22px;bottom:24px;height:84px;border:2px solid #D9C6EC;border-radius:22px;display:flex;align-items:center;padding:0 18px;gap:12px"><div class="saisie" style="flex:1;font-size:22px;line-height:1.3;color:#1C1620"></div><span style="width:52px;height:52px;border-radius:50%;background:#8E2A8E;color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px">➤</span></div>
+  </div>
+ </div>${CURSEUR}<div class="onde"></div></div></div></div>`);
+ const Q=el.querySelector.bind(el),cam=Q('.cam'),vol=Q('.vol'),mode=Q('.mode'),menu=Q('.menu'),mp=Q('.mp'),fil=Q('.fil'),saisie=Q('.saisie'),fx=Q('.fx'),nb=Q('.nb'),sel=Q('.sel'),ico=Q('.ico'),cur=Q('.curseur'),onde=Q('.onde'),fen=Q('.fen');
+ const PR='Ajoute une colonne Écart (Réalisé − Budget), puis une colonne Écart % (Écart / Budget).',EX='Expliquer la formule dans la cellule sélectionnée.';
+ const bulle=h(`<div style="margin-left:auto;max-width:400px;background:#F6ECF6;border-radius:20px 20px 6px 20px;padding:14px 18px;font-size:21px;line-height:1.35;opacity:0"></div>`);fil.appendChild(bulle);
+ const plan=h(`<div class="carte" style="margin-top:18px;padding:20px;font-size:21px;line-height:1.45;opacity:0;box-shadow:0 8px 24px rgba(67,18,74,.12)"><div style="font-weight:600;color:#5B2A86;margin-bottom:8px">Plan</div>1. Ajouter la colonne <b>Écart</b> = Réalisé − Budget<br>2. Ajouter la colonne <b>Écart %</b> = Écart / Budget<div class="ok" style="margin-top:14px;width:64px;height:52px;border-radius:16px;background:#8E2A8E;color:#fff;font-size:28px;display:flex;align-items:center;justify-content:center">✓</div></div>`);fil.appendChild(plan);
+ const bulle2=h(`<div style="margin:18px 0 0 auto;max-width:400px;background:#F6ECF6;border-radius:20px 20px 6px 20px;padding:14px 18px;font-size:21px;line-height:1.35;opacity:0">${EX}</div>`);fil.appendChild(bulle2);
+ const rep=h(`<div style="margin-top:16px;font-size:22px;line-height:1.45;color:#1C1620"></div>`);fil.appendChild(rep);
+ const okb=plan.querySelector('.ok');
+ const VOL={s:1.55,x:795,y:330},INP={s:1.5,x:795,y:1080},PLN={s:1.45,x:795,y:470},GR={s:1.8,x:300,y:300},REP={s:1.45,x:795,y:560};
+ const e=s.etape;
+ if(e==0){ev(0,'pop');ev(1.55,'clic');ev(1.75,'souffle')} if(e==1)ev(1.0,'clic'),ev(1.9,'clic'); if(e==2)ev(s.vdur*.85,'clic'); if(e==3){ev(.6,'pop');ev(1.25,'clic')} if(e==4){ev(.5,'clic');ev(2.6,'pop')}
+ const remplir=(p)=>{LIG.forEach((l,r)=>{const d=l[3]-l[2];const q=cl(p*1.4-r*.2);const ce=Q('.c5-'+(r+1)),cf=Q('.c6-'+(r+1));ce.textContent=q>0?fmt(d*eo(q)):'';cf.textContent=q>0?pct(100*d/l[2]*eo(q)):'';ce.style.color=d>0?'#B3261E':d<0?'#2E7D32':'';cf.style.color=ce.style.color;ce.style.background=q>0&&q<1?'#FCEFDF':'';cf.style.background=ce.style.background});
+  Q('.c5-0').style.opacity=cl(p*4);Q('.c6-0').style.opacity=cl(p*4)};
+ const selF2=(on)=>{sel.style.opacity=on?1:0;sel.style.left=(X[6]-2)+'px';sel.style.top=(34+46-2)+'px';sel.style.width=(W[6]+3)+'px';sel.style.height='49px'};
+ return {el,u(t,d,e){
+  const vin=e==0?eo((t-1.75)/.5):1;vol.style.transform=`translateX(${(1-vin)*540}px)`;
+  if(e==0){fen.style.transform=`translateY(${(1-bp(t,0,.7))*250}px)`;camera(cam,C0,C0,1)}else fen.style.transform='';
+  if(e==1)camera(cam,C0,VOL,eio(t/.8));
+  if(e==2)camera(cam,VOL,INP,eio(t/.8));
+  if(e==3){if(t<1.7)camera(cam,INP,PLN,eio(t/.7));else camera(cam,PLN,GR,eio((t-1.7)/.8))}
+  if(e==4){if(t<2.2)camera(cam,GR,{s:2.1,x:400,y:240},eio(t/.6));else camera(cam,{s:2.1,x:400,y:240},REP,eio((t-2.2)/.8))}
+  // sélecteur de mode
+  const choisi=e>1||(e==1&&t>1.9);mode.textContent=choisi?'Plan':'⋯';menu.style.opacity=e==1&&t>1.0&&t<2.05?1:0;menu.style.transform=`scale(${e==1?.9+.1*bp(t,1,.4):1})`;mp.style.background=e==1&&t>1.6?'#F3EAFB':'transparent';
+  mode.style.transform=e==1&&t>1.9&&t<2.2?'scale(1.12)':'';
+  // saisie, bulle, plan
+  const tf=e==2?(t-.3)/(d*.55):0;
+  if(e==2){taper(saisie,PR,tf);if(t>d*.85){saisie.innerHTML='';}bulle.textContent=PR;bulle.style.opacity=t>d*.85?ap(t,d*.85,.3):0}
+  else if(e>2){saisie.innerHTML='';bulle.textContent=PR;bulle.style.opacity=1}else{saisie.innerHTML='';bulle.style.opacity=0}
+  if(e==4){bulle.style.opacity=0;plan.style.display='none'}else plan.style.display='block';
+  plan.style.opacity=e==3?cl((t-.6)/.2):0;plan.style.transform=e==3?`translateY(${(1-bp(t,.6,.5))*40}px)`:'';okb.style.transform=e==3&&t>1.25&&t<1.45?'scale(.9)':'';okb.style.background=e==3&&t>1.25?'#3E9B5A':'#8E2A8E';
+  bulle2.style.opacity=e==4&&t>.9?ap(t,.9,.3):0;bulle2.style.display=e==4?'block':'none';rep.style.display=e==4?'block':'none';
+  if(e==4)taper(rep,'La cellule F2 divise l’écart (E2) par le budget (C2) : le carburant dépasse son budget de 20,8 %.',(t-2.6)/2,false);
+  // grille
+  remplir(e<3?0:e==3?cl((t-1.9)/1.6):1);
+  if(e==3&&t>1.9){fx.textContent='=D2-C2';nb.textContent='E2'}else if(e==4){fx.textContent='=E2/C2';nb.textContent='F2'}else{fx.textContent='';nb.textContent='A1'}
+  selF2(e==4&&t>.5);
+  // curseur
+  cur.style.opacity=(e==0&&t>.4&&t<2.3)||(e==1&&t>.3&&t<2.3)||(e==3&&t>.7&&t<1.9)||(e==4&&t<1)?1:0;onde.style.opacity=0;
+  if(e==0)curseur(cur,onde,t,[700,900],ctr(ico,cam),.4,1,1.55);
+  if(e==1){const a=ctr(mode,cam),b=ctr(mp,cam);if(t<1.3)curseur(cur,onde,t,[900,700],a,.3,.6,1.0);else curseur(cur,onde,t,a,b,1.3,.5,1.9)}
+  if(e==3)curseur(cur,onde,t,[900,900],ctr(okb,cam),.7,.5,1.25);
+  if(e==4)curseur(cur,onde,t,[700,500],ctr(Q('.c6-1'),cam),0,.4,.5);
+ }}};
+// ------------------------------------------------ bibliothèque (Mistral)
+const FICH=[['PDF','#D93F3F','Contrat_Transports_Bonaberi.pdf'],['PDF','#D93F3F','Contrat_Wouri_Express.pdf'],['PDF','#D93F3F','Contrat_Logistik_Sud.pdf'],['DOC','#4A7CF7','Procedure_achats.docx'],['XLS','#2F6B4F','Grille_tarifaire.xlsx'],['PDF','#D93F3F','+ 9 autres contrats PDF']];
+B.biblio=(s)=>{const el=h(`<div class="scene"><div class="vue"><div class="cam">
+ <div class="carte fen" style="position:absolute;left:20px;top:30px;width:1040px;height:1240px;overflow:hidden;border-radius:26px">
+  <div style="position:absolute;left:0;top:0;bottom:0;width:250px;background:#FAF7F3;border-right:2px solid #EEE7DE;padding:26px 18px">
+   <div style="font-family:SG;font-size:30px;color:#1C1620;display:flex;align-items:center;gap:10px"><span style="width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,#F7B32B,#E2541B)"></span>Vibe</div>
+   <div style="height:20px;border-radius:8px;background:#ECE4DA;margin:40px 6px 22px"></div><div style="height:20px;border-radius:8px;background:#ECE4DA;margin:22px 6px;width:70%"></div>
+   <div class="nav" style="font-size:24px;font-weight:600;padding:12px 14px;border-radius:14px;color:#1C1620">Bibliothèques</div>
+   <div style="height:20px;border-radius:8px;background:#ECE4DA;margin:22px 6px;width:60%"></div></div>
+  <div class="pg1" style="position:absolute;left:270px;top:0;right:0;bottom:0;padding:34px 30px;opacity:0">
+   <div style="font-family:SG;font-size:40px">Bibliothèques</div>
+   <div class="nouv" style="display:inline-block;margin-top:24px;background:#1C1620;color:#fff;font-size:24px;font-weight:600;padding:14px 24px;border-radius:30px">+ Nouvelle bibliothèque</div>
+   <div class="nomb carte" style="margin-top:26px;padding:22px;opacity:0;box-shadow:0 8px 24px rgba(0,0,0,.1)"><div style="font-size:20px;color:var(--g)">Nom</div><div class="nom" style="font-size:28px;font-weight:600;margin-top:6px;min-height:36px"></div></div>
+   <div class="depot" style="margin-top:26px;border:3px dashed #E2CDB4;border-radius:22px;min-height:560px;padding:20px;opacity:0"></div></div>
+  <div class="pg2" style="position:absolute;left:270px;top:0;right:0;bottom:0;padding:34px 30px;opacity:0">
+   <div class="q" style="margin-left:auto;max-width:640px;background:#FBEFE3;border-radius:24px 24px 6px 24px;padding:18px 22px;font-size:26px;line-height:1.4;opacity:0"></div>
+   <div class="r" style="margin-top:22px;font-size:27px;line-height:1.5"></div>
+   <div class="src" style="display:inline-block;margin-top:16px;border:2px solid #E2CDB4;border-radius:24px;padding:10px 20px;font-size:22px;font-weight:600;opacity:0">Sources</div>
+   <div style="position:absolute;left:30px;right:30px;bottom:30px;border:2px solid #E2CDB4;border-radius:26px;padding:16px 18px">
+    <div class="puce" style="display:inline-block;background:#FBEFE3;border-radius:16px;padding:6px 14px;font-size:20px;font-weight:600;margin-bottom:10px;opacity:0">▤ Contrats fournisseurs 2026</div>
+    <div style="display:flex;align-items:center;gap:14px"><span class="plus" style="width:52px;height:52px;border-radius:50%;border:2px solid #E2CDB4;display:flex;align-items:center;justify-content:center;font-size:32px">+</span><div class="saisie" style="flex:1;font-size:24px;line-height:1.3"></div></div>
+    <div class="menu carte" style="position:absolute;left:10px;bottom:90px;width:330px;padding:12px;opacity:0"><div style="height:20px;border-radius:8px;background:#EEE;margin:12px 8px"></div><div class="mb" style="font-size:24px;font-weight:600;padding:10px 12px;border-radius:12px">Bibliothèques ›</div><div style="height:20px;border-radius:8px;background:#EEE;margin:12px 8px"></div></div>
+    <div class="menu2 carte" style="position:absolute;left:330px;bottom:120px;width:380px;padding:12px;opacity:0"><div class="mb2" style="font-size:24px;padding:10px 12px;border-radius:12px">▤ Contrats fournisseurs 2026</div></div>
+   </div></div>
+ </div>
+ <div class="voile"></div>
+ <div class="ext carte" style="position:absolute;left:70px;top:380px;width:940px;padding:36px;opacity:0"><div style="font-size:26px;color:var(--g)">Contrat_Transports_Bonaberi.pdf</div><div style="margin-top:16px;font-size:31px;line-height:1.45;border-left:10px solid var(--o);padding-left:22px"><b>[1]</b> Article 6.1 : « Les factures sont payables <span style="background:#FCE3C3">à 45 jours fin de mois</span>. »</div><div style="margin-top:16px;font-size:31px;line-height:1.45;border-left:10px solid var(--o);padding-left:22px"><b>[2]</b> Article 6.2 : « Tout retard entraîne une pénalité de <span style="background:#FCE3C3">1 % du montant par semaine</span>. »</div><div style="margin-top:14px;font-size:22px;color:var(--g)">Contrat fictif, pour la démonstration</div></div>
+ ${CURSEUR}<div class="onde"></div></div></div></div>`);
+ const Q=el.querySelector.bind(el),cam=Q('.cam'),nav=Q('.nav'),pg1=Q('.pg1'),pg2=Q('.pg2'),nouv=Q('.nouv'),nomb=Q('.nomb'),nom=Q('.nom'),depot=Q('.depot'),q=Q('.q'),r=Q('.r'),src=Q('.src'),puce=Q('.puce'),plus=Q('.plus'),saisie=Q('.saisie'),menu=Q('.menu'),menu2=Q('.menu2'),mb=Q('.mb'),mb2=Q('.mb2'),voile=Q('.voile'),ext=Q('.ext'),cur=Q('.curseur'),onde=Q('.onde'),fen=Q('.fen');
+ const fs=FICH.map(f=>{const d=h(`<div style="display:flex;align-items:center;gap:16px;padding:12px 6px;border-bottom:1px solid #F1E9DF"><div style="width:62px;height:46px;border-radius:10px;background:${f[1]};color:#fff;font-weight:600;font-size:18px;display:flex;align-items:center;justify-content:center">${f[0]}</div><div style="font-size:23px;flex:1">${f[2]}</div><div class="st" style="font-size:26px;width:34px;text-align:center"></div></div>`);depot.appendChild(d);return d});
+ const QU='Quel délai de paiement et quelle pénalité de retard dans le contrat Transports Bonabéri ?';
+ const RT='Le paiement se fait à 45 jours fin de mois [1]. En cas de retard, la pénalité est de 1 % du montant par semaine [2].';
+ const CSB={s:1.35,x:300,y:330},CNV={s:1.3,x:650,y:420},CDP={s:1.15,x:650,y:700},CIN={s:1.35,x:620,y:1080},CQR={s:1.25,x:650,y:400};
+ const e=s.etape;
+ if(e==0){ev(0,'pop');ev(.9,'clic');ev(2.0,'clic');ev(2.2,'pop')} if(e==1)FICH.forEach((f,i)=>ev(.3+i*.45,'pop')); if(e==2){ev(.7,'clic');ev(1.6,'clic');ev(2.4,'clic')} if(e==4){ev(.8,'clic');ev(1.0,'pop')}
+ return {el,u(t,d,e){
+  if(e==0){fen.style.transform=`translateY(${(1-bp(t,0,.7))*250}px)`;if(t<1.4)camera(cam,C0,CSB,eio((t-.2)/.7));else camera(cam,CSB,CNV,eio((t-1.4)/.6))}else fen.style.transform='';
+  if(e==1)camera(cam,CNV,CDP,eio(t/.8));
+  if(e==2){if(t<.3)camera(cam,CDP,CIN,eio(t/.3));else camera(cam,CDP,CIN,1)}
+  if(e==2)camera(cam,CDP,CIN,eio(t/.7));
+  if(e==3)camera(cam,CIN,CQR,eio(t/.8));
+  if(e==4)camera(cam,CQR,C0,eio(t/.7));
+  nav.style.background=(e==0&&t>.9)||e==1?'#F3E3D0':'transparent';
+  pg1.style.opacity=e==0?ap(t,1,.3):e==1?1:0; pg2.style.opacity=e>=2?(e==2?ap(t,0,.3):1):0;
+  nomb.style.opacity=e==0?ap(t,2.2,.3):1;if(e==0)taper(nom,'Contrats fournisseurs 2026',(t-2.4)/1.1,true);else nom.textContent='Contrats fournisseurs 2026';
+  nouv.style.transform=e==0&&t>2&&t<2.2?'scale(.94)':'';
+  depot.style.opacity=e==1?ap(t,0,.3):0;
+  fs.forEach((f,i)=>{const t0=.3+i*.45,p=e==1?bp(t,t0,.5):1;f.style.opacity=e==1?cl((t-t0)/.12):1;f.style.transform=`translate(${(1-p)*-500}px,${(1-p)*200}px) rotate(${(1-p)*-12}deg)`;
+   const st=f.querySelector('.st');const fin_=t>t0+1.1;st.textContent=e==1&&!fin_?'◌':'✓';st.style.color=e==1&&!fin_?'#C9A27A':'#3E9B5A';st.style.transform=e==1&&!fin_?`rotate(${t*360}deg)`:''});
+  // menu +
+  menu.style.opacity=e==2&&t>.7&&t<2.5?1:0;mb.style.background=e==2&&t>1.6?'#FBEFE3':'transparent';menu2.style.opacity=e==2&&t>1.6&&t<2.5?1:0;mb2.style.background=e==2&&t>2.4?'#FBEFE3':'transparent';
+  plus.style.transform=e==2&&t>.7&&t<.9?'scale(.88)':'';
+  puce.style.opacity=e>=2?(e==2?ap(t,2.5,.3):1):0;
+  if(e==3){taper(saisie,QU,(t-.1)/1.4);if(t>1.6){saisie.innerHTML='';q.textContent=QU;q.style.opacity=ap(t,1.6,.3)}else q.style.opacity=0}
+  else if(e==4){saisie.innerHTML='';q.textContent=QU;q.style.opacity=1}else{saisie.innerHTML='';q.style.opacity=0}
+  if(e>=3){const p=e==3?(t-2)/1.6:1;const n=Math.round(RT.length*cl(p));r.innerHTML=RT.slice(0,n).replace(/\[(\d)\]/g,'<span class="cit" style="background:#FBEFE3;color:#9A4A12">$1</span>').replace(/\[\d?$/,'')}else r.innerHTML='';
+  src.style.opacity=e==3?ap(t,3.6,.3):e==4?1:0;src.style.background=e==4&&t>.8?'#FBEFE3':'#fff';
+  voile.style.opacity=e==4?.9*ap(t,.95,.4):0;const pe=bp(t,1.0,.6);ext.style.opacity=e==4?cl((t-1)/.15):0;ext.style.transform=`translateY(${(1-pe)*100}px) scale(${.85+.15*pe})`;
+  cur.style.opacity=(e==0&&t>.3&&t<2.4)||(e==2&&t<2.7)||(e==4&&t<1.1)?1:0;onde.style.opacity=0;
+  if(e==0){const a=ctr(nav,cam),b=ctr(nouv,cam);if(t<1.2)curseur(cur,onde,t,[600,900],a,.3,.6,.9);else curseur(cur,onde,t,a,b,1.2,.6,2.0)}
+  if(e==2){const a=ctr(plus,cam),b=ctr(mb,cam),c=ctr(mb2,cam);if(t<1.0)curseur(cur,onde,t,[800,900],a,0,.6,.7);else if(t<1.8)curseur(cur,onde,t,a,b,1.0,.5,1.6);else curseur(cur,onde,t,b,c,1.8,.5,2.4)}
+  if(e==4)curseur(cur,onde,t,[800,900],ctr(src,cam),0,.6,.8);
+ }}};
 // --------------------------------------------------------------- montage
 let PLAN,OBJ=[],MOTS=[];
 window.charger=(plan)=>{PLAN=plan;document.getElementById('badge').textContent='Astuce IA · n°'+plan.numero;
@@ -298,5 +434,5 @@ window.seek=(T)=>{const sc=PLAN.scenes;document.querySelector('#prog i').style.w
  const so=document.getElementById('sous');if(so.dataset.k!=k){so.innerHTML='<div>'+s.sous.split(' ').map(w=>`<span>${w}</span>`).join(' ')+'</div>';so.dataset.k=k}
  const sp=so.firstChild.children,n=sp.length,len=[...sp].map(x=>x.textContent.length+1),tot=len.reduce((a,b)=>a+b,0);
  const p=cl((t-.3)/Math.max(.5,s.vdur)) * tot;let acc=0;[...sp].forEach((w,i)=>{acc+=len[i];w.className=acc<=p?'dit':(acc-len[i]<=p?'mot':'')});
- so.style.opacity=ap(t,0,.2)};
+ so.style.opacity=ap(t,0,.2);so.style.fontSize=s.sous.length>100?'39px':'44px'};
 </script></body></html>
