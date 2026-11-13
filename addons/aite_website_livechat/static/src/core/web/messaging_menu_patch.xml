@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- Liste des messages de l'opérateur (Odoo web et application mobile) :
+         pour une conversation du chat, l'aperçu montre la question du
+         visiteur, pas le message d'absence signé de l'opérateur. -->
+    <t t-inherit="mail.MessagingMenu.content" t-inherit-mode="extension">
+        <xpath expr="//t[@t-foreach='threads']/t[@t-set='message']" position="after">
+            <t t-if="thread.channel_type === 'livechat'" t-set="message" t-value="thread.aiteLivechatPreviewMessage"/>
+        </xpath>
+    </t>
+
+</templates>

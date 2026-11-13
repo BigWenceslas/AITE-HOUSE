@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import Command
 from odoo.tests import tagged
+from odoo.tools import SQL
 
 from .common import AWAY_TEXT, AiteLivechatCommon
 
@@ -58,6 +59,9 @@ class TestLivechatAwayMessage(AiteLivechatCommon):
         agent_history = channel.livechat_agent_history_ids
         self.assertEqual(agent_history.message_count, 0)
         self.assertFalse(agent_history.response_time_hour)
+        # … ni un message qu'elle aurait encore à lire : un message du
+        # visiteur, un non lu.
+        self.assertEqual(agent.message_unread_counter, 1)
 
         # Jamais deux fois dans la même conversation.
         self._visitor_post(channel, "Vous êtes là ?")
@@ -99,6 +103,54 @@ class TestLivechatAwayMessage(AiteLivechatCommon):
         self._set_offline(self.operator)
         self._visitor_post(channel, "Bonjour !")
         self.assertFalse(self._away_messages(channel))
+
+    def test_away_message_not_an_answer_in_report(self):
+        # Live Chat → Rapports → Sessions : pas de « première réponse » tant
+        # que l'opératrice n'a pas répondu, le message d'absence n'est pas
+        # compté.
+        channel = self._start_session()
+        self._visitor_post(channel, "Bonjour, j'ai une question.")
+        self.assertEqual(len(self._away_messages(channel)), 1)
+        # Lu en SQL : un délai vide (NULL) se distingue d'un délai nul.
+        self.assertEqual(self._report_row(channel), {'time_to_answer': None, 'nbr_message': 1})
+
+        self._operator_post(channel, "Bonjour, voici la réponse.")
+        row = self._report_row(channel)
+        self.assertIsNotNone(row['time_to_answer'])
+        self.assertEqual(row['nbr_message'], 2)
+
+    def _report_row(self, channel):
+        Report = self.env['im_livechat.report.channel']
+        self.env.flush_all()
+        self.env.cr.execute(SQL(
+            "SELECT report.time_to_answer, report.nbr_message FROM (%s) AS report WHERE report.channel_id = %s",
+            Report._table_query, channel.id,
+        ))
+        rows = self.env.cr.dictfetchall()
+        self.assertEqual(len(rows), 1)
+        return rows[0]
+
+    def test_contact_request_skipped_when_contact_already_given(self):
+        # Le visiteur donne son e-mail dès le premier message : la dernière
+        # phrase (« indiquez-nous votre adresse e-mail… ») n'est pas envoyée.
+        channel = self._start_session()
+        self._visitor_post(channel, "Bonjour, je voudrais un devis. Mon e-mail : visiteur.devis@exemple.cm")
+        away = self._away_messages(channel)
+        self.assertIn(AWAY_TEXT, away.body)
+        self.assertNotIn("indiquez-nous", away.body)
+
+        # Sans coordonnées : le message complet.
+        self.opener.cookies.clear()
+        channel = self._start_session()
+        self._visitor_post(channel, "Bonjour, je voudrais un devis.")
+        self.assertIn("indiquez-nous votre adresse e-mail", self._away_messages(channel).body)
+
+        # Un message personnalisé est envoyé tel quel.
+        self.livechat_channel.aite_away_message = "Absents jusqu'à lundi. Laissez-nous votre e-mail."
+        self.opener.cookies.clear()
+        channel = self._start_session()
+        self._visitor_post(channel, "Mon e-mail : autre.visiteur@exemple.cm")
+        self.assertIn("Laissez-nous votre e-mail.", self._away_messages(channel).body)
 
     def test_away_message_in_visitor_language(self):
         self.env['res.lang']._activate_lang('en_US')

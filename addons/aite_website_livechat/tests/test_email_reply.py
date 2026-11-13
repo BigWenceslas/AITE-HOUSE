@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import time
 from datetime import timedelta
 from unittest.mock import patch
 
@@ -35,6 +36,26 @@ class TestLivechatVisitorContact(AiteLivechatCommon):
         )
         self.assertEqual(Channel._aite_find_phones("Commande 1234, le 13/11/2026, mail a1234567890@x.cm"), [])
 
+    def test_contact_detection_stays_fast_on_huge_messages(self):
+        # Texte fabriqué pour ralentir la recherche d'adresses (200 Ko) :
+        # quelques millisecondes au lieu de minutes, sans bloquer le serveur.
+        Channel = self.env['discuss.channel']
+        for text in ("a." * 100000, "a@" * 100000, "a@a." * 50000, "1." * 100000):
+            start = time.perf_counter()
+            Channel._aite_find_emails(text)
+            Channel._aite_find_phones(text)
+            self.assertLess(time.perf_counter() - start, 1, f"Repérage trop lent sur « {text[:8]}… »")
+
+        # Le même texte envoyé par un visiteur anonyme, par le site.
+        channel = self._start_session()
+        start = time.perf_counter()
+        self._visitor_post(channel, "a." * 100000)
+        self.assertLess(time.perf_counter() - start, 10)
+        self.assertFalse(channel.aite_visitor_email)
+        # Seul le début d'un message démesuré est examiné.
+        self._visitor_post(channel, "x" * 20000 + " loin@exemple.cm")
+        self.assertFalse(channel.aite_visitor_email)
+
     def test_contact_detected_in_visitor_messages_only(self):
         channel = self._start_session()
         self._visitor_post(channel, "Bonjour")
@@ -42,12 +63,59 @@ class TestLivechatVisitorContact(AiteLivechatCommon):
         self._visitor_post(channel, f"Mon e-mail : {VISITOR_EMAIL.upper()} et mon téléphone +237 699 11 22 33")
         self.assertEqual(channel.aite_visitor_email, VISITOR_EMAIL)
         self.assertEqual(channel.aite_visitor_phone, '+237 699 11 22 33')
-        # La plus récente l'emporte (correction de saisie).
+        # Un message qui ne contient guère que la nouvelle adresse la corrige
+        # (faute de frappe).
         self._visitor_post(channel, "Pardon, plutôt jean@exemple.cm")
         self.assertEqual(channel.aite_visitor_email, 'jean@exemple.cm')
         # Une adresse écrite par l'opératrice n'est jamais retenue.
         self._operator_post(channel, "Écrivez aussi à commercial@aite.example.com")
         self.assertEqual(channel.aite_visitor_email, 'jean@exemple.cm')
+
+    def test_third_party_and_company_addresses_never_replace_the_visitor(self):
+        # Marie donne son adresse, puis cite l'adresse de l'entreprise et
+        # celle de son comptable : la réponse part toujours chez elle.
+        channel = self._start_session()
+        self._visitor_post(channel, "Bonjour, je suis Marie, mon e-mail : marie.client@exemple.cm")
+        self._visitor_post(
+            channel,
+            "Pour info j'ai déjà écrit à contact@aite.example.com hier, et mon comptable "
+            "(compta@cabinet-tiers.cm) attend aussi votre devis.",
+        )
+        self.assertEqual(channel.aite_visitor_email, 'marie.client@exemple.cm')
+        self._visitor_post(channel, "Mettez aussi en copie mon associé : associe@cabinet-tiers.cm, merci d'avance.")
+        self.assertEqual(channel.aite_visitor_email, 'marie.client@exemple.cm')
+        self._operator_post(channel, "Bonjour Marie, votre devis n° 2026-118 : 1 450 000 FCFA.")
+        self.assertEqual(len(self._mails_to('marie.client@exemple.cm')), 1)
+        self.assertFalse(self._mails_to('compta@cabinet-tiers.cm'))
+        self.assertFalse(self._mails_to('contact@aite.example.com'))
+
+    def test_own_addresses(self):
+        Channel = self.env['discuss.channel']
+        self.env['mail.alias.domain'].create({'name': 'aite-alias.cm'})
+        self.website.domain = 'https://www.aite-house.cm'
+        for email in ('contact@aite.example.com', 'awa@aite.example.com', 'info@aite-house.cm',
+                      'devis@ventes.aite-house.cm', 'catchall@aite-alias.cm'):
+            self.assertTrue(Channel._aite_is_own_address(email), email)
+        for email in ('marie@exemple.cm', 'x@aite-house.cm.exemple.cm', 'x@autre-aite-house.cm', 'x@gmail.com'):
+            self.assertFalse(Channel._aite_is_own_address(email), email)
+
+    def test_first_address_kept_and_own_addresses_ignored(self):
+        self.env['mail.alias.domain'].create({'name': 'aite-alias.cm'})
+        channel = self._start_session()
+        # Adresses de l'entreprise : société, utilisateur interne, domaine de
+        # ses alias e-mail. Jamais retenues.
+        self._visitor_post(
+            channel,
+            "J'ai écrit à contact@aite.example.com, à awa@aite.example.com et à info@aite-alias.cm.",
+        )
+        self.assertFalse(channel.aite_visitor_email)
+        # Plusieurs adresses dans le même message : la première.
+        self._visitor_post(channel, "Moi : marie@exemple.cm ; ma collègue : awa.collegue@exemple.cm")
+        self.assertEqual(channel.aite_visitor_email, 'marie@exemple.cm')
+        # Un message de correction qui cite une adresse de l'entreprise ne
+        # change rien.
+        self._visitor_post(channel, "Plutôt contact@aite.example.com")
+        self.assertEqual(channel.aite_visitor_email, 'marie@exemple.cm')
 
     def test_email_of_logged_in_visitor(self):
         portal = new_test_user(self.env, login='aite_lc_client', name="Client Portail",

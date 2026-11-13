@@ -2,16 +2,27 @@
 import logging
 import re
 from datetime import timedelta
+from urllib.parse import urlsplit
 
 from markupsafe import Markup
 
 from odoo import api, fields, models
+from odoo.fields import Domain
 from odoo.tools import email_normalize, html2plaintext, plaintext2html
 
 from odoo.addons.im_livechat.models.discuss_channel import is_livechat_channel
 from odoo.addons.mail.tools.discuss import Store
 
+from .im_livechat_channel import AWAY_CONTACT_REQUEST
+
 _logger = logging.getLogger(__name__)
+
+# Conversations d'un canal toujours joignable : le nettoyage quotidien d'Odoo
+# clôt une conversation au bout d'un jour sans activité. Celles qui attendent
+# une réponse (question du visiteur sans réponse d'un opérateur) ou dont la
+# réponse n'a pas encore été vue par le visiteur restent ouvertes jusqu'à
+# 7 jours.
+SESSION_KEEP_OPEN_DELAY = timedelta(days=7)
 
 # Réponse par e-mail. Règle de cadence : un e-mail au plus toutes les
 # 10 minutes par conversation. Le premier part 2 minutes après la première
@@ -22,8 +33,23 @@ _logger = logging.getLogger(__name__)
 EMAIL_GROUPING_DELAY = timedelta(minutes=2)
 EMAIL_MIN_INTERVAL = timedelta(minutes=10)
 
+# Coordonnées cherchées dans les 10 000 premiers caractères d'un message
+# seulement : un message démesuré ne doit pas occuper le serveur.
+CONTACT_SCAN_MAX_CHARS = 10000
 # Adresse e-mail dans un texte libre (« écrivez-moi à jean.dupont@exemple.cm »).
-EMAIL_IN_TEXT_RE = re.compile(r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9\-]+(?:\.[A-Za-z0-9\-]+)*\.[A-Za-z]{2,}")
+# Longueurs bornées (64 caractères avant « @ », 63 par partie du domaine) et
+# début d'adresse imposé : la recherche reste linéaire, même sur un texte
+# fabriqué pour la ralentir.
+_EMAIL_LOCAL_CHARS = r"A-Za-z0-9._%+\-"
+EMAIL_IN_TEXT_RE = re.compile(
+    rf"(?<![{_EMAIL_LOCAL_CHARS}])[{_EMAIL_LOCAL_CHARS}]{{1,64}}"
+    r"@[A-Za-z0-9\-]{1,63}(?:\.[A-Za-z0-9\-]{1,63}){0,8}\.[A-Za-z]{2,24}"
+)
+# Un message court, qui ne contient guère qu'une adresse (« Pardon, plutôt
+# jean@exemple.cm » : cinq mots au plus en dehors de l'adresse), corrige
+# l'adresse déjà relevée ; une adresse citée au fil d'une phrase (« mon
+# comptable, compta@…, attend aussi votre devis ») ne la remplace pas.
+EMAIL_CORRECTION_MAX_WORDS = 5
 # Numéro de téléphone : 8 à 15 chiffres, « + » ou « 00 » facultatif, séparés
 # au plus par deux espaces, points, tirets ou parenthèses (pas de « / » :
 # une date n'est pas un numéro).
@@ -43,9 +69,10 @@ class DiscussChannel(models.Model):
         groups="base.group_user",
         readonly=True,
         copy=False,
-        help="Adresse saisie par le visiteur dans la conversation (la plus "
-             "récente), à défaut celle de son compte. Les réponses par e-mail "
-             "ne partent que vers elle.",
+        help="Première adresse que le visiteur écrit dans la conversation "
+             "(hors adresses de l'entreprise), à défaut celle de son compte. "
+             "Un message qui ne contient guère que sa nouvelle adresse la "
+             "corrige. Les réponses par e-mail ne partent que vers elle.",
     )
     aite_visitor_phone = fields.Char(
         string="Téléphone du visiteur",
@@ -62,6 +89,15 @@ class DiscussChannel(models.Model):
         copy=False,
         help="Le premier message du visiteur à un opérateur a été traité : le "
              "message d'absence ne peut plus être envoyé dans cette conversation.",
+    )
+    aite_visitor_left_dt = fields.Datetime(
+        string="Chat fermé par le visiteur",
+        groups="base.group_user",
+        readonly=True,
+        copy=False,
+        help="Le visiteur a fermé la fenêtre du chat avant d'avoir reçu une "
+             "réponse : la conversation reste ouverte pour l'opérateur, dont "
+             "la réponse part par e-mail.",
     )
     aite_email_mail_id = fields.Many2one(
         'mail.mail',
@@ -136,6 +172,29 @@ class DiscussChannel(models.Model):
             ]
         return fields_to_store
 
+    def _get_last_messages(self):
+        # Dernier message de chaque conversation, pour l'aperçu de la liste des
+        # messages (Odoo web, application mobile) : la question du visiteur,
+        # pas le message d'absence publié juste après elle.
+        messages = super()._get_last_messages()
+        away_messages = messages.filtered(lambda message: message.message_type == 'auto_comment')
+        if not away_messages:
+            return messages
+        livechats = self.browse(away_messages.mapped('res_id')).filtered(lambda channel: channel.channel_type == 'livechat')
+        # sudo: mail.message - comme le natif, qui lit en SQL le dernier
+        # message des conversations demandées.
+        Message = self.env['mail.message'].sudo()
+        for channel in livechats:
+            previous = Message.search([
+                ('model', '=', 'discuss.channel'),
+                ('res_id', '=', channel.id),
+                ('message_type', '!=', 'auto_comment'),
+            ], order='id desc', limit=1).with_env(self.env)
+            if previous:
+                away = away_messages.filtered(lambda message: message.res_id == channel.id)
+                messages = (messages - away) | previous
+        return messages
+
     def _sync_field_names(self):
         # Affichage en direct dans le panneau « Informations » de l'opérateur,
         # par le canal de bus réservé aux utilisateurs internes.
@@ -197,6 +256,9 @@ class DiscussChannel(models.Model):
         if message.message_type != 'comment':
             return
         if self._aite_is_visitor_message(message):
+            if self.aite_visitor_left_dt:
+                # Il écrit de nouveau dans cette conversation : il y est revenu.
+                self.aite_visitor_left_dt = False
             self._aite_detect_visitor_contact(message)
             self._aite_cancel_pending_email()
             self._aite_post_away_message()
@@ -234,6 +296,105 @@ class DiscussChannel(models.Model):
         return self.livechat_lang_id.code or self.env.context.get('lang')
 
     # ------------------------------------------------------------------
+    # Conversation en attente de réponse : jamais close trop tôt
+    # ------------------------------------------------------------------
+
+    def _aite_last_comments(self):
+        """ Dernier message du visiteur et dernière réponse d'un opérateur
+        humain (appelé en sudo). """
+        self.ensure_one()
+        Message = self.env['mail.message'].sudo()
+        domain = Domain([
+            ('model', '=', 'discuss.channel'),
+            ('res_id', '=', self.id),
+            ('message_type', '=', 'comment'),
+        ])
+        customers = self.livechat_customer_history_ids
+        last_visitor_message = Message.search(domain & (
+            Domain('author_guest_id', 'in', customers.guest_id.ids)
+            | Domain('author_id', 'in', customers.partner_id.ids)
+        ), order='id desc', limit=1)
+        operators = self.livechat_agent_history_ids.partner_id.filtered(
+            lambda partner: any(user._is_internal() for user in partner.user_ids))
+        last_operator_message = Message.search(
+            domain & Domain('author_id', 'in', operators.ids), order='id desc', limit=1)
+        return last_visitor_message, last_operator_message
+
+    def _aite_is_waiting_for_operator(self):
+        """ Le dernier message du visiteur n'a pas encore de réponse d'un
+        opérateur humain, dans un canal toujours joignable. """
+        self.ensure_one()
+        if self.livechat_end_dt or not self.livechat_channel_id.aite_always_available:
+            return False
+        if not self._aite_human_operator():
+            return False
+        last_visitor_message, last_operator_message = self._aite_last_comments()
+        return bool(last_visitor_message) and last_operator_message.id < last_visitor_message.id
+
+    def _aite_has_reply_unseen_by_visitor(self):
+        """ Un opérateur a répondu, le visiteur (toujours là, il n'a pas fermé
+        le chat) n'a pas encore vu la réponse : il peut revenir la lire. """
+        self.ensure_one()
+        if self.livechat_end_dt or self.aite_visitor_left_dt or not self.livechat_channel_id.aite_always_available:
+            return False
+        last_visitor_message, last_operator_message = self._aite_last_comments()
+        if not last_operator_message or last_operator_message.id < last_visitor_message.id:
+            return False
+        visitors = self.channel_member_ids.filtered(lambda member: member.livechat_member_type == 'visitor')
+        return any(member.seen_message_id.id < last_operator_message.id for member in visitors)
+
+    @api.model
+    def _aite_sessions_kept_open(self):
+        """ Conversations que le nettoyage quotidien d'Odoo ne doit pas clore
+        (au plus 7 jours après leur dernier message). """
+        # sudo: discuss.channel - tâche planifiée de nettoyage.
+        sessions = self.sudo().search([
+            ('channel_type', '=', 'livechat'),
+            ('livechat_end_dt', '=', False),
+            ('livechat_channel_id.aite_always_available', '=', True),
+            ('last_interest_dt', '>=', fields.Datetime.now() - SESSION_KEEP_OPEN_DELAY),
+        ])
+        return sessions.filtered(
+            lambda session: session._aite_is_waiting_for_operator() or session._aite_has_reply_unseen_by_visitor()
+        )
+
+    def _close_livechat_session(self, **kwargs):
+        # Le visiteur ferme le chat avant toute réponse, dans un canal toujours
+        # joignable : la conversation reste ouverte, pour que l'opérateur
+        # puisse encore répondre (la réponse part par e-mail). Odoo la
+        # clôturerait, sans plus de saisie possible pour l'opérateur.
+        self.ensure_one()
+        if not kwargs.get('cancel') and self.sudo()._aite_is_waiting_for_operator():
+            if not self.sudo().aite_visitor_left_dt:
+                self._aite_visitor_left(**kwargs)
+            return
+        return super()._close_livechat_session(**kwargs)
+
+    def _aite_visitor_left(self, **kwargs):
+        self.ensure_one()
+        member = self.channel_member_ids.filtered(lambda m: m.is_self)
+        if member:
+            # sudo: discuss.channel.rtc.session - comme le natif, le visiteur
+            # quitte l'appel en cours.
+            member.sudo()._rtc_leave_call()
+        # sudo: discuss.channel - le visiteur ferme le chat.
+        channel_sudo = self.sudo()
+        channel_sudo.aite_visitor_left_dt = fields.Datetime.now()
+        if channel_sudo.livechat_channel_id.aite_email_reply and channel_sudo.aite_visitor_email:
+            hint = self.env._("Il a fermé le chat avant votre réponse : elle lui sera envoyée par e-mail.")
+        else:
+            hint = self.env._(
+                "Il a fermé le chat avant votre réponse, sans laisser d'adresse e-mail : "
+                "il ne la verra pas.")
+        # sudo: mail.message - comme le natif, avis de départ du visiteur.
+        channel_sudo.message_post(
+            body=Markup('<div class="o_mail_notification o_hide_author">%s %s</div>') % (
+                self._get_visitor_leave_message(**kwargs), hint),
+            message_type='notification',
+            subtype_xmlid='mail.mt_comment',
+        )
+
+    # ------------------------------------------------------------------
     # Message d'absence
     # ------------------------------------------------------------------
 
@@ -254,6 +415,10 @@ class DiscussChannel(models.Model):
         if not livechat_channel.aite_always_available or operator.im_status == 'online':
             return self.env['mail.message']
         text = (livechat_channel.with_context(lang=self._aite_visitor_lang()).aite_away_message or '').strip()
+        if (self.aite_visitor_email or self.aite_visitor_phone) and text.endswith(AWAY_CONTACT_REQUEST):
+            # Le visiteur a déjà donné son e-mail ou son téléphone (dans ce
+            # message ou par son compte) : on ne le lui redemande pas.
+            text = text.removesuffix(AWAY_CONTACT_REQUEST).strip()
         if not text:
             return self.env['mail.message']
         # Signé de l'opérateur, comme le message d'accueil natif : le visiteur
@@ -267,8 +432,10 @@ class DiscussChannel(models.Model):
             message_type='auto_comment',
             subtype_xmlid='mail.mt_comment',
         )
-        # Renvoyé aussi dans la réponse à l'envoi du message du visiteur : il
-        # s'affiche aussitôt, sans attendre le bus.
+        # Renvoyé aussi dans la réponse à l'envoi du message du visiteur : la
+        # fenêtre du chat l'ajoute aussitôt à la conversation
+        # (static/src/embed/common/thread_model_patch.js), même quand la
+        # connexion en temps réel (websocket) ne passe pas.
         if store := self.env.context.get('message_post_store'):
             store.add(away_message)
         return away_message
@@ -279,17 +446,44 @@ class DiscussChannel(models.Model):
 
     @api.model
     def _aite_find_emails(self, text):
-        emails = (email_normalize(match) for match in EMAIL_IN_TEXT_RE.findall(text or ''))
-        return [email for email in emails if email]
+        text = (text or '')[:CONTACT_SCAN_MAX_CHARS]
+        emails = (email_normalize(match) for match in EMAIL_IN_TEXT_RE.findall(text))
+        return list(dict.fromkeys(email for email in emails if email))
 
     @api.model
     def _aite_find_phones(self, text):
+        text = (text or '')[:CONTACT_SCAN_MAX_CHARS]
         phones = []
-        for match in PHONE_IN_TEXT_RE.findall(EMAIL_IN_TEXT_RE.sub(' ', text or '')):
+        for match in PHONE_IN_TEXT_RE.findall(EMAIL_IN_TEXT_RE.sub(' ', text)):
             digits = re.sub(r'\D', '', match)
             if PHONE_MIN_DIGITS <= len(digits) <= PHONE_MAX_DIGITS:
                 phones.append(re.sub(r'\s+', ' ', match.strip()))
         return phones
+
+    @api.model
+    def _aite_is_own_address(self, email):
+        """ Adresse de l'entreprise elle-même (société, utilisateurs internes,
+        domaine de ses alias e-mail ou de ses sites) : le visiteur peut la
+        citer (« j'ai déjà écrit à contact@… »), ce n'est jamais la sienne. """
+        # sudo: res.company, res.users, mail.alias.domain, website - simple
+        # comparaison d'adresses, appelée pour le message d'un visiteur.
+        companies = self.env['res.company'].sudo().search([])
+        users = self.env['res.users'].sudo().with_context(active_test=False).search([('share', '=', False)])
+        if email in set(companies.partner_id.mapped('email_normalized') + users.mapped('email_normalized')):
+            return True
+        domains = set(self.env['mail.alias.domain'].sudo().search([]).mapped('name'))
+        for website in self.env['website'].sudo().search([('domain', '!=', False)]):
+            host = urlsplit(website.domain if '//' in website.domain else f'//{website.domain}').hostname or ''
+            domains.add(host.removeprefix('www.'))
+        email_domain = email.rpartition('@')[2]
+        return any(
+            domain and (email_domain == domain.lower() or email_domain.endswith(f'.{domain.lower()}'))
+            for domain in domains
+        )
+
+    @api.model
+    def _aite_count_words(self, text):
+        return sum(1 for word in text.split() if re.search(r'\w', word))
 
     def _aite_known_visitor_email(self):
         """ Adresse déjà connue du visiteur : celle de son compte quand il est
@@ -300,11 +494,19 @@ class DiscussChannel(models.Model):
         return email_normalize(self.livechat_visitor_id.email or '') or False
 
     def _aite_detect_visitor_contact(self, message):
-        """ Relève l'e-mail et le téléphone que le visiteur écrit lui-même. """
-        text = html2plaintext(message.body or '', include_references=False)
+        """ Relève l'e-mail et le téléphone que le visiteur écrit lui-même.
+
+        E-mail : la première adresse donnée est gardée ; une adresse citée
+        ensuite au fil d'une phrase (un collègue, un comptable…) ne la
+        remplace pas, seul un message qui ne contient guère que la nouvelle
+        adresse la corrige. Les adresses de l'entreprise sont ignorées. """
+        text = html2plaintext(message.body or '', include_references=False)[:CONTACT_SCAN_MAX_CHARS]
         values = {}
-        if emails := self._aite_find_emails(text):
-            values['aite_visitor_email'] = emails[-1]
+        emails = [email for email in self._aite_find_emails(text) if not self._aite_is_own_address(email)]
+        if emails and not self.aite_visitor_email:
+            values['aite_visitor_email'] = emails[0]
+        elif len(emails) == 1 and self._aite_count_words(EMAIL_IN_TEXT_RE.sub(' ', text)) <= EMAIL_CORRECTION_MAX_WORDS:
+            values['aite_visitor_email'] = emails[0]
         elif not self.aite_visitor_email:
             values['aite_visitor_email'] = self._aite_known_visitor_email()
         if phones := self._aite_find_phones(text):
@@ -318,6 +520,10 @@ class DiscussChannel(models.Model):
     # ------------------------------------------------------------------
 
     def _aite_visitor_is_online(self):
+        if self.aite_visitor_left_dt:
+            # Il a fermé le chat : même encore sur le site, il ne verrait pas
+            # la réponse.
+            return False
         customers = self.livechat_customer_history_ids
         return any(guest.im_status == 'online' for guest in customers.guest_id) or any(
             partner.im_status == 'online' for partner in customers.partner_id
@@ -446,8 +652,8 @@ class DiscussChannel(models.Model):
 
     def _aite_render_email_reply(self, template):
         """ Sujet, corps et expéditeur de l'e-mail, rendus par le modèle
-        d'e-mail (modifiable dans Paramètres → Technique → E-mails →
-        Modèles). """
+        d'e-mail (modifiable dans Paramètres → Technique → E-mail → Modèles
+        d'e-mail). """
         self.ensure_one()
         email_to = email_normalize(self.aite_visitor_email or '')
         if not email_to:

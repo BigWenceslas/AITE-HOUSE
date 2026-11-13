@@ -2,10 +2,15 @@
 from odoo import fields, models
 from odoo.tools.sql import column_exists, create_column
 
+# Dernière phrase du message d'absence par défaut : elle n'est pas envoyée
+# quand le visiteur a déjà donné son e-mail ou son téléphone.
+AWAY_CONTACT_REQUEST = (
+    "Pour être sûr de recevoir notre réponse, indiquez-nous votre adresse "
+    "e-mail ou votre numéro de téléphone."
+)
 DEFAULT_AWAY_MESSAGE = (
     "Merci pour votre message ! Nous ne sommes pas en ligne pour le moment : "
-    "nous vous répondons ici dès que possible. Pour être sûr de recevoir notre "
-    "réponse, indiquez-nous votre adresse e-mail ou votre numéro de téléphone."
+    "nous vous répondons ici dès que possible. " + AWAY_CONTACT_REQUEST
 )
 
 

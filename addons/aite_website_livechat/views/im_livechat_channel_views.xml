@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Live Chat → Configuration → Canaux → onglet « Options » : les mêmes
+    <!-- Live Chat → Canaux → le canal → onglet « Options » : les mêmes
          réglages, pour tout canal (sites multiples, canal intégré à un autre
          site). -->
     <record id="im_livechat_channel_view_form" model="ir.ui.view">

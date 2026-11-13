@@ -41,6 +41,9 @@ class TestLivechatSetup(TransactionCase):
         self.assertEqual(channel.rule_ids.mapped('action'), ['display_button'])
         self.assertFalse(channel.rule_ids.regex_url)
         self.assertEqual(self.websites_without_chat.channel_id, channel)
+        # Canal noté, pour le retrouver après une réinstallation.
+        self.assertEqual(
+            self.env['ir.config_parameter'].get_param('aite_website_livechat.created_channel_id'), str(channel.id))
         # Le site qui avait son chat le garde, et le canal reste inchangé.
         self.assertEqual(self.website_with_chat.channel_id, self.existing)
         self.assertRecordValues(self.existing, [{
@@ -76,11 +79,49 @@ class TestLivechatSetup(TransactionCase):
         self.assertFalse(self.Website._aite_setup_livechat_channel())
         self.assertEqual(self.websites_without_chat.channel_id, native)
 
+    def _archive_admin_and_other_managers(self):
+        """ Administrateur archivé, et aucun autre utilisateur interne actif
+        responsable du Live Chat ou administrateur. """
+        groups = self.env.ref('im_livechat.im_livechat_group_manager') | self.env.ref('base.group_system')
+        others = self.env['res.users'].search([('group_ids', 'in', groups.ids), ('share', '=', False)])
+        (others - self.env.ref('base.user_root')).active = False
+        self.assertFalse(self.env.ref('base.user_admin').active)
+
     def test_no_operator_when_admin_archived(self):
-        self.env.ref('base.user_admin').active = False
-        channel = self.Website._aite_setup_livechat_channel()
+        self._archive_admin_and_other_managers()
+        with self.assertLogs('odoo.addons.aite_website_livechat.models.website', level='WARNING') as logs:
+            channel = self.Website._aite_setup_livechat_channel()
+        self.assertIn("Ajoutez un opérateur", logs.output[0])
         self.assertFalse(channel.user_ids)
         self.assertFalse(channel._is_livechat_available())
+
+    def test_livechat_manager_when_admin_archived(self):
+        # L'administrateur générique est archivé, la direction gère le Live
+        # Chat : elle devient l'opératrice du canal créé.
+        self._archive_admin_and_other_managers()
+        direction = new_test_user(
+            self.env, login='aite_lc_direction', name="Direction",
+            groups='base.group_user,base.group_system,im_livechat.im_livechat_group_manager',
+        )
+        channel = self.Website._aite_setup_livechat_channel()
+        self.assertEqual(channel.user_ids, direction)
+        self.assertTrue(channel._is_livechat_available())
+
+    def test_reinstall_restores_the_created_channel(self):
+        # Désinstallation puis réinstallation : les colonnes du module sont
+        # recréées vides, le canal « Chat du site » créé auparavant retrouve
+        # ses options. Les autres canaux restent tels quels.
+        created = self.env['im_livechat.channel'].create({
+            'name': "Chat du site", 'aite_always_available': False, 'aite_email_reply': False})
+        self.env['ir.config_parameter'].set_param('aite_website_livechat.created_channel_id', created.id)
+        self.websites_without_chat.channel_id = created
+        self.assertFalse(self.Website._aite_setup_livechat_channel())
+        self.assertRecordValues(created, [{'aite_always_available': True, 'aite_email_reply': True}])
+        self.assertRecordValues(self.existing, [{'aite_always_available': False, 'aite_email_reply': False}])
+        # Canal supprimé entre-temps : rien à faire.
+        self.websites_without_chat.channel_id = self.existing
+        created.unlink()
+        self.assertFalse(self.Website._aite_setup_livechat_channel())
 
 
 @tagged('post_install', '-at_install', 'aite_website_livechat')

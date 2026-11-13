@@ -13,7 +13,7 @@
                 <a t-if="props.thread.aite_visitor_email"
                    class="d-flex align-items-center gap-2 text-break"
                    t-attf-href="mailto:{{ props.thread.aite_visitor_email }}"
-                   title="E-mail du visiteur">
+                   title="E-mail du visiteur : les réponses par e-mail partent vers cette adresse">
                     <i class="fa fa-fw fa-envelope-o" aria-hidden="true"/>
                     <span t-esc="props.thread.aite_visitor_email"/>
                 </a>

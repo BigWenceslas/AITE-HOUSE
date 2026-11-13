@@ -46,6 +46,10 @@ Réglages : Site web → Configuration → Paramètres → Live Chat.
     'assets': {
         'web.assets_frontend': [
             'aite_website_livechat/static/src/scss/livechat_button.scss',
+            'aite_website_livechat/static/src/frontend/**/*',
+        ],
+        'im_livechat.assets_embed_core': [
+            'aite_website_livechat/static/src/embed/common/**/*',
         ],
         'web.assets_backend': [
             'aite_website_livechat/static/src/core/web/**/*',

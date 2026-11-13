@@ -4,17 +4,23 @@
 // La bulle est dessinée par Odoo dans un « shadow DOM », sous un
 // div.o-livechat-root ajouté à la fin du <body> dès que le chat peut
 // s'afficher sur la page : aucune feuille de style du site ne l'atteint.
-// Elle occupe le coin inférieur droit : 50 px de côté, à 28 px du bord
-// droit, à 10 px du bas (50 px quand la page est défilée jusqu'en bas) ;
-// une conversation réduite y prend la même place.
+// Elle occupe le coin inférieur droit, dans une colonne de bulles dont la
+// hauteur varie : conversations réduites empilées au-dessus, bouton
+// d'options, marge plus grande sur téléphone et tablette, décalage en fin de
+// page.
 //
 // Le bouton WhatsApp du module aite_website_whatsapp (facultatif), quand il
-// est à droite, est donc posé juste au-dessus de la bulle, centré sur elle.
-// Ces règles ne s'appliquent que si les deux sont sur la page : rien ne
-// change sans le bouton WhatsApp, ni quand il est placé à gauche.
+// est à droite, est donc posé au-dessus de cette colonne, centré sur la
+// bulle. Sa hauteur exacte est mesurée dans la page
+// (static/src/frontend/whatsapp_spacing.js, variable --o-aite-lc-wa-bottom) ;
+// les valeurs ci-dessous ne servent qu'avant la première mesure. Ces règles
+// ne s'appliquent que si les deux sont sur la page : rien ne change sans le
+// bouton WhatsApp, ni quand il est placé à gauche.
 
-// Haut de la bulle au plus haut : 50 px (marge basse en fin de page) + 50 px.
+// Haut de la bulle seule, au plus haut : 50 px (marge basse en fin de page)
+// + 50 px ; 35 px de plus sur écran tactile (téléphone, tablette).
 $o-aite-lc-bubble-top: 100px;
+$o-aite-lc-bubble-top-touch: 135px;
 $o-aite-lc-gap: 0.75rem;
 // Icône WhatsApp (56 px) centrée sur la bulle (50 px à 28 px du bord).
 $o-aite-lc-wa-right: 25px;
@@ -28,7 +34,11 @@ $-aite-lc-sidebar-right: false;
 }
 
 body:has(> .o-livechat-root) #wrapwrap > .o_aite_wa_button_right {
-    bottom: calc(#{$o-aite-lc-bubble-top} + #{$o-aite-lc-gap} + env(safe-area-inset-bottom, 0px));
+    bottom: var(--o-aite-lc-wa-bottom, calc(#{$o-aite-lc-bubble-top} + #{$o-aite-lc-gap} + env(safe-area-inset-bottom, 0px)));
+
+    @media (pointer: coarse) {
+        bottom: var(--o-aite-lc-wa-bottom, calc(#{$o-aite-lc-bubble-top-touch} + #{$o-aite-lc-gap} + env(safe-area-inset-bottom, 0px)));
+    }
 
     @if $-aite-lc-sidebar-right {
         @media (max-width: 991.98px) {
