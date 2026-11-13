@@ -2486,6 +2486,46 @@
         "#PME",
         "#Douala"
       ]
+    },
+    {
+      "serie": "Panne Microsoft 365 — 13 novembre",
+      "semaine": null,
+      "jour": "vendredi",
+      "moment": "vendredi 13 novembre",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "MS-PANNE-1",
+      "etiquette": "Panne Microsoft 365",
+      "photo": "blazer",
+      "theme": "panne mondiale Microsoft 365 du 12 novembre 2026",
+      "titre": "Panne Microsoft 365 : *4 réflexes* pour *garder le cap*",
+      "points": [
+        "Vérifiez status.cloud.microsoft avant tout dépannage de vos postes.",
+        "Ne réinstallez pas Office et ne supprimez pas votre profil Outlook.",
+        "Ne renvoyez pas vos e-mails en boucle : confirmez l'urgent par téléphone.",
+        "Ne cliquez sur aucun lien promettant de « rétablir » votre compte."
+      ],
+      "legende": "Depuis le jeudi 12 novembre (17 h 17 à Douala pour Exchange Online), Microsoft 365 connaît une panne mondiale qui touche surtout Outlook, avec des effets sur le calendrier de Teams, SharePoint et Copilot. Ce vendredi à 13 h (heure de Douala), selon Microsoft, le service restait dégradé : la reprise progressait en Europe et s'améliorait en Amérique du Nord. Microsoft dit n'avoir à ce stade aucune preuve d'activité malveillante. Il a porté à 48 h le délai pendant lequel les e-mails retardés restent en attente.\n\nPas de panique : les bons gestes évitent d'aggraver la situation. Vérifiez d'abord la page d'état officielle. Gardez Office et votre profil Outlook intacts : dans Outlook installé sur l'ordinateur, la copie locale permet de relire les e-mails déjà synchronisés. Ne renvoyez pas vos messages, appelez pour l'urgent. Méfiez-vous aussi des faux e-mails de « rétablissement » de compte.\n\nEt vous, quel canal de secours votre équipe utilise-t-elle quand la messagerie tombe ?\n\nBesoin d’un plan de secours pour votre messagerie ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Microsoft365",
+        "#ContinuiteActivite",
+        "#Cybersecurite",
+        "#Douala",
+        "#PME"
+      ],
+      "sources": [
+        "Page d'état Microsoft 365, https://status.cloud.microsoft (flux https://status.cloud.microsoft/api/posts/mac), billet du 13/11/2026 à 12:00:37 UTC (13 h à Douala). C'était encore le dernier billet au 13/11/2026 à 12:16 UTC. Contenu : statut « Service degradation » ; reprise « encouraging » en Europe, Japon « comparatively more stable », Amérique du Nord « improving » avec des problèmes intermittents possibles ; « extended 48-hour email timeout window remains in place to help protect delayed messages » ; « no evidence of malicious activity ». Teams : appels, réunions, conversations et canaux standard fonctionnent, seules les fonctions liées à Exchange (calendrier, invitations, événements) sont touchées. Microsoft 365 apps et Apps Admin Center figurent parmi les services touchés. Prochaine mise à jour annoncée avant 13:00 UTC.",
+        "Début de l'incident Exchange Online EX1550543 : 16:17 UTC le 12/11/2026 (17 h 17 à Douala). Incident Microsoft 365 MO1550821 ouvert à 18:26 UTC (19 h 26 à Douala). La page d'état publique ne donne pas d'heure de début. Sources : franceinfo, https://www.franceinfo.fr/internet/panne-informatique-mondiale/outlook-et-teams-perturbes-pas-de-cyberattaque-d-apres-microsoft-ce-que-l-on-sait-de-la-panne-mondiale-qui-touche-le-geant-americain-depuis-jeudi_8280671.html (publié le 13/11/2026 à 11:02, mis à jour à 12:45 ; 16:17 UTC tiré d'un message Downdetector sur l'incident Exchange Online) ; azureblog.co.uk, https://azureblog.co.uk/posts/microsoft-365-outage-12-november-2026/ (13/11/2026) ; BleepingComputer, https://www.bleepingcomputer.com/news/microsoft/massive-microsoft-365-outage-disrupts-outlook-teams-copilot-worldwide/ (12/11/2026 : « began Thursday at 1:26 PM ET »)",
+        "Microsoft Learn, « View service health », https://learn.microsoft.com/en-us/microsoft-365/enterprise/view-service-health (mise à jour le 30/10/2026). La page dit de consulter Service health avant d'appeler le support ou de dépanner, et d'utiliser status.cloud.microsoft et @MSFT365Status si l'on ne peut pas se connecter au Centre d'administration (réflexe 1)",
+        "Microsoft Support, « Turn on Cached Exchange Mode », https://support.microsoft.com/en-us/Outlook/turn-on-cached-exchange-mode (consulté le 13/11/2026) : copie locale dans Outlook classique, 12 mois par défaut, pas en POP/IMAP ni dans le nouvel Outlook. Microsoft Support, « Work offline in Outlook », https://support.microsoft.com/office/work-offline-in-outlook-2460e4a8-16c7-47fc-b204-b1549275aac9 (consulté le 13/11/2026) : mode hors connexion activé par défaut dans le nouvel Outlook, lecture des e-mails possible (réflexe 2)",
+        "Recommandation « ne pas réinstaller Office ni supprimer le profil Outlook » : azureblog.co.uk (12-13/11/2026) et KBY Technologies, https://www.kbytechnologies.com/news-outages/microsoft-365-outage-november-2026 (13/11/2026). C'est une bonne pratique de prestataires, pas une consigne Microsoft. Appui indirect : la page d'état du 13/11/2026 à 12:00 UTC donne une consigne analogue, limitée à Power Apps (ne pas se déconnecter, ne pas vider les données de l'application, ne pas la réinstaller), et liste « Microsoft 365 apps » et « Apps Admin Center » parmi les services touchés (réflexe 2)",
+        "Page d'état Microsoft 365, https://status.cloud.microsoft, 13/11/2026 à 12:00 UTC : fenêtre d'expiration des e-mails portée à 48 h pour protéger les messages retardés. Microsoft Learn, « Mail flow intelligence », https://learn.microsoft.com/en-us/defender-office-365/connectors-mail-flow-intelligence (mise à jour le 02/06/2026) : par défaut, un message en file d'attente est réessayé pendant 24 h avant un avis de non-remise (cas des connecteurs). CyPro, https://cypro.co.uk/insights/cyber-bulletins/microsoft-365-outage-what-happened-on-12-november/ (12/11/2026) : canal approuvé pour l'urgent (réflexe 3)",
+        "Microsoft Learn, « Incident response planning », https://learn.microsoft.com/en-us/security/operations/incident-response-planning (mise à jour le 03/11/2026) : communications hors bande (réflexe 3)",
+        "Microsoft Support, « Avoid tech support scams », https://support.microsoft.com/en-us/security/avoid-tech-support-scams (consulté le 13/11/2026) : Microsoft ne contacte jamais personne de lui-même pour un support technique non sollicité ; ne cliquez sur aucun lien et n'appelez aucun numéro affiché dans un message d'erreur. Cornell IT, https://it.cornell.edu/news/after-outage-rapid-surge-scams-and-phishing (14/05/2026) : forte hausse des arnaques après une panne. IT-Connect, https://www.it-connect.tech/microsoft-365-outage-hits-outlook-teams-and-copilot-for-11-hours/ (13/11/2026) : les liens réécrits par Safe Links peuvent ne plus s'ouvrir (réflexe 4)"
+      ]
     }
   ]
 }
