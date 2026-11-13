@@ -25,6 +25,13 @@
                                 <t t-out="row['deadline']"/>
                                 <div t-if="row['late_days']" style="color: #B42318; font-size: 12px;">
                                     <t t-out="row['late_days']"/> j de retard
+                                    <!-- Gravité du retard (seuils des Paramètres) : pastille
+                                         rouge « critique », orange « élevé » ; rien pour un
+                                         retard léger. -->
+                                    <span t-if="row['severity'] == 'critical'"
+                                          style="display: inline-block; margin-left: 4px; padding: 1px 6px; border-radius: 9px; background-color: #D92D20; color: #FFFFFF; font-size: 11px; font-weight: 600; line-height: 16px;">critique</span>
+                                    <span t-elif="row['severity'] == 'high'"
+                                          style="display: inline-block; margin-left: 4px; padding: 1px 6px; border-radius: 9px; background-color: #FEF0C7; color: #93370D; border: 1px solid #FEC84B; font-size: 11px; font-weight: 600; line-height: 14px;">élevé</span>
                                 </div>
                             </td>
                             <td style="padding: 8px; vertical-align: top;">
@@ -65,10 +72,17 @@
                                     <p style="font-size: 14px; margin: 16px 0 0 0;">
                                         Bonjour <t t-out="user.name"/>,<br/>
                                         voici vos activités en cours sur les opportunités :
-                                        <strong style="color: #B42318;"><t t-out="counts['overdue']"/> en retard</strong>,
+                                        <strong style="color: #B42318;"><t t-out="counts['overdue']"/> en retard</strong><t t-if="critical_count"> (dont <t t-out="critical_label"/>)</t>,
                                         <strong style="color: #B54708;"><t t-out="counts['today']"/> pour aujourd'hui</strong>
                                         <t t-if="upcoming_days">et <strong><t t-out="counts['upcoming']"/> à venir</strong>
                                             sur les <t t-out="upcoming_days"/> prochains jours</t>.
+                                    </p>
+                                    <!-- Revenu attendu des opportunités en retard que l'utilisateur
+                                         peut lire (chacune une seule fois), un montant par devise ;
+                                         rien à zéro. -->
+                                    <p t-if="overdue_amounts" style="font-size: 14px; margin: 12px 0 0 0; padding: 8px 12px; background-color: #FEF3F2; border-left: 3px solid #D92D20;">
+                                        <strong>Montant en jeu : <t t-foreach="overdue_amounts" t-as="amount"><t t-if="not amount_first"> · </t><t t-out="amount['label']"/></t></strong>
+                                        <span style="color: #6C757D;">sur les opportunités en retard</span>
                                     </p>
                                 </td>
                             </tr>

@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 import logging
+from collections import defaultdict
 from datetime import timedelta
 from urllib.parse import urlencode
 
 import pytz
 
 from odoo import api, fields, models, tools
+
+from .crm_activity_params import actionable_activity_domain, get_thresholds, severity
 
 _logger = logging.getLogger(__name__)
 
@@ -59,11 +62,15 @@ class AiteCrmActivityDigest(models.AbstractModel):
         Une personne sans droits sur le CRM à qui une activité a été
         confiée sur une opportunité reçoit aussi le récapitulatif (Odoo lui
         montre ces activités) ; l'e-mail ne lui propose alors pas le
-        tableau de bord. """
+        tableau de bord.
+
+        Les activités restées ouvertes sur une opportunité perdue (archivée)
+        ne comptent pas : personne ne les traitera, elles ne justifient
+        donc pas un e-mail. """
         horizon = fields.Date.today() + timedelta(days=self._get_upcoming_days() + 1)
         groups = self.env['mail.activity'].sudo()._read_group(
             [('res_model', '=', 'crm.lead'), ('date_deadline', '<=', horizon),
-             ('user_id', '!=', False)],
+             ('user_id', '!=', False)] + actionable_activity_domain(self.env),
             ['user_id'],
         )
         users = self.env['res.users'].sudo().union(*(user for (user,) in groups))
@@ -81,6 +88,9 @@ class AiteCrmActivityDigest(models.AbstractModel):
         """ Activités de l'utilisateur, lues avec ses propres droits, dans
         son fuseau horaire et sa langue. Renvoie None s'il n'a rien.
 
+        Les activités restées ouvertes sur une opportunité perdue (archivée)
+        n'y figurent pas : elles ne sont plus à faire.
+
         :param now: instant de référence (datetime UTC naïf), pour les tests
         """
         env = self.with_user(user).with_context(
@@ -91,7 +101,7 @@ class AiteCrmActivityDigest(models.AbstractModel):
             ('res_model', '=', 'crm.lead'),
             ('user_id', '=', user.id),
             ('date_deadline', '<=', horizon),
-        ], order='date_deadline asc, id asc')
+        ] + actionable_activity_domain(env), order='date_deadline asc, id asc')
         if not activities:
             return None
 
@@ -100,20 +110,29 @@ class AiteCrmActivityDigest(models.AbstractModel):
         # (comme dans le tableau de bord).
         readable = {lead.id: lead for lead in leads._filtered_access('read').sudo()}
         base_url = self.get_base_url()
+        # Gravité du retard : mêmes seuils que le tableau de bord (Paramètres).
+        thresholds = get_thresholds(env)
 
+        # Tri par échéance croissante : la section « En retard » commence par
+        # le retard le plus ancien.
         sections = {'overdue': [], 'today': [], 'upcoming': []}
+        overdue_lead_ids = set()
         for activity in activities:
             deadline = activity.date_deadline
             key = 'overdue' if deadline < today else 'today' if deadline == today else 'upcoming'
+            late_days = (today - deadline).days if key == 'overdue' else 0
+            if key == 'overdue':
+                overdue_lead_ids.add(activity.res_id)
             lead = readable.get(activity.res_id)
             sections[key].append({
                 'type': activity.activity_type_id.name or '',
                 'summary': activity.summary or '',
                 'deadline': tools.format_date(env, deadline),
-                'late_days': (today - deadline).days if key == 'overdue' else 0,
-                'lead_name': lead.name if lead else activity.res_name,
-                'partner': lead.partner_id.display_name if lead else '',
-                'stage': lead.stage_id.name if lead else '',
+                'late_days': late_days,
+                'severity': severity(late_days, thresholds),
+                'lead_name': (lead.name if lead else activity.res_name) or '',
+                'partner': (lead.partner_id.display_name if lead else '') or '',
+                'stage': (lead.stage_id.name if lead else '') or '',
                 'revenue': tools.format_amount(env, lead.expected_revenue, lead.company_currency)
                            if lead and lead.expected_revenue else '',
                 # Lien seulement vers une opportunité que l'utilisateur peut
@@ -121,9 +140,18 @@ class AiteCrmActivityDigest(models.AbstractModel):
                 'url': '%s/mail/view?%s' % (base_url, urlencode({
                     'model': 'crm.lead', 'res_id': activity.res_id})) if lead else False,
             })
+        # Comptages et montant sur toutes les activités, avant la limite
+        # d'affichage de chaque section.
         counts = {key: len(rows) for key, rows in sections.items()}
+        critical_count = sum(1 for row in sections['overdue'] if row['severity'] == 'critical')
+        overdue_amounts = self._get_overdue_amounts(env, user, readable, overdue_lead_ids)
         for key in sections:
             sections[key] = sections[key][:MAX_ROWS_PER_SECTION]
+        # Le tableau de bord est réservé aux utilisateurs du CRM. Avec des
+        # activités en retard, le bouton ouvre directement la liste « En
+        # retard » (action client au chemin « activites-en-retard »).
+        can_open_dashboard = user.has_group('sales_team.group_sale_salesman')
+        path = 'activites-en-retard' if counts['overdue'] and can_open_dashboard else 'suivi-activites'
         return {
             'lang_env': env,
             'user': user,
@@ -132,12 +160,51 @@ class AiteCrmActivityDigest(models.AbstractModel):
             'sections': sections,
             'counts': counts,
             'total': sum(counts.values()),
+            'critical_count': critical_count,
+            'critical_label': self._critical_label(env, critical_count) if critical_count else '',
+            'overdue_amounts': overdue_amounts,
             'upcoming_days': self._get_upcoming_days(),
             'max_rows': MAX_ROWS_PER_SECTION,
-            'dashboard_url': '%s/odoo/suivi-activites' % base_url,
-            # Le tableau de bord est réservé aux utilisateurs du CRM.
-            'can_open_dashboard': user.has_group('sales_team.group_sale_salesman'),
+            'dashboard_url': '%s/odoo/%s' % (base_url, path),
+            'can_open_dashboard': can_open_dashboard,
         }
+
+    @api.model
+    def _get_overdue_amounts(self, env, user, readable, lead_ids):
+        """ Montant en jeu : somme du revenu attendu des opportunités derrière
+        les activités en retard, par devise de leur société.
+
+        Chaque opportunité ne compte qu'une fois, même avec plusieurs
+        activités en retard ; seules comptent celles que l'utilisateur peut
+        lire (une activité confiée sur l'opportunité d'un collègue n'en
+        dévoile pas le montant). Les devises à zéro sont omises ; la devise
+        de la société de l'utilisateur vient en premier.
+
+        :param readable: {id: opportunité lisible par l'utilisateur (en sudo)}
+        :param lead_ids: ids des opportunités ayant une activité en retard
+        :return: [{'currency_id', 'amount', 'label'}], ``label`` mis en forme
+                 par ``tools.format_amount`` dans la langue de l'utilisateur
+        """
+        totals = defaultdict(float)
+        for lead_id in lead_ids:
+            lead = readable.get(lead_id)
+            if lead and lead.expected_revenue:
+                totals[lead.company_currency] += lead.expected_revenue
+        main_currency = user.company_id.currency_id
+        return [
+            {'currency_id': currency.id, 'amount': amount,
+             'label': tools.format_amount(env, amount, currency)}
+            for currency, amount in sorted(
+                totals.items(), key=lambda item: (item[0] != main_currency, item[0].name))
+            if not currency.is_zero(amount)
+        ]
+
+    @api.model
+    def _critical_label(self, env, count):
+        """ « 1 critique », « 2 critiques » : accord en nombre. """
+        if count > 1:
+            return env._("%(count)s critiques", count=count)
+        return env._("%(count)s critique", count=count)
 
     @api.model
     def _prepare_mail_values(self, user, digest):
@@ -145,7 +212,12 @@ class AiteCrmActivityDigest(models.AbstractModel):
         values = {key: value for key, value in digest.items() if key != 'lang_env'}
         body = env['ir.qweb']._render('aite_crm_activity.digest_email', values)
         counts = digest['counts']
-        if counts['overdue']:
+        if counts['overdue'] and digest['critical_count']:
+            # « Vos activités CRM du jour : 5, dont 2 en retard (1 critique) »
+            subject = env._(
+                "Vos activités CRM du jour : %(total)s, dont %(overdue)s en retard (%(critical)s)",
+                total=digest['total'], overdue=counts['overdue'], critical=digest['critical_label'])
+        elif counts['overdue']:
             subject = env._(
                 "Vos activités CRM du jour : %(total)s, dont %(overdue)s en retard",
                 total=digest['total'], overdue=counts['overdue'])
