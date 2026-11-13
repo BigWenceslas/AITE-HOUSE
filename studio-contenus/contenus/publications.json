@@ -2396,6 +2396,96 @@
         "#PME",
         "#Douala"
       ]
+    },
+    {
+      "serie": "Vendredi 13 novembre — au choix",
+      "semaine": null,
+      "jour": "vendredi",
+      "moment": "vendredi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-25",
+      "etiquette": "Conseil organisation",
+      "photo": "veste-pied",
+      "theme": "préparer les congés de fin d’année",
+      "titre": "Avant les congés : 4 règles pour que *le bureau tourne sans vous*",
+      "points": [
+        "Un message d’absence clair : jusqu’à quand, et qui contacter à votre place.",
+        "Un remplaçant désigné pour chaque dossier urgent, briefé avant le départ.",
+        "Les validations déléguées dans le logiciel, pas seulement à l’oral.",
+        "On ne confie pas son mot de passe : on délègue un accès, pas son compte."
+      ],
+      "legende": "Décembre arrive, les congés aussi. Et chaque année, c’est la même histoire : le patron est au village, une facture attend sa signature, le fournisseur menace de couper. Tout le monde appelle, le réseau ne passe pas. Ça va gâter.\n\nAvant de partir : un message d’absence avec la date de retour et le nom de la personne à contacter, un remplaçant pour chaque dossier urgent, des validations déléguées dans les outils (dans Microsoft 365 comme dans Odoo, cela se paramètre), et jamais son mot de passe confié à un collègue.\n\nQui signe à votre place quand vous êtes en congé ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Organisation",
+        "#Microsoft365",
+        "#Odoo",
+        "#PME",
+        "#Douala"
+      ]
+    },
+    {
+      "serie": "Vendredi 13 novembre — au choix",
+      "semaine": null,
+      "jour": "vendredi",
+      "moment": "vendredi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-26",
+      "etiquette": "Conseil matériel",
+      "photo": "boubou",
+      "theme": "acheter un ordinateur professionnel",
+      "titre": "Acheter un PC pour le bureau : 4 points *avant de payer*",
+      "points": [
+        "Un disque SSD et 16 Go de mémoire : en dessous, il ralentit vite.",
+        "Windows 11 Professionnel avec une vraie licence, pas une version piratée.",
+        "Une garantie d’au moins un an, avec un service après-vente au Cameroun.",
+        "Avant la remise : inventaire, antivirus, sauvegarde et chiffrement."
+      ],
+      "legende": "La fin d’année, c’est souvent le moment de renouveler le matériel. Et c’est là qu’on se fait avoir : un « bon prix » au marché, un PC qui rame au bout de six mois, une licence qui saute, et pas de garantie quand la carte mère lâche.\n\nAvant de payer, vérifiez quatre points : un disque SSD et assez de mémoire (16 Go pour être tranquille), Windows 11 Professionnel avec une vraie licence, une garantie avec un service après-vente au Cameroun, et une vraie préparation avant de remettre le poste : inscription à l’inventaire, antivirus, sauvegarde et chiffrement du disque.\n\nVos derniers ordinateurs ont-ils tenu leurs promesses ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Informatique",
+        "#Windows",
+        "#Infogerance",
+        "#PME",
+        "#Cameroun"
+      ]
+    },
+    {
+      "serie": "Vendredi 13 novembre — au choix",
+      "semaine": null,
+      "jour": "vendredi",
+      "moment": "vendredi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-27",
+      "etiquette": "Conseil caisse",
+      "photo": "ndop",
+      "theme": "encaissements Mobile Money",
+      "titre": "Mobile Money : 4 règles pour que *la caisse colle*",
+      "points": [
+        "Un compte marchand au nom de l’entreprise, pas le numéro du caissier.",
+        "Chaque paiement porte la référence de la facture ou du ticket.",
+        "Le relevé est rapproché chaque semaine avec les ventes.",
+        "Les frais de transaction et de retrait sont comptabilisés, pas oubliés."
+      ],
+      "legende": "Le client paie par Orange Money ou MoMo, sur le numéro personnel du caissier. En fin de mois, personne ne sait plus quel paiement correspond à quelle vente, et les frais de retrait ont mangé une partie de la marge. Mola, c’est comme ça que l’argent disparaît sans bruit.\n\nOuvrez un compte marchand au nom de l’entreprise, demandez la référence de la facture à chaque paiement, rapprochez le relevé avec les ventes chaque semaine, et comptabilisez les frais. Un logiciel de caisse ou de comptabilité qui importe les relevés fait ce travail en quelques minutes.\n\nAujourd’hui, sur quel numéro vos clients vous paient-ils ? Diagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#MobileMoney",
+        "#Caisse",
+        "#Comptabilite",
+        "#PME",
+        "#Douala"
+      ]
     }
   ]
 }

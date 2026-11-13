@@ -1178,6 +1178,69 @@
         "#Vin",
         "#Moderation"
       ]
+    },
+    {
+      "serie": "Vendredi 13 novembre — au choix",
+      "points": [],
+      "etiquette": "",
+      "id": "VD-VEN-1",
+      "jour": "vendredi",
+      "moment": "vendredi 12h",
+      "modele": "vd-ambiance",
+      "titre": "C’est vendredi, mola !",
+      "texte": "LA SEMAINE EST FINIE, *ON SE RETROUVE* CE SOIR À LA VÉRANDAH",
+      "photo": null,
+      "alcool": true,
+      "legende": "C’est vendredi ! Tu as bien bossé, maintenant on souffle. Les amis, la musique, la bonne table : tout est prêt à Makepe. Tu viens avec qui ce soir ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98\nL’abus d’alcool est dangereux pour la santé. À consommer avec modération.",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#Vendredi",
+        "#Moderation"
+      ]
+    },
+    {
+      "serie": "Vendredi 13 novembre — au choix",
+      "jour": "vendredi",
+      "modele": "vd-sombre",
+      "titre": "",
+      "points": [],
+      "id": "VD-VEN-2",
+      "moment": "vendredi 17h",
+      "etiquette": "Bon vendredi",
+      "photo": "tunique",
+      "alcool": false,
+      "texte": "Vendredi, on ne rentre pas directement, mola ! *Les amis t’attendent* à La Vérandah.",
+      "legende": "Le bureau, c’est fini pour cette semaine. Avant de rentrer, passe dire bonjour aux amis, on s’assoit, on rigole, on oublie la fatigue. À quelle heure tu arrives ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#AfterWork",
+        "#BonWeekEnd"
+      ]
+    },
+    {
+      "serie": "Vendredi 13 novembre — au choix",
+      "jour": "vendredi",
+      "modele": "vd-sombre",
+      "titre": "",
+      "points": [],
+      "id": "VD-VEN-3",
+      "moment": "vendredi 21h",
+      "etiquette": "Le conseil de la cave",
+      "photo": "blazer",
+      "alcool": true,
+      "texte": "Vendredi soir, on s’amuse, mola. Mais si tu as bu, *ta clé reste dans ta poche* : on t’appelle un taxi.",
+      "legende": "La fête est belle quand tout le monde rentre bien. Tu as bu ? Tu laisses la voiture, tu prends un taxi ou tu rentres avec celui qui n’a pas bu. Demain matin, tu nous remercieras. Qui conduit chez vous ce soir ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98\nL’abus d’alcool est dangereux pour la santé. À consommer avec modération.",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#ConseilDeLaCave",
+        "#Moderation",
+        "#RentreBien"
+      ]
     }
   ]
 }

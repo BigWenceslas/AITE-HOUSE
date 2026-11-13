@@ -947,3 +947,55 @@ L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
 
 #LaVerandah #Douala #ConseilDeLaCave #Vin #Moderation
 ```
+
+## Vendredi 13 novembre — au choix
+
+### Vendredi 12h — Ambiance · undefined
+
+![VD-VEN-1](VD-VEN-1-vd-ambiance.jpg)
+
+**Visuel :** C’est vendredi, mola ! — LA SEMAINE EST FINIE, ON SE RETROUVE CE SOIR À LA VÉRANDAH
+
+**Légende à publier :**
+
+```text
+C’est vendredi ! Tu as bien bossé, maintenant on souffle. Les amis, la musique, la bonne table : tout est prêt à Makepe. Tu viens avec qui ce soir ?
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
+
+#LaVerandah #Douala #Makepe #Vendredi #Moderation
+```
+
+### Vendredi 17h — Pensée (photo ronde) · undefined
+
+![VD-VEN-2](VD-VEN-2-vd-sombre.jpg)
+
+**Visuel :** Bon vendredi — Vendredi, on ne rentre pas directement, mola ! Les amis t’attendent à La Vérandah.
+
+**Légende à publier :**
+
+```text
+Le bureau, c’est fini pour cette semaine. Avant de rentrer, passe dire bonjour aux amis, on s’assoit, on rigole, on oublie la fatigue. À quelle heure tu arrives ?
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #Douala #Makepe #AfterWork #BonWeekEnd
+```
+
+### Vendredi 21h — Pensée (photo ronde) · undefined
+
+![VD-VEN-3](VD-VEN-3-vd-sombre.jpg)
+
+**Visuel :** Le conseil de la cave — Vendredi soir, on s’amuse, mola. Mais si tu as bu, ta clé reste dans ta poche : on t’appelle un taxi.
+
+**Légende à publier :**
+
+```text
+La fête est belle quand tout le monde rentre bien. Tu as bu ? Tu laisses la voiture, tu prends un taxi ou tu rentres avec celui qui n’a pas bu. Demain matin, tu nous remercieras. Qui conduit chez vous ce soir ?
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
+
+#LaVerandah #Douala #ConseilDeLaCave #Moderation #RentreBien
+```
