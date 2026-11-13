@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- Discuss → conversation du chat → panneau « Informations » :
+         l'e-mail et le téléphone que le visiteur a écrits (ou l'e-mail de
+         son compte). Données réservées aux utilisateurs internes, mises à
+         jour en direct. -->
+    <t t-inherit="im_livechat.LivechatChannelInfoList" t-inherit-mode="extension">
+        <xpath expr="//t[@t-name='extra_infos']" position="before">
+            <div t-if="props.thread.aite_visitor_email or props.thread.aite_visitor_phone"
+                 class="o-aite-livechat-VisitorContact d-flex flex-column bg-inherit gap-1">
+                <h6 class="pt-3 mb-1">Contact du visiteur</h6>
+                <a t-if="props.thread.aite_visitor_email"
+                   class="d-flex align-items-center gap-2 text-break"
+                   t-attf-href="mailto:{{ props.thread.aite_visitor_email }}"
+                   title="E-mail du visiteur">
+                    <i class="fa fa-fw fa-envelope-o" aria-hidden="true"/>
+                    <span t-esc="props.thread.aite_visitor_email"/>
+                </a>
+                <a t-if="props.thread.aite_visitor_phone"
+                   class="d-flex align-items-center gap-2 text-break"
+                   t-attf-href="tel:{{ props.thread.aite_visitor_phone }}"
+                   title="Téléphone du visiteur">
+                    <i class="fa fa-fw fa-phone" aria-hidden="true"/>
+                    <span t-esc="props.thread.aite_visitor_phone"/>
+                </a>
+            </div>
+        </xpath>
+    </t>
+
+</templates>

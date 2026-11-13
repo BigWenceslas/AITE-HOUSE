@@ -1,0 +1,40 @@
+// AITE — Chat du site : la bulle du chat et le bouton WhatsApp ne se
+// chevauchent jamais.
+//
+// La bulle est dessinée par Odoo dans un « shadow DOM », sous un
+// div.o-livechat-root ajouté à la fin du <body> dès que le chat peut
+// s'afficher sur la page : aucune feuille de style du site ne l'atteint.
+// Elle occupe le coin inférieur droit : 50 px de côté, à 28 px du bord
+// droit, à 10 px du bas (50 px quand la page est défilée jusqu'en bas) ;
+// une conversation réduite y prend la même place.
+//
+// Le bouton WhatsApp du module aite_website_whatsapp (facultatif), quand il
+// est à droite, est donc posé juste au-dessus de la bulle, centré sur elle.
+// Ces règles ne s'appliquent que si les deux sont sur la page : rien ne
+// change sans le bouton WhatsApp, ni quand il est placé à gauche.
+
+// Haut de la bulle au plus haut : 50 px (marge basse en fin de page) + 50 px.
+$o-aite-lc-bubble-top: 100px;
+$o-aite-lc-gap: 0.75rem;
+// Icône WhatsApp (56 px) centrée sur la bulle (50 px à 28 px du bord).
+$o-aite-lc-wa-right: 25px;
+
+// En-tête « barre latérale » à droite (Site Web → Thème → En-tête) : sur
+// grand écran, le module WhatsApp décale son bouton de la largeur de la
+// barre ; ce décalage est conservé.
+$-aite-lc-sidebar-right: false;
+@if function-exists('o-website-value') {
+    $-aite-lc-sidebar-right: o-website-value('header-template') == 'sidebar' and o-website-value('hamburger-position') == 'right';
+}
+
+body:has(> .o-livechat-root) #wrapwrap > .o_aite_wa_button_right {
+    bottom: calc(#{$o-aite-lc-bubble-top} + #{$o-aite-lc-gap} + env(safe-area-inset-bottom, 0px));
+
+    @if $-aite-lc-sidebar-right {
+        @media (max-width: 991.98px) {
+            right: calc(#{$o-aite-lc-wa-right} + env(safe-area-inset-right, 0px));
+        }
+    } @else {
+        right: calc(#{$o-aite-lc-wa-right} + env(safe-area-inset-right, 0px));
+    }
+}

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Site web → Configuration → Paramètres → bloc « Général » → « Live
+         Chat » : sous le choix du canal (module website_livechat), les
+         réglages du canal du site choisi en tête de l'écran. Réservés, comme
+         le choix du canal, aux responsables du Live Chat. -->
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.aite.website.livechat</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="website_livechat.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <setting id="livechat" position="inside">
+                <div class="content-group" id="aite_livechat_settings"
+                     groups="im_livechat.im_livechat_group_manager"
+                     invisible="not channel_id">
+                    <div class="mt16">
+                        <field name="aite_livechat_always_available" class="w-auto"/>
+                        <label for="aite_livechat_always_available" string="Toujours joignable" class="o_light_label ms-2"/>
+                        <div class="text-muted small">
+                            La bulle reste affichée même quand aucun opérateur n'est connecté : les messages
+                            des visiteurs arrivent dans Discuss et en notification push (navigateur,
+                            application mobile Odoo).
+                        </div>
+                    </div>
+                    <div class="mt16" invisible="not aite_livechat_always_available">
+                        <label for="aite_livechat_away_message" string="Message d'absence" class="o_light_label"/>
+                        <field name="aite_livechat_away_message" class="w-100"
+                               placeholder="Merci pour votre message ! Nous vous répondons ici dès que possible."/>
+                        <div class="text-muted small">
+                            Envoyé une fois par conversation, au premier message du visiteur, si l'opérateur
+                            n'est pas en ligne. Vide : pas de message d'absence.
+                        </div>
+                    </div>
+                    <div class="mt16">
+                        <field name="aite_livechat_email_reply" class="w-auto"/>
+                        <label for="aite_livechat_email_reply" string="Réponse par e-mail" class="o_light_label ms-2"/>
+                        <div class="text-muted small">
+                            Si le visiteur a quitté le site et a donné son adresse e-mail, vos réponses lui sont
+                            aussi envoyées par e-mail (au plus un e-mail toutes les 10 minutes).
+                        </div>
+                    </div>
+                    <div class="mt8">
+                        <button name="action_aite_livechat_operators" type="object"
+                                string="Opérateurs du chat" icon="oi-arrow-right" class="btn-link"/>
+                    </div>
+                </div>
+            </setting>
+        </field>
+    </record>
+
+</odoo>

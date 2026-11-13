@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Live Chat → Configuration → Canaux → onglet « Options » : les mêmes
+         réglages, pour tout canal (sites multiples, canal intégré à un autre
+         site). -->
+    <record id="im_livechat_channel_view_form" model="ir.ui.view">
+        <field name="name">im_livechat.channel.form.inherit.aite.website.livechat</field>
+        <field name="model">im_livechat.channel</field>
+        <field name="inherit_id" ref="im_livechat.im_livechat_channel_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='options']" position="inside">
+                <group string="Quand personne n'est en ligne" name="aite_offline">
+                    <group>
+                        <field name="aite_always_available"/>
+                        <field name="aite_away_message"
+                               invisible="not aite_always_available"
+                               placeholder="Merci pour votre message ! Nous vous répondons ici dès que possible."/>
+                        <field name="aite_email_reply"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
