@@ -48,6 +48,15 @@ function verifierRapport() {
             if (!annulations[0].textContent.includes(motif)) {
                 throw new Error(`motif « ${motif} » absent : ${annulations[0].textContent}`);
             }
+            // Revue de 6a, constat 4 : la table et la quantité sont nommées
+            // (« Table 4 · Coca-Cola », « Qté 1 · … »), pas deux nombres nus.
+            const ligne = annulations[0].textContent.replace(/\s+/g, " ");
+            const table = donnees.aite_annulations[0].table;
+            for (const attendu of [`Table ${table} · `, "Qté 1 · "]) {
+                if (!ligne.includes(attendu)) {
+                    throw new Error(`« ${attendu} » absent de la ligne : ${ligne}`);
+                }
+            }
             const total = bloc.querySelector("[data-aite-quantite]")?.dataset.aiteQuantite;
             if (total !== "1") {
                 throw new Error(`total annulé : « ${total} »`);

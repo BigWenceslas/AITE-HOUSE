@@ -47,7 +47,7 @@
                             class="border-bottom border-secondary">
                             <td class="ps-2"><span t-out="annulation['table']">12</span></td>
                             <td><span t-out="annulation['produit']">Castel</span></td>
-                            <td class="text-end"><span t-out="'%g' % annulation['quantite']">1</span></td>
+                            <td class="text-end"><span t-out="annulation['quantite_texte']">1</span></td>
                             <td class="text-end">
                                 <t t-if="currency['position']">
                                     <span t-out="annulation['montant']" t-options="{'widget': 'float', 'precision': currency['precision']}">1000</span>&#160;<span t-out="currency['symbol']">FCFA</span>
@@ -61,7 +61,7 @@
                         </tr>
                         <tr class="fw-bold">
                             <td class="ps-2" colspan="2">Total</td>
-                            <td class="text-end"><span t-out="'%g' % aite_annulations_total['quantite']">1</span></td>
+                            <td class="text-end"><span t-out="aite_annulations_total['quantite_texte']">1</span></td>
                             <td class="text-end">
                                 <t t-if="currency['position']">
                                     <span t-out="aite_annulations_total['montant']" t-options="{'widget': 'float', 'precision': currency['precision']}">1000</span>&#160;<span t-out="currency['symbol']">FCFA</span>

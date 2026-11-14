@@ -121,6 +121,10 @@ class RestaurantCommon(TestPoSCommon):
                 cls.env.ref('account.group_account_invoice').id,
             ])],
         })
+        # Le compte du manager (partie 4.4) : Administrateur du Point de Vente,
+        # Employés « Agent » et, depuis la revue de 6a (constat 2), le droit
+        # Facturation : le rapport de session d'Odoo lit les paiements
+        # comptables (account.payment) dès qu'une vente est payée.
         cls.compte_manager = Users.create({
             'name': "Manager du restaurant",
             'login': 'aite_manager_resto',
@@ -131,6 +135,7 @@ class RestaurantCommon(TestPoSCommon):
                 cls.env.ref('base.group_user').id,
                 cls.env.ref('point_of_sale.group_pos_manager').id,
                 cls.env.ref('hr.group_hr_user').id,
+                cls.env.ref('account.group_account_invoice').id,
             ])],
         })
 

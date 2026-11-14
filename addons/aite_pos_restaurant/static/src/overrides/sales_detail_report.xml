@@ -7,7 +7,13 @@
          annulations de la session, avec leur motif et qui les a autorisées
          (REST-25 critère 5, Q51, REST-22). Seulement pour une caisse au
          service à table contrôlé (aite_restaurant, posé par le serveur dans
-         get_sale_details). Les attributs data-aite servent aux tours. -->
+         get_sale_details). Les attributs data-aite servent aux tours.
+         Une annulation : « Table 12 · Castel », puis « Qté 2 · 2 000 » (revue
+         de 6a, constat 4 : deux nombres nus se lisaient comme deux
+         quantités) ; la quantité est écrite par le serveur (« 1,5 »). Les
+         mots « Table » et « Qté » sont dans des expressions, pas en texte :
+         la caisse traduit un texte par sa seule valeur, et « Table » y devient
+         « Tableau » avec les modules hôteliers (AH-09). -->
     <t t-name="aite_pos_restaurant.SaleDetailsReport" t-inherit="point_of_sale.SaleDetailsReport" t-inherit-mode="extension">
         <xpath expr="//div[hasclass('pos-receipt-order-data')]" position="before">
             <div t-if="aite_restaurant" class="aite-rapport-restaurant">
@@ -34,10 +40,9 @@
                 <div t-foreach="aite_annulations" t-as="annulation" t-key="annulation_index"
                      class="aite-annulation">
                     <div class="responsive-price">
-                        <t t-esc="annulation.table"/> · <t t-esc="annulation.produit.substr(0, 20)"/>
-                        <span class="pos-receipt-right-align">
-                            <t t-esc="annulation.quantite"/> · <t t-esc="formatCurrency(annulation.montant, false)"/>
-                        </span>
+                        <t t-esc="(annulation.table ? 'Table ' + annulation.table + ' · ' : '') + annulation.produit.substr(0, 20)"/>
+                        <span class="pos-receipt-right-align"
+                              t-esc="'Qté ' + annulation.quantite_texte + ' · ' + formatCurrency(annulation.montant, false)"/>
                     </div>
                     <div class="pos-receipt-left-padding">
                         <t t-esc="annulation.motif"/>
@@ -49,7 +54,7 @@
                     Total annulé
                     <span class="pos-receipt-right-align"
                           t-att-data-aite-quantite="aite_annulations_total.quantite"
-                          t-esc="aite_annulations_total.quantite + ' · ' + formatCurrency(aite_annulations_total.montant, false)"/>
+                          t-esc="'Qté ' + aite_annulations_total.quantite_texte + ' · ' + formatCurrency(aite_annulations_total.montant, false)"/>
                 </div>
             </div>
         </xpath>

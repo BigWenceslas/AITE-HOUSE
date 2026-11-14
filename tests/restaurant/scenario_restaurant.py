@@ -50,6 +50,7 @@ from lxml import etree
 from odoo import fields
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tests import Form
+from odoo.tools.safe_eval import safe_eval
 
 ok_count = 0
 ko = []
@@ -146,7 +147,8 @@ manager = Users.create({
     'email': 'manager@restaurant.example',
     'groups_id': [(6, 0, [env.ref('base.group_user').id,
                           env.ref('point_of_sale.group_pos_manager').id,
-                          env.ref('hr.group_hr_user').id])],
+                          env.ref('hr.group_hr_user').id,
+                          env.ref('account.group_account_invoice').id])],
 })
 check("le compte de la caisse a un courriel et le droit Facturation",
       bool(caisse.email) and caisse.has_group('account.group_account_invoice'))
@@ -157,6 +159,11 @@ check("le compte de la caisse est « Utilisateur » du Point de Vente, sans droi
 check("le manager a Employés « Agent » et l'administration du Point de Vente",
       manager.has_group('hr.group_hr_user')
       and manager.has_group('point_of_sale.group_pos_manager'))
+# Revue de 6a, constat 2 : le rapport de session et « Détails des ventes »
+# d'Odoo lisent les paiements comptables (account.payment) dès qu'une vente
+# est payée ; sans le droit Facturation, Odoo refuse le rapport au manager.
+check("le manager a aussi le droit Facturation : il ouvre le rapport de session",
+      manager.has_group('account.group_account_invoice'))
 
 print("\n═══ 3. Le manager saisit son équipe (incrément 1) ═══")
 Employes = env['hr.employee'].with_user(manager)
@@ -785,7 +792,6 @@ deja = (1, 2) if ardoise else (0, 0)
 
 def personnes_et_tables():
     """Les totaux de la vue croisée « Personnes et tables » sur la session."""
-    from odoo.tools.safe_eval import safe_eval
     domaine = safe_eval(action_pt.domain or '[]') + [('session_id', '=', session.id)]
     ligne = Commandes_manager.read_group(
         domaine, ['aite_tables:sum', 'aite_personnes:sum', 'aite_sans_table:sum',
@@ -805,9 +811,14 @@ if action_pt and 'aite_tables' in env['pos.order']._fields:
           (table.aite_tables, table.aite_personnes, part_12b.aite_tables, part_12b.aite_personnes)
           == (1, 6, 0, 0),
           (table.aite_tables, table.aite_personnes, part_12b.aite_tables, part_12b.aite_personnes))
+    lues_pt = env['pos.order'].with_user(manager).search(
+        safe_eval(action_pt.domain or '[]') + [('session_id', '=', session.id)])
+    ecartees = table_7_cmd | table_1 | table_9_cmd
     check("la table 7 absorbée par la réunion, la table 1 annulée, la table 9 encore ouverte : "
           "aucune n'est comptée",
-          table_7_cmd.state == 'cancel' and table_9_cmd.state == 'draft')
+          (table_7_cmd.state, table_1.state, table_9_cmd.state) == ('cancel', 'cancel', 'draft')
+          and not (lues_pt & ecartees) and table in lues_pt,
+          ((table_7_cmd.state, table_1.state, table_9_cmd.state), (lues_pt & ecartees).ids))
     check("« Personnes et tables » du jour : tables %d, personnes %d" % (deja[0] + 1,
                                                                        deja[1] + 6),
           personnes_et_tables() == (deja[0] + 1, deja[1] + 6, 0), personnes_et_tables())
@@ -820,13 +831,22 @@ if action_pt and 'aite_tables' in env['pos.order']._fields:
               for l in par_serveur), par_serveur)
 else:
     check("« Personnes et tables » existe (incrément 6)", False)
-# « Détails des ventes » et le rapport de session lisent les paiements
-# comptables (account.payment) : Odoo les refuse à un Administrateur du Point
-# de Vente sans le droit Facturation (constat de l'incrément 6, à ajouter aux
-# réglages des comptes par AITE, partie 4.4). AITE le lui donne.
-manager.groups_id += env.ref('account.group_account_invoice')
-details = env['report.point_of_sale.report_saledetails'].with_user(manager).get_sale_details(
-    False, False, False, [session.id])
+
+
+def details_des_ventes(utilisateur):
+    """Les données du rapport de session (« Détails des ventes » d'Odoo et
+    nos lignes), lues par ``utilisateur`` ; ``{'erreur': …}`` si Odoo refuse."""
+    try:
+        with env.cr.savepoint():
+            return env['report.point_of_sale.report_saledetails'].with_user(
+                utilisateur).get_sale_details(False, False, False, [session.id])
+    except AccessError as erreur:
+        return {'erreur': str(erreur), 'products': []}
+
+
+details = details_des_ventes(manager)
+check("le manager ouvre « Détails des ventes » de la session (droit Facturation)",
+      'erreur' not in details, details.get('erreur'))
 vendus = {}
 for categorie in details['products']:
     for l in categorie['products']:
@@ -845,6 +865,11 @@ check("« 99 » ouvre une table à ce nom, à 2 personnes, ouverte par Awa",
       numero.floating_order_name == "99" and numero.customer_count == 2
       and numero.aite_ouverte_par_id == awa and bool(numero.aite_heure_ouverture))
 ajouter(t99, castel, 1)
+# Le manager a mis un jus à la carte ; Awa en sert un à la table 99.
+jus = env['product.product'].with_user(manager).create({
+    'name': "Jus de gingembre", 'type': 'consu', 'available_in_pos': True,
+    'list_price': 500, 'taxes_id': [(5, 0, 0)]})
+ajouter(t99, jus, 1)
 caisse_envoie(t99, carine, etat='paid', payer=especes)
 check("encaissée : ce n'est pas une vente sans table (pas de note)",
       numero.state == 'paid' and not any("vente sans table" in (m.body or '')
@@ -954,8 +979,7 @@ print("\n═══ 9 bis. Le rapport de fermeture : tables, personnes, annulatio
 attendu = (deja[0] + 2 + (1 if hasattr(env['product.product'], 'aite_stock_disponible') else 0),
            deja[1] + 8 + (2 if hasattr(env['product.product'], 'aite_stock_disponible') else 0),
            0)
-fermeture = env['report.point_of_sale.report_saledetails'].with_user(manager).get_sale_details(
-    False, False, False, [session.id])
+fermeture = details_des_ventes(manager)
 check("le rapport de fermeture donne %d tables et %d personnes, 0 vente sans table"
       % attendu[:2], (fermeture.get('aite_tables'), fermeture.get('aite_personnes'),
                       fermeture.get('aite_sans_table')) == attendu,
@@ -1030,8 +1054,11 @@ if Report is not None and 'famille_n1_id' in Report._fields:
     boisson = Familles.create({'name': "Boisson"})
     alcool = Familles.create({'name': "Alcoolisé", 'parent_id': boisson.id})
     biere = Familles.create({'name': "Bière", 'parent_id': alcool.id})
+    sans_alcool = Familles.create({'name': "Non alcoolisé", 'parent_id': boisson.id})
+    famille_jus = Familles.create({'name': "Jus", 'parent_id': sans_alcool.id})
     bieres = castel | (globals().get('guinness') or env['product.product'])
     bieres.with_user(manager).write({'pos_categ_ids': [(6, 0, biere.ids)]})
+    jus.with_user(manager).write({'pos_categ_ids': [(6, 0, famille_jus.ids)]})
     Analyse = Report.with_user(manager)
     dans_session = [('session_id', '=', session.id)]
     total = Analyse.read_group(dans_session, ['price_subtotal_incl:sum'], [])[0][
@@ -1042,20 +1069,43 @@ if Report is not None and 'famille_n1_id' in Report._fields:
     encaissees = env['pos.order'].search([('session_id', '=', session.id),
                                           ('state', 'in', ('paid', 'done', 'invoiced'))])
     biere_vendue = sum(l.price_subtotal_incl for l in encaissees.lines if l.product_id in bieres)
-    check("« Boisson » additionne ses sous-familles : %d F de bières" % biere_vendue,
-          par_famille.get("Boisson") == biere_vendue and biere_vendue > 0,
-          (par_famille, biere_vendue))
+    jus_vendu = sum(l.price_subtotal_incl for l in encaissees.lines if l.product_id == jus)
+    par_sous_famille = {
+        l['famille_n2_id'][0]: l['price_subtotal_incl'] for l in Analyse.read_group(
+            dans_session + [('famille_n1_id', '=', boisson.id)],
+            ['price_subtotal_incl:sum'], ['famille_n2_id'])}
+    check("« Boisson » additionne ses deux sous-familles : %d F de bières et %d F de jus"
+          % (biere_vendue, jus_vendu),
+          par_famille.get("Boisson") == biere_vendue + jus_vendu and biere_vendue > 0
+          and jus_vendu > 0
+          and par_sous_famille == {alcool.id: biere_vendue, sans_alcool.id: jus_vendu},
+          (par_famille, par_sous_famille, biere_vendue, jus_vendu))
     check("la somme des familles est le total des ventes (rien ne disparaît)",
           sum(par_famille.values()) == total, (par_famille, total))
     vue = etree.fromstring(Analyse.get_views([(False, 'search')])['views']['search']['arch'])
-    filtre = vue.xpath("//field[@string='Famille']/@filter_domain")
-    from odoo.tools.safe_eval import safe_eval
-    trouve = Analyse.search(dans_session + safe_eval(
-        filtre[0], {'self': "Alcoolisé", 'raw_value': "Alcoolisé"})) if filtre else Analyse
-    check("le manager tape « Alcoolisé » dans « Famille » : il trouve les bières, "
-          "sans savoir à quel niveau est la famille",
-          bool(filtre) and bool(trouve) and set(trouve.mapped('product_id')) <= set(bieres),
-          trouve.mapped('product_id.name'))
+    champ_famille = vue.xpath("//field[@string='Famille']")
+
+    def cherche_famille(texte=None, famille=None):
+        """Le champ « Famille » de la recherche, comme le client web : un
+        texte tapé puis Entrée (« ilike »), ou une famille choisie dans la
+        liste (son identifiant, « = »)."""
+        champ = champ_famille[0]
+        libelle, valeur = (famille.display_name, famille.id) if famille else (texte, texte)
+        if champ.get('filter_domain'):
+            domaine = safe_eval(champ.get('filter_domain'), {'self': libelle, 'raw_value': valeur})
+        else:
+            domaine = [(champ.get('name'), '=' if famille else 'ilike', valeur)]
+        return Analyse.search(dans_session + domaine)
+
+    trouve = cherche_famille("Alcoolisé") if champ_famille else Analyse
+    check("le manager tape « Alcoolisé » dans « Famille » : il trouve les bières, pas le jus "
+          "« Non alcoolisé », sans savoir à quel niveau est la famille",
+          bool(trouve) and set(trouve.mapped('product_id')) <= set(bieres)
+          and sum(trouve.mapped('price_subtotal_incl')) == biere_vendue,
+          (trouve.mapped('product_id.name'), sum(trouve.mapped('price_subtotal_incl'))))
+    trouve = cherche_famille(famille=sans_alcool) if champ_famille else Analyse
+    check("il choisit « Boisson / Non alcoolisé » dans la liste : le jus seul",
+          trouve.mapped('product_id') == jus, trouve.mapped('product_id.name'))
 else:
     check("l'analyse AITE connaît les familles (aite_pos_analytics 18.0.2.1.5)", False)
 

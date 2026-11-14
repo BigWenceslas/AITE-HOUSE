@@ -36,6 +36,10 @@ class PosDailyReport(models.Model):
 
     @api.model
     def _aite_colonnes_supplementaires(self):
+        # Le crochet de désinstallation recrée la vue sans ces colonnes, en
+        # gardant celles des autres modules (aite_sans_employe).
+        if self.env.context.get('aite_sans_employe'):
+            return super()._aite_colonnes_supplementaires()
         return super()._aite_colonnes_supplementaires() + (
             ", po.aite_ouverte_par_id AS serveur_id"
             ", COALESCE(po.aite_encaissee_par_id, po.employee_id) AS encaisse_par_id")

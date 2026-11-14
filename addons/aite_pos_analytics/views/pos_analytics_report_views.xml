@@ -67,11 +67,11 @@
                 <!-- Un seul champ « Famille » (REST-23-P1) : il cherche à
                      tous les niveaux ; le manager tape « Boissons » ou « Non
                      alcoolisé » sans savoir à quel niveau la famille se
-                     trouve. Une famille choisie dans la liste est cherchée par
-                     son identifiant (Odoo remplace alors « ilike » par
-                     « = »). -->
-                <field name="famille_n1_id" string="Famille"
-                       filter_domain="['|', '|', ('famille_n1_id', 'ilike', raw_value), ('famille_n2_id', 'ilike', raw_value), ('famille_n3_id', 'ilike', raw_value)]"/>
+                     trouve. Un nom tapé en entier ne ramène que cette famille
+                     (« Alcoolisé » ne compte pas « Non alcoolisé ») ; une
+                     famille choisie dans la liste est cherchée par son
+                     identifiant (famille_id, méthode de recherche). -->
+                <field name="famille_id" string="Famille"/>
                 <field name="config_id"/>
                 <field name="session_id"/>
 
@@ -130,5 +130,23 @@
             </p>
         </field>
     </record>
+
+    <!-- Favori « Ventes par famille » (REST-23-P1 ; revue de 6a, constat 7) :
+         le tableau croisé s'ouvre toujours par catégorie de produit (une base
+         hôtelière garde son rapport) ; ce favori partagé donne, en deux
+         touches (Favoris, « Ventes par famille »), les lignes Famille >
+         Sous-famille et leurs sous-totaux. Posé une fois : le client peut le
+         renommer ou le supprimer. -->
+    <data noupdate="1">
+        <record id="filtre_ventes_par_famille" model="ir.filters">
+            <field name="name">Ventes par famille</field>
+            <field name="model_id">aite.pos.daily.report</field>
+            <field name="action_id" ref="action_pos_daily_report"/>
+            <field name="user_id" eval="False"/>
+            <field name="is_default" eval="False"/>
+            <field name="domain">[]</field>
+            <field name="context">{'group_by': ['famille_n1_id', 'famille_n2_id']}</field>
+        </record>
+    </data>
 
 </odoo>

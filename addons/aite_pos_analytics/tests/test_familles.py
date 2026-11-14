@@ -123,17 +123,28 @@ class TestPosFamilles(PosAnalyticsCommon):
         self.assertEqual(cafe.price_subtotal, 1200)
         self.assertEqual(self._par('famille_n1_id')[False], 1200)
 
-    def _recherche_famille(self, valeur, choisie=False):
-        """Le champ « Famille » de la recherche : le texte tapé (« Rechercher
-        Famille pour : … »), ou une famille choisie dans la liste (Odoo
-        remplace alors « ilike » par « = », raw_value = son identifiant)."""
+    def _recherche_famille(self, texte=None, famille=None):
+        """Ce que fait le champ « Famille » de la recherche, comme le client
+        web d'Odoo (search_bar.js, search_model.js ``_getFieldDomain``) : un
+        texte tapé puis Entrée (« Rechercher Famille pour : … ») est cherché
+        avec « ilike » ; une famille choisie dans la liste dépliée l'est par
+        son identifiant, avec « = » (et, s'il y a un ``filter_domain``, avec
+        ``raw_value`` = l'identifiant et l'opérateur du filtre)."""
         vue = self.Report.get_views([(False, 'search')])['views']['search']['arch']
         champs = etree.fromstring(vue).xpath("//field[@string='Famille']")
         self.assertEqual(len(champs), 1)
-        filtre = champs[0].get('filter_domain')
-        if choisie:
-            filtre = filtre.replace("'ilike'", "'='")
-        domaine = safe_eval(filtre, {'self': str(valeur), 'raw_value': valeur})
+        champ = champs[0]
+        if famille:
+            libelle, valeur = famille.display_name, famille.id
+            operateur = champ.get('operator') or '='
+        else:
+            libelle = valeur = texte
+            operateur = champ.get('operator') or 'ilike'
+        if champ.get('filter_domain'):
+            domaine = safe_eval(champ.get('filter_domain'),
+                                {'self': libelle, 'raw_value': valeur})
+        else:
+            domaine = [(champ.get('name'), operateur, valeur)]
         return self.Report.search(self._domaine() + domaine).product_id
 
     def test_le_champ_famille_trouve_une_famille_a_tout_niveau(self):
@@ -145,8 +156,34 @@ class TestPosFamilles(PosAnalyticsCommon):
         self.assertEqual(self._recherche_famille("Bières (familles)"), self.biere | self.blonde)
         self.assertEqual(self._recherche_famille("Boissons (familles)"),
                          self.biere | self.vin | self.soda | self.blonde | self.formule)
-        self.assertEqual(self._recherche_famille(self.alcool.id, choisie=True),
+        self.assertEqual(self._recherche_famille(famille=self.alcool),
                          self.biere | self.vin | self.blonde)
+        self.assertEqual(self._recherche_famille(famille=self.soft), self.soda | self.formule)
+
+    def test_un_nom_tape_ne_ramene_pas_une_famille_qui_le_contient(self):
+        """Revue de 6a, constat 1 : « Alcoolisé » tapé puis Entrée ne compte
+        pas « Non alcoolisé », qui contient ce nom (familles de la graine :
+        Boisson > Alcoolisé, Boisson > Non alcoolisé). Le total lu est celui
+        de la famille choisie dans la liste."""
+        self._ventes()
+        tape = self._recherche_famille("Alcoolisé (familles)")
+        self.assertEqual(tape, self.biere | self.vin | self.blonde)
+        self.assertEqual(tape, self._recherche_famille(famille=self.alcool))
+        # En minuscules ou en majuscules, c'est toujours le même nom.
+        self.assertEqual(self._recherche_famille("alcoolisé (FAMILLES)"),
+                         self.biere | self.vin | self.blonde)
+
+    def test_un_bout_de_nom_trouve_les_familles_qui_le_contiennent(self):
+        """Un texte qui n'est le nom d'aucune famille cherche les familles dont
+        le nom le contient : « alcool » donne « Alcoolisé » et « Non
+        alcoolisé » ; « Bière » donne « Bières » ; un caractère joker de SQL
+        tapé (« % », « _ ») est un caractère comme un autre."""
+        self._ventes()
+        self.assertEqual(self._recherche_famille("alcool"),
+                         self.biere | self.vin | self.blonde | self.soda | self.formule)
+        self.assertEqual(self._recherche_famille("Bière"), self.biere | self.blonde)
+        self.assertFalse(self._recherche_famille("%"))
+        self.assertFalse(self._recherche_famille("Vin_ (familles)"))
 
     def test_libelles_et_regroupements(self):
         champs = self.Report.fields_get(['famille_n1_id', 'famille_n2_id', 'famille_n3_id'])
@@ -162,6 +199,36 @@ class TestPosFamilles(PosAnalyticsCommon):
         self.assertEqual(groupes['grp_sous_famille'], ("Sous-famille", 'famille_n2_id'))
         self.assertEqual(groupes['grp_sous_sous_famille'],
                          ("Sous-sous-famille", 'famille_n3_id'))
+
+    def test_le_favori_ventes_par_famille(self):
+        """Revue de 6a, constat 7 : le tableau croisé s'ouvre toujours par
+        catégorie de produit (une base hôtelière garde son rapport) ; le
+        favori « Ventes par famille », livré et partagé, donne en deux touches
+        les lignes Famille > Sous-famille et leurs sous-totaux."""
+        action = self.env.ref('aite_pos_analytics.action_pos_daily_report')
+        favori = self.env.ref('aite_pos_analytics.filtre_ventes_par_famille')
+        self.assertEqual((favori.name, favori.model_id, favori.action_id.id),
+                         ("Ventes par famille", 'aite.pos.daily.report', action.id))
+        self.assertFalse(favori.user_id)
+        self.assertFalse(favori.is_default)
+        self.assertEqual(safe_eval(favori.domain), [])
+        self.assertEqual(safe_eval(favori.context),
+                         {'group_by': ['famille_n1_id', 'famille_n2_id']})
+        lecteur = self.env['res.users'].with_context(no_reset_password=True).create({
+            'name': "Lecteur des analyses (familles)", 'login': 'aite_lecteur_familles',
+            'groups_id': [(6, 0, [
+                self.env.ref('base.group_user').id,
+                self.env.ref('aite_pos_analytics.group_aite_pos_analytics_user').id])],
+        })
+        filtres = self.env['ir.filters'].with_user(lecteur).get_filters(
+            'aite.pos.daily.report', action.id)
+        self.assertIn("Ventes par famille", [f['name'] for f in filtres])
+        self._ventes()
+        lignes = self.Report.read_group(self._domaine(), ['price_subtotal:sum'],
+                                        safe_eval(favori.context)['group_by'], lazy=False)
+        boissons = sum(l['price_subtotal'] for l in lignes
+                       if l['famille_n1_id'] and l['famille_n1_id'][0] == self.boissons.id)
+        self.assertEqual(boissons, 2000 + 8000 + 1500 + 1200 + 700)
 
     def test_le_rapport_d_avant_ne_change_pas(self):
         """Une base hôtelière sans restaurant garde son rapport : il s'ouvre

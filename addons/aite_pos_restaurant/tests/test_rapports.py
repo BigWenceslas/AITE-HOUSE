@@ -12,13 +12,18 @@ Q51, REST-22 ; partie 5.3) — tables, personnes, ventes sans table et
 annulations de la session, imprimés depuis la caisse et depuis la gestion.
 Chaque addition passe par le chemin de la caisse (``_commande_caisse``).
 """
+import datetime
+from types import SimpleNamespace
 from uuid import uuid4
 
+import pytz
+from dateutil.relativedelta import relativedelta
 from lxml import etree
 
 from odoo import fields
 from odoo.exceptions import AccessError, UserError
 from odoo.tests import tagged
+from odoo.tools import mute_logger
 from odoo.tools.safe_eval import safe_eval
 
 from .common import Addition, RestaurantCommon
@@ -330,6 +335,21 @@ class TestPersonnesEtTables(RapportsCommon):
             with self.subTest(filtre=nom):
                 self.assertIn(nom, filtres)
         self.assertEqual(recherche.xpath("//filter[@name='periode']/@date"), ['date_order'])
+        # Revue de 6a, constat 5 : la liste montre les compteurs, pas celle
+        # des commandes d'Odoo (Réf., Session, Point de vente, Statut…).
+        liste = etree.fromstring(vues['views']['list']['arch'])
+        visibles = [n.get('name') for n in liste.xpath('//field')
+                    if not n.get('column_invisible') and n.get('optional') != 'hide']
+        self.assertEqual(visibles, ['date_order', 'table_id', 'aite_personnes', 'aite_articles',
+                                    'aite_ouverte_par_id', 'aite_encaissee_par_id',
+                                    'amount_total'])
+        self.assertEqual(liste.xpath("//field[@name='amount_total']/@widget"), ['monetary'])
+        for nom in ('aite_tables', 'aite_personnes', 'aite_sans_table', 'aite_articles',
+                    'amount_total'):
+            with self.subTest(somme=nom):
+                self.assertTrue(liste.xpath("//field[@name='%s']/@sum" % nom))
+        self.assertNotEqual(vues['views']['list']['id'],
+                            self.env.ref('point_of_sale.view_pos_order_tree').id)
         # Le pivot de la gestion d'Odoo reste celui d'Odoo.
         self.assertNotEqual(Commandes.get_views([(False, 'pivot')])['views']['pivot']['id'],
                             vues['views']['pivot']['id'])
@@ -341,6 +361,102 @@ class TestPersonnesEtTables(RapportsCommon):
         self.assertNotIn(menu.id, self.env['ir.ui.menu'].with_user(
             self.compte_caisse)._visible_menu_ids())
 
+    # ------------------------------------------------------------------
+    # Revue de 6a, constat 6 : les bornes des périodes (REST-24)
+    # ------------------------------------------------------------------
+
+    FUSEAU = 'Africa/Douala'
+
+    def _bornes(self, vue, filtre, jour):
+        """Le domaine d'une période de la recherche, évalué comme le client
+        web (py.js) le fait pour ``jour`` (``context_today()``) à l'heure de
+        l'utilisateur (``to_utc()`` : de l'heure locale vers UTC)."""
+        fuseau = pytz.timezone(self.FUSEAU)
+
+        class Instant(datetime.datetime):
+            def to_utc(self):
+                return fuseau.localize(self.replace(tzinfo=None)).astimezone(
+                    pytz.utc).replace(tzinfo=None)
+
+        arch = etree.fromstring(self.env['pos.order'].get_views(
+            [(vue.id, 'search')])['views']['search']['arch'])
+        domaine = arch.xpath("//filter[@name='%s']/@domain" % filtre)[0]
+        return safe_eval(domaine, {
+            'context_today': lambda: jour, 'relativedelta': relativedelta,
+            'datetime': SimpleNamespace(datetime=Instant, time=datetime.time,
+                                        date=datetime.date)})
+
+    def test_les_bornes_des_periodes(self):
+        """« Aujourd'hui » de minuit à minuit, « Cette semaine » du lundi au
+        dimanche, « Ce mois » du 1er au dernier jour, « Cette année » du 1er
+        janvier au 31 décembre, à l'heure de Douala (UTC+1) : la borne de
+        début est minuit à Douala, 23 h la veille en UTC."""
+        vue = self.env.ref('aite_pos_restaurant.view_pos_order_search_personnes_tables')
+
+        def local(jour, mois, annee):
+            """Minuit à Douala, en UTC."""
+            return datetime.datetime(annee, mois, jour) - datetime.timedelta(hours=1)
+
+        cas = [
+            # jour, filtre, début (local), fin exclue (local)
+            (datetime.date(2026, 11, 14), 'aujourd_hui', (14, 11, 2026), (15, 11, 2026)),
+            (datetime.date(2026, 11, 14), 'cette_semaine', (9, 11, 2026), (16, 11, 2026)),
+            (datetime.date(2026, 11, 9), 'cette_semaine', (9, 11, 2026), (16, 11, 2026)),
+            (datetime.date(2026, 11, 15), 'cette_semaine', (9, 11, 2026), (16, 11, 2026)),
+            (datetime.date(2026, 11, 1), 'cette_semaine', (26, 10, 2026), (2, 11, 2026)),
+            (datetime.date(2026, 12, 31), 'cette_semaine', (28, 12, 2026), (4, 1, 2027)),
+            (datetime.date(2026, 11, 14), 'ce_mois', (1, 11, 2026), (1, 12, 2026)),
+            (datetime.date(2026, 12, 31), 'ce_mois', (1, 12, 2026), (1, 1, 2027)),
+            (datetime.date(2026, 11, 14), 'cette_annee', (1, 1, 2026), (1, 1, 2027)),
+            (datetime.date(2027, 1, 1), 'cette_annee', (1, 1, 2027), (1, 1, 2028)),
+        ]
+        for jour, filtre, debut, fin in cas:
+            with self.subTest(jour=jour.strftime('%d/%m/%Y'), filtre=filtre):
+                self.assertEqual(self._bornes(vue, filtre, jour), [
+                    ('date_order', '>=', local(*debut).strftime('%Y-%m-%d %H:%M:%S')),
+                    ('date_order', '<', local(*fin).strftime('%Y-%m-%d %H:%M:%S'))])
+        # Les mêmes périodes que le rapport des annulations (incrément 4).
+        annulations = self.env.ref('aite_pos_restaurant.view_restaurant_annulation_search')
+
+        def domaine(arch, filtre):
+            texte = etree.fromstring(arch).xpath("//filter[@name='%s']/@domain" % filtre)[0]
+            return ' '.join(texte.split())
+
+        for filtre in ('aujourd_hui', 'cette_semaine', 'ce_mois', 'cette_annee'):
+            with self.subTest(annulations=filtre):
+                self.assertEqual(domaine(annulations.arch, filtre).replace("'date'", "'date_order'"),
+                                 domaine(vue.arch, filtre))
+
+    def test_des_ventes_de_part_et_d_autre_des_bornes(self):
+        """Trois additions encaissées, datées autour de minuit à Douala, lues
+        le samedi 14/11/2026 : celle du dimanche 08/11 à 23 h 30 (heure de
+        Douala) est du mois mais pas de la semaine ; celle du lundi 09/11 à
+        0 h 30 est de la semaine ; celle du dimanche 01/11 à 0 h 30 est du
+        mois. Aucune n'est d'aujourd'hui."""
+        vue = self.env.ref('aite_pos_restaurant.view_pos_order_search_personnes_tables')
+        dates = ['2026-11-08 22:30:00', '2026-11-08 23:30:00', '2026-10-31 23:30:00']
+        commandes = []
+        for date_utc, table in zip(dates, (self.table_7, self.table_12, self.table_3)):
+            _addition, commande = self._table(table, 2, [(self.castel, 1)])
+            self.env.flush_all()
+            self.env.cr.execute("UPDATE pos_order SET date_order = %s WHERE id = %s",
+                                [date_utc, commande.id])
+            commandes.append(commande)
+        self.env['pos.order'].invalidate_model(['date_order'])
+        action = self.env.ref('aite_pos_restaurant.action_personnes_tables')
+        jour = datetime.date(2026, 11, 14)
+        Commandes = self.env['pos.order'].with_user(self.compte_manager)
+
+        def lues(filtre):
+            return Commandes.search(safe_eval(action.domain) + [
+                ('session_id', '=', self.session.id)] + self._bornes(vue, filtre, jour))
+
+        dimanche, lundi, premier = commandes
+        self.assertFalse(lues('aujourd_hui'))
+        self.assertEqual(lues('cette_semaine'), lundi)
+        self.assertEqual(lues('ce_mois'), dimanche | lundi | premier)
+        self.assertEqual(lues('cette_annee'), dimanche | lundi | premier)
+
 
 @tagged('post_install', '-at_install', 'aite_pos_restaurant')
 class TestRapportDeFermeture(RapportsCommon):
@@ -348,15 +464,6 @@ class TestRapportDeFermeture(RapportsCommon):
     tables, personnes, ventes sans table et annulations de la session, dans
     les données d'Odoo (« Imprimer le rapport » de la caisse, rapport de
     session de la gestion)."""
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        # « Détails des ventes » et le rapport de session lisent les paiements
-        # comptables (account.payment) : Odoo les refuse à un Administrateur
-        # du Point de Vente sans le droit Facturation. Le compte du manager le
-        # reçoit, comme le compte de la caisse (partie 4.4).
-        cls.compte_manager.groups_id += cls.env.ref('account.group_account_invoice')
 
     def _journee(self):
         """Deux tables (2 et 4 personnes), une vente sans table ; Paul annule
@@ -399,11 +506,61 @@ class TestRapportDeFermeture(RapportsCommon):
             ("12", "Castel", 1.0, 1000.0, "Retrait sans code", ""),
         ])
         self.assertEqual(donnees['aite_annulations_total'],
-                         {'quantite': 3.0, 'montant': 3000.0})
+                         {'quantite': 3.0, 'quantite_texte': "3", 'montant': 3000.0})
+        # Revue de 6a, constat 9 : la quantité est écrite par le serveur, dans
+        # la langue de l'utilisateur, sans zéros inutiles (« 2 », « 1,5 »).
+        self.assertEqual([a['quantite_texte'] for a in donnees['aite_annulations']], ["2", "1"])
         # REST-25 critère 2 : les quantités vendues de chaque produit (Odoo).
         vendus = {ligne['product_name']: ligne['quantity']
                   for categorie in donnees['products'] for ligne in categorie['products']}
         self.assertEqual(vendus, {"Castel": 3.0, "Poulet DG": 1.0})
+
+    def test_une_quantite_decimale_s_ecrit_a_la_francaise(self):
+        """Revue de 6a, constat 9 : 1,5 (et non « 1.5 ») ; 2 (et non « 2.0 ») ;
+        1 000 avec le séparateur des milliers de la langue."""
+        self.env['res.lang']._activate_lang('fr_FR')
+        Rapport = self.env['report.point_of_sale.report_saledetails']
+        francais = Rapport.with_context(lang='fr_FR')
+        separateur = self.env['res.lang']._lang_get('fr_FR').thousands_sep
+        self.assertEqual([francais._aite_quantite_texte(q) for q in (1.5, 2.0, 0.25, 1000.0)],
+                         ["1,5", "2", "0,25", "1%s000" % separateur])
+        self.assertEqual(Rapport.with_context(lang='en_US')._aite_quantite_texte(1.5), "1.5")
+
+    def test_le_manager_ouvre_le_rapport_de_session(self):
+        """Revue de 6a, constat 2 : le compte du manager (partie 4.4, avec le
+        droit Facturation : décision à faire valider par AITE) ouvre le
+        rapport de session d'une session qui a des ventes payées, et
+        « Détails des ventes » de la période."""
+        self._journee()
+        self.assertTrue(self.compte_manager.has_group('account.group_account_invoice'))
+        html, _format = self.env['ir.actions.report'].with_user(
+            self.compte_manager)._render_qweb_html(
+                'point_of_sale.sale_details_report', self.session.ids)
+        self.assertIn('id="aite_restaurant"', html.decode())
+        donnees = self.env['report.point_of_sale.report_saledetails'].with_user(
+            self.compte_manager).get_sale_details(False, False, False, self.session.ids)
+        self.assertEqual(donnees['aite_tables'], 2)
+
+    def test_sans_facturation_odoo_refuse_le_rapport_de_session(self):
+        """Pourquoi ce droit : dès qu'une session a une vente payée,
+        get_sale_details d'Odoo lit les paiements comptables
+        (account.payment, point_of_sale/models/report_sale_details.py) ; un
+        Administrateur du Point de Vente avec Employés « Agent », sans le droit
+        Facturation, reçoit une erreur d'accès. Si une version d'Odoo lève
+        cette limite, ce test le dira : le droit ne sera plus nécessaire."""
+        self._journee()
+        sans_facturation = self.env['res.users'].with_context(no_reset_password=True).create({
+            'name': "Manager sans Facturation", 'login': 'aite_manager_sans_facturation',
+            'company_id': self.company.id, 'company_ids': [(6, 0, self.company.ids)],
+            'groups_id': [(6, 0, [
+                self.env.ref('base.group_user').id,
+                self.env.ref('point_of_sale.group_pos_manager').id,
+                self.env.ref('hr.group_hr_user').id,
+            ])],
+        })
+        with self.assertRaises(AccessError):
+            self.env['ir.actions.report'].with_user(sans_facturation)._render_qweb_html(
+                'point_of_sale.sale_details_report', self.session.ids)
 
     def test_par_dates_et_par_caisse(self):
         """« Détails des ventes » de la gestion (période, caisses) : les mêmes
@@ -455,16 +612,30 @@ class TestRapportDeFermeture(RapportsCommon):
         self.assertNotIn('aite_restaurant', str(html))
 
     def test_le_rapport_par_employe_de_pos_hr(self):
-        """Le rapport par employé de pos_hr hérite du rapport d'Odoo : il garde
-        ses arguments ; les tables sont celles que l'employé a encaissées, les
-        annulations celles qu'il a demandées."""
+        """Revue de 6a, constat 3 : le rapport par employé de pos_hr (coché
+        d'office dans l'assistant de la session) garde le rapport d'Odoo. Son
+        gabarit pose les variables une à une, sans les nôtres :
+        get_sale_details garde ses arguments et ne pose pas le bloc du
+        restaurant (la spécification ne demande rien par employé)."""
         self._journee()
         Rapport = self.env['report.pos_hr.single_employee_sales_report']
         carine = Rapport.get_sale_details(False, False, False, self.session.ids,
                                           self.carine.id)
         self.assertEqual(carine['employee_name'], "Carine")
-        self.assertEqual((carine['aite_tables'], carine['aite_personnes'],
-                          carine['aite_sans_table']), (2, 6, 1))
-        self.assertEqual(carine['aite_annulations'], [])
-        awa = Rapport.get_sale_details(False, False, False, self.session.ids, self.awa.id)
-        self.assertEqual(len(awa['aite_annulations']), 2)
+        self.assertFalse(carine.get('aite_restaurant'))
+        self.assertNotIn('aite_annulations', carine)
+        donnees = {'date_start': False, 'date_stop': False, 'config_ids': self.config.ids,
+                   'session_ids': self.session.ids,
+                   'employee_ids': (self.carine | self.awa).ids}
+        # Le gabarit de pos_hr porte un t-key que la gestion ne connaît pas
+        # (avertissement d'Odoo, sans rapport avec ce module).
+        with mute_logger('odoo.addons.base.models.ir_qweb'):
+            html, _format = self.env['ir.actions.report'].with_user(
+                self.compte_manager)._render_qweb_html(
+                    'pos_hr.multi_employee_sales_report_action', [], data=donnees)
+        page = ' '.join(etree.fromstring(html, etree.HTMLParser()).itertext())
+        self.assertIn("Carine", page)
+        self.assertNotIn("Tables et personnes", page)
+        # Le rapport de la session, lui, a le bloc.
+        self.assertTrue(self.env['report.point_of_sale.report_saledetails'].get_sale_details(
+            False, False, False, self.session.ids)['aite_restaurant'])

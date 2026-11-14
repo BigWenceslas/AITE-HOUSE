@@ -59,6 +59,31 @@
         </field>
     </record>
 
+    <!-- La liste de « Personnes et tables » (revue de 6a, constat 5) : les
+         additions comptées, avec leur table, leurs personnes, leurs articles,
+         qui l'a ouverte, qui l'a encaissée et le total en FCFA ; les sommes
+         en bas de colonne sont celles du tableau croisé. -->
+    <record id="view_pos_order_list_personnes_tables" model="ir.ui.view">
+        <field name="name">pos.order.list.aite.personnes.tables</field>
+        <field name="model">pos.order</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <list string="Personnes et tables" create="0">
+                <field name="currency_id" column_invisible="1"/>
+                <field name="date_order" string="Date" options="{'show_seconds': False}"
+                       width="130px"/>
+                <field name="table_id"/>
+                <field name="aite_tables" sum="Tables" optional="hide"/>
+                <field name="aite_personnes" sum="Personnes" width="100px"/>
+                <field name="aite_sans_table" sum="Ventes sans table" optional="hide"/>
+                <field name="aite_articles" sum="Articles" width="90px"/>
+                <field name="aite_ouverte_par_id"/>
+                <field name="aite_encaissee_par_id"/>
+                <field name="amount_total" string="Total" widget="monetary" sum="Total"/>
+            </list>
+        </field>
+    </record>
+
     <!-- Périodes comme les annulations (REST-24) : « Aujourd'hui » (par
          défaut), « Cette semaine » (du lundi à aujourd'hui), « Ce mois »,
          « Cette année », à l'heure de l'utilisateur, et le filtre de date
@@ -109,7 +134,7 @@
         <field name="context">{'search_default_aujourd_hui': 1, 'create': False}</field>
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_pos_order_pivot_personnes_tables')}),
-            (0, 0, {'view_mode': 'list', 'view_id': ref('point_of_sale.view_pos_order_tree')})]"/>
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_pos_order_list_personnes_tables')})]"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Aucune addition encaissée sur cette période. Chaque table encaissée compte ici pour une table et son nombre de personnes ; une part d'addition divisée ne compte pas deux fois, et une vente sans table est comptée à part. Changez la période pour voir les autres jours.

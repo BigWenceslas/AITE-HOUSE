@@ -140,3 +140,23 @@ class TestEmployeDansLesAnalyses(RestaurantCommon):
                    [self.session.id])
         self.assertEqual(cr.fetchone()[0], 1)
         cr.execute("ROLLBACK TO SAVEPOINT aite_colonne")
+
+    def test_desinstaller_la_passerelle_garde_les_colonnes_des_autres(self):
+        """Revue de 6a, constat 8 : désinstallée, la passerelle ne retire de la
+        vue que ses propres colonnes ; celles qu'un autre module ajoute par le
+        même point d'extension (simulé ici sur le module d'analyse) restent."""
+        from unittest.mock import patch
+
+        from odoo.addons.aite_pos_analytics.models.pos_analytics_report import (
+            PosDailyReport as Analyse)
+        from odoo.addons.aite_pos_analytics_hr import uninstall_hook
+        with patch.object(Analyse, '_aite_colonnes_supplementaires',
+                          lambda self: ", 1 AS aite_autre_colonne"):
+            self.assertIn('serveur_id',
+                          self.env['aite.pos.daily.report']._aite_colonnes_supplementaires())
+            uninstall_hook(self.env)
+        cr = self.env.cr
+        self.assertTrue(column_exists(cr, 'aite_pos_daily_report', 'aite_autre_colonne'))
+        self.assertFalse(column_exists(cr, 'aite_pos_daily_report', 'serveur_id'))
+        self.assertFalse(column_exists(cr, 'aite_pos_daily_report', 'encaisse_par_id'))
+        self.assertTrue(column_exists(cr, 'aite_pos_daily_report', 'famille_n1_id'))

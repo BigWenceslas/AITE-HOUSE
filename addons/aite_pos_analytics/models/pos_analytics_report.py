@@ -85,6 +85,60 @@ class PosDailyReport(models.Model):
         'pos.category', string="Sous-sous-famille", readonly=True,
         help="Le troisième niveau des catégories de caisse ; un article rangé "
              "plus bas compte ici sous son ancêtre de troisième niveau.")
+    # Le champ « Famille » de la recherche (un seul, partie 5.4) : il cherche
+    # la famille à ses trois niveaux. Non stocké ; sa valeur est la famille la
+    # plus précise de l'article.
+    famille_id = fields.Many2one(
+        'pos.category', string="Famille (à tout niveau)", readonly=True,
+        compute='_compute_famille_id', search='_search_famille_id',
+        help="Tapez le nom d'une famille, d'une sous-famille ou d'une "
+             "sous-sous-famille, ou choisissez-la dans la liste : seules ses "
+             "ventes restent, celles de ses sous-familles comprises. Un nom "
+             "tapé en entier ne ramène que cette famille (« Alcoolisé » ne "
+             "compte pas « Non alcoolisé ») ; un bout de nom ramène toutes "
+             "les familles qui le contiennent.")
+
+    @api.depends('famille_n1_id', 'famille_n2_id', 'famille_n3_id')
+    def _compute_famille_id(self):
+        for ligne in self:
+            ligne.famille_id = ligne.famille_n3_id or ligne.famille_n2_id or ligne.famille_n1_id
+
+    @api.model
+    def _aite_familles_du_texte(self, texte):
+        """Les familles qu'un texte tapé désigne : celles qui portent ce nom
+        exact (sans tenir compte des majuscules), sinon celles dont le nom le
+        contient. « % » et « _ » tapés sont des caractères comme les autres."""
+        texte = (texte or '').strip()
+        if not texte:
+            return self.env['pos.category']
+        echappe = texte.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_')
+        Famille = self.env['pos.category']
+        return Famille.search([('name', '=ilike', echappe)]) \
+            or Famille.search([('name', '=ilike', '%' + echappe + '%')])
+
+    def _search_famille_id(self, operator, value):
+        """« Famille » de la recherche (revue de 6a, constat 1) : une famille
+        choisie dans la liste arrive par son identifiant (« = ») ; un texte
+        tapé (« ilike ») désigne d'abord la famille de ce nom exact, pour que
+        « Alcoolisé » ne compte pas « Non alcoolisé ». Les ventes d'une
+        famille sont celles de ses trois niveaux."""
+        negatif = operator in ('!=', 'not in', 'not ilike', 'not like')
+        valeurs = value if isinstance(value, (list, tuple)) else [value]
+        if operator in ('=', '!=', 'in', 'not in') and all(
+                isinstance(v, int) or v is False or v is None for v in valeurs):
+            ids = [v for v in valeurs if v]
+            if not ids:
+                # « Sans famille » : l'article n'a aucune catégorie de caisse.
+                return [('famille_n1_id', '!=' if negatif else '=', False)]
+        else:
+            ids = []
+            for texte in valeurs:
+                ids += self._aite_familles_du_texte(texte if isinstance(texte, str) else '').ids
+        if negatif:
+            return ['&', '&', ('famille_n1_id', 'not in', ids),
+                    ('famille_n2_id', 'not in', ids), ('famille_n3_id', 'not in', ids)]
+        return ['|', '|', ('famille_n1_id', 'in', ids), ('famille_n2_id', 'in', ids),
+                ('famille_n3_id', 'in', ids)]
 
     # ------------------------------------------------------------------
     # Vue SQL : lire les ventes à jour (règle de CLAUDE.md)
