@@ -255,8 +255,10 @@ En ligne de commande, c'est équivalent à
 ### 9.4 Ce qui se passe à l'installation (rien à régler)
 
 - Une **caisse « Restaurant »** est créée, prête au premier service : modes
-  de paiement **Espèces** et **Mobile Money** (journal de banque du même
-  nom), salle **« Salle »** avec une table, case **« Service à table
+  de paiement **Espèces** (sur le journal d'espèces du plan comptable : la
+  société n'a qu'un journal d'espèces ; un journal n'est créé que si celui
+  du plan sert déjà une autre caisse) et **Mobile Money** (journal de banque
+  du même nom), salle **« Salle »** avec une table, case **« Service à table
   contrôlé »** cochée. Cette case règle d'office la connexion par code
   (« Se connecter avec Employés »), le contrôle des prix (le manager seul les
   change), les remises désactivées, le partage et l'impression de
@@ -264,6 +266,12 @@ En ligne de commande, c'est équivalent à
   (le journal AITE le remplace). Délai avant l'orange : 60 minutes ; vente
   sans table : fermée ; produits épuisés : refusés. Si le plan comptable
   n'est pas encore chargé, la caisse est créée au moment où il l'est.
+- **Une caisse créée ensuite** (un bar, par exemple) reçoit d'office ses
+  propres **Espèces** (son journal d'espèces, nommé « Espèces Bar ») et
+  **Mobile Money**.
+- **Base créée en anglais** puis passée au français : le chargement du
+  français (Paramètres → Langues) renomme « Espèces » les modes d'espèces
+  encore nommés « Cash ».
 - **Une caisse qui existait déjà n'est jamais modifiée.** Pour la passer au
   service à table contrôlé : Point de Vente → Configuration → Paramètres →
   choisir la caisse → bloc Restaurant → cocher « Est un bar/restaurant »,

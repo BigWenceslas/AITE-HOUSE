@@ -1450,4 +1450,15 @@ CAS = [
      "Installation sans erreur ; aucun menu ni module hôtelier ; société en "
      "FCFA ; caisse « Restaurant » prête (Espèces, Mobile Money, salle "
      "« Salle », case « Service à table contrôlé » cochée)."),
+    ("R104", "R", 2, "Base du restaurant installée (cas R103)",
+     "Mise en service — un seul journal d'espèces, et une caisse créée "
+     "ensuite a ses Espèces",
+     "1. Facturation → Configuration → Comptabilité → Journaux : regarder "
+     "les journaux de type « Espèces ».\n2. Point de Vente → Configuration "
+     "→ Point de vente → Nouveau : nom « Bar », Enregistrer.\n3. Regarder "
+     "les modes de paiement de « Bar », puis revenir aux journaux.",
+     "Étape 1 : un seul journal d'espèces (« Espèces »), celui des Espèces "
+     "de la caisse « Restaurant ». Étape 3 : « Bar » a « Espèces » et "
+     "« Mobile Money » ; ses Espèces sont sur un nouveau journal « Espèces "
+     "Bar » ; aucun journal d'espèces n'est resté sans mode de paiement."),
 ]

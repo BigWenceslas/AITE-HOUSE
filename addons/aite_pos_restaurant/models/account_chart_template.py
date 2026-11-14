@@ -11,7 +11,10 @@ encore de plan) : un rechargement, ou le passage à une autre localisation,
 ne crée jamais une caisse ni un journal sans geste de l'utilisateur, même si
 le manager a entre-temps décoché « Service à table contrôlé » partout. Une
 société créée plus tard (ou une succursale, qu'Odoo charge à la suite de sa
-société mère) reçoit donc sa propre caisse au chargement de son plan.
+société mère) reçoit donc sa propre caisse au chargement de son plan, si
+elle a déjà un entrepôt : Odoo 18 n'en crée d'office que pour la première
+société de la base (et dans ses tests) ; sinon l'avertissement ci-dessous
+est écrit et la caisse se crée à la main (notes de version, Limites).
 """
 import logging
 

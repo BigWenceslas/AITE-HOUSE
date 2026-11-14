@@ -1,10 +1,10 @@
 RECETTE AITE HOUSE — contenu et régénération
 =============================================
 - AITE_HOUSE_cahier_de_recette.xlsx : outil de travail (4 onglets :
-  Synthèse, Cas de test, Anomalies, Mode d'emploi). 249 cas, statuts en
+  Synthèse, Cas de test, Anomalies, Mode d'emploi). 250 cas, statuts en
   listes déroulantes, compteurs automatiques par statut et par domaine.
 - AITE_HOUSE_plan_de_recette.pdf : plan de recette + procès-verbal
-  signable (23 pages).
+  signable (24 pages).
 
 Modifier / compléter les scénarios :
   1. Éditer cas_de_test.py (liste CAS : id, domaine, priorité, pré-requis,

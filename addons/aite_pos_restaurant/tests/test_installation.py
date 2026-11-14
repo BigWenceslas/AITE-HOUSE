@@ -19,6 +19,14 @@ R31 = ("Décochez d'abord « Service à table contrôlé » : sans les codes "
 @tagged('post_install', '-at_install', 'aite_pos_restaurant')
 class TestInstallation(RestaurantCommon):
 
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        # Les noms sont lus en français (with_context(lang='fr_FR')) : sur une
+        # base installée en anglais seul, le français est activé ici (sinon
+        # « Invalid language code: fr_FR », vérification finale).
+        cls.env['res.lang']._activate_lang('fr_FR')
+
     def _restaurant(self, company=None):
         return self.env['pos.config'].search([
             ('company_id', '=', (company or self.company).id),
@@ -64,7 +72,12 @@ class TestInstallation(RestaurantCommon):
         self.assertTrue(restaurant.aite_refus_epuise)
 
     def test_especes_et_mobile_money_seuls(self):
-        modes = self._restaurant().payment_method_ids
+        """Sur une société neuve : la préparation des tests du Point de Vente
+        d'Odoo (``TestPoSCommon._create_basic_config``) supprime les modes
+        du journal d'espèces par défaut de la société de test, donc les
+        « Espèces » de la caisse posée d'office sur ce journal."""
+        modes = self._restaurant(self._create_company(name="Restaurant neuf")) \
+            .payment_method_ids.with_context(lang='fr_FR')
         self.assertEqual(sorted(modes.mapped('name')), ["Espèces", "Mobile Money"])
         especes = modes.filtered(lambda m: m.name == "Espèces")
         self.assertTrue(especes.is_cash_count)
@@ -73,6 +86,95 @@ class TestInstallation(RestaurantCommon):
         self.assertEqual(mobile.journal_id.name, "Mobile Money")
         self.assertFalse(modes.filtered('split_transactions'),
                          "pas de « Compte client » (Q56)")
+
+    def test_un_seul_journal_d_especes(self):
+        """Deux journaux « Espèces » (notes de version, §2 : caisse
+        « Restaurant », un seul journal « Espèces ») : la caisse posée d'office
+        reprend le journal d'espèces libre du plan
+        comptable au lieu d'en créer un second ; la société n'a qu'un journal
+        d'espèces, celui des « Espèces » de la caisse « Restaurant »."""
+        societe = self._create_company(name="Restaurant neuf")
+        journaux = self.env['account.journal'].search([
+            ('company_id', '=', societe.id), ('type', '=', 'cash')])
+        self.assertEqual(len(journaux), 1, journaux.mapped('name'))
+        especes = self._restaurant(societe).payment_method_ids.filtered('is_cash_count')
+        self.assertEqual(especes.with_context(lang='fr_FR').name, "Espèces")
+        self.assertEqual(especes.journal_id, journaux)
+
+    def test_especes_s_appelle_cash_en_anglais(self):
+        """Chasse aux régressions (tours d'Odoo ``CashClosingDetails`` et
+        ``OrderPaidInCash``) : « Espèces » porte le nom traduisible d'un mode
+        d'espèces d'Odoo, « Espèces » en français, « Cash » en anglais. Forcé
+        à « Espèces » dans toutes les langues, le mode resté libre après la
+        suppression des caisses passait avant le « Cash » d'une caisse créée
+        ensuite : Odoo comptait « Espèces » à la fermeture, l'écran « Cash »."""
+        especes = self._restaurant(self._create_company(name="Restaurant neuf")) \
+            .payment_method_ids.filtered('is_cash_count')
+        self.assertEqual(especes.with_context(lang='fr_FR').name, "Espèces")
+        self.assertEqual(especes.with_context(lang='en_US').name, "Cash")
+
+    def test_le_francais_active_ensuite_traduit_les_especes(self):
+        """Vérification finale (constat de la revue) : une base créée en
+        anglais puis passée au français (cas d'un hébergeur) affichait
+        « Cash » sur le bouton de paiement, car le nom français n'est posé
+        qu'avec le français actif. Au chargement des traductions françaises
+        (Paramètres → Langues), un mode d'espèces nommé « Cash » sans nom
+        français reçoit « Espèces » ; un nom déjà traduit n'est pas touché."""
+        especes = self._restaurant(self._create_company(name="Restaurant neuf")) \
+            .payment_method_ids.filtered('is_cash_count')
+        # Comme sur une base créée en anglais : aucun nom français.
+        especes.update_field_translations('name', {'fr_FR': False})
+        self.assertEqual(especes.with_context(lang='fr_FR').name, "Cash")
+        journal = self.env['account.journal'].create({
+            'name': "Caisse du bar", 'type': 'cash', 'code': 'CBART',
+            'company_id': self.company.id})
+        renomme = self.env['pos.payment.method'].create({
+            'name': "Cash", 'journal_id': journal.id, 'company_id': self.company.id})
+        renomme.update_field_translations('name', {'fr_FR': "Caisse du bar"})
+
+        self.env['ir.module.module']._load_module_terms(['aite_pos_restaurant'], ['fr_FR'])
+
+        (especes | renomme).invalidate_recordset(['name'])
+        self.assertEqual(especes.with_context(lang='fr_FR').name, "Espèces")
+        self.assertEqual(especes.with_context(lang='en_US').name, "Cash")
+        self.assertEqual(renomme.with_context(lang='fr_FR').name, "Caisse du bar")
+
+    def test_un_journal_d_especes_deja_pris_n_est_pas_repris(self):
+        """Le journal d'espèces de la société sert déjà un mode de paiement
+        (une caisse existante) : la caisse « Restaurant » reçoit son propre
+        journal, car Odoo n'accepte qu'un mode d'espèces par journal."""
+        societe = self._create_company(name="Restaurant équipé")
+        restaurant = self._restaurant(societe)
+        journal_pris = restaurant.payment_method_ids.filtered('is_cash_count').journal_id
+        restaurant.unlink()  # le mode « Espèces » reste : son journal est pris
+        caisse = self.env['pos.config']._aite_preparer_caisse(societe)
+        especes = caisse.payment_method_ids.filtered('is_cash_count')
+        self.assertEqual(len(especes), 1)
+        self.assertEqual(especes.journal_id.type, 'cash')
+        self.assertNotEqual(especes.journal_id, journal_pris)
+
+    def test_une_caisse_creee_ensuite_a_ses_especes(self):
+        """Chasse aux régressions (test d'Odoo ``test_report_listing``) :
+        une caisse créée ensuite n'avait pas d'espèces. Odoo lui propose les
+        modes de la société encore libres ; celles de la caisse « Restaurant »
+        ne se partagent pas (un mode d'espèces ne sert qu'une caisse), et Odoo
+        n'en crée que si la société n'a aucun mode de paiement (ici, elle a
+        « Mobile Money »). Une caisse créée ensuite (« Bar ») reçoit donc ses
+        propres « Espèces », sur un journal d'espèces à son nom (« Espèces
+        Bar », vérification finale : pas deux journaux homonymes), et garde
+        « Mobile Money »."""
+        societe = self._create_company(name="Restaurant et bar")
+        especes_restaurant = self._restaurant(societe).payment_method_ids.filtered(
+            'is_cash_count')
+        bar = self.env['pos.config'].with_company(societe).create({
+            'name': "Bar", 'company_id': societe.id})
+        especes = bar.payment_method_ids.filtered('is_cash_count').with_context(lang='fr_FR')
+        self.assertEqual(especes.mapped('name'), ["Espèces"])
+        self.assertEqual(especes.journal_id.type, 'cash')
+        self.assertNotEqual(especes.journal_id, especes_restaurant.journal_id)
+        self.assertEqual(especes.journal_id.name, "Espèces Bar")
+        self.assertIn("Mobile Money", bar.payment_method_ids.mapped('name'))
+        self.assertFalse(bar.payment_method_ids.filtered('split_transactions'))
 
     def test_la_salle_s_appelle_salle(self):
         self.assertEqual(self._restaurant().floor_ids.mapped('name'), ["Salle"])
@@ -93,6 +195,26 @@ class TestInstallation(RestaurantCommon):
         restaurant = self._restaurant(autre)
         self.assertEqual(len(restaurant), 1)
         self.assertTrue(restaurant.aite_mode_restaurant)
+
+    def test_une_succursale_recoit_sa_caisse(self):
+        """Une succursale : Odoo lui charge le plan de sa société mère à la
+        validation de sa création ; quand elle a un entrepôt, elle reçoit sa
+        caisse « Restaurant », et un seul journal d'espèces, celui de ses
+        « Espèces ». Odoo 18 ne crée d'office l'entrepôt d'une société créée
+        ensuite qu'en test (stock, res_company.py) : hors test, la succursale
+        n'a ni entrepôt ni caisse (notes de version, §7, et point à valider)."""
+        succursale = self.env['res.company'].create({
+            'name': "Succursale", 'parent_id': self.company.id})
+        self.env.user.company_ids |= succursale
+        self.env.flush_all()
+        self.env.cr.precommit.run()
+        self.assertTrue(succursale.chart_template)
+        restaurant = self._restaurant(succursale)
+        self.assertEqual(len(restaurant), 1)
+        journaux = self.env['account.journal'].search([
+            ('company_id', '=', succursale.id), ('type', '=', 'cash')])
+        self.assertEqual(restaurant.payment_method_ids.filtered('is_cash_count').journal_id,
+                         journaux)
 
     def test_recharger_le_plan_comptable_ne_cree_rien(self):
         """La caisse n'est posée qu'au premier chargement du plan comptable.

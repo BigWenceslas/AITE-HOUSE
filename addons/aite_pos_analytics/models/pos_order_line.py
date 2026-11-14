@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models
+from odoo.tools import float_is_zero
 
 
 class PosOrderLine(models.Model):
@@ -55,6 +56,24 @@ class PosOrderLine(models.Model):
                 (line.margin / line.price_subtotal * 100.0)
                 if line.price_subtotal else 0.0
             )
+
+    @api.depends('price_subtotal', 'margin')
+    def _compute_margin(self):
+        """« Marge (%) » d'Odoo, lue sur la marge AITE ci-dessus.
+
+        Le calcul d'Odoo (non stocké) pose « Marge » et « Marge (%) » ;
+        « Marge » est ici le champ stocké AITE (coût figé à la vente) : chaque
+        lecture de « Marge (%) » (formulaire d'une commande dans la gestion)
+        réécrivait donc la ligne, ce qui échoue en transaction de lecture
+        seule (ERROR « read-only transaction » au journal du serveur). Seul le
+        pourcentage est calculé ici, sans rien écrire."""
+        for line in self:
+            if line.product_id.type == 'combo' or float_is_zero(
+                    line.price_subtotal,
+                    precision_rounding=line.currency_id.rounding):
+                line.margin_percent = 0
+            else:
+                line.margin_percent = line.margin / line.price_subtotal
 
     @api.model_create_multi
     def create(self, vals_list):

@@ -139,7 +139,8 @@ if [ $RESTO = 1 ]; then
       *)
         echo "✗ La base « $ODOO_DB » existe sans le restaurant (aite_pos_restaurant) : rien n'y est installé."
         echo "   --restaurant n'installe le restaurant que dans une base qu'il crée : choisissez une autre"
-        echo "   base (ODOO_DB=…), ou supprimez celle-ci (dropdb $ODOO_DB) et relancez."
+        echo "   base (ODOO_DB=…), ou supprimez celle-ci et son filestore, puis relancez :"
+        echo "   PGPASSWORD=odoo dropdb -h $PG_HOST -U odoo $ODOO_DB && rm -rf $ROOT/dev/filestore/filestore/$ODOO_DB"
         exit 1 ;;
     esac
     echo "base existante — mise à niveau des modules du restaurant"

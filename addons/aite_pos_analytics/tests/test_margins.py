@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Coût, marge et agrégats de session — le cœur chiffré du module."""
-from odoo.tests import tagged
+from odoo.tests import new_test_user, tagged
 
 from .common import PosAnalyticsCommon
 
@@ -51,6 +51,27 @@ class TestPosMargins(PosAnalyticsCommon):
         order = self._sale([(self.beer, 1, 1000.0)])
         self.assertEqual(order.lines.margin, -1000.0)
         self.assertAlmostEqual(order.lines.margin_rate, -100.0, places=2)
+
+    def test_lire_la_marge_en_pourcentage_n_ecrit_pas_la_ligne(self):
+        """Vérification finale du restaurant (constat de la revue) : ouvrir
+        une commande dans la gestion (colonne « Marge (%) » d'Odoo) écrivait
+        la ligne. Le calcul d'Odoo de « Marge (%) » pose aussi « Marge »,
+        devenu ici le champ stocké AITE : chaque lecture réécrivait la ligne
+        (ERROR « read-only transaction » au journal du serveur, test d'Odoo
+        ``test_receipt_screen_edit_payment_lines``). Une lecture ne modifie
+        rien ; « Marge (%) » se lit sur la marge AITE (coût figé)."""
+        order = self._sale([(self.beer, 2, 5000.0)])   # CA 10 000, CMV 4 000
+        line = order.lines
+        auteur = line.write_uid
+        lecteur = new_test_user(self.env, login='aite_lecteur_marge',
+                                groups='base.group_user,point_of_sale.group_pos_user')
+        line.invalidate_recordset()
+        pourcentage = line.with_user(lecteur).margin_percent
+        self.env.flush_all()
+        line.invalidate_recordset()
+        self.assertEqual(line.write_uid, auteur, "la lecture a écrit la ligne")
+        self.assertAlmostEqual(pourcentage, 0.6, places=4)
+        self.assertEqual(line.margin, 6000.0)
 
     # ------------------------------------------------------------------
     # Agrégats de commande

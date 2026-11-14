@@ -140,6 +140,20 @@ check("modes « Espèces » et « Mobile Money » seuls",
 check("« Mobile Money » sur un journal de banque à son nom",
       modes.filtered(lambda m: m.name == "Mobile Money").journal_id.mapped('name')
       == ["Mobile Money"])
+# Deux journaux « Espèces » (notes de version, §2 : caisse « Restaurant », un
+# seul journal « Espèces ») : la caisse reprend le journal d'espèces du plan
+# comptable au lieu de le laisser libre à côté du sien (base installée depuis
+# la correction). Une caisse créée ensuite (un bar) a son propre journal
+# (« Espèces Bar ») : on ne compte donc pas les journaux, on vérifie qu'aucun
+# journal d'espèces n'est laissé sans mode de paiement.
+journaux_libres = env['account.journal'].search([
+    ('company_id', '=', company.id), ('type', '=', 'cash'),
+    ('pos_payment_method_ids', '=', False)])
+check("aucun journal d'espèces laissé libre : les « Espèces » de la caisse sont sur "
+      "celui du plan comptable", not journaux_libres,
+      "libres : %s ; « Espèces » de la caisse sur : %s" % (
+          journaux_libres.mapped('code'),
+          modes.filtered('is_cash_count').journal_id.mapped('code')))
 check("la salle s'appelle « Salle »", restaurant.floor_ids.mapped('name') == ["Salle"],
       restaurant.floor_ids.mapped('name'))
 check("aucun modèle hôtelier (aite.hotel.*) dans la base",

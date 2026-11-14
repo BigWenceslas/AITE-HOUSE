@@ -58,7 +58,26 @@ seul installe 4 dossiers (`docs/INSTALLATION.md`, §9).
 - **Caisse « Restaurant »** posée d'office (Espèces, Mobile Money, salle
   « Salle »), à l'installation si le plan comptable est déjà chargé, sinon
   au premier chargement du plan comptable de la société ; jamais recréée par
-  un rechargement ; une caisse existante n'est jamais modifiée.
+  un rechargement ; une caisse existante n'est jamais modifiée. Ses
+  **Espèces** reprennent le journal d'espèces libre de la société (celui du
+  plan comptable) : un seul journal « Espèces » ; un journal n'est créé que
+  si aucun n'est libre (il y en avait deux).
+- **Une caisse créée ensuite** (un bar, par exemple) reçoit ses propres
+  **Espèces** (journal d'espèces libre, sinon créé à son nom : « Espèces
+  Bar »), en plus des modes qu'Odoo lui propose (dont Mobile Money). Avant,
+  une caisse créée ensuite n'avait pas d'espèces : celles de la caisse
+  « Restaurant » ne se partagent pas (un mode d'espèces ne sert qu'une
+  caisse), et Odoo n'en crée que si la société n'a aucun mode de paiement ;
+  c'était aussi la cause de l'erreur du test d'Odoo `test_report_listing`.
+- **« Espèces » porte le nom traduisible des modes d'espèces d'Odoo** :
+  « Espèces » en français, « Cash » en anglais (il était forcé à
+  « Espèces » dans toutes les langues ; sur une base en anglais, deux tours
+  de fermeture de caisse d'Odoo comptaient alors le mauvais mode). Rien ne
+  change pour une base créée en français (INSTALLATION §9.2). Sur une base
+  créée en anglais puis passée au français, le chargement des traductions
+  françaises (Paramètres → Langues) donne « Espèces » à tout mode d'espèces
+  encore nommé « Cash » sans nom français ; un nom déjà traduit n'est pas
+  touché.
 - Fiche employé, première page : **« Niveau en caisse »** et **« Code
   caisse »** (4 chiffres, obligatoire, unique dans la société, proposé
   d'office ; le refus ne nomme jamais le collègue ; « Dupliquer » donne une
@@ -165,6 +184,17 @@ seul installe 4 dossiers (`docs/INSTALLATION.md`, §9).
 - La vue relit des données à jour (`flush_model`) ; point d'extension pour la
   passerelle. **Rien ne change** dans les rapports existants (vérifié par une
   mise à niveau d'une base qui a des ventes).
+- **Correction (Python seul, défaut de la 18.0.2.1.4 livrée)** : ouvrir une
+  commande dans la gestion (Point de Vente → Commandes, ou « Modifier le
+  paiement » depuis la caisse) réécrivait ses lignes. Le calcul d'Odoo de
+  « Marge (%) » pose aussi « Marge », que le module a remplacé par sa marge
+  stockée (coût figé à la vente) : chaque lecture écrivait la ligne, et le
+  journal du serveur portait une ligne ERROR « read-only transaction » (la
+  requête était rejouée, sans effet visible). « Marge (%) » se lit
+  maintenant sur la marge AITE, sans rien écrire ; une ligne de menu
+  composé (combo) garde 0 %. La marge stockée n'est plus recalculée en
+  douce à l'ouverture d'une commande (voir le §7 et le point 27 pour le
+  coût).
 
 ### `aite_pos_analytics_hr` 18.0.1.0.0 — le serveur dans les analyses (AH-03)
 « Serveur (ouverte par) » et « Encaissée par » dans l'analyse AITE ;
@@ -289,6 +319,18 @@ incrément.
   bar/restaurant » (sa phrase dit « ci-dessous »), pas en fin de bloc.
 - Caisse « Restaurant » posée au seul **premier** chargement du plan
   comptable de chaque société.
+- Ses **Espèces** reprennent le journal d'espèces libre du plan comptable
+  (la partie 4.4 prescrivait `_create_cash_payment_method({'name':
+  "Espèces"})`, c'est-à-dire un second journal « Espèces ») ; un journal
+  n'est créé que si aucun n'est libre (vérification finale).
+- **Toute caisse créée ensuite** reçoit d'office des Espèces (journal libre,
+  sinon créé à son nom, « Espèces Bar ») : non prévu par la spécification,
+  qui ne parlait que de la caisse « Restaurant » (vérification finale : sans
+  cela, une seconde caisse n'avait pas d'espèces).
+- Le mode s'appelle **« Cash » en anglais** et « Espèces » en français (nom
+  traduisible d'Odoo ; la spécification écrivait « Espèces » seul), et le
+  français chargé après l'installation le renomme « Espèces »
+  (vérification finale).
 - Réglages d'`aite_pos_credit` renommés `aite_credit_*` et migration
   18.0.2.0.6 : non prévus par la spécification.
 - Les réglages du Point de Vente sont réservés à Administration /
@@ -559,9 +601,37 @@ incrément.
   toujours le compte Odoo (hors lot 1).
 - Le rendu du rapport par employé de `pos_hr` écrit un avertissement « t-key »
   d'Odoo dans le journal du serveur (sans effet à l'écran).
-- Le test d'Odoo `point_of_sale` `test_report_listing` est en erreur dès
-  qu'`aite_pos_restaurant` est installé (journal d'espèces de la caisse posée
-  d'office) ; sans effet pour l'utilisateur, non corrigé.
+- **Société créée ensuite, succursale** : la caisse « Restaurant » n'est
+  posée au chargement du plan comptable que si la société a un entrepôt.
+  Or Odoo 18 ne crée d'entrepôt d'office que pour la première société de la
+  base (et dans ses tests) : une société ou une succursale créée ensuite dans
+  la gestion n'a pas sa caisse, et le journal du serveur porte l'avertissement
+  « caisse « Restaurant » non créée » (essai hors tests : plan chargé,
+  0 entrepôt, 0 caisse). Le cas du client (une base, une société) n'est pas
+  touché ; pour une seconde société, la suite est à trancher (point 28).
+- **Hôtel avec restaurant : un seul journal d'espèces pour deux tiroirs.**
+  Les Espèces de la caisse « Restaurant » sont sur le journal d'espèces du
+  plan comptable ; la réception de l'hôtel, tant que son « Journal des
+  encaissements » n'est pas réglé, encaisse les folios en espèces sur le
+  premier journal d'espèces de la société, c'est-à-dire le même (essai de la
+  revue : base du restaurant, puis `aite_hotel_pos_link` installé : la
+  réception et la caisse sur CSH1 ; avant la correction du journal, la
+  caisse avait le sien). Pour un hôtel avec restaurant, AITE règle à
+  l'installation **Paramètres → Gestion Hôtelière → Comptabilité des
+  règlements → « Journal des encaissements »** sur un journal d'espèces
+  propre à la réception (créé dans Facturation → Configuration →
+  Comptabilité → Journaux). Le client pilote ne reçoit pas `aite_pos_restaurant` dans
+  cette livraison (point 20) ; s'il le reçoit un jour, régler ce journal
+  d'abord.
+- **Les marges d'`aite_pos_analytics` remplacent celles d'Odoo** (depuis la
+  première version, donc dans la 18.0.2.1.4 livrée ; sans lien avec le
+  lot 1) : le module redéfinit les champs d'Odoo « Coût total » et « Marge »
+  des lignes de caisse (coût = prix de revient du produit figé à la vente,
+  dans la monnaie de la société). Le coût réel d'Odoo (premier entré premier
+  sorti, valorisation en temps réel, conversion dans la monnaie de la
+  caisse) n'est plus calculé, y compris dans les rapports d'Odoo ; trois
+  tests d'Odoo (`TestPosMargin`) échouent pour cette raison, aussi sur une
+  base qui n'a qu'`aite_pos_analytics`. Voir les points à valider.
 - Le nom d'application d'`aite_pos_analytics` porte encore le nom du client
   pilote (« AITE — POS Analytics (LAVERANDAH) ») : visible dans les
   Applications d'un autre client (AH-11).
@@ -630,7 +700,14 @@ la revue) ; ceux des incréments 1 à 6a sont dans les corps de leurs commits.
   tests, 0 échec, 0 erreur, 39 tours de caisse réellement joués dans Chrome
   (« tour succeeded »), 0 ligne ERROR ou WARNING ; avec `aite_hotel_pos_link`
   installé : 481 tests, 0 échec, 39 tours ; seul test sauté : le kit
-  (Fabrication absente).
+  (Fabrication absente). Vérification finale (base neuve, code final, après
+  les corrections du journal, des Espèces et de la marge) : 447 tests (6 de
+  plus dans `TestInstallation`, 1 dans `TestPosMargins`), 0 échec, 0 erreur,
+  39 tours, 0 ligne ERROR ou WARNING ; sautés : les deux tests de la note de
+  chambre et le kit ; puis `aite_hotel_pos_link` installé (journaux, modes
+  et caisses inchangés) : ses 41 tests et les deux tests de la note de
+  chambre, 43 tests, 0 échec, 0 erreur. Les tests d'installation activent le
+  français s'il manque : ils passent aussi sur une base en anglais.
 - **`AiteParcoursTour`** : toutes les lignes de la partie 1.2 (partie 3),
   516 étapes ; il échoue bien si une mesure s'écarte de la partie 1.2 (essais
   du développeur : compte faux, valeur attendue fausse) et si la fenêtre de
@@ -639,12 +716,53 @@ la revue) ; ceux des incréments 1 à 6a sont dans les corps de leurs commits.
 - **Tours standard d'Odoo** (base en anglais, `pos_hr`, `pos_restaurant`,
   `pos_hr_restaurant`) : 43 tests, 0 échec, 55 tours ; une seule ligne
   ERROR, connue (bibliothèque `rlPyCairo` absente).
-- **Scénario novice** (`dev/run_tests.sh restaurant`) : 154 vérifications,
+- **Suites standard complètes du Point de Vente d'Odoo** (chasse aux
+  régressions et vérification finale, 14/11/2026 ; bases en anglais,
+  Cameroun, sans démonstration ; tests joués sans mise à niveau) : une base
+  de référence sans nos modules (`pos_restaurant`, `pos_hr`) contre une base
+  avec nos modules, test par test. Mêmes modules du Point de Vente installés
+  des deux côtés (`sale` et `sale_stock` en plus avec nos modules :
+  `aite_pos_credit` dépend de `sale`). Code final : `pos_hr` 12 tests,
+  `pos_restaurant` 31 (1 sauté par Odoo), `pos_hr_restaurant` 0,
+  `pos_online_payment` 10, `pos_online_payment_self_order` 1 : 0 échec des
+  deux côtés, mêmes tours (15, 40, 4, 1) ; `pos_self_order` 44 : 11 échecs et
+  7 erreurs d'Odoo, les mêmes des deux côtés ; au total « 11 failed,
+  7 error(s) of 98 tests » des deux côtés, sans aucune différence test par
+  test. `point_of_sale` : référence « 2 failed, 1 error(s) of 401 tests »
+  (échecs d'Odoo : `test_product_combo_price`, bureau et mobile ; erreur :
+  `TestPointOfSale.test_no_default_pricelist`). Avec nos modules, après la
+  seule correction du journal (un seul journal « Espèces ») : 7 échecs de
+  plus (les deux tours de fermeture de caisse, en version bureau et mobile,
+  et trois tests de marge), l'erreur de `test_report_listing` et la
+  préparation de `TestPointOfSale` en erreur (« 9 failed, 2 error(s) of
+  399 tests »). Code final : « 5 failed, 1 error(s) of 399 tests », 216 tours ;
+  restent les deux échecs d'Odoo, les trois tests de marge (§7, point 27) et
+  la préparation de `TestPointOfSale`, qui crée une société pendant le
+  chargement du Point de Vente, avant `sale_stock` : même erreur sur la
+  référence dès que `sale` est installé, sans aucun module AITE ; sans effet
+  hors des tests (d'où 399 tests au lieu de 401). Lignes ERROR du journal
+  hors résultats de tests : la préparation de `TestPointOfSale` et les deux
+  tours combo d'Odoo ; la ligne ERROR « read-only transaction » du tour
+  d'Odoo `test_receipt_screen_edit_payment_lines` (défaut d'`aite_pos_analytics`,
+  §2) a disparu ; 0 WARNING.
+- **Scénario novice** (`dev/run_tests.sh restaurant`) : 155 vérifications,
   0 KO, sur la base de travail `aite_resto` créée par `dev/setup_env.sh
   --restaurant`, et sur une base où la caisse a servi puis fermé (session
   « Contrôle d'ouverture » en attente, cas qui rendait le script rouge avant
   la revue) ; audit des menus : 6 menus, aucun problème ; tests purs :
-  vague 1 28, restaurant 29, socle 18 fichiers.
+  vague 1 28, restaurant 29, socle 18 fichiers. Vérification finale sur une
+  base neuve préparée comme `aite_resto` (création, installation, graine) :
+  155 vérifications (une de plus : aucun journal d'espèces laissé libre à
+  côté de celui de la caisse), 0 KO, audit de 6 menus, « TOUT EST VERT » ;
+  vert aussi avec une seconde caisse « Bar » gardée (son journal « Espèces
+  Bar ») ; le premier contrôle écrit (« un seul journal d'espèces ») y était
+  rouge à tort. La base de travail `aite_resto` existante a été installée
+  avant la correction : elle a encore un journal d'espèces libre (CSH1) à
+  côté de celui de la caisse (CSH2), et cette vérification y est rouge
+  (essai sur une copie) tant qu'elle n'est pas recréée : `PGPASSWORD=odoo
+  dropdb -h localhost -U odoo aite_resto && rm -rf
+  dev/filestore/filestore/aite_resto`, puis `dev/setup_env.sh
+  --restaurant`.
 - **Garde-fous** : `dev/setup_env.sh --restaurant` sur une copie de la base
   hôtelière, ou sur une base sans restaurant, s'arrête en erreur sans rien y
   installer (modules, produits, comptes et caisses inchangés) ;
@@ -656,13 +774,15 @@ la revue) ; ceux des incréments 1 à 6a sont dans les corps de leurs commits.
   hôtelière, mise à niveau d'`aite_pos_credit` (migration 18.0.2.0.6 jouée)
   et d'`aite_pos_analytics` (18.0.2.1.4 → 18.0.2.1.6), 0 ligne ERROR ou
   WARNING, puis `dev/run_tests.sh` : scénarios 38, 36, 46 et 33
-  vérifications, 0 KO, audit de 38 menus, « TOUT EST VERT ».
+  vérifications, 0 KO, audit de 38 menus, « TOUT EST VERT » (rejoué à
+  l'identique par la vérification finale, code final).
 - **Captures** (`captures/restaurant/`, 23 images, 2,8 Mo) prises par
   `tests/restaurant/shots.py` sur une copie de la base du restaurant, 0
   erreur JavaScript, 0 ligne ERROR ou WARNING du serveur, regardées une à
   une.
-- **Cahier de recette** régénéré : 249 cas dont 103 du domaine R, PDF de 23
-  pages, totaux recalculés par LibreOffice.
+- **Cahier de recette** régénéré : 250 cas dont 104 du domaine R (R104 :
+  un seul journal d'espèces, une caisse créée ensuite a ses Espèces), PDF de
+  24 pages, totaux recalculés par LibreOffice sur une copie (250, R 104).
 - **Enterprise** : aucune base Enterprise n'était disponible ; rien n'y a
   été joué, rien n'a été simulé.
 - `dev/run_tests.sh` n'a pas été joué sur la base de développement hôtelière
@@ -734,38 +854,44 @@ la revue) ; ceux des incréments 1 à 6a sont dans les corps de leurs commits.
     rouvrez la fenêtre d'annulation. » ; « Le délai avant l'orange doit être
     d'au moins 1 minute. » ; le libellé « Ce qui va se passer ». Les
     valide-t-on tels quels ?
-19. **Deux journaux « Espèces »** (celui du plan comptable et celui de la
-    caisse posée d'office), cause aussi de l'erreur du test d'Odoo
-    `test_report_listing` : n'en garde-t-on qu'un ?
-20. **Ardoises signalées par la migration 18.0.2.0.6** chez le client pilote
+19. **Ardoises signalées par la migration 18.0.2.0.6** chez le client pilote
     (déjà remboursées, ou rattachées à une addition encore ouverte) : qui les
     reprend, et quand ?
-21. **Livraison au client pilote** : lui livre-t-on maintenant
+20. **Livraison au client pilote** : lui livre-t-on maintenant
     `aite_pos_credit` 18.0.2.0.6 (AH-01 change la naissance des ardoises),
     `aite_pos_analytics` 18.0.2.1.6 et la correction d'`aite_hotel_pos_link`
     (version inchangée, redémarrage seul) ?
-22. **Passerelle installée à la main** sur une base où l'analyse et le
+21. **Passerelle installée à la main** sur une base où l'analyse et le
     restaurant étaient déjà installés : acceptable, ou prévoit-on une
     installation automatique à la mise à niveau ?
-23. **Noms hérités du client pilote** dans les fiches d'applications et les
+22. **Noms hérités du client pilote** dans les fiches d'applications et les
     cartes (AH-11 : « AITE — POS Analytics (LAVERANDAH) », « Top bières »,
     « Consignes d'emballages ») et **étude comparative** (AH-10) : les
     corrige-t-on avant toute présentation au client du restaurant ?
-24. **TVA de la carte** : Odoo pose d'office sur chaque nouveau produit la TVA
+23. **TVA de la carte** : Odoo pose d'office sur chaque nouveau produit la TVA
     de 19,25 % hors taxes (un prix de 1 000 FCFA est encaissé 1 193 FCFA,
     constaté sur une base neuve) ; la graine de démonstration ne pose aucune
     taxe. Quelle taxe « prix TTC » AITE règle-t-il avec le comptable du client
     avant la saisie de la carte ?
-25. **Essais sur place** (partie 8 ci-dessus) : quand les joue-t-on sur la
+24. **Essais sur place** (partie 8 ci-dessus) : quand les joue-t-on sur la
     tablette et l'hébergement du client, imprimantes de cuisine et deux
     postes compris ?
-26. **Changer la case ou la vente sans table sur une caisse déjà utilisée** :
+25. **Changer la case ou la vente sans table sur une caisse déjà utilisée** :
     après chaque fermeture, la tablette rouvre une session « Contrôle
     d'ouverture » qui grise ces deux réglages, et l'administrateur ne peut pas
     la supprimer. Accepte-t-on cette contrainte d'Odoo (faire ces réglages
     avant la mise en service), ou faut-il un moyen de les changer ensuite ?
-27. **Compte de la notification « Envoyé : … »** : par famille la plus fine
+26. **Compte de la notification « Envoyé : … »** : par famille la plus fine
     du produit, comme les compteurs du bouton « J'envoie » d'Odoo (« 1 Pizzas,
     2 Bière ») ; le nom de la famille est repris tel quel, d'où « 1 Pizzas ».
     Garde-t-on ce compte, ou compte-t-on par famille de premier niveau
     (« 1 Nourriture, 2 Boisson », l'exemple de la partie 1.4) ?
+27. **Marges d'`aite_pos_analytics`** (constat de la chasse aux régressions,
+    antérieur au lot 1, voir le §7) : garde-t-on le coût figé à la vente sous
+    les noms des champs d'Odoo, ou renomme-t-on les champs AITE (migration
+    chez le client pilote, tableaux de bord AITE à reprendre) pour rendre à
+    Odoo ses marges au coût réel ?
+28. **Société créée ensuite ou succursale** (§7) : Odoo 18 ne lui crée pas
+    d'entrepôt, donc pas de caisse « Restaurant ». Crée-t-on d'office son
+    entrepôt (et donc sa caisse), ou AITE crée-t-il l'entrepôt et la caisse
+    à la main pour chaque nouvelle société ?
