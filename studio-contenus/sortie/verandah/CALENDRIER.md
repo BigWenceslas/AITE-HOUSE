@@ -999,3 +999,53 @@ L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
 
 #LaVerandah #Douala #ConseilDeLaCave #Moderation #RentreBien
 ```
+
+## Week-end 14-15 novembre — au choix
+
+### Samedi 12h — Ambiance · undefined
+
+![VD-WE-9](VD-WE-9-vd-ambiance.jpg)
+
+**Visuel :** C’est samedi, mola ! — TU AS BOSSÉ TOUTE LA SEMAINE, CE SOIR ON SE RETROUVE À LA VÉRANDAH.
+
+**Légende à publier :**
+
+```text
+Le boulot attendra lundi. Ce soir, on pose tout et on se retrouve entre amis à La Vérandah. C’est qui le premier arrivé ce soir ?
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #Douala #Makepe #SamediSoir #BonWeekEnd
+```
+
+### Samedi 17h — Pensée (photo ronde) · undefined
+
+![VD-WE-10](VD-WE-10-vd-sombre.jpg)
+
+**Visuel :** Bon samedi — Samedi, mola, sors ta plus belle tenue et viens montrer ça à La Vérandah ce soir.
+
+**Légende à publier :**
+
+```text
+Le samedi, on se fait beau et on sort. Prépare ta tenue, préviens tes amis, on t’attend. C’est quelle tenue qui sort ce soir ? ✨
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #Douala #Makepe #SamediSoir #Sortie
+```
+
+### Dimanche 11h — Pensée (photo ronde) · undefined
+
+![VD-DIM-4](VD-DIM-4-vd-sombre.jpg)
+
+**Visuel :** Bon dimanche — Dimanche, mola, la marmite se repose à la maison, viens manger avec les tiens à La Vérandah.
+
+**Légende à publier :**
+
+```text
+Le dimanche, celui qui cuisine toute la semaine mérite aussi de se reposer. Viens à table avec tes proches, on s’occupe de vous. Chez toi, qui mérite une pause cuisine ?
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #Douala #Makepe #BonDimanche #Famille
+```

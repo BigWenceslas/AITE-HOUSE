@@ -2526,6 +2526,72 @@
         "Microsoft Learn, « Incident response planning », https://learn.microsoft.com/en-us/security/operations/incident-response-planning (mise à jour le 03/11/2026) : communications hors bande (réflexe 3)",
         "Microsoft Support, « Avoid tech support scams », https://support.microsoft.com/en-us/security/avoid-tech-support-scams (consulté le 13/11/2026) : Microsoft ne contacte jamais personne de lui-même pour un support technique non sollicité ; ne cliquez sur aucun lien et n'appelez aucun numéro affiché dans un message d'erreur. Cornell IT, https://it.cornell.edu/news/after-outage-rapid-surge-scams-and-phishing (14/05/2026) : forte hausse des arnaques après une panne. IT-Connect, https://www.it-connect.tech/microsoft-365-outage-hits-outlook-teams-and-copilot-for-11-hours/ (13/11/2026) : les liens réécrits par Safe Links peuvent ne plus s'ouvrir (réflexe 4)"
       ]
+    },
+    {
+      "serie": "Week-end 14-15 novembre — au choix",
+      "semaine": null,
+      "jour": "samedi",
+      "moment": "samedi 10h",
+      "modele": "affiche",
+      "etiquette": "Bon week-end",
+      "titre": "",
+      "points": [],
+      "numero": null,
+      "id": "WE-9",
+      "photo": "tunique",
+      "theme": "Le meilleur clin d'œil à la panne Microsoft 365 : le DG remercie lui-même son éq",
+      "texte": "Même quand Outlook et Teams ont pris une pause, tu as tenu le cap : *merci, la famille*.",
+      "legende": "Jeudi et vendredi, la messagerie a joué à cache-cache avec tout le monde, partout dans le monde. Tu as appelé, patienté, trouvé d’autres chemins, et le travail a avancé quand même. Ce samedi, je voulais simplement te dire merci. Et toi, comment as-tu tenu le coup pendant ces deux jours ?",
+      "hashtags": [
+        "#AITEConsulting",
+        "#BonWeekEnd",
+        "#Merci",
+        "#Douala"
+      ]
+    },
+    {
+      "serie": "Week-end 14-15 novembre — au choix",
+      "semaine": null,
+      "jour": "samedi",
+      "moment": "samedi 12h",
+      "modele": "affiche",
+      "etiquette": "Bon week-end",
+      "titre": "",
+      "points": [],
+      "numero": null,
+      "id": "WE-10",
+      "photo": "boubou",
+      "theme": "Idée concrète et bien de Douala : les heures perdues dans les embouteillages de ",
+      "texte": "Ce samedi, pas de bouchons de Ndokoti à affronter : ce temps gagné, donne-le à *tes enfants*, mola.",
+      "legende": "Toute la semaine, on passe des heures dans la circulation. Aujourd’hui, ce temps est à toi : un jeu, une balade, une vraie conversation avec les petits. Ce sont ces moments-là qu’ils retiendront. Et toi, qu’as-tu prévu avec tes enfants ce week-end ?",
+      "hashtags": [
+        "#AITEConsulting",
+        "#BonWeekEnd",
+        "#Famille",
+        "#Douala"
+      ]
+    },
+    {
+      "serie": "Week-end 14-15 novembre — au choix",
+      "semaine": null,
+      "jour": "dimanche",
+      "moment": "dimanche 9h",
+      "modele": "affiche",
+      "etiquette": "Bon dimanche",
+      "titre": "",
+      "points": [],
+      "numero": null,
+      "id": "DIM-4",
+      "photo": "ndop",
+      "theme": "Idée humaine et nouvelle, jamais traitée : la solidarité de quartier, très parla",
+      "texte": "Dimanche, prends le temps de saluer *tes voisins du quartier* : ce sont eux qui veillent quand tu n’es pas là.",
+      "legende": "En semaine, on part tôt et on rentre tard, souvent sans voir personne. Le dimanche, c’est l’occasion de passer dire bonjour, de prendre des nouvelles de la vieille d’à côté. Le quartier, c’est aussi une famille. Et toi, à quand remonte ta dernière causerie avec tes voisins ?",
+      "hashtags": [
+        "#AITEConsulting",
+        "#BonDimanche",
+        "#Quartier",
+        "#Douala"
+      ]
     }
   ]
 }

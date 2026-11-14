@@ -1241,6 +1241,69 @@
         "#Moderation",
         "#RentreBien"
       ]
+    },
+    {
+      "serie": "Week-end 14-15 novembre — au choix",
+      "points": [],
+      "etiquette": "",
+      "id": "VD-WE-9",
+      "jour": "samedi",
+      "moment": "samedi 12h",
+      "modele": "vd-ambiance",
+      "titre": "C’est samedi, mola !",
+      "texte": "TU AS BOSSÉ TOUTE LA SEMAINE, *CE SOIR ON SE RETROUVE* À LA VÉRANDAH.",
+      "photo": null,
+      "alcool": false,
+      "legende": "Le boulot attendra lundi. Ce soir, on pose tout et on se retrouve entre amis à La Vérandah. C’est qui le premier arrivé ce soir ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#SamediSoir",
+        "#BonWeekEnd"
+      ]
+    },
+    {
+      "serie": "Week-end 14-15 novembre — au choix",
+      "jour": "samedi",
+      "modele": "vd-sombre",
+      "titre": "",
+      "points": [],
+      "id": "VD-WE-10",
+      "moment": "samedi 17h",
+      "etiquette": "Bon samedi",
+      "photo": "veste-pied",
+      "alcool": false,
+      "texte": "Samedi, mola, sors ta *plus belle tenue* et viens montrer ça *à La Vérandah* ce soir.",
+      "legende": "Le samedi, on se fait beau et on sort. Prépare ta tenue, préviens tes amis, on t’attend. C’est quelle tenue qui sort ce soir ? ✨\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#SamediSoir",
+        "#Sortie"
+      ]
+    },
+    {
+      "serie": "Week-end 14-15 novembre — au choix",
+      "jour": "dimanche",
+      "modele": "vd-sombre",
+      "titre": "",
+      "points": [],
+      "id": "VD-DIM-4",
+      "moment": "dimanche 11h",
+      "etiquette": "Bon dimanche",
+      "photo": "blazer",
+      "alcool": false,
+      "texte": "Dimanche, mola, la marmite se repose à la maison, viens *manger avec les tiens* à La Vérandah.",
+      "legende": "Le dimanche, celui qui cuisine toute la semaine mérite aussi de se reposer. Viens à table avec tes proches, on s’occupe de vous. Chez toi, qui mérite une pause cuisine ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#BonDimanche",
+        "#Famille"
+      ]
     }
   ]
 }
