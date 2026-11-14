@@ -58,8 +58,9 @@ patch(PaymentScreen.prototype, {
             return;
         }
         // AH-02 : même garde que le gabarit (ardoise réservée au manager sur
-        // une caisse au service à table contrôlé d'aite_pos_restaurant).
-        if (this.pos.aitePeut && !this.pos.aitePeut("ardoise")) {
+        // une caisse au service à table contrôlé d'aite_pos_restaurant) ; sur
+        // toute autre caisse, rien ne change (comportement d'avant AH-02).
+        if (this.pos.aiteActif && !this.pos.aitePeut("ardoise")) {
             return;
         }
         const partner = order.get_partner

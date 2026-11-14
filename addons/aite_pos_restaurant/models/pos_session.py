@@ -256,6 +256,15 @@ class PosSession(models.Model):
         self._aite_autoriser(employe)
         return {'id': employe.id, 'name': employe.name}
 
+    def aite_motifs_annulation(self):
+        """Requête de la fenêtre d'annulation, à son ouverture : les motifs
+        actifs, dans leur ordre (incrément 4). Lus en ``sudo()`` : le compte de
+        la caisse n'a aucun droit sur les motifs ; un motif ajouté pendant le
+        service est proposé à l'annulation suivante (REST-12 critère 5)."""
+        motifs = self.env['aite.restaurant.motif'].sudo().search([])
+        return [{'id': motif.id, 'name': motif.name,
+                 'precision_requise': motif.precision_requise} for motif in motifs]
+
     def aite_abandonner_code(self):
         """Requête de la caisse : la fenêtre d'ouverture ou de fermeture a
         été abandonnée ; le code tapé n'autorise plus rien. Sans effet sur

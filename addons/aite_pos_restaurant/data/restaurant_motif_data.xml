@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- Les cinq motifs d'annulation posés d'office (Q35 ; spécification,
+         partie 3.2). noupdate : le manager les renomme, les range ou en
+         ajoute dans Point de Vente → Configuration → Motifs d'annulation,
+         sans que la mise à niveau ne les remette. -->
+    <record id="motif_erreur_saisie" model="aite.restaurant.motif">
+        <field name="name">Erreur de saisie</field>
+        <field name="sequence">1</field>
+    </record>
+    <record id="motif_client_parti" model="aite.restaurant.motif">
+        <field name="name">Client parti</field>
+        <field name="sequence">2</field>
+    </record>
+    <record id="motif_plat_refuse" model="aite.restaurant.motif">
+        <field name="name">Plat refusé</field>
+        <field name="sequence">3</field>
+    </record>
+    <record id="motif_produit_manquant" model="aite.restaurant.motif">
+        <field name="name">Produit manquant</field>
+        <field name="sequence">4</field>
+    </record>
+    <record id="motif_autre" model="aite.restaurant.motif">
+        <field name="name">Autre</field>
+        <field name="sequence">5</field>
+        <field name="precision_requise" eval="True"/>
+    </record>
+
+</odoo>

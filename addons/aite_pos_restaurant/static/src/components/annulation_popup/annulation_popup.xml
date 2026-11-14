@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- La fenêtre d'annulation : sans en-tête d'Odoo (sa croix ferait un
+         second « Retour »). Titre, sous-titre (« Déjà envoyé : … », ou R9 quand
+         un chef de salle doit taper son code), puis l'étape en cours. -->
+    <t t-name="aite_pos_restaurant.AiteAnnulationPopup">
+        <Dialog header="false" footer="false" size="'md'" contentClass="'aite-annulation-popup'">
+            <h4 class="aite-annulation-titre aite-code-titre text-center mb-2" t-esc="props.titre"/>
+            <div t-if="props.sousTitre" class="aite-annulation-sous-titre text-center text-muted mb-3"
+                 t-esc="props.sousTitre"/>
+
+            <!-- 1. Combien ? -->
+            <div t-if="state.etape === 'quantite'" class="aite-annulation-quantites">
+                <div class="aite-annulation-question text-center fw-bold mb-2" t-esc="textes.combien"/>
+                <div class="aite-annulation-boutons">
+                    <t t-foreach="props.quantites" t-as="quantite" t-key="quantite">
+                        <button class="btn btn-primary btn-lg aite-touche"
+                                t-att-data-aite-quantite="quantite"
+                                t-on-click="() => this.choisirQuantite(quantite)"
+                                t-esc="libelleQuantite(quantite)"/>
+                    </t>
+                </div>
+            </div>
+
+            <!-- 2. Le code d'un chef de salle -->
+            <t t-elif="state.etape === 'code'">
+                <div class="aite-annulation-question text-center fw-bold mb-1" t-esc="textes.codeChef"/>
+                <div class="aite-code-points d-flex justify-content-center gap-3 my-3">
+                    <t t-foreach="[0, 1, 2, 3]" t-as="rang" t-key="rang">
+                        <span class="aite-point" t-att-class="{'aite-point-plein': rang lt state.code.length}"/>
+                    </t>
+                </div>
+                <div t-if="state.erreur" class="aite-code-erreur text-danger text-center fw-bold mb-2"
+                     t-esc="state.erreur"/>
+                <div class="aite-code-pave">
+                    <t t-foreach="touches" t-as="chiffre" t-key="chiffre">
+                        <button class="btn btn-light btn-lg aite-touche" t-att-data-aite-chiffre="chiffre"
+                                t-att-disabled="state.verification"
+                                t-on-click="() => this.toucher(chiffre)" t-esc="chiffre"/>
+                    </t>
+                    <span/>
+                    <button class="btn btn-light btn-lg aite-touche" data-aite-chiffre="0"
+                            t-att-disabled="state.verification"
+                            t-on-click="() => this.toucher('0')">0</button>
+                    <button class="btn btn-light btn-lg aite-touche aite-code-effacer"
+                            t-att-disabled="state.verification"
+                            t-on-click="() => this.effacer()">⌫</button>
+                </div>
+            </t>
+
+            <!-- 3. Pourquoi ? -->
+            <div t-else="" class="aite-annulation-motifs">
+                <div class="aite-annulation-question text-center fw-bold mb-2" t-esc="textes.pourquoi"/>
+                <div class="aite-annulation-boutons">
+                    <t t-foreach="props.motifs" t-as="motif" t-key="motif.id">
+                        <button class="btn btn-lg aite-touche aite-motif"
+                                t-att-class="state.motif and state.motif.id === motif.id ? 'btn-primary' : 'btn-outline-primary'"
+                                t-att-data-aite-motif-id="motif.id"
+                                t-att-disabled="state.envoi"
+                                t-on-click="() => this.choisirMotif(motif)" t-esc="motif.name"/>
+                    </t>
+                </div>
+                <t t-if="state.motif">
+                    <label class="form-label fw-bold mt-3 mb-1" for="aite_annulation_precision"
+                           t-esc="textes.precision"/>
+                    <input id="aite_annulation_precision" type="text"
+                           class="form-control form-control-lg aite-annulation-precision"
+                           t-model="state.precision"/>
+                    <button class="btn btn-primary btn-lg w-100 mt-2 aite-touche aite-annulation-valider"
+                            t-att-disabled="state.envoi"
+                            t-on-click="() => this.validerPrecision()" t-esc="textes.valider"/>
+                </t>
+                <div t-if="state.erreur" class="aite-annulation-erreur text-danger text-center fw-bold mt-2"
+                     t-esc="state.erreur"/>
+            </div>
+
+            <button class="btn btn-secondary btn-lg w-100 mt-3 aite-touche aite-annulation-retour"
+                    t-att-disabled="state.envoi"
+                    t-on-click="() => this.props.close()" t-esc="textes.retour"/>
+        </Dialog>
+    </t>
+
+</templates>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Le rapport des annulations (REST-22 ; spécification, partie 5.1 ;
+         incrément 4). Lu par le chef de salle avec le seul profil « Restaurant :
+         lecture des rapports », et par le manager. Les vues ne montrent que des
+         noms recopiés (table, produit, employés, motif) : le lecteur n'a aucun
+         droit sur la caisse, les commandes ni les employés. Lecture seule : le
+         serveur seul écrit ce journal. -->
+    <record id="view_restaurant_annulation_list" model="ir.ui.view">
+        <field name="name">aite.restaurant.annulation.list</field>
+        <field name="model">aite.restaurant.annulation</field>
+        <field name="arch" type="xml">
+            <list string="Annulations" create="0" edit="0" delete="0"
+                  decoration-danger="not autorisee">
+                <field name="date" options="{'show_seconds': False}"/>
+                <field name="table_nom"/>
+                <field name="produit_nom"/>
+                <field name="quantite" sum="Total"/>
+                <field name="montant" sum="Total" widget="monetary"/>
+                <field name="serveur_nom"/>
+                <field name="superieur_nom"/>
+                <field name="motif_nom"/>
+                <field name="commentaire"/>
+                <field name="type_annulation" optional="show"/>
+                <field name="autorisee" column_invisible="True"/>
+                <field name="order_ref" optional="hide"/>
+                <field name="prix_unitaire" optional="hide" widget="monetary"/>
+                <field name="currency_id" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_restaurant_annulation_pivot" model="ir.ui.view">
+        <field name="name">aite.restaurant.annulation.pivot</field>
+        <field name="model">aite.restaurant.annulation</field>
+        <field name="arch" type="xml">
+            <pivot string="Annulations" sample="1">
+                <field name="motif_nom" type="row"/>
+                <field name="quantite" type="measure"/>
+                <field name="montant" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_restaurant_annulation_graph" model="ir.ui.view">
+        <field name="name">aite.restaurant.annulation.graph</field>
+        <field name="model">aite.restaurant.annulation</field>
+        <field name="arch" type="xml">
+            <graph string="Annulations" type="bar" sample="1">
+                <field name="motif_nom"/>
+                <field name="montant" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Périodes : « Aujourd'hui » (par défaut), « Cette semaine », « Ce mois »,
+         « Cette année » (à l'heure de l'utilisateur), et le filtre de date
+         d'Odoo pour une période libre. -->
+    <record id="view_restaurant_annulation_search" model="ir.ui.view">
+        <field name="name">aite.restaurant.annulation.search</field>
+        <field name="model">aite.restaurant.annulation</field>
+        <field name="arch" type="xml">
+            <search string="Annulations">
+                <field name="produit_nom"/>
+                <field name="table_nom"/>
+                <field name="serveur_nom"/>
+                <field name="superieur_nom"/>
+                <field name="motif_nom"/>
+                <field name="order_ref"/>
+                <filter name="aujourd_hui" string="Aujourd'hui"
+                        domain="[('date', '&gt;=', datetime.datetime.combine(context_today(), datetime.time(0, 0, 0)).to_utc().strftime('%Y-%m-%d %H:%M:%S')),
+                                 ('date', '&lt;', datetime.datetime.combine(context_today() + relativedelta(days=1), datetime.time(0, 0, 0)).to_utc().strftime('%Y-%m-%d %H:%M:%S'))]"/>
+                <filter name="cette_semaine" string="Cette semaine"
+                        domain="[('date', '&gt;=', datetime.datetime.combine(context_today() + relativedelta(weeks=-1, days=1, weekday=0), datetime.time(0, 0, 0)).to_utc().strftime('%Y-%m-%d %H:%M:%S')),
+                                 ('date', '&lt;', datetime.datetime.combine(context_today() + relativedelta(days=1, weekday=0), datetime.time(0, 0, 0)).to_utc().strftime('%Y-%m-%d %H:%M:%S'))]"/>
+                <filter name="ce_mois" string="Ce mois"
+                        domain="[('date', '&gt;=', datetime.datetime.combine(context_today() + relativedelta(day=1), datetime.time(0, 0, 0)).to_utc().strftime('%Y-%m-%d %H:%M:%S')),
+                                 ('date', '&lt;', datetime.datetime.combine(context_today() + relativedelta(months=1, day=1), datetime.time(0, 0, 0)).to_utc().strftime('%Y-%m-%d %H:%M:%S'))]"/>
+                <filter name="cette_annee" string="Cette année"
+                        domain="[('date', '&gt;=', datetime.datetime.combine(context_today() + relativedelta(month=1, day=1), datetime.time(0, 0, 0)).to_utc().strftime('%Y-%m-%d %H:%M:%S')),
+                                 ('date', '&lt;', datetime.datetime.combine(context_today() + relativedelta(years=1, month=1, day=1), datetime.time(0, 0, 0)).to_utc().strftime('%Y-%m-%d %H:%M:%S'))]"/>
+                <filter name="date" date="date" string="Période"/>
+                <separator/>
+                <filter name="sans_code" string="Sans code" domain="[('autorisee', '=', False)]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="par_motif" string="Motif" context="{'group_by': 'motif_nom'}"/>
+                    <filter name="par_demandeur" string="Demandée par" context="{'group_by': 'serveur_nom'}"/>
+                    <filter name="par_responsable" string="Autorisée par" context="{'group_by': 'superieur_nom'}"/>
+                    <filter name="par_produit" string="Produit" context="{'group_by': 'produit_nom'}"/>
+                    <filter name="par_jour" string="Jour" context="{'group_by': 'date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_restaurant_annulation" model="ir.actions.act_window">
+        <field name="name">Annulations</field>
+        <field name="res_model">aite.restaurant.annulation</field>
+        <field name="view_mode">list,pivot,graph</field>
+        <field name="search_view_id" ref="view_restaurant_annulation_search"/>
+        <field name="context">{'search_default_aujourd_hui': 1, 'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucune annulation sur cette période. Une ligne s'ajoute ici chaque fois qu'un chef de salle annule, avec son code et un motif, un produit déjà envoyé en cuisine ou au bar. Changez la période en haut de l'écran pour voir les autres jours.
+            </p>
+        </field>
+    </record>
+
+</odoo>

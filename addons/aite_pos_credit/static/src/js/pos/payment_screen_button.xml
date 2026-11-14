@@ -11,11 +11,14 @@
        t-inherit="point_of_sale.PaymentScreenButtons"
        t-inherit-mode="extension">
         <!-- AH-02 : sur une caisse au service à table contrôlé
-             (aite_pos_restaurant), l'ardoise est réservée au manager ;
-             pos.aitePeut n'existe pas sans ce module (pas de dépendance).
-             Le bouton n'apparaît que si la caisse a un mode « ardoise ». -->
+             (aite_pos_restaurant), le bouton n'apparaît que pour le manager
+             et que si la caisse a un mode « ardoise ». Sur toute autre caisse
+             (pos.aiteActif faux, ou absent sans aite_pos_restaurant : pas de
+             dépendance), il reste affiché comme avant AH-02, et le toucher sans
+             mode « ardoise » affiche l'aide à la configuration (décision
+             d'arbitrage, incrément 4 du restaurant). -->
         <xpath expr="//div[hasclass('payment-buttons')]" position="inside">
-            <button t-if="(!pos.aitePeut or pos.aitePeut('ardoise')) and _aiteGetCreditMethod()"
+            <button t-if="!pos.aiteActif or (pos.aitePeut('ardoise') and _aiteGetCreditMethod())"
                     class="button btn btn-secondary btn-lg py-3 mb-2 w-100 aite-credit-btn"
                     t-on-click="() => this.putOnCredit()">
                 <i class="fa fa-book me-2" role="img" aria-label="Ardoise"

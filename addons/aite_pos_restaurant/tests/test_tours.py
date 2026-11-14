@@ -351,3 +351,110 @@ class TestToursTable(AiteToursModeCommon):
         self.assertFalse(self.env['aite.restaurant.saisie'].search_count(
             [('config_id', '=', self.pos_config.id), ('employe_nom', '=', "Carine")]))
 
+
+@tagged('post_install', '-at_install', 'aite_pos_restaurant')
+class TestToursAnnulation(AiteToursModeCommon):
+    """Incrément 4 : verrou après envoi, code d'un responsable, motifs,
+    journal des annulations (AiteAnnulationTour, AiteAnnulerTableTour,
+    AiteDeplacementTour, AiteFermetureTour). Moussa (2222, serveur) tape son
+    code dans la fenêtre d'annulation : R8."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.employes["Moussa"] = cls.env['hr.employee'].create({
+            'name': "Moussa", 'pin': '2222', 'aite_niveau_caisse': 'serveur',
+            'company_id': cls.env.company.id})
+
+    def _journal(self, domaine=None):
+        return self.env['aite.restaurant.annulation'].search(
+            [('config_id', '=', self.pos_config.id)] + (domaine or []), order='id')
+
+    def _table(self, numero, etat=None):
+        domaine = [('config_id', '=', self.pos_config.id),
+                   ('table_id.table_number', '=', numero)]
+        if etat:
+            domaine.append(('state', '=', etat))
+        return self.env['pos.order'].search(domaine, order='id desc', limit=1)
+
+    def test_annulation(self):
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteAnnulationTour', login='pos_user')
+        addition = self._addition_table_5()
+        self.assertEqual(addition.state, 'draft')
+        ligne = addition.lines
+        self.assertEqual(ligne.product_id.name, "Coca-Cola")
+        self.assertEqual(ligne.qty, 1)
+        self.assertEqual(ligne.aite_qte_envoyee, 1)
+        trace = self._journal()
+        self.assertEqual(len(trace), 1, trace.mapped('type_annulation'))
+        self.assertEqual(trace.type_annulation, 'produit')
+        self.assertTrue(trace.autorisee)
+        self.assertEqual(trace.quantite, 2)
+        self.assertEqual(trace.superieur_id, self.employes["Paul"])
+        self.assertEqual(trace.serveur_id, self.employes["Awa"])
+        self.assertEqual(trace.motif_id, self.env.ref('aite_pos_restaurant.motif_erreur_saisie'))
+        self.assertEqual(trace.table_nom, "5")
+        # La 4ᵉ, saisie puis retirée avant tout enregistrement : ni saisie ni
+        # annulation (Q34).
+        self.assertEqual(self._saisies(addition), [("Coca-Cola", 3.0, "Awa")])
+        self.assertFalse(self._journal([('type_annulation', '=', 'retrait_sans_code')]))
+
+    def test_annuler_la_table(self):
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteAnnulerTableTour', login='pos_user')
+        table_5 = self._table(5)
+        self.assertEqual(table_5.state, 'cancel')
+        traces = self._journal([('order_id', '=', table_5.id)])
+        self.assertEqual(sorted(traces.mapped('produit_nom')), ["Coca-Cola", "Water"])
+        self.assertEqual(set(traces.mapped('type_annulation')), {'table'})
+        self.assertEqual(set(traces.mapped('superieur_nom')), {"Paul"})
+        self.assertEqual(set(traces.mapped('serveur_nom')), {"Awa"})
+        self.assertEqual(set(traces.mapped('motif_nom')), {"Client parti"})
+        table_4 = self._table(4)
+        self.assertEqual(table_4.state, 'cancel')
+        traces_4 = self._journal([('order_id', '=', table_4.id)])
+        self.assertEqual(traces_4.mapped('produit_nom'), ["Coca-Cola"])
+        self.assertEqual(traces_4.superieur_nom, "Paul")
+        self.assertEqual(traces_4.serveur_nom, "Paul")
+        self.assertFalse(self._journal([('type_annulation', '=', 'annulation_sans_code')]))
+
+    def test_deplacement(self):
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteDeplacementTour', login='pos_user')
+        self.assertFalse(self._journal(), "ni la division ni la réunion ne sont des annulations")
+        absorbee = self._table(5, 'cancel')
+        self.assertTrue(absorbee)
+        self.assertTrue(absorbee.aite_fusionnee)
+        table_4 = self._table(4, 'draft')
+        self.assertEqual(sum(table_4.lines.mapped('qty')), 3)
+        self.assertEqual(sum(table_4.lines.mapped('aite_qte_envoyee')), 3)
+        part = self.env['pos.order'].search([('config_id', '=', self.pos_config.id),
+                                             ('floating_order_name', '=', "5B")])
+        self.assertEqual(part.lines.product_id.mapped('name'), ["Water"])
+        self.assertEqual(part.lines.aite_qte_envoyee, 1)
+        # Les saisies : ce qu'Awa a ajouté, une fois.
+        saisies = self.env['aite.restaurant.saisie'].search(
+            [('config_id', '=', self.pos_config.id)])
+        self.assertEqual(sum(saisies.mapped('quantite')), 4)
+
+    def test_fermeture(self):
+        session = self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteFermetureTour', login='pos_user')
+        self.assertEqual(session.state, 'closed')
+        self.assertEqual(session.aite_fermee_par_id, self.employes["Paul"])
+        traces = self._journal([('session_id', '=', session.id)])
+        self.assertEqual(len(traces), 2)
+        self.assertEqual(set(traces.mapped('type_annulation')), {'fermeture'})
+        self.assertEqual(sorted(traces.mapped('produit_nom')), ["Coca-Cola", "Water"])
+        self.assertEqual(set(traces.mapped('superieur_nom')), {"Paul"})
+        self.assertEqual(set(traces.order_id.mapped('state')), {'cancel'})
+
+    def test_ardoise_sans_mode_ardoise(self):
+        """AH-02 en mode : sans mode « ardoise » sur la caisse, pas de bouton,
+        même pour le manager."""
+        if 'is_aite_credit' not in self.env['pos.payment.method']._fields:
+            self.skipTest("aite_pos_credit n'est pas installé")
+        self.assertFalse(self.pos_config.payment_method_ids.filtered('is_aite_credit'))
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteArdoiseSansModeTour', login='pos_user')

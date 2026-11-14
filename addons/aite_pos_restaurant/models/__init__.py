@@ -9,3 +9,5 @@ from . import account_chart_template
 from . import pos_order_line
 from . import pos_order
 from . import restaurant_saisie
+from . import restaurant_motif
+from . import restaurant_annulation

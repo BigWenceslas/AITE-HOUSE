@@ -1,13 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Journal des saisies (incrément 3) : chaque société ne voit que les
-         siennes, comme le rapport journalier d'aite_pos_analytics. Personne
-         n'a l'écriture : le serveur l'écrit en sudo() (partie 3.4). Le groupe
-         « Restaurant : lecture des rapports » arrive à l'incrément 4. -->
+    <!-- Le profil de lecture du chef de salle (AH-05 ; spécification, partie
+         3.4 ; incrément 4). Il lit le rapport des annulations sans aucun droit
+         sur la caisse : il ne peut ni ouvrir une session ni voir la
+         configuration. Posé une fois (noupdate) : AITE le donne aux comptes
+         qui en ont besoin. Schéma de CLAUDE.md : le groupe implique
+         base.group_user (un utilisateur qui n'a que lui est interne), et le
+         responsable du Point de Vente comme l'administrateur l'ont d'office. -->
+    <data noupdate="1">
+        <record id="module_category_restaurant" model="ir.module.category">
+            <field name="name">Restaurant AITE</field>
+            <field name="description">Rapports du service à table contrôlé (annulations).</field>
+            <field name="sequence">25</field>
+        </record>
+
+        <record id="group_lecture_rapports" model="res.groups">
+            <field name="name">Restaurant : lecture des rapports</field>
+            <field name="category_id" ref="module_category_restaurant"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Lit le rapport des annulations (menu « Restaurant »), sans aucun droit sur la caisse ni sur les commandes : pour le chef de salle.</field>
+        </record>
+    </data>
+
+    <record id="point_of_sale.group_pos_manager" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('group_lecture_rapports'))]"/>
+    </record>
+    <record id="base.group_system" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('group_lecture_rapports'))]"/>
+    </record>
+
+    <!-- Journaux du restaurant : chaque société ne voit que les siens, comme le
+         rapport journalier d'aite_pos_analytics. Personne n'a l'écriture : le
+         serveur les écrit en sudo() (partie 3.4). -->
     <record id="rule_restaurant_saisie_company" model="ir.rule">
         <field name="name">Saisies du restaurant : sociétés autorisées</field>
         <field name="model_id" ref="model_aite_restaurant_saisie"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_restaurant_annulation_company" model="ir.rule">
+        <field name="name">Annulations du restaurant : sociétés autorisées</field>
+        <field name="model_id" ref="model_aite_restaurant_annulation"/>
         <field name="domain_force">[('company_id', 'in', company_ids)]</field>
     </record>
 

@@ -63,9 +63,28 @@ Incrément 3 (la table) :
 * « Addition », « Diviser l'addition », « Déplacer ou réunir », « Annuler la
   table » ; « Liste de prix » retirée de la caisse.
 
+Incrément 4 (annuler ce qui est parti) :
+
+* ce qui est parti en cuisine ou au bar est verrouillé : sur la caisse, ⌫
+  retire librement ce qui n'est pas encore envoyé ; sous ce qui est parti, il
+  ouvre une seule fenêtre — combien, le code d'un chef de salle (vérifié par
+  le serveur), le motif, qui valide ; un chef de salle identifié ne retape pas
+  son code ; la personne identifiée ne change pas ;
+* « Annuler la table » et la corbeille de « Commandes » ouvrent directement
+  cette fenêtre pour une table qui a des produits envoyés ; à la fermeture,
+  « Annuler ces tables » annule toutes les tables encore ouvertes avec un seul
+  motif ; ni la division ni la réunion ne sont des annulations ;
+* le journal des annulations (Restaurant → Annulations : aujourd'hui par
+  défaut, semaine, mois, année, « Sans code », par motif, par employé, par
+  produit) ; ce qui arrive sans code n'est jamais refusé mais tracé
+  (« Retrait sans code », « Annulation sans code ») ; cinq motifs posés
+  d'office (Point de Vente → Configuration → Motifs d'annulation) ;
+* le profil « Restaurant : lecture des rapports » pour le chef de salle : il
+  lit les annulations sans aucun droit sur la caisse.
+
 Aucune dépendance au socle hôtelier.
 """,
-    'version': '18.0.1.0.2',
+    'version': '18.0.1.0.3',
     'author': "AITE Consulting",
     'website': "https://aiteconsulting.com",
     'category': 'Point of Sale',
@@ -74,11 +93,15 @@ Aucune dépendance au socle hôtelier.
     'data': [
         'security/restaurant_security.xml',
         'security/ir.model.access.csv',
+        'data/restaurant_motif_data.xml',
         'views/hr_employee_views.xml',
         'views/res_config_settings_views.xml',
         'views/pos_order_views.xml',
         'views/pos_session_views.xml',
         'views/restaurant_saisie_views.xml',
+        'views/restaurant_annulation_views.xml',
+        'views/restaurant_motif_views.xml',
+        'views/restaurant_menus.xml',
     ],
     'assets': {
         'point_of_sale._assets_pos': ['aite_pos_restaurant/static/src/**/*'],

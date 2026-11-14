@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Les motifs (Point de Vente → Configuration → Motifs d'annulation) :
+         liste modifiable en place, rangée par glisser ; on archive, on
+         n'efface pas. -->
+    <record id="view_restaurant_motif_list" model="ir.ui.view">
+        <field name="name">aite.restaurant.motif.list</field>
+        <field name="model">aite.restaurant.motif</field>
+        <field name="arch" type="xml">
+            <list string="Motifs d'annulation" editable="bottom" delete="0">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="precision_requise"/>
+                <field name="active" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_restaurant_motif_search" model="ir.ui.view">
+        <field name="name">aite.restaurant.motif.search</field>
+        <field name="model">aite.restaurant.motif</field>
+        <field name="arch" type="xml">
+            <search string="Motifs d'annulation">
+                <field name="name"/>
+                <filter name="archives" string="Archivés" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_restaurant_motif" model="ir.actions.act_window">
+        <field name="name">Motifs d'annulation</field>
+        <field name="res_model">aite.restaurant.motif</field>
+        <field name="view_mode">list</field>
+        <field name="search_view_id" ref="view_restaurant_motif_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Les motifs sont proposés au chef de salle quand il annule un produit déjà envoyé : il en touche un, et l'annulation est enregistrée avec ce motif. Ajoutez, renommez ou rangez les motifs ici ; archivez ceux qui ne servent plus.
+            </p>
+        </field>
+    </record>
+
+</odoo>

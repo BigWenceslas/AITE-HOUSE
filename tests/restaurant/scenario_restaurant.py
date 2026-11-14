@@ -23,6 +23,12 @@ Incrément 3 : la table (personnes, « ouverte par » figé, heure posée par le
 serveur, « encaissée par »), le journal des saisies (qui a saisi quoi, ni la
 division ni la réunion ne comptent), la quantité verrouillée à l'envoi, le
 numéro qui n'est pas sur le plan, la vente sans table fermée d'office.
+Incrément 4 : le verrou après envoi (retrait sans code tracé), l'annulation
+avec le code d'un chef de salle et un motif (refus d'un code de serveur, même
+demande renvoyée sans double), la division et la réunion qui ne sont pas des
+annulations, la table encore ouverte annulée sans code à la fermeture, le
+rapport des annulations lu par le chef de salle avec le seul profil de
+lecture.
 """
 import contextlib
 import sys
@@ -107,6 +113,13 @@ check("aucun modèle hôtelier (aite.hotel.*) dans la base",
       not env['ir.model'].search_count([('model', '=like', 'aite.hotel.%')]))
 check("la société est en FCFA", company.currency_id.name == 'XAF',
       company.currency_id.name)
+motifs = env['aite.restaurant.motif'].search([], order='sequence, id') \
+    if 'aite.restaurant.motif' in env else []
+check("cinq motifs d'annulation posés d'office (incrément 4)",
+      [m.name for m in motifs] == ["Erreur de saisie", "Client parti", "Plat refusé",
+                                   "Produit manquant", "Autre"], [m.name for m in motifs])
+check("« Autre » demande une précision",
+      [m.name for m in motifs if m.precision_requise] == ["Autre"])
 
 print("\n═══ 2. AITE règle les comptes (incrément 1) ═══")
 Users = env['res.users'].with_context(no_reset_password=True)
@@ -425,6 +438,7 @@ Tables = env['restaurant.table'].with_user(manager)
 salle = restaurant.floor_ids[:1]
 table_12 = Tables.create({'floor_id': salle.id, 'table_number': 12, 'seats': 4})
 table_7 = Tables.create({'floor_id': salle.id, 'table_number': 7, 'seats': 4})
+table_9 = Tables.create({'floor_id': salle.id, 'table_number': 9, 'seats': 2})
 check("le manager ajoute les tables 7 et 12 à la salle",
       {7, 12} <= set(salle.table_ids.mapped('table_number')))
 castel = env['product.product'].search([('name', '=', "Castel")], limit=1) or \
@@ -555,6 +569,76 @@ check("1 Castel ajoutée sous le code de Paul : une saisie à son nom",
 envoyer(t12)
 caisse_envoie(t12, paul)
 
+Annulations = env['aite.restaurant.annulation'] if 'aite.restaurant.annulation' in env else None
+R8 = ("Ce code ne peut pas annuler. Il faut celui d'un chef de salle, d'un "
+      "superviseur ou du manager.")
+
+print("\n═══ 13 bis. Awa retire une Castel envoyée sans code : c'est tracé (incrément 4) ═══")
+# Table 9 : 3 Castel envoyées ; puis une copie de poste trafiquée renvoie 2
+# (le pavé, lui, ouvrirait la fenêtre d'annulation).
+t9 = nouvelle_addition(table_9, 2, awa)
+c9 = ajouter(t9, castel, 3)
+envoyer(t9)
+table_9_cmd = caisse_envoie(t9, awa)
+t9['lignes'][c9].update(qty=2, modifiee=True)
+caisse_envoie(t9, awa)
+retrait = Annulations.with_user(manager).search(
+    [('order_id', '=', table_9_cmd.id), ('autorisee', '=', False)]) if Annulations is not None else []
+check("la synchronisation passe (jamais refusée), la table garde 2 Castel",
+      table_9_cmd.lines.qty == 2, table_9_cmd.lines.qty)
+check("une ligne « Retrait sans code » au rapport des annulations : 1 Castel, par Awa, "
+      "sans responsable",
+      len(retrait) == 1 and retrait.type_annulation == 'retrait_sans_code'
+      and retrait.quantite == 1 and retrait.serveur_nom == "Awa" and not retrait.superieur_nom,
+      [(r.type_annulation, r.quantite, r.serveur_nom) for r in retrait])
+
+print("\n═══ 13 ter. Paul annule une Castel avec son code et un motif (incrément 4) ═══")
+motif_parti = env.ref('aite_pos_restaurant.motif_client_parti', raise_if_not_found=False)
+demande = str(uuid4())
+Commandes = env['pos.order'].with_user(caisse)
+if Annulations is not None and motif_parti:
+    reponse = Commandes.aite_autoriser_annulation(
+        table_9_cmd.ids, [{'uuid': c9, 'quantite': 1}], awa.pin, motif_parti.id, False,
+        awa.id, str(uuid4()), 'produit')
+    check("Awa tape son propre code dans la fenêtre d'annulation : refusé (R8)",
+          reponse == {'erreur': R8}, reponse)
+    reponse = Commandes.aite_autoriser_annulation(
+        table_9_cmd.ids, [{'uuid': c9, 'quantite': 1}], paul.pin, motif_parti.id, False,
+        awa.id, demande, 'produit')
+    autorisee = Annulations.with_user(manager).search(
+        [('order_id', '=', table_9_cmd.id), ('autorisee', '=', True)])
+    check("Paul tape son code et touche « Client parti » : accepté",
+          reponse.get('superieur_nom') == "Paul", reponse)
+    check("une ligne au rapport : 1 Castel, autorisée par Paul, demandée par Awa, "
+          "« Client parti »",
+          len(autorisee) == 1 and autorisee.quantite == 1 and autorisee.superieur_nom == "Paul"
+          and autorisee.serveur_nom == "Awa" and autorisee.motif_nom == "Client parti",
+          [(a.quantite, a.superieur_nom, a.serveur_nom, a.motif_nom) for a in autorisee])
+    check("le montant est en FCFA : 1 000", autorisee.montant == 1000
+          and autorisee.currency_id.name == 'XAF', (autorisee.montant, autorisee.currency_id.name))
+    Commandes.aite_autoriser_annulation(
+        table_9_cmd.ids, [{'uuid': c9, 'quantite': 1}], paul.pin, motif_parti.id, False,
+        awa.id, demande, 'produit')
+    check("la même demande renvoyée (réponse perdue) : toujours une seule ligne",
+          Annulations.search_count([('order_id', '=', table_9_cmd.id),
+                                    ('autorisee', '=', True)]) == 1)
+    # La caisse applique la baisse et note ce qui reste parti (bon d'annulation).
+    t9['lignes'][c9].update(qty=1, modifiee=True)
+    for entree in t9['preparation']['lines'].values():
+        entree['quantity'] = 1
+    t9['preparation']['metadata'] = {'serverDate': fields.Datetime.to_string(fields.Datetime.now())}
+    caisse_envoie(t9, awa)
+    check("la baisse appliquée par la caisse ne crée rien de plus au rapport",
+          Annulations.search_count([('order_id', '=', table_9_cmd.id)]) == 2
+          and table_9_cmd.lines.qty == 1 and table_9_cmd.lines.aite_qte_envoyee == 1)
+    aujourdhui = Annulations.with_user(manager).read_group(
+        [('date', '>=', fields.Datetime.to_string(fields.Datetime.now().replace(
+            hour=0, minute=0, second=0)))], ['montant:sum'], [])
+    check("rapport du jour : le total suit (2 000 F : un retrait, une annulation)",
+          aujourdhui and aujourdhui[0]['montant'] == 2000, aujourdhui)
+else:
+    check("le journal des annulations existe (incrément 4)", False)
+
 print("\n═══ 14. Division et réunion : pas des saisies (incrément 3) ═══")
 # Division : 1 Castel dans la part « 12B » (même personne, même heure).
 part = nouvelle_addition(None, 0, awa, "12B")
@@ -579,12 +663,20 @@ t12['lignes'][c12].update(qty=5, modifiee=True)
 t12['preparation']['lines'][c12]['quantity'] = 5
 t12['valeurs']['customer_count'] = 6
 caisse_envoie(t12, awa, deplacement=True)
+# La caisse signale la réunion avant d'annuler la table absorbée (incrément 4).
+if hasattr(Commandes, 'aite_marquer_fusion'):
+    Commandes.aite_marquer_fusion(table_7_cmd.id)
 table_7_cmd.with_user(caisse).action_pos_order_cancel()
 check("réunion : la table 12 a 6 personnes et 5 Castel verrouillées",
       table.customer_count == 6 and table.lines.aite_qte_envoyee == 5,
       (table.customer_count, table.lines.aite_qte_envoyee))
 check("ni la division ni la réunion ne sont des saisies",
       Saisies.search_count([('order_id', 'in', (table | part_12b).ids)]) == 2)
+check("ni la division ni la réunion ne sont des annulations (incrément 4)",
+      Annulations is not None and not Annulations.search_count(
+          [('order_id', 'in', (table | part_12b | table_7_cmd).ids)]))
+check("la table 7 absorbée est marquée « Réunie à une autre table »",
+      'aite_fusionnee' in table_7_cmd._fields and table_7_cmd.aite_fusionnee)
 
 print("\n═══ 15. La caissière encaisse (incrément 3) ═══")
 caisse_envoie(t12, carine, etat='paid', payer=especes)
@@ -618,8 +710,24 @@ check("encaissée : ce n'est pas une vente sans table (pas de note)",
       numero.state == 'paid' and not any("vente sans table" in (m.body or '')
                                          for m in numero.message_ids))
 
-print("\n═══ 9. Fermeture de la caisse par code (incrément 2) ═══")
+print("\n═══ 9. Fermeture de la caisse par code (incréments 2 et 4) ═══")
 R13 = "Seul un chef de salle ou le manager ferme la caisse."
+# La table 9 est encore ouverte, 1 Castel envoyée : « Annuler les commandes »
+# d'Odoo, sans la fenêtre d'annulation (copie de poste en retard).
+erreur = None
+try:
+    with env.cr.savepoint():
+        table_9_cmd.with_user(caisse).action_pos_order_cancel()
+except Exception as exc:  # noqa: BLE001
+    erreur = exc
+check("une table encore ouverte annulée sans code : jamais d'erreur", erreur is None, erreur)
+sans_code = Annulations.search([('order_id', '=', table_9_cmd.id),
+                                ('type_annulation', '=', 'annulation_sans_code')]) \
+    if Annulations is not None else []
+check("la table 9 est annulée et tracée « Annulation sans code » (1 Castel, Awa)",
+      table_9_cmd.state == 'cancel' and len(sans_code) == 1 and sans_code.quantite == 1
+      and sans_code.serveur_nom == "Awa",
+      [(a.type_annulation, a.quantite, a.serveur_nom) for a in sans_code])
 message = refus_utilisateur(lambda: poste.post_closing_cash_details(0))
 check("fermer sans code (fenêtre de fermeture d'Odoo seule) : refusé (R13)",
       message == R13, message)
@@ -648,6 +756,42 @@ check("« Caisse fermée par » : Paul", session.aite_fermee_par_id == paul,
 check("l'historique de la session dit une fois « Caisse fermée par Paul »",
       len(session.message_ids.filtered(
           lambda m: "Caisse fermée par Paul" in (m.body or ''))) == 1)
+
+print("\n═══ 17. Le chef de salle lit le rapport des annulations (incrément 4) ═══")
+groupe = env.ref('aite_pos_restaurant.group_lecture_rapports', raise_if_not_found=False)
+if groupe and Annulations is not None:
+    # AITE donne au chef de salle le seul profil « Restaurant : lecture des rapports ».
+    chef = Users.create({'name': "Chef de salle", 'login': 'scenario_chef_resto',
+                         'groups_id': [(6, 0, [groupe.id])]})
+    check("le chef de salle est un utilisateur interne, sans droit sur la caisse",
+          chef._is_internal() and not chef.has_group('point_of_sale.group_pos_user'))
+    lu = Annulations.with_user(chef).search([])
+    check("il lit les annulations (retrait, annulation autorisée, annulation sans code)",
+          sorted(lu.mapped('type_annulation')) ==
+          ['annulation_sans_code', 'produit', 'retrait_sans_code'], lu.mapped('type_annulation'))
+    check("il ne lit pas les commandes", refus_acces(lambda: env['pos.order'].with_user(
+        chef).search([])))
+    check("il ne lit pas la configuration de la caisse", refus_acces(
+        lambda: env['pos.config'].with_user(chef).search([])))
+    menus = env['ir.ui.menu'].with_user(chef)._visible_menu_ids()
+    racine = env.ref('aite_pos_restaurant.menu_restaurant_root')
+    check("le menu « Restaurant » est le sien ; pas le Point de Vente",
+          racine.id in menus and env.ref('point_of_sale.menu_point_root').id not in menus)
+    action = env.ref('aite_pos_restaurant.action_restaurant_annulation')
+    vues = Annulations.with_user(chef).get_views(
+        [(False, mode) for mode in action.view_mode.split(',')] + [(False, 'search')])
+    champs = vues['models']['aite.restaurant.annulation']['fields']
+    lignes = Annulations.with_user(chef).web_search_read(
+        [], {nom: {} for nom in champs if nom not in ('currency_id',)})
+    check("« Restaurant → Annulations » s'ouvre (liste, vue croisée, graphique)",
+          lignes['length'] == 3 and {'list', 'pivot', 'graph'} <= set(vues['views']))
+    check("l'écran vide dit quoi faire (plus de 120 caractères)",
+          'o_view_nocontent' in (action.help or '') and len(action.help) >= 120,
+          len(action.help or ''))
+    check("la période par défaut est « Aujourd'hui »",
+          'search_default_aujourd_hui' in (action.context or ''), action.context)
+else:
+    check("le profil « Restaurant : lecture des rapports » existe (incrément 4)", False)
 
 env.cr.rollback()
 print("\n══════════════════════════════════════")

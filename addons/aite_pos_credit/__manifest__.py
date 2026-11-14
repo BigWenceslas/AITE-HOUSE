@@ -80,6 +80,10 @@ Compatible Odoo 18 Enterprise.
             'aite_pos_credit/static/src/js/pos/payment_screen_button.js',
             'aite_pos_credit/static/src/js/pos/payment_screen_button.xml',
         ],
+        # Tours de la caisse (tests seulement).
+        'web.assets_tests': [
+            'aite_pos_credit/static/tests/tours/**/*',
+        ],
     },
 
     'post_init_hook': 'post_init_hook',

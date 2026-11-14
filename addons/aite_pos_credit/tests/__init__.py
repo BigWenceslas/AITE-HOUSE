@@ -9,3 +9,4 @@ from . import test_ecarts_caisse
 from . import test_ecarts_ergonomie
 from . import test_js_utils
 from . import test_migration
+from . import test_tours

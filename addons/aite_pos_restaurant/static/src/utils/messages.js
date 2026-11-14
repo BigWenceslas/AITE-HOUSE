@@ -11,6 +11,12 @@
 /** Espace insécable. */
 const ESP = "\u00a0";
 
+/** Une quantité à l'écran : « 2 », « 1,5 ». */
+export function nombre(quantite) {
+    const n = Number(quantite) || 0;
+    return Number.isInteger(n) ? String(n) : String(Math.round(n * 1000) / 1000).replace(".", ",");
+}
+
 export const MESSAGES = {
     R1: "Code inconnu. Retapez votre code.",
     R3:
@@ -45,6 +51,15 @@ export const MESSAGES = {
     R30:
         `Toute l'addition est sélectionnée${ESP}: il n'y a rien à diviser. Encaissez ` +
         "la table directement.",
+    // Incrément 4 : annuler ce qui est parti
+    R8:
+        "Ce code ne peut pas annuler. Il faut celui d'un chef de salle, d'un superviseur " +
+        "ou du manager.",
+    R9: (quantite, produit) =>
+        `Déjà envoyé${ESP}: ${nombre(quantite)} ${produit}. Pour l'annuler, un chef de salle ` +
+        "tape son code.",
+    R24: "Écrivez en quelques mots pourquoi.",
+    R26: "Ce produit vient d'être annulé sur un autre poste. Rien n'a changé ici.",
 };
 
 export const TITRES = {
@@ -59,6 +74,13 @@ export const TITRES = {
     personnes: (numero) => `Table ${numero} — combien de personnes${ESP}?`,
     /** Une vente sans table (« + ») : le numéro de son onglet. */
     venteSansTable: (numero) => `Vente sans table ${numero} — votre${ESP}code`,
+    // Incrément 4 : la fenêtre d'annulation
+    annulerProduit: (produit, table) => `Annuler ${produit} — table ${table}`,
+    annulerTable: (table) => `Annuler la table ${table}`,
+    annulerTables: (liste) => `Annuler les tables encore ouvertes${ESP}: ${liste}`,
+    /** Le filet du modèle (set_quantity) : titre de la fenêtre d'Odoo. */
+    produitDejaEnvoye: "Produit déjà envoyé",
+    fermerLaCaisse: "Fermer la caisse",
 };
 
 export const TEXTES = {
@@ -82,6 +104,29 @@ export const TEXTES = {
     table: (numero) => `Table ${numero}`,
     venteSansTable: "Vente sans table",
     ouvertePar: (nom) => `ouverte par ${nom}`,
+    // Incrément 4 : annuler ce qui est parti
+    dejaEnvoye: (quantite) => `Déjà envoyé${ESP}: ${nombre(quantite)}.`,
+    dejaEnvoyeListe: (liste) => `Déjà envoyé${ESP}: ${liste}`,
+    /** « 2 Coca-Cola, 1 Water ». */
+    envoi: (quantite, produit) => `${nombre(quantite)} ${produit}`,
+    combien: `Combien${ESP}?`,
+    tout: (quantite) => `${nombre(quantite)} (tout)`,
+    codeChef: "Code d'un chef de salle",
+    pourquoi: `Pourquoi${ESP}?`,
+    precision: "Précision",
+    annulationFaite: (quantite, produit, nom) =>
+        `Annulation faite${ESP}: ${nombre(quantite)} ${produit}, par ${nom}.`,
+    bonEnvoye: "Bon d'annulation envoyé.",
+    /** À la fermeture, des tables encore ouvertes (une seule : au singulier). */
+    tablesOuvertes: (nombreDeTables, liste) =>
+        nombreDeTables === 1
+            ? `1 table est encore ouverte${ESP}: ${liste}. Encaissez-la, ou annulez-la avec ` +
+              "un motif, avant de fermer."
+            : `${nombreDeTables} tables sont encore ouvertes${ESP}: ${liste}. Encaissez-les, ` +
+              "ou annulez-les avec un motif, avant de fermer.",
+    voirLesTables: "Voir les tables",
+    annulerCesTables: "Annuler ces tables",
+    annuler: "annuler",
     /** « 35 min » ; à partir d'une heure, « 1 h 05 ». */
     duree: (minutes) => {
         if (minutes < 60) {

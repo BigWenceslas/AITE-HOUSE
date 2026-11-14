@@ -6,7 +6,9 @@
          bouton « Saisies » (journal filtré sur l'addition). Les champs sont
          masqués quand ils sont vides ; le bouton suit le mode de la caisse
          (une addition ouverte avant la mise à niveau a des saisies sans
-         « ouverte par »). Le bouton « Annulations » arrive à l'incrément 4. -->
+         « ouverte par »). Incrément 4 : le bouton « Annulations » (le journal des
+         annulations filtré sur l'addition, pour qui lit ce rapport) et « Réunie
+         à une autre table » sur une addition absorbée par une réunion. -->
     <record id="view_pos_pos_form_aite_restaurant" model="ir.ui.view">
         <field name="name">pos.order.form.aite.restaurant</field>
         <field name="model">pos.order</field>
@@ -17,6 +19,10 @@
                         icon="fa-pencil" string="Saisies"
                         invisible="not aite_mode_restaurant"
                         groups="point_of_sale.group_pos_manager"/>
+                <button name="action_aite_annulations" type="object" class="oe_stat_button"
+                        icon="fa-ban" string="Annulations"
+                        invisible="not aite_mode_restaurant"
+                        groups="aite_pos_restaurant.group_lecture_rapports"/>
             </xpath>
             <xpath expr="//group[@name='order_fields']" position="inside">
                 <field name="aite_mode_restaurant" invisible="1"/>
@@ -25,6 +31,7 @@
                 <field name="aite_heure_ouverture" invisible="not aite_heure_ouverture"/>
                 <field name="aite_encaissee_par_id" invisible="not aite_encaissee_par_id"
                        options="{'no_open': True}"/>
+                <field name="aite_fusionnee" invisible="not aite_fusionnee"/>
             </xpath>
         </field>
     </record>

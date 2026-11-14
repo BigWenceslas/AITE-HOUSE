@@ -406,3 +406,141 @@ export function actionsSansRenommer() {
     ];
 }
 
+
+// ----------------------------------------------------------------------
+// Incrément 4 : la fenêtre d'annulation (`AiteAnnulationPopup`)
+// ----------------------------------------------------------------------
+
+const ANNULATION = ".modal:not(.o_inactive_modal) .aite-annulation-popup";
+
+/** Un texte de la caisse (`TEXTES`), calculé au moment de l'étape. */
+export function texte(cle, ...valeurs) {
+    return () => {
+        const modele = odoo.loader.modules.get("@aite_pos_restaurant/utils/messages").TEXTES[cle];
+        return typeof modele === "function" ? modele(...valeurs.map(valeur)) : modele;
+    };
+}
+
+/** Un message de refus (`MESSAGES`), calculé au moment de l'étape. */
+export function messageDe(cle, ...valeurs) {
+    return () => {
+        const modele = message(cle);
+        return typeof modele === "function" ? modele(...valeurs.map(valeur)) : modele;
+    };
+}
+
+/** La fenêtre d'annulation est ouverte, avec le titre et le sous-titre
+ * attendus s'ils sont donnés (`titre(…)`, `texte(…)`, `messageDe(…)`). */
+export function popupAnnulation(titreAttendu = null, sousTitre = null) {
+    return [
+        { content: "la fenêtre d'annulation est ouverte", trigger: ANNULATION },
+        ...(titreAttendu
+            ? [
+                  verifier("titre de la fenêtre d'annulation", () => {
+                      const t = document.querySelector(`${ANNULATION} .aite-annulation-titre`);
+                      return t?.textContent.trim() === valeur(titreAttendu) || JSON.stringify(t?.textContent);
+                  }),
+              ]
+            : []),
+        ...(sousTitre
+            ? [
+                  verifier("sous-titre de la fenêtre d'annulation", () => {
+                      const t = document.querySelector(`${ANNULATION} .aite-annulation-sous-titre`);
+                      return t?.textContent.trim() === valeur(sousTitre) || JSON.stringify(t?.textContent);
+                  }),
+              ]
+            : []),
+    ];
+}
+
+export function pasDePopupAnnulation() {
+    return {
+        content: "aucune fenêtre d'annulation",
+        trigger: "body:not(:has(.aite-annulation-popup))",
+    };
+}
+
+/** « Combien ? » : les boutons proposés, puis toucher `nombre`. */
+export function combien(nombre, proposes = null) {
+    return [
+        { content: "« Combien ? »", trigger: `${ANNULATION} .aite-annulation-quantites` },
+        ...(proposes
+            ? [
+                  verifier("les quantités proposées", () => {
+                      const boutons = [
+                          ...document.querySelectorAll(`${ANNULATION} [data-aite-quantite]`),
+                      ].map((b) => b.dataset.aiteQuantite);
+                      return JSON.stringify(boutons) === JSON.stringify(proposes) || JSON.stringify(boutons);
+                  }),
+              ]
+            : []),
+        {
+            content: `annuler ${nombre}`,
+            trigger: `${ANNULATION} [data-aite-quantite="${nombre}"]`,
+            run: "click",
+        },
+    ];
+}
+
+/** Le pavé « Code d'un chef de salle » de la fenêtre d'annulation. */
+export function codeAnnulation(code) {
+    return [
+        { content: "« Code d'un chef de salle »", trigger: `${ANNULATION} .aite-code-pave` },
+        ...[...code].map((chiffre) => ({
+            content: `touche ${chiffre}`,
+            trigger: `${ANNULATION} [data-aite-chiffre="${chiffre}"]`,
+            run: "click",
+        })),
+    ];
+}
+
+export function pasDeCodeAnnulation() {
+    return verifier(
+        "pas de code demandé",
+        () => !document.querySelector(`${ANNULATION} .aite-code-pave`)
+    );
+}
+
+/** « Pourquoi ? » : toucher le motif de rang `rang` (0 = le premier, dans
+ * l'ordre des motifs : « Erreur de saisie »), qui valide. */
+export function motif(rang = 0) {
+    return [
+        { content: "« Pourquoi ? »", trigger: `${ANNULATION} .aite-annulation-motifs` },
+        {
+            content: `le motif n° ${rang + 1}`,
+            trigger: `${ANNULATION} .aite-annulation-motifs [data-aite-motif-id]:eq(${rang})`,
+            run: "click",
+        },
+    ];
+}
+
+export function retourAnnulation() {
+    return { content: "« Retour »", trigger: `${ANNULATION} .aite-annulation-retour`, run: "click" };
+}
+
+/** Une notification (de tout type) dont le texte vaut exactement `attendu`. */
+export function notification(attendu) {
+    return verifier("notification attendue", () =>
+        [...document.querySelectorAll(".o_notification_content")].some(
+            (c) => c.textContent.trim() === valeur(attendu)
+        ) || [...document.querySelectorAll(".o_notification_content")].map((c) => c.textContent).join(" | ")
+    );
+}
+
+/** La ligne du produit `nom` sur l'écran de commande, sa quantité affichée
+ * (lue dans le modèle de la caisse, pas dans le texte). */
+export function quantiteDeLaLigne(nom, attendu) {
+    return verifier(`la ligne ${nom} est à ${attendu}`, () => {
+        const ligne = posmodel.get_order()?.lines.find((l) => l.get_product().name === nom);
+        const quantite = ligne ? ligne.get_quantity() : 0;
+        return quantite === attendu || `quantité ${quantite}`;
+    });
+}
+
+/** La table `numero` est libre sur le plan (aucune addition ouverte). */
+export function tableLibre(numero) {
+    return verifier(`la table ${numero} est libre`, () => {
+        const table = posmodel.models["restaurant.table"].find((t) => t.table_number === numero);
+        return (table && !posmodel.getActiveOrdersOnTable(table).length) || "table occupée";
+    });
+}

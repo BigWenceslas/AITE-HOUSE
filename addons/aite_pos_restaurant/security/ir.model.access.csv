@@ -1,2 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_aite_restaurant_saisie_manager,aite.restaurant.saisie manager,model_aite_restaurant_saisie,point_of_sale.group_pos_manager,1,0,0,0
+access_aite_restaurant_motif_lecture,aite.restaurant.motif lecture,model_aite_restaurant_motif,group_lecture_rapports,1,0,0,0
+access_aite_restaurant_motif_manager,aite.restaurant.motif manager,model_aite_restaurant_motif,point_of_sale.group_pos_manager,1,1,1,0
+access_aite_restaurant_annulation_lecture,aite.restaurant.annulation lecture,model_aite_restaurant_annulation,group_lecture_rapports,1,0,0,0
+access_aite_restaurant_annulation_manager,aite.restaurant.annulation manager,model_aite_restaurant_annulation,point_of_sale.group_pos_manager,1,0,0,0

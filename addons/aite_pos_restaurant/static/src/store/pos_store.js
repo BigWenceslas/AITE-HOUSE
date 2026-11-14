@@ -32,17 +32,38 @@
  *   libre (étape personnes) ;
  * - un numéro qui n'est pas sur le plan ouvre une table à ce nom (code,
  *   personnes) ; la vente sans table (« + ») suit la case de la caisse.
+ *
+ * Incrément 4 — annuler ce qui est parti :
+ * - tout produit compte comme « à envoyer », même d'une famille sans
+ *   imprimante (REST-10 critère 4) ;
+ * - une seule fenêtre (`AiteAnnulationPopup`) pour annuler un produit
+ *   envoyé, une table qui a des produits envoyés (« Annuler la table », la
+ *   corbeille de « Commandes ») et les tables encore ouvertes à la
+ *   fermeture : combien, le code d'un responsable vérifié par le serveur, le
+ *   motif ; la personne identifiée ne change pas ; une clé de demande par
+ *   annulation, gardée jusqu'à ce que la baisse soit appliquée (un nouvel
+ *   essai après R27 la réutilise) ;
+ * - l'addition absorbée par « Déplacer ou réunir » est signalée au serveur
+ *   avant d'être annulée (`aite_marquer_fusion`) : ce n'est pas une
+ *   annulation.
  */
 import { patch } from "@web/core/utils/patch";
 import { PosStore } from "@point_of_sale/app/store/pos_store";
 import { makeAwaitable } from "@point_of_sale/app/store/make_awaitable_dialog";
 import { ConnectionLostError, RPCError } from "@web/core/network/rpc";
-import { deserializeDateTime } from "@web/core/l10n/dates";
+import { deserializeDateTime, serializeDateTime } from "@web/core/l10n/dates";
+import { uuidv4 } from "@point_of_sale/utils";
+import {
+    changesToOrder,
+    getOrderChanges,
+} from "@point_of_sale/app/models/utils/order_change";
 // Fixe l'ordre des patchs : ceux de pos_hr et du restaurant d'abord.
 import "@pos_hr/overrides/models/pos_store";
 import "@pos_restaurant/overrides/models/pos_store";
 import { AiteCodePopup } from "@aite_pos_restaurant/components/code_popup/code_popup";
+import { AiteAnnulationPopup } from "@aite_pos_restaurant/components/annulation_popup/annulation_popup";
 import { MESSAGES, TEXTES, TITRES } from "@aite_pos_restaurant/utils/messages";
+import { partEnvoyee } from "@aite_pos_restaurant/utils/envoi";
 
 /** Écrans qui demandent quelqu'un d'identifié (point de passage `showScreen`). */
 const ECRANS_A_CODE = ["ProductScreen", "PaymentScreen", "TicketScreen"];
@@ -595,6 +616,9 @@ patch(PosStore.prototype, {
         if (ecran === "PaymentScreen" && this.get_order()?.payment_ids?.length) {
             return false;
         }
+        if (this.aiteAnnulationEnvoi) {
+            return false; // une annulation en cours d'envoi au serveur (partie 1.3)
+        }
         this.dialog.closeAll();
         if (this.isOrderTransferMode) {
             // Le déplacement est abandonné : la table touchée ensuite sur le
@@ -1099,5 +1123,416 @@ patch(PosStore.prototype, {
             parties.push(TEXTES.duree(minutes));
         }
         return parties.join(" · ");
+    },
+
+    // ------------------------------------------------------------------
+    // Incrément 4 : ce qui est parti, et son annulation
+    // ------------------------------------------------------------------
+
+    /** Tout produit compte comme « à envoyer », même d'une famille sans
+     * imprimante (REST-10 critère 4) : sinon il ne serait jamais « parti »,
+     * donc jamais verrouillé. L'impression reste filtrée imprimante par
+     * imprimante (sendOrderInPreparation ne passe pas par ici). */
+    getOrderChanges(skipped = false, order = this.get_order()) {
+        if (!this.aiteActif) {
+            return super.getOrderChanges(...arguments);
+        }
+        return getOrderChanges(order, skipped, new Set());
+    },
+
+    /** Les lignes de l'addition dont une part est partie en cuisine ou au bar. */
+    aiteLignesEnvoyees(order) {
+        return (order?.lines || []).filter((line) => partEnvoyee(line) > 0);
+    },
+
+    aitePorteDesEnvois(order) {
+        return this.aiteLignesEnvoyees(order).length > 0;
+    },
+
+    /** R4 si l'addition est celle d'un collègue (Q19), sinon rien. */
+    aiteRefusTableDUnCollegue(order) {
+        const ouvertePar = order?.aite_ouverte_par_id;
+        if (
+            !ouvertePar ||
+            !this.cashier ||
+            ouvertePar.id === this.cashier.id ||
+            this.aitePeut("table_collegue")
+        ) {
+            return null;
+        }
+        return this.aiteEstVenteSansTable(order)
+            ? MESSAGES.R4vente(order.getFloatingOrderName(), ouvertePar.name)
+            : MESSAGES.R4(this.aiteNomAddition(order), ouvertePar.name);
+    },
+
+    /** Les motifs actifs, lus sur le serveur à l'ouverture de la fenêtre
+     * (REST-12 critère 5). Hors connexion : R27, et rien. */
+    async aiteMotifs() {
+        try {
+            return await this.data.call("pos.session", "aite_motifs_annulation", [
+                [this.session.id],
+            ]);
+        } catch (erreur) {
+            if (erreur instanceof ConnectionLostError) {
+                this.notification.add(MESSAGES.R27(TEXTES.annuler), { type: "danger" });
+                return null;
+            }
+            throw erreur;
+        }
+    },
+
+    /** La requête de la fenêtre d'annulation (`aite_autoriser_annulation`).
+     * Rend la réponse du serveur, `"fermer"` (refus : la fenêtre se ferme) ou
+     * `false` (pas de réseau, R27 : la fenêtre reste, la clé est gardée). */
+    async aiteDemanderAnnulation({ orderIds, lignes, code, motif_id, commentaire, demande, nature }) {
+        this.aiteAnnulationEnvoi = true;
+        let reponse;
+        try {
+            reponse = await this.data.call("pos.order", "aite_autoriser_annulation", [
+                orderIds,
+                lignes,
+                code,
+                motif_id,
+                commentaire || false,
+                this.cashier?.id || false,
+                demande,
+                nature,
+            ]);
+        } catch (erreur) {
+            if (erreur instanceof ConnectionLostError) {
+                this.notification.add(MESSAGES.R27(TEXTES.annuler), { type: "danger" });
+                return false;
+            }
+            if (erreur instanceof RPCError && erreur.data?.message) {
+                this.notification.add(erreur.data.message, { type: "danger" });
+                return "fermer";
+            }
+            throw erreur;
+        } finally {
+            this.aiteAnnulationEnvoi = false;
+        }
+        if (reponse?.erreur) {
+            this.notification.add(reponse.erreur, { type: "danger" });
+            return "fermer";
+        }
+        return reponse;
+    },
+
+    /** La fenêtre d'annulation, pour un produit, une table ou les tables à
+     * la fermeture. Le code est demandé seulement si la personne identifiée
+     * ne peut pas annuler (sinon son code de visite sert, T3) ; le code tapé
+     * ne change pas la personne identifiée (REST-11-P1). `requete(choix)`
+     * rend ce qui part au serveur. Rend `{reponse, choix}`, ou faux. */
+    async aiteFenetreAnnulation({ titre, sousTitre, sousTitreCode, quantites = [], requete }) {
+        if (this.aiteAnnulationEnCours) {
+            return false;
+        }
+        this.aiteAnnulationEnCours = true;
+        try {
+            const motifs = await this.aiteMotifs();
+            if (!motifs) {
+                return false;
+            }
+            const codeRequis = !(this.aitePeut("annuler_envoye") && this.aiteCodeVisite);
+            let reponse = null;
+            const choix = await makeAwaitable(this.dialog, AiteAnnulationPopup, {
+                titre,
+                sousTitre: (codeRequis ? sousTitreCode : sousTitre) || "",
+                quantites,
+                codeRequis,
+                motifs,
+                reconnaitre: (code) => {
+                    const employe = this.aiteEmployeParCode(code);
+                    if (!employe) {
+                        return MESSAGES.R1;
+                    }
+                    if (!this.aiteEmployePeut(employe, "annuler_envoye")) {
+                        this.notification.add(MESSAGES.R8, { type: "danger" });
+                        return false;
+                    }
+                    return employe;
+                },
+                envoyer: async (demande) => {
+                    const resultat = await this.aiteDemanderAnnulation({
+                        ...requete(demande),
+                        ...demande,
+                        code: demande.code || this.aiteCodeVisite,
+                    });
+                    if (resultat && typeof resultat === "object") {
+                        reponse = resultat;
+                        return true;
+                    }
+                    return resultat;
+                },
+            });
+            return choix && reponse ? { reponse, choix } : false;
+        } finally {
+            this.aiteAnnulationEnCours = false;
+        }
+    },
+
+    /** Annuler une part envoyée d'une ligne (⌫ ou « +/- » sous ce qui est
+     * parti) : la fenêtre, puis la baisse appliquée aussitôt, le bon
+     * d'annulation de cette ligne seule, l'enregistrement et la
+     * notification. */
+    async aiteAnnulerLigne(line) {
+        const order = line?.order_id;
+        const envoye = line ? partEnvoyee(line) : 0;
+        if (!order || envoye <= 0 || this.aiteAnnulationEnCours) {
+            return false;
+        }
+        // Le serveur doit savoir ce qui est parti avant de l'annuler.
+        await this.aiteQuitterAddition(order);
+        const uuid = line.uuid;
+        const produit = line.get_full_product_name();
+        order.uiState.aiteDemandes = order.uiState.aiteDemandes || {};
+        const demande = (order.uiState.aiteDemandes[uuid] ||= uuidv4());
+        const entieres = Array.from({ length: Math.floor(envoye) }, (_v, i) => i + 1);
+        const quantites = entieres.at(-1) === envoye ? entieres : [...entieres, envoye];
+        const resultat = await this.aiteFenetreAnnulation({
+            titre: TITRES.annulerProduit(produit, this.aiteNomAddition(order)),
+            sousTitre: TEXTES.dejaEnvoye(envoye),
+            sousTitreCode: MESSAGES.R9(envoye, produit),
+            quantites,
+            requete: (choix) => ({
+                orderIds: [order.id],
+                lignes: [{ uuid, quantite: choix.quantite || envoye }],
+                demande,
+                nature: "produit",
+            }),
+        });
+        if (!resultat) {
+            return false;
+        }
+        // Une demande renvoyée (réponse perdue) : la quantité annulée la
+        // première fois, que le serveur rend, fait foi.
+        const quantite = resultat.reponse.quantites?.[uuid] || resultat.choix.quantite || envoye;
+        const ligne = order.lines.find((l) => l.uuid === uuid);
+        if (ligne) {
+            order.uiState.aiteAutorisation = true;
+            try {
+                const reste = ligne.get_quantity() - quantite;
+                if (reste > 0) {
+                    ligne.set_quantity(reste);
+                } else {
+                    order.removeOrderline(ligne);
+                }
+            } finally {
+                order.uiState.aiteAutorisation = false;
+            }
+        }
+        delete order.uiState.aiteDemandes[uuid];
+        const imprime = await this.aiteBonDAnnulation(order, uuid);
+        await this.aiteSynchroniser(order);
+        const texte = TEXTES.annulationFaite(quantite, produit, resultat.reponse.superieur_nom);
+        this.notification.add(imprime ? `${texte} ${TEXTES.bonEnvoye}` : texte, { type: "info" });
+        return true;
+    },
+
+    /** Le bon d'annulation de la seule ligne annulée (REST-11 critère 1), et
+     * ce qui est parti pour elle mis à jour. Les autres produits de la table
+     * pas encore envoyés ne partent pas avec lui (écart à la partie 4.1, qui
+     * prévoyait sendOrderInPreparationUpdateLastChange : celui-ci envoie toute
+     * l'addition). Rend vrai si un bon est sorti. */
+    async aiteBonDAnnulation(order, uuid) {
+        let imprime = false;
+        if (this.printers_category_ids_set?.size) {
+            const changement = changesToOrder(order, false, this.orderPreparationCategories);
+            const annules = changement.cancelled.filter((ligne) => ligne.uuid === uuid);
+            if (annules.length) {
+                try {
+                    imprime = await this.printChanges(order, {
+                        new: [],
+                        cancelled: annules,
+                        noteUpdated: [],
+                        generalNote: false,
+                        modeUpdate: false,
+                    });
+                } catch (erreur) {
+                    console.info("Restaurant : bon d'annulation non imprimé", erreur);
+                }
+            }
+        }
+        const preparation = order.last_order_preparation_change;
+        const ligne = order.lines.find((l) => l.uuid === uuid);
+        for (const [cle, entree] of Object.entries(preparation.lines || {})) {
+            if (cle.startsWith(uuid) || entree?.uuid === uuid) {
+                if (ligne) {
+                    entree.quantity = ligne.get_quantity();
+                } else {
+                    delete preparation.lines[cle];
+                }
+            }
+        }
+        preparation.metadata = {
+            ...(preparation.metadata || {}),
+            serverDate: serializeDateTime(luxon.DateTime.now()),
+        };
+        if (ligne) {
+            ligne.saved_quantity = ligne.get_quantity();
+            ligne.setHasChange(false);
+        }
+        return imprime;
+    },
+
+    /** Annuler une table qui porte des produits envoyés : une fenêtre (sans
+     * « Combien ? »), le code d'un responsable si besoin, le motif. Rend vrai
+     * si le serveur a autorisé (l'addition peut alors être annulée). */
+    async aiteAnnulerTable(order) {
+        if (!this.aitePorteDesEnvois(order)) {
+            return true;
+        }
+        await this.aiteQuitterAddition(order);
+        const liste = this.aiteLignesEnvoyees(order)
+            .map((line) => TEXTES.envoi(partEnvoyee(line), line.get_full_product_name()))
+            .join(", ");
+        order.uiState.aiteDemande ||= uuidv4();
+        const resultat = await this.aiteFenetreAnnulation({
+            titre: TITRES.annulerTable(this.aiteNomAddition(order)),
+            sousTitre: TEXTES.dejaEnvoyeListe(liste),
+            sousTitreCode: TEXTES.dejaEnvoyeListe(liste),
+            requete: () => ({
+                orderIds: [order.id],
+                lignes: false,
+                demande: order.uiState.aiteDemande,
+                nature: "table",
+            }),
+        });
+        if (!resultat) {
+            return false;
+        }
+        this.aiteAnnulationsAutorisees.add(order.uuid);
+        return true;
+    },
+
+    /** À la fermeture, « Annuler ces tables » : une seule fenêtre et un seul
+     * motif pour toutes les tables encore ouvertes (REST-10 critère 9). Sans
+     * aucun produit envoyé, rien à autoriser. Rend vrai si l'on peut les
+     * annuler. */
+    async aiteAnnulerTables(orders, ids = []) {
+        const ouvertes = orders.filter((o) => !o.finalized);
+        if (!ouvertes.some((o) => this.aitePorteDesEnvois(o))) {
+            return true;
+        }
+        for (const order of ouvertes) {
+            await this.aiteQuitterAddition(order);
+        }
+        const identifiants = [
+            ...new Set([
+                ...ids.filter((id) => typeof id === "number"),
+                ...ouvertes.map((o) => o.id).filter((id) => typeof id === "number"),
+            ]),
+        ];
+        this.aiteDemandeFermeture ||= uuidv4();
+        const resultat = await this.aiteFenetreAnnulation({
+            titre: TITRES.annulerTables(this.aiteListeDesTables(ouvertes, ids)),
+            requete: () => ({
+                orderIds: identifiants,
+                lignes: false,
+                demande: this.aiteDemandeFermeture,
+                nature: "fermeture",
+            }),
+        });
+        if (!resultat) {
+            return false;
+        }
+        this.aiteDemandeFermeture = null;
+        for (const order of ouvertes) {
+            this.aiteAnnulationsAutorisees.add(order.uuid);
+        }
+        return true;
+    },
+
+    /** « 4, 5, 99 » : les tables (et numéros) des additions ouvertes connues
+     * du serveur (`ids`, à la fermeture) ou qui portent des produits. */
+    aiteListeDesTables(orders, ids = []) {
+        const noms = orders
+            .filter(
+                (o) =>
+                    !o.finalized &&
+                    (ids.includes(o.id) || o.lines.length || o.isBooked || o.table_id)
+            )
+            .map((o) => String(this.aiteNomAddition(o)))
+            .filter(Boolean);
+        return [...new Set(noms)]
+            .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+            .join(", ");
+    },
+
+    get aiteAnnulationsAutorisees() {
+        if (!this._aiteAnnulationsAutorisees) {
+            this._aiteAnnulationsAutorisees = new Set();
+        }
+        return this._aiteAnnulationsAutorisees;
+    },
+
+    /** « Annuler la table » et la corbeille de « Commandes » (T14) : une
+     * addition qui porte des produits envoyés ouvre directement notre
+     * fenêtre, sans la confirmation d'Odoo ; une addition d'un collègue est
+     * refusée (R4). Sans produit envoyé : Odoo. L'addition annulée n'est pas
+     * une saisie (drapeau de déplacement posé pendant l'annulation, T19). */
+    async onDeleteOrder(order) {
+        if (!this.aiteActif || !order) {
+            return super.onDeleteOrder(...arguments);
+        }
+        const refus = this.aiteRefusTableDUnCollegue(order);
+        if (refus) {
+            this.notification.add(refus, { type: "danger" });
+            return false;
+        }
+        if (!this.aitePorteDesEnvois(order)) {
+            return super.onDeleteOrder(...arguments);
+        }
+        if (!(await this.aiteAnnulerTable(order))) {
+            return false;
+        }
+        const depuisCommandes = this.mainScreen.component?.name === "TicketScreen";
+        this.aiteDeplacementEnCours = true;
+        try {
+            if (!(await this.deleteOrders([order]))) {
+                return false;
+            }
+            order.uiState.displayed = false;
+            this.afterOrderDeletion();
+        } finally {
+            this.aiteDeplacementEnCours = false;
+        }
+        if (!depuisCommandes) {
+            this.showScreen("FloorScreen");
+        }
+        return true;
+    },
+
+    /** Filet pour tous les chemins de `deleteOrders` : une annulation déjà
+     * autorisée passe ; l'addition absorbée par une réunion est signalée au
+     * serveur ; une addition qui porte encore des produits envoyés ouvre la
+     * fenêtre d'annulation. */
+    async _onBeforeDeleteOrder(order) {
+        if (!this.aiteActif) {
+            return super._onBeforeDeleteOrder(...arguments);
+        }
+        if (this.aiteAnnulationsAutorisees.has(order.uuid)) {
+            this.aiteAnnulationsAutorisees.delete(order.uuid);
+            return super._onBeforeDeleteOrder(...arguments);
+        }
+        if (this.aiteDeplacementEnCours) {
+            if (typeof order.id === "number") {
+                try {
+                    await this.data.call("pos.order", "aite_marquer_fusion", [order.id]);
+                } catch (erreur) {
+                    if (!(erreur instanceof ConnectionLostError)) {
+                        throw erreur;
+                    }
+                }
+            }
+            return super._onBeforeDeleteOrder(...arguments);
+        }
+        if (this.aitePorteDesEnvois(order)) {
+            if (!(await this.aiteAnnulerTable(order))) {
+                return false;
+            }
+            this.aiteAnnulationsAutorisees.delete(order.uuid);
+        }
+        return super._onBeforeDeleteOrder(...arguments);
     },
 });

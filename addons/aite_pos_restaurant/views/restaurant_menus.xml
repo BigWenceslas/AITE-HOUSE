@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Menus (partie 5.1) : un seul menu racine « Restaurant » → « Annulations »
+         pour le chef de salle, qui n'a pas accès au Point de Vente (AH-05 ;
+         entorse nécessaire à la règle 5, aucun écran existant ne lui étant
+         accessible sans lui donner la caisse) ; les motifs dans la
+         configuration du Point de Vente (manager). -->
+    <menuitem id="menu_restaurant_root" name="Restaurant" sequence="31"
+              web_icon="fa fa-cutlery,#FFFFFF,#7C3AED"
+              groups="group_lecture_rapports"/>
+    <menuitem id="menu_restaurant_annulation" name="Annulations" sequence="10"
+              parent="menu_restaurant_root" action="action_restaurant_annulation"
+              groups="group_lecture_rapports"/>
+    <menuitem id="menu_restaurant_motif" name="Motifs d'annulation" sequence="60"
+              parent="point_of_sale.menu_point_config_product"
+              action="action_restaurant_motif"
+              groups="point_of_sale.group_pos_manager"/>
+
+</odoo>

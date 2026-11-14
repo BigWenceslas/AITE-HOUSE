@@ -1,7 +1,8 @@
 // Caisse du restaurant AITE : la fenêtre du code et le plan verrouillé
 // (spécification, partie 1.1). Gros boutons pour la tablette.
 
-.aite-code-popup {
+.aite-code-popup,
+.aite-annulation-popup {
     .aite-code-titre {
         font-weight: 600;
     }
@@ -79,5 +80,25 @@
         padding-left: 0.5rem;
         padding-right: 0.5rem;
         white-space: nowrap;
+    }
+}
+
+// Incrément 4 : la fenêtre d'annulation (combien, code, motif). Le pavé et
+// les points reprennent ceux de la fenêtre du code (ci-dessus).
+.aite-annulation-popup {
+    .aite-annulation-boutons {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+        gap: 0.5rem;
+    }
+    .aite-annulation-boutons .aite-touche {
+        min-height: 4rem;
+        font-size: 1.35rem;
+        white-space: normal;
+    }
+    .aite-annulation-retour,
+    .aite-annulation-valider {
+        min-height: 3.25rem;
+        font-size: 1.25rem;
     }
 }
