@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- Le rapport de fermeture imprimé depuis la caisse (« Imprimer le
+         rapport » ; spécification, partie 5.3 ; incrément 6) : après le total
+         d'Odoo, les tables, les personnes, les ventes sans table et les
+         annulations de la session, avec leur motif et qui les a autorisées
+         (REST-25 critère 5, Q51, REST-22). Seulement pour une caisse au
+         service à table contrôlé (aite_restaurant, posé par le serveur dans
+         get_sale_details). Les attributs data-aite servent aux tours. -->
+    <t t-name="aite_pos_restaurant.SaleDetailsReport" t-inherit="point_of_sale.SaleDetailsReport" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('pos-receipt-order-data')]" position="before">
+            <div t-if="aite_restaurant" class="aite-rapport-restaurant">
+                <br/>
+                <div>------------------------</div>
+                <br/>
+                <div>Tables et personnes&#160;:</div>
+                <div>
+                    Nombre de tables
+                    <span class="pos-receipt-right-align" data-aite="tables" t-esc="aite_tables"/>
+                </div>
+                <div>
+                    Nombre de personnes
+                    <span class="pos-receipt-right-align" data-aite="personnes" t-esc="aite_personnes"/>
+                </div>
+                <div>
+                    Ventes sans table
+                    <span class="pos-receipt-right-align" data-aite="sans_table" t-esc="aite_sans_table"/>
+                </div>
+                <br/>
+                <div>------------------------</div>
+                <br/>
+                <div>Annulations&#160;:</div>
+                <div t-foreach="aite_annulations" t-as="annulation" t-key="annulation_index"
+                     class="aite-annulation">
+                    <div class="responsive-price">
+                        <t t-esc="annulation.table"/> · <t t-esc="annulation.produit.substr(0, 20)"/>
+                        <span class="pos-receipt-right-align">
+                            <t t-esc="annulation.quantite"/> · <t t-esc="formatCurrency(annulation.montant, false)"/>
+                        </span>
+                    </div>
+                    <div class="pos-receipt-left-padding">
+                        <t t-esc="annulation.motif"/>
+                        <t t-if="annulation.autorisee_par"> · <t t-esc="annulation.autorisee_par"/></t>
+                    </div>
+                </div>
+                <div t-if="!aite_annulations.length">Aucune annulation.</div>
+                <div>
+                    Total annulé
+                    <span class="pos-receipt-right-align"
+                          t-att-data-aite-quantite="aite_annulations_total.quantite"
+                          t-esc="aite_annulations_total.quantite + ' · ' + formatCurrency(aite_annulations_total.montant, false)"/>
+                </div>
+            </div>
+        </xpath>
+    </t>
+
+</templates>

@@ -12,6 +12,12 @@
     <menuitem id="menu_restaurant_annulation" name="Annulations" sequence="10"
               parent="menu_restaurant_root" action="action_restaurant_annulation"
               groups="group_lecture_rapports"/>
+    <!-- « Personnes et tables » (incrément 6, partie 5.2) : dans le menu
+         d'analyse du Point de Vente, à côté de « Détails des ventes », pour le
+         manager. -->
+    <menuitem id="menu_personnes_tables" name="Personnes et tables" sequence="6"
+              parent="point_of_sale.menu_point_rep" action="action_personnes_tables"
+              groups="point_of_sale.group_pos_manager"/>
     <menuitem id="menu_restaurant_motif" name="Motifs d'annulation" sequence="60"
               parent="point_of_sale.menu_point_config_product"
               action="action_restaurant_motif"

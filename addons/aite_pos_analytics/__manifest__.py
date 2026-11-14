@@ -17,6 +17,9 @@ Fonctionnalités principales
 * Agrégation performante (champs stored) sur sessions, commandes et catégories.
 * Modèle SQL ``aite.pos.daily.report`` pour analyses temporelles (pivot / graph).
 * Détection automatique des écarts de caisse avec classification de sévérité.
+* Ventes par famille, sous-famille et sous-sous-famille de caisse (les
+  catégories de l'écran de commande, jusqu'à la racine) : un seul champ
+  « Famille » de recherche, regroupements par niveau (18.0.2.1.5).
 * Dashboard OWL custom (livré en Sprint 2).
 
 Compatible Odoo 18 Enterprise.
@@ -24,7 +27,7 @@ Compatible Odoo 18 Enterprise.
     'author': "AITE CONSULTING",
     'website': "https://aiteconsulting.com",
     'category': 'Point of Sale',
-    'version': '18.0.2.1.4',
+    'version': '18.0.2.1.5',
     'license': 'LGPL-3',
 
     'depends': [

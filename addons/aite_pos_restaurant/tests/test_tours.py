@@ -19,6 +19,10 @@ vente sans table, réunion ; et, depuis sa revue, l'addition quittée par un
 onglet enregistrée au nom de qui l'a remplie (T19, ``AiteSaisieOngletTour``).
 Les tours de l'incrément 2 vérifient aussi le journal des saisies.
 """
+import json
+from uuid import uuid4
+
+from odoo import fields
 from odoo.tests import tagged
 
 from odoo.addons.pos_restaurant.tests.test_frontend import TestFrontendCommon
@@ -636,3 +640,64 @@ class TestToursEpuiseCorrectifs(AiteToursStockCommon):
         self._ouvrir_la_caisse()
         self.start_pos_tour('AiteDureeCommandeTour', login='pos_user')
         self.assertEqual(self._table(5).lines.product_id.name, "Water")
+
+
+@tagged('post_install', '-at_install', 'aite_pos_restaurant')
+class TestToursRapports(AiteToursModeCommon):
+    """Incrément 6 : le rapport de fermeture imprimé depuis la caisse
+    (« Imprimer le rapport », gabarit point_of_sale.SaleDetailsReport) porte
+    les tables, les personnes, les ventes sans table et les annulations de la
+    session (partie 5.3). Le tour rend le gabarit avec les données du serveur :
+    il n'y a pas d'imprimante dans les tests."""
+
+    def _synchroniser(self, session, table, personnes, produit, quantite, employe,
+                      etat='draft', envoyer=True):
+        """Une addition telle que la caisse l'envoie (sync_from_ui), sous le
+        compte de la caisse."""
+        maintenant = fields.Datetime.to_string(fields.Datetime.now())
+        uuid_ligne = str(uuid4())
+        total = produit.lst_price * quantite
+        preparation = {'lines': {}, 'metadata': {}, 'generalNote': '', 'sittingMode': 'dine in'}
+        if envoyer:
+            preparation['lines'][uuid_ligne] = {
+                'uuid': uuid_ligne, 'product_id': produit.id, 'name': produit.name,
+                'note': '', 'quantity': quantite, 'attribute_value_ids': []}
+        especes = self.pos_config.payment_method_ids.filtered('is_cash_count')[:1]
+        donnees = {
+            'uuid': str(uuid4()), 'name': "Commande %s" % uuid_ligne, 'session_id': session.id,
+            'state': etat, 'user_id': self.pos_user.id,
+            'pricelist_id': self.pos_config.pricelist_id.id, 'fiscal_position_id': False,
+            'sequence_number': 1, 'to_invoice': False, 'date_order': maintenant,
+            'amount_tax': 0.0, 'amount_total': total,
+            'amount_paid': total if etat == 'paid' else 0.0, 'amount_return': 0.0,
+            'last_order_preparation_change': json.dumps(preparation),
+            'table_id': table.id, 'customer_count': personnes,
+            'employee_id': employe.id, 'aite_ouverte_par_id': employe.id,
+            'lines': [[0, 0, {
+                'uuid': uuid_ligne, 'product_id': produit.id, 'qty': quantite,
+                'price_unit': produit.lst_price, 'discount': 0.0, 'tax_ids': [(6, 0, [])],
+                'price_subtotal': total, 'price_subtotal_incl': total,
+                'full_product_name': produit.display_name}]],
+            'payment_ids': [[0, 0, {'amount': total, 'name': maintenant,
+                                    'payment_method_id': especes.id}]] if etat == 'paid' else [],
+        }
+        reponse = self.env['pos.order'].with_user(self.pos_user).with_context(
+            config_id=self.pos_config.id, aite_employee_id=employe.id).sync_from_ui([donnees])
+        return self.env['pos.order'].browse(reponse['pos.order'][0]['id']), uuid_ligne
+
+    def test_rapport_de_fermeture_en_caisse(self):
+        session = self._ouvrir_la_caisse()
+        coca = self.env['product.product'].search([('name', '=', 'Coca-Cola')], limit=1)
+        table_4 = self.env['restaurant.table'].search([
+            ('floor_id.pos_config_ids', 'in', self.pos_config.ids), ('table_number', '=', 4)],
+            limit=1)
+        payee, _ligne = self._synchroniser(session, self.main_floor_table_5, 3, coca, 2,
+                                           self.employes["Carine"], etat='paid')
+        self.assertEqual((payee.state, payee.aite_tables, payee.aite_personnes), ('paid', 1, 3))
+        ouverte, ligne = self._synchroniser(session, table_4, 2, coca, 1, self.employes["Awa"])
+        reponse = self.env['pos.order'].with_user(self.pos_user).aite_autoriser_annulation(
+            ouverte.ids, [{'uuid': ligne, 'quantite': 1}], '4444',
+            self.env.ref('aite_pos_restaurant.motif_client_parti').id, False,
+            self.employes["Awa"].id, str(uuid4()), 'produit')
+        self.assertNotIn('erreur', reponse)
+        self.start_pos_tour('AiteRapportFermetureTour', login='pos_user')

@@ -236,6 +236,25 @@ class TestCompteurs(unittest.TestCase):
         self.assertEqual(tuple(regles.compteurs(None, False, False)), (0, 0, 1))
 
 
+class TestArticles(unittest.TestCase):
+    """Les articles d'une addition (partie 5.2, incrément 6) : la somme des
+    quantités positives de ses lignes (une ligne de remboursement, négative,
+    ne compte pas)."""
+
+    CAS = [
+        (([3, 2],), 5.0, "3 Castel et 2 Poulet DG"),
+        (([1, -1],), 1.0, "une ligne négative ne compte pas"),
+        (([-2],), 0.0, "un remboursement"),
+        (([],), 0.0, "une table sans produit"),
+        (([0.5, None, False],), 0.5, "quantités décimales ou vides"),
+    ]
+
+    def test_les_cas(self):
+        for args, attendu, pourquoi in self.CAS:
+            with self.subTest(pourquoi):
+                self.assertEqual(regles.articles(*args), attendu)
+
+
 class TestAlerte(unittest.TestCase):
     """La couleur d'une table du plan (incrément 5, REST-17) :
     alerte(minutes, delai) → '' (libre), 'vert' (ouverte), 'orange' (ouverte

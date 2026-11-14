@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Le rapport de fermeture imprimé depuis la gestion (rapport de session,
+         « Détails des ventes » ; spécification, partie 5.3 ; incrément 6) :
+         après les remises d'Odoo, les tables, les personnes, les ventes sans
+         table et les annulations de la session (REST-25 critère 5, Q51,
+         REST-22). Seulement pour une caisse au service à table contrôlé
+         (aite_restaurant, posé par get_sale_details). Le chef de salle n'a
+         rien à rédiger : il signe le rapport. -->
+    <template id="pos_session_sales_details_aite_restaurant"
+              inherit_id="point_of_sale.pos_session_sales_details">
+        <xpath expr="//div[@id='discounts']" position="after">
+            <div t-if="aite_restaurant" id="aite_restaurant"
+                 style="break-inside: avoid; page-break-inside: avoid;">
+                <h6 class="bg-secondary p-1 fw-bold">Tables et personnes</h6>
+                <table class="table table-sm table-borderless">
+                    <tbody>
+                        <tr class="border-bottom border-secondary">
+                            <td class="ps-2">Nombre de tables</td>
+                            <td class="text-end"><span t-out="aite_tables">3</span></td>
+                        </tr>
+                        <tr class="border-bottom border-secondary">
+                            <td class="ps-2">Nombre de personnes</td>
+                            <td class="text-end"><span t-out="aite_personnes">13</span></td>
+                        </tr>
+                        <tr class="border-bottom border-secondary">
+                            <td class="ps-2">Ventes sans table</td>
+                            <td class="text-end"><span t-out="aite_sans_table">0</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h6 class="bg-secondary p-1 fw-bold">Annulations</h6>
+                <table t-if="aite_annulations" class="table table-sm table-borderless">
+                    <thead>
+                        <tr class="border-bottom border-secondary">
+                            <th class="ps-2">Table</th>
+                            <th>Produit</th>
+                            <th class="text-end">Quantité</th>
+                            <th class="text-end">Montant</th>
+                            <th>Motif</th>
+                            <th>Autorisée par</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="aite_annulations" t-as="annulation"
+                            class="border-bottom border-secondary">
+                            <td class="ps-2"><span t-out="annulation['table']">12</span></td>
+                            <td><span t-out="annulation['produit']">Castel</span></td>
+                            <td class="text-end"><span t-out="'%g' % annulation['quantite']">1</span></td>
+                            <td class="text-end">
+                                <t t-if="currency['position']">
+                                    <span t-out="annulation['montant']" t-options="{'widget': 'float', 'precision': currency['precision']}">1000</span>&#160;<span t-out="currency['symbol']">FCFA</span>
+                                </t>
+                                <t t-else="">
+                                    <span t-out="currency['symbol']">FCFA</span>&#160;<span t-out="annulation['montant']" t-options="{'widget': 'float', 'precision': currency['precision']}">1000</span>
+                                </t>
+                            </td>
+                            <td><span t-out="annulation['motif']">Client parti</span></td>
+                            <td><span t-out="annulation['autorisee_par'] or '—'">Paul</span></td>
+                        </tr>
+                        <tr class="fw-bold">
+                            <td class="ps-2" colspan="2">Total</td>
+                            <td class="text-end"><span t-out="'%g' % aite_annulations_total['quantite']">1</span></td>
+                            <td class="text-end">
+                                <t t-if="currency['position']">
+                                    <span t-out="aite_annulations_total['montant']" t-options="{'widget': 'float', 'precision': currency['precision']}">1000</span>&#160;<span t-out="currency['symbol']">FCFA</span>
+                                </t>
+                                <t t-else="">
+                                    <span t-out="currency['symbol']">FCFA</span>&#160;<span t-out="aite_annulations_total['montant']" t-options="{'widget': 'float', 'precision': currency['precision']}">1000</span>
+                                </t>
+                            </td>
+                            <td colspan="2"/>
+                        </tr>
+                    </tbody>
+                </table>
+                <p t-else="" class="ps-2">Aucune annulation sur cette période.</p>
+            </div>
+        </xpath>
+    </template>
+
+</odoo>

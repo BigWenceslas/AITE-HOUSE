@@ -37,6 +37,8 @@
                 <field name="config_id"/>
                 <field name="product_id"/>
                 <field name="categ_id" optional="show"/>
+                <field name="famille_n1_id" optional="hide"/>
+                <field name="famille_n2_id" optional="hide"/>
                 <field name="qty" sum="Total qté"/>
                 <field name="price_subtotal" sum="Total CA"/>
                 <field name="total_cost" sum="Total CMV"/>
@@ -62,6 +64,14 @@
             <search string="Analyse POS">
                 <field name="product_id"/>
                 <field name="categ_id"/>
+                <!-- Un seul champ « Famille » (REST-23-P1) : il cherche à
+                     tous les niveaux ; le manager tape « Boissons » ou « Non
+                     alcoolisé » sans savoir à quel niveau la famille se
+                     trouve. Une famille choisie dans la liste est cherchée par
+                     son identifiant (Odoo remplace alors « ilike » par
+                     « = »). -->
+                <field name="famille_n1_id" string="Famille"
+                       filter_domain="['|', '|', ('famille_n1_id', 'ilike', raw_value), ('famille_n2_id', 'ilike', raw_value), ('famille_n3_id', 'ilike', raw_value)]"/>
                 <field name="config_id"/>
                 <field name="session_id"/>
 
@@ -75,6 +85,15 @@
                             context="{'group_by':'product_id'}"/>
                     <filter string="Catégorie" name="grp_categ"
                             context="{'group_by':'categ_id'}"/>
+                    <!-- Familles de caisse (REST-23-P1) : « Famille », puis
+                         « Sous-famille », donnent au tableau croisé les
+                         sous-totaux de chaque niveau. -->
+                    <filter string="Famille" name="grp_famille"
+                            context="{'group_by':'famille_n1_id'}"/>
+                    <filter string="Sous-famille" name="grp_sous_famille"
+                            context="{'group_by':'famille_n2_id'}"/>
+                    <filter string="Sous-sous-famille" name="grp_sous_sous_famille"
+                            context="{'group_by':'famille_n3_id'}"/>
                     <filter string="Point de vente" name="grp_config"
                             context="{'group_by':'config_id'}"/>
                     <filter string="Session" name="grp_session"

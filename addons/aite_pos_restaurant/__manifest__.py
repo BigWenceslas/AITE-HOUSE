@@ -100,9 +100,23 @@ Incrément 5 (le plan en couleurs ; les produits épuisés) :
   hors connexion, la caisse vend (réglage « Refuser la vente des produits
   épuisés », coché d'office).
 
+Incrément 6 (les rapports) :
+
+* « Personnes et tables » (Point de Vente → Analyse) : pour la période choisie
+  (aujourd'hui d'office, la semaine, le mois, l'année ou d'une date à une
+  autre), le nombre de tables, de personnes, de ventes sans table, d'articles
+  et le total encaissé, par jour, par session, par « Ouverte par » ou par
+  « Encaissée par » ; une table divisée ne compte qu'une fois, une réunion
+  additionne les personnes, les additions ouvertes ou annulées et les
+  remboursements ne comptent pas ;
+* le rapport de fermeture (« Imprimer le rapport » de la caisse, rapport de
+  session de la gestion) donne aussi les tables, les personnes, les ventes
+  sans table et les annulations de la session, avec leur motif et qui les a
+  autorisées.
+
 Aucune dépendance au socle hôtelier.
 """,
-    'version': '18.0.1.0.4',
+    'version': '18.0.1.0.5',
     'author': "AITE Consulting",
     'website': "https://aiteconsulting.com",
     'category': 'Point of Sale',
@@ -119,6 +133,7 @@ Aucune dépendance au socle hôtelier.
         'views/restaurant_saisie_views.xml',
         'views/restaurant_annulation_views.xml',
         'views/restaurant_motif_views.xml',
+        'views/report_saledetails.xml',
         'views/restaurant_menus.xml',
     ],
     'assets': {

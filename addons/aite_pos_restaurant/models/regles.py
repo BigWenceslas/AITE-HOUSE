@@ -12,6 +12,9 @@ Incrément 5 : la couleur d'une table du plan (``alerte``, délai par défaut
 ``DELAI_ALERTE``) ; la caisse applique la même règle (``utils/alerte.js``),
 avec le délai de la caisse (``pos.config.aite_delai_alerte``).
 
+Incrément 6 : ce qu'une addition compte dans « Personnes et tables »
+(``compteurs``, ``articles``), calculé et stocké sur l'addition.
+
 Ce fichier est chargé tel quel par ``tests/restaurant/test_restaurant_logic.py``,
 sans Odoo : il ne doit importer que la bibliothèque standard.
 """
@@ -180,3 +183,10 @@ def compteurs(personnes, part, remboursement):
     if part:
         return 0, 0, 0
     return 0, 0, 1
+
+
+def articles(quantites):
+    """Les articles d'une addition, dans « Personnes et tables » (partie
+    5.2) : la somme des quantités positives de ses lignes ; une ligne
+    négative (remboursement) ne compte pas."""
+    return round(sum(q for q in (_nombre(q) for q in quantites) if q > 0), 6)

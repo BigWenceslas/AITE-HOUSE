@@ -12,3 +12,4 @@ from . import pos_order
 from . import restaurant_saisie
 from . import restaurant_motif
 from . import restaurant_annulation
+from . import report_sale_details

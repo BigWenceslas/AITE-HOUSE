@@ -42,6 +42,11 @@ Incrément 4 — annuler ce qui est parti (T9, T14, partie 4.2) :
 
 Hors du service à table contrôlé, rien de tout cela : la caisse n'est pas
 touchée.
+
+Incrément 6 — « Personnes et tables » (partie 5.2, T21) : quatre compteurs
+calculés et stockés sur chaque addition (``regles.compteurs``), que la caisse
+n'écrit jamais (``CHAMPS_SERVEUR``) ; une addition d'une caisse hors service à
+table les a aussi (une vente sans personne y compte comme vente sans table).
 """
 import json
 import logging
@@ -99,6 +104,31 @@ class PosOrder(models.Model):
         string="Réunie à une autre table", readonly=True, copy=False,
         help="Cette addition a été versée dans une autre table : son annulation "
              "n'est pas une annulation de produits.")
+    # « Personnes et tables » (incrément 6, partie 5.2 ; T21) : quatre
+    # compteurs calculés et stockés, lus par une vue croisée de l'écran des
+    # commandes (pas de vue SQL). La règle est regles.compteurs ; l'action
+    # ne garde que les additions réglées (ni ouvertes ni annulées : les tables
+    # absorbées par une réunion sont annulées).
+    aite_tables = fields.Integer(
+        string="Tables", compute='_compute_aite_compteurs', store=True, readonly=True,
+        help="1 pour une table encaissée (ou un numéro tapé) qui a au moins une "
+             "personne ; 0 pour une part d'addition divisée, une vente sans table "
+             "ou un remboursement : une table divisée ne compte qu'une fois.")
+    aite_personnes = fields.Integer(
+        string="Personnes", compute='_compute_aite_compteurs', store=True, readonly=True,
+        help="Le nombre de personnes de la table, compté une seule fois : une part "
+             "d'addition divisée en a 0, une réunion de tables additionne les "
+             "personnes.")
+    aite_sans_table = fields.Integer(
+        string="Ventes sans table", compute='_compute_aite_compteurs', store=True,
+        readonly=True,
+        help="1 pour une vente au comptoir ou à emporter, sans table ni personne : "
+             "elle est comptée à part, hors des tables et des personnes.")
+    aite_articles = fields.Float(
+        string="Articles", compute='_compute_aite_compteurs', store=True, readonly=True,
+        digits='Product Unit of Measure',
+        help="La somme des quantités vendues sur l'addition (une quantité "
+             "négative ne compte pas).")
 
     # ------------------------------------------------------------------
     # Champs protégés (partie 3.1)
@@ -252,8 +282,27 @@ class PosOrder(models.Model):
         return notes
 
     def _aite_est_un_remboursement(self):
-        return bool(self.lines.filtered('refunded_orderline_id')) or \
-            float_compare(self.amount_total, 0.0, precision_rounding=self.currency_id.rounding) < 0
+        if self.lines.filtered('refunded_orderline_id'):
+            return True
+        if not self.currency_id:
+            return self.amount_total < 0
+        return float_compare(self.amount_total, 0.0,
+                             precision_rounding=self.currency_id.rounding) < 0
+
+    @api.depends('customer_count', 'aite_origine_uuid', 'amount_total', 'currency_id',
+                 'lines.qty', 'lines.refunded_orderline_id')
+    def _compute_aite_compteurs(self):
+        """« Personnes et tables » (partie 5.2) : ce que l'addition compte,
+        selon ``regles.compteurs`` (une part « 12B » a 0 personne, une vente
+        sans table compte à part, un remboursement ne compte pas)."""
+        for commande in self:
+            tables, personnes, sans_table = regles.compteurs(
+                commande.customer_count, bool(commande.aite_origine_uuid),
+                commande._aite_est_un_remboursement())
+            commande.aite_tables = tables
+            commande.aite_personnes = personnes
+            commande.aite_sans_table = sans_table
+            commande.aite_articles = regles.articles(commande.lines.mapped('qty'))
 
     # ------------------------------------------------------------------
     # Lignes : saisies et quantités parties

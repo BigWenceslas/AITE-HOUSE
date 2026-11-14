@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- L'employé dans l'analyse AITE (AH-03 ; spécification du restaurant,
+         partie 5.5) : recherche et regroupements « Serveur » et « Encaissée
+         par » ; le regroupement par compte Odoo dit ce qu'il est. -->
+    <record id="view_pos_daily_report_search_employe" model="ir.ui.view">
+        <field name="name">aite.pos.daily.report.search.employe</field>
+        <field name="model">aite.pos.daily.report</field>
+        <field name="inherit_id" ref="aite_pos_analytics.view_pos_daily_report_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='session_id']" position="after">
+                <field name="serveur_id" string="Serveur"/>
+                <field name="encaisse_par_id"/>
+            </xpath>
+            <xpath expr="//filter[@name='grp_user']" position="attributes">
+                <attribute name="string">Compte Odoo</attribute>
+            </xpath>
+            <xpath expr="//filter[@name='grp_user']" position="before">
+                <filter string="Serveur" name="grp_serveur"
+                        context="{'group_by':'serveur_id'}"/>
+                <filter string="Encaissée par" name="grp_encaisse_par"
+                        context="{'group_by':'encaisse_par_id'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_pos_daily_report_list_employe" model="ir.ui.view">
+        <field name="name">aite.pos.daily.report.list.employe</field>
+        <field name="model">aite.pos.daily.report</field>
+        <field name="inherit_id" ref="aite_pos_analytics.view_pos_daily_report_list"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_id']" position="after">
+                <field name="serveur_id" optional="show"/>
+                <field name="encaisse_par_id" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

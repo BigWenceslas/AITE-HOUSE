@@ -36,4 +36,85 @@
         </field>
     </record>
 
+    <!-- « Personnes et tables » (REST-25-P1, REST-02 critère 4 ; spécification,
+         partie 5.2 ; incrément 6) : une vue croisée de l'écran des commandes,
+         sur les quatre compteurs calculés et stockés de l'addition (pas de vue
+         SQL, T21). Seules les additions réglées comptent : ni les tables
+         ouvertes, ni les annulées (dont celles qu'absorbe une réunion). Les
+         vues portent une priorité basse : l'écran des commandes d'Odoo garde
+         les siennes. -->
+    <record id="view_pos_order_pivot_personnes_tables" model="ir.ui.view">
+        <field name="name">pos.order.pivot.aite.personnes.tables</field>
+        <field name="model">pos.order</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <pivot string="Personnes et tables">
+                <field name="date_order" interval="day" type="row"/>
+                <field name="aite_tables" type="measure"/>
+                <field name="aite_personnes" type="measure"/>
+                <field name="aite_sans_table" type="measure"/>
+                <field name="aite_articles" type="measure"/>
+                <field name="amount_total" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Périodes comme les annulations (REST-24) : « Aujourd'hui » (par
+         défaut), « Cette semaine » (du lundi à aujourd'hui), « Ce mois »,
+         « Cette année », à l'heure de l'utilisateur, et le filtre de date
+         d'Odoo pour une période libre ; regroupements par jour, par session
+         (Q54 : la journée suit la session), par « Ouverte par » et par
+         « Encaissée par ». -->
+    <record id="view_pos_order_search_personnes_tables" model="ir.ui.view">
+        <field name="name">pos.order.search.aite.personnes.tables</field>
+        <field name="model">pos.order</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <search string="Personnes et tables">
+                <field name="session_id"/>
+                <field name="config_id"/>
+                <field name="aite_ouverte_par_id"/>
+                <field name="aite_encaissee_par_id"/>
+                <filter name="aujourd_hui" string="Aujourd'hui"
+                        domain="[('date_order', '&gt;=', datetime.datetime.combine(context_today(), datetime.time(0, 0, 0)).to_utc().strftime('%Y-%m-%d %H:%M:%S')),
+                                 ('date_order', '&lt;', datetime.datetime.combine(context_today() + relativedelta(days=1), datetime.time(0, 0, 0)).to_utc().strftime('%Y-%m-%d %H:%M:%S'))]"/>
+                <filter name="cette_semaine" string="Cette semaine"
+                        domain="[('date_order', '&gt;=', datetime.datetime.combine(context_today() + relativedelta(weeks=-1, days=1, weekday=0), datetime.time(0, 0, 0)).to_utc().strftime('%Y-%m-%d %H:%M:%S')),
+                                 ('date_order', '&lt;', datetime.datetime.combine(context_today() + relativedelta(days=1, weekday=0), datetime.time(0, 0, 0)).to_utc().strftime('%Y-%m-%d %H:%M:%S'))]"/>
+                <filter name="ce_mois" string="Ce mois"
+                        domain="[('date_order', '&gt;=', datetime.datetime.combine(context_today() + relativedelta(day=1), datetime.time(0, 0, 0)).to_utc().strftime('%Y-%m-%d %H:%M:%S')),
+                                 ('date_order', '&lt;', datetime.datetime.combine(context_today() + relativedelta(months=1, day=1), datetime.time(0, 0, 0)).to_utc().strftime('%Y-%m-%d %H:%M:%S'))]"/>
+                <filter name="cette_annee" string="Cette année"
+                        domain="[('date_order', '&gt;=', datetime.datetime.combine(context_today() + relativedelta(month=1, day=1), datetime.time(0, 0, 0)).to_utc().strftime('%Y-%m-%d %H:%M:%S')),
+                                 ('date_order', '&lt;', datetime.datetime.combine(context_today() + relativedelta(years=1, month=1, day=1), datetime.time(0, 0, 0)).to_utc().strftime('%Y-%m-%d %H:%M:%S'))]"/>
+                <filter name="periode" date="date_order" string="Période"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="par_jour" string="Jour" context="{'group_by': 'date_order:day'}"/>
+                    <filter name="par_session" string="Session" context="{'group_by': 'session_id'}"/>
+                    <filter name="par_ouverte_par" string="Ouverte par"
+                            context="{'group_by': 'aite_ouverte_par_id'}"/>
+                    <filter name="par_encaissee_par" string="Encaissée par"
+                            context="{'group_by': 'aite_encaissee_par_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_personnes_tables" model="ir.actions.act_window">
+        <field name="name">Personnes et tables</field>
+        <field name="res_model">pos.order</field>
+        <field name="view_mode">pivot,list</field>
+        <field name="domain">[('state', 'in', ('paid', 'done', 'invoiced'))]</field>
+        <field name="search_view_id" ref="view_pos_order_search_personnes_tables"/>
+        <field name="context">{'search_default_aujourd_hui': 1, 'create': False}</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_pos_order_pivot_personnes_tables')}),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('point_of_sale.view_pos_order_tree')})]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucune addition encaissée sur cette période. Chaque table encaissée compte ici pour une table et son nombre de personnes ; une part d'addition divisée ne compte pas deux fois, et une vente sans table est comptée à part. Changez la période pour voir les autres jours.
+            </p>
+        </field>
+    </record>
+
 </odoo>

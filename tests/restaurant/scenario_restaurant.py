@@ -33,6 +33,13 @@ Incrément 5 : le délai de l'orange (posé à 60, porté à 90 : la phrase suit
 nombre ; 0 refusé) et le refus des produits épuisés (réglage et sa phrase ;
 produit suivi à 0, entrée de stock, bouteilles envoyées sur une table ouverte
 déduites sur tous les postes, table encaissée comptée une seule fois).
+Incrément 6 (partie 6a) : « Personnes et tables » (la table réunie compte une
+fois avec ses personnes additionnées, la part « 12B » ne compte pas, les
+additions ouvertes et annulées non plus), les quantités vendues de « Détails
+des ventes », le rapport de fermeture (tables, personnes, annulations), les
+ventes par famille (Boisson > Alcoolisé > Bière) et, si la passerelle
+aite_pos_analytics_hr est installée, le serveur et la caissière dans les
+analyses.
 """
 import contextlib
 import sys
@@ -766,6 +773,71 @@ check("la fiche de l'addition montre « Ouverte par », « Heure d'ouverture »,
 check("le compte de la caisse ne lit pas le journal des saisies",
       refus_acces(lambda: Saisies.with_user(caisse).search([])))
 
+print("\n═══ 15 bis. Le manager lit « Personnes et tables » (incrément 6) ═══")
+# Point de Vente → Analyse → « Personnes et tables » : la vue croisée du jour.
+# Déjà encaissées dans cette session : la table 12 (réunie à la table 7, 6
+# personnes), sa part « 12B » et, si l'ardoise est proposée, la table de
+# l'ardoise (2 personnes).
+Commandes_manager = env['pos.order'].with_user(manager)
+action_pt = env.ref('aite_pos_restaurant.action_personnes_tables', raise_if_not_found=False)
+deja = (1, 2) if ardoise else (0, 0)
+
+
+def personnes_et_tables():
+    """Les totaux de la vue croisée « Personnes et tables » sur la session."""
+    from odoo.tools.safe_eval import safe_eval
+    domaine = safe_eval(action_pt.domain or '[]') + [('session_id', '=', session.id)]
+    ligne = Commandes_manager.read_group(
+        domaine, ['aite_tables:sum', 'aite_personnes:sum', 'aite_sans_table:sum',
+                  'aite_articles:sum', 'amount_total:sum'], [])[0]
+    return (ligne['aite_tables'] or 0, ligne['aite_personnes'] or 0,
+            ligne['aite_sans_table'] or 0)
+
+
+if action_pt and 'aite_tables' in env['pos.order']._fields:
+    menus_manager = env['ir.ui.menu'].with_user(manager)._visible_menu_ids()
+    check("le menu Point de Vente → Analyse → « Personnes et tables » est au manager",
+          env.ref('aite_pos_restaurant.menu_personnes_tables').id in menus_manager)
+    check("l'écran vide dit quoi faire (plus de 120 caractères), « Aujourd'hui » d'office",
+          'o_view_nocontent' in (action_pt.help or '') and len(action_pt.help) >= 120
+          and 'search_default_aujourd_hui' in (action_pt.context or ''))
+    check("la table 12 réunie compte pour 1 table et 6 personnes ; la part « 12B » ne compte pas",
+          (table.aite_tables, table.aite_personnes, part_12b.aite_tables, part_12b.aite_personnes)
+          == (1, 6, 0, 0),
+          (table.aite_tables, table.aite_personnes, part_12b.aite_tables, part_12b.aite_personnes))
+    check("la table 7 absorbée par la réunion, la table 1 annulée, la table 9 encore ouverte : "
+          "aucune n'est comptée",
+          table_7_cmd.state == 'cancel' and table_9_cmd.state == 'draft')
+    check("« Personnes et tables » du jour : tables %d, personnes %d" % (deja[0] + 1,
+                                                                       deja[1] + 6),
+          personnes_et_tables() == (deja[0] + 1, deja[1] + 6, 0), personnes_et_tables())
+    par_serveur = Commandes_manager.read_group(
+        [('session_id', '=', session.id), ('state', 'in', ('paid', 'done', 'invoiced')),
+         ('aite_ouverte_par_id', '!=', False)],
+        ['aite_personnes:sum'], ['aite_ouverte_par_id'])
+    check("regroupé par « Ouverte par » : Awa a servi la table 12 (REST-02 critère 4)",
+          any(l['aite_ouverte_par_id'][1] == "Awa" and l['aite_personnes'] >= 6
+              for l in par_serveur), par_serveur)
+else:
+    check("« Personnes et tables » existe (incrément 6)", False)
+# « Détails des ventes » et le rapport de session lisent les paiements
+# comptables (account.payment) : Odoo les refuse à un Administrateur du Point
+# de Vente sans le droit Facturation (constat de l'incrément 6, à ajouter aux
+# réglages des comptes par AITE, partie 4.4). AITE le lui donne.
+manager.groups_id += env.ref('account.group_account_invoice')
+details = env['report.point_of_sale.report_saledetails'].with_user(manager).get_sale_details(
+    False, False, False, [session.id])
+vendus = {}
+for categorie in details['products']:
+    for l in categorie['products']:
+        vendus[l['product_id']] = vendus.get(l['product_id'], 0) + l['quantity']
+payees = env['pos.order'].search([('session_id', '=', session.id),
+                                  ('state', 'in', ('paid', 'done', 'invoiced'))])
+castel_vendues = sum(l.qty for l in payees.lines if l.product_id == castel)
+check("« Détails des ventes » donne la quantité de Castel vendue (REST-25 critère 2) : %g"
+      % castel_vendues, vendus.get(castel.id) == castel_vendues and castel_vendues > 0,
+      (vendus.get(castel.id), castel_vendues))
+
 print("\n═══ 16. Un numéro qui n'est pas sur le plan (incrément 3) ═══")
 t99 = nouvelle_addition(None, 2, awa, "99")
 numero = caisse_envoie(t99, awa)
@@ -874,6 +946,43 @@ check("l'historique de la session dit une fois « Caisse fermée par Paul »",
       len(session.message_ids.filtered(
           lambda m: "Caisse fermée par Paul" in (m.body or ''))) == 1)
 
+print("\n═══ 9 bis. Le rapport de fermeture : tables, personnes, annulations (incrément 6) ═══")
+# Encaissées dans la session : la table 12 (6 personnes), le numéro 99
+# (2 personnes), la table 7 de la Guinness (2 personnes, incrément 5) et la
+# table de l'ardoise (2 personnes) si elle est proposée ; la part « 12B » ne
+# compte pas.
+attendu = (deja[0] + 2 + (1 if hasattr(env['product.product'], 'aite_stock_disponible') else 0),
+           deja[1] + 8 + (2 if hasattr(env['product.product'], 'aite_stock_disponible') else 0),
+           0)
+fermeture = env['report.point_of_sale.report_saledetails'].with_user(manager).get_sale_details(
+    False, False, False, [session.id])
+check("le rapport de fermeture donne %d tables et %d personnes, 0 vente sans table"
+      % attendu[:2], (fermeture.get('aite_tables'), fermeture.get('aite_personnes'),
+                      fermeture.get('aite_sans_table')) == attendu,
+      (fermeture.get('aite_tables'), fermeture.get('aite_personnes'),
+       fermeture.get('aite_sans_table'), attendu))
+annulees = Annulations.search([('session_id', '=', session.id)]) if Annulations is not None else []
+check("il liste les %d annulations de la session, autorisées ou non, et leur total"
+      % len(annulees),
+      len(fermeture.get('aite_annulations') or []) == len(annulees) == 5
+      and (fermeture.get('aite_annulations_total') or {}).get('montant')
+      == sum(annulees.mapped('montant')),
+      (len(fermeture.get('aite_annulations') or []), len(annulees),
+       fermeture.get('aite_annulations_total')))
+check("une annulation autorisée y porte son motif et le nom de Paul",
+      any(a['motif'] == "Client parti" and a['autorisee_par'] == "Paul"
+          for a in fermeture.get('aite_annulations') or []), fermeture.get('aite_annulations'))
+try:
+    html, _format = env['ir.actions.report'].with_user(manager)._render_qweb_html(
+        'point_of_sale.sale_details_report', session.ids)
+    html = str(html)
+except Exception as exc:  # noqa: BLE001
+    html = repr(exc)
+check("le rapport imprimé depuis la gestion montre « Nombre de tables », « Nombre de "
+      "personnes » et les annulations : le chef de salle n'a rien à rédiger, il signe",
+      'Nombre de tables' in html and 'Nombre de personnes' in html and 'Client parti' in html,
+      html[:300])
+
 print("\n═══ 17. Le chef de salle lit le rapport des annulations (incrément 4) ═══")
 groupe = env.ref('aite_pos_restaurant.group_lecture_rapports', raise_if_not_found=False)
 if groupe and Annulations is not None:
@@ -910,6 +1019,60 @@ if groupe and Annulations is not None:
           'search_default_aujourd_hui' in (action.context or ''), action.context)
 else:
     check("le profil « Restaurant : lecture des rapports » existe (incrément 4)", False)
+
+print("\n═══ 18. Le manager lit les ventes par famille (incrément 6, REST-23-P1) ═══")
+Report = env['aite.pos.daily.report'] if 'aite.pos.daily.report' in env else None
+if Report is not None and 'famille_n1_id' in Report._fields:
+    # AITE donne au manager le profil « Manager — Analyses POS » ; le manager
+    # range la carte en familles de caisse (celles de l'écran de commande).
+    manager.groups_id += env.ref('aite_pos_analytics.group_aite_pos_analytics_manager')
+    Familles = env['pos.category'].with_user(manager)
+    boisson = Familles.create({'name': "Boisson"})
+    alcool = Familles.create({'name': "Alcoolisé", 'parent_id': boisson.id})
+    biere = Familles.create({'name': "Bière", 'parent_id': alcool.id})
+    bieres = castel | (globals().get('guinness') or env['product.product'])
+    bieres.with_user(manager).write({'pos_categ_ids': [(6, 0, biere.ids)]})
+    Analyse = Report.with_user(manager)
+    dans_session = [('session_id', '=', session.id)]
+    total = Analyse.read_group(dans_session, ['price_subtotal_incl:sum'], [])[0][
+        'price_subtotal_incl']
+    par_famille = {(l['famille_n1_id'] or (False, "sans famille"))[1]: l['price_subtotal_incl']
+                   for l in Analyse.read_group(dans_session, ['price_subtotal_incl:sum'],
+                                               ['famille_n1_id'])}
+    encaissees = env['pos.order'].search([('session_id', '=', session.id),
+                                          ('state', 'in', ('paid', 'done', 'invoiced'))])
+    biere_vendue = sum(l.price_subtotal_incl for l in encaissees.lines if l.product_id in bieres)
+    check("« Boisson » additionne ses sous-familles : %d F de bières" % biere_vendue,
+          par_famille.get("Boisson") == biere_vendue and biere_vendue > 0,
+          (par_famille, biere_vendue))
+    check("la somme des familles est le total des ventes (rien ne disparaît)",
+          sum(par_famille.values()) == total, (par_famille, total))
+    vue = etree.fromstring(Analyse.get_views([(False, 'search')])['views']['search']['arch'])
+    filtre = vue.xpath("//field[@string='Famille']/@filter_domain")
+    from odoo.tools.safe_eval import safe_eval
+    trouve = Analyse.search(dans_session + safe_eval(
+        filtre[0], {'self': "Alcoolisé", 'raw_value': "Alcoolisé"})) if filtre else Analyse
+    check("le manager tape « Alcoolisé » dans « Famille » : il trouve les bières, "
+          "sans savoir à quel niveau est la famille",
+          bool(filtre) and bool(trouve) and set(trouve.mapped('product_id')) <= set(bieres),
+          trouve.mapped('product_id.name'))
+else:
+    check("l'analyse AITE connaît les familles (aite_pos_analytics 18.0.2.1.5)", False)
+
+if Report is not None and 'serveur_id' in Report._fields:
+    print("\n═══ 19. Le serveur et la caissière dans les analyses (incrément 6, AH-03) ═══")
+    Analyse = Report.with_user(manager)
+    lignes_12 = Analyse.search([('order_id', '=', table.id)])
+    check("la table 12 : « Serveur (ouverte par) » Awa, « Encaissée par » Carine, sous le "
+          "compte de la caisse",
+          set(lignes_12.mapped('serveur_id.name')) == {"Awa"}
+          and set(lignes_12.mapped('encaisse_par_id.name')) == {"Carine"}
+          and set(lignes_12.mapped('user_id')) == {caisse},
+          (lignes_12.mapped('serveur_id.name'), lignes_12.mapped('encaisse_par_id.name')))
+    check("le compte Odoo s'affiche « Compte Odoo »",
+          Report.fields_get(['user_id'])['user_id']['string'] == "Compte Odoo")
+else:
+    print("\n(aite_pos_analytics_hr absent : le serveur dans les analyses n'est pas vérifié)")
 
 env.cr.rollback()
 print("\n══════════════════════════════════════")
