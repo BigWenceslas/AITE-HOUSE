@@ -97,6 +97,14 @@ class TestChargement(RestaurantCommon):
         self.assertTrue(employes["Awa"]['_barcode'], "le badge reste lu hors mode")
         self.assertNotIn('_aite_droits', donnees['pos.session']['data'][0])
 
+    def test_le_delai_et_le_refus_arrivent_en_caisse(self):
+        """Incrément 5 : la caisse lit le délai de l'orange et le refus des
+        épuisés dans pos.config, chargé avec tous ses champs."""
+        self.config.write({'aite_delai_alerte': 75, 'aite_refus_epuise': False})
+        config = self._charger_caisse()['pos.config']['data'][0]
+        self.assertEqual(config['aite_delai_alerte'], 75)
+        self.assertFalse(config['aite_refus_epuise'])
+
 
 @tagged('post_install', '-at_install', 'aite_pos_restaurant')
 class TestModesReserves(RestaurantCommon):

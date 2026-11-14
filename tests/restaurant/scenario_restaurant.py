@@ -29,6 +29,10 @@ demande renvoyée sans double), la division et la réunion qui ne sont pas des
 annulations, la table encore ouverte annulée sans code à la fermeture, le
 rapport des annulations lu par le chef de salle avec le seul profil de
 lecture.
+Incrément 5 : le délai de l'orange (posé à 60, porté à 90 : la phrase suit le
+nombre ; 0 refusé) et le refus des produits épuisés (réglage et sa phrase ;
+produit suivi à 0, entrée de stock, bouteilles envoyées sur une table ouverte
+déduites sur tous les postes, table encaissée comptée une seule fois).
 """
 import contextlib
 import sys
@@ -284,6 +288,43 @@ with contextlib.closing(env.cr.savepoint()):
 env.invalidate_all()
 check("la caisse « Restaurant » est de nouveau au service à table contrôlé",
       restaurant.aite_mode_restaurant)
+
+print("\n═══ 4 ter. Le délai de l'orange et les produits épuisés (incrément 5) ═══")
+# Réglés dans la même page que la case (qui les règle est à trancher par AITE,
+# voir plus haut) ; ils ne sont proposés qu'au service à table contrôlé.
+check("orange après 60 minutes, produits épuisés refusés : posés d'office",
+      getattr(restaurant, 'aite_delai_alerte', None) == 60
+      and getattr(restaurant, 'aite_refus_epuise', None) is True,
+      (getattr(restaurant, 'aite_delai_alerte', None), getattr(restaurant, 'aite_refus_epuise', None)))
+ids = [r.get('id') for r in bloc]
+check("les deux réglages sont dans le bloc Restaurant, après la case",
+      'aite_delai_alerte' in ids and 'aite_refus_epuise' in ids
+      and ids.index('aite_mode_restaurant') < ids.index('aite_delai_alerte'), ids)
+fiche = Form(Reglages)
+fiche.pos_config_id = restaurant
+phrase_60 = fiche.pos_aite_phrase_delai if 'pos_aite_phrase_delai' in Reglages._fields else ''
+check("la phrase du délai dit « plus de 60 minutes »",
+      "Une table ouverte depuis plus de 60 minutes passe à l'orange sur le plan" in (phrase_60 or ''),
+      phrase_60)
+message = None
+if 'pos_aite_delai_alerte' in Reglages._fields:
+    fiche.pos_aite_delai_alerte = 90
+    check("le délai porté à 90 : la phrase dit « 90 minutes » avant même d'enregistrer",
+          "ouverte depuis plus de 90 minutes passe à l'orange" in (fiche.pos_aite_phrase_delai or ''),
+          fiche.pos_aite_phrase_delai)
+    message = refus(fiche.save)
+    check("enregistré : la caisse passe à 90 minutes",
+          message is None and restaurant.aite_delai_alerte == 90,
+          message or restaurant.aite_delai_alerte)
+    message = enregistrer_reglages(pos_aite_delai_alerte=0)
+    check("un délai de 0 minute est refusé, le message dit quoi faire",
+          message == "Le délai avant l'orange doit être d'au moins 1 minute.", message)
+else:
+    check("le réglage « Délai avant l'orange (minutes) » existe", False)
+reglage = vue.xpath("//setting[@id='aite_refus_epuise']")
+check("« Refuser la vente des produits épuisés » porte sa phrase « ce qui va se passer »",
+      bool(reglage) and "Saisissez le stock de départ avant le premier service"
+      in (reglage[0].get('help') or ''))
 
 print("\n═══ 5. Ce que la caisse reçoit au démarrage (incrément 1) ═══")
 restaurant.with_user(caisse).open_ui()
@@ -736,6 +777,55 @@ caisse_envoie(t99, carine, etat='paid', payer=especes)
 check("encaissée : ce n'est pas une vente sans table (pas de note)",
       numero.state == 'paid' and not any("vente sans table" in (m.body or '')
                                          for m in numero.message_ids))
+
+print("\n═══ 16 bis. Les produits épuisés (incrément 5) ═══")
+# Le manager met la Guinness à la carte en cochant « Suivre l'inventaire »
+# (la Castel, déjà vendue, ne peut plus changer de suivi : Odoo le refuse).
+Produits = env['product.product'].with_user(manager)
+if hasattr(env['product.product'], 'aite_stock_disponible'):
+    guinness = Produits.create({'name': "Guinness", 'type': 'consu', 'is_storable': True,
+                                'available_in_pos': True, 'list_price': 1500,
+                                'taxes_id': [(5, 0, 0)]})
+    poste_stock = env['product.product'].with_user(caisse)
+
+    def disponible():
+        """Ce que la caisse reçoit (une requête pour toute la carte)."""
+        return poste_stock.aite_stock_disponible(restaurant.id)
+
+    check("la Guinness, suivie en stock et jamais rentrée : disponible 0 (la caisse refuse)",
+          disponible().get(guinness.id) == 0, disponible().get(guinness.id))
+    check("la Castel n'est pas suivie : elle n'est pas contrôlée, elle se vend toujours",
+          castel.id not in disponible())
+    # « Mettre la quantité à jour » sur la fiche du produit : 24 bouteilles.
+    entrepot = restaurant.picking_type_id.warehouse_id
+    erreur = None
+    try:
+        with env.cr.savepoint():
+            quant = env['stock.quant'].with_user(manager).with_context(inventory_mode=True).create({
+                'product_id': guinness.id, 'location_id': entrepot.lot_stock_id.id,
+                'inventory_quantity': 24})
+            quant.action_apply_inventory()
+    except Exception as exc:  # noqa: BLE001
+        erreur = exc
+    check("le manager enregistre l'entrée de 24 bouteilles", erreur is None, erreur)
+    check("entrée de 24 : disponible 24, sans recharger la caisse",
+          disponible().get(guinness.id) == 24, disponible().get(guinness.id))
+    # Awa ouvre la table 7 (libre depuis la réunion) et envoie 2 Guinness.
+    t7b = nouvelle_addition(table_7, 2, awa)
+    ajouter(t7b, guinness, 2)
+    envoyer(t7b)
+    table_7_bis = caisse_envoie(t7b, awa)
+    check("2 Guinness envoyées sur une table ouverte : disponible 22 sur tous les postes (19b)",
+          disponible().get(guinness.id) == 22, disponible().get(guinness.id))
+    caisse_envoie(t7b, carine, etat='paid', payer=especes)
+    check("la table encaissée sort du stock une seule fois : 22 en stock, disponible 22",
+          table_7_bis.state == 'paid'
+          and guinness.with_context(warehouse_id=entrepot.id).qty_available == 22
+          and disponible().get(guinness.id) == 22,
+          (table_7_bis.state, guinness.with_context(warehouse_id=entrepot.id).qty_available,
+           disponible().get(guinness.id)))
+else:
+    check("la caisse sait ce qui reste en stock (aite_stock_disponible, incrément 5)", False)
 
 print("\n═══ 9. Fermeture de la caisse par code (incréments 2 et 4) ═══")
 R13 = "Seul un chef de salle ou le manager ferme la caisse."

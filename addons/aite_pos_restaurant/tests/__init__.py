@@ -7,4 +7,5 @@ from . import test_commande
 from . import test_saisie
 from . import test_annulation
 from . import test_rapports
+from . import test_stock
 from . import test_tours

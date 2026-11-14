@@ -478,3 +478,161 @@ class TestToursAnnulation(AiteToursModeCommon):
         self.assertFalse(self.pos_config.payment_method_ids.filtered('is_aite_credit'))
         self._ouvrir_la_caisse()
         self.start_pos_tour('AiteArdoiseSansModeTour', login='pos_user')
+
+
+class AiteToursStockCommon(AiteToursModeCommon):
+    """Les produits suivis en stock des tours de l'incrément 5 (sans test :
+    une classe de tests n'hérite jamais d'une autre)."""
+
+    def _produits(self):
+        Produit = self.env['product.product']
+        coca = Produit.search([('name', '=', "Coca-Cola")], limit=1)
+        water = Produit.search([('name', '=', "Water")], limit=1)
+        coca.write({'is_storable': True, 'barcode': '5449000000996'})
+        self.assertFalse(water.is_storable)
+        return coca, water
+
+    def _entree(self, produit, quantite):
+        """Le manager enregistre une entrée de stock (« Mettre la quantité à
+        jour »), dans l'entrepôt de la caisse."""
+        emplacement = self.pos_config.picking_type_id.warehouse_id.lot_stock_id
+        quant = self.env['stock.quant'].with_context(inventory_mode=True).create({
+            'product_id': produit.id, 'location_id': emplacement.id,
+            'inventory_quantity': quantite})
+        quant.action_apply_inventory()
+
+    def _table(self, numero):
+        return self.env['pos.order'].search([
+            ('config_id', '=', self.pos_config.id),
+            ('table_id.table_number', '=', numero)], order='id desc', limit=1)
+
+    def _disponible(self, produit):
+        return self.env['product.product'].with_user(self.pos_user).aite_stock_disponible(
+            self.pos_config.id).get(produit.id)
+
+
+@tagged('post_install', '-at_install', 'aite_pos_restaurant')
+class TestToursPlanStock(AiteToursStockCommon):
+    """Incrément 5 : le plan en couleurs (REST-17 : AiteCouleursTour, joué
+    avec un délai de 60 puis de 90 minutes) ; les produits épuisés (REST-19a :
+    AiteEpuiseRefusTour, entrée de stock en Python, AiteEpuiseVenteTour)."""
+
+    def _couleurs(self):
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteCouleursTour', login='pos_user')
+        addition = self._addition_table_5()
+        # REST-17 critère 3 : la table orange a été encaissée par Carine.
+        self.assertEqual(addition.state, 'paid')
+        self.assertTrue(addition.aite_heure_ouverture)
+        self.assertEqual(addition.aite_encaissee_par_id, self.employes["Carine"])
+
+    def test_couleurs(self):
+        self.assertEqual(self.pos_config.aite_delai_alerte, 60)
+        self._couleurs()
+
+    def test_couleurs_delai_90(self):
+        """REST-17 critère 4 : le délai porté à 90 minutes s'applique à
+        l'ouverture suivante de la caisse."""
+        self.pos_config.aite_delai_alerte = 90
+        self._couleurs()
+
+    def test_epuise(self):
+        coca, water = self._produits()
+        self.assertTrue(self.pos_config.aite_refus_epuise)
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteEpuiseRefusTour', login='pos_user')
+        self.assertEqual(self._table(5).lines.product_id, water)
+        # Entre les deux tours : une bouteille entre en stock.
+        self._entree(coca, 1)
+        self.start_pos_tour('AiteEpuiseVenteTour', login='pos_user')
+        ligne = self._table(4).lines
+        self.assertEqual(ligne.product_id, coca)
+        self.assertEqual(ligne.qty, 1)
+        self.assertEqual(ligne.aite_qte_envoyee, 1)
+        self.assertEqual(self.env['product.product'].with_user(self.pos_user)
+                         .aite_stock_disponible(self.pos_config.id)[coca.id], 0)
+
+    def test_epuise_reglage_decoche(self):
+        """« Refuser la vente des produits épuisés » décoché : un produit
+        suivi se vend même à zéro."""
+        coca, _water = self._produits()
+        self.pos_config.aite_refus_epuise = False
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteEpuiseVenteTour', login='pos_user')
+        self.assertEqual(self._table(4).lines.product_id, coca)
+        self.assertEqual(self._table(4).lines.qty, 2)
+
+
+@tagged('post_install', '-at_install', 'aite_pos_restaurant')
+class TestToursEpuiseCorrectifs(AiteToursStockCommon):
+    """Revue de l'incrément 5 : chaque tour reproduit un constat, écrit avant
+    sa correction. Le refus des produits épuisés est fait aux gestes qui
+    ajoutent (toucher d'une carte, code-barres, pavé, fenêtre de
+    configuration), jamais dans ``addLineToCurrentOrder`` que des boutons
+    d'Odoo appellent pour scinder une ligne ; hors connexion, on vend (Q59)."""
+
+    def test_pave(self):
+        """Constat 1 : deux Coca-Cola en stock, « 5 » tapé au pavé est refusé,
+        « 2 » passe."""
+        coca, _water = self._produits()
+        self._entree(coca, 2)
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteEpuisePaveTour', login='pos_user')
+        ligne = self._table(5).lines
+        self.assertEqual(ligne.product_id, coca)
+        self.assertEqual(ligne.qty, 2)
+        self.assertEqual(ligne.aite_qte_envoyee, 2)
+        self.assertEqual(self._disponible(coca), 0)
+
+    def test_note_cuisine(self):
+        """Constat 2 : la note cuisine sur une ligne en partie envoyée d'un
+        produit au bout de son stock est posée, sans R11 ni erreur."""
+        coca, _water = self._produits()
+        self._entree(coca, 2)
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteEpuiseNoteTour', login='pos_user')
+        lignes = self._table(5).lines
+        self.assertEqual(lignes.product_id, coca)
+        self.assertEqual(sum(lignes.mapped('qty')), 2)
+        self.assertEqual(sorted(note or '' for note in lignes.mapped('note')),
+                         ['', 'bien fraîche'])
+        self.assertEqual(self._disponible(coca), 0)
+
+    def test_variantes(self):
+        """Constat 3 : « Jus » 33 cl à 0, 50 cl à 5 ; la variante choisie dans
+        la fenêtre de configuration est contrôlée."""
+        taille = self.env['product.attribute'].create({
+            'name': "Taille", 'create_variant': 'always',
+            'value_ids': [(0, 0, {'name': "33 cl"}), (0, 0, {'name': "50 cl"})]})
+        modele = self.env['product.template'].create({
+            'name': "Jus", 'available_in_pos': True, 'is_storable': True,
+            'list_price': 900, 'taxes_id': [(6, 0, [])],
+            'pos_categ_ids': [(4, self.env['pos.category'].search(
+                [('name', '=', 'Drinks')], limit=1).id)],
+            'attribute_line_ids': [(0, 0, {
+                'attribute_id': taille.id, 'value_ids': [(6, 0, taille.value_ids.ids)]})]})
+        jus_33, jus_50 = modele.product_variant_ids.sorted(
+            lambda p: p.product_template_variant_value_ids.name)
+        self.assertIn("33 cl", jus_33.display_name)
+        self._entree(jus_50, 5)
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteEpuiseVarianteTour', login='pos_user')
+        ligne = self._table(5).lines
+        self.assertEqual(ligne.product_id, jus_50)
+        self.assertEqual(ligne.qty, 1)
+        self.assertEqual(self._disponible(jus_50), 4)
+        self.assertEqual(self._disponible(jus_33), 0)
+
+    def test_hors_connexion(self):
+        """Constat 4 : hors connexion, ou relecture du stock en erreur, la
+        caisse vend (Q59) ; ici les bouteilles sont retirées avant l'envoi."""
+        coca, water = self._produits()
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteEpuiseHorsConnexionTour', login='pos_user')
+        self.assertEqual(self._table(5).lines.product_id, water)
+
+    def test_duree_sur_l_ecran_de_commande(self):
+        """Constat 7 : la durée de la phrase d'état suit la minuterie."""
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteDureeCommandeTour', login='pos_user')
+        self.assertEqual(self._table(5).lines.product_id.name, "Water")

@@ -46,6 +46,20 @@
  * - l'addition absorbée par « Déplacer ou réunir » est signalée au serveur
  *   avant d'être annulée (`aite_marquer_fusion`) : ce n'est pas une
  *   annulation.
+ *
+ * Incrément 5 — le plan en couleurs ; les produits épuisés :
+ * - `aiteTic()` (minuterie de 30 secondes du plan et de l'écran de commande)
+ *   fait recalculer couleurs et durées ; `aiteAlerte(minutes)` applique le
+ *   délai de la caisse ;
+ * - un produit suivi en stock qui n'en a plus n'est pas ajouté (R11), au
+ *   toucher d'une carte, à la lecture d'un code-barres, au retour de la
+ *   fenêtre de configuration (la variante choisie) et à la hausse d'une
+ *   quantité au pavé. Le disponible de tous les produits suivis est gardé en
+ *   mémoire 60 secondes, lu en une requête (`aite_stock_disponible`), relu à
+ *   l'ouverture de l'écran de commande ; le serveur est relu avant de
+ *   décider si le reste connu est de 2 ou moins (T20) ou ne suffit pas : la
+ *   caisse ne refuse qu'après une relecture qui a abouti. Hors connexion, ou
+ *   si la relecture n'aboutit pas, on vend (Q59).
  */
 import { patch } from "@web/core/utils/patch";
 import { PosStore } from "@point_of_sale/app/store/pos_store";
@@ -61,9 +75,17 @@ import { AiteCodePopup } from "@aite_pos_restaurant/components/code_popup/code_p
 import { AiteAnnulationPopup } from "@aite_pos_restaurant/components/annulation_popup/annulation_popup";
 import { MESSAGES, TEXTES, TITRES } from "@aite_pos_restaurant/utils/messages";
 import { partEnvoyee, quantiteEnvoyee } from "@aite_pos_restaurant/utils/envoi";
+import { alerte } from "@aite_pos_restaurant/utils/alerte";
 
 /** Écrans qui demandent quelqu'un d'identifié (point de passage `showScreen`). */
 const ECRANS_A_CODE = ["ProductScreen", "PaymentScreen", "TicketScreen"];
+
+/** Le disponible des produits suivis est gardé en mémoire 60 secondes (T20). */
+const MEMOIRE_STOCK = 60000;
+/** À 2 ou moins de reste connu, le serveur est réinterrogé avant d'ajouter. */
+const SEUIL_STOCK = 2;
+/** Un ajout n'attend pas le précédent plus de 10 secondes. */
+const ATTENTE_AJOUT = 10000;
 
 patch(PosStore.prototype, {
     /** Vrai si la case « Service à table contrôlé » est cochée sur une caisse
@@ -465,6 +487,9 @@ patch(PosStore.prototype, {
         const permis = this.aiteEcranPermis(name, order);
         if (permis !== name) {
             return this.showScreen(permis);
+        }
+        if (name === "ProductScreen") {
+            this.aiteRafraichirStock(); // sans attendre (T20)
         }
         return super.showScreen(name, props);
     },
@@ -1105,8 +1130,11 @@ patch(PosStore.prototype, {
         return Math.max(0, Math.floor(luxon.DateTime.now().diff(debut, "minutes").minutes));
     },
 
-    /** « Table 12 · ouverte par Awa · 35 min ». */
+    /** « Table 12 · ouverte par Awa · 35 min ». Lire `aiteHorloge` abonne
+     * l'écran de commande au tic de sa minuterie : la durée suit, sans que
+     * personne ne touche l'écran (partie 1.3 ; revue de l'incrément 5). */
     aiteEtatCommande(order) {
+        void this.aiteHorloge; // abonnement au tic de la minuterie
         if (!order) {
             return "";
         }
@@ -1540,5 +1568,251 @@ patch(PosStore.prototype, {
             this.aiteAnnulationsAutorisees.delete(order.uuid);
         }
         return super._onBeforeDeleteOrder(...arguments);
+    },
+
+    // ------------------------------------------------------------------
+    // Incrément 5 : le plan en couleurs (REST-17)
+    // ------------------------------------------------------------------
+
+    /** Le tic de la minuterie du plan et de l'écran de commande (toutes les
+     * 30 secondes) : abonnés à `aiteHorloge`, ils recalculent couleurs et
+     * durées sans que personne ne touche l'écran. Un tour l'appelle aussi
+     * après avoir avancé l'horloge. */
+    aiteTic() {
+        this.aiteHorloge = (this.aiteHorloge || 0) + 1;
+    },
+
+    /** « vert » ou « orange » pour une table ouverte depuis `minutes`, selon
+     * le délai de la caisse (réglage « Délai avant l'orange »). */
+    aiteAlerte(minutes) {
+        return alerte(minutes, this.config.aite_delai_alerte);
+    },
+
+    // ------------------------------------------------------------------
+    // Incrément 5 : les produits épuisés (REST-19a, REST-19b critère 4)
+    // ------------------------------------------------------------------
+    //
+    // Le refus est fait aux gestes qui ajoutent (revue de l'incrément 5) :
+    // le toucher d'une carte et la lecture d'un code-barres (`aiteGesteAjout`,
+    // appelé par l'écran de commande : le premier ajout de ligne du geste est
+    // contrôlé dans `addLineToOrder`, ou, pour un produit à variantes, au
+    // retour de la fenêtre de configuration, sur la variante choisie), et la
+    // hausse d'une quantité au pavé (`OrderSummary._setValue`).
+    // `addLineToCurrentOrder` d'Odoo n'est pas touché : des boutons l'appellent
+    // pour scinder une ligne sans rien ajouter (« Note cuisine », « Note au
+    // client » sur une ligne en partie envoyée), ou pour un devis, des
+    // billets, et se servent de la ligne rendue.
+
+    /** Vrai si la caisse refuse les produits suivis épuisés. */
+    get aiteRefusEpuise() {
+        return this.aiteActif && Boolean(this.config.aite_refus_epuise);
+    },
+
+    /** Relit le disponible de tous les produits suivis, en une requête ; une
+     * relecture déjà en cours est attendue plutôt que doublée. Rend vrai si
+     * la lecture a abouti ; hors connexion ou sur une erreur du serveur, rend
+     * faux, sans rien afficher : la caisse vend alors (Q59, partie 8.3). */
+    aiteRafraichirStock() {
+        if (!this.aiteRefusEpuise || this.data.network?.offline) {
+            return Promise.resolve(false);
+        }
+        if (!this.aiteStockEnCours) {
+            this.aiteStockEnCours = this.data
+                .call("product.product", "aite_stock_disponible", [this.config.id])
+                .then((produits) => {
+                    this.aiteStock = { produits: produits || {}, date: Date.now() };
+                    return true;
+                })
+                .catch(() => false)
+                .finally(() => {
+                    this.aiteStockEnCours = null;
+                });
+        }
+        return this.aiteStockEnCours;
+    },
+
+    /** Le disponible connu de `product` (stock de l'entrepôt de la caisse,
+     * moins ce qui est parti sur les tables ouvertes de tous les postes) :
+     * un nombre ; `null` pour un produit non suivi ; `undefined` si la
+     * mémoire est absente ou a plus de 60 secondes (T20). */
+    aiteDisponible(product) {
+        if (!this.aiteStock || Date.now() - this.aiteStock.date > MEMOIRE_STOCK) {
+            return undefined;
+        }
+        const disponible = this.aiteStock.produits[product.id];
+        return typeof disponible === "number" ? disponible : null;
+    },
+
+    /** Ce que l'addition `order` porte de `product` sans l'avoir envoyé
+     * (le serveur, lui, a déjà retiré ce qui est parti). */
+    aiteNonEnvoye(order, product) {
+        return (order?.lines || [])
+            .filter((line) => line.get_product()?.id === product.id)
+            .reduce((total, line) => total + Math.max(0, line.get_quantity() - partEnvoyee(line)), 0);
+    },
+
+    /** La décision qui n'attend pas le serveur : vrai pour un réglage
+     * décoché, un produit sans « Suivre l'inventaire » (chargé avec la
+     * carte), un poste hors connexion, ou un reste connu de plus de 2 et
+     * suffisant ; sinon `null` : il faut relire le stock. Jamais faux : la
+     * caisse ne refuse qu'après une relecture qui a abouti. */
+    aiteDecisionImmediate(order, product, quantite) {
+        if (!this.aiteRefusEpuise || !product || !(quantite > 0)) {
+            return true;
+        }
+        if (!product.is_storable) {
+            return true; // plat, pizza, café : jamais refusé, sans lire le stock
+        }
+        if (this.data.network?.offline) {
+            return true; // Q59 : hors connexion, on vend
+        }
+        const disponible = this.aiteDisponible(product);
+        if (disponible === null) {
+            return true; // absent de la réponse du serveur : kit de Fabrication
+        }
+        if (disponible === undefined) {
+            return null; // mémoire absente ou périmée
+        }
+        const reste = disponible - this.aiteNonEnvoye(order, product);
+        return reste > SEUIL_STOCK && reste >= quantite ? true : null;
+    },
+
+    /** Vrai si `quantite` de `product` peut encore s'ajouter à `order` :
+     * reste = disponible − ce que l'addition porte sans l'avoir envoyé. À 2
+     * ou moins, ou quand la quantité dépasse le reste connu, le serveur est
+     * relu avant de décider (une entrée de stock est vue aussitôt, REST-19
+     * critère 2). Hors connexion, ou si la relecture n'aboutit pas, on vend
+     * (Q59). */
+    async aiteProduitDisponible(order, product, quantite) {
+        if (this.aiteDecisionImmediate(order, product, quantite)) {
+            return true;
+        }
+        if (!(await this.aiteRafraichirStock())) {
+            return true;
+        }
+        const disponible = this.aiteStock.produits[product.id];
+        if (typeof disponible !== "number") {
+            return true;
+        }
+        return disponible - this.aiteNonEnvoye(order, product) >= quantite;
+    },
+
+    /** R11, sous le titre « Produit épuisé » (REST-19 critère 1). */
+    aiteNotifierEpuise(product) {
+        this.notification.add(MESSAGES.R11(product.display_name || product.name), {
+            type: "danger",
+            title: TITRES.produitEpuise,
+        });
+    },
+
+    /** Un geste qui ajoute un produit (toucher d'une carte, code-barres),
+     * appelé par l'écran de commande. Les gestes passent l'un après l'autre :
+     * au double toucher sur la dernière bouteille, le second voit la ligne du
+     * premier (sinon tous deux attendraient la même relecture du serveur et
+     * passeraient). L'attente du précédent est bornée à 10 secondes. Le
+     * premier ajout de ligne du geste est contrôlé (`addLineToOrder`). */
+    async aiteGesteAjout(ajouter) {
+        if (!this.aiteRefusEpuise) {
+            return ajouter();
+        }
+        const precedent = this.aiteAjoutEnCours;
+        let liberer;
+        const courant = new Promise((resolve) => (liberer = resolve));
+        this.aiteAjoutEnCours = courant;
+        try {
+            if (precedent) {
+                await Promise.race([
+                    precedent,
+                    new Promise((resolve) => setTimeout(resolve, ATTENTE_AJOUT)),
+                ]);
+            }
+            this.aiteControleAjout = true;
+            return await ajouter();
+        } finally {
+            this.aiteControleAjout = false;
+            liberer();
+            if (this.aiteAjoutEnCours === courant) {
+                this.aiteAjoutEnCours = null;
+            }
+        }
+    },
+
+    /** Le premier ajout de ligne d'un geste (`aiteGesteAjout`) : un produit
+     * suivi qui n'en a plus n'est pas ajouté (R11) ; un plat sans suivi se
+     * vend toujours (critère 3). Un produit à configurer est contrôlé au
+     * retour de la fenêtre de configuration, sur la variante choisie. */
+    async addLineToOrder(vals, order, opts = {}, configure = true) {
+        if (!this.aiteControleAjout) {
+            return super.addLineToOrder(...arguments);
+        }
+        this.aiteControleAjout = false; // les lignes suivantes du geste ne sont pas des touchers
+        const product =
+            typeof vals.product_id === "number"
+                ? this.models["product.product"].get(vals.product_id)
+                : vals.product_id;
+        if (!product) {
+            return super.addLineToOrder(...arguments);
+        }
+        if (product.isConfigurable() && configure) {
+            return super.addLineToOrder(vals, order, { ...opts, aiteControleStock: order }, configure);
+        }
+        if (!(await this.aiteProduitDisponible(order, product, this.aiteQuantiteAjoutee(vals, opts)))) {
+            this.aiteNotifierEpuise(product);
+            return;
+        }
+        return super.addLineToOrder(...arguments);
+    },
+
+    /** La quantité qu'un geste ajoute : 1, celle d'un code-barres de quantité
+     * ou de poids, ou celle de l'emballage lu. */
+    aiteQuantiteAjoutee(vals, opts = {}) {
+        let quantite = vals.qty === undefined ? 1 : Number(vals.qty);
+        const code = opts.code;
+        if (code && ["quantity", "weight"].includes(code.type)) {
+            quantite = Number(code.value);
+        }
+        const emballage = code && this.models["product.packaging"]?.getAllBy("barcode")[code.code];
+        if (emballage) {
+            quantite = emballage.qty;
+        }
+        return quantite;
+    },
+
+    /** Le bandeau d'informations de la fenêtre de configuration relit le
+     * produit 500 ms après le dernier choix, même si la fenêtre est déjà
+     * fermée (Odoo n'annule pas cette lecture différée). En mode, « J'envoie »
+     * ramène au plan, où il n'y a plus d'addition courante : Odoo y lirait
+     * `order.pricelist_id` et la caisse afficherait « Oups ! ». Sans addition
+     * courante, rien n'est lu (le bandeau n'affiche rien). Trouvé par le tour
+     * AiteEpuiseVarianteTour (revue de l'incrément 5). */
+    async getProductInfo(product, quantity, priceExtra = 0) {
+        if (this.aiteActif && !this.get_order()) {
+            return null;
+        }
+        return super.getProductInfo(...arguments);
+    },
+
+    /** La fenêtre de configuration d'un produit touché : la variante choisie
+     * est contrôlée (revue de l'incrément 5, constat 3). Refusée : R11 à son
+     * nom, et rien n'est ajouté (Odoo n'ajoute rien sans réponse). */
+    async openConfigurator(product, opts = {}) {
+        const payload = await super.openConfigurator(...arguments);
+        const order = opts.aiteControleStock;
+        if (!payload || !order) {
+            return payload;
+        }
+        const variante =
+            this.models["product.product"]
+                .filter((p) => p.raw?.product_template_variant_value_ids?.length > 0)
+                .find((p) =>
+                    p.raw.product_template_variant_value_ids.every((v) =>
+                        payload.attribute_value_ids.includes(v)
+                    )
+                ) || product;
+        if (!(await this.aiteProduitDisponible(order, variante, payload.qty || 1))) {
+            this.aiteNotifierEpuise(variante);
+            return null;
+        }
+        return payload;
     },
 });

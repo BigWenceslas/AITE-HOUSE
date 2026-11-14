@@ -63,6 +63,10 @@ export const MESSAGES = {
     /** Le filet du modèle : une quantité négative hors remboursement (revue
      * de l'incrément 4 ; texte que la spécification ne donne pas). */
     quantiteNegative: `Pas de quantité négative sur une addition${ESP}: pour retirer un produit, touchez ⌫.`,
+    // Incrément 5 : les produits épuisés (titre `TITRES.produitEpuise`)
+    R11: (produit) =>
+        `Plus de ${produit} en stock. Si la bouteille est bien là, demandez au manager ` +
+        `d'enregistrer l'entrée de stock${ESP}: la vente repassera aussitôt.`,
 };
 
 export const TITRES = {
@@ -85,6 +89,8 @@ export const TITRES = {
     produitDejaEnvoye: "Produit déjà envoyé",
     quantiteNegative: "Quantité négative",
     fermerLaCaisse: "Fermer la caisse",
+    // Incrément 5 : R11 (REST-19 critère 1)
+    produitEpuise: "Produit épuisé",
 };
 
 export const TEXTES = {
@@ -131,6 +137,22 @@ export const TEXTES = {
     voirLesTables: "Voir les tables",
     annulerCesTables: "Annuler ces tables",
     annuler: "annuler",
+    // Incrément 5 : la légende du plan (partie 1.4), une partie par couleur
+    // (la feuille de style pose une pastille de la couleur devant chacune).
+    legendeParties: (delai) => [
+        { cle: "libre", texte: `Gris${ESP}: libre` },
+        { cle: "vert", texte: `Vert${ESP}: ouverte` },
+        {
+            cle: "orange",
+            texte: `Orange${ESP}: ouverte depuis plus de ${delai}${ESP}min, proposez l'addition`,
+        },
+        { cle: "pastille", texte: `Pastille rouge${ESP}: pas encore envoyé` },
+    ],
+    /** « Gris : libre · Vert : ouverte · Orange : … · Pastille rouge : … ». */
+    legende: (delai) =>
+        TEXTES.legendeParties(delai)
+            .map((partie) => partie.texte)
+            .join(" · "),
     /** « 35 min » ; à partir d'une heure, « 1 h 05 ». */
     duree: (minutes) => {
         if (minutes < 60) {

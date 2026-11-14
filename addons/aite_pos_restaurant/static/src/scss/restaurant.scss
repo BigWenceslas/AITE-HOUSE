@@ -102,3 +102,60 @@
         font-size: 1.25rem;
     }
 }
+
+// Incrément 5 : le plan en couleurs (REST-17). La couleur d'Odoo est un style
+// en ligne (couleur de dessin de la table) : `!important` la remplace. Gris :
+// libre ; vert : ouverte ; orange : ouverte depuis le délai de la caisse. La
+// pastille rouge d'Odoo (pas encore envoyé) est gardée telle quelle.
+$aite-libre: rgba(0, 0, 0, 0.125);
+$aite-vert: rgb(53, 211, 116);
+$aite-orange: rgb(255, 152, 0);
+
+.floor-screen.aite-mode {
+    .table[data-aite-alerte="libre"] {
+        background: $aite-libre !important;
+        border-color: rgba(0, 0, 0, 0.25) !important;
+    }
+    .table[data-aite-alerte="vert"] {
+        background: $aite-vert !important;
+        border-color: darken($aite-vert, 12%) !important;
+    }
+    .table[data-aite-alerte="orange"] {
+        background: $aite-orange !important;
+        border-color: darken($aite-orange, 12%) !important;
+    }
+    // La durée sous le numéro ; le numéro remonte un peu pour lui laisser la
+    // place (tables de 50 pixels, taille d'Odoo par défaut).
+    .table .label.aite-avec-duree {
+        top: 38% !important;
+    }
+    .table .aite-duree {
+        bottom: 2px;
+        font-size: 0.8rem;
+        line-height: 1;
+    }
+    .aite-legende {
+        font-size: 1rem;
+    }
+    .aite-pastille {
+        display: inline-block;
+        width: 0.9rem;
+        height: 0.9rem;
+        border-radius: 3px;
+        border: 1px solid rgba(0, 0, 0, 0.25);
+        vertical-align: -0.1rem;
+    }
+    .aite-pastille-libre {
+        background: $aite-libre;
+    }
+    .aite-pastille-vert {
+        background: $aite-vert;
+    }
+    .aite-pastille-orange {
+        background: $aite-orange;
+    }
+    .aite-pastille-pastille {
+        background: var(--bs-danger, #dc3545);
+        border-radius: 50%;
+    }
+}

@@ -12,7 +12,13 @@
  * - un chiffre qui donnerait moins que ce qui est parti est ignoré : le pavé
  *   appelle `_setValue` à chaque chiffre, et taper « 12 » sur une ligne de 3
  *   ne doit rien ouvrir au « 1 » ;
- * - au-dessus de ce qui est parti : Odoo.
+ * - au-dessus de ce qui est parti : Odoo ;
+ * - incrément 5 (revue, constat 1) : une hausse d'un produit suivi en stock
+ *   passe par le même contrôle qu'un ajout (`pos.aiteProduitDisponible`) ;
+ *   refusée, elle affiche R11, le chiffre est ignoré et le pavé repart de
+ *   zéro (« 5 » refusé, puis « 2 » vaut 2, pas 52). Quand la mémoire du stock
+ *   ne suffit pas pour décider, le chiffre est appliqué au retour du
+ *   serveur, s'il est encore celui du pavé et de la même ligne.
  * `disallowLineQuantityChange` d'Odoo n'est pas utilisé : il crée une ligne
  * négative sans code. */
 import { patch } from "@web/core/utils/patch";
@@ -25,7 +31,8 @@ patch(OrderSummary.prototype, {
         if (!this.pos.aiteActif || this.pos.numpadMode !== "quantity") {
             return super._setValue(...arguments);
         }
-        let line = this.currentOrder?.get_selected_orderline();
+        const selectionnee = this.currentOrder?.get_selected_orderline();
+        let line = selectionnee;
         if (line?.combo_parent_id) {
             line = line.combo_parent_id;
         }
@@ -42,20 +49,44 @@ patch(OrderSummary.prototype, {
                 return;
             }
         }
-        if (envoye <= 0) {
-            return super._setValue(...arguments);
-        }
-        if (val === "remove" || negative) {
-            if (line.get_quantity() > envoye) {
-                line.set_quantity(envoye);
+        if (envoye > 0) {
+            if (val === "remove" || negative) {
+                if (line.get_quantity() > envoye) {
+                    line.set_quantity(envoye);
+                    return;
+                }
+                this.numberBuffer.reset();
+                this.pos.aiteAnnulerLigne(line);
                 return;
             }
-            this.numberBuffer.reset();
-            this.pos.aiteAnnulerLigne(line);
-            return;
+            if (Number.isNaN(quantite) || quantite < envoye) {
+                return; // sous ce qui est parti : ignoré
+            }
         }
-        if (Number.isNaN(quantite) || quantite < envoye) {
-            return; // sous ce qui est parti : ignoré
+        // Incrément 5 : une hausse d'un produit suivi en stock (constat 1).
+        const hausse = quantite === null || Number.isNaN(quantite) ? 0 : quantite - line.get_quantity();
+        if (hausse > 0 && !line.refunded_orderline_id) {
+            const order = this.currentOrder;
+            const product = line.get_product();
+            if (!this.pos.aiteDecisionImmediate(order, product, hausse)) {
+                this.pos.aiteProduitDisponible(order, product, hausse).then((permis) => {
+                    const toujours =
+                        this.pos.get_order() === order &&
+                        this.numberBuffer.get() === val &&
+                        order.get_selected_orderline() === selectionnee &&
+                        this.pos.numpadMode === "quantity";
+                    if (!toujours) {
+                        return; // un autre chiffre, une autre ligne ou un autre écran entre-temps
+                    }
+                    if (permis) {
+                        super._setValue(val);
+                        return;
+                    }
+                    this.numberBuffer.reset();
+                    this.pos.aiteNotifierEpuise(product);
+                });
+                return;
+            }
         }
         return super._setValue(...arguments);
     },

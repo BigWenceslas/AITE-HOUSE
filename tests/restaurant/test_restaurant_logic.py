@@ -236,5 +236,43 @@ class TestCompteurs(unittest.TestCase):
         self.assertEqual(tuple(regles.compteurs(None, False, False)), (0, 0, 1))
 
 
+class TestAlerte(unittest.TestCase):
+    """La couleur d'une table du plan (incrément 5, REST-17) :
+    alerte(minutes, delai) → '' (libre), 'vert' (ouverte), 'orange' (ouverte
+    depuis le délai ou plus : proposez l'addition)."""
+
+    CAS = [
+        ((0, 60), 'vert', "table qui vient d'ouvrir"),
+        ((59, 60), 'vert', "59 minutes, délai de 60"),
+        ((60, 60), 'orange', "60 minutes révolues (REST-17 critère 1)"),
+        ((61, 60), 'orange', "61 minutes"),
+        ((89, 90), 'vert', "délai porté à 90 (REST-17 critère 4)"),
+        ((95, 90), 'orange', "95 minutes, délai de 90"),
+        ((None, 60), '', "table libre"),
+    ]
+
+    def test_les_cas_de_la_specification(self):
+        for args, attendu, pourquoi in self.CAS:
+            with self.subTest(pourquoi, args=args):
+                self.assertEqual(regles.alerte(*args), attendu)
+
+    def test_delai_par_defaut_soixante_minutes(self):
+        self.assertEqual(regles.DELAI_ALERTE, 60)
+
+    def test_delai_absent_ou_nul_vaut_le_defaut(self):
+        """Un délai vide ou nul ne met pas toutes les tables à l'orange : le
+        défaut (60 minutes) s'applique (le réglage refuse de toute façon
+        moins d'une minute)."""
+        for delai in (None, 0, -5):
+            with self.subTest(delai=delai):
+                self.assertEqual(regles.alerte(59, delai), 'vert')
+                self.assertEqual(regles.alerte(60, delai), 'orange')
+
+    def test_horloge_en_retard(self):
+        """Une tablette dont l'horloge retarde sur le serveur : la durée est
+        négative, la table reste verte."""
+        self.assertEqual(regles.alerte(-3, 60), 'vert')
+
+
 if __name__ == '__main__':
     unittest.main()

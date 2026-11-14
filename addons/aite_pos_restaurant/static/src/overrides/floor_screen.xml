@@ -3,7 +3,12 @@
 
     <!-- Sous la barre du plan : la phrase d'état, ou le bandeau « caisse
          fermée » le matin (partie 1.4). Pas de « Obtenir des codes QR » :
-         moins de boutons sur l'écran de repos (partie 1.1 A). -->
+         moins de boutons sur l'écran de repos (partie 1.1 A).
+         Incrément 5 : chaque table porte son alerte (data-aite-alerte :
+         libre, vert, orange ; la feuille de style pose la couleur, par-dessus
+         le style en ligne d'Odoo) et sa durée sous le numéro ; une légende en
+         bas du plan (partie 1.4). La pastille rouge d'Odoo (produits pas
+         encore envoyés) est gardée. -->
     <t t-name="aite_pos_restaurant.FloorScreen" t-inherit="pos_restaurant.FloorScreen" t-inherit-mode="extension">
         <!-- Marque du mode sur le plan : la feuille de style y masque le
              bouton « Obtenir des codes QR » de pos_self_order (installé
@@ -22,6 +27,29 @@
                 <div t-else="" class="aite-plan-etat px-3 py-2 fs-5 border-bottom bg-light"
                      t-esc="aiteTextes.planEtat"/>
             </t>
+        </xpath>
+        <xpath expr="//div[hasclass('table')]" position="attributes">
+            <attribute name="t-att-data-aite-alerte">pos.aiteActif ? aiteAlerte(table) : undefined</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('table')]//div[hasclass('label')]" position="attributes">
+            <attribute name="t-att-class">{'aite-avec-duree': pos.aiteActif and aiteDuree(table)}</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('table')]//div[hasclass('label')]" position="after">
+            <t t-if="pos.aiteActif">
+                <t t-set="aiteDureeTable" t-value="aiteDuree(table)"/>
+                <div t-if="aiteDureeTable"
+                     class="aite-duree position-absolute start-50 translate-middle-x text-nowrap fw-bold"
+                     t-esc="aiteDureeTable"/>
+            </t>
+        </xpath>
+        <xpath expr="//div[@t-ref='floor-map-scroll']" position="after">
+            <div t-if="pos.aiteActif"
+                 class="aite-legende d-flex flex-wrap align-items-center gap-1 px-3 py-2 border-top bg-light">
+                <t t-foreach="aiteLegende" t-as="partie" t-key="partie.cle">
+                    <t t-if="!partie_first"> · </t>
+                    <span class="aite-legende-partie text-nowrap"><span t-attf-class="aite-pastille aite-pastille-{{partie.cle}} me-1"/><t t-esc="partie.texte"/></span>
+                </t>
+            </div>
         </xpath>
     </t>
 

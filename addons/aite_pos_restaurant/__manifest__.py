@@ -82,9 +82,27 @@ Incrément 4 (annuler ce qui est parti) :
 * le profil « Restaurant : lecture des rapports » pour le chef de salle : il
   lit les annulations sans aucun droit sur la caisse.
 
+Incrément 5 (le plan en couleurs ; les produits épuisés) :
+
+* sur le plan, chaque table dit son état d'un coup d'œil : gris = libre,
+  vert = ouverte, orange = ouverte depuis plus que le délai de la caisse
+  (60 minutes d'office, réglage « Délai avant l'orange (minutes) ») ; la durée
+  s'écrit sous le numéro (« 35 min », « 1 h 05 »), comptée depuis l'ouverture
+  de la table, même après un déplacement, une division ou une réunion ; elle
+  est recalculée toutes les 30 secondes, sans toucher l'écran ; une légende
+  en bas du plan ;
+* un produit dont on suit le stock (« Suivre l'inventaire ») et qui n'en a
+  plus n'est pas ajouté à une table — toucher de la carte, code-barres,
+  quantité tapée au pavé, variante choisie : « Produit épuisé », avec ce
+  qu'il faut faire ; ce qui est déjà parti sur les tables ouvertes est
+  déduit, sur tous les postes ; une entrée de stock rend la vente aussitôt,
+  sans recharger la caisse ; les plats sans suivi se vendent toujours ;
+  hors connexion, la caisse vend (réglage « Refuser la vente des produits
+  épuisés », coché d'office).
+
 Aucune dépendance au socle hôtelier.
 """,
-    'version': '18.0.1.0.3',
+    'version': '18.0.1.0.4',
     'author': "AITE Consulting",
     'website': "https://aiteconsulting.com",
     'category': 'Point of Sale',

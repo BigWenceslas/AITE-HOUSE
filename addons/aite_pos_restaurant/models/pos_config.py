@@ -6,6 +6,8 @@ import logging
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
+from . import regles
+
 _logger = logging.getLogger(__name__)
 
 AIDE_MODE = (
@@ -31,6 +33,8 @@ REGLAGES_DU_MODE = {
     'order_edit_tracking': False,      # T18 : le journal AITE est la trace
     'iface_print_skip_screen': False,  # partie 4.3 : retour au plan après paiement
     'aite_vente_sans_table': False,    # PROF-04-P1 : pas de « + »
+    'aite_delai_alerte': regles.DELAI_ALERTE,  # Q11 : orange après 60 minutes
+    'aite_refus_epuise': True,         # Q12 : un produit suivi épuisé est refusé
 }
 
 AIDE_VENTE_SANS_TABLE = (
@@ -42,6 +46,37 @@ AIDE_VENTE_SANS_TABLE = (
     "tables. Seuls la caissière, le chef de salle et le manager peuvent "
     "l'ouvrir. Se change seulement caisse fermée."
 )
+
+# Incrément 5 (partie 4.3). La phrase du délai suit le nombre réglé : elle
+# est calculée dans les réglages (res.config.settings), à partir de ce modèle.
+AIDE_DELAI = (
+    "Une table ouverte depuis plus de {delai} passe à l'orange sur le plan, "
+    "sans que personne ne touche l'écran : c'est le moment de demander au "
+    "client s'il veut l'addition. La durée s'affiche sous le numéro de chaque "
+    "table."
+)
+
+AIDE_REFUS_EPUISE = (
+    "Coché : un produit dont vous suivez le stock (case « Suivre "
+    "l'inventaire » de sa fiche, par exemple une bière) ne peut plus être "
+    "ajouté à une table quand il n'en reste plus, en comptant ce qui est déjà "
+    "parti sur les tables ouvertes ; il redevient vendable moins d'une minute "
+    "après l'enregistrement d'une entrée de stock. Les produits sans suivi "
+    "(plats, pizzas, café) se vendent toujours. Saisissez le stock de départ "
+    "avant le premier service, sinon ces produits seront refusés."
+)
+
+
+def phrase_delai(delai):
+    """La phrase « ce qui va se passer » du délai, avec le nombre réglé
+    (« plus de 1 minute », « plus de 90 minutes »)."""
+    try:
+        delai = int(delai or 0)
+    except (TypeError, ValueError):
+        delai = 0
+    minutes = "%d minute" % delai if abs(delai) == 1 else "%d minutes" % delai
+    return AIDE_DELAI.format(delai=minutes)
+
 
 NOM_CAISSE = "Restaurant"
 NOM_SALLE = "Salle"
@@ -57,6 +92,17 @@ class PosConfig(models.Model):
     aite_vente_sans_table = fields.Boolean(
         string="Autoriser la vente sans table", default=False,
         help=AIDE_VENTE_SANS_TABLE)
+    # Incrément 5 : le plan en couleurs (REST-17) et les produits épuisés
+    # (REST-19a). Lus par la caisse à son ouverture (pos.config est chargé
+    # avec tous ses champs) : un changement s'applique quand la caisse est
+    # rouverte (REST-17 critère 4) ; ils ne sont donc pas réservés à la
+    # caisse fermée.
+    aite_delai_alerte = fields.Integer(
+        string="Délai avant l'orange (minutes)", default=regles.DELAI_ALERTE,
+        help=phrase_delai(regles.DELAI_ALERTE))
+    aite_refus_epuise = fields.Boolean(
+        string="Refuser la vente des produits épuisés", default=True,
+        help=AIDE_REFUS_EPUISE)
 
     def _aite_actif(self):
         """Vrai si la caisse est au service à table contrôlé (même règle que
@@ -76,6 +122,13 @@ class PosConfig(models.Model):
                 raise ValidationError(_(
                     "Décochez d'abord « Service à table contrôlé » : sans les "
                     "codes personnels, la caisse ne saurait plus qui fait quoi."))
+
+    @api.constrains('aite_delai_alerte')
+    def _aite_verifier_delai(self):
+        for config in self:
+            if config.aite_delai_alerte < 1:
+                raise ValidationError(_(
+                    "Le délai avant l'orange doit être d'au moins 1 minute."))
 
     def _get_forbidden_change_fields(self):
         # Aucune addition en cours ne change de règle en plein service : les

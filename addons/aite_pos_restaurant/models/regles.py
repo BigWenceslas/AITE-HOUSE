@@ -8,6 +8,10 @@ Source unique du tableau des droits (spécification, partie 3.3) :
   algorithme (``PosStore.aitePeut``) ;
 * le rôle de ``pos_hr`` est dérivé du niveau (``role_caisse``).
 
+Incrément 5 : la couleur d'une table du plan (``alerte``, délai par défaut
+``DELAI_ALERTE``) ; la caisse applique la même règle (``utils/alerte.js``),
+avec le délai de la caisse (``pos.config.aite_delai_alerte``).
+
 Ce fichier est chargé tel quel par ``tests/restaurant/test_restaurant_logic.py``,
 sans Odoo : il ne doit importer que la bibliothèque standard.
 """
@@ -41,6 +45,7 @@ DROITS = {
 }
 
 DELAI_RETOUR_PLAN = 300  # secondes (T10) : retour au plan verrouillé sans activité
+DELAI_ALERTE = 60  # minutes (Q11) : une table ouverte depuis ce délai passe à l'orange
 # Remise, produit offert : personne en caisse à l'ouverture (Q20) — réglage, pas un droit.
 # Plan de salle : dessiné dans la gestion par le compte Odoo du manager (T17).
 
@@ -137,6 +142,25 @@ def part_negative(qte_avant, qte):
     avant = max(-_nombre(qte_avant), 0.0)
     apres = max(-_nombre(qte), 0.0)
     return round(max(apres - avant, 0.0), 6)
+
+
+def alerte(minutes, delai):
+    """La couleur d'une table du plan (REST-17, incrément 5) : ``''`` pour
+    une table libre (``minutes`` vaut ``None``), ``'vert'`` pour une table
+    ouverte, ``'orange'`` quand elle l'est depuis ``delai`` minutes ou plus
+    (« 60 minutes révolues », REST-17 critère 1) : c'est le moment de
+    proposer l'addition. Un délai vide ou nul vaut ``DELAI_ALERTE`` (le
+    réglage refuse moins d'une minute). La caisse applique la même règle
+    (``utils/alerte.js``)."""
+    if minutes is None:
+        return ''
+    try:
+        delai = int(delai or 0)
+    except (TypeError, ValueError):
+        delai = 0
+    if delai < 1:
+        delai = DELAI_ALERTE
+    return 'orange' if _nombre(minutes) >= delai else 'vert'
 
 
 def compteurs(personnes, part, remboursement):

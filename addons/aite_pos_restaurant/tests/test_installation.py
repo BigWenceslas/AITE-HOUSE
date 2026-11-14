@@ -59,6 +59,9 @@ class TestInstallation(RestaurantCommon):
         self.assertTrue(restaurant.iface_printbill)
         self.assertFalse(restaurant.order_edit_tracking)
         self.assertFalse(restaurant.iface_print_skip_screen)
+        # Incrément 5 (Q11, Q12) : orange après 60 minutes, épuisés refusés.
+        self.assertEqual(restaurant.aite_delai_alerte, 60)
+        self.assertTrue(restaurant.aite_refus_epuise)
 
     def test_especes_et_mobile_money_seuls(self):
         modes = self._restaurant().payment_method_ids
@@ -199,6 +202,8 @@ class TestInstallation(RestaurantCommon):
             'restrict_price_control': False,
             'order_edit_tracking': True,
             'iface_print_skip_screen': True,
+            'aite_delai_alerte': 15,
+            'aite_refus_epuise': False,
         })
         Reglages = self.env['res.config.settings']
         self.assertIn('pos_aite_mode_restaurant', Reglages._onchange_methods)
@@ -215,6 +220,9 @@ class TestInstallation(RestaurantCommon):
         self.assertTrue(reglages.pos_iface_printbill)
         self.assertFalse(reglages.pos_order_edit_tracking)
         self.assertFalse(reglages.pos_iface_print_skip_screen)
+        # Incrément 5 : le délai de l'orange et le refus des épuisés.
+        self.assertEqual(reglages.pos_aite_delai_alerte, 60)
+        self.assertTrue(reglages.pos_aite_refus_epuise)
         # Rien n'est écrit tant que le manager n'enregistre pas.
         self.assertFalse(caisse.aite_mode_restaurant)
         self.assertTrue(caisse.manual_discount)
@@ -287,3 +295,84 @@ class TestInstallation(RestaurantCommon):
             with self.subTest(champ=champ):
                 parent = vue.xpath("//field[@name='%s']/.." % champ)[0]
                 self.assertEqual(parent.get('invisible'), 'pos_aite_mode_restaurant')
+
+    # ------------------------------------------------------------------
+    # Incrément 5 : le délai de l'orange et le refus des épuisés
+    # ------------------------------------------------------------------
+
+    def _reglages(self):
+        with mute_logger('odoo.tests.form.onchange'):
+            reglages = Form(self.env['res.config.settings'])
+        reglages.pos_config_id = self.config
+        return reglages
+
+    def test_la_phrase_du_delai_suit_le_reglage(self):
+        """Partie 4.3 : « le nombre suit le réglage » ; le manager voit la
+        phrase changer pendant qu'il tape (scénario : 90 → « 90 minutes »)."""
+        reglages = self._reglages()
+        self.assertEqual(reglages.pos_aite_delai_alerte, 60)
+        self.assertEqual(
+            reglages.pos_aite_phrase_delai,
+            "Une table ouverte depuis plus de 60 minutes passe à l'orange sur le plan, "
+            "sans que personne ne touche l'écran : c'est le moment de demander au "
+            "client s'il veut l'addition. La durée s'affiche sous le numéro de chaque "
+            "table.")
+        reglages.pos_aite_delai_alerte = 90
+        self.assertIn("ouverte depuis plus de 90 minutes passe à l'orange",
+                      reglages.pos_aite_phrase_delai)
+        reglages.pos_aite_delai_alerte = 1
+        self.assertIn("ouverte depuis plus de 1 minute passe à l'orange",
+                      reglages.pos_aite_phrase_delai)
+
+    def test_le_delai_s_enregistre_pendant_le_service(self):
+        """REST-17 critère 4 : le délai porté à 90 s'applique quand la caisse
+        est rouverte ; il n'est pas réservé à la caisse fermée."""
+        self._ouvrir_session()
+        self.config.aite_delai_alerte = 90
+        self.assertEqual(self.config.aite_delai_alerte, 90)
+        donnees = self.config.current_session_id.with_user(self.compte_caisse).load_data(
+            ['pos.config'])
+        self.assertEqual(donnees['pos.config']['data'][0]['aite_delai_alerte'], 90)
+
+    def test_la_phrase_du_delai_a_un_libelle_francais(self):
+        """Revue de l'incrément 5, constat 6 : sans libellé, le champ de la
+        phrase s'appelait « Pos Aite Phrase Delai » (mode débogage, export)."""
+        champ = self.env['res.config.settings']._fields['pos_aite_phrase_delai']
+        self.assertEqual(champ.string, "Ce qui va se passer")
+
+    def test_un_delai_de_moins_d_une_minute_est_refuse(self):
+        for delai in (0, -10):
+            with self.subTest(delai=delai), self.assertRaises(ValidationError) as erreur:
+                self.config.aite_delai_alerte = delai
+            self.assertEqual(erreur.exception.args[0],
+                             "Le délai avant l'orange doit être d'au moins 1 minute.")
+
+    def test_la_phrase_du_refus_des_epuises(self):
+        arch = self.env['res.config.settings'].get_view(view_type='form')['arch']
+        reglage = etree.fromstring(arch).xpath("//setting[@id='aite_refus_epuise']")
+        self.assertEqual(len(reglage), 1)
+        self.assertEqual(
+            reglage[0].get('help'),
+            "Coché : un produit dont vous suivez le stock (case « Suivre l'inventaire » de "
+            "sa fiche, par exemple une bière) ne peut plus être ajouté à une table quand il "
+            "n'en reste plus, en comptant ce qui est déjà parti sur les tables ouvertes ; il "
+            "redevient vendable moins d'une minute après l'enregistrement d'une entrée de "
+            "stock. Les produits sans suivi (plats, pizzas, café) se vendent toujours. "
+            "Saisissez le stock de départ avant le premier service, sinon ces produits "
+            "seront refusés.")
+        self.assertEqual(reglage[0].xpath(".//field/@name"), ['pos_aite_refus_epuise'])
+
+    def test_l_ordre_des_reglages_du_restaurant(self):
+        """Partie 4.3 : la case, le délai, la vente sans table, le refus des
+        épuisés ; les trois derniers seulement au service à table contrôlé."""
+        arch = self.env['res.config.settings'].get_view(view_type='form')['arch']
+        vue = etree.fromstring(arch)
+        ids = [r.get('id') for r in vue.xpath("//block[@id='restaurant_section']/setting")]
+        aite = [i for i in ids if i and i.startswith('aite_')]
+        self.assertEqual(aite, ['aite_mode_restaurant', 'aite_delai_alerte',
+                                'aite_vente_sans_table', 'aite_refus_epuise'])
+        self.assertEqual(ids.index('aite_delai_alerte'), ids.index('aite_mode_restaurant') + 1)
+        for reglage in ('aite_delai_alerte', 'aite_refus_epuise'):
+            with self.subTest(reglage=reglage):
+                element = vue.xpath("//setting[@id='%s']" % reglage)[0]
+                self.assertEqual(element.get('invisible'), 'not pos_aite_mode_restaurant')

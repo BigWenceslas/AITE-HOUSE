@@ -1,4 +1,4 @@
-/* global posmodel, odoo */
+/* global posmodel, odoo, luxon */
 /** Étapes communes des tours de la caisse du restaurant (spécification,
  * partie 6.3). Sélecteurs CSS et attributs `data-aite-*` seulement : aucun
  * libellé d'Odoo n'est cherché par son texte (les tours passent dans toutes
@@ -543,4 +543,193 @@ export function tableLibre(numero) {
         const table = posmodel.models["restaurant.table"].find((t) => t.table_number === numero);
         return (table && !posmodel.getActiveOrdersOnTable(table).length) || "table occupée";
     });
+}
+
+// ----------------------------------------------------------------------
+// Incrément 5 : le plan en couleurs, les produits épuisés
+// ----------------------------------------------------------------------
+
+/** La table `numero` sur le plan (l'élément `.table` dont le numéro est
+ * `numero`). */
+function tableDuPlan(numero) {
+    return [...document.querySelectorAll(".floor-screen .floor-map .table")].find(
+        (el) => el.querySelector(".label")?.textContent.trim() === String(numero)
+    );
+}
+
+/** Les couleurs attendues à l'écran (feuille de style d'AITE, `!important`
+ * sur le style en ligne d'Odoo). */
+const FONDS = { vert: "rgb(53, 211, 116)", orange: "rgb(255, 152, 0)" };
+
+/** La table `numero` porte l'alerte `attendu` (« libre », « vert »,
+ * « orange ») ; pour une table ouverte, la couleur affichée est bien celle de
+ * l'alerte. */
+export function couleurDeLaTable(numero, attendu) {
+    return verifier(`la table ${numero} est « ${attendu} »`, () => {
+        const el = tableDuPlan(numero);
+        if (!el) {
+            return "table absente du plan";
+        }
+        const alerte = el.dataset.aiteAlerte;
+        const fond = getComputedStyle(el).backgroundColor;
+        if (alerte !== attendu) {
+            return `alerte ${alerte}`;
+        }
+        return !FONDS[attendu] || fond === FONDS[attendu] || `fond ${fond}`;
+    });
+}
+
+/** La durée écrite sous le numéro de la table : `attendu` (un texte, ou
+ * `texte("duree", m)`), ou aucune durée si `attendu` est vide. */
+export function dureeDeLaTable(numero, attendu) {
+    return verifier(`la durée de la table ${numero}`, () => {
+        const el = tableDuPlan(numero);
+        const duree = el?.querySelector(".aite-duree")?.textContent.trim() || "";
+        return duree === (valeur(attendu) || "") || JSON.stringify(duree);
+    });
+}
+
+/** L'horloge de la caisse avancée à `minutes` (un nombre, ou une fonction
+ * appelée au moment de l'étape) après l'ouverture de la table `numero`, posée
+ * par le serveur ; puis le tic de la minuterie du plan (`posmodel.aiteTic()`,
+ * appelé toutes les 30 secondes à l'écran). L'horloge est celle de luxon,
+ * comme `freezeDateTime` d'Odoo. */
+export function avancerLHorloge(numero, minutes) {
+    return {
+        content: `horloge avancée après l'ouverture de la table ${numero}`,
+        trigger: "body",
+        run() {
+            const { DateTime } = luxon;
+            const table = posmodel.models["restaurant.table"].find(
+                (t) => String(t.table_number) === String(numero)
+            );
+            const heure = table?.getOrder()?.aite_heure_ouverture;
+            if (!heure) {
+                throw new Error(`la table ${numero} n'a pas d'heure d'ouverture`);
+            }
+            const debut =
+                typeof heure === "string" ? DateTime.fromSQL(heure, { zone: "utc" }) : heure;
+            const instant = debut.plus({ minutes: valeur(minutes), seconds: 10 }).toMillis();
+            DateTime.now = () => DateTime.fromMillis(instant);
+            posmodel.aiteTic();
+        },
+    };
+}
+
+/** La légende du plan, avec le délai de la caisse. */
+export function legende() {
+    return verifier("la légende du plan", () => {
+        const modele = odoo.loader.modules.get("@aite_pos_restaurant/utils/messages").TEXTES;
+        const attendu = modele.legende(posmodel.config.aite_delai_alerte);
+        const lu = document.querySelector(".floor-screen .aite-legende")?.textContent;
+        const net = (t) => (t || "").replace(/\s+/g, " ").trim();
+        return net(lu) === net(attendu) || JSON.stringify(lu);
+    });
+}
+
+/** R11 : notification « danger » titrée « Produit épuisé » pour `produit` ;
+ * elle est fermée ensuite. */
+export function produitEpuise(produit) {
+    return verifier(`« Produit épuisé » : ${typeof produit === "function" ? "variante" : produit}`, () => {
+        const messages = odoo.loader.modules.get("@aite_pos_restaurant/utils/messages");
+        const attendu = messages.MESSAGES.R11(valeur(produit));
+        for (const contenu of document.querySelectorAll(".o_notification_content")) {
+            const notification = contenu.closest(".o_notification");
+            const titre = notification.querySelector(".o_notification_title")?.textContent.trim();
+            if (
+                contenu.textContent.trim() === attendu &&
+                titre === messages.TITRES.produitEpuise &&
+                notification.querySelector(".o_notification_bar.bg-danger")
+            ) {
+                notification.querySelector(".o_notification_close")?.click();
+                return true;
+            }
+        }
+        return [...document.querySelectorAll(".o_notification")].map((n) => n.textContent).join(" | ");
+    });
+}
+
+/** Aucune ligne du produit `nom` sur l'addition. */
+export function pasDeLigne(nom) {
+    return verifier(`aucune ligne ${nom}`, () =>
+        !posmodel.get_order()?.lines.some((l) => l.get_product().name === nom) || "ligne présente"
+    );
+}
+
+// Revue de l'incrément 5 : les gestes qui ajoutent, les variantes, la note.
+
+/** Aucune notification « Produit épuisé » n'est affichée. */
+export function pasDeProduitEpuise() {
+    return verifier("pas de « Produit épuisé »", () => {
+        const titre = odoo.loader.modules.get("@aite_pos_restaurant/utils/messages").TITRES
+            .produitEpuise;
+        const titres = [...document.querySelectorAll(".o_notification_title")].map((t) =>
+            t.textContent.trim()
+        );
+        return !titres.includes(titre) || "R11 affiché";
+    });
+}
+
+/** La variante de `nom` dont le nom affiché contient `variante` (« 50 cl »). */
+export function variante(nom, variante) {
+    return posmodel.models["product.product"].find(
+        (p) => p.name === nom && p.display_name.includes(variante)
+    );
+}
+
+/** Les lignes de l'addition, en texte : « Jus (50 cl) × 1 | … ». */
+function lignes() {
+    return (posmodel.get_order()?.lines || [])
+        .map((l) => `${l.get_product().display_name} × ${l.get_quantity()} [${l.getNote()}]`)
+        .join(" | ");
+}
+
+/** La variante `variante` de `nom` est sur l'addition, à `quantite`
+ * (0 : absente). */
+export function quantiteDeLaVariante(nom, variante_, quantite) {
+    return verifier(`${nom} ${variante_} à ${quantite}`, () => {
+        const produit = variante(nom, variante_);
+        const total = (posmodel.get_order()?.lines || [])
+            .filter((l) => l.get_product().id === produit?.id)
+            .reduce((somme, l) => somme + l.get_quantity(), 0);
+        return total === quantite || lignes();
+    });
+}
+
+/** « Note cuisine » de la rangée principale (le bouton d'Odoo, reconnu à
+ * son libellé traduit dans la langue de la page). */
+export function noteCuisine() {
+    return {
+        content: "« Note cuisine »",
+        trigger: ".product-screen .control-buttons button",
+        run() {
+            const libelle = _t("Kitchen Note");
+            const bouton = [
+                ...document.querySelectorAll(".product-screen .control-buttons button"),
+            ].find((b) => b.textContent.trim() === libelle);
+            if (!bouton) {
+                throw new Error(`bouton « ${libelle} » absent`);
+            }
+            bouton.click();
+        },
+    };
+}
+
+/** Les lignes de `nom` : `attendu` est la liste des « quantité/note »
+ * (« 1/ », « 1/bien fraîche »), dans n'importe quel ordre. */
+export function lignesDuProduit(nom, attendu) {
+    return verifier(`lignes ${nom} : ${attendu.join(", ")}`, () => {
+        const lu = (posmodel.get_order()?.lines || [])
+            .filter((l) => l.get_product().name === nom)
+            .map((l) => `${l.get_quantity()}/${l.getNote() || ""}`)
+            .sort();
+        return JSON.stringify(lu) === JSON.stringify([...attendu].sort()) || lignes();
+    });
+}
+
+/** Aucune fenêtre d'erreur d'Odoo (« Oups ! … »). */
+export function pasDErreur() {
+    return verifier("pas de fenêtre d'erreur", () =>
+        !document.querySelector(".o_error_dialog, .modal .o_error_detail") || "erreur affichée"
+    );
 }
