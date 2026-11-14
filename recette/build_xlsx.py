@@ -6,7 +6,7 @@ from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.utils import get_column_letter
 
-from cas_de_test import CAS, DOMAINES
+from cas_de_test import CAS, DOMAINES, VERSION
 
 TEAL = "0F6478"
 TEAL_D = "0A4C5C"
@@ -20,6 +20,14 @@ STATUTS = ["À tester", "OK", "KO", "Bloqué", "Non applicable"]
 PRIO_LBL = {1: "1 - Critique", 2: "2 - Majeur", 3: "3 - Mineur"}
 DOM_NOM = {c: n for c, n, _ in DOMAINES}
 DOM_MOD = {c: m for c, _, m in DOMAINES}
+# Dernière ligne de l'onglet « Cas de test » comptée par les formules de la
+# synthèse : 50 lignes libres après le dernier cas, pour les cas ajoutés à la
+# main.
+FIN = len(CAS) + 51
+# Les modules livrés : les dossiers d'addons/ qui ont un manifeste.
+ADDONS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "addons")
+NB_MODULES = sum(os.path.isfile(os.path.join(ADDONS, d, "__manifest__.py"))
+                 for d in os.listdir(ADDONS))
 
 thin = Side(style="thin", color="C9D4DA")
 BORD = Border(left=thin, right=thin, top=thin, bottom=thin)
@@ -33,13 +41,13 @@ ws.sheet_view.showGridLines = False
 
 ws["B2"] = "CAHIER DE RECETTE — AITE HOUSE"
 ws["B2"].font = Font(name=F, size=18, bold=True, color=TEAL_D)
-ws["B3"] = "Suite de gestion hôtelière sur Odoo 18 — 12 modules"
+ws["B3"] = "Suite de gestion hôtelière et restaurant sur Odoo 18 — %d modules" % NB_MODULES
 ws["B3"].font = Font(name=F, size=11, color="5A6670")
 ws["B4"] = "AITE Consulting SARL · info@aite-consulting.com · (+237) 673 373 367"
 ws["B4"].font = Font(name=F, size=9, color="8A949C")
 
 # bandeau d'identification (cellules à remplir = fond jaune)
-ident = [("Client / établissement", ""), ("Version testée", "AITE HOUSE — septembre 2026"),
+ident = [("Client / établissement", ""), ("Version testée", "AITE HOUSE — %s" % VERSION),
          ("Environnement", "Recette"), ("Base de données", ""),
          ("Date de début", ""), ("Date de fin", ""),
          ("Testeur principal", ""), ("Responsable AITE", "")]
@@ -76,14 +84,14 @@ for col in "BCD":
 row = 20
 for s in STATUTS:
     ws.cell(row, 2, s).font = Font(name=F, size=10)
-    ws.cell(row, 3).value = f"=COUNTIF('Cas de test'!$I$2:$I$200,$B{row})"
+    ws.cell(row, 3).value = f"=COUNTIF('Cas de test'!$I$2:$I${FIN},$B{row})"
     ws.cell(row, 4).value = f"=IFERROR($C{row}/$C$25,0)"
     ws.cell(row, 4).number_format = "0.0%"
     for col in (2, 3, 4):
         ws.cell(row, col).border = BORD
     row += 1
 ws.cell(25, 2, "TOTAL").font = Font(name=F, size=10, bold=True)
-ws.cell(25, 3).value = "=COUNTA('Cas de test'!$A$2:$A$200)"
+ws.cell(25, 3).value = f"=COUNTA('Cas de test'!$A$2:$A${FIN})"
 ws.cell(25, 3).font = Font(name=F, size=10, bold=True)
 ws.cell(25, 4).value = "=IFERROR(SUM($D$20:$D$24),0)"
 ws.cell(25, 4).number_format = "0.0%"
@@ -99,8 +107,8 @@ ws["C27"].number_format = "0.0%"
 ws["C27"].font = Font(name=F, size=12, bold=True, color=TEAL_D)
 ws["B28"] = "Cas critiques en échec (bloquants)"
 ws["B28"].font = Font(name=F, size=10, bold=True)
-ws["C28"] = ("=COUNTIFS('Cas de test'!$D$2:$D$200,\"1 - Critique\","
-             "'Cas de test'!$I$2:$I$200,\"KO\")")
+ws["C28"] = (f"=COUNTIFS('Cas de test'!$D$2:$D${FIN},\"1 - Critique\","
+             f"'Cas de test'!$I$2:$I${FIN},\"KO\")")
 ws["C28"].font = Font(name=F, size=12, bold=True, color="C0392B")
 
 # avancement par domaine
@@ -118,16 +126,16 @@ row = 20
 for code, nom, mod in DOMAINES:
     ws.cell(row, 7, nom).font = Font(name=F, size=9)
     ws.cell(row, 8, mod).font = Font(name=F, size=9, color="5A6670")
-    ws.cell(row, 9).value = f"=COUNTIF('Cas de test'!$B$2:$B$200,$G{row})"
+    ws.cell(row, 9).value = f"=COUNTIF('Cas de test'!$B$2:$B${FIN},$G{row})"
     ws.cell(row, 10).value = (
-        f"=COUNTIFS('Cas de test'!$B$2:$B$200,$G{row},"
-        f"'Cas de test'!$I$2:$I$200,\"OK\")")
+        f"=COUNTIFS('Cas de test'!$B$2:$B${FIN},$G{row},"
+        f"'Cas de test'!$I$2:$I${FIN},\"OK\")")
     ws.cell(row, 11).value = (
-        f"=COUNTIFS('Cas de test'!$B$2:$B$200,$G{row},"
-        f"'Cas de test'!$I$2:$I$200,\"KO\")")
+        f"=COUNTIFS('Cas de test'!$B$2:$B${FIN},$G{row},"
+        f"'Cas de test'!$I$2:$I${FIN},\"KO\")")
     ws.cell(row, 12).value = (
-        f"=COUNTIFS('Cas de test'!$B$2:$B$200,$G{row},"
-        f"'Cas de test'!$I$2:$I$200,\"À tester\")")
+        f"=COUNTIFS('Cas de test'!$B$2:$B${FIN},$G{row},"
+        f"'Cas de test'!$I$2:$I${FIN},\"À tester\")")
     for col in range(7, 13):
         ws.cell(row, col).border = BORD
         ws.cell(row, col).font = Font(name=F, size=9)
@@ -238,11 +246,19 @@ lignes = [
     ("Installer la suite AITE HOUSE sur une base de recette (jamais sur la "
      "production). Installer aite_demo_data pour disposer de données, ou "
      "partir des données réelles du client selon le contexte.", ""),
+    ("Restaurant sans hôtel (domaine R seul) : les 4 dossiers du §9 "
+     "d'INSTALLATION.md, base créée avec le pays Cameroun (FCFA), comptes "
+     "caisse, manager et chef de salle (§9.5), équipe, carte et plan saisis "
+     "(§9.6).", ""),
     ("", ""),
     ("2. Dérouler les cas dans l'ordre des domaines", "h"),
     ("Les cas A à M suivent le parcours naturel de l'établissement : "
      "hébergement, espaces, réservation en ligne, caisse, note de chambre, "
-     "crédit, fidélité, stock, achats, pilotage, puis transverse.", ""),
+     "crédit, fidélité, stock, achats, pilotage, puis transverse ; N à Q "
+     "couvrent la vague 1 (taxe de séjour, registre, gouvernante, "
+     "indicateurs). Le domaine R couvre le restaurant (service à table, lot "
+     "1) : pour un restaurant sans hôtel, seul R s'applique, les autres cas "
+     "sont « Non applicable ».", ""),
     ("Traiter en priorité les cas « 1 - Critique » : ils conditionnent la "
      "mise en production.", ""),
     ("", ""),

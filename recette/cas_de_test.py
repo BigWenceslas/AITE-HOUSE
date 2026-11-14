@@ -8,6 +8,9 @@ Priorités : 1 = critique (bloque la mise en production)
             3 = mineur   (confort, à planifier)
 """
 
+# Version du cahier (à changer quand les cas changent).
+VERSION = "novembre 2026"
+
 DOMAINES = [
     ("A", "Hébergement — chambres & séjours", "aite_hotel_management"),
     ("B", "Espaces & prestations", "aite_slot_booking"),
@@ -27,6 +30,8 @@ DOMAINES = [
     ("P", "Gouvernante, inspections & maintenance", "aite_housekeeping"),
     ("Q", "Indicateurs hôteliers — RevPAR, pickup, pace",
      "aite_exec_dashboard, aite_direction_dashboard"),
+    ("R", "Restaurant — service à table (lot 1)",
+     "aite_pos_restaurant, aite_pos_credit, aite_pos_analytics, aite_pos_analytics_hr"),
 ]
 
 CAS = [
@@ -871,4 +876,578 @@ CAS = [
      "d'ensemble, puis chaque onglet.",
      "Aucune erreur d'accès : l'administrateur reçoit d'office les "
      "profils Manager (Analyses POS) et Responsable (Crédit clients)."),
+
+    # ══════════ R — RESTAURANT, SERVICE À TABLE (LOT 1) ══════════
+    # Un cas par critère d'acceptation du lot 1 (périmètre, partie 3 ;
+    # spécification « Restaurant, lot 1 »). Rôles : un serveur, la
+    # caissière, un chef de salle, le manager (Employés → « Niveau en
+    # caisse »). La caisse « Restaurant » est au service à table contrôlé,
+    # ouverte sous le compte de la caisse sur chaque tablette.
+    ("R01", "R", 1, "Caisse ouverte, plan affiché, personne d'identifié",
+     "REST-01 c.1 — Aucune table sans code",
+     "1. Toucher une table du plan.\n2. Toucher « Retour » sans taper de code.",
+     "La fenêtre « Table n — votre code » s'ouvre (quatre points, un pavé) ; "
+     "sans code, aucune table ne s'ouvre et le plan reste affiché, "
+     "verrouillé."),
+    ("R02", "R", 1, "Un serveur avec un niveau et un code",
+     "REST-01 c.2 — Le code identifie l'employé",
+     "1. Toucher une table libre.\n2. Taper son code (4 chiffres).\n"
+     "3. Toucher le nombre de personnes.",
+     "Le code est validé seul au 4ᵉ chiffre ; l'écran de commande s'ouvre, "
+     "le nom du serveur est en haut ; un code faux vide les points et "
+     "affiche « Code inconnu. Retapez votre code. »."),
+    ("R03", "R", 1, "Compte du manager (Employés : Gestionnaire)",
+     "REST-01 c.3 — Code obligatoire et unique",
+     "1. Employés → Nouveau : nom, « Niveau en caisse » = Serveur.\n"
+     "2. Vider le code, enregistrer.\n3. Taper 3 chiffres, enregistrer.\n"
+     "4. Taper le code d'un collègue, enregistrer.",
+     "Un code de 4 chiffres est proposé dès le niveau choisi, sur la "
+     "première page, sans courriel demandé ; chaque enregistrement fautif "
+     "est refusé et le message dit quoi corriger, sans jamais nommer le "
+     "collègue dont le code est pris."),
+    ("R04", "R", 1, "Une table ouverte par un serveur",
+     "REST-02 c.1 — Ouverte par, encaissée par",
+     "1. La caissière touche la table, tape son code, « J'encaisse », "
+     "Espèces, Valider.\n2. Point de Vente → Commandes → ouvrir l'addition.",
+     "La fiche indique « Ouverte par » : le serveur, « Encaissée par » : la "
+     "caissière, et l'heure d'ouverture ; « Ouverte par » n'a pas changé."),
+    ("R05", "R", 1, "Un serveur identifié sur l'écran de commande",
+     "REST-02 c.2 — Le code est demandé avant d'encaisser",
+     "1. Toucher « J'encaisse ».\n2. Taper le code du serveur.\n"
+     "3. Taper le code de la caissière.",
+     "La fenêtre « Code de la personne qui encaisse » s'ouvre, sous-titre « … "
+     "ne peut pas encaisser : la caissière tape son code ici. » ; le code du "
+     "serveur est refusé (« Vous ne pouvez pas encaisser. Appelez la "
+     "caissière : elle tapera son code ici. ») ; celui de la caissière ouvre "
+     "le paiement."),
+    ("R06", "R", 2, "Une table où deux employés ont saisi des produits",
+     "REST-02 c.3 — Qui a saisi quoi",
+     "1. Point de Vente → Commandes → ouvrir l'addition.\n"
+     "2. Bouton « Saisies ».",
+     "Une ligne par ajout : produit, quantité ajoutée, nom de l'employé, "
+     "heure ; ni une division ni une réunion de tables n'y ajoutent de "
+     "ligne."),
+    ("R07", "R", 2, "Des additions encaissées sur la période",
+     "REST-02 c.4 — Regrouper par « Ouverte par » et « Encaissée par »",
+     "1. Point de Vente → Analyse → Personnes et tables.\n2. Regrouper par "
+     "« Ouverte par », puis par « Encaissée par ».",
+     "Les tables, personnes et montants se lisent par serveur, puis par "
+     "personne qui a encaissé."),
+    ("R08", "R", 1, "Un serveur sur l'écran de commande",
+     "REST-02 c.5 — Le code après chaque envoi",
+     "1. Ajouter un produit, toucher « J'envoie ».\n2. Toucher de nouveau "
+     "la table.",
+     "Après « J'envoie » : notification « Envoyé : … », retour au plan, plus "
+     "aucun nom en haut ; toucher la table redemande le code."),
+    ("R09", "R", 1, "Un produit envoyé sur la table d'un serveur",
+     "REST-03 c.1 — Un serveur n'annule pas seul",
+     "1. Le serveur touche la ligne, puis ⌫ ⌫.",
+     "La fenêtre d'annulation s'ouvre : « Déjà envoyé : … Pour l'annuler, un "
+     "chef de salle tape son code. », puis « Code d'un chef de salle » ; "
+     "rien n'est retiré sans ce code."),
+    ("R10", "R", 1, "Un employé de chaque niveau",
+     "REST-03 c.2 — Le tableau des droits, niveau par niveau",
+     "1. Avec chaque code, essayer : ouvrir la caisse, encaisser, imprimer "
+     "le rapport, sortir des espèces, fermer la caisse, annuler un produit "
+     "envoyé, rembourser, changer un prix.",
+     "Serveur : refusé partout, avec le message du geste ; caissière : "
+     "ouvre, encaisse, imprime le rapport ; chef de salle : en plus, espèces, "
+     "annulation et fermeture ; manager : tout, y compris rembourser et le "
+     "prix."),
+    ("R11", "R", 2, "Un serveur, caisse fermée",
+     "REST-03 c.3 — Le nouveau niveau s'applique à la réouverture",
+     "1. Le manager passe l'employé en « Caissière ».\n2. Rouvrir la caisse "
+     "(recharger la page).\n3. Avec son code, « J'encaisse ».",
+     "Le paiement s'ouvre : le niveau changé s'applique dès la réouverture."),
+    ("R12", "R", 2, "« Contrôle des prix » coché (posé par la case)",
+     "REST-04 c.1 — Le prix au seul manager",
+     "1. La caissière touche une ligne.\n2. Toucher « Prix ».\n3. Le manager "
+     "prend la main (nom en haut, son code), touche « Prix ».",
+     "Pour la caissière, la touche « Prix » est grisée et le prix ne change "
+     "pas ; pour le manager, elle est active."),
+    ("R13", "R", 2, "Compte du manager",
+     "REST-04 c.2 — Le manager crée un produit",
+     "1. Point de Vente → Produits → Nouveau : nom, prix en FCFA, "
+     "catégorie du PdV.\n2. Recharger la caisse.",
+     "Le produit est proposé dans sa famille à l'écran de commande."),
+    ("R14", "R", 2, "Un serveur identifié",
+     "REST-04 c.3 — Pas de configuration ni de rapport pour un serveur",
+     "1. Ouvrir le menu ≡.\n2. Toucher « Imprimer le rapport » (s'il y a une "
+     "imprimante), « Entrée ou sortie d'espèces », « Fermer la caisse ».",
+     "Le menu ne propose que Commandes, Entrée ou sortie d'espèces, Fermer "
+     "la caisse (et Imprimer le rapport avec une imprimante) ; chaque geste "
+     "réservé est refusé au serveur avec son message ; pas de « Modifier le "
+     "plan »."),
+    ("R15", "R", 1, "Un serveur qui vient de taper son code",
+     "REST-05 c.1 — Le numéro, puis les personnes, avant tout produit",
+     "1. Toucher une table libre du plan, taper son code.",
+     "La fenêtre enchaîne « Table n — combien de personnes ? » ; aucun "
+     "produit ne peut être saisi avant."),
+    ("R16", "R", 1, "Plan affiché",
+     "REST-05 c.2 — La table touchée s'ouvre à son nom",
+     "1. Toucher la table 12, taper son code, choisir les personnes.",
+     "L'écran de commande s'ouvre sur la table 12 : « Table 12 · ouverte "
+     "par … · 0 min »."),
+    ("R17", "R", 2, "Plan affiché",
+     "REST-05 c.3 — Le numéro tapé au clavier",
+     "1. Bouton « Table » de la barre, taper 12, valider.\n2. Taper son "
+     "code.",
+     "La table 12 s'ouvre ; la fenêtre du clavier propose « Retour » (jamais "
+     "« Discard »)."),
+    ("R18", "R", 2, "Aucune table 99 sur le plan",
+     "Q25 — Un numéro qui n'est pas sur le plan",
+     "1. Bouton « Table », taper 99, valider.\n2. Taper son code, choisir "
+     "2 personnes.",
+     "Une table « 99 » s'ouvre à 2 personnes et compte comme une table "
+     "(le refus d'un numéro inconnu est au lot 2)."),
+    ("R19", "R", 3, "Caisse fermée ; réglage « Autoriser la vente sans "
+     "table »",
+     "REST-05 c.5 — La vente sans table (option)",
+     "1. Réglage décoché : regarder la barre du plan.\n2. AITE le coche "
+     "(caisse fermée), rouvrir la caisse.\n3. Un serveur, puis la caissière, "
+     "touchent « + ».",
+     "Décoché : pas de « + ». Coché : la caissière ouvre une vente sans table "
+     "ni personnes (0 personne) ; le serveur est refusé (« La vente sans "
+     "table n'est pas ouverte ici. Ouvrez une table du plan. »)."),
+    ("R20", "R", 1, "Une table libre",
+     "REST-06 c.1 — Les personnes avant tout produit",
+     "1. Toucher la table, taper son code.",
+     "Huit gros boutons 1 à 8 et « 9 et plus » ; l'écran de commande ne "
+     "s'ouvre qu'après le choix."),
+    ("R21", "R", 1, "L'étape des personnes est affichée",
+     "REST-06 c.2 — Sans nombre, la table ne s'ouvre pas",
+     "1. Toucher « 9 et plus », ne rien taper.\n2. Toucher « Retour ».",
+     "« Valider » reste grisé (« Il faut au moins une personne à table. ») ; "
+     "« Retour » ramène au plan, la table reste libre."),
+    ("R22", "R", 2, "L'étape des personnes est affichée",
+     "REST-06 c.3 — Zéro n'existe pas",
+     "1. Chercher un bouton 0.\n2. « 9 et plus », taper 0.",
+     "Aucun bouton 0 ; 0 tapé laisse « Valider » grisé."),
+    ("R23", "R", 1, "Une table ouverte pour 4 personnes",
+     "REST-06 c.4 — Le nombre est sur l'addition",
+     "1. Regarder la rangée de boutons de l'écran de commande.\n2. Ouvrir "
+     "l'addition dans Point de Vente → Commandes.",
+     "Le bouton indique « 4 personnes » ; la fiche de l'addition indique 4 "
+     "convives."),
+    ("R24", "R", 1, "Une table ouverte pour 4, sans produit",
+     "REST-06 c.5 — Occupée dès la validation",
+     "1. Revenir au plan (« Plan »).\n2. Regarder le plan sur un autre "
+     "poste.",
+     "La table est verte, avec sa durée, sur les deux postes ; un autre "
+     "serveur qui la touche est refusé (c'est la table d'un collègue)."),
+    ("R25", "R", 3, "Une table divisée ; la table 9 libre",
+     "REST-06 c.6 — Une part portée sur une table libre",
+     "1. « Déplacer ou réunir » la part (« 12B ») vers la table 9.",
+     "Le nombre de personnes de la table 9 est demandé."),
+    ("R26", "R", 1, "Une table ouverte pour 5 personnes",
+     "REST-07 c.1 — Corriger le nombre en deux touches",
+     "1. Toucher « 5 personnes ».\n2. Toucher 7 (« 9 et plus » au-delà de "
+     "8).",
+     "Le bouton indique « 7 personnes »."),
+    ("R27", "R", 2, "Cette table encaissée",
+     "REST-07 c.2 — Le rapport compte le nombre corrigé",
+     "1. Point de Vente → Analyse → Personnes et tables (Aujourd'hui).",
+     "La table compte pour 7 personnes."),
+    ("R28", "R", 2, "Une table qui porte des produits",
+     "REST-07 c.3 — Zéro refusé en cours de repas",
+     "1. Toucher « 7 personnes » et chercher 0.",
+     "Aucun moyen de saisir 0 personne : la table garde son nombre."),
+    ("R29", "R", 2, "La carte rangée en familles par le manager",
+     "REST-09 c.1 — Les familles à l'ouverture d'une table",
+     "1. Ouvrir une table.",
+     "L'écran de commande montre les familles racines Nourriture et "
+     "Boisson."),
+    ("R30", "R", 2, "Écran de commande ouvert",
+     "REST-09 c.2 — Les sous-familles",
+     "1. Toucher Boisson.",
+     "Alcoolisé et Non alcoolisé apparaissent."),
+    ("R31", "R", 2, "Boisson > Alcoolisé affiché",
+     "REST-09 c.3 — Une sous-sous-famille",
+     "1. Toucher Bière.",
+     "Seules les bières sont proposées."),
+    ("R32", "R", 3, "Une sous-famille affichée",
+     "REST-09 c.4 — Remonter d'un niveau",
+     "1. Retoucher la famille active.",
+     "La caisse remonte d'un niveau."),
+    ("R33", "R", 3, "Compte du manager",
+     "REST-09 c.5 — Un produit rangé dans « Vin »",
+     "1. Ranger un produit dans la catégorie du PdV « Vin ».\n2. Recharger "
+     "la caisse.",
+     "Le produit apparaît sous Boisson > Alcoolisé > Vin."),
+    ("R34", "R", 1, "Un produit saisi, pas encore envoyé",
+     "REST-10 c.1 — Retirer ce qui n'est pas parti",
+     "1. Toucher la ligne, ⌫, ⌫.",
+     "La ligne disparaît, sans code ni trace."),
+    ("R35", "R", 1, "Un produit envoyé",
+     "REST-10 c.2 — Ce qui est parti ne se retire plus",
+     "1. Toucher la ligne, taper un chiffre plus petit.\n2. ⌫, ⌫.",
+     "Le chiffre plus petit est ignoré ; ⌫ ⌫ ouvre la fenêtre d'annulation "
+     "qui demande le code d'un chef de salle."),
+    ("R36", "R", 1, "Trois bières envoyées, une quatrième saisie",
+     "REST-10 c.3 — La 4ᵉ part librement",
+     "1. ⌫, ⌫ sur la ligne des bières.\n2. ⌫, ⌫ encore.",
+     "La 4ᵉ est retirée librement, les trois envoyées restent ; la seconde "
+     "fois, la fenêtre d'annulation s'ouvre."),
+    ("R37", "R", 1, "Une famille sans imprimante de préparation",
+     "REST-10 c.4 — Verrouillé même sans imprimante",
+     "1. Envoyer un produit de cette famille.\n2. ⌫, ⌫.",
+     "La fenêtre d'annulation s'ouvre, comme pour les autres produits."),
+    ("R38", "R", 1, "Un produit envoyé depuis un poste",
+     "REST-10 c.5 — Même refus sur un autre poste ou après rechargement",
+     "1. Sur un autre poste (ou après Ctrl+F5), ouvrir la table.\n2. ⌫, ⌫ "
+     "sur la ligne envoyée.",
+     "La fenêtre d'annulation s'ouvre de la même façon."),
+    ("R39", "R", 1, "Une table qui porte des produits envoyés",
+     "REST-10 c.6 — Annuler une table entière",
+     "1. Actions → « Annuler la table ».\n2. Recommencer depuis ≡ → "
+     "Commandes → corbeille.",
+     "La fenêtre « Annuler la table n » s'ouvre directement (code d'un chef "
+     "de salle, motif), sans la confirmation d'Odoo ; avec le code et le "
+     "motif, la table est libérée et chaque produit est tracé."),
+    ("R40", "R", 1, "Un produit envoyé",
+     "REST-10 c.7 — Pas de remise pour le ramener à zéro",
+     "1. Toucher la ligne, regarder la touche « % ».",
+     "La touche « % » est grisée pour tous : aucune remise n'est proposée."),
+    ("R41", "R", 1, "Des produits envoyés sur deux tables",
+     "REST-10 c.8 — Diviser et déplacer restent libres",
+     "1. Actions → « Diviser l'addition ».\n2. Actions → « Déplacer ou "
+     "réunir » vers l'autre table.",
+     "Aucune fenêtre d'annulation, aucune ligne dans Restaurant → "
+     "Annulations."),
+    ("R42", "R", 1, "Deux tables encore ouvertes avec des produits envoyés",
+     "REST-10 c.9 — Fermer la caisse avec des tables ouvertes",
+     "1. ≡ → Fermer la caisse, code d'un chef de salle, espèces comptées, "
+     "« Fermer la caisse ».\n2. « Annuler ces tables », toucher un motif.",
+     "Message « 2 tables sont encore ouvertes : … Encaissez-les, ou "
+     "annulez-les avec un motif, avant de fermer. » ; le motif seul suffit "
+     "(le code est déjà tapé) ; chaque produit est tracé « Fermeture », la "
+     "caisse se ferme."),
+    ("R43", "R", 1, "Un produit envoyé ; un chef de salle ; une imprimante "
+     "de cuisine",
+     "REST-11 c.1 — Le code du chef de salle annule",
+     "1. ⌫ ⌫ sur la ligne, « Combien ? » si besoin.\n2. Le chef de salle "
+     "tape son code, touche un motif.",
+     "Notification « Annulation faite : 1 … , par … » ; la quantité baisse ; "
+     "un bon d'annulation part en cuisine (« Bon d'annulation envoyé. »)."),
+    ("R44", "R", 2, "Après l'annulation (R43)",
+     "REST-11 c.2 — Le serveur reste identifié",
+     "1. Regarder le nom en haut de l'écran.",
+     "Le nom du serveur est toujours en haut : il continue sa table."),
+    ("R45", "R", 1, "La fenêtre d'annulation ouverte",
+     "REST-11 c.3 — Le code d'un serveur ou d'une caissière ne suffit pas",
+     "1. Taper le code d'un serveur.\n2. Taper celui de la caissière.",
+     "Refusé à chaque fois : « Ce code ne peut pas annuler. Il faut celui "
+     "d'un chef de salle, d'un superviseur ou du manager. »."),
+    ("R46", "R", 1, "Une annulation faite (R43)",
+     "REST-11 c.4 — La trace dit qui a demandé et qui a autorisé",
+     "1. Restaurant → Annulations.",
+     "« Demandée par » : le serveur ; « Autorisée par » : le chef de salle."),
+    ("R47", "R", 1, "Des annulations dans la journée",
+     "REST-12 c.1 — Ce que lit le manager",
+     "1. Restaurant → Annulations (Aujourd'hui d'office).",
+     "Chaque ligne donne la date et l'heure, la table, le produit, la "
+     "quantité, le montant en FCFA, demandée par, autorisée par, le motif "
+     "et la précision ; les totaux sont en bas."),
+    ("R48", "R", 1, "Une division, un déplacement, une réunion faits",
+     "REST-12 c.2 — Les déplacements ne sont pas des annulations",
+     "1. Restaurant → Annulations.",
+     "Aucune ligne pour ces gestes."),
+    ("R49", "R", 1, "Une ligne du journal des annulations",
+     "REST-12 c.3 — Le journal ne se modifie pas",
+     "1. Avec le compte du manager, puis de l'administrateur, tenter de "
+     "modifier ou supprimer la ligne.",
+     "Refusé pour tous : « Une annulation enregistrée ne se modifie pas et "
+     "ne s'efface pas : c'est la trace demandée par le manager. »."),
+    ("R50", "R", 1, "La fenêtre d'annulation, code tapé",
+     "REST-12 c.4 — Pas d'annulation sans motif",
+     "1. Toucher « Retour » sans motif.\n2. Rouvrir, toucher « Autre », "
+     "valider sans précision.\n3. Écrire une précision, valider.",
+     "Sans motif, rien n'est annulé ; « Autre » sans précision : « Écrivez "
+     "en quelques mots pourquoi. » ; avec la précision, la ligne porte le "
+     "motif et la précision."),
+    ("R51", "R", 2, "Compte du manager",
+     "REST-12 c.5 — Un motif ajouté est proposé aussitôt",
+     "1. Point de Vente → Configuration → Motifs d'annulation → Nouveau.\n"
+     "2. Annuler un produit sur la caisse, sans la recharger.",
+     "Le nouveau motif est proposé dans la fenêtre d'annulation."),
+    ("R52", "R", 2, "Une baisse d'un produit envoyé arrivée sans code "
+     "(poste en retard, gestion)",
+     "REST-12 — Ce qui arrive sans code est tracé",
+     "1. Restaurant → Annulations, filtre « Sans code ».",
+     "Une ligne « Retrait sans code » ou « Annulation sans code », sans "
+     "« Autorisée par » ; la vente n'a jamais été bloquée."),
+    ("R53", "R", 1, "Tables 4 et 5 occupées",
+     "REST-13 c.1 — Réunir deux tables",
+     "1. Sur la table 5 : Actions → « Déplacer ou réunir ».\n2. Toucher la "
+     "table 4.",
+     "La table 4 porte tous les produits des deux tables ; la table 5 est "
+     "libre."),
+    ("R54", "R", 2, "Produits envoyés sur les deux tables ; imprimante de "
+     "cuisine",
+     "REST-13 c.2 — Pas de bon renvoyé à la réunion",
+     "1. Réunir les tables.",
+     "Aucun bon n'est renvoyé en cuisine pour ces produits."),
+    ("R55", "R", 1, "Une réunion faite",
+     "REST-13 c.3 — Pas d'annulation à la réunion",
+     "1. Restaurant → Annulations.",
+     "Aucune ligne pour la table absorbée."),
+    ("R56", "R", 2, "Une table de 3 personnes et une de 4",
+     "REST-13 c.4 — Les personnes s'additionnent",
+     "1. Réunir les deux tables.",
+     "L'addition compte 7 personnes et garde l'heure d'ouverture la plus "
+     "ancienne."),
+    ("R57", "R", 1, "Table 5 avec six produits",
+     "REST-14 c.1 — Diviser par produits",
+     "1. Actions → « Diviser l'addition ».\n2. Choisir deux produits, "
+     "« Créer l'addition à part ».",
+     "Une addition « 5B » porte ces deux produits, la table 5 garde les "
+     "quatre autres ; tout sélectionner est refusé (« Toute l'addition est "
+     "sélectionnée : il n'y a rien à diviser. Encaissez la table "
+     "directement. »)."),
+    ("R58", "R", 1, "Produits déjà envoyés",
+     "REST-14 c.2 — Pas de bon ni d'annulation à la division",
+     "1. Diviser l'addition.",
+     "Aucun bon renvoyé, aucune ligne dans Restaurant → Annulations."),
+    ("R59", "R", 2, "L'addition « 5B » créée",
+     "REST-14 c.3 — Après la part, la table reste ouverte",
+     "1. Encaisser « 5B ».",
+     "La caisse revient à la table 5, toujours ouverte avec ses quatre "
+     "produits, même personne identifiée."),
+    ("R60", "R", 2, "Tables 3 et 7 occupées",
+     "REST-15 c.1 — Déplacer une bière vers une autre table",
+     "1. Table 3 : « Diviser l'addition », choisir la bière, « Créer "
+     "l'addition à part ».\n2. Sur la part : « Déplacer ou réunir » vers la "
+     "table 7.",
+     "La bière est sur l'addition de la 7 et plus sur celle de la 3 (en "
+     "deux gestes)."),
+    ("R61", "R", 2, "Table 9 libre",
+     "REST-15 c.2 — Vers une table libre",
+     "1. Diviser deux produits de la table 3, puis « Déplacer ou réunir » "
+     "la part vers la table 9.",
+     "La caisse demande les personnes de la table 9, qui devient occupée "
+     "avec ces deux produits."),
+    ("R62", "R", 1, "Produits envoyés",
+     "REST-15 c.3 — Pas de bon ni d'annulation au déplacement",
+     "1. Déplacer des produits envoyés.",
+     "Aucun bon renvoyé, aucune ligne dans Restaurant → Annulations."),
+    ("R63", "R", 1, "Salle dessinée (Point de Vente → Configuration → "
+     "Plans de salle)",
+     "REST-16 c.1 — Le plan est l'écran de repos",
+     "1. Ouvrir la caisse sur une tablette.",
+     "Le plan s'affiche avec toutes les tables et leurs numéros, sans écran "
+     "« Déverrouiller la caisse » ; phrase « Touchez une table, puis tapez "
+     "votre code. »."),
+    ("R64", "R", 1, "Une table ouverte pour 4, sans produit",
+     "REST-16 c.2 — Une table ouverte se distingue",
+     "1. Regarder le plan.",
+     "Elle est verte, les tables libres sont grises."),
+    ("R65", "R", 2, "Un serveur",
+     "REST-16 c.3 — Le plan ne se modifie pas depuis la caisse",
+     "1. Chercher « Modifier le plan ».\n2. Glisser une table sur une autre.",
+     "« Modifier le plan » n'est pas proposé ; glisser une table ne la "
+     "déplace pas et ne relie pas deux tables."),
+    ("R66", "R", 1, "Délai de la caisse : 60 minutes",
+     "REST-17 c.1 — Verte, puis orange",
+     "1. Ouvrir une table, ne plus toucher l'écran.\n2. Regarder à 59, puis "
+     "à 61 minutes.",
+     "Verte à 59 minutes ; orange au plus tard à 61 minutes, sans que "
+     "personne n'ait touché l'écran ; la légende dit « Orange : ouverte "
+     "depuis plus de 60 min, proposez l'addition »."),
+    ("R67", "R", 1, "Un poste sur l'écran de commande",
+     "REST-17 c.2 — Poste laissé seul 10 minutes",
+     "1. Ne plus toucher l'écran pendant 10 minutes.",
+     "Après 5 minutes, le poste revient au plan, verrouillé (choix écrit : "
+     "écart à Q17) ; le plan et ses couleurs restent affichés, sans écran de "
+     "veille."),
+    ("R68", "R", 1, "Une table orange",
+     "REST-17 c.3 — Encaissée, elle redevient libre",
+     "1. La caissière l'encaisse.",
+     "La table redevient grise, sans durée."),
+    ("R69", "R", 2, "Caisse fermée ; compte d'AITE",
+     "REST-17 c.4 — Un autre délai",
+     "1. Réglages du Point de Vente → « Délai avant l'orange (minutes) » = "
+     "90.\n2. Rouvrir la caisse.",
+     "La phrase sous le réglage dit « plus de 90 minutes » dès la saisie ; "
+     "à la réouverture, l'orange vient après 90 minutes."),
+    ("R70", "R", 2, "Une table ouverte depuis 50 minutes",
+     "REST-17 c.5 — La durée suit la première ouverture",
+     "1. La déplacer, la diviser ou la réunir.",
+     "La durée affichée reste comptée depuis la première ouverture."),
+    ("R71", "R", 2, "Une table ouverte depuis 40 minutes",
+     "REST-17 c.6 — La durée se lit sur la table",
+     "1. Regarder le plan.",
+     "« 40 min » sous le numéro ; à partir d'une heure, « 1 h 05 » ; la "
+     "même durée dans la phrase d'état de l'écran de commande."),
+    ("R72", "R", 1, "Un produit suivi (« Suivre l'inventaire »), stock nul",
+     "REST-18 c.1 — Le stock de départ",
+     "1. Fiche du produit → « Mettre à jour la quantité » : 24.",
+     "Le stock vaut 24 ; la caisse le vend de nouveau en moins d'une "
+     "minute."),
+    ("R73", "R", 3, "Une saisie de stock faite",
+     "REST-18 c.2 — La saisie est datée et signée",
+     "1. Inventaire → Rapports → Historique des mouvements.",
+     "La saisie est datée et porte le nom de celui qui l'a faite."),
+    ("R74", "R", 3, "Des saisies dans la semaine",
+     "REST-18 c.4 — Retrouver les saisies de la semaine",
+     "1. Historique des mouvements, filtrer la semaine.",
+     "Chaque saisie est retrouvée."),
+    ("R75", "R", 1, "Un produit suivi dont le stock est nul",
+     "REST-19 c.1 — Produit épuisé",
+     "1. Le toucher sur l'écran de commande.\n2. Le lire au code-barres.\n"
+     "3. Taper une quantité au pavé sur sa ligne.",
+     "Refus titré « Produit épuisé » : « Plus de … en stock. Si la bouteille "
+     "est bien là, demandez au manager d'enregistrer l'entrée de stock : la "
+     "vente repassera aussitôt. » ; rien n'est ajouté."),
+    ("R76", "R", 1, "Ce produit épuisé",
+     "REST-19 c.2 — Vendable en moins d'une minute après une entrée",
+     "1. Le manager enregistre une entrée de stock.\n2. Sans recharger la "
+     "caisse, toucher le produit.",
+     "La vente passe."),
+    ("R77", "R", 1, "Un plat non suivi en stock",
+     "REST-19 c.3 — Les plats se vendent toujours",
+     "1. Toucher le plat.",
+     "La vente passe."),
+    ("R78", "R", 1, "Un produit suivi dont il reste 2 unités",
+     "REST-19 c.4 — Ce qui est parti compte sur tous les postes",
+     "1. Envoyer ces 2 unités sur une table non encaissée.\n2. Sur un autre "
+     "poste, ajouter le produit.",
+     "Refusé (« Produit épuisé ») au plus tard une minute après l'envoi."),
+    ("R79", "R", 3, "Réseau coupé",
+     "Q59 — Hors connexion, la caisse vend",
+     "1. Couper le réseau, ajouter un produit suivi.",
+     "La vente passe (aucun contrôle de stock hors connexion) ; annuler, "
+     "ouvrir et fermer la caisse sont impossibles (« Pas de réseau : … »)."),
+    ("R80", "R", 1, "Trois annulations dans la journée",
+     "REST-22 c.1 — Le rapport du jour",
+     "1. Restaurant → Annulations.",
+     "Trois lignes et leur total (quantité, montant en FCFA)."),
+    ("R81", "R", 2, "Ce rapport ouvert",
+     "REST-22 c.2 — Sous-totaux par responsable ou par motif",
+     "1. Regrouper par « Autorisée par », puis par motif ; vue croisée.",
+     "Un sous-total par responsable, puis par motif."),
+    ("R82", "R", 1, "Deux tables réunies, une table divisée, un produit "
+     "déplacé dans la journée",
+     "REST-22 c.3 — Les déplacements n'y figurent pas",
+     "1. Lire le rapport des annulations.",
+     "Aucun de ces gestes n'y figure."),
+    ("R83", "R", 1, "Compte du chef de salle : « Restaurant : lecture des "
+     "rapports » seul",
+     "REST-22 c.4, AH-05 — Le chef de salle lit sans accès à la caisse",
+     "1. Se connecter avec ce compte.\n2. Ouvrir Restaurant → Annulations.",
+     "Le rapport s'ouvre ; ni le menu Point de Vente, ni les commandes, ni la "
+     "configuration de la caisse ne lui sont accessibles."),
+    ("R84", "R", 1, "Ventes de bières, de vins et de sodas",
+     "REST-23 c.1 — Une famille additionne ses sous-familles",
+     "1. Point de Vente → Analyse → Analyse AITE → Tableau croisé & "
+     "graphique.\n2. Favori « Ventes par famille ».",
+     "Lignes Famille > Sous-famille, une seule colonne « Total » (quatre "
+     "mesures, pas de colonne par catégorie) : « Boisson » = Alcoolisé + Non "
+     "alcoolisé, et chaque sous-famille la somme de ses produits."),
+    ("R85", "R", 2, "Ce tableau ouvert",
+     "REST-23 c.2 — Une seule famille",
+     "1. Taper « Pizzas » dans la recherche, choisir « Famille ».",
+     "Seules les pizzas, avec quantités et montants ; « Alcoolisé » tapé ne "
+     "ramène pas « Non alcoolisé »."),
+    ("R86", "R", 2, "Ce tableau ouvert",
+     "REST-23 c.3 — Un seul produit",
+     "1. Taper le nom d'un produit, choisir « Produit ».",
+     "Seules les ventes de ce produit."),
+    ("R87", "R", 2, "Ventes de la période",
+     "REST-23 c.4 — Un produit compté une seule fois",
+     "1. Comparer la somme des familles au total.",
+     "La somme des familles est le total ; un produit rangé dans plusieurs "
+     "familles ne compte que dans la première."),
+    ("R88", "R", 2, "Ventes et annulations sur plusieurs semaines",
+     "REST-24 c.1 — Cette semaine",
+     "1. Personnes et tables, puis Annulations : filtre « Cette semaine ».",
+     "Les chiffres du lundi à aujourd'hui."),
+    ("R89", "R", 2, "Ventes en décembre 2026",
+     "REST-24 c.2 — Une période libre",
+     "1. Filtre de date : du 01/12/2026 au 15/12/2026.",
+     "Seules les ventes de ces quinze jours sont comptées."),
+    ("R90", "R", 2, "Une période sans vente",
+     "REST-24 c.3 — Une période vide dit quoi faire",
+     "1. Ouvrir Personnes et tables sur cette période.",
+     "L'écran dit qu'il n'y a rien sur cette période et invite à la "
+     "changer."),
+    ("R91", "R", 1, "Trois tables encaissées de 2, 4 et 7 personnes pour "
+     "130 000 FCFA",
+     "REST-25 c.1 — Tables, personnes et ventes sur la même page",
+     "1. Point de Vente → Analyse → Personnes et tables (Aujourd'hui).",
+     "3 tables, 13 personnes et 130 000 FCFA sur la même page."),
+    ("R92", "R", 1, "Des ventes sur la période",
+     "REST-25 c.2 — Les quantités vendues de chaque produit",
+     "1. Point de Vente → Analyse → « Détails des ventes ».\n2. Choisir la "
+     "même période (dates de début et de fin), imprimer.",
+     "Le rapport donne la quantité vendue et le montant de chaque produit, "
+     "par catégorie ; les mêmes quantités figurent dans le rapport de "
+     "fermeture de la session."),
+    ("R93", "R", 1, "Une table de 6 personnes divisée en deux additions",
+     "REST-25 c.3 — Une table divisée compte une fois",
+     "1. Encaisser les deux additions.\n2. Personnes et tables.",
+     "1 table et 6 personnes."),
+    ("R94", "R", 1, "Une table encore ouverte et une table annulée",
+     "REST-25 c.4 — Ni ouverte ni annulée",
+     "1. Personnes et tables.",
+     "Ni l'une ni l'autre n'est comptée (ni les remboursements)."),
+    ("R95", "R", 1, "Caisse fermée le soir",
+     "REST-25 c.5 — Le rapport de fermeture",
+     "1. Point de Vente → Analyse → Rapport de session (ou « Imprimer le "
+     "rapport » à la caisse).",
+     "Le rapport indique le nombre de tables et de personnes, les ventes "
+     "sans table et les annulations de la session (table, produit, "
+     "quantité, montant, motif, autorisée par) : le chef de salle n'a rien à "
+     "rédiger, il signe."),
+    ("R96", "R", 3, "Vente sans table ouverte ; deux tables de 4 et 2 et "
+     "trois ventes sans table",
+     "REST-25 c.6 — Les ventes sans table à part",
+     "1. Personnes et tables.",
+     "2 tables, 6 personnes et, à part, 3 ventes sans table."),
+    ("R97", "R", 3, "130 000 FCFA pour 13 personnes servies",
+     "REST-26 c.1 — Prix moyen par personne (tableau de bord standard)",
+     "1. Point de Vente → Tableau de bord.",
+     "Le prix moyen par personne est de 10 000 FCFA (le tableau standard "
+     "compte aussi les ventes sans table et les remboursements : à contrôler "
+     "à l'écran ; le calcul selon nos règles est au lot 2)."),
+    ("R98", "R", 3, "Une période sans table servie",
+     "REST-26 c.2 — Pas de moyenne sans table",
+     "1. Tableau de bord sur cette période.",
+     "Aucune moyenne n'est affichée."),
+    ("R99", "R", 2, "Une table ouverte",
+     "REST-08 c.4 — Le client sur la table (bouton « Client »)",
+     "1. Toucher « Client », choisir un client.\n2. Encaisser une autre "
+     "table sans client.",
+     "Le client est rattaché à l'addition ; une table sans client "
+     "s'encaisse sans rien réclamer."),
+    ("R100", "R", 1, "Mode « Ardoise client » sur la caisse ; une table "
+     "ouverte",
+     "AH-01 — L'ardoise naît seulement d'une addition réglée",
+     "1. Le manager choisit l'ardoise au paiement, revient au plan sans "
+     "valider.\n2. Annuler la table.\n3. Une autre table : ardoise, "
+     "Valider.",
+     "Aucune ardoise tant que l'addition n'est pas réglée ; aucune ardoise "
+     "ouverte après l'annulation ; une ardoise du bon montant après la "
+     "validation (POS Crédit → Ardoises)."),
+    ("R101", "R", 1, "Mode « Ardoise client » sur la caisse du restaurant "
+     "et sur une caisse sans service à table",
+     "AH-02 — L'ardoise réservée au manager en restaurant",
+     "1. Caisse du restaurant : écran de paiement avec la caissière, puis "
+     "avec le manager.\n2. Autre caisse : écran de paiement.",
+     "Restaurant : « Mettre sur ardoise » et l'ardoise n'apparaissent que "
+     "pour le manager. Autre caisse : le bouton est là, comme avant."),
+    ("R102", "R", 1, "Deux tables ouvertes par deux serveurs, encaissées par "
+     "la caissière, sous le même compte de caisse",
+     "AH-03 — Le serveur dans les analyses",
+     "1. Analyse AITE → Tableau croisé : regrouper par « Serveur (ouverte "
+     "par) », puis par « Encaissée par ».",
+     "Les deux serveurs sont distingués ; « Encaissée par » donne la "
+     "caissière ; le compte Odoo s'affiche « Compte Odoo »."),
+    ("R103", "R", 1, "Base vierge créée avec le pays Cameroun, en "
+     "français, sans démonstration",
+     "AH-12 — Restaurant seul, sans hôtel",
+     "1. Installer les 4 modules (INSTALLATION.md, §9).\n2. Ouvrir Point "
+     "de Vente.",
+     "Installation sans erreur ; aucun menu ni module hôtelier ; société en "
+     "FCFA ; caisse « Restaurant » prête (Espèces, Mobile Money, salle "
+     "« Salle », case « Service à table contrôlé » cochée)."),
 ]

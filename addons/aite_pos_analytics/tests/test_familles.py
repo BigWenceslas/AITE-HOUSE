@@ -204,7 +204,10 @@ class TestPosFamilles(PosAnalyticsCommon):
         """Revue de 6a, constat 7 : le tableau croisé s'ouvre toujours par
         catégorie de produit (une base hôtelière garde son rapport) ; le
         favori « Ventes par famille », livré et partagé, donne en deux touches
-        les lignes Famille > Sous-famille et leurs sous-totaux."""
+        les lignes Famille > Sous-famille et leurs sous-totaux. Revue de 6b,
+        constat 9 : sans colonne (pas de regroupement par catégorie de
+        produit en colonnes), chaque famille se lit sur une ligne, quatre
+        mesures en tout."""
         action = self.env.ref('aite_pos_analytics.action_pos_daily_report')
         favori = self.env.ref('aite_pos_analytics.filtre_ventes_par_famille')
         self.assertEqual((favori.name, favori.model_id, favori.action_id.id),
@@ -213,7 +216,8 @@ class TestPosFamilles(PosAnalyticsCommon):
         self.assertFalse(favori.is_default)
         self.assertEqual(safe_eval(favori.domain), [])
         self.assertEqual(safe_eval(favori.context),
-                         {'group_by': ['famille_n1_id', 'famille_n2_id']})
+                         {'group_by': ['famille_n1_id', 'famille_n2_id'],
+                          'pivot_column_groupby': []})
         lecteur = self.env['res.users'].with_context(no_reset_password=True).create({
             'name': "Lecteur des analyses (familles)", 'login': 'aite_lecteur_familles',
             'groups_id': [(6, 0, [

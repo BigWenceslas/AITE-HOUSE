@@ -10,7 +10,10 @@
  *   la fermeture ; la fenêtre le dit (« {k} tables sont encore ouvertes : … »)
  *   et propose « Voir les tables » (la liste des commandes) ou « Annuler ces
  *   tables » : une seule fenêtre d'annulation et un seul motif pour toutes
- *   (le code de la personne qui ferme sert), puis la fermeture reprend. */
+ *   (le code de la personne qui ferme sert), puis la fermeture reprend ;
+ * - revue de 6b : en mode, la fenêtre dit « Entrée ou sortie d'espèces »
+ *   comme le menu ≡ (au lieu de « Cash entrant/sortant »), et « 1 commande »
+ *   au singulier (gabarit closing_popup.xml, textes de `TEXTES`). */
 import { patch } from "@web/core/utils/patch";
 import { onWillUnmount } from "@odoo/owl";
 import { ClosePosPopup } from "@point_of_sale/app/navbar/closing_popup/closing_popup";
@@ -21,6 +24,7 @@ import { MESSAGES, TEXTES, TITRES } from "@aite_pos_restaurant/utils/messages";
 patch(ClosePosPopup.prototype, {
     setup() {
         super.setup(...arguments);
+        this.aiteTextes = TEXTES; // libellés du gabarit (closing_popup.xml)
         if (this.pos.aiteActif) {
             this.pos.aiteGestesEnCours = (this.pos.aiteGestesEnCours || 0) + 1;
             onWillUnmount(() => {

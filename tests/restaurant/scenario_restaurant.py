@@ -12,6 +12,14 @@ caisse, la caissière ouvre la caisse, etc. Le côté caisse est joué par les
 appels que fait la caisse (synchronisation, requêtes), sous le compte de la
 caisse. Tout est annulé à la fin (rollback).
 
+Il se joue aussi sur la base de travail du restaurant (aite_resto, créée par
+« dev/setup_env.sh --restaurant », avec la graine dev/seeds/seed_restaurant.py :
+dev/run_tests.sh restaurant) : l'équipe, la salle et les familles déjà en place
+sont reprises, rien n'est compté deux fois. Condition de départ : la caisse
+« Restaurant » n'est pas en service (le scénario joue l'ouverture du matin) ;
+la session « Contrôle d'ouverture » qu'Odoo rouvre après chaque fermeture est
+fermée le temps du scénario.
+
 Il sert de spécification : chaque incrément y ajoute ses vérifications
 (spécification, partie 6.5). Incrément 1 : installation, comptes, équipe,
 réglage de la case, messages sans courriel, ardoise réglée (AH-01).
@@ -102,6 +110,19 @@ print("\n═══ 1. AITE installe le module (incrément 1) ═══")
 restaurant = env['pos.config'].search([
     ('company_id', '=', company.id), ('name', '=', "Restaurant")])
 check("une caisse « Restaurant » existe", len(restaurant) == 1, restaurant)
+# Après chaque fermeture, la tablette se recharge et Odoo rouvre aussitôt une
+# session en « Contrôle d'ouverture » (un simple affichage de la caisse en
+# crée une aussi) : sur la base de travail, il y en a toujours une. Elle n'a
+# aucune commande ; le scénario la ferme comme AITE le ferait dans la gestion
+# (annulé par le rollback final), puis joue l'ouverture du matin. Seule une
+# caisse vraiment en service (ouverte, ou en cours de fermeture) l'arrête.
+for attente in restaurant.session_ids.filtered(
+        lambda s: s.state == 'opening_control' and not s.order_ids):
+    attente.action_pos_session_closing_control()
+en_cours = restaurant.session_ids.filtered(lambda s: s.state != 'closed')
+check("la caisse « Restaurant » n'est pas en service : le scénario joue l'ouverture du "
+      "matin (une caisse restée ouverte se ferme d'abord dans la caisse : ≡ → Fermer "
+      "la caisse)", not en_cours, en_cours.mapped(lambda s: "%s (%s)" % (s.name, s.state)))
 check("la case « Service à table contrôlé » est cochée",
       restaurant.aite_mode_restaurant and restaurant._aite_actif())
 check("« Contrôle des prix » coché", restaurant.restrict_price_control)
@@ -166,6 +187,10 @@ check("le manager a aussi le droit Facturation : il ouvre le rapport de session"
       manager.has_group('account.group_account_invoice'))
 
 print("\n═══ 3. Le manager saisit son équipe (incrément 1) ═══")
+# Sur la base de travail, la graine a déjà posé une équipe : elle arrive
+# aussi en caisse (section 5), et ses codes sont pris.
+deja_en_caisse = env['hr.employee'].search([
+    ('company_id', '=', company.id), ('aite_niveau_caisse', '!=', False)])
 Employes = env['hr.employee'].with_user(manager)
 fiche = Form(Employes)
 fiche.name = "Awa"
@@ -345,12 +370,17 @@ restaurant.with_user(caisse).open_ui()
 session = restaurant.current_session_id
 donnees = session.with_user(caisse).load_data(['pos.config', 'hr.employee'])
 noms = {e['name'] for e in donnees['hr.employee']['data']}
-check("les cinq employés à niveau arrivent en caisse, sous le compte de la caisse",
-      noms == {"Awa", "Carine", "Moussa", "Paul", "Fanta"}, noms)
+attendus = {"Awa", "Carine", "Moussa", "Paul", "Fanta"} | set(deja_en_caisse.mapped('name'))
+check("les cinq employés à niveau arrivent en caisse, sous le compte de la caisse"
+      + (" (avec l'équipe déjà en place : %s)" % ", ".join(sorted(deja_en_caisse.mapped('name')))
+         if deja_en_caisse else ""), noms == attendus, noms)
 check("un employé sans niveau n'apparaît pas sur la caisse", "Comptable" not in noms)
 roles = {e['name']: e['_role'] for e in donnees['hr.employee']['data']}
-check("seule Fanta (manager) a le rôle manager d'Odoo",
-      [n for n, r in roles.items() if r == 'manager'] == ["Fanta"], roles)
+managers_en_place = set(deja_en_caisse.filtered(
+    lambda e: e.aite_niveau_caisse == 'manager').mapped('name'))
+check("seule Fanta (manager) a le rôle manager d'Odoo"
+      + (", avec les managers déjà en place" if managers_en_place else ""),
+      {n for n, r in roles.items() if r == 'manager'} == {"Fanta"} | managers_en_place, roles)
 check("la caisse reçoit le tableau des droits",
       donnees['pos.session']['data'][0].get('_aite_droits', {}).get('encaisser') == 'caissiere')
 
@@ -491,11 +521,19 @@ check("pendant le service, cocher la vente sans table est refusé",
 # Le plan se dessine dans la gestion (Point de Vente → Configuration → Plans de salle).
 Tables = env['restaurant.table'].with_user(manager)
 salle = restaurant.floor_ids[:1]
-table_12 = Tables.create({'floor_id': salle.id, 'table_number': 12, 'seats': 4})
-table_7 = Tables.create({'floor_id': salle.id, 'table_number': 7, 'seats': 4})
-table_9 = Tables.create({'floor_id': salle.id, 'table_number': 9, 'seats': 2})
-check("le manager ajoute les tables 7 et 12 à la salle",
-      {7, 12} <= set(salle.table_ids.mapped('table_number')))
+
+
+def table_du_plan(numero, places):
+    """La table ``numero`` de la salle ; le manager l'ajoute si elle manque."""
+    return Tables.search([('floor_id', '=', salle.id), ('table_number', '=', numero)], limit=1) \
+        or Tables.create({'floor_id': salle.id, 'table_number': numero, 'seats': places})
+
+
+table_12 = table_du_plan(12, 4)
+table_7 = table_du_plan(7, 4)
+table_9 = table_du_plan(9, 2)
+check("les tables 7, 9 et 12 sont sur le plan de la salle (ajoutées si elles manquaient)",
+      {7, 9, 12} <= set(salle.table_ids.mapped('table_number')))
 castel = env['product.product'].search([('name', '=', "Castel")], limit=1) or \
     env['product.product'].create({'name': "Castel", 'type': 'consu', 'available_in_pos': True,
                                    'list_price': 1000, 'taxes_id': [(5, 0, 0)]})
@@ -688,8 +726,9 @@ if Annulations is not None and motif_parti:
           and table_9_cmd.lines.qty == 1 and table_9_cmd.lines.aite_qte_envoyee == 1)
     aujourdhui = Annulations.with_user(manager).read_group(
         [('date', '>=', fields.Datetime.to_string(fields.Datetime.now().replace(
-            hour=0, minute=0, second=0)))], ['montant:sum'], [])
-    check("rapport du jour : le total suit (2 000 F : un retrait, une annulation)",
+            hour=0, minute=0, second=0))), ('session_id', '=', session.id)],
+        ['montant:sum'], [])
+    check("rapport du jour, pour ce service : le total suit (2 000 F : un retrait, une annulation)",
           aujourdhui and aujourdhui[0]['montant'] == 2000, aujourdhui)
 else:
     check("le journal des annulations existe (incrément 4)", False)
@@ -1015,7 +1054,8 @@ if groupe and Annulations is not None:
                          'groups_id': [(6, 0, [groupe.id])]})
     check("le chef de salle est un utilisateur interne, sans droit sur la caisse",
           chef._is_internal() and not chef.has_group('point_of_sale.group_pos_user'))
-    lu = Annulations.with_user(chef).search([])
+    du_service = [('session_id', '=', session.id)]
+    lu = Annulations.with_user(chef).search(du_service)
     check("il lit les annulations (retraits, annulation autorisée, annulations sans code)",
           sorted(lu.mapped('type_annulation')) ==
           ['annulation_sans_code', 'annulation_sans_code', 'produit', 'retrait_sans_code',
@@ -1033,7 +1073,7 @@ if groupe and Annulations is not None:
         [(False, mode) for mode in action.view_mode.split(',')] + [(False, 'search')])
     champs = vues['models']['aite.restaurant.annulation']['fields']
     lignes = Annulations.with_user(chef).web_search_read(
-        [], {nom: {} for nom in champs if nom not in ('currency_id',)})
+        du_service, {nom: {} for nom in champs if nom not in ('currency_id',)})
     check("« Restaurant → Annulations » s'ouvre (liste, vue croisée, graphique)",
           lignes['length'] == 5 and {'list', 'pivot', 'graph'} <= set(vues['views']))
     check("l'écran vide dit quoi faire (plus de 120 caractères)",
@@ -1051,11 +1091,18 @@ if Report is not None and 'famille_n1_id' in Report._fields:
     # range la carte en familles de caisse (celles de l'écran de commande).
     manager.groups_id += env.ref('aite_pos_analytics.group_aite_pos_analytics_manager')
     Familles = env['pos.category'].with_user(manager)
-    boisson = Familles.create({'name': "Boisson"})
-    alcool = Familles.create({'name': "Alcoolisé", 'parent_id': boisson.id})
-    biere = Familles.create({'name': "Bière", 'parent_id': alcool.id})
-    sans_alcool = Familles.create({'name': "Non alcoolisé", 'parent_id': boisson.id})
-    famille_jus = Familles.create({'name': "Jus", 'parent_id': sans_alcool.id})
+
+    def famille(nom, parent=None):
+        """La famille ``nom`` sous ``parent`` : celle déjà en place, sinon créée."""
+        domaine = [('name', '=', nom), ('parent_id', '=', parent.id if parent else False)]
+        return Familles.search(domaine, limit=1) or Familles.create(
+            {'name': nom, 'parent_id': parent.id if parent else False})
+
+    boisson = famille("Boisson")
+    alcool = famille("Alcoolisé", boisson)
+    biere = famille("Bière", alcool)
+    sans_alcool = famille("Non alcoolisé", boisson)
+    famille_jus = famille("Jus", sans_alcool)
     bieres = castel | (globals().get('guinness') or env['product.product'])
     bieres.with_user(manager).write({'pos_categ_ids': [(6, 0, biere.ids)]})
     jus.with_user(manager).write({'pos_categ_ids': [(6, 0, famille_jus.ids)]})

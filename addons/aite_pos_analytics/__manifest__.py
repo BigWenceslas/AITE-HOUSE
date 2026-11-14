@@ -21,7 +21,7 @@ Fonctionnalités principales
   catégories de l'écran de commande, jusqu'à la racine) : un seul champ
   « Famille » de recherche (un nom tapé en entier ne ramène que cette
   famille), regroupements par niveau et favori « Ventes par famille »
-  (18.0.2.1.5).
+  (18.0.2.1.5 ; favori sans colonne, une ligne par famille : 18.0.2.1.6).
 * Dashboard OWL custom (livré en Sprint 2).
 
 Compatible Odoo 18 Enterprise.
@@ -29,7 +29,7 @@ Compatible Odoo 18 Enterprise.
     'author': "AITE CONSULTING",
     'website': "https://aiteconsulting.com",
     'category': 'Point of Sale',
-    'version': '18.0.2.1.5',
+    'version': '18.0.2.1.6',
     'license': 'LGPL-3',
 
     'depends': [

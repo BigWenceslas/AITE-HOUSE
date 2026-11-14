@@ -112,11 +112,13 @@ Incrément 6 (les rapports) :
 * le rapport de fermeture (« Imprimer le rapport » de la caisse, rapport de
   session de la gestion) donne aussi les tables, les personnes, les ventes
   sans table et les annulations de la session, avec leur motif et qui les a
-  autorisées.
+  autorisées ;
+* la fenêtre de fermeture dit « Entrée ou sortie d'espèces », comme le menu
+  de la caisse, et « 1 commande » au singulier (18.0.1.0.6).
 
 Aucune dépendance au socle hôtelier.
 """,
-    'version': '18.0.1.0.5',
+    'version': '18.0.1.0.6',
     'author': "AITE Consulting",
     'website': "https://aiteconsulting.com",
     'category': 'Point of Sale',

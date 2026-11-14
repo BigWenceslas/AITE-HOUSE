@@ -1,15 +1,19 @@
 RECETTE AITE HOUSE — contenu et régénération
 =============================================
 - AITE_HOUSE_cahier_de_recette.xlsx : outil de travail (4 onglets :
-  Synthèse, Cas de test, Anomalies, Mode d'emploi). 146 cas, statuts en
+  Synthèse, Cas de test, Anomalies, Mode d'emploi). 249 cas, statuts en
   listes déroulantes, compteurs automatiques par statut et par domaine.
 - AITE_HOUSE_plan_de_recette.pdf : plan de recette + procès-verbal
-  signable (15 pages).
+  signable (23 pages).
 
 Modifier / compléter les scénarios :
   1. Éditer cas_de_test.py (liste CAS : id, domaine, priorité, pré-requis,
      scénario, étapes, résultat attendu). Priorité 1=critique, 2=majeur,
-     3=mineur. Domaines A..Q définis dans DOMAINES.
+     3=mineur. Domaines A..R définis dans DOMAINES (R : restaurant,
+     service à table, lot 1). VERSION (même fichier) : la date affichée
+     en tête du classeur et du PDF ; le nombre de modules est compté dans
+     addons/. Les formules de la synthèse laissent 50 lignes libres après
+     le dernier cas pour des cas ajoutés à la main.
   2. pip install weasyprint --break-system-packages   (si absent)
   3. python3 build_xlsx.py        (écrit le classeur à côté du script ; RECETTE_OUT=<dossier> pour ailleurs)
      ouvrir/enregistrer dans LibreOffice ou Excel pour recalculer les formules

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- La fenêtre de fermeture d'Odoo, en mode (revue de 6b, constat 6 ;
+         règle 6 de CLAUDE.md) : le bouton et le titre des mouvements
+         d'espèces disent « Entrée ou sortie d'espèces », comme le menu ≡ du
+         même parcours (Odoo et pos_hr traduisent « Cash entrant/sortant ») ;
+         « {n} commande(s) » est accordé (Odoo écrit « 1 commandes »). Hors
+         mode, rien ne change. Le titre visé est celui de pos_hr : en mode,
+         la connexion des employés est toujours cochée, et c'est son bloc qui
+         s'affiche. -->
+    <t t-name="aite_pos_restaurant.ClosePosPopup" t-inherit="point_of_sale.ClosePosPopup" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('total-orders')]" position="attributes">
+            <attribute name="t-if">!pos.aiteActif</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('total-orders')]" position="after">
+            <div t-if="pos.aiteActif" class="total-orders fw-bolder align-middle my-1">
+                <t t-esc="aiteTextes.commandes(props.orders_details.quantity)"/>
+                <span class="amount ms-1" t-esc="env.utils.formatCurrency(props.orders_details.amount)"/>
+            </div>
+        </xpath>
+        <xpath expr="//PaymentMethodBreakdown[@title.translate='Cash in/out']" position="attributes">
+            <attribute name="t-if">!pos.aiteActif</attribute>
+        </xpath>
+        <xpath expr="//PaymentMethodBreakdown[@title.translate='Cash in/out']" position="after">
+            <PaymentMethodBreakdown t-if="pos.aiteActif" title="aiteTextes.mouvementsEspeces"
+                total_amount="getMovesTotalAmount()" transactions="props.default_cash_details.moves_per_employee"/>
+        </xpath>
+        <xpath expr="//button[@t-on-click='() => this.cashMove()']" position="attributes">
+            <attribute name="t-if">!pos.aiteActif</attribute>
+        </xpath>
+        <xpath expr="//button[@t-on-click='() => this.cashMove()']" position="after">
+            <button t-if="pos.aiteActif" class="button btn btn-secondary aite-especes-btn"
+                t-att-class="this.ui.isSmall ? 'w-100' : 'btn-lg'" t-on-click="() => this.cashMove()"
+                t-esc="aiteTextes.especes"/>
+        </xpath>
+    </t>
+
+</templates>

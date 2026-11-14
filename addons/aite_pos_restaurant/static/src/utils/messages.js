@@ -136,6 +136,14 @@ export const TEXTES = {
               "ou annulez-les avec un motif, avant de fermer.",
     voirLesTables: "Voir les tables",
     annulerCesTables: "Annuler ces tables",
+    // Revue de 6b : la fenêtre de fermeture d'Odoo dit comme le menu ≡.
+    especes: "Entrée ou sortie d'espèces",
+    mouvementsEspeces: "Entrées et sorties d'espèces",
+    /** « 0 commande : », « 1 commande : », « 6 commandes : ». */
+    commandes: (nombreDeCommandes) =>
+        nombreDeCommandes > 1
+            ? `${nombreDeCommandes} commandes${ESP}:`
+            : `${nombreDeCommandes} commande${ESP}:`,
     annuler: "annuler",
     // Incrément 5 : la légende du plan (partie 1.4), une partie par couleur
     // (la feuille de style pose une pastille de la couleur devant chacune).

@@ -135,7 +135,9 @@
          le tableau croisé s'ouvre toujours par catégorie de produit (une base
          hôtelière garde son rapport) ; ce favori partagé donne, en deux
          touches (Favoris, « Ventes par famille »), les lignes Famille >
-         Sous-famille et leurs sous-totaux. Posé une fois : le client peut le
+         Sous-famille et leurs sous-totaux, sans colonne (revue de 6b : les
+         colonnes par catégorie de produit répétaient les quatre mesures pour
+         chaque catégorie) ; 18.0.2.1.6. Posé une fois : le client peut le
          renommer ou le supprimer. -->
     <data noupdate="1">
         <record id="filtre_ventes_par_famille" model="ir.filters">
@@ -145,7 +147,7 @@
             <field name="user_id" eval="False"/>
             <field name="is_default" eval="False"/>
             <field name="domain">[]</field>
-            <field name="context">{'group_by': ['famille_n1_id', 'famille_n2_id']}</field>
+            <field name="context">{'group_by': ['famille_n1_id', 'famille_n2_id'], 'pivot_column_groupby': []}</field>
         </record>
     </data>
 

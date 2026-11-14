@@ -1,6 +1,6 @@
 # AITE HOUSE — Roadmap produit & état d'avancement
 
-**Date : 11 octobre 2026 · Odoo 18 · AITE Consulting**
+**Date : 11 octobre 2026, mis à jour le 14 novembre 2026 (restaurant, lot 1) · Odoo 18 · AITE Consulting**
 Référence : étude comparative AITE HOUSE vs marché (10 oct. 2026) — 63 fonctionnalités évaluées, 26 fonctionnalités proposées en 3 vagues.
 
 ---
@@ -9,12 +9,13 @@ Référence : étude comparative AITE HOUSE vs marché (10 oct. 2026) — 63 fon
 
 | | |
 |---|---|
-| **Modules livrables** | **16** = 12 modules du socle (sept. 2026) + `aite_hotel_gantt` (passerelle Enterprise) + 3 modules de la vague 1 (oct. 2026) — ≈ 50 000 lignes |
+| **Modules livrables** | **18** = 12 modules du socle (sept. 2026) + `aite_hotel_gantt` (passerelle Enterprise) + 3 modules de la vague 1 (oct. 2026) + 2 modules du restaurant, lot 1 (nov. 2026 : `aite_pos_restaurant`, passerelle `aite_pos_analytics_hr`) |
+| **Restaurant, lot 1** | ✅ **Développé** (6 incréments), **pas encore livré** : caisse de service à table (`aite_pos_restaurant` 18.0.1.0.6), passerelle des analyses (`aite_pos_analytics_hr` 18.0.1.0.0), corrections `aite_pos_credit` 18.0.2.0.6 et `aite_pos_analytics` 18.0.2.1.6 ; restaurant seul installable sans hôtel (4 dossiers) ; 27 points à valider par AITE (`docs/NOTES_DE_VERSION_restaurant_lot1.md`) |
 | **Vague 1 (9 fonctionnalités)** | **5 terminées** (F01 à F04, F06) · **1 partielle** (F07 : briques déjà dans le socle) · **3 à faire** (F05, F08, F09) |
 | **Vague 2 (8)** | 2 partielles faites en avance (F14 statistiques, F16 objets trouvés) · 6 à faire |
 | **Vague 3 (9)** | 1 partielle (F19 checklists d'inspection) · 8 à faire |
 | **Grille marché (63 critères)** | avant la vague 1 : 18 couverts / 16 partiels / 29 absents → **aujourd'hui : 26 couverts / 18 partiels / 19 absents** |
-| **Qualité** | 613 tests Odoo (`addons/*/tests`) + 143 vérifications de parcours « utilisateur novice » + 28 tests purs, sur Odoo 18 réel ; 33 écrans audités (0 erreur, chaque état vide explique quoi faire) ; cahier de recette : 146 cas, 17 domaines |
+| **Qualité** | 613 tests Odoo (`addons/*/tests`) + 143 vérifications de parcours « utilisateur novice » + 28 tests purs, sur Odoo 18 réel ; 33 écrans audités (0 erreur, chaque état vide explique quoi faire) ; restaurant : 440 tests Odoo des 4 modules du restaurant dont 39 tours de caisse joués dans Chrome (481 avec la note de chambre), 154 vérifications de parcours novice, 29 tests purs, 6 écrans audités ; cahier de recette : 249 cas, 18 domaines (A-R) |
 
 Légende des statuts : ✅ **Fait** (livré et testé) · 🟡 **Partiel** (une partie existe, le reste est décrit) · ⬜ **À faire**
 
@@ -28,9 +29,9 @@ Légende des statuts : ✅ **Fait** (livré et testé) · 🟡 **Partiel** (une 
 | 2 | `aite_slot_booking` | **18.0.1.0.5** | Espaces & prestations au créneau (salles VIP/VVIP, SPA, coiffure, pressing), conflits, no-show, report au folio | 25 | ✅ |
 | 3 | `aite_website_booking` | **18.0.1.0.2** | Réservation en ligne (site web) : espaces, prestations, demandes de séjour, acompte | 8 | ✅ |
 | 4 | `aite_hotel_pos_link` | **18.0.1.0.3** | **Note de chambre** : moyen de paiement POS → folio du séjour, file de rattachement | 13 | ✅ |
-| 5 | `aite_pos_credit` | **18.0.2.0.5** | Crédit clients (ardoises) POS + Ventes : encours et sévérité par âge (pas de plafond par client), remboursements, écritures 411, recouvrement | 38 | ✅ |
+| 5 | `aite_pos_credit` | **18.0.2.0.6** | Crédit clients (ardoises) POS + Ventes : encours et sévérité par âge (pas de plafond par client), remboursements, écritures 411, recouvrement ; ardoise seulement sur commande réglée (AH-01), réservée au manager en restaurant (AH-02) — 18.0.2.0.6 pas encore livrée | 38 | ✅ |
 | 6 | `aite_loyalty` | **18.0.1.0.3** | Fidélité unifiée : points, historisation, statut Standard/VIP/VVIP automatique | 16 | ✅ |
-| 7 | `aite_pos_analytics` | **18.0.2.1.4** | Analyses ventes POS : CA, marge, CMV, écarts de caisse, heures de pointe, produits | 36 | ✅ |
+| 7 | `aite_pos_analytics` | **18.0.2.1.6** | Analyses ventes POS : CA, marge, CMV, écarts de caisse, heures de pointe, produits ; ventes par famille sur trois niveaux (18.0.2.1.6, pas encore livrée : 18.0.2.1.4 chez le client pilote) | 36 | ✅ |
 | 8 | `aite_stock_dashboard` | **18.0.1.1.3** | Stock : valorisation, couverture, ruptures, rotation, coulage, inventaires, dépôts | 19 | ✅ |
 | 9 | `aite_purchase_dashboard` | **18.0.1.0.5** | Achats : dettes 401 / balance âgée / échéancier, créances 409, OTIF, hausses de prix | 19 | ✅ |
 | 10 | `aite_direction_dashboard` | **18.0.1.1.2** | **Cockpit Direction** consolidé : POS + crédit + stock + achats + **hébergement (TO, ADR, RevPAR, N-1)**, cash à risque, actions | 9 | ✅ |
@@ -39,6 +40,8 @@ Légende des statuts : ✅ **Fait** (livré et testé) · 🟡 **Partiel** (une 
 | 13 | `aite_city_tax` | **18.0.1.0.2** | **Taxe de séjour** automatique (barèmes CM/CI/SN/GN par étoiles), ligne auto sur folio hors TVA, état mensuel | 16 | ✅ **nouveau** |
 | 14 | `aite_guest_registry` | **18.0.1.0.3** | **Registre des clients** : fiche d'enregistrement au check-in, registre de police, statistiques d'hébergement | 20 | ✅ **nouveau** |
 | 15 | `aite_housekeeping` | **18.0.1.0.6** | **Gouvernante & maintenance** : tableau des chambres, « Ma journée » mobile, répartition, inspections, pannes → app Maintenance, hors service auto, objets trouvés | 21 | ✅ **nouveau** |
+| 16 | `aite_pos_restaurant` | **18.0.1.0.6** | **Restaurant (service à table)** : code personnel et quatre niveaux, plan verrouillé, personnes, journal des saisies, annulations sous code et leur journal, couleurs des tables, refus des produits épuisés, « Personnes et tables », rapport de fermeture ; caisse « Restaurant » posée d'office ; sans hôtel | 85 | ✅ développé, pas encore livré |
+| 17 | `aite_pos_analytics_hr` | **18.0.1.0.0** | Passerelle (auto) : serveur (« ouverte par ») et « encaissée par » dans les analyses AITE | 7 | ✅ développé, pas encore livré |
 
 Dépendances Odoo standard : `point_of_sale`, `sale`, `account`, `purchase`, `stock`, `website`, `portal`, `mail`, `product`, `web`, `maintenance` (Community) et `web_gantt` (**Enterprise**, module passerelle `aite_hotel_gantt` uniquement, auto-installé : le socle s'installe tel quel sur Community, planning en calendrier).
 
@@ -135,7 +138,8 @@ Ordre recommandé : ~~F06~~ (livré) → **F05 → F07 → F08 → F09** (du plu
 | Guides utilisateur PDF (Note de chambre, Réservation en ligne, Fidélité, Espaces & prestations, Tableau de bord Direction) | ✅ |
 | Fiches produit POS Analytics, POS Crédit | ✅ |
 | Étude comparative (19 pages) + benchmarks | ✅ |
-| Cahier de recette (146 cas, 17 domaines A-Q) + plan de recette (15 pages) | ✅ |
+| Cahier de recette (249 cas, 18 domaines A-R, dont 103 cas du restaurant) + plan de recette (23 pages) | ✅ |
+| Restaurant, lot 1 : `docs/INSTALLATION.md` §9 « Restaurant seul », notes de version, 23 captures (`captures/restaurant/`), environnement `dev/setup_env.sh --restaurant` et `dev/run_tests.sh restaurant` | ✅ |
 | Kit éditorial (relance chaîne, contenu #1, 5 articles de blog) | ✅ |
 | Guides utilisateur des 3 nouveaux modules | ⬜ À produire (captures disponibles dans `captures/`) |
 
@@ -162,7 +166,7 @@ Ordre recommandé : ~~F06~~ (livré) → **F05 → F07 → F08 → F09** (du plu
 | Taxe de séjour | Articles CGI exacts, clé de répartition 80/20 commune/État, calendrier de la taxation en temps réel | F04 / F15 — texte légal dans l'onglet |
 | Édition Odoo | ✅ Réglé : le socle s'installe sur Community (planning calendrier) ; `aite_hotel_gantt` ajoute le Gantt sur Enterprise | — |
 | Plaquette | Mentions légales page Contact : RC/DLA/2022/A/80 · NUI P029416901505B (ancienne brochure) ou RC/DLA/2019/B/1043 · NUI M021912751893C (offre 2025) ? | Documentation commerciale |
-| Restaurant (service à table) | Demande d'un client reçue le 12/11, hors des 26 fonctionnalités : périmètre, lots et questions dans `docs/PERIMETRE_FONCTIONNEL_RESTAURANT.md` (mis à jour le 13/11 : restaurant seul, avec pizzas, café, petits déjeuners, bar et cuisine ; sans hôtel, 5 modules sur 16 s'installent, constaté par installation à froid ; puis réponses d'AITE : caisse unique, vente sans table et caisse du bar en options, 83 questions). Arbitrage à rendre avec la fin de la vague 1 ; deux corrections à prévoir avant toute activation (ardoise sur commande non réglée, nom du vendeur dans les analyses) | Nouvelle ligne « Restaurant » ; `aite_pos_credit`, `aite_pos_analytics` |
+| Restaurant (service à table) | Demande d'un client reçue le 12/11, hors des 26 fonctionnalités : périmètre, lots et questions dans `docs/PERIMETRE_FONCTIONNEL_RESTAURANT.md`. **Lot 1 développé** (spécification arbitrée, 6 incréments, 14/11) ; les deux corrections prévues sont faites (ardoise sur commande réglée : AH-01 ; serveur dans les analyses : AH-03). Reste à trancher : les 27 points de `docs/NOTES_DE_VERSION_restaurant_lot1.md` (§10), dont l'écart à Q17, « Tableau » au lieu de « Table » (aussi sans hôtel), la TVA de la carte, l'essai sur Enterprise ; lot 2 ensuite | `aite_pos_restaurant`, `aite_pos_analytics_hr`, `aite_pos_credit`, `aite_pos_analytics` |
 | POS LAVERANDAH | Impression du ticket : les 4 informations de diagnostic n'ont pas été reçues (modèle d'imprimante, mode d'impression, navigateur, message d'erreur) | Support client |
 
 ---
@@ -177,3 +181,4 @@ Ordre recommandé : ~~F06~~ (livré) → **F05 → F07 → F08 → F09** (du plu
 | 2026-10-11 | **Vague 1 — livraison 1** : `aite_city_tax`, `aite_guest_registry` 18.0.1.0.0, `aite_housekeeping` 18.0.1.0.1 ; socle 18.0.1.0.3 ; cahier de recette 139 cas ; export développement pour Claude Code |
 | 2026-10-11 | Dépôt git unifié (`BigWenceslas/AITE-HOUSE`) : export vague 1 + campagne de tests de septembre ; environnement Odoo 18 reproductible (`dev/`) |
 | 2026-10-11 | **F06 livré** : RevPAR, pickup, pace, écarts N-1 (tableau exécutif 18.0.1.1.0, cockpit Direction 18.0.1.1.0) ; correctifs trouvés en campagne : droits admin POS/Crédit, fuseau des créneaux, jeu d'essai ; cahier de recette 146 cas (domaine Q) |
+| 2026-11-14 | **Restaurant, lot 1 développé** (incréments 1 à 6) : `aite_pos_restaurant` 18.0.1.0.6, `aite_pos_analytics_hr` 18.0.1.0.0, `aite_pos_credit` 18.0.2.0.6, `aite_pos_analytics` 18.0.2.1.6 ; outillage « restaurant seul » (`dev/setup_env.sh --restaurant`, `dev/run_tests.sh restaurant`, graine `dev/seeds/seed_restaurant.py`) ; cahier de recette 249 cas (domaine R) ; pas encore livré |

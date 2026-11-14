@@ -18,6 +18,9 @@ Incrément 3 : la table (``TestToursTable``) — personnes, numéro inconnu,
 vente sans table, réunion ; et, depuis sa revue, l'addition quittée par un
 onglet enregistrée au nom de qui l'a remplie (T19, ``AiteSaisieOngletTour``).
 Les tours de l'incrément 2 vérifient aussi le journal des saisies.
+
+Incrément 6 : un service complet de bout en bout (``TestToursParcours``,
+``AiteParcoursTour``), qui mesure les touches de la partie 1.2.
 """
 import json
 from uuid import uuid4
@@ -701,3 +704,140 @@ class TestToursRapports(AiteToursModeCommon):
             self.employes["Awa"].id, str(uuid4()), 'produit')
         self.assertNotIn('erreur', reponse)
         self.start_pos_tour('AiteRapportFermetureTour', login='pos_user')
+
+
+@tagged('post_install', '-at_install', 'aite_pos_restaurant')
+class TestToursParcours(AiteToursStockCommon):
+    """Incrément 6 : AiteParcoursTour (parties 1.2 et 6.3) — un service
+    complet, de l'ouverture de la caisse à sa fermeture, puis le lendemain,
+    réellement joué à l'écran ; chaque geste de la partie 1.2 compte ses
+    touches (mesures écrites dans le journal du test). Ici, ce que le serveur
+    a gardé du service."""
+
+    def _additions(self, session, numero):
+        return self.env['pos.order'].search([
+            ('session_id', '=', session.id), ('table_id.table_number', '=', numero)],
+            order='id')
+
+    def test_parcours_complet(self):
+        coca, water = self._produits()
+        # Coca-Cola suivi en stock (10 bouteilles), Minute Maid suivi et
+        # jamais rentré (épuisé), Water sans suivi ; des prix ronds.
+        minute = self.env['product.product'].search([('name', '=', "Minute Maid")], limit=1)
+        minute.is_storable = True
+        coca.product_tmpl_id.list_price = 1000
+        water.product_tmpl_id.list_price = 500
+        self._entree(coca, 10)
+        # La caisse est fermée : la caissière l'ouvre à l'écran.
+        self.pos_config.with_user(self.pos_user).open_ui()
+        session = self.pos_config.current_session_id
+        self.assertEqual(session.state, 'opening_control')
+
+        self.start_pos_tour('AiteParcoursTour', login='pos_user')
+
+        employes = self.employes
+        # L'ouverture et la fermeture, par code vérifié par le serveur ; les
+        # espèces : 5 500 encaissées, 1 000 sorties.
+        self.assertEqual(session.state, 'closed')
+        self.assertEqual(session.aite_ouverte_par_id, employes["Carine"])
+        self.assertEqual(session.aite_fermee_par_id, employes["Paul"])
+        self.assertEqual(session.cash_register_balance_end_real, 4500)
+        # Lignes d'espèces de la session : la sortie, puis, à la fermeture,
+        # les encaissements en espèces.
+        self.assertEqual(sorted(session.statement_line_ids.mapped('amount')), [-1000, 5500])
+        # Six additions payées : la table 5 de bout en bout, la table 4
+        # encaissée au poste d'Awa, la table 2 encaissée par Fanta (deux fois),
+        # les deux parts de la table 4.
+        payees = session.order_ids.filtered(lambda o: o.state in ('paid', 'done'))
+        self.assertEqual(len(payees), 6, payees.mapped('name'))
+        self.assertEqual(sum(payees.mapped('amount_total')), 5500)
+
+        # La table 5 : ouverte par Awa, 6 personnes, encaissée par Carine.
+        addition = self._additions(session, 5)[0]
+        self.assertIn(addition.state, ('paid', 'done'))
+        self.assertEqual(addition.aite_ouverte_par_id, employes["Awa"])
+        self.assertEqual(addition.aite_encaissee_par_id, employes["Carine"])
+        self.assertEqual(addition.customer_count, 6)
+        self.assertEqual((addition.aite_tables, addition.aite_personnes), (1, 6))
+        self.assertEqual(addition.amount_total, 1500)
+        lignes = {l.product_id.name: l.qty for l in addition.lines}
+        self.assertEqual(lignes, {"Coca-Cola": 1, "Water": 1})
+        # Le produit épuisé n'a jamais été ajouté.
+        self.assertFalse(self.env['pos.order.line'].search_count([('product_id', '=', minute.id)]))
+        # Le journal des saisies : ce qu'Awa a ajouté et envoyé ; la Coca-Cola
+        # saisie puis retirée avant tout enregistrement n'y est pas (Q34).
+        saisies = {}
+        for produit, quantite, employe in self._saisies(addition):
+            self.assertEqual(employe, "Awa")
+            saisies[produit] = saisies.get(produit, 0) + quantite
+        self.assertEqual(saisies, {"Coca-Cola": 1, "Water": 2})
+
+        # La table 4 : Paul seul a annulé le Water ; Carine a encaissé la
+        # Coca-Cola au poste d'Awa ; puis deux parts encaissées par Carine ;
+        # puis une table annulée par Paul seul.
+        premiere, origine, annulee = self._additions(session, 4)
+        # La part « 4B » n'a pas de table : elle garde son origine.
+        part = self.env['pos.order'].search([('aite_origine_uuid', '=', origine.uuid)])
+        self.assertIn(premiere.state, ('paid', 'done'))
+        self.assertEqual(premiere.amount_total, 1000)
+        self.assertEqual(premiere.aite_ouverte_par_id, employes["Awa"])
+        self.assertEqual(premiere.aite_encaissee_par_id, employes["Carine"])
+        self.assertEqual(sum(premiere.lines.filtered(
+            lambda l: l.product_id == water).mapped('qty')), 0)
+        self.assertFalse(origine.aite_origine_uuid)
+        self.assertEqual((len(part), part.session_id), (1, session))
+        self.assertEqual({(o.amount_total, o.aite_encaissee_par_id.name) for o in (origine, part)},
+                         {(1000, "Carine"), (500, "Carine")})
+        self.assertEqual(part.aite_ouverte_par_id, employes["Awa"])
+        self.assertEqual(annulee.state, 'cancel')
+
+        # La table 2 : ouverte par Awa, encaissée par Fanta (M1, « ouverte
+        # par » figé) ; puis ouverte par Carine, reprise et encaissée par
+        # Fanta ; le soir, annulée à la fermeture.
+        table_2 = self._additions(session, 2)
+        awa, carine, soir_2 = table_2
+        self.assertEqual((awa.amount_total, awa.aite_ouverte_par_id, awa.aite_encaissee_par_id),
+                         (1000, employes["Awa"], employes["Fanta"]))
+        self.assertEqual(
+            (carine.amount_total, carine.aite_ouverte_par_id, carine.aite_encaissee_par_id),
+            (500, employes["Carine"], employes["Fanta"]))
+        soir_5 = self._additions(session, 5)[1]
+        self.assertEqual((soir_2.state, soir_5.state), ('cancel', 'cancel'))
+
+        # Les annulations : deux produits (Paul et Awa sur la table 5, Paul
+        # seul sur la table 4), une table (Paul seul), deux tables à la
+        # fermeture ; toutes autorisées par Paul ; aucun retrait ni aucune
+        # annulation sans code.
+        traces = self.env['aite.restaurant.annulation'].search(
+            [('session_id', '=', session.id)], order='id')
+        self.assertEqual(sorted(traces.mapped('type_annulation')),
+                         ['fermeture', 'fermeture', 'produit', 'produit', 'table'])
+        self.assertTrue(all(traces.mapped('autorisee')))
+        self.assertEqual(traces.mapped('superieur_id'), employes["Paul"])
+        produit_5 = traces.filtered(lambda t: t.order_id == addition)
+        self.assertEqual((produit_5.type_annulation, produit_5.produit_nom, produit_5.quantite),
+                         ('produit', "Water", 1))
+        self.assertEqual(produit_5.serveur_id, employes["Awa"])
+        self.assertEqual(produit_5.motif_id, self.env.ref('aite_pos_restaurant.motif_erreur_saisie'))
+        self.assertEqual(produit_5.montant, 500)
+        produit_4 = traces.filtered(lambda t: t.order_id == premiere)
+        self.assertEqual((produit_4.type_annulation, produit_4.produit_nom, produit_4.quantite),
+                         ('produit', "Water", 1))
+        # Le stock : quatre Coca-Cola vendues ; celle de la table annulée à la
+        # fermeture ne sort pas ; l'épuisé reste à 0.
+        self.assertEqual(self._disponible(coca), 6)
+        self.assertEqual(self._disponible(minute), 0)
+
+        # Le lendemain : Carine rouvre la caisse avec le fond de la veille,
+        # Paul la ferme sans vente ; une nouvelle session attend le code.
+        lendemain = self.env['pos.session'].search(
+            [('config_id', '=', self.pos_config.id), ('id', '>', session.id)], order='id')
+        self.assertEqual(len(lendemain), 2, lendemain.mapped('state'))
+        self.assertEqual(lendemain[0].state, 'closed')
+        self.assertEqual(lendemain[0].aite_ouverte_par_id, employes["Carine"])
+        self.assertEqual(lendemain[0].aite_fermee_par_id, employes["Paul"])
+        self.assertEqual((lendemain[0].cash_register_balance_start,
+                          lendemain[0].cash_register_balance_end_real), (4500, 4500))
+        self.assertFalse(lendemain[0].order_ids)
+        self.assertEqual(lendemain[1].state, 'opening_control')
+        self.assertEqual(self.pos_config.current_session_id, lendemain[1])

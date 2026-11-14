@@ -4,7 +4,7 @@ import base64
 import os
 from collections import Counter
 
-from cas_de_test import CAS, DOMAINES
+from cas_de_test import CAS, DOMAINES, VERSION
 
 DOM_NOM = {c: n for c, n, _ in DOMAINES}
 DOM_MOD = {c: m for c, _, m in DOMAINES}
@@ -15,6 +15,10 @@ pcnt = Counter(x[2] for x in CAS)
 logo = ""
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT_DIR = os.environ.get("RECETTE_OUT", HERE)
+# Les modules livrés : les dossiers d'addons/ qui ont un manifeste.
+ADDONS = os.path.join(HERE, "..", "addons")
+NB_MODULES = sum(os.path.isfile(os.path.join(ADDONS, d, "__manifest__.py"))
+                 for d in os.listdir(ADDONS))
 for p in (os.path.join(HERE, "logo_aite.jpg"), "logo_aite.jpg"):
     if os.path.exists(p):
         logo = ('<img src="data:image/jpeg;base64,%s" style="height:12mm"/>'
@@ -98,8 +102,8 @@ html = """<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">
 <style>%s</style></head><body>
 
 <div class="hd"><div><h1>Plan et cahier de recette</h1>
-<div class="sub">AITE HOUSE — suite de gestion hôtelière sur Odoo 18</div>
-<div class="meta">Version de septembre 2026 · 12 modules · %d scénarios de
+<div class="sub">AITE HOUSE — suite de gestion hôtelière et restaurant sur Odoo 18</div>
+<div class="meta">Version de %s · %d modules · %d scénarios de
 test</div></div><div>%s</div></div>
 
 <h2>1. Objet du document</h2>
@@ -114,7 +118,7 @@ de document.</p>
 
 <div class="krow">
 <div class="k"><div class="klbl">SCÉNARIOS</div><div class="kval">%d</div>
-<div class="ksub">répartis sur 13 domaines</div></div>
+<div class="ksub">répartis sur %d domaines</div></div>
 <div class="k r"><div class="klbl">CRITIQUES</div><div class="kval">%d</div>
 <div class="ksub">bloquent la mise en production</div></div>
 <div class="k a"><div class="klbl">MAJEURS</div><div class="kval">%d</div>
@@ -131,21 +135,29 @@ de document.</p>
 <ul>
 <li>Environnement de <b>recette dédié</b>, distinct de la production, avec
 une sauvegarde préalable de la base.</li>
-<li>Les 12 modules installés selon la procédure du fichier
+<li>Hôtel : les modules installés selon la procédure du fichier
 <b>INSTALLATION.md</b>, dans l'ordre de dépendances indiqué.</li>
 <li>Société paramétrée en <b>FCFA</b> (ou GNF), avec les modes de règlement
 utilisés : espèces, Mobile Money, carte.</li>
-<li>Jeu de données : <b>aite_demo_data</b> pour une recette de démonstration,
+<li>Hôtel, jeu de données : <b>aite_demo_data</b> pour une recette de démonstration,
 ou les données réelles reprises pour une recette client.</li>
 <li>Au moins <b>deux profils utilisateurs</b> créés (un profil caisse, un
 profil gérant) afin de tester le cloisonnement des droits.</li>
-<li>Deux points de vente configurés et au moins deux chambres disponibles.</li>
+<li>Hôtel : deux points de vente configurés et au moins deux chambres
+disponibles.</li>
+<li>Restaurant sans hôtel (domaine <b>R</b> seul) : les 4 dossiers du §9 de
+<b>INSTALLATION.md</b>, base créée avec le pays Cameroun (FCFA), comptes
+caisse, manager et chef de salle (§9.5), équipe, carte et plan saisis par le
+manager (§9.6) ; les conditions propres à l'hôtel ci-dessus ne s'appliquent
+pas.</li>
 </ul>
 
 <h2>4. Déroulement et règles de gestion</h2>
-<p>Les domaines sont déroulés dans l'ordre <b>A à M</b>, qui suit le parcours
+<p>Les domaines sont déroulés dans l'ordre <b>A à %s</b>, qui suit le parcours
 réel de l'établissement : de la réservation d'une chambre jusqu'au pilotage
-du gérant. Chaque cas est déclaré dans l'une des situations suivantes :</p>
+du gérant ; le domaine <b>R</b> (restaurant, service à table) se déroule
+seul pour un restaurant sans hôtel, les autres cas étant alors « Non
+applicable ». Chaque cas est déclaré dans l'une des situations suivantes :</p>
 <table><tr><th>Statut</th><th>Signification</th></tr>
 <tr><td><span class="pill p-g">OK</span></td><td>Le résultat obtenu est
 conforme au résultat attendu.</td></tr>
@@ -188,7 +200,7 @@ entre le client et AITE Consulting SARL.</p>
 <table>
 <tr><th>Élément</th><th>Valeur</th></tr>
 <tr><td>Client / établissement</td><td>&nbsp;</td></tr>
-<tr><td>Solution testée</td><td>AITE HOUSE — 12 modules, Odoo 18</td></tr>
+<tr><td>Solution testée</td><td>AITE HOUSE — %d modules, Odoo 18</td></tr>
 <tr><td>Environnement et base</td><td>&nbsp;</td></tr>
 <tr><td>Période de recette</td><td>du &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 &nbsp;&nbsp;&nbsp;&nbsp; au</td></tr>
@@ -223,10 +235,11 @@ entre le client et AITE Consulting SARL.</p>
 — Douala, Makepe Bloc F · info@aite-consulting.com ·
 (+237) 673 373 367 / 656 801 098 · https://aite-consulting.com</p>
 
-</body></html>""" % (CSS, len(CAS), logo, len(CAS), pcnt[1], pcnt[2],
-                     pcnt[3], dom_rows, len(CAS), cas_rows, len(CAS))
+</body></html>""" % (CSS, VERSION, NB_MODULES, len(CAS), logo, len(CAS), len(DOMAINES),
+                     pcnt[1], pcnt[2], pcnt[3], dom_rows, DOMAINES[-1][0], len(CAS),
+                     cas_rows, NB_MODULES, len(CAS))
 
-open('plan_recette.html', 'w', encoding='utf-8').write(html)
+open(os.path.join(OUT_DIR, 'plan_recette.html'), 'w', encoding='utf-8').write(html)
 import weasyprint
 weasyprint.HTML(string=html).write_pdf(
     os.path.join(OUT_DIR, 'AITE_HOUSE_plan_de_recette.pdf'))

@@ -1,5 +1,7 @@
 # AITE HOUSE — Suite de gestion hôtelière sur Odoo 18
-**Version du paquet : octobre 2026 (vague 1) · 16 modules · Odoo 18 (Community & Enterprise)**
+**Version du paquet : novembre 2026 (vague 1 et restaurant, lot 1) · 18 modules · Odoo 18 (Community & Enterprise)**
+
+Un restaurant **sans hôtel** n'installe que les modules de la caisse : voir le §9, « Restaurant seul ».
 
 Éditeur : AITE Consulting SARL — Douala, Makepe Bloc F
 info@aite-consulting.com · (+237) 673 373 367 / 656 801 098 · https://aite-consulting.com
@@ -10,7 +12,8 @@ info@aite-consulting.com · (+237) 673 373 367 / 656 801 098 · https://aite-con
 
 ```
 AITE_HOUSE/
-├── addons/            les 16 modules à déposer sur le serveur
+├── addons/            les 18 modules à déposer sur le serveur (16 pour l'hôtel ;
+│                      un restaurant seul en dépose 4, voir §9)
 ├── docs/              ce fichier, notes de version, guides utilisateur, fiches
 │                      produit, plaquette, guide de test, cahiers de recette
 ├── recette/           cahier de recette (139 cas) et plan de recette
@@ -26,9 +29,9 @@ AITE_HOUSE/
 | aite_slot_booking | 18.0.1.0.5 | Espaces & prestations réservables au créneau (salles, piscine, billard…) |
 | aite_website_booking | 18.0.1.0.2 | Réservation en ligne depuis le site web, acompte |
 | aite_hotel_pos_link | 18.0.1.0.3 | **Note de chambre** : report des consommations du bar sur le folio |
-| aite_pos_credit | 18.0.2.0.5 | Crédit clients (ardoises) : plafonds, encours, recouvrement |
+| aite_pos_credit | 18.0.2.0.6 | Crédit clients (ardoises) : plafonds, encours, recouvrement ; l'ardoise ne naît que d'une commande réglée |
 | aite_loyalty | 18.0.1.0.3 | Fidélité : points, niveaux VIP & VVIP |
-| aite_pos_analytics | 18.0.2.1.4 | Analyses des ventes : heures de pointe, marges, CMV |
+| aite_pos_analytics | 18.0.2.1.6 | Analyses des ventes : heures de pointe, marges, CMV, ventes par famille sur trois niveaux |
 | aite_stock_dashboard | 18.0.1.1.3 | Stock : ruptures, coulage, couverture, inventaires |
 | aite_purchase_dashboard | 18.0.1.0.5 | Achats : échéancier fournisseurs, OTIF, hausses de prix |
 | aite_direction_dashboard | 18.0.1.1.2 | **Cockpit Direction** : vue consolidée, cash à risque, actions |
@@ -38,6 +41,8 @@ AITE_HOUSE/
 | aite_city_tax | 18.0.1.0.2 | **Taxe de séjour** automatique : barèmes par pays et étoiles, ligne sur le folio, état mensuel |
 | aite_guest_registry | 18.0.1.0.3 | **Registre des clients** : fiche d'enregistrement au check-in, registre de police, statistiques |
 | aite_housekeeping | 18.0.1.0.6 | **Gouvernante & maintenance** : tableau des chambres, « Ma journée », inspections, pannes, objets trouvés |
+| aite_pos_restaurant | 18.0.1.0.6 | **Restaurant (service à table)** : code personnel et quatre niveaux, plan de salle verrouillé, personnes, annulations sous code et leur journal, couleurs des tables, refus des produits épuisés, « Personnes et tables » — voir §9 |
+| aite_pos_analytics_hr | 18.0.1.0.0 | Passerelle : serveur (« ouverte par ») et « encaissée par » dans les analyses AITE ; s'installe seule avec les deux modules précédents |
 
 ## 3. Prérequis
 
@@ -191,6 +196,196 @@ En cas de blocage, transmettre à AITE Consulting les lignes `ERROR` /
   d'attention.
 - `captures_uat/` — les captures d'écran de la recette navigateur ;
   `../recette/` — le cahier de recette fonctionnel (139 cas, 16 domaines) et son plan.
+
+
+## 9. Restaurant seul (sans hôtel) — lot 1 du restaurant
+
+Pour un restaurant, un bar ou une pizzeria **sans hébergement** : la caisse
+de service à table (`aite_pos_restaurant`), ses analyses et l'ardoise.
+Aucun module hôtelier n'est installé. Ce qui change à la caisse est décrit
+dans [`NOTES_DE_VERSION_restaurant_lot1.md`](NOTES_DE_VERSION_restaurant_lot1.md).
+
+### 9.1 Ce que le client installe
+
+| Dossier à déposer | Version | Rôle |
+|---|---|---|
+| `aite_pos_restaurant` | 18.0.1.0.6 | la caisse du restaurant : code personnel, quatre niveaux, plan verrouillé, personnes, annulations sous code, couleurs, produits épuisés, rapports |
+| `aite_pos_analytics` | 18.0.2.1.6 | analyses des ventes, dont les ventes par famille sur trois niveaux |
+| `aite_pos_analytics_hr` | 18.0.1.0.0 | passerelle : le serveur et la caissière dans les analyses ; s'installe seule |
+| `aite_pos_credit` | 18.0.2.0.6 | ardoises : réservées au manager en caisse, créées seulement sur une addition réglée |
+
+Odoo installe avec eux, sans rien demander : Point de Vente, Restaurant,
+Employés et la connexion des employés au Point de Vente, Inventaire,
+Facturation et Ventes. Les autres modules AITE ne sont pas nécessaires.
+
+### 9.2 Avant d'installer
+
+- **Créer la base avec l'écran de création d'Odoo**, pays **Cameroun**,
+  langue **Français**, **sans** données de démonstration : la société naît
+  en **FCFA** avec le plan comptable camerounais. Une base créée en ligne de
+  commande sans pays naît en dollars, et Odoo refuse ensuite de changer la
+  devise. Sur une base existante : Paramètres → Sociétés → la devise doit
+  être `XAF` avant toute vente.
+- Ne pas lancer le **scénario « Restaurant »** qu'Odoo propose sur un Point
+  de Vente vide : il charge des produits en anglais et des additions
+  d'exemple, et laisse une caisse ouverte. Le module pose lui-même la
+  caisse « Restaurant ».
+
+### 9.3 Installer, dans cet ordre
+
+1. **Déposer** les 4 dossiers du §9.1 à côté des autres dossiers d'addons
+   (`addons_path` de `odoo.conf`) ; ne jamais remplacer le répertoire entier.
+2. **Redémarrer** le service Odoo.
+3. Activer le **mode développeur** (Paramètres → tout en bas → « Activer le
+   mode développeur ») : sans lui, le menu suivant n'apparaît pas.
+   Apps → **« Mettre à jour la liste des Apps »** → « Mettre à jour ».
+4. Apps → retirer le filtre « Apps » de la recherche → chercher **« service
+   à table »** → « AITE — Restaurant (service à table) » → **Activer**.
+5. Chercher **« POS Analytics »** → « AITE — POS Analytics (LAVERANDAH) »
+   (nom hérité du client pilote, voir les notes de version) → **Activer** ;
+   puis **« Crédit clients »** → « AITE — Crédit clients (Ardoises POS &
+   Ventes) » → **Activer**. La passerelle « AITE — Analyses du restaurant
+   par employé » s'installe seule avec « POS Analytics » (sa carte n'a plus
+   de bouton « Activer » : rien à faire).
+6. **Ctrl+Shift+R** dans le navigateur.
+
+En ligne de commande, c'est équivalent à
+`odoo-bin -c <odoo.conf> -d <base> -i pos_restaurant,pos_hr,aite_pos_restaurant,aite_pos_credit,aite_pos_analytics --stop-after-init`.
+
+### 9.4 Ce qui se passe à l'installation (rien à régler)
+
+- Une **caisse « Restaurant »** est créée, prête au premier service : modes
+  de paiement **Espèces** et **Mobile Money** (journal de banque du même
+  nom), salle **« Salle »** avec une table, case **« Service à table
+  contrôlé »** cochée. Cette case règle d'office la connexion par code
+  (« Se connecter avec Employés »), le contrôle des prix (le manager seul les
+  change), les remises désactivées, le partage et l'impression de
+  l'addition ; elle laisse « Suivi des modifications de commandes » décoché
+  (le journal AITE le remplace). Délai avant l'orange : 60 minutes ; vente
+  sans table : fermée ; produits épuisés : refusés. Si le plan comptable
+  n'est pas encore chargé, la caisse est créée au moment où il l'est.
+- **Une caisse qui existait déjà n'est jamais modifiée.** Pour la passer au
+  service à table contrôlé : Point de Vente → Configuration → Paramètres →
+  choisir la caisse → bloc Restaurant → cocher « Est un bar/restaurant »,
+  puis **« Service à table contrôlé »** (caisse fermée ; la phrase sous la
+  case dit ce qui va se passer).
+- « Caisse fermée » veut dire : **aucune session** de cette caisse, pas même
+  une session « Contrôle d'ouverture ». Or, après chaque fermeture, la
+  tablette se recharge et Odoo rouvre aussitôt une session en « Contrôle
+  d'ouverture », qui grise la case et « Autoriser la vente sans table » (et
+  que l'administrateur ne peut pas supprimer) : **régler ces deux cases avant
+  d'ouvrir la caisse pour la première fois**. Le délai de l'orange et le
+  refus des épuisés se changent à tout moment (ils s'appliquent à la
+  réouverture).
+- Cinq **motifs d'annulation** (Erreur de saisie, Client parti, Plat refusé,
+  Produit manquant, Autre — avec une précision) : Point de Vente →
+  Configuration → Motifs d'annulation.
+- Les rapports : **Restaurant → Annulations** ; Point de Vente → Analyse →
+  **Personnes et tables** et **Détails des ventes** (quantités vendues de
+  chaque produit) ; Point de Vente → Analyse → Analyse AITE → Tableau croisé
+  & graphique, favori **« Ventes par famille »** ; le rapport de fermeture de
+  la caisse donne aussi les tables, les personnes et les annulations.
+
+### 9.5 Ce que règle AITE : les comptes Odoo
+
+Paramètres → Utilisateurs & Sociétés → Utilisateurs → **Nouveau**. Les
+employés de salle n'ont **pas** de compte Odoo : ils ont un code (§9.6).
+
+| Compte | Droits à donner | Pourquoi |
+|---|---|---|
+| **la caisse** (ouvert sur chaque tablette) | Point de Vente : **Utilisateur** ; Comptabilité : **Facturation** ; **un courriel** | Facturation : sans lui, les entrées et sorties d'espèces sont refusées ; le courriel : Odoo publie à son nom à la fermeture. Jamais « Administrateur » : chaque tablette resterait connectée avec ces droits |
+| **le manager** | Point de Vente : **Administrateur** ; Employés : **Gestionnaire : Gérer tous les employés** ; Comptabilité : **Facturation** ; POS Analytics AITE : **Manager — Analyses POS** | les niveaux et les codes de la fiche employé ; Facturation : sans lui, Odoo refuse le rapport de session dès qu'une vente est payée ; les analyses AITE |
+| **le chef de salle** qui lit les rapports | Restaurant AITE : **Restaurant : lecture des rapports**, rien d'autre | il lit les annulations sans aucun accès à la caisse ni à sa configuration |
+
+Les réglages de la caisse (Point de Vente → Configuration → Paramètres)
+sont réservés à l'administrateur d'Odoo (AITE). Dans le bloc Restaurant,
+chaque réglage dit sous lui ce qui va se passer : « Délai avant l'orange
+(minutes) », « Autoriser la vente sans table » (caisse fermée), « Refuser
+la vente des produits épuisés ». Les **imprimantes de cuisine et de bar** se
+déclarent dans le même bloc (« Imprimantes de préparation », une par poste,
+avec ses familles).
+
+### 9.6 Ce que fait le manager avant le premier service
+
+1. **L'équipe** — Employés → Nouveau : le nom, puis **« Niveau en caisse »**
+   (Serveur, Caissière, Chef de salle ou superviseur, Manager) ; le **« Code
+   caisse »** (4 chiffres, propre à l'employé) est proposé d'office, sur la
+   première page de la fiche. Aucun courriel. Un employé sans niveau
+   n'apparaît pas sur la caisse.
+2. **La carte** — Point de Vente → Configuration → Produits →
+   **Catégories de produits du PdV** : les familles de l'écran de commande,
+   sur trois niveaux (par exemple Nourriture > Pizzas ; Boisson >
+   Alcoolisé > Bière) ; les mêmes noms en catégories de produit (Inventaire →
+   Configuration → Produits → Catégories de produits), que lisent encore le
+   tableau de bord AITE et l'onglet « Par catégorie ». Sur chaque produit :
+   le prix en FCFA, la case « Point de Vente » (en haut de la fiche), sa
+   catégorie dans l'onglet « Point de Vente », et **« Suivre
+   l'inventaire »** sur les seules boissons vendues à l'unité (les bières,
+   par exemple). **Taxes** : Odoo pose d'office la TVA
+   de 19,25 % **hors taxes** (un prix de 1 000 FCFA est encaissé 1 193 FCFA) ;
+   pour des prix de carte taxes comprises, AITE règle avec le comptable du
+   client une taxe « prix TTC » avant de saisir la carte.
+3. **Le plan** — Point de Vente → Configuration → **Plans de salle** →
+   « Salle » : les tables, avec leur numéro et leurs places. Le plan ne se
+   modifie pas depuis la caisse.
+4. **Le stock de départ** — sur la fiche de chaque produit suivi : « Mettre
+   la quantité à jour ». Un produit suivi sans stock est refusé à la caisse
+   (« Produit épuisé »).
+
+### 9.7 Le premier service
+
+Sur chaque tablette : se connecter avec le **compte de la caisse** → Point
+de Vente → « Restaurant » → **Ouvrir la caisse**. La fenêtre du code s'ouvre
+d'elle-même : la caissière (ou un chef de salle) tape son code, puis
+**« J'ouvre la caisse »**. Le plan reste ensuite affiché, verrouillé :
+« Touchez une table, puis tapez votre code. » Le soir, un chef de salle
+ferme la caisse (≡ → Fermer la caisse → son code).
+
+### 9.8 Mise à niveau d'une base qui a déjà ces modules
+
+1. Sauvegarder la base et le `filestore` ; **fermer toutes les caisses**.
+2. Déposer les nouveaux dossiers à la place des anciens (chaque dossier
+   AITE, jamais le répertoire entier), redémarrer.
+3. Apps (mode développeur) → « Mettre à jour la liste des Apps » →
+   **Mettre à niveau** `aite_pos_restaurant`, `aite_pos_analytics` et
+   `aite_pos_credit`.
+4. Si « AITE — Analyses du restaurant par employé » n'est pas installé
+   (base où les deux modules étaient installés avant son arrivée) : Apps →
+   retirer le filtre « Apps » → chercher **« par employé »** → **Activer**.
+5. Ctrl+Shift+R sur chaque tablette.
+
+Ne rien désinstaller pour une mise à niveau ; ne jamais retirer des fichiers
+avant d'avoir désinstallé proprement le module depuis Apps.
+
+### 9.9 Vérifier
+
+- Point de Vente : la caisse **« Restaurant »**, case « Service à table
+  contrôlé » cochée ; ouverte, la caisse demande le code de la caissière,
+  puis affiche le plan verrouillé, en couleurs, avec la légende en bas.
+- Employés : une fiche à niveau a son code ; un code déjà pris est refusé
+  sans dire à qui il est.
+- Restaurant → Annulations et Point de Vente → Analyse → Personnes et tables
+  s'ouvrent ; vides, ils disent quoi faire.
+- Aucun menu Hôtel.
+
+### 9.10 Ce qu'il ne faut pas faire
+
+- Cocher « Suivi des modifications de commandes » : avec des employés sans
+  courriel, une baisse de quantité échoue ; le journal AITE suffit.
+- Décocher « Se connecter avec Employés » ou « Est un bar/restaurant » sur
+  la caisse : c'est refusé tant que « Service à table contrôlé » est coché
+  (décocher d'abord la case, caisse fermée).
+- Ouvrir la caisse d'une tablette sous un autre compte que celui de la
+  caisse : les traces « sans code » seraient alors attribuées à ce compte.
+
+**Environnement de développement** (AITE) : `dev/setup_env.sh --restaurant`
+crée la base `aite_resto` de la même façon, avec un jeu de données de
+démonstration (12 tables, une carte en trois niveaux, cinq employés,
+comptes « caisse », « manager », « chef ») et refuse une base existante qui
+n'est pas celle du restaurant (une base hôtelière, par exemple) ;
+`dev/run_tests.sh restaurant` la teste, même après un service (les captures,
+elles, se prennent sur une copie : voir `tests/restaurant/shots.py`).
+**Enterprise** : non essayé à ce jour (aucune base disponible).
 
 ---
 © AITE Consulting SARL — tous droits réservés.
