@@ -450,6 +450,26 @@ class TestToursAnnulation(AiteToursModeCommon):
         self.assertEqual(set(traces.mapped('superieur_nom')), {"Paul"})
         self.assertEqual(set(traces.order_id.mapped('state')), {'cancel'})
 
+    def test_plus_moins(self):
+        """Revue de l'incrément 4, constats 1 et 2 : « +/- » ne crée pas de
+        ligne négative, et retire d'abord la part pas encore envoyée, comme
+        ⌫ ; une annulation sur une ligne qui a encore une part pas envoyée ne
+        la fait pas passer pour envoyée. La caisse et le serveur restent
+        d'accord."""
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteMoinsTour', login='pos_user')
+        addition = self._addition_table_5()
+        self.assertEqual(addition.state, 'draft')
+        self.assertEqual(addition.lines.product_id.mapped('name'), ["Coca-Cola"])
+        ligne = addition.lines
+        self.assertEqual((ligne.qty, ligne.aite_qte_envoyee, ligne.aite_qte_preparation),
+                         (2, 2, 2))
+        traces = self._journal()
+        self.assertEqual(traces.mapped('type_annulation'), ['produit', 'produit'])
+        self.assertEqual(traces.mapped('quantite'), [1, 1])
+        self.assertEqual(set(traces.mapped('superieur_nom')), {"Paul"})
+        self.assertEqual(set(traces.mapped('serveur_nom')), {"Awa"})
+
     def test_ardoise_sans_mode_ardoise(self):
         """AH-02 en mode : sans mode « ardoise » sur la caisse, pas de bouton,
         même pour le manager."""

@@ -50,7 +50,7 @@ from odoo import _, api, fields, models
 from odoo.tools import float_compare
 
 from . import regles
-from .pos_order_line import CHAMPS_LIGNE_SERVEUR, contexte_synchro
+from .pos_order_line import CHAMPS_LIGNE_SERVEUR, contexte_synchro, dans_la_synchro
 from .pos_session import contexte_serveur, ecrit_par_le_serveur
 
 _logger = logging.getLogger(__name__)
@@ -292,6 +292,34 @@ class PosOrder(models.Model):
                 employe = self.env['hr.employee']
         return employe or self.employee_id.sudo()
 
+    def _aite_depuis_la_gestion(self):
+        """Vrai si l'écriture ne vient pas de la caisse (revue de
+        l'incrément 4, constat 3). Vient de la caisse : la synchronisation (le
+        contexte qu'elle pose), ou une requête du compte qui porte la session
+        (``session_id.user_id`` : la tablette est ouverte sous ce compte).
+        Vient de la gestion : une action de la gestion (menu « Action » de la
+        liste ou de la fiche, qui pose ``active_model``), ou tout autre compte
+        Odoo."""
+        self.ensure_one()
+        contexte = self.env.context
+        if dans_la_synchro(self.env) or 'aite_employee_id' in contexte:
+            return False
+        if contexte.get('active_model'):
+            return True
+        return self.env.user != self.session_id.user_id
+
+    def _aite_auteur_de_trace(self):
+        """Qui a fait le geste tracé sans code (partie 4.2) : depuis la
+        caisse, la personne identifiée sur le poste, sinon l'employé de
+        l'addition ; depuis la gestion, l'utilisateur Odoo, sans employé
+        (pos_hr remplit l'employé de toute addition : la serveuse n'y est pour
+        rien). Rend ``(employé, nom)``."""
+        self.ensure_one()
+        if self._aite_depuis_la_gestion():
+            return self.env['hr.employee'], self.env.user.name
+        employe = self._aite_employe_de_saisie()
+        return employe, (employe.name if employe else self.env.user.name)
+
     def _aite_nom_table(self):
         if self.table_id:
             return str(self.table_id.table_number)
@@ -329,6 +357,11 @@ class PosOrder(models.Model):
             qte = ligne.qty if ligne else 0.0
             saisie, retrait, nouvelle = regles.bilan_ligne(
                 envoyee, prep_avant, prep, qte_avant, qte, deplacement)
+            # Une ligne négative qui n'est pas un remboursement (« +/- » sur
+            # une ligne neuve) baisse l'addition comme un retrait (revue de
+            # l'incrément 4, constat 1) ; bilan_ligne ne compte que le positif.
+            if ligne and not deplacement and not ligne.refunded_orderline_id:
+                retrait += regles.part_negative(qte_avant, qte)
             if ligne and not annulee and (
                     float_compare(nouvelle, ligne.aite_qte_envoyee, precision_digits=PRECISION)
                     or float_compare(prep, ligne.aite_qte_preparation,
@@ -422,9 +455,10 @@ class PosOrder(models.Model):
         """Une ligne envoyée baissée directement (hors synchronisation) :
         « Retrait sans code »."""
         self.ensure_one()
+        employe, nom = self._aite_auteur_de_trace()
         self.env['aite.restaurant.annulation'].sudo().create(self._aite_valeurs_annulation(
             ligne.uuid, ligne.product_id, ligne.full_product_name, prix, retrait,
-            'retrait_sans_code', serveur=self._aite_employe_de_saisie()))
+            'retrait_sans_code', serveur=employe or None, serveur_nom=nom))
 
     def _aite_tracer_annulation_sans_code(self):
         """Une addition en cours qui porte encore des produits envoyés,
@@ -432,7 +466,9 @@ class PosOrder(models.Model):
         réunion) : une ligne « Annulation sans code » par produit, et le
         verrou retombe. Jamais d'erreur : la synchronisation du poste, qui
         renvoie cette annulation à chaque fois, resterait bloquée.
-        Demandée par : l'employé de l'addition, sinon le compte Odoo (gestion)."""
+        Demandée par : depuis la caisse, la personne identifiée ou l'employé
+        de l'addition ; depuis la gestion, l'utilisateur Odoo
+        (``_aite_auteur_de_trace``)."""
         traces = []
         for commande in self:
             if (commande.state != 'draft' or commande.aite_fusionnee
@@ -441,13 +477,12 @@ class PosOrder(models.Model):
             lignes = commande.lines.filtered(lambda ligne: ligne.aite_qte_envoyee > 0)
             if not lignes:
                 continue
-            employe = commande.employee_id.sudo()
+            employe, nom = commande._aite_auteur_de_trace()
             for ligne in lignes:
                 traces.append(commande._aite_valeurs_annulation(
                     ligne.uuid, ligne.product_id, ligne.full_product_name,
                     commande._aite_prix_ttc(ligne), ligne.aite_qte_envoyee,
-                    'annulation_sans_code', serveur=employe or None,
-                    serveur_nom=False if employe else self.env.user.name))
+                    'annulation_sans_code', serveur=employe or None, serveur_nom=nom))
             lignes.with_context(**contexte_serveur()).write({'aite_qte_envoyee': 0.0})
         if traces:
             self.env['aite.restaurant.annulation'].sudo().create(traces)
@@ -458,6 +493,25 @@ class PosOrder(models.Model):
     def _aite_r8(self):
         return _("Ce code ne peut pas annuler. Il faut celui d'un chef de salle, d'un "
                  "superviseur ou du manager.")
+
+    def _aite_demande_incomplete(self):
+        return _("Demande d'annulation incomplète.")
+
+    @api.model
+    def _aite_meme_demande(self, deja, identifiants, lignes, nature):
+        """Les traces d'une clé déjà enregistrée portent-elles sur la demande
+        reçue : même nature, additions parmi celles demandées et, pour un
+        produit, les mêmes lignes ?"""
+        if set(deja.mapped('type_annulation')) != {nature}:
+            return False
+        commandes = {trace.order_id.id for trace in deja}
+        if False in commandes or not commandes <= set(identifiants):
+            return False
+        if nature == 'produit':
+            demandees = {demande.get('uuid') for demande in lignes or []
+                         if isinstance(demande, dict)}
+            return demandees == set(deja.mapped('ligne_uuid'))
+        return True
 
     def _aite_r26(self):
         return _("Ce produit vient d'être annulé sur un autre poste. Rien n'a changé ici.")
@@ -480,7 +534,9 @@ class PosOrder(models.Model):
         - ``demandeur_id`` : la personne identifiée sur le poste ;
         - ``demande_uuid`` : la clé de la demande ; une demande déjà
           enregistrée avec cette clé rend la première réponse, sans rien
-          refaire (réponse perdue, nouvel essai) ;
+          refaire (réponse perdue, nouvel essai), si elle porte sur les mêmes
+          additions et les mêmes lignes ; sinon, « Demande d'annulation
+          incomplète. » ;
         - ``nature`` : ``produit``, ``table`` ou ``fermeture``.
 
         Écrit les lignes du journal et baisse lui-même ``aite_qte_envoyee`` :
@@ -494,14 +550,27 @@ class PosOrder(models.Model):
         Journal = self.env['aite.restaurant.annulation'].sudo()
         if not demande_uuid or not isinstance(demande_uuid, str) \
                 or nature not in NATURES_AUTORISEES:
-            return self._aite_refus_annulation(_("Demande d'annulation incomplète."))
+            return self._aite_refus_annulation(self._aite_demande_incomplete())
+        identifiants = [i for i in (order_ids or []) if isinstance(i, int)]
+        if identifiants:
+            # Deux demandes simultanées avec la même clé (réponse perdue, puis
+            # nouvel essai alors que la première tourne encore) : la seconde
+            # attend la première ; son instantané est alors périmé, Odoo la
+            # rejoue, et elle trouve la première réponse ci-dessous.
+            self.env.cr.execute(
+                "SELECT id FROM pos_order_line WHERE order_id IN %s FOR UPDATE",
+                [tuple(identifiants)])
         deja = Journal.search([('demande_uuid', '=', demande_uuid)])
         if deja:
+            # La première réponse, seulement pour la même demande (mêmes
+            # additions, même nature, mêmes lignes) : une clé rejouée ailleurs
+            # ne rend rien d'une autre addition (revue, constat 4).
+            if not self._aite_meme_demande(deja, identifiants, lignes, nature):
+                return self._aite_refus_annulation(self._aite_demande_incomplete())
             return {'superieur_id': deja[0].superieur_id.id,
                     'superieur_nom': deja[0].superieur_nom,
                     'quantites': {trace.ligne_uuid: trace.quantite for trace in deja}}
 
-        identifiants = [i for i in (order_ids or []) if isinstance(i, int)]
         commandes = self.browse(identifiants).exists()
         config = commandes.config_id
         if not commandes or len(config) != 1 or not config._aite_actif():
@@ -532,6 +601,11 @@ class PosOrder(models.Model):
 
         a_annuler = []
         if nature == 'produit':
+            uuids = [demande.get('uuid') for demande in lignes or [] if isinstance(demande, dict)]
+            if len(uuids) != len(set(uuids)):
+                # La même ligne deux fois (requête forgée) : chaque quantité
+                # passerait seule le contrôle (revue, constat 5).
+                return self._aite_refus_annulation(self._aite_demande_incomplete())
             for demande in lignes or []:
                 if not isinstance(demande, dict):
                     return self._aite_refus_annulation(self._aite_r26())

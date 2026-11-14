@@ -639,6 +639,33 @@ if Annulations is not None and motif_parti:
 else:
     check("le journal des annulations existe (incrément 4)", False)
 
+print("\n═══ 13 quater. Les contournements fermés à la revue (incrément 4) ═══")
+# Table 1 : 2 Castel envoyées. Un poste trafiqué renvoie une ligne neuve à
+# -1 (sur la caisse, « +/- » sur une ligne neuve la retire, comme ⌫).
+if Annulations is not None:
+    table_1_ter = restaurant.floor_ids.table_ids.filtered(lambda t: t.table_number == 1)
+    t1b = nouvelle_addition(table_1_ter, 2, awa)
+    ajouter(t1b, castel, 2)
+    envoyer(t1b)
+    cmd_1 = caisse_envoie(t1b, awa)
+    ajouter(t1b, castel, -1)
+    caisse_envoie(t1b, awa)
+    negatif = Annulations.search([('order_id', '=', cmd_1.id)])
+    check("une ligne négative qui n'est pas un remboursement baisse l'addition : tracée "
+          "« Retrait sans code » (1 Castel, Awa)",
+          len(negatif) == 1 and negatif.type_annulation == 'retrait_sans_code'
+          and negatif.quantite == 1 and negatif.serveur_nom == "Awa",
+          [(a.type_annulation, a.quantite, a.serveur_nom) for a in negatif])
+    # Le manager annule l'addition d'Awa depuis la gestion (« Cancel Order »).
+    env.ref('point_of_sale.pos_order_set_cancel').with_user(manager).with_context(
+        active_model='pos.order', active_ids=cmd_1.ids, active_id=cmd_1.id).run()
+    gestion = Annulations.search([('order_id', '=', cmd_1.id),
+                                  ('type_annulation', '=', 'annulation_sans_code')])
+    check("annulée depuis la gestion : « Demandée par » le manager, pas Awa",
+          cmd_1.state == 'cancel' and len(gestion) == 1 and gestion.quantite == 2
+          and gestion.serveur_nom == "Manager du restaurant" and not gestion.serveur_id,
+          [(a.quantite, a.serveur_nom, a.serveur_id.name) for a in gestion])
+
 print("\n═══ 14. Division et réunion : pas des saisies (incrément 3) ═══")
 # Division : 1 Castel dans la part « 12B » (même personne, même heure).
 part = nouvelle_addition(None, 0, awa, "12B")
@@ -766,9 +793,10 @@ if groupe and Annulations is not None:
     check("le chef de salle est un utilisateur interne, sans droit sur la caisse",
           chef._is_internal() and not chef.has_group('point_of_sale.group_pos_user'))
     lu = Annulations.with_user(chef).search([])
-    check("il lit les annulations (retrait, annulation autorisée, annulation sans code)",
+    check("il lit les annulations (retraits, annulation autorisée, annulations sans code)",
           sorted(lu.mapped('type_annulation')) ==
-          ['annulation_sans_code', 'produit', 'retrait_sans_code'], lu.mapped('type_annulation'))
+          ['annulation_sans_code', 'annulation_sans_code', 'produit', 'retrait_sans_code',
+           'retrait_sans_code'], lu.mapped('type_annulation'))
     check("il ne lit pas les commandes", refus_acces(lambda: env['pos.order'].with_user(
         chef).search([])))
     check("il ne lit pas la configuration de la caisse", refus_acces(
@@ -784,7 +812,7 @@ if groupe and Annulations is not None:
     lignes = Annulations.with_user(chef).web_search_read(
         [], {nom: {} for nom in champs if nom not in ('currency_id',)})
     check("« Restaurant → Annulations » s'ouvre (liste, vue croisée, graphique)",
-          lignes['length'] == 3 and {'list', 'pivot', 'graph'} <= set(vues['views']))
+          lignes['length'] == 5 and {'list', 'pivot', 'graph'} <= set(vues['views']))
     check("l'écran vide dit quoi faire (plus de 120 caractères)",
           'o_view_nocontent' in (action.help or '') and len(action.help) >= 120,
           len(action.help or ''))

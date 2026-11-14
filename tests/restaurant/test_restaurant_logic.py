@@ -190,6 +190,31 @@ class TestBilanLigne(unittest.TestCase):
                          (2, 0, 0))
 
 
+class TestPartNegative(unittest.TestCase):
+    """Revue de l'incrément 4, constat 1 : la part négative ajoutée à une
+    ligne qui n'est pas un remboursement (« +/- » sur une ligne neuve) baisse
+    l'addition comme un retrait : part_negative(qte_avant, qte)."""
+
+    CAS = [
+        ((0, -1), 1, "ligne neuve à -1"),
+        ((1, -1), 1, "ligne de 1 passée à -1 : seule la part sous zéro"),
+        ((-2, -3), 1, "elle s'enfonce de 1"),
+        ((-3, -3), 0, "renvoyée sans changement"),
+        ((-3, -1), 0, "elle remonte"),
+        ((-1, 2), 0, "redevenue positive"),
+        ((3, 2), 0, "baisse au-dessus de zéro : le bilan de la ligne en juge"),
+        ((None, False), 0, "valeurs vides"),
+    ]
+
+    def test_les_cas(self):
+        for (avant, apres), attendu, nom in self.CAS:
+            with self.subTest(nom):
+                self.assertEqual(regles.part_negative(avant, apres), attendu)
+
+    def test_quantites_decimales(self):
+        self.assertAlmostEqual(regles.part_negative(-0.25, -0.75), 0.5)
+
+
 class TestCompteurs(unittest.TestCase):
     """Personnes et tables d'une addition (partie 5.2) :
     compteurs(personnes, part, remboursement) → (tables, personnes, sans_table)."""

@@ -126,6 +126,19 @@ def bilan_ligne(envoyee, prep_avant, prep, qte_avant, qte, deplacement):
     return round(saisie, 6), round(retrait, 6), round(nouvelle, 6)
 
 
+def part_negative(qte_avant, qte):
+    """La quantité négative ajoutée à une ligne d'addition qui n'est **pas**
+    un remboursement, depuis la synchronisation précédente (revue de
+    l'incrément 4, constat 1) : une ligne neuve à -1 (« +/- » sur une ligne
+    neuve), ou une ligne qui s'enfonce sous zéro. Elle baisse l'addition comme
+    un retrait de ce qui est parti : « Retrait sans code ». Une ligne de
+    remboursement (``refunded_orderline_id``) n'est jamais passée ici.
+    ``bilan_ligne`` ne compte, lui, que la part positive."""
+    avant = max(-_nombre(qte_avant), 0.0)
+    apres = max(-_nombre(qte), 0.0)
+    return round(max(apres - avant, 0.0), 6)
+
+
 def compteurs(personnes, part, remboursement):
     """Ce qu'une addition réglée compte dans « Personnes et tables »
     (partie 5.2) : ``(tables, personnes, sans_table)``.

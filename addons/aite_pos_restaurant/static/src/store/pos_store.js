@@ -53,17 +53,14 @@ import { makeAwaitable } from "@point_of_sale/app/store/make_awaitable_dialog";
 import { ConnectionLostError, RPCError } from "@web/core/network/rpc";
 import { deserializeDateTime, serializeDateTime } from "@web/core/l10n/dates";
 import { uuidv4 } from "@point_of_sale/utils";
-import {
-    changesToOrder,
-    getOrderChanges,
-} from "@point_of_sale/app/models/utils/order_change";
+import { getOrderChanges } from "@point_of_sale/app/models/utils/order_change";
 // Fixe l'ordre des patchs : ceux de pos_hr et du restaurant d'abord.
 import "@pos_hr/overrides/models/pos_store";
 import "@pos_restaurant/overrides/models/pos_store";
 import { AiteCodePopup } from "@aite_pos_restaurant/components/code_popup/code_popup";
 import { AiteAnnulationPopup } from "@aite_pos_restaurant/components/annulation_popup/annulation_popup";
 import { MESSAGES, TEXTES, TITRES } from "@aite_pos_restaurant/utils/messages";
-import { partEnvoyee } from "@aite_pos_restaurant/utils/envoi";
+import { partEnvoyee, quantiteEnvoyee } from "@aite_pos_restaurant/utils/envoi";
 
 /** Écrans qui demandent quelqu'un d'identifié (point de passage `showScreen`). */
 const ECRANS_A_CODE = ["ProductScreen", "PaymentScreen", "TicketScreen"];
@@ -1322,7 +1319,7 @@ patch(PosStore.prototype, {
             }
         }
         delete order.uiState.aiteDemandes[uuid];
-        const imprime = await this.aiteBonDAnnulation(order, uuid);
+        const imprime = await this.aiteBonDAnnulation(order, uuid, quantite);
         await this.aiteSynchroniser(order);
         const texte = TEXTES.annulationFaite(quantite, produit, resultat.reponse.superieur_nom);
         this.notification.add(imprime ? `${texte} ${TEXTES.bonEnvoye}` : texte, { type: "info" });
@@ -1333,32 +1330,27 @@ patch(PosStore.prototype, {
      * ce qui est parti pour elle mis à jour. Les autres produits de la table
      * pas encore envoyés ne partent pas avec lui (écart à la partie 4.1, qui
      * prévoyait sendOrderInPreparationUpdateLastChange : celui-ci envoie toute
-     * l'addition). Rend vrai si un bon est sorti. */
-    async aiteBonDAnnulation(order, uuid) {
-        let imprime = false;
-        if (this.printers_category_ids_set?.size) {
-            const changement = changesToOrder(order, false, this.orderPreparationCategories);
-            const annules = changement.cancelled.filter((ligne) => ligne.uuid === uuid);
-            if (annules.length) {
-                try {
-                    imprime = await this.printChanges(order, {
-                        new: [],
-                        cancelled: annules,
-                        noteUpdated: [],
-                        generalNote: false,
-                        modeUpdate: false,
-                    });
-                } catch (erreur) {
-                    console.info("Restaurant : bon d'annulation non imprimé", erreur);
-                }
-            }
-        }
+     * l'addition). Ce qui est parti baisse de la quantité annulée, et de rien
+     * d'autre : une part de la ligne pas encore envoyée reste à envoyer (revue
+     * de l'incrément 4, constat 2). Rend vrai si un bon est sorti. */
+    async aiteBonDAnnulation(order, uuid, quantite) {
         const preparation = order.last_order_preparation_change;
         const ligne = order.lines.find((l) => l.uuid === uuid);
+        // Ce qui part sur le bon : la quantité annulée, prise sur ce qui est
+        // parti pour cette ligne (une entrée par note envoyée), au format des
+        // entrées enregistrées, celui du bon d'annulation d'Odoo.
+        const annules = [];
+        let aRetirer = Number(quantite) || 0;
         for (const [cle, entree] of Object.entries(preparation.lines || {})) {
             if (cle.startsWith(uuid) || entree?.uuid === uuid) {
-                if (ligne) {
-                    entree.quantity = ligne.get_quantity();
+                const parti = Number(entree?.quantity) || 0;
+                const retire = Math.min(parti, aRetirer);
+                aRetirer -= retire;
+                if (retire > 1e-9) {
+                    annules.push({ ...entree, quantity: retire });
+                }
+                if (ligne && parti - retire > 1e-9) {
+                    entree.quantity = parti - retire;
                 } else {
                     delete preparation.lines[cle];
                 }
@@ -1370,7 +1362,21 @@ patch(PosStore.prototype, {
         };
         if (ligne) {
             ligne.saved_quantity = ligne.get_quantity();
-            ligne.setHasChange(false);
+            ligne.setHasChange(ligne.get_quantity() > quantiteEnvoyee(ligne) + 1e-9);
+        }
+        let imprime = false;
+        if (this.printers_category_ids_set?.size && annules.length) {
+            try {
+                imprime = await this.printChanges(order, {
+                    new: [],
+                    cancelled: annules,
+                    noteUpdated: [],
+                    generalNote: false,
+                    modeUpdate: false,
+                });
+            } catch (erreur) {
+                console.info("Restaurant : bon d'annulation non imprimé", erreur);
+            }
         }
         return imprime;
     },

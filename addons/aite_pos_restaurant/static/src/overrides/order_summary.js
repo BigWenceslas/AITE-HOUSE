@@ -4,7 +4,11 @@
  * - ⌫ jusqu'au vide (« remove ») : ce qui n'est pas encore parti s'en va
  *   librement (la ligne redescend à ce qui est parti, sans code ni trace,
  *   Q34) ; une ligne entièrement partie ouvre la fenêtre d'annulation ;
- * - « +/- » (valeur négative) : la fenêtre d'annulation ;
+ * - « +/- » (valeur négative, hors remboursement) : comme ⌫ (revue de
+ *   l'incrément 4, constats 1 et 2) — une ligne pas encore envoyée s'en va,
+ *   une ligne qui a une part pas encore envoyée redescend à ce qui est parti,
+ *   une ligne entièrement partie ouvre la fenêtre d'annulation ; jamais de
+ *   ligne négative, qui baisserait l'addition sans code ;
  * - un chiffre qui donnerait moins que ce qui est parti est ignoré : le pavé
  *   appelle `_setValue` à chaque chiffre, et taper « 12 » sur une ligne de 3
  *   ne doit rien ouvrir au « 1 » ;
@@ -25,21 +29,27 @@ patch(OrderSummary.prototype, {
         if (line?.combo_parent_id) {
             line = line.combo_parent_id;
         }
-        const envoye = line ? partEnvoyee(line) : 0;
-        if (!line || envoye <= 0) {
+        if (!line) {
             return super._setValue(...arguments);
         }
-        if (val === "remove") {
+        const envoye = partEnvoyee(line);
+        const quantite = val === "remove" ? null : parseFloat("" + (val ? val : 0));
+        const negative = quantite !== null && quantite < 0 && !line.refunded_orderline_id;
+        if (negative) {
+            this.numberBuffer.reset(); // le pavé garde « -4 » : le « +/- » suivant le rendrait positif
+            if (envoye <= 0) {
+                this.currentOrder.removeOrderline(line);
+                return;
+            }
+        }
+        if (envoye <= 0) {
+            return super._setValue(...arguments);
+        }
+        if (val === "remove" || negative) {
             if (line.get_quantity() > envoye) {
                 line.set_quantity(envoye);
                 return;
             }
-            this.numberBuffer.reset();
-            this.pos.aiteAnnulerLigne(line);
-            return;
-        }
-        const quantite = parseFloat("" + (val ? val : 0));
-        if (quantite < 0) {
             this.numberBuffer.reset();
             this.pos.aiteAnnulerLigne(line);
             return;

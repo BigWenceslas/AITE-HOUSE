@@ -356,12 +356,17 @@ class TestAnnulation(RestaurantCommon):
         self.assertEqual(len(self._journal(commande)), 2)
 
     def test_annulation_depuis_la_gestion(self):
+        """Revue de l'incrément 4, constat 3 : « Cancel Order » de la gestion
+        sur l'addition d'Awa (pos_hr remplit l'employé de toute addition) :
+        la trace est au nom de l'utilisateur Odoo qui a annulé, pas d'Awa
+        (partie 4.2 : « ou l'utilisateur Odoo s'il vient de la gestion »)."""
         _addition, commande, _castel, _poulet = self._table_deux_produits()
-        commande.employee_id = False
+        self.assertEqual(commande.employee_id, self.awa, "le cas réel : l'employé est posé")
         commande.with_user(self.compte_manager).action_pos_order_cancel()
         traces = self._journal(commande)
         self.assertEqual(len(traces), 2)
         self.assertEqual(set(traces.mapped('serveur_nom')), {"Manager du restaurant"})
+        self.assertFalse(traces.serveur_id, "aucun employé n'est accusé")
 
     def test_annulation_de_table_autorisee(self):
         _addition, commande, _castel, _poulet = self._table_deux_produits()
@@ -526,3 +531,157 @@ class TestAnnulation(RestaurantCommon):
         self.assertEqual(action['res_model'], 'aite.restaurant.annulation')
         self.assertEqual(self.Annulation.with_user(self.compte_manager).search_count(
             action['domain']), 1)
+
+    # ------------------------------------------------------------------
+    # Revue de l'incrément 4 : constats corrigés (test d'abord)
+    # ------------------------------------------------------------------
+
+    def _ligne_directe(self, commande, produit, qty):
+        """Une ligne créée par une requête directe du compte de la caisse."""
+        prix = produit.lst_price
+        return self.env['pos.order.line'].with_user(self.compte_caisse).create({
+            'order_id': commande.id, 'product_id': produit.id, 'qty': qty,
+            'price_unit': prix, 'price_subtotal': qty * prix,
+            'price_subtotal_incl': qty * prix, 'full_product_name': produit.display_name,
+            'tax_ids': [(6, 0, [])], 'uuid': str(uuid4())})
+
+    def test_ligne_negative_synchronisee_tracee(self):
+        """Constat 1 (bloquant) : « +/- » sur une ligne neuve donne une ligne
+        négative qui baisse l'addition d'un produit déjà envoyé, sans code ni
+        trace. La synchronisation n'est jamais refusée, mais la part négative
+        d'une ligne qui n'est pas un remboursement est un « Retrait sans
+        code », quel que soit le produit."""
+        addition, commande, _ligne = self._table_envoyee(3)
+        moins_castel = addition.ajouter(self.castel, -1)
+        self._commande_caisse(addition, self.awa)
+        trace = self._journal(commande)
+        self.assertEqual(len(trace), 1, trace.mapped('type_annulation'))
+        self.assertEqual(trace.type_annulation, 'retrait_sans_code')
+        self.assertEqual(trace.quantite, 1)
+        self.assertEqual(trace.montant, 1000)
+        self.assertEqual(trace.produit_nom, "Castel")
+        self.assertEqual(trace.ligne_uuid, moins_castel)
+        self.assertEqual(trace.serveur_nom, "Awa")
+        # La même ligne renvoyée sans changement : rien de plus.
+        addition.envoyer()
+        self._commande_caisse(addition, self.awa)
+        self.assertEqual(len(self._journal(commande)), 1)
+        # Une ligne négative d'un autre produit (jamais envoyé) : tracée aussi.
+        moins_poulet = addition.ajouter(self.poulet, -2)
+        self._commande_caisse(addition, self.awa)
+        trace = self._journal(commande).filtered(lambda t: t.ligne_uuid == moins_poulet)
+        self.assertEqual((trace.type_annulation, trace.quantite, trace.montant),
+                         ('retrait_sans_code', 2, 13000))
+        # Elle s'enfonce encore (-2 → -3) : la part de plus seulement.
+        addition.changer(moins_poulet, -3)
+        self._commande_caisse(addition, self.awa)
+        traces = self._journal(commande).filtered(lambda t: t.ligne_uuid == moins_poulet)
+        self.assertEqual(sorted(traces.mapped('quantite')), [1, 2])
+
+    def test_ligne_negative_ecrite_directement_tracee(self):
+        """Constat 1 : une ligne négative créée, ou une ligne passée en
+        négatif, par une requête directe du compte de la caisse."""
+        _addition, commande, _ligne = self._table_envoyee(3)
+        creee = self._ligne_directe(commande, self.castel, -3)
+        trace = self._journal(commande)
+        self.assertEqual(len(trace), 1)
+        self.assertEqual((trace.type_annulation, trace.quantite, trace.montant, trace.ligne_uuid),
+                         ('retrait_sans_code', 3, 3000, creee.uuid))
+        neuve = self._ligne_directe(commande, self.poulet, 1)
+        self.assertEqual(len(self._journal(commande)), 1, "une ligne positive n'est pas tracée")
+        neuve.with_user(self.compte_caisse).write({'qty': -2})
+        trace = self._journal(commande).filtered(lambda t: t.ligne_uuid == neuve.uuid)
+        self.assertEqual((trace.type_annulation, trace.quantite, trace.montant),
+                         ('retrait_sans_code', 2, 13000))
+
+    def test_remboursement_n_est_pas_un_retrait(self):
+        """Une ligne de remboursement (``refunded_orderline_id``) est négative
+        par nature : ni trace en cours, ni à l'encaissement."""
+        addition = Addition(self.table_12, 2, self.awa)
+        addition.ajouter(self.castel, 1)
+        especes = self.config.payment_method_ids.filtered('is_cash_count')[:1]
+        commande = self._commande_caisse(addition, self.carine, etat='paid', payer=especes)
+        retour = Addition(personnes=0, ouverte_par=self.fanta)
+        retour.ajouter(self.castel, -1)
+        lien = {'refunded_orderline_id': commande.lines.id}
+        remboursement = self._commande_caisse(retour, self.fanta, en_plus_lignes=lien)
+        self.assertEqual(remboursement.state, 'draft')
+        self._commande_caisse(retour, self.fanta, etat='paid', payer=especes, en_plus_lignes=lien)
+        self.assertEqual(remboursement.state, 'paid')
+        self.assertFalse(self._journal())
+
+    def test_annulation_par_l_action_de_la_gestion(self):
+        """Constat 3 : l'action « Cancel Order » (menu Action de la liste ou
+        de la fiche), lancée par le manager, puis par le compte de la caisse
+        lui-même depuis la gestion : au nom de l'utilisateur Odoo."""
+        action = self.env.ref('point_of_sale.pos_order_set_cancel')
+        for compte in (self.compte_manager, self.compte_caisse):
+            with self.subTest(compte=compte.name):
+                _addition, commande, _castel, _poulet = self._table_deux_produits()
+                action.with_user(compte).with_context(
+                    active_model='pos.order', active_ids=commande.ids,
+                    active_id=commande.id).run()
+                self.assertEqual(commande.state, 'cancel')
+                traces = self._journal(commande)
+                self.assertEqual(len(traces), 2)
+                self.assertEqual(set(traces.mapped('serveur_nom')), {compte.name})
+                self.assertFalse(traces.serveur_id)
+
+    def test_retrait_direct_depuis_la_gestion(self):
+        """Constat 3 : une ligne envoyée baissée ou supprimée par le manager
+        depuis la gestion : au nom de l'utilisateur Odoo ; par le compte de
+        la caisse (requête de la caisse) : l'employé de l'addition."""
+        _addition, commande, castel, poulet = self._table_deux_produits()
+        ligne_castel = commande.lines.filtered(lambda l: l.uuid == castel)
+        ligne_poulet = commande.lines.filtered(lambda l: l.uuid == poulet)
+        ligne_castel.with_user(self.compte_manager).write({'qty': 1})
+        ligne_poulet.with_user(self.compte_manager).unlink()
+        traces = self._journal(commande)
+        self.assertEqual(len(traces), 2)
+        self.assertEqual(set(traces.mapped('serveur_nom')), {"Manager du restaurant"})
+        self.assertFalse(traces.serveur_id)
+        ligne_castel.with_user(self.compte_caisse).write({'qty': 0})
+        trace = self._journal(commande) - traces
+        self.assertEqual((trace.quantite, trace.serveur_nom), (1, "Awa"))
+
+    def test_cle_rejouee_sur_une_autre_addition(self):
+        """Constat 4 : une clé déjà enregistrée, renvoyée pour une autre
+        addition ou une autre ligne (requête forgée) : refusée, rien n'est
+        rendu de la première demande ni baissé."""
+        _addition, commande, ligne = self._table_envoyee(3)
+        demande = str(uuid4())
+        self.assertNotIn('erreur', self._autoriser(
+            commande, [{'uuid': ligne.uuid, 'quantite': 1}], '4444', demande=demande))
+        _autre, table_7, ligne_7 = self._table_envoyee(3, table=self.table_7)
+        incomplete = {'erreur': "Demande d'annulation incomplète."}
+        reponse = self.env['pos.order'].with_user(self.compte_caisse).aite_autoriser_annulation(
+            table_7.ids, [{'uuid': ligne_7.uuid, 'quantite': 3}], '0000', 999999, False,
+            False, demande, 'produit')
+        self.assertEqual(reponse, incomplete)
+        self.assertEqual(ligne_7.aite_qte_envoyee, 3)
+        # Même addition, autre ligne ; même addition, autre nature.
+        poulet = commande.lines.create({
+            'order_id': commande.id, 'product_id': self.poulet.id, 'qty': 1,
+            'price_unit': 6500, 'price_subtotal': 6500, 'price_subtotal_incl': 6500,
+            'full_product_name': "Poulet DG", 'uuid': str(uuid4())})
+        self.assertEqual(self._autoriser(commande, [{'uuid': poulet.uuid, 'quantite': 1}],
+                                         '4444', demande=demande), incomplete)
+        self.assertEqual(self._autoriser(commande, False, '4444', demande=demande,
+                                         nature='table'), incomplete)
+        self.assertEqual(ligne.aite_qte_envoyee, 2)
+        self.assertEqual(len(self._journal()), 1)
+        # La vraie demande renvoyée (réponse perdue) : toujours la première réponse.
+        seconde = self._autoriser(commande, [{'uuid': ligne.uuid, 'quantite': 1}], '4444',
+                                  demande=demande)
+        self.assertEqual(seconde.get('quantites'), {ligne.uuid: 1})
+
+    def test_meme_ligne_deux_fois_dans_une_demande(self):
+        """Constat 5 : la même ligne deux fois dans ``lignes`` (requête
+        forgée) : un refus en français, ni erreur de base de données, ni
+        trace, ni baisse."""
+        _addition, commande, ligne = self._table_envoyee(3)
+        reponse = self._autoriser(commande, [{'uuid': ligne.uuid, 'quantite': 2},
+                                             {'uuid': ligne.uuid, 'quantite': 2}], '4444')
+        self.assertEqual(reponse, {'erreur': "Demande d'annulation incomplète."})
+        self.assertFalse(self._journal())
+        self.assertEqual(ligne.aite_qte_envoyee, 3)

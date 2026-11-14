@@ -1,10 +1,11 @@
-/* global posmodel */
+/* global posmodel, odoo */
 /** Incrément 4 : verrou après envoi, code d'un responsable, motifs
  * (spécification, partie 6.3). AiteAnnulationTour, AiteAnnulerTableTour,
  * AiteDeplacementTour, AiteFermetureTour ; et AiteArdoiseSansModeTour (AH-02 :
  * en mode, pas de bouton d'ardoise sans mode « ardoise », même pour le
- * manager). Les vérifications côté serveur sont faites en Python après chaque
- * tour (test_tours.py, TestToursAnnulation). */
+ * manager) ; AiteMoinsTour (revue de l'incrément 4, constats 1 et 2 : la
+ * touche « +/- »). Les vérifications côté serveur sont faites en Python après
+ * chaque tour (test_tours.py, TestToursAnnulation). */
 import * as Chrome from "@point_of_sale/../tests/tours/utils/chrome_util";
 import * as ProductScreen from "@point_of_sale/../tests/tours/utils/product_screen_util";
 import * as PaymentScreen from "@point_of_sale/../tests/tours/utils/payment_screen_util";
@@ -252,5 +253,110 @@ registry.category("web_tour.tours").add("AiteArdoiseSansModeTour", {
                 "pas de « Mettre sur ardoise » sans mode « ardoise », même pour le manager",
                 () => !document.querySelector(".payment-screen .aite-credit-btn")
             ),
+        ].flat(),
+});
+
+/** Ce qui est parti pour la ligne (`utils/envoi.js`), lu dans le module de
+ * la caisse au moment de l'étape : les tours sont aussi chargés dans la
+ * gestion, où ce module n'existe pas (pas d'import, comme aite_util.js). */
+function quantiteEnvoyee(ligne) {
+    return odoo.loader.modules.get("@aite_pos_restaurant/utils/envoi").quantiteEnvoyee(ligne);
+}
+
+/** La ligne du produit `nom` de l'addition courante. */
+function ligneDe(nom) {
+    return posmodel.get_order()?.lines.find((l) => l.get_product().name === nom);
+}
+
+registry.category("web_tour.tours").add("AiteMoinsTour", {
+    steps: () =>
+        [
+            ...Aite.planVerrouille(),
+            // Awa envoie 3 Coca-Cola.
+            ...ouvrir("5", "1111", "4"),
+            ProductScreen.clickDisplayedProduct("Coca-Cola"),
+            ProductScreen.clickDisplayedProduct("Coca-Cola"),
+            ProductScreen.clickDisplayedProduct("Coca-Cola"),
+            Aite.jEnvoie(),
+            ...Aite.planVerrouille(),
+            ...ouvrir("5", "1111"),
+            // Constat 1 : une Water neuve puis « +/- » ne donne pas une ligne
+            // négative (qui baisserait l'addition sans code) : comme ⌫, la
+            // ligne pas encore envoyée s'en va.
+            ProductScreen.clickDisplayedProduct("Water"),
+            Aite.quantiteDeLaLigne("Water", 1),
+            ProductScreen.clickNumpad("+/-"),
+            Aite.pasDePopupAnnulation(),
+            Aite.verifier("aucune ligne négative : la Water neuve est retirée", () => {
+                const lignes = posmodel.get_order().lines;
+                return (
+                    (lignes.length === 1 && lignes[0].get_quantity() === 3) ||
+                    JSON.stringify(lignes.map((l) => [l.get_product().name, l.get_quantity()]))
+                );
+            }),
+            // Le filet du modèle : une quantité négative hors remboursement
+            // est refusée, même sur une ligne pas encore envoyée.
+            ProductScreen.clickDisplayedProduct("Water"),
+            Aite.quantiteDeLaLigne("Water", 1),
+            Aite.verifier("set_quantity refuse une quantité négative", () => {
+                const ligne = ligneDe("Water");
+                const refus = ligne.set_quantity(-1);
+                return (
+                    (refus?.title === Aite.titre("quantiteNegative")() &&
+                        ligne.get_quantity() === 1) ||
+                    JSON.stringify([refus, ligne.get_quantity()])
+                );
+            }),
+            ProductScreen.clickNumpad("⌫"),
+            ProductScreen.clickNumpad("⌫"),
+            Aite.verifier("la Water neuve est retirée par ⌫", () => !ligneDe("Water") || "Water"),
+            // Constat 2 : une 4ᵉ Coca-Cola, pas encore envoyée ; « +/- » la
+            // retire d'abord, comme ⌫ (pas de fenêtre).
+            ProductScreen.clickDisplayedProduct("Coca-Cola"),
+            Aite.quantiteDeLaLigne("Coca-Cola", 4),
+            ProductScreen.clickNumpad("+/-"),
+            Aite.pasDePopupAnnulation(),
+            Aite.quantiteDeLaLigne("Coca-Cola", 3),
+            // « +/- » sur la ligne entièrement partie : la fenêtre d'annulation.
+            ProductScreen.clickNumpad("+/-"),
+            ...Aite.popupAnnulation(
+                Aite.titre("annulerProduit", "Coca-Cola", 5),
+                Aite.messageDe("R9", 3, "Coca-Cola")
+            ),
+            ...Aite.combien("1", ["1", "2", "3"]),
+            ...Aite.codeAnnulation("4444"),
+            ...Aite.motif(0),
+            Aite.pasDePopupAnnulation(),
+            Aite.quantiteDeLaLigne("Coca-Cola", 2),
+            Aite.verifier("2 Coca-Cola parties, rien à envoyer", () => {
+                const envoye = quantiteEnvoyee(ligneDe("Coca-Cola"));
+                const changements = posmodel.getOrderChanges().count;
+                return (envoye === 2 && changements === 0) || JSON.stringify([envoye, changements]);
+            }),
+            // La fenêtre ouverte sur une ligne qui a encore une part pas
+            // envoyée (2 parties, 1 neuve) : seule la part partie baisse ; la
+            // neuve reste à envoyer, sans bon (le serveur le sait aussi).
+            ProductScreen.clickDisplayedProduct("Coca-Cola"),
+            Aite.quantiteDeLaLigne("Coca-Cola", 3),
+            {
+                content: "la fenêtre d'annulation sur la ligne de 3, dont 2 parties",
+                trigger: "body",
+                run: () => {
+                    posmodel.aiteAnnulerLigne(ligneDe("Coca-Cola"));
+                },
+            },
+            ...Aite.popupAnnulation(null, Aite.messageDe("R9", 2, "Coca-Cola")),
+            ...Aite.combien("1", ["1", "2"]),
+            ...Aite.codeAnnulation("4444"),
+            ...Aite.motif(0),
+            Aite.pasDePopupAnnulation(),
+            Aite.quantiteDeLaLigne("Coca-Cola", 2),
+            Aite.verifier("1 Coca-Cola partie, 1 à envoyer", () => {
+                const envoye = quantiteEnvoyee(ligneDe("Coca-Cola"));
+                const changements = posmodel.getOrderChanges().count;
+                return (envoye === 1 && changements === 1) || JSON.stringify([envoye, changements]);
+            }),
+            Aite.jEnvoie(),
+            ...Aite.planVerrouille(),
         ].flat(),
 });

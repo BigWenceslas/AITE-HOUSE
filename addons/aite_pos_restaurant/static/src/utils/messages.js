@@ -60,6 +60,9 @@ export const MESSAGES = {
         "tape son code.",
     R24: "Écrivez en quelques mots pourquoi.",
     R26: "Ce produit vient d'être annulé sur un autre poste. Rien n'a changé ici.",
+    /** Le filet du modèle : une quantité négative hors remboursement (revue
+     * de l'incrément 4 ; texte que la spécification ne donne pas). */
+    quantiteNegative: `Pas de quantité négative sur une addition${ESP}: pour retirer un produit, touchez ⌫.`,
 };
 
 export const TITRES = {
@@ -80,6 +83,7 @@ export const TITRES = {
     annulerTables: (liste) => `Annuler les tables encore ouvertes${ESP}: ${liste}`,
     /** Le filet du modèle (set_quantity) : titre de la fenêtre d'Odoo. */
     produitDejaEnvoye: "Produit déjà envoyé",
+    quantiteNegative: "Quantité négative",
     fermerLaCaisse: "Fermer la caisse",
 };
 

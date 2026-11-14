@@ -13,16 +13,20 @@
         <field name="arch" type="xml">
             <list string="Annulations" create="0" edit="0" delete="0"
                   decoration-danger="not autorisee">
-                <field name="date" options="{'show_seconds': False}"/>
-                <field name="table_nom"/>
+                <!-- Les colonnes de la partie 5.1 ; « Nature » est à afficher au
+                     besoin (la ligne rouge dit déjà « sans code »). Largeurs
+                     posées pour qu'à 1 280 px aucun en-tête ne soit coupé
+                     (revue de l'incrément 4, constat 7). -->
+                <field name="date" options="{'show_seconds': False}" width="130px"/>
+                <field name="table_nom" width="60px"/>
                 <field name="produit_nom"/>
-                <field name="quantite" sum="Total"/>
-                <field name="montant" sum="Total" widget="monetary"/>
-                <field name="serveur_nom"/>
-                <field name="superieur_nom"/>
+                <field name="quantite" sum="Total" width="70px"/>
+                <field name="montant" sum="Total" widget="monetary" width="110px"/>
+                <field name="serveur_nom" width="170px"/>
+                <field name="superieur_nom" width="110px"/>
                 <field name="motif_nom"/>
                 <field name="commentaire"/>
-                <field name="type_annulation" optional="show"/>
+                <field name="type_annulation" optional="hide"/>
                 <field name="autorisee" column_invisible="True"/>
                 <field name="order_ref" optional="hide"/>
                 <field name="prix_unitaire" optional="hide" widget="monetary"/>

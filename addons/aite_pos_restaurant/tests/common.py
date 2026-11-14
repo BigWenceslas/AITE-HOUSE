@@ -156,9 +156,12 @@ class RestaurantCommon(TestPoSCommon):
         """Session ouverte comme le fait la caisse : en mode, le code d'une
         personne qui peut ouvrir (Carine par défaut) est vérifié par le
         serveur (``aite_ouvrir_caisse``), puis le contrôle d'ouverture
-        d'Odoo est validé (incrément 2)."""
+        d'Odoo est validé (incrément 2). La session est ouverte par le compte
+        de la caisse, comme sur la tablette : c'est lui qui la porte
+        (``user_id``), et une trace écrite par un autre compte vient de la
+        gestion (revue de l'incrément 4, constat 3)."""
         config = config or self.config
-        config.open_ui()
+        config.with_user(self.compte_caisse).open_ui()
         session = config.current_session_id
         caisse = session.with_user(self.compte_caisse)
         if config._aite_actif():
