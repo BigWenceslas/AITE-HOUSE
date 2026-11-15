@@ -46,16 +46,19 @@ VITESSE = '1.0'
 SORTIE_DEPOT = os.path.join(RACINE, 'docs', 'guides', 'videos')
 
 # Le document de référence de chaque vidéo, relatif à docs/.
-GUIDES = {'presentation': 'GUIDE_RECETTE_UAT.md', 't16_restaurant_mise_en_place': 'NOTES_DE_VERSION_restaurant_lot1.md'}
+GUIDES = {'presentation': 'GUIDE_RECETTE_UAT.md'}
 
 # Les tutoriels marketing, une vidéo par fonctionnalité (scenarios/t*.py).
 TUTORIELS = ['t01_reception', 't02_planning', 't03_folio', 't04_note_chambre', 't05_taxe_sejour', 't06_registre',
              't07_gouvernante', 't08_site_web', 't09_espaces', 't10_ardoises', 't11_fidelite', 't12_ventes',
              't13_stock', 't14_achats', 't15_direction']
-# Les tutoriels du restaurant (lot 1, un restaurant sans hôtel : demo.RESTO), ajoutés au fur et à mesure qu'ils
-# existent ; la page de la série les range sous l'intertitre « Restaurant ».
-TUTORIELS_RESTAURANT = ['t16_restaurant_mise_en_place']
+# Les tutoriels du restaurant (lot 1, un restaurant sans hôtel : demo.RESTO) ; la page de la série les range
+# sous l'intertitre « Restaurant » et saute ceux dont la vidéo n'existe pas encore.
+TUTORIELS_RESTAURANT = ['t16_restaurant_mise_en_place', 't17_restaurant_servir_une_table', 't18_restaurant_plan_en_couleurs', 't19_restaurant_annulations',
+                        't20_restaurant_produits_epuises', 't21_restaurant_encaisser', 't22_restaurant_fermer_la_caisse', 't23_restaurant_rapports']
 TUTORIELS = TUTORIELS + TUTORIELS_RESTAURANT
+# le document de référence des tutoriels du restaurant : les notes de version du lot 1
+GUIDES.update({profil: 'NOTES_DE_VERSION_restaurant_lot1.md' for profil in TUTORIELS_RESTAURANT})
 
 # Les vidéos de la série : la présentation, puis les tutoriels.
 ORDRE = ['presentation'] + TUTORIELS
