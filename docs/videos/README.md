@@ -276,6 +276,9 @@ Restaurant (lot 1, `produire.TUTORIELS_RESTAURANT`) :
 | 18 | `19-tutoriel-restaurant-plan-en-couleurs.mp4` | Le plan en couleurs | 2 min 01 | 5,4 Mo |
 | 19 | `20-tutoriel-restaurant-annulations.mp4` | Annuler sous le code du chef de salle | 2 min 11 | 6,0 Mo |
 | 20 | `21-tutoriel-restaurant-produits-epuises.mp4` | Produits épuisés | 1 min 57 | 6,9 Mo |
+| 21 | `22-tutoriel-restaurant-encaisser.mp4` | Encaisser une table | 1 min 55 | 6,1 Mo |
+| 22 | `23-tutoriel-restaurant-fermer-la-caisse.mp4` | Fermer la caisse | 2 min 01 | 6,8 Mo |
+| 23 | `24-tutoriel-restaurant-rapports.mp4` | Les rapports du restaurant | 1 min 57 | 5,7 Mo |
 
 Le tutoriel 14 lit dans `aite_purchase_dashboard` le calcul des créances
 fournisseurs (409/4091) : il a été refait après la correction du module
