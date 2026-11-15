@@ -1285,65 +1285,66 @@
       ]
     },
     {
-      "serie": "Dimanche 15 novembre — au choix (nouvelles propositions)",
+      "serie": "Dimanche 15 novembre — version 3",
       "jour": "dimanche",
       "modele": "vd-sombre",
       "titre": "",
       "points": [],
-      "id": "VD-DIM-5",
-      "moment": "dimanche 10h",
-      "etiquette": "Journée mondiale du souvenir",
-      "photo": "tunique",
+      "id": "VD-DIM-8",
+      "moment": "dimanche 11h",
+      "etiquette": "Entre amis",
+      "photo": "veste-pied",
       "alcool": false,
-      "texte": "Aujourd’hui, le monde se souvient des *victimes de la route* : ce soir, aie une *pensée* pour ceux qui les pleurent.",
-      "legende": "Ce dimanche 15 novembre, troisième dimanche du mois, c’est la Journée mondiale du souvenir des victimes de la route, reconnue par l’ONU en 2005. Pas d’annonce aujourd’hui, seulement une pensée pour les familles qui, à Douala comme ailleurs, ont perdu un proche sur la route. Le mot d’ordre de la journée tient en trois verbes : se souvenir, soutenir, agir. Ce soir, à qui vas-tu dire « rentre doucement » ?",
-      "hashtags": [
-        "#LaVerandah",
-        "#Douala",
-        "#SecuriteRoutiere",
-        "#WDoR2026"
-      ]
-    },
-    {
-      "serie": "Dimanche 15 novembre — au choix (nouvelles propositions)",
-      "points": [],
-      "etiquette": "",
-      "id": "VD-DIM-6",
-      "jour": "dimanche",
-      "moment": "dimanche 15h",
-      "modele": "vd-ambiance",
-      "titre": "Séance levée, cahier fermé !",
-      "texte": "LA *CAUSERIE DE LA RÉUNION* CONTINUE À LA VÉRANDAH, À MAKEPE",
-      "photo": null,
-      "alcool": false,
-      "legende": "À Douala, le dimanche, c’est souvent jour de réunion : on cotise, on fait les comptes, on règle les affaires du groupe. Quand la séance est levée, la causerie peut continuer à Makepe. Ta réunion, elle tombe quel dimanche du mois ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "texte": "« On se voit », tu lui dis depuis des mois. C’est *aujourd’hui*.",
+      "legende": "« On se voit, on se voit »… et trois mois passent. Ce dimanche, appelle-le et retrouvez-vous cet après-midi à La Vérandah. Tu penses à qui, là ? 📞\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
       "hashtags": [
         "#LaVerandah",
         "#Douala",
         "#Makepe",
-        "#Reunion",
-        "#BonDimanche"
+        "#BonDimanche",
+        "#Amis"
       ]
     },
     {
-      "serie": "Dimanche 15 novembre — au choix (nouvelles propositions)",
+      "serie": "Dimanche 15 novembre — version 3",
       "points": [],
       "etiquette": "",
-      "id": "VD-DIM-7",
+      "id": "VD-DIM-9",
       "jour": "dimanche",
-      "moment": "dimanche 18h",
+      "moment": "dimanche 14h",
       "modele": "vd-ambiance",
-      "titre": "Demain, les Lions !",
-      "texte": "APRÈS LE *2-0 DE JAPOMA*, ON GARDE LA MÊME FAIM À *GABORONE*",
+      "titre": "À deux ou à dix ?",
+      "texte": "UNE TABLE T’ATTEND CET *APRÈS-MIDI*",
       "photo": null,
-      "alcool": false,
-      "legende": "Jeudi à Japoma, les Lions indomptables ont battu la Namibie 2-0 et mènent le groupe G avec 7 points. Demain lundi à 14 h (heure de Douala), ils retrouvent la Namibie à Gaborone, au Botswana, pour les éliminatoires de la CAN 2027. Le soir, on refait le match ensemble à La Vérandah. 🦁 Ton pronostic pour Gaborone ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "alcool": true,
+      "legende": "Dimanche, mola ! À deux pour souffler ou à dix pour rigoler, l’après-midi se partage à La Vérandah. Tu viens à deux ou à dix ? 🙌\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98\nL’abus d’alcool est dangereux pour la santé. À consommer avec modération.",
       "hashtags": [
         "#LaVerandah",
         "#Douala",
-        "#LionsIndomptables",
-        "#CAN2027",
-        "#Makepe"
+        "#Makepe",
+        "#BonDimanche",
+        "#Moderation"
+      ]
+    },
+    {
+      "serie": "Dimanche 15 novembre — version 3",
+      "jour": "dimanche",
+      "modele": "vd-sombre",
+      "titre": "",
+      "points": [],
+      "id": "VD-DIM-10",
+      "moment": "dimanche 10h30",
+      "etiquette": "Bon dimanche",
+      "photo": "boubou",
+      "alcool": false,
+      "texte": "Après la messe, pas besoin d’aller loin : on *traverse*.",
+      "legende": "Dimanche, mola ! La messe finie, la table t’attend juste en face. Tu viens avec qui ? 🙏\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#BonDimanche",
+        "#SainteMonique"
       ]
     }
   ]

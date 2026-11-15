@@ -1034,50 +1034,53 @@ La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp 
 #LaVerandah #Douala #Makepe #SamediSoir #Sortie
 ```
 
-## Dimanche 15 novembre — au choix (nouvelles propositions)
+## Dimanche 15 novembre — version 3
 
-### Dimanche 10h — Pensée (photo ronde) · undefined
+### Dimanche 11h — Pensée (photo ronde) · undefined
 
-![VD-DIM-5](VD-DIM-5-vd-sombre.jpg)
+![VD-DIM-8](VD-DIM-8-vd-sombre.jpg)
 
-**Visuel :** Journée mondiale du souvenir — Aujourd’hui, le monde se souvient des victimes de la route : ce soir, aie une pensée pour ceux qui les pleurent.
-
-**Légende à publier :**
-
-```text
-Ce dimanche 15 novembre, troisième dimanche du mois, c’est la Journée mondiale du souvenir des victimes de la route, reconnue par l’ONU en 2005. Pas d’annonce aujourd’hui, seulement une pensée pour les familles qui, à Douala comme ailleurs, ont perdu un proche sur la route. Le mot d’ordre de la journée tient en trois verbes : se souvenir, soutenir, agir. Ce soir, à qui vas-tu dire « rentre doucement » ?
-
-#LaVerandah #Douala #SecuriteRoutiere #WDoR2026
-```
-
-### Dimanche 15h — Ambiance · undefined
-
-![VD-DIM-6](VD-DIM-6-vd-ambiance.jpg)
-
-**Visuel :** Séance levée, cahier fermé ! — LA CAUSERIE DE LA RÉUNION CONTINUE À LA VÉRANDAH, À MAKEPE
+**Visuel :** Entre amis — « On se voit », tu lui dis depuis des mois. C’est aujourd’hui.
 
 **Légende à publier :**
 
 ```text
-À Douala, le dimanche, c’est souvent jour de réunion : on cotise, on fait les comptes, on règle les affaires du groupe. Quand la séance est levée, la causerie peut continuer à Makepe. Ta réunion, elle tombe quel dimanche du mois ?
+« On se voit, on se voit »… et trois mois passent. Ce dimanche, appelle-le et retrouvez-vous cet après-midi à La Vérandah. Tu penses à qui, là ? 📞
 
 La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
 
-#LaVerandah #Douala #Makepe #Reunion #BonDimanche
+#LaVerandah #Douala #Makepe #BonDimanche #Amis
 ```
 
-### Dimanche 18h — Ambiance · undefined
+### Dimanche 14h — Ambiance · undefined
 
-![VD-DIM-7](VD-DIM-7-vd-ambiance.jpg)
+![VD-DIM-9](VD-DIM-9-vd-ambiance.jpg)
 
-**Visuel :** Demain, les Lions ! — APRÈS LE 2-0 DE JAPOMA, ON GARDE LA MÊME FAIM À GABORONE
+**Visuel :** À deux ou à dix ? — UNE TABLE T’ATTEND CET APRÈS-MIDI
 
 **Légende à publier :**
 
 ```text
-Jeudi à Japoma, les Lions indomptables ont battu la Namibie 2-0 et mènent le groupe G avec 7 points. Demain lundi à 14 h (heure de Douala), ils retrouvent la Namibie à Gaborone, au Botswana, pour les éliminatoires de la CAN 2027. Le soir, on refait le match ensemble à La Vérandah. 🦁 Ton pronostic pour Gaborone ?
+Dimanche, mola ! À deux pour souffler ou à dix pour rigoler, l’après-midi se partage à La Vérandah. Tu viens à deux ou à dix ? 🙌
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
+
+#LaVerandah #Douala #Makepe #BonDimanche #Moderation
+```
+
+### Dimanche 10h30 — Pensée (photo ronde) · undefined
+
+![VD-DIM-10](VD-DIM-10-vd-sombre.jpg)
+
+**Visuel :** Bon dimanche — Après la messe, pas besoin d’aller loin : on traverse.
+
+**Légende à publier :**
+
+```text
+Dimanche, mola ! La messe finie, la table t’attend juste en face. Tu viens avec qui ? 🙏
 
 La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
 
-#LaVerandah #Douala #LionsIndomptables #CAN2027 #Makepe
+#LaVerandah #Douala #Makepe #BonDimanche #SainteMonique
 ```

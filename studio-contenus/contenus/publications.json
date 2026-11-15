@@ -2572,29 +2572,7 @@
       ]
     },
     {
-      "serie": "Dimanche 15 novembre — au choix (nouvelles propositions)",
-      "semaine": null,
-      "jour": "dimanche",
-      "moment": "dimanche",
-      "modele": "affiche",
-      "etiquette": "Journée du souvenir",
-      "titre": "",
-      "points": [],
-      "numero": null,
-      "id": "DIM-5",
-      "photo": "veste-pied",
-      "theme": "Journée mondiale du souvenir des victimes de la route (WDoR), 3e dimanche de novembre, soi",
-      "texte": "Aucun rendez-vous client ne vaut un excès de vitesse : arrive *en retard*, mais arrive *entier*.",
-      "legende": "Ce dimanche 15 novembre, c’est la Journée mondiale du souvenir des victimes de la route. Une pensée pour les familles que la route a endeuillées. Un rendez-vous se décale, une vie ne se remplace pas : si tu reprends la route demain pour le travail, pars plus tôt et lève le pied. Et toi, quand tu es en retard, tu appelles ou tu accélères ?",
-      "hashtags": [
-        "#AITEConsulting",
-        "#SecuriteRoutiere",
-        "#WDoR2026",
-        "#Douala"
-      ]
-    },
-    {
-      "serie": "Dimanche 15 novembre — au choix (nouvelles propositions)",
+      "serie": "Dimanche 15 novembre — version 3",
       "semaine": null,
       "jour": "dimanche",
       "moment": "dimanche",
@@ -2603,20 +2581,19 @@
       "titre": "",
       "points": [],
       "numero": null,
-      "id": "DIM-6",
-      "photo": "ndop-pied",
-      "theme": "Réunions et tontines du dimanche à Douala (Cameroon Tribune, Bepanda ; camer.be). Le geste",
-      "texte": "Trésorier de la réunion, si ton cahier des cotisations n’existe qu’en *un seul exemplaire*, ce soir, *photographie-le*.",
-      "legende": "À Douala, le dimanche est souvent jour de réunion : cotisations, entraide, et une séance qui change souvent de maison. Si le cahier se mouille ou se perd, des mois de confiance partent avec lui. Une photo des pages du jour, envoyée au président ou au secrétaire, et les comptes du groupe existent enfin en deux exemplaires. Dans ta réunion, qui garde une copie du cahier ?",
+      "id": "DIM-8",
+      "photo": "tunique",
+      "theme": "dimanche",
+      "texte": "Le dimanche matin, même Douala *baisse le volume*. Fais comme elle.",
+      "legende": "Toute la semaine, la ville klaxonne, appelle et négocie. Le dimanche matin, elle se tait un peu : c’est le moment de faire pareil. 😌\n\nEt toi, c’est quoi le son de ton dimanche ?",
       "hashtags": [
         "#AITEConsulting",
-        "#Tontine",
-        "#Sauvegarde",
+        "#BonDimanche",
         "#Douala"
       ]
     },
     {
-      "serie": "Dimanche 15 novembre — au choix (nouvelles propositions)",
+      "serie": "Dimanche 15 novembre — version 3",
       "semaine": null,
       "jour": "dimanche",
       "moment": "dimanche",
@@ -2625,15 +2602,37 @@
       "titre": "",
       "points": [],
       "numero": null,
-      "id": "DIM-7",
-      "photo": "blazer",
-      "theme": "FAQ officielle WhatsApp « À propos des appareils connectés » (faq.whatsapp.com/37827980443",
-      "texte": "Ton bureau est fermé aujourd’hui, mais ton WhatsApp y est peut-être *resté ouvert* : *déconnecte-le* depuis ton téléphone.",
-      "legende": "Sur ton téléphone, ouvre le menu à trois points (Réglages sur iPhone), puis Appareils connectés : touche l’ordinateur oublié et choisis Déconnexion. Bureau, cyber, ordinateur d’un collègue : tant qu’un appareil reste dans cette liste, il peut afficher tes discussions. Combien d’appareils vois-tu dans ta liste ce soir ?",
+      "id": "DIM-9",
+      "photo": "boubou",
+      "theme": "dimanche",
+      "texte": "Le dimanche matin, la mama des beignets-haricots est toujours là : aujourd’hui, *dis-lui merci*.",
+      "legende": "Elle est là avant tout le monde, chaque dimanche, et on ne pense jamais à la remercier. Aujourd’hui, un merci en plus de la monnaie. 😊\n\nEt toi, qui fait ton dimanche sans le savoir ?",
       "hashtags": [
         "#AITEConsulting",
-        "#WhatsApp",
-        "#Cybersecurite",
+        "#BonDimanche",
+        "#Merci",
+        "#Douala"
+      ]
+    },
+    {
+      "serie": "Dimanche 15 novembre — version 3",
+      "semaine": null,
+      "jour": "dimanche",
+      "moment": "dimanche",
+      "modele": "affiche",
+      "etiquette": "Bon dimanche",
+      "titre": "",
+      "points": [],
+      "numero": null,
+      "id": "DIM-10",
+      "photo": "ndop",
+      "theme": "dimanche",
+      "texte": "Dimanche soir d’enfance : l’uniforme repassé sur la chaise, et *la semaine pouvait venir*.",
+      "legende": "Rien ne pressait, et pourtant tout était prêt. Ce calme-là, on peut le garder pour nos dimanches d’adulte.\n\nEt toi, ton dimanche soir d’enfance, il sentait quoi ?",
+      "hashtags": [
+        "#AITEConsulting",
+        "#BonDimanche",
+        "#Souvenirs",
         "#Douala"
       ]
     }

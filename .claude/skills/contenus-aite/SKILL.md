@@ -84,3 +84,12 @@ de vraies photos du lieu dès que le DG en fournit. Les conseils numérotés res
 ## Vidéos « Astuce IA »
 
 Série de vidéos verticales (1080 × 1920, 40 à 50 s, voix off française, sous-titres incrustés) sur des astuces concrètes d’IA au bureau, tous outils confondus (ChatGPT, Gemini, Copilot, Claude, Le Chat de Mistral). Outil et méthode : `studio-contenus/videos-astuce-ia/README.md`. Chaque fonction montrée vient de la page d’aide officielle de l’éditeur, vérifiée le jour même ; prononciation contrôlée par retranscription.
+
+## Le dimanche (retours du DG, 14-15 novembre 2026)
+
+Refusés : « saluer tes voisins » (pas original), puis un dimanche sur la Journée du souvenir des victimes de la route, un conseil « photographie le cahier de la réunion », un tutoriel WhatsApp (pas bons). Ce qui marche le dimanche :
+- une seule idée parmi trois : couper, remercier, préparer la semaine calmement ; aucun conseil technique ni tâche à faire, aucun mot de travail (client, dossier), aucune promotion : les conseils restent en semaine ;
+- une phrase de 15 mots au plus, un seul passage en relief ; légende de 2 ou 3 phrases courtes, sans chiffre, date ni fait encyclopédique, et une question simple ;
+- aucun thème triste ou commémoratif, aucun sujet choisi seulement parce qu'il est au calendrier ;
+- l'originalité vient du vécu de Douala (la ville qui baisse le volume, la mama des beignets-haricots, l'uniforme repassé du dimanche soir), jamais d'un fait personnel du DG inventé ;
+- pas le même thème que La Vérandah le même jour.

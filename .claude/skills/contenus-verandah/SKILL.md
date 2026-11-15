@@ -51,3 +51,11 @@ Week-end (validé par le DG le 7 nov. 2026) : **une phrase, pas une liste**, tut
 une question en fin de légende. AITE : modèle `affiche`, esprit repos et ressourcement. La Vérandah :
 modèle `vd-ambiance` (vendredi, samedi : invitation, « tu viens avec qui ? ») et `vd-sombre` le dimanche ;
 de vraies photos du lieu dès que le DG en fournit. Les conseils numérotés restent pour la semaine.
+
+## Le dimanche (retours du DG, 14-15 novembre 2026)
+
+Refusés : « la marmite se repose, viens manger » (pas original), puis la Journée du souvenir des victimes de la route (deuil sur la page d'un lieu qui sert de l'alcool), la causerie après la réunion, le match des Lions du lundi (pas bons). Ce qui marche le dimanche :
+- se poser, être ensemble, remercier les clients ; jamais de deuil, d'accident ni de journée commémorative ; un événement du lundi va dans le post du lundi ;
+- court et direct, dans le ton de la phrase du DG (« C'est lundi, mola ! … on se retrouve le soir à La Vérandah »), une raison concrète de venir aujourd'hui, rien d'inventé ;
+- exemples retenus : « Après la messe, pas besoin d'aller loin : on traverse. » (La Vérandah est en face de l'église Sainte Monique) ; « « On se voit », tu lui dis depuis des mois. C'est aujourd'hui. » ;
+- pas le même thème qu'AITE le même jour.
