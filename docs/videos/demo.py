@@ -175,7 +175,11 @@ FOND_RESTO = 25000
 # - la table 10 du soir (t20) n'est pas celle de midi (t18) : à midi, la 10 est à Loïc de 11:52 à son
 #   encaissement, avant 13:30 ; le soir, Inès la rouvre. t21 l'encaisse (20 000 FCFA, 4 personnes) ;
 # - les tables 4 et 2 sont encore ouvertes à 13:48 (t19) : un encaissement de la table 4 avant 13:48
-#   (storyboards t21 et t22 : 12:41) contredirait t18 et t19.
+#   (storyboards t21 et t22 : 12:41) contredirait t18 et t19 ;
+# - t21 encaisse les tables 4 (13:52), 2 (divisée à 14:11) et 10 du soir (19:56). Ce qui leur est ajouté
+#   l'après-midi l'est entre 13:00 et 13:30 : à 13:48, la tablette unique a encore la famille Bière choisie
+#   (t19), donc rien n'a été saisi d'une autre famille après 13:30 (O pos_store.js:1058-1068 ; ECARTS n° 96).
+#   Aucune table ne s'ouvre entre 13:48 et 14:11 en dehors de 2, 4 et 5 ; la 5 est encaissée à 14:05.
 TABLES_JOUR_RESTO = [
     (1, 'Loïc', '11:52', None, {}, "un Jus de bissap 50 cl retiré sans code à 11:52 (poste en retard) ; libre à 12:50",
      ('t19',)),
@@ -183,18 +187,24 @@ TABLES_JOUR_RESTO = [
     (10, 'Loïc', '11:52', None, {'Pizza Reine': 2, 'Bière blonde 65 cl': 4}, 'encaissée entre 13:00 et 13:30',
      ('t18', 't19')),
     (4, 'Loïc', '12:15', 6, {'Pizza Margherita': 1, 'Bière blonde 65 cl': 2, 'Cola 33 cl': 2},
-     '4 personnes, puis 6 (t17) ; 10 000 FCFA envoyés à la fin de t17 ; encore ouverte à 13:48 (1 h 33)',
-     ('t17', 't18', 't19')),
+     '4 personnes, puis 6 (t17) ; 10 000 FCFA envoyés à la fin de t17 ; encore ouverte à 13:48 (1 h 33) ; '
+     'Pizza quatre fromages et 2 Eau minérale 50 cl ajoutées et envoyées entre 13:00 et 13:30 ; 18 000 FCFA, '
+     '8 articles ; encaissée en espèces à 13:52 par Prisca (t21)',
+     ('t17', 't18', 't19', 't21')),
     (6, 'Inès', '12:28', None, {}, 'encaissée entre 13:00 et 13:30', ('t18', 't19')),
-    (2, 'Loïc', '12:55', None, {'Cola 33 cl': 2}, 'envoyés par Landry à 13:00 (t18) ; encore ouverte à 13:48',
-     ('t18', 't19')),
+    (2, 'Loïc', '12:55', 2, {'Cola 33 cl': 2}, 'envoyés par Landry à 13:00 (t18) ; encore ouverte à 13:48 ; '
+     'Pizza Reine et Pizza quatre fromages ajoutées et envoyées entre 13:00 et 13:30 (15 000 FCFA) ; divisée à '
+     '14:11 : part 2B (Pizza Reine, 6 000 FCFA, Mobile Money, 0 personne), puis table 2 (9 000 FCFA, espèces), '
+     'encaissées par Prisca (t21)',
+     ('t18', 't19', 't21')),
     (5, 'Inès', '13:05', 2, {'Pizza quatre fromages': 1, 'Bière blonde 65 cl': 2},
      "une 4ᵉ bière saisie puis retirée, une bière envoyée annulée à 13:30 : 10 000 FCFA", ('t19',)),
     (9, 'Loïc', '13:28', 2, {}, 'Pizza Margherita et 2 Cola 33 cl (7 000 FCFA) annulés en entier à 13:48 par Landry',
      ('t19',)),
     (10, 'Inès', '19:10', 4, {'Pizza Reine': 1, 'Bière blonde 65 cl': 2, 'Cola 33 cl': 1, 'Pizza quatre fromages': 1,
                               'Bière brune 65 cl': 2},
-     'service du soir : 25 min puis 31 min dans t20 ; 20 000 FCFA, encaissée par t21', ('t20',)),
+     "service du soir : 25 min puis 31 min dans t20 ; 20 000 FCFA, encaissée en espèces à 19:56 par Prisca, au "
+     "poste d'Inès (t21) ; seule table ouverte le soir jusque-là", ('t20', 't21')),
 ]
 
 # Le journal des annulations du 14/10 (tutoriel 19, étape 7), dans l'ordre de la liste (« date desc, id
@@ -205,4 +215,47 @@ ANNULATIONS_JOUR_RESTO = [
     ('14/10/2026 13:48', '9', 'Pizza Margherita', 1, 'Landry', 'Landry', 'Client parti', ''),
     ('14/10/2026 13:30', '5', 'Bière blonde 65 cl', 1, 'Inès', 'Landry', 'Autre', 'Bouteille cassée au service'),
     ('14/10/2026 11:52', '1', 'Jus de bissap 50 cl', 1, 'Loïc', '', '', ''),
+]
+
+# La session du 14/10 (t22 la ferme, t23 en lit les rapports).
+SESSION_RESTO = 'POS/00014'
+
+# Les additions réglées de la session du 14/10, dans l'ordre des paiements : (payée à, table ou part, ouverte par,
+# personnes, contenu {article: quantité}, mode, encaissée par). Elles tiennent ensemble ce que montrent t17 à t21
+# (TABLES_JOUR_RESTO) et ce qu'affichent t22 (12 commandes, 188 500 FCFA, 121 500 en espèces, 67 000 en Mobile
+# Money, 11 tables, 33 personnes) et t23 (les rapports). Une part d'addition divisée (« 2B ») compte 0 table et
+# 0 personne (R/models/regles.py, ``compteurs``). Les tables 3 et 8, les dernières du soir, sont encaissées par
+# Landry (Prisca partie ; le droit : regles.py, 'encaisser' = caissière, Landry est superviseur) ; jamais montré
+# ailleurs que dans t23.
+JOURNEE_RESTO = [
+    ('12:35', '1', 'Loïc', 3, {'Pizza Reine': 1, 'Pizza Margherita': 2, 'Cola 33 cl': 2, 'Jus de bissap 50 cl': 1},
+     'Mobile Money', 'Prisca'),
+    ('13:15', '7', 'Inès', 4, {'Pizza Margherita': 2, 'Pizza Reine': 2, 'Bière blonde 65 cl': 4}, 'Mobile Money',
+     'Prisca'),
+    ('13:20', '10', 'Loïc', 2, {'Pizza Reine': 2, 'Bière blonde 65 cl': 4}, 'Espèces', 'Prisca'),
+    ('13:25', '6', 'Inès', 2, {'Pizza quatre fromages': 1, 'Bière blonde 65 cl': 2}, 'Espèces', 'Prisca'),
+    ('13:52', '4', 'Loïc', 6, {'Pizza Margherita': 1, 'Bière blonde 65 cl': 2, 'Cola 33 cl': 2, 'Pizza quatre fromages': 1,
+                               'Eau minérale 50 cl': 2}, 'Espèces', 'Prisca'),
+    ('14:05', '5', 'Inès', 2, {'Pizza quatre fromages': 1, 'Bière blonde 65 cl': 2}, 'Espèces', 'Prisca'),
+    ('14:11', '2B', 'Loïc', 0, {'Pizza Reine': 1}, 'Mobile Money', 'Prisca'),
+    ('14:12', '2', 'Loïc', 2, {'Cola 33 cl': 2, 'Pizza quatre fromages': 1}, 'Espèces', 'Prisca'),
+    ('19:56', '10', 'Inès', 4, {'Pizza Reine': 1, 'Bière blonde 65 cl': 2, 'Cola 33 cl': 1, 'Pizza quatre fromages': 1,
+                                'Bière brune 65 cl': 2}, 'Espèces', 'Prisca'),
+    ('20:48', '9', 'Loïc', 2, {'Pizza quatre fromages': 1, 'Bière blonde 65 cl': 2, 'Cola 33 cl': 1}, 'Espèces',
+     'Prisca'),
+    ('21:20', '3', 'Loïc', 4, {'Pizza quatre fromages': 2, 'Pizza Margherita': 1, 'Bière blonde 65 cl': 3,
+                               'Cola 33 cl': 2}, 'Espèces', 'Landry'),
+    ('21:35', '8', 'Inès', 2, {'Pizza Reine': 2, 'Bière blonde 33 cl': 2}, 'Mobile Money', 'Landry'),
+]
+
+# Les deux tables encore ouvertes à 22:30, tout envoyé (t22) : (table, ouverte par, ouverte à, produits).
+OUVERTES_FERMETURE_RESTO = [(11, 'Loïc', '21:40', [('Bière blonde 65 cl', 2)]),
+                            (12, 'Inès', '21:15', [('Pizza Margherita', 1), ('Cola 33 cl', 1)])]
+
+# Leurs produits, annulés à la fermeture par Landry (t22), au format de ANNULATIONS_JOUR_RESTO ; l'heure (22:31) et
+# l'ordre des trois lignes sont posés par la série, aucune source ne les fixe (lu, non vu).
+ANNULATIONS_FERMETURE_RESTO = [
+    ('14/10/2026 22:31', '12', 'Cola 33 cl', 1, 'Landry', 'Landry', 'Client parti', ''),
+    ('14/10/2026 22:31', '12', 'Pizza Margherita', 1, 'Landry', 'Landry', 'Client parti', ''),
+    ('14/10/2026 22:31', '11', 'Bière blonde 65 cl', 2, 'Landry', 'Landry', 'Client parti', ''),
 ]

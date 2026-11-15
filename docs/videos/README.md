@@ -231,6 +231,22 @@ Pièges relevés sur les tutoriels 17 à 20 :
 - les cartes de l'accroche sont « aspirées » par la révélation : n'y mettre
   que des douleurs que la vidéo résout.
 
+Pièges relevés sur les tutoriels 21 à 23 :
+
+- la voix dit le nom d'un bouton quand le doigt y arrive : la saisie d'un
+  code prend environ 2 s de gestes, la phrase qui suit doit l'attendre
+  (t21, « Addition ») ;
+- une bulle n'a pas de flèche : la cible se désigne par un anneau, et la
+  bulle se pose loin de ce qu'elle couvrirait ; un trait d'union se coupe
+  dans une bulle : un gluon U+2060 après lui (écrit en échappement) ;
+- la journée entière du 14/10 (les douze additions, la session POS/00014,
+  les tables ouvertes et les annulations de la fermeture) est dans
+  `demo.JOURNEE_RESTO`, `SESSION_RESTO`, `OUVERTES_FERMETURE_RESTO` et
+  `ANNULATIONS_FERMETURE_RESTO` : un rapport, un total ou un compteur se
+  calcule depuis elle, jamais à la main ;
+- dans Odoo 18, « Favoris » n'est pas un bouton mais une colonne du panneau
+  de recherche (▾) ; un favori remplace la recherche en cours.
+
 ### La série livrée (`docs/guides/videos/`)
 
 | N° | Vidéo | Fonctionnalité | Durée | Poids |

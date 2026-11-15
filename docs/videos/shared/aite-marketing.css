@@ -552,6 +552,8 @@
 .resto .rs-btn-ic { flex: none; width: 68px; height: 68px; border-radius: 6px; background: #E2E5E9; display: flex; align-items: center;
   justify-content: center; color: #343A40; }
 .resto .rs-btn-ic svg { width: 32px; height: 32px; }
+/* le bouton d'impression de la fermeture, avec une imprimante (resto_fermeture(imprimante=True)) */
+.resto .rs-imp .ico, .resto .rs-imp .ico svg { width: 26px; height: 26px; }
 .resto .rs-zone-txt { height: 128px; border: 1px solid #CED4DA; border-radius: 6px; padding: 14px 20px; font-size: 21px; color: #6C757D; }
 .resto .rs-clo .rs-dlg-c { position: relative; height: 540px; overflow: hidden; padding: 0 32px; }
 .resto .rs-cl-defil { padding: 20px 0 24px; }

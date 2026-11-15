@@ -422,7 +422,8 @@ assert (P_EDWIGE, P_LANDRY, P_PRISCA, P_INES, P_LOIC) == ('Edwige', 'Landry', 'P
 PRIX = {nom: prix for nom, _f, prix, _c, _s in demo.CARTE_RESTO}
 COUT = {nom: cout for nom, _f, _p, cout, _s in demo.CARTE_RESTO}
 FAMILLE = {nom: fam for nom, fam, _p, _c, _s in demo.CARTE_RESTO}
-SESSION = 'POS/00014'          # la session du 14/10 (t22)
+SESSION = demo.SESSION_RESTO   # la session du 14/10 (t22)
+assert SESSION == 'POS/00014'
 ESP, MM = demo.MODES_RESTO
 JOUR = demo.JOUR_RESTO
 
@@ -447,6 +448,7 @@ JOURNEE = [
     ('21:35', '8', P_INES, 2, {'Pizza Reine': 2, 'Bière blonde 33 cl': 2}, MM, P_LANDRY),
 ]
 
+assert JOURNEE == demo.JOURNEE_RESTO, 't23 : la journée commune (demo.JOURNEE_RESTO) a changé'
 
 def _total(contenu):
     return sum(PRIX[p] * q for p, q in contenu.items())
@@ -549,6 +551,7 @@ FERMETURE = [('%s 22:31' % JOUR, '11', 'Bière blonde 65 cl', 2), ('%s 22:31' % 
              ('%s 22:31' % JOUR, '12', 'Cola 33 cl', 1)]
 ANNULATIONS = ([(d, t, p, q, P_LANDRY, P_LANDRY, demo.MOTIFS_RESTO[1], '') for d, t, p, q in reversed(FERMETURE)]
                + list(demo.ANNULATIONS_JOUR_RESTO))
+assert ANNULATIONS[:3] == demo.ANNULATIONS_FERMETURE_RESTO, 't23 : les annulations de la fermeture ont changé'
 assert demo.MOTIFS_RESTO[1] == 'Client parti'
 QTE_AN = sum(a[3] for a in ANNULATIONS)
 MONTANT_AN = sum(a[3] * PRIX[a[2]] for a in ANNULATIONS)
@@ -912,7 +915,7 @@ TUTORIEL = {
                      ('personne', 'Le total des personnes servies, nulle part'),
                      ('echange', 'Une table divisée comptée deux fois'),
                      ('cle', 'Tout passe sous le compte de la caisse : qui a servi ?'),
-                     ('liste', 'Les boissons ? Seulement famille par famille'),
+                     ('liste', 'Les boissons ? Aucun sous-total par niveau'),
                      ('corbeille', 'Les annulations absentes des rapports')],
         'voix': "Combien de personnes avez-vous servies aujourd'hui ? Quand le rapport compte des additions, une table "
                 "divisée compte deux fois, et les annulations n'y figurent pas.",
@@ -985,8 +988,8 @@ TUTORIEL = {
         {'temps': 2, 'titre': 'Les ventes par famille',
          'texte': 'Analyse › Analyse AITE › Tableau croisé & graphique : favori « Ventes par famille », puis la session '
                   'du jour.',
-         'voix': "Dans l'analyse Aïte, le favori Ventes par famille range le chiffre par famille, puis par "
-                 "sous-famille ; Edwige y ajoute la session du jour. Les boissons : quarante-huit mille cinq cents "
+         'voix': "Dans l'analyse Aïte, le favori Ventes par famille, sur la session du jour, range le chiffre par "
+                 "famille, puis par sous-famille. Les boissons : quarante-huit mille cinq cents "
                  "francs, dont trente-six mille cinq cents d'alcoolisé, avec leur coût et leur marge.",
          'gestes': [vue('t23-fa'), clic('#t23-fa-tg', d=0.6), montrer('#t23-pa', d=0.2, y=-6),
                     anneau('#t23-pa-fav', d=1.4), pause(0.2), clic('#t23-fa-tg', d=0.5), cacher('#t23-pa', d=0.15),
@@ -994,23 +997,25 @@ TUTORIEL = {
                     bulle('b-session', '#t23-fa-ses', cote='bas', d=1.9), pause(1.2),
                     anneau('#t23-fap-r-boi', d=1.4), pause(0.4), anneau('#t23-fap-r-alc', d=1.4), pause(0.4),
                     anneau('#t23-fap-c-alc-1', d=0.8), anneau('#t23-fap-c-alc-2', d=0.8),
-                    reaction('r-page', d=2.0), pause(1.4)]},
+                    reaction('r-page', d=2.0), pause(0.8)]},
         {'temps': 3, 'titre': 'Les annulations, en lecture seule',
          'texte': 'Le chef de salle, profil « Restaurant : lecture des rapports » : Restaurant › Annulations, sans la '
                   'caisse.',
          'voix': "Landry, le chef de salle, n'a que la lecture des rapports : ni caisse, ni configuration. Dans "
                  "Restaurant, Annulations, il relit les sept du jour : qui a demandé, qui a autorisé, pourquoi ; en "
-                 "rouge, le retrait passé sans code. Regroupées par motif : cinq clients partis, pour seize mille "
-                 "francs.",
+                 "rouge, le retrait passé sans code. Regroupées par motif, avec leurs sommes : cinq clients partis, "
+                 "pour seize mille francs.",
          'gestes': [montrer('#t23-lec', d=0.5, y=0), classe('#tu-perso', ajouter=['t23-landry'], avec=True),
                     pause(2.4), anneau('#t23-lec-apps', d=1.6), pause(0.4), anneau('#t23-lec-menu', d=1.0), pause(0.5),
                     anneau('#t23-an-pager', d=0.8), anneau('#t23-an-h6', d=0.6), anneau('#t23-an-h7', d=0.6),
                     anneau('#t23-an-h8', d=0.6), curseur('#t23-an-7', fx=0.3, d=0.45),
-                    bulle('b-sans-code', '#t23-an-7', cote='bas', d=2.0), pause(0.3),
-                    clic('#t23-an-tg', d=0.4), montrer('#t23-pn', d=0.2, y=-6),
-                    clic('#t23-pn-g0', fx=0.3, d=0.4), classe('#t23-pn-g0', ajouter=['coche']),
-                    vue('t23-am', 'lecture'), clic('#t23-am-tg', d=0.4), cacher('#t23-pn', d=0.15),
-                    anneau('#t23-ag-2', d=1.2)]},
+                    bulle('b-sans-code', '#t23-an-7', cote='bas', d=1.8), pause(0.7),
+                    # « Regroupées par motif » : le panneau s'ouvre au début de la phrase et se referme avant
+                    # « cinq clients partis », dit pendant l'anneau sur « Client parti (5) ».
+                    clic('#t23-an-tg', d=0.35, puis=0.05), montrer('#t23-pn', d=0.2, y=-6, puis=0),
+                    clic('#t23-pn-g0', fx=0.3, d=0.35, puis=0), classe('#t23-pn-g0', ajouter=['coche'], puis=0),
+                    vue('t23-am', 'lecture', puis=0), clic('#t23-am-tg', d=0.3, puis=0),
+                    cacher('#t23-pn', d=0.15), anneau('#t23-ag-2', d=1.8), pause(1.0)]},
     ],
     'resultats': {
         'titre': 'Les chiffres du soir, sans rien recompter',
@@ -1022,8 +1027,9 @@ TUTORIEL = {
             {'valeur': '3', 'compter': 3, 'unite': 'niveaux', 'icone': 'piles',
              'texte': 'de familles : famille, sous-famille, sous-sous-famille'},
             # A/views/pos_analytics_report_views.xml:134-141 ; N l.177-180.
+            # Les deux touches montrées à l'étape 4 : ▾ de la recherche (le panneau, colonne « Favoris »), puis le favori.
             {'valeur': '2', 'compter': 2, 'unite': 'touches', 'icone': 'etoile',
-             'texte': 'pour les ventes par famille : Favoris, puis « Ventes par famille »'},
+             'texte': 'pour les ventes par famille : le panneau de recherche, puis « Ventes par famille »'},
         ],
         'voix': "Cinq mesures sur une page, trois niveaux de familles, deux touches pour les ventes par famille.",
     },

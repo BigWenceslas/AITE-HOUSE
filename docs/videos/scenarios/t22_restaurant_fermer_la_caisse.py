@@ -371,48 +371,35 @@ NOM_L, CODE_L = LANDRY[1], LANDRY[3]
 NOM_P, CODE_P = PRISCA[1], PRISCA[3]
 NOM_E = EDWIGE[1]
 PRIX = {nom: prix for nom, _f, prix, _c, _s in demo.CARTE_RESTO}
-SESSION = 'POS/00014'
+SESSION = demo.SESSION_RESTO
+assert SESSION == 'POS/00014'
 FOND = demo.FOND_RESTO
 assert FOND == 25000
 
 # La journée du 14/10 : les additions réglées de la session, une par ligne : (payée à, table ou part, ouverte par,
-# personnes, tables, contenu, mode). Les tables de demo.TABLES_JOUR_RESTO (t17 à t20) gardent qui les a ouvertes et
-# ce qu'elles portent ; ce qui n'était fixé nulle part est proposé ici (compte rendu, « Demandes au socle »). Une part
-# d'addition divisée compte 0 table et 0 personne (R/models/regles.py, ``compteurs``). Toutes encaissées par Prisca.
+# personnes, tables, contenu, mode). La journée commune est demo.JOURNEE_RESTO (intégration de t21 à t23 : elle tient
+# ensemble t17 à t21 et t23 ; la division est celle que montre t21, sur la table 2 à 14:11). Une part d'addition
+# divisée compte 0 table et 0 personne (R/models/regles.py, ``compteurs``). Encaissées par Prisca, sauf les tables 3
+# et 8, les dernières du soir, par Landry (demo.JOURNEE_RESTO ; jamais visible dans t22).
 ESP, MM = demo.MODES_RESTO
-JOURNEE = [
-    ('12:35', '1', 'Loïc', 3, 1, {'Pizza Reine': 1, 'Pizza Margherita': 2, 'Cola 33 cl': 2, 'Jus de bissap 50 cl': 1}, MM),
-    ('13:15', '7', 'Inès', 4, 1, {'Pizza Margherita': 2, 'Pizza Reine': 2, 'Bière blonde 65 cl': 4}, MM),
-    ('13:20', '10', 'Loïc', 2, 1, {'Pizza Reine': 2, 'Bière blonde 65 cl': 4}, ESP),
-    ('13:25', '6', 'Inès', 2, 1, {'Pizza quatre fromages': 1, 'Bière blonde 65 cl': 2}, ESP),
-    ('14:00', '4', 'Loïc', 6, 1, {'Pizza Margherita': 1, 'Bière blonde 65 cl': 2, 'Cola 33 cl': 2,
-                                  'Pizza quatre fromages': 1, 'Eau minérale 50 cl': 2}, ESP),
-    ('14:05', '5', 'Inès', 2, 1, {'Pizza quatre fromages': 1, 'Bière blonde 65 cl': 2}, ESP),
-    ('14:10', '2', 'Loïc', 2, 1, {'Cola 33 cl': 2, 'Pizza Margherita': 1, 'Bière blonde 65 cl': 2}, ESP),
-    ('20:05', '10', 'Inès', 4, 1, {'Pizza Reine': 1, 'Bière blonde 65 cl': 2, 'Cola 33 cl': 1,
-                                   'Pizza quatre fromages': 1, 'Bière brune 65 cl': 2}, ESP),
-    ('20:47', '9B', 'Loïc', 0, 0, {'Pizza Reine': 1}, MM),
-    ('20:48', '9', 'Loïc', 2, 1, {'Pizza quatre fromages': 1, 'Bière blonde 65 cl': 2}, ESP),
-    ('21:20', '3', 'Loïc', 4, 1, {'Pizza quatre fromages': 2, 'Pizza Margherita': 1, 'Bière blonde 65 cl': 3,
-                                  'Cola 33 cl': 2}, ESP),
-    ('21:35', '8', 'Inès', 2, 1, {'Pizza Reine': 2, 'Bière blonde 33 cl': 2}, MM),
-]
-
+JOURNEE = [(h, t, ouv, pers, 0 if t.endswith('B') else 1, contenu, mode)
+           for h, t, ouv, pers, contenu, mode, _enc in demo.JOURNEE_RESTO]
+assert [x[1] for x in JOURNEE] == ['1', '7', '10', '6', '4', '5', '2B', '2', '10', '9', '3', '8']
 
 def _total(contenu):
     return sum(PRIX[p] * q for p, q in contenu.items())
 
 
-# Ce que demo.TABLES_JOUR_RESTO fixe déjà : qui a ouvert, combien de personnes, ce que porte la table (sans l'ajout de
-# t21 pour la table 4 : quatre fromages et deux eaux, storyboard t21).
+# Ce que demo.TABLES_JOUR_RESTO fixe déjà : qui a ouvert, combien de personnes, ce que porte la table (contenus lus
+# comme un minimum : t21 y ajoute l'après-midi).
 _FIXE = {(t, ouv, h): (pers, contenu) for t, ouv, h, pers, contenu, _s, _tu in demo.TABLES_JOUR_RESTO}
 assert _FIXE[(10, 'Loïc', '11:52')][1] == JOURNEE[2][5]
 assert _FIXE[(5, 'Inès', '13:05')] == (JOURNEE[5][3], JOURNEE[5][5])
-assert _FIXE[(10, 'Inès', '19:10')] == (JOURNEE[7][3], JOURNEE[7][5])
+assert _FIXE[(10, 'Inès', '19:10')] == (JOURNEE[8][3], JOURNEE[8][5])
 assert _FIXE[(4, 'Loïc', '12:15')][0] == JOURNEE[4][3]
 assert all(JOURNEE[4][5][p] >= q for p, q in _FIXE[(4, 'Loïc', '12:15')][1].items())
-assert all(JOURNEE[6][5][p] >= q for p, q in _FIXE[(2, 'Loïc', '12:55')][1].items())
-assert _total(JOURNEE[7][5]) == 20000
+assert all(JOURNEE[7][5][p] >= q for p, q in _FIXE[(2, 'Loïc', '12:55')][1].items())
+assert _total(JOURNEE[8][5]) == 20000
 NB_COMMANDES = len(JOURNEE)
 TOTAL_JOUR = sum(_total(c) for *_x, c, _m in JOURNEE)
 ESPECES_JOUR = sum(_total(c) for *_x, c, m in JOURNEE if m == ESP)
@@ -426,6 +413,7 @@ assert (NB_COMMANDES, TOTAL_JOUR, ESPECES_JOUR, MOMO_JOUR, TABLES, PERSONNES) ==
 OUVERTES = [(11, 'Loïc', '21:40', 50, [('Bière blonde 65 cl', 2)]),
             (12, 'Inès', '21:15', 75, [('Pizza Margherita', 1), ('Cola 33 cl', 1)])]
 assert all(n not in [int(x[1]) for x in JOURNEE if x[1].isdigit() and x[0] > '21:00'] for n, *_r in OUVERTES)
+assert [(n, o, h, pr) for n, o, h, _m, pr in OUVERTES] == demo.OUVERTES_FERMETURE_RESTO
 LISTE = ', '.join(str(n) for n, *_r in OUVERTES)
 assert LISTE == '11, 12'
 
@@ -468,35 +456,16 @@ CODE = resto_code('t22-code', TITRES_RESTO['fermer'])
 
 
 def fermeture(ident, mouvements):
-    """« Fermeture de la caisse » (resto_fermeture), avec ce que le composant du socle ne pose pas : le champ du
-    comptage à « 0 » (Odoo, closing_popup.js:68-72), son texte indicatif vide (pour le geste ``saisir``), le signe d'un
-    mouvement négatif (« - 121 500 FCFA » : payment_method_breakdown.xml:8-9) et le bouton d'impression (avec une
-    imprimante : closing_popup.xml:109-111 ; icône fa-print de SaleDetailsButton)."""
-    html = resto_fermeture(ident, NB_COMMANDES, TOTAL_JOUR, FOND, ESPECES_JOUR, mouvements=mouvements, compte=0,
-                           autres=[(MM, MOMO_JOUR)])
-    remplacements = [('<span class="val" id="%s-in-val">0</span>' % ident,
-                      '<span id="%s-in-ph"></span><span class="val" id="%s-in-val">0</span>' % (ident, ident)),
-                     ('Ventes du jour<span class="ico">%s</span></span>' % ICONES['telecharger'],
-                      'Ventes du jour<span class="ico">%s</span></span><span class="rs-bt t22-imp" id="%s-imp">'
-                      '<span class="ico">%s</span></span>' % (ICONES['telecharger'], ident, ICONES['imprimer']))]
-    if mouvements < 0:
-        remplacements.append(('<span>+ %s</span>' % fcfa(mouvements), '<span>- %s</span>' % fcfa(-mouvements)))
-    # le composant passe par ``superpose`` (chaque texte porte data-layout-allow-overlap) : les morceaux aussi
-    for avant, apres in remplacements:
-        avant, apres = superpose(avant), superpose(apres)
-        assert html.count(avant) == 1, (ident, avant)
-        html = html.replace(avant, apres)
-    # le détail des espèces, désigné par la caméra et l'anneau
-    marque = superpose('<div class="rs-cl-s fonce"><span><i class="rs-tri">')
-    i = html.index(marque, html.index(marque) + 1)
-    html = (html[:i] + superpose('<div class="rs-cl-s fonce" id="%s-mvt"><span><i class="rs-tri">' % ident)
-            + html[i + len(marque):])
-    return html
+    """« Fermeture de la caisse » (ecrans.resto_fermeture) : le champ du comptage à « 0 » (Odoo, closing_popup.js:68-72),
+    le signe d'un mouvement négatif (« - 121 500 FCFA » : payment_method_breakdown.xml:8-9) et le bouton d'impression
+    (avec une imprimante : closing_popup.xml:109-111 ; icône fa-print de SaleDetailsButton)."""
+    return resto_fermeture(ident, NB_COMMANDES, TOTAL_JOUR, FOND, ESPECES_JOUR, mouvements=mouvements, compte=0,
+                           autres=[(MM, MOMO_JOUR)], imprimante=True)
 
 
 F1 = fermeture('t22-f1', 0)
 F2 = fermeture('t22-f2', -SORTIE)
-assert '- 121 500 FCFA' in F2 and 'id="t22-f2-mvt"' in F2 and 'class="rs-cl-s fonce off" id' not in F1
+assert '- 121 500 FCFA' in F2 and 'id="t22-f2-mvt"' in F2 and 'class="rs-cl-s fonce off" id="t22-f1-mvt"' in F1
 
 
 def mouvement(ident, haut=226, largeur=1072):
@@ -583,7 +552,6 @@ CSS = ("/* -- la pastille : Landry (le personnage), Prisca à l'étape 5, Edwige
 /* -- la fermeture : le pied tient sur une ligne avec le bouton d'impression (btn-lg icône) -- */
 #t22-f1 .rs-dlg-p, #t22-f2 .rs-dlg-p { gap: 10px; padding: 18px 26px 20px; }
 #t22-f1 .rs-dlg-p .rs-bt, #t22-f2 .rs-dlg-p .rs-bt { padding: 0 19px; }
-.resto .t22-imp .ico, .resto .t22-imp .ico svg { width: 26px; height: 26px; }
 /* le champ du comptage pendant la saisie (form-control:focus) */
 #t22-f2-in.focus { border-color: var(--muk-prim); box-shadow: 0 0 0 4px rgba(74,120,146,.22); }
 /* -- la fenêtre des mouvements d'espèces d'Odoo (cash_move_popup.xml) -- */
@@ -781,8 +749,11 @@ TUTORIEL = {
                      ('pieces', 'Entrer ou sortir des espèces : ouvert à tous'),
                      ('graphe', 'Le rapport du soir compte des additions, pas des personnes'),
                      ('liste', 'Aucune annulation dans le rapport de fermeture')],
+        # « les annule », pas « les efface », et pas « sans trace » : Odoo garde les additions annulées (filtre
+        # « Annulé » des commandes, PERIMETRE_FONCTIONNEL_RESTAURANT.md:493) ; le bouton annule toutes les tables d'un
+        # coup, sans motif (:574, C30 : O/point_of_sale/…/closing_popup.js:292-311).
         'voix': "Vingt-deux heures trente : qui ferme la caisse ? Et les tables restées ouvertes ? Trop souvent, un seul "
-                "bouton les efface toutes, sans motif ni trace.",
+                "bouton les annule toutes d'un coup, sans motif.",
     },
     'revelation': {
         # regles.py:41-42 ; S/overrides/closing_popup.js:54-79 ; R/views/report_saledetails.xml:13-78.

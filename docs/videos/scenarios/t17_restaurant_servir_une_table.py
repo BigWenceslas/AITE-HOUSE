@@ -36,8 +36,9 @@ Le monde rejoué (conditions) :
   (pos_store.js:1058-1068) : à la deuxième visite, « Bière » est toujours
   choisie (capture 09) ;
 - carte demo.CARTE_RESTO, sans TVA (pas de ligne « Taxes ») ; une table de 4
-  personnes, puis 6 ; la table 4 reste ouverte à la fin (t21 l'encaisse) :
-  Pizza Margherita, 2 Bière blonde 65 cl, 2 Cola 33 cl = 10 000 FCFA.
+  personnes, puis 6 ; la table 4 reste ouverte à la fin : Pizza Margherita,
+  2 Bière blonde 65 cl, 2 Cola 33 cl = 10 000 FCFA (t21 l'encaisse, 18 000
+  FCFA après les ajouts de l'après-midi : demo.TABLES_JOUR_RESTO).
 
 Écrans et libellés (modèles visuels : captures/restaurant/01 à 07, et 09) :
 

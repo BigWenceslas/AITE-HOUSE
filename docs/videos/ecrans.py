@@ -1278,7 +1278,10 @@ def resto_code(ident, titre, sous_titre='', erreur='', personnes=False, haut=205
     « La caisse est fermée… » ou de la phrase d'état du plan, qui reste lisible en entier, comme sur la capture 01
     (haut de la fenêtre à 24 % de l'écran, sous le texte du bandeau, à 17-22 %), et au-dessus de la légende (la
     fenêtre du code fait 525 px : elle finit à 730 px dans un cadre de 796 px). Centrée comme dans Odoo, elle
-    cacherait la phrase : la caisse de la vidéo est plus large que haute par rapport à la tablette.
+    cacherait la phrase : la caisse de la vidéo est plus large que haute par rapport à la tablette. Avec un
+    sous-titre, la fenêtre est plus haute : t21 la pose à ``haut=128`` pour qu'elle finisse au-dessus de la
+    légende (sur la capture C/04, la fenêtre réelle est centrée verticalement : avec un sous-titre, elle
+    monterait ; la série garde la convention, sous la phrase d'état).
     Identifiants : <id>-voile, <id>, <id>-titre, <id>-st, <id>-p0…3, <id>-err, <id>-k0…9, <id>-retour, <id>-eff,
     <id>-code, <id>-pers, <id>-n1…8, <id>-plus, <id>-pretour."""
     pers = ''
@@ -1744,16 +1747,20 @@ def resto_ouverture(ident, fond='0', haut=200):
 
 
 def resto_fermeture(ident, nb_commandes, total, ouverture, especes, mouvements=0, compte=None, autres=(),
-                    note='', haut=62):
+                    note='', haut=62, imprimante=False):
     """« Fermeture de la caisse » avec les textes d'AITE (S/overrides/closing_popup.xml:12-37 ; capture 14) :
     « 1 commande : 6 000 FCFA » accordé ; le bloc Espèces (attendu, Ouverture, ▸ Paiements, ▸ Entrées et sorties
     d'espèces, Compté, Différence) ; un bloc par autre mode ``autres`` = [(nom, montant)] (▸ Paiements, Différence) ;
     « Comptage de caisse » (champ, billets, copier) ; un champ « <mode> Nombre » par mode de type banque qui a des
     paiements (O/point_of_sale, closing_popup.xml ; « Count » traduit « Nombre ») ; « Note de clôture » ; puis
     « Fermer la caisse », « Ignorer », « Entrée ou sortie d'espèces », « Ventes du jour ⤓ ». Le corps défile
-    (<id>-defil, geste ``defiler``). ``compte`` : le montant compté (None : champ vide, différence = −attendu).
-    Identifiants : <id>-voile, <id>, <id>-n, <id>-esp, <id>-compte, <id>-diff, <id>-diffl, <id>-in (champ,
-    <id>-in-val), <id>-ok, <id>-ignorer, <id>-especes, <id>-ventes."""
+    (<id>-defil, geste ``defiler``). ``compte`` : le montant compté (None : champ vide, différence = −attendu ;
+    à l'ouverture de la fenêtre, Odoo met « 0 » dans le champ : ``compte=0``, closing_popup.js:68-72). Un mouvement
+    négatif s'écrit « - 121 500 FCFA » (payment_method_breakdown.xml:8-9). ``imprimante`` : le bouton d'impression
+    après « Ventes du jour » (closing_popup.xml:109-111 ; icône fa-print de SaleDetailsButton). Identifiants :
+    <id>-voile, <id>, <id>-n, <id>-esp, <id>-mvt (la ligne des entrées et sorties), <id>-compte, <id>-diff,
+    <id>-diffl, <id>-in (champ, <id>-in-ph : le texte indicatif vide, pour le geste ``saisir`` ; <id>-in-val),
+    <id>-ok, <id>-ignorer, <id>-especes, <id>-ventes, <id>-imp."""
     attendu = ouverture + especes + mouvements
     compte_v = attendu if compte is None else compte
     diff = compte_v - attendu if compte is not None else -attendu
@@ -1761,11 +1768,12 @@ def resto_fermeture(ident, nb_commandes, total, ouverture, especes, mouvements=0
     blocs = ('<div class="rs-cl-b" id="%s-esp"><div class="rs-cl-t"><span>Espèces</span><span>%s</span></div>'
              '<div class="rs-cl-s"><span>Ouverture</span><span>%s</span></div>'
              '<div class="rs-cl-s fonce"><span><i class="rs-tri">%s</i>Paiements</span><span>+ %s</span></div>'
-             '<div class="rs-cl-s fonce%s"><span><i class="rs-tri">%s</i>%s</span><span>+ %s</span></div>'
+             '<div class="rs-cl-s fonce%s" id="%s-mvt"><span><i class="rs-tri">%s</i>%s</span><span>%s %s</span></div>'
              '<div class="rs-cl-s"><span>Compté</span><span id="%s-compte">%s</span></div>'
              '<div class="rs-cl-s%s" id="%s-diffl"><span>Différence</span><span id="%s-diff">%s</span></div></div>'
-             % (ident, e(fcfa(attendu)), e(fcfa(ouverture)), ICONES['triangle'], e(fcfa(especes)), acc, ICONES['triangle'],
-                e(TEXTES_RESTO['mouvementsEspeces']), e(fcfa(mouvements)), ident,
+             % (ident, e(fcfa(attendu)), e(fcfa(ouverture)), ICONES['triangle'], e(fcfa(especes)), acc, ident,
+                ICONES['triangle'], e(TEXTES_RESTO['mouvementsEspeces']), '-' if mouvements < 0 else '+',
+                e(fcfa(abs(mouvements))), ident,
                 e(fcfa(compte_v if compte is not None else 0)), ' rouge' if diff else '', ident, ident, e(fcfa(diff))))
     for nom, montant in autres:
         blocs += ('<div class="rs-cl-b"><div class="rs-cl-t"><span>%s</span><span>%s</span></div>'
@@ -1778,9 +1786,9 @@ def resto_fermeture(ident, nb_commandes, total, ouverture, especes, mouvements=0
                                                                               ICONES['croix-pleine'])
                       for nom, montant in autres if montant)
     comptage = ('<div class="rs-lab">Comptage de caisse</div><div class="rs-in-l"><span class="rs-champ rs-plein rs-saisie" '
-                'id="%s-in"><span class="val" id="%s-in-val">%s</span><span class="rs-x">%s</span></span>'
-                '<span class="rs-btn-ic">%s</span><span class="rs-btn-ic">%s</span></div>'
-                % (ident, ident, e(str(compte)) if compte is not None else '', ICONES['croix-pleine'],
+                'id="%s-in"><span id="%s-in-ph"></span><span class="val" id="%s-in-val">%s</span><span class="rs-x">%s'
+                '</span></span><span class="rs-btn-ic">%s</span><span class="rs-btn-ic">%s</span></div>'
+                % (ident, ident, ident, e(str(compte)) if compte is not None else '', ICONES['croix-pleine'],
                    ICONES['billets'], ICONES['copier']))
     corps = ('<div class="rs-cl-defil" id="%s-defil">%s<hr>%s%s<div class="rs-lab">Note de clôture</div>'
              '<div class="rs-zone-txt">%s</div></div>'
@@ -1789,6 +1797,8 @@ def resto_fermeture(ident, nb_commandes, total, ouverture, especes, mouvements=0
             '</span><span class="rs-bt rs-dr" id="%s-especes">%s</span><span class="rs-bt" id="%s-ventes">Ventes du jour'
             '<span class="ico">%s</span></span>'
             % (ident, ident, ident, e(TEXTES_RESTO['especes']), ident, ICONES['telecharger']))
+    if imprimante:
+        pied += '<span class="rs-bt rs-imp" id="%s-imp"><span class="ico">%s</span></span>' % (ident, ICONES['imprimer'])
     droite = '<b class="rs-cl-n" id="%s-n">%s %s</b>' % (ident, e(TEXTES_RESTO['commandes'](nb_commandes)), e(fcfa(total)))
     return _dialogue(ident, 'Fermeture de la caisse', corps, pied, 1060, haut, droite_titre=droite, classe_=' rs-clo')
 
