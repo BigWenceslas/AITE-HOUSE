@@ -153,7 +153,10 @@ Données : `demo.py`, bloc « le restaurant ».
   `fe-*`). Ce qui suit la couleur primaire d'Odoo prend le bleu acier de MuK
   (le thème habille aussi la caisse) ; les couleurs codées en dur par AITE et
   par Odoo (tables, légende, pavé, familles, notifications) restent telles
-  quelles. Échelle : la caisse fait 1 720 px de large, 1,34 fois la tablette
+  quelles, sauf les gris des éléments inactifs (« Addition » et « Note cuisine »
+  grisés, « % » et « Prix », « J'envoie » sans rien à envoyer, la quantité d'une
+  tuile), un ton plus foncés que le rendu d'Odoo pour le contraste WCAG AA du
+  contrôle (`aite-marketing.css`, relectures de t17 à t20). Échelle : la caisse fait 1 720 px de large, 1,34 fois la tablette
   de 1 280 points des captures (barres, boutons, fenêtres), mais 796 px de
   haut pour 800 points : le cadre est plus large que la tablette. Le plan est
   donc rejoué **×1,05** (une table de 120 points fait 126 px), tassé en
@@ -161,6 +164,17 @@ Données : `demo.py`, bloc « le restaurant ».
   la largeur de la caisse, contre les deux tiers sur la tablette. La fenêtre
   du code s'ouvre à 205 px du haut de la caisse, sous la ligne de texte du
   bandeau (capture 01), et non au centre.
+- Le monde de la série : la caisse a une imprimante de tickets (« Addition »
+  imprime), mais **pas d'imprimante de préparation**, comme les captures et les
+  tours (`R/tests/test_tours.py:41-43`) ; la pastille rouge compte donc tous les
+  produits pas encore envoyés. Le bon d'annulation et la phrase « Bon
+  d'annulation envoyé. » ne sont montrés dans aucun tutoriel tant qu'ils n'ont
+  pas été vus sur une imprimante réelle (notes de version §8 ; t19 : `BON_VU`).
+- La journée du 14/10 en salle (qui ouvre quelle table, à quelle heure, ce
+  qu'elle porte, ce qui en est sûr) est dans `demo.TABLES_JOUR_RESTO`, le journal
+  des annulations dans `demo.ANNULATIONS_JOUR_RESTO`, le fond de caisse dans
+  `demo.FOND_RESTO` : t21 à t23 les reprennent. Midi (t17 à t19), puis le
+  service du soir (t20 : la table 10 rouverte par Inès).
 - La fin des tutoriels du restaurant dit « Caisse de restaurant sur Odoo 18 »
   (`demo.SOUS_MARQUE_RESTO`) au lieu de « Suite hôtelière sur Odoo 18 ».
 - Les textes de la caisse sont recopiés de `static/src/utils/messages.js`

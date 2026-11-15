@@ -168,9 +168,13 @@ composants d'`ecrans.py` (« La caisse du restaurant ») : `fenetre_resto`,
 puis les personnes), `resto_commande` (familles, tuiles, addition, pavé,
 « J'envoie », « J'encaisse »), `resto_notification`, `resto_annulation`,
 `resto_paiement`, `resto_menu`, `resto_ouverture`, `resto_fermeture`,
-`resto_confirmation`, `visionneuse_pdf` et le rapport de fermeture ; côté
-gestion, `page_reglages` / `reglage` (les réglages du Point de Vente) et
-`fiche_employe`. Les textes de la caisse sont ceux de
+`resto_confirmation`, `visionneuse_pdf` et le rapport de fermeture ; depuis
+l'intégration de t17 à t20, `resto_visite` (une table rouverte, avant et après
+le premier toucher), `resto_pile` et `resto_produits` (les familles et les
+tuiles, toucher par toucher), `resto_motifs` et `resto_actions` (la fenêtre
+« Actions » d'Odoo), `typo_resto` ; côté gestion, `page_reglages` / `reglage`
+(les réglages du Point de Vente), `fiche_employe` et `panneau_liste` (le
+panneau complet d'une liste : flèches et vues). Les textes de la caisse sont ceux de
 `static/src/utils/messages.js` (`MESSAGES_RESTO`, `TITRES_RESTO`,
 `TEXTES_RESTO`). Une fenêtre à étapes (code puis personnes ; combien, code,
 pourquoi) est faite d'une tête et de panneaux empilés : on passe d'une étape
@@ -196,6 +200,37 @@ Pièges relevés sur le tutoriel 16 :
   carte, le plan de salle et le stock de départ (`docs/INSTALLATION.md`
   §9.6).
 
+Pièges relevés sur les tutoriels 17 à 20 :
+
+- **caler les gestes sur la voix réelle**, pas sur l'estimation de 15
+  caractères par seconde : Kokoro en dit 17 à 19, et les écarts ont atteint
+  3 s. Les pauses de chaque piste donnent les instants des phrases :
+  `ffmpeg -i <dossier>/fr/<slug>/assets/voix/<empreinte>-n.wav -af silencedetect=noise=-38dB:d=0.12 -f null -`,
+  puis `hyperframes snapshot --at <t>` sur chaque geste ;
+- un `zoom` sur le navigateur des tutoriels en dessous de 1,32 laisse voir son
+  bord haut et le fond violet (`shared/aite-motion.js:109-121`) ; un zoom sur
+  la rangée du bas du plan ou sur « J'envoie » passe sous la légende d'étape ;
+- le moteur mesure les cibles une fois, au chargement : un élément en
+  `display: none` à ce moment (la case de l'employé avant la correction du
+  socle) donne un anneau en haut à gauche ; cacher par `visibility`, avec le
+  texte le plus long que la vidéo y mettra ;
+- la pastille rouge du bouton « Salle » ne s'affiche jamais dans Odoo 18
+  (`ECARTS.md` n° 94) : `resto_plan(badge=…)` reste à `None` ;
+- une table qu'on rouvre garde la famille choisie sur le poste (pas les
+  racines) et n'a pas de ligne choisie : pas de pavé, « Note cuisine » grisé
+  (`resto_commande(sans_ligne=True)`, `resto_visite`) ;
+- ni bon d'annulation ni « Bon d'annulation envoyé. » tant qu'ils n'ont pas
+  été vus (notes de version §8 ; t19 : `BON_VU`) ; la série est sans
+  imprimante de préparation (DESIGN.md) ;
+- une réaction d'un autre que le personnage s'écrit `(texte, nom)` dans
+  `reactions` ; la pastille du haut change de personne par
+  `ecrans.css_personnage` ;
+- la journée en salle est fixée dans `demo.TABLES_JOUR_RESTO` (midi : t17 à
+  t19 ; le soir : t20) : un tutoriel qui montre une table, une heure ou une
+  durée la relit, et la complète s'il encaisse ou annule ;
+- les cartes de l'accroche sont « aspirées » par la révélation : n'y mettre
+  que des douleurs que la vidéo résout.
+
 ### La série livrée (`docs/guides/videos/`)
 
 | N° | Vidéo | Fonctionnalité | Durée | Poids |
@@ -215,6 +250,16 @@ Pièges relevés sur le tutoriel 16 :
 | 13 | `14-tutoriel-stock.mp4` | Stock bar & cave | 2 min 04 | 8,6 Mo |
 | 14 | `15-tutoriel-achats.mp4` | Achats & fournisseurs | 2 min 04 | 9,4 Mo |
 | 15 | `16-tutoriel-direction.mp4` | Cockpit Direction | 2 min 10 | 8,5 Mo |
+
+Restaurant (lot 1, `produire.TUTORIELS_RESTAURANT`) :
+
+| N° | Vidéo | Fonctionnalité | Durée | Poids |
+|---|---|---|---|---|
+| 16 | `17-tutoriel-restaurant-mise-en-place.mp4` | Service à table contrôlé : la mise en place | 2 min 02 | 6,8 Mo |
+| 17 | `18-tutoriel-restaurant-servir-une-table.mp4` | Ouvrir la caisse et servir une table | 2 min 11 | 6,3 Mo |
+| 18 | `19-tutoriel-restaurant-plan-en-couleurs.mp4` | Le plan en couleurs | 2 min 01 | 5,4 Mo |
+| 19 | `20-tutoriel-restaurant-annulations.mp4` | Annuler sous le code du chef de salle | 2 min 11 | 6,0 Mo |
+| 20 | `21-tutoriel-restaurant-produits-epuises.mp4` | Produits épuisés | 1 min 57 | 6,9 Mo |
 
 Le tutoriel 14 lit dans `aite_purchase_dashboard` le calcul des créances
 fournisseurs (409/4091) : il a été refait après la correction du module

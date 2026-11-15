@@ -123,7 +123,7 @@ AVATARS_RESTO = {'Edwige': '#A0446E', 'Prisca': '#B26A2B', 'Loïc': '#3F7D5A', '
 # Les familles de la caisse, sur trois niveaux (noms de la recette R29-R33 et de
 # docs/INSTALLATION.md §9.6) : (nom, couleur d'Odoo, sous-familles). Couleurs relevées
 # sur la base du restaurant (Nourriture 7, Boisson 8) ; une sous-famille prend celle de
-# son parent (point_of_sale/models/pos_category.py:71-79).
+# son parent, à la création comme au déplacement (point_of_sale/models/pos_category.py:67-81).
 FAMILLES_RESTO = [
     ('Nourriture', 7, [('Pizzas', 0, []), ('Petit déjeuner', 0, []), ('Plats', 0, [])]),
     ('Boisson', 8, [
@@ -160,3 +160,49 @@ CARTE_RESTO = [
 # Les cinq motifs d'annulation posés d'office (addons/aite_pos_restaurant/data/
 # restaurant_motif_data.xml:8-28) ; « Autre » demande une précision.
 MOTIFS_RESTO = ['Erreur de saisie', 'Client parti', 'Plat refusé', 'Produit manquant', 'Autre']
+
+# Le fond de caisse du 14/10 : les espèces comptées à la fermeture précédente, proposées à l'ouverture
+# (tutoriel 17 ; point_of_sale opening_control_popup.js:29-32) ; la fermeture du jour les recompte (t22).
+FOND_RESTO = 25000
+
+# La journée du 14/10 en salle, telle que la montrent les tutoriels 17 à 20 (relus) : la référence des
+# tutoriels qui suivent (t21 encaisse, t22 ferme la caisse, t23 lit les rapports). Une table, une ligne :
+# (table, ouverte par, heure d'ouverture, personnes, contenu {article: quantité} quand le tutoriel le
+# fixe, ce qui est sûr de la suite, tutoriels). Les heures ne sont jamais à l'écran de la caisse (seules
+# les durées) ; elles le sont dans la gestion (journal des annulations, commandes, rapports).
+# - midi : t18 montre le plan de 12:50 à 13:00 (4, 6, 7, 10 et 2 ouvertes, les autres libres), t19 celui
+#   de 13:30 et de 13:48 (6, 7 et 10 encaissées entre-temps) ;
+# - la table 10 du soir (t20) n'est pas celle de midi (t18) : à midi, la 10 est à Loïc de 11:52 à son
+#   encaissement, avant 13:30 ; le soir, Inès la rouvre. t21 l'encaisse (20 000 FCFA, 4 personnes) ;
+# - les tables 4 et 2 sont encore ouvertes à 13:48 (t19) : un encaissement de la table 4 avant 13:48
+#   (storyboards t21 et t22 : 12:41) contredirait t18 et t19.
+TABLES_JOUR_RESTO = [
+    (1, 'Loïc', '11:52', None, {}, "un Jus de bissap 50 cl retiré sans code à 11:52 (poste en retard) ; libre à 12:50",
+     ('t19',)),
+    (7, 'Inès', '11:45', None, {}, 'orange à 12:45 ; encaissée entre 13:00 et 13:30', ('t18', 't19')),
+    (10, 'Loïc', '11:52', None, {'Pizza Reine': 2, 'Bière blonde 65 cl': 4}, 'encaissée entre 13:00 et 13:30',
+     ('t18', 't19')),
+    (4, 'Loïc', '12:15', 6, {'Pizza Margherita': 1, 'Bière blonde 65 cl': 2, 'Cola 33 cl': 2},
+     '4 personnes, puis 6 (t17) ; 10 000 FCFA envoyés à la fin de t17 ; encore ouverte à 13:48 (1 h 33)',
+     ('t17', 't18', 't19')),
+    (6, 'Inès', '12:28', None, {}, 'encaissée entre 13:00 et 13:30', ('t18', 't19')),
+    (2, 'Loïc', '12:55', None, {'Cola 33 cl': 2}, 'envoyés par Landry à 13:00 (t18) ; encore ouverte à 13:48',
+     ('t18', 't19')),
+    (5, 'Inès', '13:05', 2, {'Pizza quatre fromages': 1, 'Bière blonde 65 cl': 2},
+     "une 4ᵉ bière saisie puis retirée, une bière envoyée annulée à 13:30 : 10 000 FCFA", ('t19',)),
+    (9, 'Loïc', '13:28', 2, {}, 'Pizza Margherita et 2 Cola 33 cl (7 000 FCFA) annulés en entier à 13:48 par Landry',
+     ('t19',)),
+    (10, 'Inès', '19:10', 4, {'Pizza Reine': 1, 'Bière blonde 65 cl': 2, 'Cola 33 cl': 1, 'Pizza quatre fromages': 1,
+                              'Bière brune 65 cl': 2},
+     'service du soir : 25 min puis 31 min dans t20 ; 20 000 FCFA, encaissée par t21', ('t20',)),
+]
+
+# Le journal des annulations du 14/10 (tutoriel 19, étape 7), dans l'ordre de la liste (« date desc, id
+# desc » : aite_pos_restaurant/models/restaurant_annulation.py:37) : (date, table, produit, quantité,
+# demandée par, autorisée par, motif, précision). La ligne de 11:52 est arrivée sans code d'un poste en retard.
+ANNULATIONS_JOUR_RESTO = [
+    ('14/10/2026 13:48', '9', 'Cola 33 cl', 2, 'Landry', 'Landry', 'Client parti', ''),
+    ('14/10/2026 13:48', '9', 'Pizza Margherita', 1, 'Landry', 'Landry', 'Client parti', ''),
+    ('14/10/2026 13:30', '5', 'Bière blonde 65 cl', 1, 'Inès', 'Landry', 'Autre', 'Bouteille cassée au service'),
+    ('14/10/2026 11:52', '1', 'Jus de bissap 50 cl', 1, 'Loïc', '', '', ''),
+]

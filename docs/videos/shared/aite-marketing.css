@@ -285,8 +285,11 @@
 .resto .rs-cb svg { width: 40px; height: 40px; }
 .resto.sur-commande .rs-cherche { display: flex; }
 .resto.sur-commande .rs-cb { display: inline-flex; }
-.resto .rs-emp { display: none; align-items: center; gap: 10px; max-width: 250px; padding: 0 8px; }
-.resto.avec-emp .rs-emp { display: flex; }
+/* l'employé : caché sans être retiré tant que personne n'est identifié (le moteur mesure les cibles au chargement :
+   un anneau ou le curseur sur <id>-emp viserait sinon une case de taille nulle) ; fenetre_resto pose d'office le nom
+   le plus long que la vidéo montre (relecture de t18) */
+.resto .rs-emp { display: flex; visibility: hidden; align-items: center; gap: 10px; max-width: 250px; padding: 0 8px; }
+.resto.avec-emp .rs-emp { visibility: inherit; }
 .resto .rs-emp .avatar { flex: none; width: 36px; height: 36px; font-size: 17px; border-radius: 6px; }
 .resto .rs-emp-n { max-width: 190px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .resto .rs-menu { width: 52px; height: 52px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #343A40; }
@@ -388,6 +391,9 @@
 .resto .rs-prec label { display: block; font-size: 20px; font-weight: 700; margin-bottom: 6px; }
 .resto .rs-prec .rs-champ { width: auto; }
 .resto .rs-annul .rs-err { margin: 12px 0 0; }
+/* le champ de la précision (form-control-lg), le trait primaire au focus (classe focus) */
+.resto .rs-champ-prec { justify-content: flex-start; }
+.resto .rs-champ-prec.focus { border-color: var(--muk-prim); box-shadow: 0 0 0 4px rgba(74,120,146,.22); }
 /* la notification d'Odoo, en haut à droite */
 .resto .rs-notif { position: absolute; right: 10px; top: 72px; width: 580px; z-index: 40; background: #fff; border-radius: 4px;
   border-left: 8px solid #17A2B8; box-shadow: 0 10px 30px rgba(0,0,0,.22); padding: 20px 60px 20px 26px; font-size: 20px;
@@ -422,18 +428,22 @@
 .resto .rs-ctrl { flex: none; display: flex; gap: 8px; }
 .resto .rs-ctrl > span { height: 56px; padding: 0 14px; background: #fff; border-radius: 4px; display: flex; align-items: center;
   font-size: 20px; white-space: nowrap; color: #212529; }
-.resto .rs-ctrl > span.gris { color: #8C959D; }
+/* les gris des éléments inactifs, un ton plus foncés que le rendu d'Odoo, pour le contraste WCAG AA du contrôle
+   de HyperFrames (relectures de t17 à t20) : « Addition » et « Note cuisine » grisés #8C959D → #6C757D (3,0 → 4,7:1),
+   « % » et « Prix » #6C757D → #5C636A (4,2 → 5,5:1), « J'envoie » inactif #8C959D → #6C757D (2,9 → 4,5:1), la
+   quantité d'une tuile #6C757D → #495057 (2,3 → 4,0:1 sur la lavande, texte de 46 px gras) */
+.resto .rs-ctrl > span.gris { color: #6C757D; }
 .resto .rs-ctrl > span.dr { margin-left: auto; }
 .resto .rs-pave4 { flex: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
 .resto .rs-pk { height: 54px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center;
   font-size: 22px; color: #212529; }
 .resto .rs-pk svg { width: 30px; height: 30px; }
 .resto .rs-pk.sel { background: #DCE6EC; box-shadow: inset 0 0 0 1px var(--muk-prim); }
-.resto .rs-pk.gris { background: #F1F3F5; color: #6C757D; }
+.resto .rs-pk.gris { background: #F1F3F5; color: #5C636A; }
 .resto .rs-pk.jaune { background: #FDE697; } .resto .rs-pk.rose { background: #FAE0D5; } .resto .rs-pk.rouge { background: #FFABAB; }
 .resto .rs-pk.vert { background: #C3F0C9; }
 .resto .rs-act { flex: none; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; height: 90px; }
-.resto .rs-envoyer { border-radius: 4px; background: #F8F9FA; color: #8C959D; display: flex; align-items: center;
+.resto .rs-envoyer { border-radius: 4px; background: #F8F9FA; color: #6C757D; display: flex; align-items: center;
   justify-content: space-between; gap: 10px; padding: 0 20px; font-size: 26px; }
 .resto .rs-envoyer.actif { background: var(--muk-prim); color: #fff; }
 .resto .rs-envoyer-t { font-weight: 400; white-space: nowrap; }
@@ -443,6 +453,11 @@
 .resto .rs-cpt i { font-style: normal; padding: 0 9px; border-radius: 4px; background: rgba(0,0,0,.3); }
 .resto .rs-envoyer.deux-col .rs-envoyer-t { display: none; }
 .resto .rs-envoyer.deux-col .rs-cpts { flex: 1; display: grid; grid-template-columns: 1fr 1fr; column-gap: 18px; }
+/* rien à envoyer : « J'envoie » centré, sans compteurs (O/pos_restaurant/…/actionpad_widget.js:32-38,
+   swapButtonClasses : « btn-light pe-none disabled justify-content-center » ; capture 09) */
+.resto .rs-envoyer:not(.actif) { justify-content: center; }
+.resto .rs-envoyer:not(.actif) .rs-cpts { display: none; }
+.resto .rs-envoyer:not(.actif) .rs-envoyer-t { display: block; }
 .resto .rs-encaisser { border-radius: 4px; background: #fff; color: #212529; display: flex; align-items: center; justify-content: center;
   font-size: 26px; }
 .resto .rs-encaisser.actif { background: var(--muk-prim); color: #fff; }
@@ -457,9 +472,18 @@
 .resto .rs-info { position: absolute; top: 0; right: 0; width: 0; height: 0; border-style: solid; border-width: 0 40px 40px 0;
   border-color: transparent rgba(154,158,161,.5) transparent transparent; }
 .resto .rs-info svg { position: absolute; left: 26px; top: 5px; width: 7px; height: 14px; }
-.resto .rs-tuile-q { position: absolute; right: 12px; bottom: 2px; font-size: 46px; font-weight: 800; color: #6C757D; line-height: 1;
+.resto .rs-tuile-q { position: absolute; right: 12px; bottom: 2px; font-size: 46px; font-weight: 800; color: #495057; line-height: 1;
   visibility: hidden; }
 .resto .rs-tuile-q.on { visibility: inherit; }
+/* une visite à une table (ecrans.resto_visite) : l'addition avant et après le premier toucher, dans la même case ;
+   sans ligne, J'encaisse absent et J'envoie sur toute la rangée (pos_restaurant actionpad_widget.xml:15-17) */
+.resto .rs-cmd.rs-visite > .rs-g { grid-column: 1; grid-row: 1; }
+.resto .rs-cmd.rs-visite > .rs-d { grid-column: 2; grid-row: 1; }
+.resto .rs-g-vide .rs-encaisser { display: none; }
+.resto .rs-g-vide .rs-act { grid-template-columns: 1fr; }
+/* la pile des familles et des tuiles (ecrans.resto_pile) : un état par toucher de famille, au même endroit */
+.resto .rs-pile { flex: 1; min-height: 0; display: grid; }
+.resto .rs-et { grid-area: 1 / 1; display: flex; flex-direction: column; gap: 14px; min-height: 0; }
 
 /* -- l'écran de paiement -- */
 .resto .rs-paie { position: absolute; inset: 0; display: grid; grid-template-columns: 660px 1fr; gap: 14px; padding: 8px 10px 10px; }
@@ -545,6 +569,16 @@
 .resto .rs-dlg-c hr { border: 0; border-top: 1px solid #DEE2E6; margin: 4px 0 22px; }
 .resto .rs-saisie .val { font-weight: 400; }
 .resto .rs-conf { margin: 4px 0; font-size: 22px; line-height: 1.5; }
+/* la fenêtre « Actions » d'Odoo (ecrans.resto_actions) : en-tête et croix, sans pied ; boutons btn-secondary
+   btn-lg py-5 en trois colonnes (control_buttons.scss:1-2), grisés (opacité 0,65) sans ligne choisie */
+.resto .rs-actions .rs-dlg-p { display: none; }
+.resto .rs-actions .rs-dlg-c { padding: 10px 21px 21px; }
+.resto .rs-act-g { display: grid; grid-template-columns: repeat(3, 1fr); gap: 11px; margin-top: 11px; }
+.resto .rs-act-b { height: 168px; border-radius: 8px; background: #E2E5E9; color: #212529; font-size: 26px; display: flex;
+  align-items: center; justify-content: center; gap: 8px; text-align: center; padding: 0 16px; }
+.resto .rs-act-b.off { opacity: .65; }
+.resto .rs-act-i { width: 26px; height: 26px; display: inline-flex; font-style: normal; flex: none; }
+.resto .rs-act-i svg { width: 26px; height: 26px; }
 
 /* -- le rapport en PDF (visionneuse du navigateur) -- */
 .resto .rs-pdf { position: absolute; inset: 0; z-index: 27; background: #525659; overflow: hidden; }
@@ -560,6 +594,21 @@
 .resto .rs-rp-t td.d { text-align: right; }
 .resto .rs-rp-t tr.gras td { font-weight: 700; border-bottom: 0; }
 .resto .rs-rp-p { padding: 4px 12px; }
+
+/* ------------------------------------- panneau complet d'une liste (thème MuK) --
+   ecrans.panneau_liste (repris de t19, capture 22) : titre, recherche, pagination, flèches, vues */
+.cp-l .titre { font-size: 24px; }
+.cp-l .recherche { margin-left: auto; width: 640px; }
+.cp-l .pager { margin-left: auto; }
+.cp-fl { display: flex; gap: 2px; }
+.cp-fl i { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; background: #E9ECEF;
+  color: #343A40; font-style: normal; font-size: 24px; border-radius: 4px; }
+.cp-vues { display: flex; gap: 0; margin-left: 8px; }
+.cp-vues i { width: 50px; height: 42px; display: flex; align-items: center; justify-content: center; background: #E9ECEF;
+  color: #343A40; }
+.cp-vues i:first-child { border-radius: 4px 0 0 4px; } .cp-vues i:last-child { border-radius: 0 4px 4px 0; }
+.cp-vues i.actif { background: #D5E1E8; box-shadow: inset 0 0 0 1px var(--muk-prim); }
+.cp-vues svg { width: 22px; height: 22px; }
 
 /* ------------------------------------------------- réglages (thème MuK) -- */
 .rg-page { position: absolute; inset: 0; background: #fff; }

@@ -68,7 +68,8 @@ def bulle(ident, sel, cote='droite', d=2.4, **kw):
 
 def reaction(ident, d=2.6, **kw):
     """Le personnage du tutoriel réagit (``TUTORIEL['reactions']``), dans le
-    coin bas droit, sans bloquer."""
+    coin bas droit, sans bloquer. Une réaction d'un autre que le personnage
+    s'écrit (texte, nom) : elle est signée de son prénom et de son initiale."""
     return _g('reaction', ident=ident, d=d, **kw)
 
 
@@ -173,9 +174,12 @@ class Tutoriel(moteur.Video):
                             for i, x in enumerate(temps))
         bulles = ''.join('<div class="bulle masque" id="%s"><span class="b-ico">%s</span><span>%s</span></div>'
                          % (i, ICONES['eclair'], e(txt)) for i, txt in s.get('bulles', {}).items())
+        # une réaction est signée du personnage, ou d'un autre : (texte, nom) — le chef de salle qui prend la table
+        # d'un collègue (relecture de t18)
         reactions = ''.join('<div class="reaction masque" id="%s"><span class="av">%s</span><div><b>%s</b>'
-                            '<span>%s</span></div></div>' % (i, e(nom[0]), e(nom.split()[0]), e(txt))
-                            for i, txt in s.get('reactions', {}).items())
+                            '<span>%s</span></div></div>' % (i, e(qui[0]), e(qui.split()[0]), e(txt))
+                            for i, (txt, qui) in ((i, r if isinstance(r, tuple) else (r, nom))
+                                                  for i, r in s.get('reactions', {}).items()))
         legendes = []
         debut = t
         self.entree('#tu-fond', t, d=0.5, y=0)
