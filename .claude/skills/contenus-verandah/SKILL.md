@@ -59,3 +59,4 @@ Refusés : « la marmite se repose, viens manger » (pas original), puis la Jour
 - court et direct, dans le ton de la phrase du DG (« C'est lundi, mola ! … on se retrouve le soir à La Vérandah »), une raison concrète de venir aujourd'hui, rien d'inventé ;
 - exemples retenus : « Après la messe, pas besoin d'aller loin : on traverse. » (La Vérandah est en face de l'église Sainte Monique) ; « « On se voit », tu lui dis depuis des mois. C'est aujourd'hui. » ;
 - pas le même thème qu'AITE le même jour.
+- Consigne du DG (15 novembre) : partir de l'actualité qui fait parler les clients, avec ses mots : « Après le 2-0, on se capte à La Vérandah, au calme. » (victoire des Lions 2-0 sur la Namibie à Japoma) ; « se capter » = se retrouver. Le dimanche reste « au calme ». Refusés le 15 : « après la messe, on traverse » (l'église comme argument de vente), « on se voit, c'est aujourd'hui », « à deux ou à dix ».

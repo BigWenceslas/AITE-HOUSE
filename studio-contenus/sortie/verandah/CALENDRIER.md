@@ -1034,53 +1034,52 @@ La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp 
 #LaVerandah #Douala #Makepe #SamediSoir #Sortie
 ```
 
-## Dimanche 15 novembre — version 3
+## Dimanche 15 novembre — version 4 (consignes du DG)
 
-### Dimanche 11h — Pensée (photo ronde) · undefined
+### Dimanche 12h — Pensée (photo ronde) · undefined
 
-![VD-DIM-8](VD-DIM-8-vd-sombre.jpg)
+![VD-DIM-11](VD-DIM-11-vd-sombre.jpg)
 
-**Visuel :** Entre amis — « On se voit », tu lui dis depuis des mois. C’est aujourd’hui.
+**Visuel :** Bon dimanche — Après le 2-0, on se capte à La Vérandah, au calme.
 
 **Légende à publier :**
 
 ```text
-« On se voit, on se voit »… et trois mois passent. Ce dimanche, appelle-le et retrouvez-vous cet après-midi à La Vérandah. Tu penses à qui, là ? 📞
+Jeudi à Japoma, les Lions ont battu la Namibie 2-0 et on est en tête du groupe. Aujourd’hui c’est dimanche : on en parle tranquillement, sans pression. Avec qui tu viens refaire le match ? 🦁
 
 La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
 
-#LaVerandah #Douala #Makepe #BonDimanche #Amis
+#LaVerandah #Douala #Makepe #LionsIndomptables #BonDimanche
 ```
 
-### Dimanche 14h — Ambiance · undefined
+### Dimanche 15h — Ambiance · undefined
 
-![VD-DIM-9](VD-DIM-9-vd-ambiance.jpg)
+![VD-DIM-12](VD-DIM-12-vd-ambiance.jpg)
 
-**Visuel :** À deux ou à dix ? — UNE TABLE T’ATTEND CET APRÈS-MIDI
+**Visuel :** Mola, viens on cause — LE 2-0 SE RACONTE AU CALME, À LA VÉRANDAH
 
 **Légende à publier :**
 
 ```text
-Dimanche, mola ! À deux pour souffler ou à dix pour rigoler, l’après-midi se partage à La Vérandah. Tu viens à deux ou à dix ? 🙌
+Le match, tout le monde l’a vu, mais chacun a sa version des deux buts. Viens raconter la tienne à La Vérandah, posé, à Makepe. C’est quoi ton meilleur moment de jeudi ?
 
 La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
-L’abus d’alcool est dangereux pour la santé. À consommer avec modération.
 
-#LaVerandah #Douala #Makepe #BonDimanche #Moderation
+#LaVerandah #Douala #Makepe #LionsIndomptables #BonDimanche
 ```
 
-### Dimanche 10h30 — Pensée (photo ronde) · undefined
+### Dimanche 17h — Ambiance · undefined
 
-![VD-DIM-10](VD-DIM-10-vd-sombre.jpg)
+![VD-DIM-13](VD-DIM-13-vd-ambiance.jpg)
 
-**Visuel :** Bon dimanche — Après la messe, pas besoin d’aller loin : on traverse.
+**Visuel :** Les Lions ont assuré — MAINTENANT ON SE POSE À LA VÉRANDAH
 
 **Légende à publier :**
 
 ```text
-Dimanche, mola ! La messe finie, la table t’attend juste en face. Tu viens avec qui ? 🙏
+Les Lions ont gagné 2-0 et sont en tête du groupe G : la semaine a bien fini. Aujourd’hui, on se pose à La Vérandah, à Makepe. Tu passes à quelle heure ?
 
 La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
 
-#LaVerandah #Douala #Makepe #BonDimanche #SainteMonique
+#LaVerandah #Douala #Makepe #LionsIndomptables #BonDimanche
 ```

@@ -93,3 +93,5 @@ Refusés : « saluer tes voisins » (pas original), puis un dimanche sur la Jour
 - aucun thème triste ou commémoratif, aucun sujet choisi seulement parce qu'il est au calendrier ;
 - l'originalité vient du vécu de Douala (la ville qui baisse le volume, la mama des beignets-haricots, l'uniforme repassé du dimanche soir), jamais d'un fait personnel du DG inventé ;
 - pas le même thème que La Vérandah le même jour.
+
+- Consigne du DG (15 novembre) : le dimanche d'AITE, c'est **le repos et profiter en famille**, ou une **citation** vérifiée (moderne, pas littéraire : ex. Anne Lamott, TED 2017, « Presque tout se remet à fonctionner si on le débranche quelques minutes… vous y compris. »). Retenus : « ton seul programme, c'est de rire avec ceux que tu aimes », « une sieste après le ndolé du dimanche ».

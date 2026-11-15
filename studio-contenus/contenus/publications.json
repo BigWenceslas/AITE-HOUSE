@@ -2635,6 +2635,74 @@
         "#Souvenirs",
         "#Douala"
       ]
+    },
+    {
+      "id": "DIM-11",
+      "serie": "Dimanche 15 novembre — version 4 (consignes du DG)",
+      "semaine": null,
+      "jour": "dimanche",
+      "moment": "dimanche",
+      "modele": "sombre",
+      "theme": "citation · Anne Lamott (TED2017, « 12 truths I learned from life and writing », vérité n° 2)",
+      "etiquette": "Citation du dimanche",
+      "texte": "« Presque tout se remet à fonctionner si on le *débranche quelques minutes*… vous y compris. »",
+      "auteur": "Anne Lamott",
+      "titre": "",
+      "points": [],
+      "numero": null,
+      "photo": "tunique",
+      "legende": "« Presque tout se remet à fonctionner si on le débranche quelques minutes… vous y compris. » L’écrivaine américaine Anne Lamott le disait en 2017, lors d’une conférence TED (« Almost everything will work again if you unplug it for a few minutes, including you »).\n\nNous qui passons la semaine à redémarrer des ordinateurs, on le sait mieux que personne : ce dimanche, c’est ton tour de te débrancher, en famille. 😌\n\nEt toi, comment tu te débranches le dimanche ?",
+      "hashtags": [
+        "#AITEConsulting",
+        "#BonDimanche",
+        "#Repos",
+        "#Famille",
+        "#Douala"
+      ]
+    },
+    {
+      "serie": "Dimanche 15 novembre — version 4 (consignes du DG)",
+      "semaine": null,
+      "jour": "dimanche",
+      "moment": "dimanche",
+      "modele": "affiche",
+      "etiquette": "Bon dimanche",
+      "titre": "",
+      "points": [],
+      "numero": null,
+      "id": "DIM-12",
+      "photo": "veste-pied",
+      "theme": "repos et famille",
+      "texte": "Aujourd’hui, ton seul programme, c’est de *rire* avec ceux que tu aimes.",
+      "legende": "Pas de rendez-vous, pas de liste de choses à faire. Juste les blagues des enfants, les histoires des parents et les éclats de rire. 😄\n\nQui te fait le plus rire dans ta famille ?",
+      "hashtags": [
+        "#AITEConsulting",
+        "#BonDimanche",
+        "#Famille",
+        "#Douala"
+      ]
+    },
+    {
+      "serie": "Dimanche 15 novembre — version 4 (consignes du DG)",
+      "semaine": null,
+      "jour": "dimanche",
+      "moment": "dimanche",
+      "modele": "affiche",
+      "etiquette": "Bon dimanche",
+      "titre": "",
+      "points": [],
+      "numero": null,
+      "id": "DIM-13",
+      "photo": "boubou",
+      "theme": "repos et famille",
+      "texte": "Une sieste après le *ndolé* du dimanche, c’est aussi prendre soin de toi.",
+      "legende": "Le repas est bon, le ventre est plein, les yeux se ferment doucement. Ne lutte pas, la sieste du dimanche fait partie du programme. 😴\n\nToi, tu es plutôt sieste ou balade après le repas ?",
+      "hashtags": [
+        "#AITEConsulting",
+        "#BonDimanche",
+        "#Repos",
+        "#Douala"
+      ]
     }
   ]
 }
