@@ -121,8 +121,9 @@ composée avec `ecrans.navigateur(ecrans.fenetre_muk(...))`),
 `vues_initiales`, `bulles` {id: texte}, `reactions` {id: texte}, `etapes`
 (`temps`, `titre`, `texte`, `voix`, `gestes`), `resultats` (`titre`,
 `cartes` [{valeur, compter, unite, icone, texte}], `voix`), `cta` (`appel`,
-`suivant`, `voix`), `vignette`, et au besoin `css` (styles propres au
-tutoriel, pour un écran composé à la main).
+`suivant`, `voix`, et au besoin `sous_marque`, la ligne sous « AITE HOUSE »,
+« Suite hôtelière sur Odoo 18 » par défaut), `vignette`, et au besoin `css`
+(styles propres au tutoriel, pour un écran composé à la main).
 
 Gestes propres aux tutoriels (`marketing.py`) :
 
@@ -146,6 +147,54 @@ clone les modules MuK IT (branche 18.0, LGPL-3) à côté du dépôt, les ajoute
 l'`addons_path` et installe le thème ; il habille l'interface sans changer
 les modules AITE et ne fait pas partie de la livraison (sur Odoo Enterprise,
 l'équivalent est `muk_web_enterprise_theme`).
+
+### Les tutoriels du restaurant (16 à 23)
+
+Le lot 1 du restaurant (`aite_pos_restaurant`, `aite_pos_analytics`,
+`aite_pos_analytics_hr` ; `docs/NOTES_DE_VERSION_restaurant_lot1.md`) a sa
+suite de tutoriels, `scenarios/t16_restaurant_*.py` à `t23_restaurant_*.py`
+(`produire.TUTORIELS_RESTAURANT`, rangés sur la page de la série sous
+l'intertitre « Restaurant »). Ils montrent un **restaurant sans hôtel** : le
+module ne dépend pas du socle hôtelier et n'est pas installé chez le client
+pilote. Le chapitre 3 de la présentation, qui dit qu'AITE HOUSE n'installe
+pas `pos_restaurant`, parle de la caisse du restaurant de l'hôtel ; il n'est
+pas contredit. Autre établissement, autre société, autre barre
+d'applications : `demo.py` (bloc « le restaurant ») et `DESIGN.md`
+(« Le restaurant »).
+
+La caisse plein écran au service à table contrôlé est rejouée par les
+composants d'`ecrans.py` (« La caisse du restaurant ») : `fenetre_resto`,
+`resto_plan` et `resto_salle` (le plan en couleurs), `resto_code` (le code,
+puis les personnes), `resto_commande` (familles, tuiles, addition, pavé,
+« J'envoie », « J'encaisse »), `resto_notification`, `resto_annulation`,
+`resto_paiement`, `resto_menu`, `resto_ouverture`, `resto_fermeture`,
+`resto_confirmation`, `visionneuse_pdf` et le rapport de fermeture ; côté
+gestion, `page_reglages` / `reglage` (les réglages du Point de Vente) et
+`fiche_employe`. Les textes de la caisse sont ceux de
+`static/src/utils/messages.js` (`MESSAGES_RESTO`, `TITRES_RESTO`,
+`TEXTES_RESTO`). Une fenêtre à étapes (code puis personnes ; combien, code,
+pourquoi) est faite d'une tête et de panneaux empilés : on passe d'une étape
+à l'autre par `cacher` / `montrer`, la fenêtre prend la hauteur de l'étape.
+La pastille du personnage change de personne par une classe
+(`ecrans.css_personnage`). Pour la voix, « manager » est réécrit
+« manadjeur » (`produire.PRONONCIATION`). La fin dit « Caisse de restaurant
+sur Odoo 18 » (`cta.sous_marque` = `demo.SOUS_MARQUE_RESTO`).
+
+Pièges relevés sur le tutoriel 16 :
+
+- la fenêtre du code (`resto_code`) s'ouvre par défaut à 205 px du haut de
+  la caisse, sous la ligne du bandeau ou de la phrase d'état, qui reste
+  lisible ; ne pas la remonter ;
+- la liste des employés compte aussi la fiche du compte administrateur
+  (module Employés) : six fiches, et non cinq ;
+- un clic sur une application de la barre ouvre son tableau de bord, pas un
+  menu de configuration : passer d'une application à une liste par un fondu,
+  ou rejouer le menu déroulant ;
+- une phrase de l'écran se relit dans la vue XML **et** dans la constante
+  Python (voir le garde-fou de `t16_restaurant_mise_en_place.py`) ;
+- la caisse n'est pas « prête » à l'installation : il reste au manager la
+  carte, le plan de salle et le stock de départ (`docs/INSTALLATION.md`
+  §9.6).
 
 ### La série livrée (`docs/guides/videos/`)
 

@@ -46,12 +46,16 @@ VITESSE = '1.0'
 SORTIE_DEPOT = os.path.join(RACINE, 'docs', 'guides', 'videos')
 
 # Le document de référence de chaque vidéo, relatif à docs/.
-GUIDES = {'presentation': 'GUIDE_RECETTE_UAT.md'}
+GUIDES = {'presentation': 'GUIDE_RECETTE_UAT.md', 't16_restaurant_mise_en_place': 'NOTES_DE_VERSION_restaurant_lot1.md'}
 
 # Les tutoriels marketing, une vidéo par fonctionnalité (scenarios/t*.py).
 TUTORIELS = ['t01_reception', 't02_planning', 't03_folio', 't04_note_chambre', 't05_taxe_sejour', 't06_registre',
              't07_gouvernante', 't08_site_web', 't09_espaces', 't10_ardoises', 't11_fidelite', 't12_ventes',
              't13_stock', 't14_achats', 't15_direction']
+# Les tutoriels du restaurant (lot 1, un restaurant sans hôtel : demo.RESTO), ajoutés au fur et à mesure qu'ils
+# existent ; la page de la série les range sous l'intertitre « Restaurant ».
+TUTORIELS_RESTAURANT = ['t16_restaurant_mise_en_place']
+TUTORIELS = TUTORIELS + TUTORIELS_RESTAURANT
 
 # Les vidéos de la série : la présentation, puis les tutoriels.
 ORDRE = ['presentation'] + TUTORIELS
@@ -73,6 +77,10 @@ ICONES_APPS = {
     'maintenance': ('odoo', 'addons/maintenance/static/description/icon.png'),
     'apps': ('odoo', 'odoo/addons/base/static/description/modules.png'),
     'parametres': ('odoo', 'odoo/addons/base/static/description/settings.png'),
+    # Le restaurant (tutoriels 16 à 23). « Restaurant » n'a pas d'image (web_icon « fa fa-cutlery », R/views/
+    # restaurant_menus.xml:9-11) : la barre MuK pose alors l'icône de base d'Odoo (muk_web_appsbar, appsbar.xml:19-27).
+    'restaurant': ('odoo', 'odoo/addons/base/static/description/icon.png'),
+    'employes': ('odoo', 'addons/hr/static/description/icon.png'),
 }
 
 # La police de l'interface rejouée : Inter, installée sur la machine de
@@ -156,7 +164,9 @@ def duree_media(chemin):
 
 # Les mots que Kokoro lit « à l'anglaise » : réécrits pour la voix seulement,
 # juste avant la synthèse (les scénarios gardent l'orthographe de l'écran).
-PRONONCIATION = {'Odoo': 'Odou', 'VVIP': 'double VIP', 'pressing': 'pressinng'}
+PRONONCIATION = {'Odoo': 'Odou', 'VVIP': 'double VIP', 'pressing': 'pressinng',
+                 # le niveau « Manager » du restaurant (tutoriels 16 à 23) : Kokoro lit « managé »
+                 'manager': 'manadjeur'}
 
 
 def prononcer(texte):
@@ -489,6 +499,7 @@ PAGE = """<!doctype html>
   .liens a { color: #714B67; font-weight: 600; text-decoration: none; }
   .liens a:hover { text-decoration: underline; }
   footer { padding: 0 16px 40px; font-size: 13px; color: var(--texte-2); text-align: center; }
+  h2.intertitre { margin: 34px 0 14px; font-size: 24px; }
 </style>
 </head>
 <body>
@@ -508,6 +519,7 @@ l'interface (Odoo 18, thème MuK), avec ses vrais libellés, sur des données de
 def ecrire_index():
     """La page qui présente la série : une carte par vidéo présente."""
     cartes = []
+    intertitre = False
     for rang, profil in enumerate(ORDRE, 1):
         try:
             scenario = charger(profil)
@@ -520,8 +532,13 @@ def ecrire_index():
         duree = duree_media(video)
         mo = os.path.getsize(video) / 1e6
         pdf = GUIDES.get(profil)
-        lien_pdf = '<a href="../%s">Document de référence</a>' % pdf if pdf else ''
+        # la page vit dans docs/guides/videos/ : le document, relatif à docs/, est deux dossiers plus haut
+        lien_pdf = '<a href="../../%s">Document de référence</a>' % pdf if pdf else ''
         genre = ('TUTORIEL %d' % scenario['numero']) if est_tutoriel(scenario) else 'PRÉSENTATION'
+        # le premier tutoriel du restaurant présent ouvre l'intertitre « Restaurant » (une nouvelle grille)
+        if profil in TUTORIELS_RESTAURANT and cartes and not intertitre:
+            cartes.append('</div><h2 class="intertitre">Restaurant</h2><div class="grille">')
+            intertitre = True
         cartes.append(
             '<article><video controls preload="none" poster="%s.jpg" src="%s.mp4"></video><div class="corps">'
             '<div class="num">%02d · %s</div><h2>%s</h2><div class="meta">%d min %02d s · %.1f Mo</div>'
@@ -530,7 +547,7 @@ def ecrire_index():
                lien_pdf, nom))
     with open(os.path.join(SORTIE_DEPOT, 'index.html'), 'w', encoding='utf-8') as f:
         f.write(PAGE.replace('%(cartes)s', '\n'.join(cartes)))
-    return len(cartes)
+    return sum(1 for carte in cartes if carte.startswith('<article'))
 
 
 def escape_html(texte):

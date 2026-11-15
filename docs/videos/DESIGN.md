@@ -111,6 +111,63 @@ chiffres finaux propres à chaque personne : Estelle 01, l'hôtel 10) et, pour
 Claire, la plage française réservée à la fiction (+33 6 39 98 21 47) ;
 adresses `exemple.cm` / `exemple.fr`.
 
+## Le restaurant (tutoriels 16 à 23)
+
+Les tutoriels du restaurant (lot 1 : `aite_pos_restaurant`, `aite_pos_analytics`,
+`aite_pos_analytics_hr`) montrent un **restaurant sans hôtel** : le module ne
+dépend pas du socle hôtelier et n'est pas installé chez le client pilote de
+l'hôtel. Autre établissement, autre société, autre barre d'applications ; la
+même charte, le même thème MuK, le même jour de référence (14/10/2026).
+Données : `demo.py`, bloc « le restaurant ».
+
+- Établissement fictif **« Café-Restaurant — Démo »** (pizza, café, petit
+  déjeuner, bar et cuisine) de **« Démo Restauration SARL »**, téléphone
+  `+237 6 00 00 00 50` (la plage 50-59 est réservée au restaurant). Base
+  mono-société, **sans TVA**, comme toute la série : une base créée au
+  Cameroun pose pourtant une TVA de 19,25 % hors taxes (`docs/INSTALLATION.md`
+  §9.6, point 2) ; la vidéo suppose qu'AITE a réglé la carte « sans taxe »
+  avec le comptable.
+- La caisse « Restaurant », la salle « Salle », les modes « Espèces » et
+  « Mobile Money » : les noms que le module pose à l'installation.
+- L'équipe, fictive, prénom seul sur la fiche et à la caisse : **Edwige
+  Bilongo** (manager), **Prisca Tamo** (caissière), **Loïc Ewodo** (serveur),
+  **Inès Fotabong** (serveuse), **Landry Essola** (chef de salle) ; codes
+  caisse de quatre chiffres « tirés au hasard ». Aucun nom du jeu d'essai
+  (`dev/seeds/seed_restaurant.py`), des captures ni de la série hôtelière ;
+  les noms ont été cherchés dans tout le dépôt. Les réglages du Point de
+  Vente sont joués sous le compte de l'administrateur d'Odoo (AITE), sans
+  nom de personne.
+- La salle : douze tables, disposées comme le jeu d'essai (rangée de quatre
+  tables carrées, rangée de quatre rondes, puis 9 et 10 plus larges, 11 et
+  12) ; les familles sur trois niveaux, Nourriture (Pizzas, Petit déjeuner,
+  Plats) et Boisson (Alcoolisé : Bière, Vin, Whisky ; Non alcoolisé : Sodas,
+  Café), aux couleurs d'Odoo relevées sur la base du restaurant (7 et 8) ;
+  une carte de 18 articles génériques, **sans aucune marque** (le jeu d'essai
+  et les captures portent de vraies marques de boissons) ; seules les bières
+  sont suivies en stock.
+- La caisse plein écran est rejouée par `ecrans.py` (« La caisse du
+  restaurant ») : plan en couleurs (gris libre, vert ouverte, orange après le
+  délai, pastille rouge), fenêtre du code, écran de commande par familles,
+  annulation, paiement, menu ≡, ouverture et fermeture de la caisse, rapport
+  de fermeture ; styles `shared/aite-marketing.css` (classes `rs-*`, `rg-*`,
+  `fe-*`). Ce qui suit la couleur primaire d'Odoo prend le bleu acier de MuK
+  (le thème habille aussi la caisse) ; les couleurs codées en dur par AITE et
+  par Odoo (tables, légende, pavé, familles, notifications) restent telles
+  quelles. Échelle : la caisse fait 1 720 px de large, 1,34 fois la tablette
+  de 1 280 points des captures (barres, boutons, fenêtres), mais 796 px de
+  haut pour 800 points : le cadre est plus large que la tablette. Le plan est
+  donc rejoué **×1,05** (une table de 120 points fait 126 px), tassé en
+  hauteur pour tenir avec le bandeau et la légende : il occupe la moitié de
+  la largeur de la caisse, contre les deux tiers sur la tablette. La fenêtre
+  du code s'ouvre à 205 px du haut de la caisse, sous la ligne de texte du
+  bandeau (capture 01), et non au centre.
+- La fin des tutoriels du restaurant dit « Caisse de restaurant sur Odoo 18 »
+  (`demo.SOUS_MARQUE_RESTO`) au lieu de « Suite hôtelière sur Odoo 18 ».
+- Les textes de la caisse sont recopiés de `static/src/utils/messages.js`
+  (`ecrans.MESSAGES_RESTO`, `TITRES_RESTO`, `TEXTES_RESTO`, espace insécable
+  comprise) ; les phrases des réglages et de la fiche employé sont relues
+  dans le code du module au chargement du scénario.
+
 ## Ouverture et fin
 
 Le logo AITE Consulting (jamais redessiné) sur une carte blanche, « AITE

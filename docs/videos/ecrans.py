@@ -883,3 +883,936 @@ def pos_ligne_paiement(identifiant, mode, montant):
     """Une ligne de paiement de l'écran de paiement, masquée au départ."""
     return ('<div class="pos-pl masque" id="%s"><span>%s</span><span>%s</span><span class="x">×</span></div>'
             % (identifiant, e(mode), e(montant)))
+
+
+# =========================================================================
+# La caisse du restaurant (tutoriels 16 à 23 : aite_pos_restaurant, lot 1)
+# =========================================================================
+# Un restaurant SANS hôtel (aite_pos_restaurant ne dépend pas du socle :
+# __manifest__.py:119, 126) : la caisse plein écran au service à table
+# contrôlé, puis les écrans de gestion du thème MuK qui la règlent. Les
+# libellés de la caisse sont ceux de ``static/src/utils/messages.js``
+# (recopiés ci-dessous, espace insécable comprise) et des gabarits
+# ``static/src/**/*.xml`` ; les couleurs, celles de ``scss/restaurant.scss``
+# et d'Odoo 18 (``point_of_sale``, ``pos_restaurant``, ``web``). Les captures
+# ``captures/restaurant/*.jpg`` n'ont servi que de modèle visuel. Abréviations
+# des sources : R/ = addons/aite_pos_restaurant/, S/ = R/static/src/,
+# O/ = ../odoo18/addons/.
+#
+# Échelle : la caisse occupe 1720 × 796 px du navigateur des tutoriels, soit
+# 1,34 fois la tablette de 1 280 × 800 points des captures en largeur ; en
+# hauteur, le plan est tassé (``resto_plan``). Les composants posés sur la
+# caisse (fenêtres, menu, notifications) passent par ``superpose``.
+# Les styles sont dans ``shared/aite-marketing.css``, section « caisse du
+# restaurant », sous ``.resto`` (classes rs-*), et « réglages » (rg-*).
+
+import base64 as _base64
+import colorsys as _colorsys
+import os as _os
+
+ESP = ' '      # espace insécable de messages.js:12, avant « : » et « ? »
+
+
+def nombre_resto(quantite):
+    """« 2 », « 1,5 » : ``nombre`` de S/utils/messages.js:15-18."""
+    n = float(quantite or 0)
+    return str(int(n)) if n == int(n) else ('%g' % round(n, 3)).replace('.', ',')
+
+
+def duree_resto(minutes):
+    """« 35 min » ; à partir d'une heure, « 1 h 05 » (``TEXTES.duree``, messages.js:165-171)."""
+    if minutes < 60:
+        return '%d min' % minutes
+    return '%d h %02d' % (minutes // 60, minutes % 60)
+
+
+# Les textes de la caisse, mot pour mot (S/utils/messages.js:20-172).
+MESSAGES_RESTO = {
+    'R1': "Code inconnu. Retapez votre code.",
+    'R3': "La caisse n'est pas encore ouverte. La caissière ou un chef de salle doit l'ouvrir avec son code.",
+    'R5': "Il faut au moins une personne à table.",
+    'R4': lambda table, nom: ("Table %s%s: c'est la table de %s. Seuls %s, la caissière ou un chef de salle "
+                              "peuvent la modifier." % (table, ESP, nom, nom)),
+    'R10': "Vous ne pouvez pas encaisser. Appelez la caissière%s: elle tapera son code ici." % ESP,
+    'R13': "Seul un chef de salle ou le manager ferme la caisse.",
+    'R14': ("L'écart de caisse dépasse le maximum autorisé%s: seul le manager peut fermer. Recomptez, ou appelez "
+            "le manager." % ESP),
+    'R15': "Seul un chef de salle ou le manager peut sortir ou entrer des espèces.",
+    'R16': "Seul le manager peut rembourser une addition payée.",
+    'R21': "Seuls la caissière, le chef de salle et le manager impriment le rapport des ventes.",
+    'R8': "Ce code ne peut pas annuler. Il faut celui d'un chef de salle, d'un superviseur ou du manager.",
+    'R9': lambda q, produit: ("Déjà envoyé%s: %s %s. Pour l'annuler, un chef de salle tape son code."
+                              % (ESP, nombre_resto(q), produit)),
+    'R24': "Écrivez en quelques mots pourquoi.",
+    'R11': lambda produit: ("Plus de %s en stock. Si la bouteille est bien là, demandez au manager d'enregistrer "
+                            "l'entrée de stock%s: la vente repassera aussitôt." % (produit, ESP)),
+}
+TITRES_RESTO = {
+    'table': lambda n: 'Table %s — votre%scode' % (n, ESP),
+    'ouvrir': 'Votre code pour ouvrir la caisse',
+    'encaisser': 'Code de la personne qui encaisse',
+    'fermer': 'Votre code pour fermer la caisse',
+    'especes': "Votre code — entrée ou sortie d'espèces",
+    'commandes': 'Votre code — liste des commandes',
+    'rapport': 'Votre code — rapport des ventes',
+    'prendreLaMain': 'Qui prend la main%s? Tapez votre code' % ESP,
+    'personnes': lambda n: 'Table %s — combien de personnes%s?' % (n, ESP),
+    'annulerProduit': lambda produit, table: 'Annuler %s — table %s' % (produit, table),
+    'annulerTable': lambda table: 'Annuler la table %s' % table,
+    'annulerTables': lambda liste: 'Annuler les tables encore ouvertes%s: %s' % (ESP, liste),
+    'fermerLaCaisse': 'Fermer la caisse',
+    'produitEpuise': 'Produit épuisé',
+}
+TEXTES_RESTO = {
+    'planEtat': 'Touchez une table, puis tapez votre code.',
+    'caisseFermee': "La caisse est fermée. La caissière ou un chef de salle tape son code pour l'ouvrir.",
+    'ouvrirLaCaisse': 'Ouvrir la caisse',
+    'neSaitPasEncaisser': lambda nom: '%s ne peut pas encaisser%s: la caissière tape son code ici.' % (nom, ESP),
+    'envoye': lambda compte: 'Envoyé%s: %s.' % (ESP, compte),
+    'retour': 'Retour',
+    'neufEtPlus': '9 et plus',
+    'valider': 'Valider',
+    'personnes': lambda n: '%d personne' % n if n in (0, 1) else '%d personnes' % n,
+    'addition': 'Addition',
+    'diviser': "Diviser l'addition",
+    'deplacer': 'Déplacer ou réunir',
+    'annulerLaTable': 'Annuler la table',
+    'creerLaPart': "Créer l'addition à part",
+    'table': lambda n: 'Table %s' % n,
+    'ouvertePar': lambda nom: 'ouverte par %s' % nom,
+    'dejaEnvoye': lambda q: 'Déjà envoyé%s: %s.' % (ESP, nombre_resto(q)),
+    'dejaEnvoyeListe': lambda liste: 'Déjà envoyé%s: %s' % (ESP, liste),
+    'envoi': lambda q, produit: '%s %s' % (nombre_resto(q), produit),
+    'combien': 'Combien%s?' % ESP,
+    'tout': lambda q: '%s (tout)' % nombre_resto(q),
+    'codeChef': "Code d'un chef de salle",
+    'pourquoi': 'Pourquoi%s?' % ESP,
+    'precision': 'Précision',
+    'annulationFaite': lambda q, produit, nom: 'Annulation faite%s: %s %s, par %s.' % (ESP, nombre_resto(q), produit, nom),
+    'bonEnvoye': "Bon d'annulation envoyé.",
+    'tablesOuvertes': lambda k, liste: (
+        '1 table est encore ouverte%s: %s. Encaissez-la, ou annulez-la avec un motif, avant de fermer.' % (ESP, liste)
+        if k == 1 else '%d tables sont encore ouvertes%s: %s. Encaissez-les, ou annulez-les avec un motif, avant de '
+                       'fermer.' % (k, ESP, liste)),
+    'voirLesTables': 'Voir les tables',
+    'annulerCesTables': 'Annuler ces tables',
+    'especes': "Entrée ou sortie d'espèces",
+    'mouvementsEspeces': "Entrées et sorties d'espèces",
+    'commandes': lambda n: '%d commandes%s:' % (n, ESP) if n > 1 else '%d commande%s:' % (n, ESP),
+    'legendeParties': lambda delai: [('libre', 'Gris%s: libre' % ESP), ('vert', 'Vert%s: ouverte' % ESP),
+                                     ('orange', "Orange%s: ouverte depuis plus de %s%smin, proposez l'addition"
+                                      % (ESP, delai, ESP)),
+                                     ('pastille', 'Pastille rouge%s: pas encore envoyé' % ESP)],
+}
+
+
+def etat_commande(table, nom, minutes):
+    """La phrase d'état de l'écran de commande : « Table 4 · ouverte par Loïc · 0 min »
+    (S/store/pos_store.js:1136-1150 ; TEXTES.table, ouvertePar, duree)."""
+    return ' · '.join((TEXTES_RESTO['table'](table), TEXTES_RESTO['ouvertePar'](nom), duree_resto(minutes)))
+
+
+assert (TITRES_RESTO['table'](4), TEXTES_RESTO['envoye']('2 Pizzas, 2 Bière'), duree_resto(65), duree_resto(35),
+        TEXTES_RESTO['commandes'](1), etat_commande(4, 'Loïc', 0)) == (
+    'Table 4 — votre code', 'Envoyé : 2 Pizzas, 2 Bière.', '1 h 05', '35 min', '1 commande :',
+    'Table 4 · ouverte par Loïc · 0 min')
+
+# Les couleurs d'Odoo (O/web/static/src/scss/secondary_variables.scss:8-9, $o-colors), éclaircies comme
+# .o_colorlist_item_color_N (O/web/static/src/core/colorlist/colorlist.scss:14-21 : +25 % de luminosité,
+# +15 % de saturation ; texte −40 % / −15 %) et ..._transparent_N (O/point_of_sale/static/src/scss/pos.scss:
+# 166-172 : +28 %) : les familles et les tuiles de l'écran de commande.
+COULEURS_ODOO = ('#a2a2a2', '#ee2d2d', '#dc8534', '#e8bb1d', '#5794dd', '#9f628f', '#db8865', '#41a9a2', '#304be0',
+                 '#ee2f8a', '#61c36e', '#9872e6')
+
+
+def _ajuster(hexa, dl, ds):
+    """``adjust-color($c, $lightness: dl, $saturation: ds)`` de Sass (HSL, bornes 0-100 %)."""
+    r, g, b = [int(hexa[i:i + 2], 16) / 255.0 for i in (1, 3, 5)]
+    h, l, s = _colorsys.rgb_to_hls(r, g, b)
+    r, g, b = _colorsys.hls_to_rgb(h, min(1.0, max(0.0, l + dl)), min(1.0, max(0.0, s + ds)))
+    return '#%02X%02X%02X' % tuple(int(round(x * 255)) for x in (r, g, b))
+
+
+def couleur_odoo(n, transparent=False):
+    """(fond, texte) d'une couleur d'Odoo 1-11 ; ``transparent`` : la teinte des tuiles et des familles
+    ni choisies ni enfants. ``n`` = 0 (sans couleur) : None."""
+    if not n:
+        return None
+    base = COULEURS_ODOO[n]
+    return _ajuster(base, 0.28 if transparent else 0.25, 0.15), _ajuster(base, -0.40, -0.15)
+
+
+assert couleur_odoo(8) == ('#97A6F9', '#0E1436') and couleur_odoo(8, True)[0] == '#A5B2FA'
+
+# Les couleurs du plan (S/scss/restaurant.scss:110-126 ; fond de salle rgb(249,250,251) :
+# O/pos_restaurant/models/pos_restaurant.py:18 ; darken(…, 12 %) calculé).
+PLAN_LIBRE, PLAN_VERT, PLAN_ORANGE = 'rgba(0,0,0,.125)', '#35D374', '#FF9800'
+
+ICONES.update({
+    'codebarres': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 4h1.6v16H2zM4.6 4h.8v16h-.8zM6.6 4h1.6v16H6.6zM9.4 4h.8v16h-.8zM11.2 4h.8v16h-.8zM13.2 4h1.6v16h-1.6zM16 4h.8v16H16zM17.8 4h.8v16h-.8zM19.6 4h.8v16h-.8zM21.4 4h.6v16h-.6z"/></svg>',
+    'burger': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>',
+    'effacer': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M8.5 5H21v14H8.5L2.5 12z"/><path d="M11.5 9l6 6M17.5 9l-6 6"/></svg>',
+    'panier': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M2.5 4h3l2.4 10.5h10.6L21 7H7"/><circle cx="9.5" cy="19" r="1.6"/><circle cx="17.5" cy="19" r="1.6"/></svg>',
+    'telecharger': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M10.5 3h3v8h3.5L12 16.5 7 11h3.5z"/><path d="M3 15h3v3h12v-3h3v6H3z"/></svg>',
+    'copier': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="1.5"/><path d="M16 8V5.5A1.5 1.5 0 0014.5 4h-9A1.5 1.5 0 004 5.5v9A1.5 1.5 0 005.5 16H8"/></svg>',
+    'billets': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="6" width="19" height="12" rx="1.5"/><circle cx="12" cy="12" r="2.6"/><path d="M5.5 9v6M18.5 9v6"/></svg>',
+    'croix': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg>',
+    'croix-pleine': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+    'info': '<svg viewBox="0 0 8 16" fill="#fff"><circle cx="4" cy="2.4" r="1.9"/><path d="M1.2 6h4.3v7.6H7V16H1v-2.4h1.5V8.4H1.2z"/></svg>',
+    'triangle': '<svg viewBox="0 0 10 10" fill="currentColor"><path d="M3 1.5l4.5 3.5L3 8.5z"/></svg>',
+    'fleche-droite': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg>',
+    'nuage': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M7 18.5H6a4 4 0 01-.6-7.95A6 6 0 0117 8.6a4.5 4.5 0 01.5 8.9H17"/><path d="M12 12v8M9 15l3-3 3 3"/></svg>',
+    'engrenage': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M10.3 2h3.4l.5 2.6 1.9.8 2.2-1.5 2.4 2.4-1.5 2.2.8 1.9 2.6.5v3.4l-2.6.5-.8 1.9 1.5 2.2-2.4 2.4-2.2-1.5-1.9.8-.5 2.6h-3.4l-.5-2.6-1.9-.8-2.2 1.5-2.4-2.4 1.5-2.2-.8-1.9L2 13.7v-3.4l2.6-.5.8-1.9-1.5-2.2 2.4-2.4 2.2 1.5 1.9-.8zM12 8.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7z"/></svg>',
+    'poignee': '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>',
+    'contacts': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="4.5" width="20" height="15" rx="1.5"/><circle cx="8" cy="11" r="2.4"/><path d="M4.5 17c.5-2 1.9-3 3.5-3s3 1 3.5 3M14 9h5M14 12h5M14 15h3"/></svg>',
+})
+
+# Les applications de la base « restaurant seul » (aite_resto), et ce que chaque compte voit dans la barre
+# (relevé en lecture sur la base, ir_ui_menu et res_groups_users_rel, le 15/11/2026) : Discussion (5), Restaurant
+# (31), Tableaux de bord (37), POS Crédit (46), Point de Vente (50), Facturation (55), Inventaire (140), Employés
+# (185), Apps (500), Paramètres (550). « Tracker de liens » (base.group_no_one, mode développeur) et « Tests »
+# (module de test de la base de développement) ne paraissent pas sur une base livrée. « Restaurant » a une
+# icône « fa » (R/views/restaurant_menus.xml:9-11) : sans image, le thème MuK pose l'icône de base d'Odoo
+# (muk_web_appsbar/static/src/webclient/appsbar/appsbar.xml:19-27 ; O/web/static/src/webclient/menus/
+# menu_helpers.js:41-50).
+APPS_MUK.update({'Restaurant': 'restaurant', 'Employés': 'employes'})
+APPS_PROFIL.update({
+    'resto_admin': ['Discussion', 'Restaurant', 'Tableaux de bord', 'POS Crédit', 'Point de Vente', 'Facturation',
+                    'Inventaire', 'Employés', 'Apps', 'Paramètres'],
+    'resto_manager': ['Discussion', 'Restaurant', 'Tableaux de bord', 'Point de Vente', 'Facturation', 'Inventaire',
+                      'Employés', 'Apps'],
+    'resto_chef': ['Discussion', 'Restaurant', 'Tableaux de bord', 'Employés', 'Apps'],
+    'resto_caisse': ['Discussion', 'Tableaux de bord', 'Point de Vente', 'Facturation', 'Employés', 'Apps'],
+})
+# Les menus de la barre (même relevé) : « Restaurant » → « Annulations » (restaurant_menus.xml:12-14) ;
+# « Employés » du manager (gestionnaire RH) : « Employés », « Départements », « Analyse », « Configuration »
+# (« Annuaire » est retiré aux gestionnaires : O/hr/models/ir_ui_menu.py:9-13 ; capture 24).
+MENUS_MUK.update({
+    'restaurant': ['Annulations'],
+    'employes': ['Employés', 'Départements', 'Analyse', 'Configuration'],
+})
+# Le menu « Analyse » du Point de Vente pour le manager du restaurant (point_of_sale ; « Personnes et tables » :
+# R/views/restaurant_menus.xml:18-20) ; la section « Analyse AITE » : MENU_ANALYSE_AITE.
+MENU_ANALYSE_RESTO = ['Commandes', 'Détails des ventes', 'Rapport de session', 'Personnes et tables']
+
+
+def _odoo_dir():
+    return _os.environ.get('ODOO_DIR', _os.path.abspath(_os.path.join(_os.path.dirname(__file__), '..', '..', '..',
+                                                                         'odoo18')))
+
+
+_IMAGES_ODOO = {}
+
+
+def image_odoo(relatif):
+    """Une image d'Odoo, jamais redessinée, en data: URI (lue au premier besoin)."""
+    if relatif not in _IMAGES_ODOO:
+        with open(_os.path.join(_odoo_dir(), relatif), 'rb') as f:
+            _IMAGES_ODOO[relatif] = 'data:image/png;base64,' + _base64.b64encode(f.read()).decode()
+    return _IMAGES_ODOO[relatif]
+
+
+def superpose(html):
+    """Une fenêtre posée sur la caisse : chacun de ses textes porte data-layout-allow-overlap, la superposition
+    voulue que le contrôle de mise en page de HyperFrames attend sur le bloc de texte lui-même (comme
+    scenarios/c3_bar_restaurant.py, ``superpose``)."""
+    html = html.replace(' data-layout-allow-overlap', '')
+    return _re.sub(r'<(div|span|b|p|em|i|small|label)(?=[\s>])', r'<\1 data-layout-allow-overlap', html)
+
+
+# ------------------------------------------------ la caisse plein écran --
+
+def fenetre_resto(ident, vues, calques='', ecran='plan', onglet='Table', employe=None, avatar='#185FA5',
+                  cache=False):
+    """La caisse du restaurant (O/point_of_sale/static/src/app/navbar/navbar.xml, O/pos_restaurant/…/navbar.xml:
+    19-28, S/overrides/navbar.xml) : « Plan », l'onglet (« Table » sur le plan, le numéro ailleurs), le logo d'Odoo,
+    puis à droite « Rechercher des produits… » et le code-barres (écran de commande seulement), l'employé identifié
+    (personne tant que personne ne l'est, pas de cadenas), le menu ≡. Pas de « + » : la vente sans table est fermée
+    d'office (S/overrides/order_tabs.xml:6-10).
+
+    ``ecran`` : 'plan' | 'commande' | 'paiement' (classe sur-<ecran> du cadre, que le geste ``classe`` change) ;
+    ``employe`` : (nom, initiale) affiché d'office, ou None (la classe avec-emp le montre ensuite, et les gestes
+    ``texte`` posent son nom et son initiale dans <id>-emp-n et <id>-emp-av). Identifiants : <id>-plan,
+    <id>-onglet, <id>-cherche, <id>-cb, <id>-emp, <id>-menu ; le corps : <id>-corps."""
+    nom, initiale = employe or ('', '')
+    classes = 'app pos resto sur-%s%s%s' % (ecran, ' avec-emp' if employe else '', ' masque' if cache else '')
+    return ('<div class="%s" id="%s"><div class="rs-haut">'
+            '<span class="rs-plan" id="%s-plan">Plan</span><span class="rs-onglet" id="%s-onglet">%s</span>'
+            '<i class="rs-sep"></i><img class="rs-logo" src="%s" alt="">'
+            '<span class="rs-droite"><span class="rs-cherche" id="%s-cherche"><span class="ico">%s</span>'
+            'Rechercher des produits…</span><span class="rs-cb" id="%s-cb">%s</span>'
+            '<span class="rs-emp" id="%s-emp"><span class="avatar" id="%s-emp-av" style="background:%s">%s</span>'
+            '<span class="rs-emp-n" id="%s-emp-n">%s</span></span>'
+            '<span class="rs-menu" id="%s-menu">%s</span></span></div>'
+            '<div class="rs-corps" id="%s-corps">%s</div>%s</div>'
+            % (classes, ident, ident, ident, e(onglet), image_odoo('addons/web/static/img/logo.png'),
+               ident, ICONES['loupe'], ident, ICONES['codebarres'], ident, ident, avatar, e(initiale), ident, e(nom),
+               ident, ICONES['burger'], ident, ''.join(vues), calques))
+
+
+# --------------------------------------------------------------- le plan --
+# La salle du jeu d'essai (dev/seeds/seed_restaurant.py:52-75, disposition de la capture 03) : 3 rangées de 4,
+# tables carrées de 120 × 120 (4 places), rondes de 110 × 110 (2 places), puis 9 et 10 de 160 × 120 (6 places),
+# 11 et 12 de 120 × 120 ; x = 60 + 220 × colonne, y = 50 + 180 × rangée. Rejouée ×1,05 en largeur, tassée en
+# hauteur pour tenir sous la fente du bandeau (``resto_plan``) : x = 63 + 231 c, y = 16 + 186 r.
+
+def tables_salle(etats=None):
+    """Les douze tables, prêtes pour ``resto_table`` : {numéro: (forme, x, y, l, h)} ; ``etats`` n'est pas lu ici."""
+    salle = {}
+    for i in range(12):
+        n = i + 1
+        rangee, colonne = divmod(i, 4)
+        if rangee == 0:
+            forme, l, h = 'carree', 126, 126
+        elif rangee == 1:
+            forme, l, h = 'ronde', 116, 116
+        else:
+            forme, l, h = ('carree', 168, 126) if n in (9, 10) else ('carree', 126, 126)
+        salle[n] = (forme, 63 + 231 * colonne, 16 + 186 * rangee, l, h)
+    return salle
+
+
+def resto_table(ident, numero, forme='carree', x=0, y=0, l=126, h=126, etat='libre', duree='', pastille=None):
+    """Une table du plan (O/pos_restaurant/static/src/app/floor_screen/floor_screen.xml:113-158 ; S/overrides/
+    floor_screen.xml:31-44) : ``etat`` 'libre' | 'vert' | 'orange' (une classe, jamais un fondu) ; ``duree`` sous
+    le numéro (« 35 min », « 1 h 05 », vide pour une table libre ; la classe avec-duree remonte le numéro,
+    restaurant.scss:129-131) ; ``pastille`` : le nombre pas encore envoyé (cercle rouge en haut à droite), ou
+    None. Identifiants : <id> (la table), <id>-n, <id>-d (durée, texte), <id>-p (pastille, classe « on »)."""
+    return ('<div class="rs-table rs-%s %s%s" id="%s" style="left:%dpx;top:%dpx;width:%dpx;height:%dpx">'
+            '<span class="rs-num" id="%s-n">%s</span><span class="rs-duree" id="%s-d">%s</span>'
+            '<span class="rs-pastille%s" id="%s-p">%s</span></div>'
+            % (forme, etat, ' avec-duree' if duree else '', ident, x, y, l, h, ident, e(numero), ident, e(duree),
+               ' on' if pastille else '', ident, e(pastille or '')))
+
+
+def resto_salle(prefixe, etats=None):
+    """Les douze tables de la salle : ``etats`` = {numéro: (etat, durée, pastille)} ; les autres sont libres.
+    Identifiants : <prefixe>-t1 … <prefixe>-t12."""
+    etats = etats or {}
+    html = []
+    for n, (forme, x, y, l, h) in tables_salle().items():
+        etat, duree, pastille = etats.get(n, ('libre', '', None))
+        html.append(resto_table('%s-t%d' % (prefixe, n), n, forme, x, y, l, h, etat, duree, pastille))
+    return ''.join(html)
+
+
+def resto_plan(ident, tables, delai=60, salle='Salle', caisse_fermee=False, initiale=False, badge=None):
+    """Le plan verrouillé, écran de repos de la caisse (O/pos_restaurant FloorScreen + S/overrides/
+    floor_screen.xml) : le bouton de la salle (btn-outline-secondary actif, avec sa pastille rouge ``badge`` des
+    articles pas encore envoyés : floor_screen.xml:10-17), puis la phrase d'état ou, caisse fermée, le bandeau
+    jaune et « Ouvrir la caisse » (S/overrides/floor_screen.xml:21-28), la salle (``tables`` = HTML de
+    ``resto_salle``) et la légende (:45-53). Pas de « Obtenir des codes QR » (restaurant.scss:39-41).
+
+    Le bandeau et la phrase occupent la même fente (la salle ne bouge pas quand la caisse s'ouvre) : la classe
+    ``ouverte`` de <id>-ecran montre la phrase et cache le bandeau. Identifiants : <id>-ecran, <id>-salle,
+    <id>-salle-p, <id>-fermee, <id>-ouvrir, <id>-etat, <id>-carte, <id>-legende."""
+    parties = ' · '.join('<span class="rs-leg-p"><i class="rs-leg-%s"></i>%s</span>' % (cle, e(texte))
+                         for cle, texte in TEXTES_RESTO['legendeParties'](delai))
+    return _vue(ident, initiale, (
+        '<div class="rs-plan-ecran%s" id="%s-ecran">'
+        '<div class="rs-salles"><span class="rs-salle actif" id="%s-salle">%s<b class="rs-badge%s" id="%s-salle-p">%s</b>'
+        '</span></div><div class="rs-fente">'
+        '<div class="rs-fermee" id="%s-fermee"><span>%s</span><span class="rs-bt-prim" id="%s-ouvrir">%s</span></div>'
+        '<div class="rs-etat" id="%s-etat">%s</div></div>'
+        '<div class="rs-carte" id="%s-carte">%s</div>'
+        '<div class="rs-legende" id="%s-legende">%s</div></div>'
+        % ('' if caisse_fermee else ' ouverte', ident, ident, e(salle), ' on' if badge else '', ident, e(badge or ''),
+           ident, e(TEXTES_RESTO['caisseFermee']), ident, e(TEXTES_RESTO['ouvrirLaCaisse']),
+           ident, e(TEXTES_RESTO['planEtat']), ident, tables, ident, parties)), classe='vue rs-vue')
+
+
+# ------------------------------------------------ la fenêtre du code --
+
+def _points(ident):
+    return '<div class="rs-points">%s</div>' % ''.join('<i id="%s-p%d"></i>' % (ident, k) for k in range(4))
+
+
+def _pave_code(ident, retour=True):
+    """Le pavé 3 × 4 de la fenêtre du code (code_popup.xml:23-37) : 1-9, « Retour » (gris), 0, ⌫ ; sans
+    « Retour », une case vide (annulation_popup.xml, étape du code)."""
+    touches = ''.join('<span class="rs-k" id="%s-k%s">%s</span>' % (ident, c, c) for c in '123456789')
+    gauche = ('<span class="rs-k rs-k-retour" id="%s-retour">%s</span>' % (ident, e(TEXTES_RESTO['retour']))
+              if retour else '<span></span>')
+    return ('<div class="rs-pave">%s%s<span class="rs-k" id="%s-k0">0</span><span class="rs-k rs-k-eff" id="%s-eff">'
+            '%s</span></div>' % (touches, gauche, ident, ident, ICONES['effacer']))
+
+
+def resto_code(ident, titre, sous_titre='', erreur='', personnes=False, haut=205):
+    """La fenêtre du code (AiteCodePopup, S/components/code_popup/code_popup.xml:10-74 ; taille « sm »), posée
+    sur un voile : titre, sous-titre (S/utils/messages.js : ``neSaitPasEncaisser``), quatre points, erreur (R1),
+    pavé. Un seul « Retour », pas d'en-tête. Le code est validé seul au 4ᵉ chiffre ; le chiffre n'est jamais
+    lisible, seuls les points se remplissent (classe ``plein`` sur <id>-p0 … <id>-p3).
+
+    La fenêtre est faite d'une tête (le titre) et de panneaux empilés au même endroit, chacun avec son fond :
+    la fenêtre a toujours la hauteur de l'étape affichée. ``personnes`` : l'étape des personnes (code_popup.xml:
+    39-72), cachée : huit boutons 1-8 (primaires), « 9 et plus », « Retour » ; pour y passer :
+    ``cacher('#<id>-code')``, ``montrer('#<id>-pers')`` et le titre par ``texte('#<id>-titre', …)``.
+    ``erreur`` : la ligne d'erreur, réservée et cachée (``montrer('#<id>-err')``).
+    ``haut`` : le haut de la fenêtre dans la caisse. 205 px (défaut) la pose sous la ligne de texte du bandeau
+    « La caisse est fermée… » ou de la phrase d'état du plan, qui reste lisible en entier, comme sur la capture 01
+    (haut de la fenêtre à 24 % de l'écran, sous le texte du bandeau, à 17-22 %), et au-dessus de la légende (la
+    fenêtre du code fait 525 px : elle finit à 730 px dans un cadre de 796 px). Centrée comme dans Odoo, elle
+    cacherait la phrase : la caisse de la vidéo est plus large que haute par rapport à la tablette.
+    Identifiants : <id>-voile, <id>, <id>-titre, <id>-st, <id>-p0…3, <id>-err, <id>-k0…9, <id>-retour, <id>-eff,
+    <id>-code, <id>-pers, <id>-n1…8, <id>-plus, <id>-pretour."""
+    pers = ''
+    if personnes:
+        pers = ('<div class="rs-pan masque" id="%s-pers"><div class="rs-pers-b">%s</div>'
+                '<span class="rs-k rs-k-large" id="%s-plus">%s</span>'
+                '<span class="rs-k rs-k-retour rs-k-large" id="%s-pretour">%s</span></div>'
+                % (ident, ''.join('<span class="rs-k rs-k-prim" id="%s-n%d">%d</span>' % (ident, k, k)
+                                  for k in range(1, 9)),
+                   ident, e(TEXTES_RESTO['neufEtPlus']), ident, e(TEXTES_RESTO['retour'])))
+    st = '<div class="rs-st" id="%s-st">%s</div>' % (ident, e(sous_titre)) if sous_titre else ''
+    err = '<div class="rs-err masque" id="%s-err">%s</div>' % (ident, e(erreur)) if erreur else ''
+    corps = ('<div class="rs-fen-h"><div class="rs-titre" id="%s-titre">%s</div></div><div class="rs-pans">'
+             '<div class="rs-pan" id="%s-code">%s%s%s%s</div>%s</div>'
+             % (ident, e(titre), ident, st, _points(ident), err, _pave_code(ident), pers))
+    return superpose('<div class="voile masque rs-voile" id="%s-voile"></div>'
+                     '<div class="rs-fen rs-code masque" id="%s" style="top:%dpx">%s</div>' % (ident, ident, haut, corps))
+
+
+# ------------------------------------------------- la notification --
+
+def resto_notification(ident, texte, titre='', genre='info'):
+    """La notification d'Odoo 18 en haut à droite de la caisse : barre de couleur à gauche (info #17A2B8,
+    danger #DC3545 : O/web/static/src/scss/primary_variables.scss:85, 87), titre gras s'il y en a un, texte,
+    croix de fermeture (captures 07, 09, 12). Geste : ``notifier(ident)``."""
+    t = '<b>%s</b>' % e(titre) if titre else ''
+    return superpose('<div class="rs-notif masque %s" id="%s"><div class="rs-notif-c">%s<span>%s</span></div>'
+                     '<span class="rs-notif-x">%s</span></div>' % (genre, ident, t, e(texte), ICONES['croix']))
+
+
+# ------------------------------------------- l'écran de commande --
+
+def resto_familles(ident, arbre, chemin=()):
+    """Les familles de l'écran de commande, comme ``getCategoriesAndSub`` (O/point_of_sale/static/src/app/screens/
+    product_screen/product_screen.js:113-152) : les racines, et sous chaque famille du chemin choisi ses enfants, à
+    plat. ``arbre`` = [(nom, couleur, enfants)] (une famille sans couleur hérite de son parent :
+    O/point_of_sale/models/pos_category.py:71-79) ; ``chemin`` = noms choisis, de la racine à la famille active.
+    Choisie ou enfant de la famille active (toutes les racines, sans chemin) : o_colorlist_item_color_N ; sinon,
+    teinte « transparent » et opacité 50 % (category_selector.xml:6-10). Identifiants : <id>-f-<clé> (nom sans
+    accent ni espace, en minuscules)."""
+    boutons = []
+
+    def cle(nom):
+        import unicodedata
+        return ''.join(c for c in unicodedata.normalize('NFD', nom.lower()) if c.isalnum())
+
+    def parcourir(branches, profondeur, couleur_parent, parent_actif):
+        for nom, couleur, enfants in branches:
+            couleur = couleur or couleur_parent
+            choisie = profondeur < len(chemin) and chemin[profondeur] == nom
+            dans_chemin = nom in chemin[:len(chemin)]
+            if chemin:
+                enfant = parent_actif
+            else:
+                enfant = profondeur == 0
+            if dans_chemin or enfant:
+                fond, texte_ = couleur_odoo(couleur) or ('#F8F9FA', '#212529')
+                classe_ = 'sel' if dans_chemin else 'enfant'
+            else:
+                fond, texte_ = couleur_odoo(couleur, True) or ('#F8F9FA', '#212529')
+                classe_ = 'autre'
+            boutons.append('<span class="rs-fam %s" id="%s-f-%s" style="background:%s;color:%s">%s</span>'
+                           % (classe_, ident, cle(nom), fond, texte_, e(nom)))
+            if choisie and enfants:
+                actif = profondeur == len(chemin) - 1
+                parcourir(enfants, profondeur + 1, couleur, actif)
+
+    parcourir(arbre, 0, 0, not chemin)
+    return '<div class="rs-familles" id="%s">%s</div>' % (ident, ''.join(boutons))
+
+
+def resto_tuiles(ident, produits, qtes=None):
+    """Les tuiles des produits (O/point_of_sale/static/src/app/generic_components/product_card/product_card.xml) :
+    ``produits`` = [(clé, nom, couleur de la famille)], teinte « transparent » de la famille (product_screen.xml:35),
+    pastille « i » ; ``qtes`` : {clé: quantité} à l'addition, en grand en bas à droite (cachée sinon : geste
+    ``texte`` sur <id>-<clé>-q puis ``classe(…, ajouter=['on'])``). Identifiants : <id>-<clé>, <id>-<clé>-q."""
+    qtes = qtes or {}
+    tuiles = []
+    for c, nom, couleur in produits:
+        fond, texte_ = couleur_odoo(couleur, True) or ('#F8F9FA', '#212529')
+        q = qtes.get(c)
+        tuiles.append('<span class="rs-tuile" id="%s-%s" style="background:%s;color:%s"><i class="rs-info">%s</i>'
+                      '<span class="rs-tuile-n">%s</span><b class="rs-tuile-q%s" id="%s-%s-q">%s</b></span>'
+                      % (ident, c, fond, texte_, ICONES['info'], e(nom), ' on' if q else '', ident, c,
+                         e(nombre_resto(q) if q else '')))
+    return '<div class="rs-tuiles" id="%s">%s</div>' % (ident, ''.join(tuiles))
+
+
+def resto_ligne(ident, article, qte, prix, envoyee=True, choisie=False, cache=False):
+    """Une ligne de l'addition (O/point_of_sale/static/src/app/generic_components/orderline/orderline.xml) :
+    l'article en gras et son montant ; dessous, la quantité encadrée « 2,00 » et « x 1 500 FCFA / Unité(s) ».
+    Pas encore envoyée : une barre verte de 6 px à gauche (orderline.scss:24-39, $o-success #28A745 ; capture 06) ;
+    la classe ``envoyee`` la retire. ``choisie`` : bordée de la couleur primaire. Identifiants : <id>, <id>-q
+    (« 2,00 »), <id>-m (montant)."""
+    return ('<div class="rs-ligne%s%s%s" id="%s"><div class="a"><b>%s</b><span id="%s-m">%s</span></div>'
+            '<div class="q"><b id="%s-q">%s</b> x %s / Unité(s)</div></div>'
+            % (' envoyee' if envoyee else '', ' choisie' if choisie else '', ' masque' if cache else '', ident,
+               e(article), ident, e(fcfa(qte * prix)), ident, ('%.2f' % qte).replace('.', ','), e(fcfa(prix))))
+
+
+TOUCHES_COMMANDE = (('1', ''), ('2', ''), ('3', ''), ('Qté', 'sel'), ('4', ''), ('5', ''), ('6', ''), ('%', 'gris'),
+                    ('7', ''), ('8', ''), ('9', ''), ('Prix', 'gris'), ('+/-', 'jaune'), ('0', ''), (',', 'rose'),
+                    ('⌫', 'rouge'))
+TOUCHES_PAIEMENT = (('1', ''), ('2', ''), ('3', ''), ('+10', 'vert'), ('4', ''), ('5', ''), ('6', ''), ('+20', 'vert'),
+                    ('7', ''), ('8', ''), ('9', ''), ('+50', 'vert'), ('+/-', 'jaune'), ('0', ''), (',', 'rose'),
+                    ('⌫', 'rouge'))
+
+
+def _code_touche(t):
+    return {'+/-': 'pm', ',': 'v', '⌫': 'eff', 'Qté': 'q', '%': 'pc', 'Prix': 'px'}.get(t, t.replace('+', 'p'))
+
+
+def resto_pave(ident, touches=TOUCHES_COMMANDE, prix_actif=False, cache=False):
+    """Le pavé de l'écran de commande ou de paiement (O/point_of_sale/static/src/app/screens/product_screen/
+    product_screen.js:153-170) : « Qté » choisi ; « % » grisé (remises désactivées par la case : R/models/
+    pos_config.py:29) ; « Prix » grisé sauf pour le manager (``prix_actif`` ; product_screen.js:165-168,
+    R/models/regles.py:46) ; « +/- » jaune, « , » rose, « ⌫ » rouge (teintes transparent_3, _6, _1).
+    Identifiants : <id>-k1 … <id>-k9, <id>-k0, <id>-kq, <id>-kpc, <id>-kpx, <id>-kpm, <id>-kv, <id>-keff,
+    <id>-kp10…"""
+    ks = []
+    for t, c in touches:
+        if t == 'Prix' and prix_actif:
+            c = ''
+        contenu = ICONES['effacer'] if t == '⌫' else e(t)
+        ks.append('<span class="rs-pk %s" id="%s-k%s">%s</span>' % (c, ident, _code_touche(t), contenu))
+    return '<div class="rs-pave4%s" id="%s-pave">%s</div>' % (' masque' if cache else '', ident, ''.join(ks))
+
+
+def resto_envoi(ident, compteurs=()):
+    """« J'envoie » (S/overrides/actionpad_widget.xml:13-15 ; O/pos_restaurant/static/src/overrides/components/
+    product_screen/actionpad_widget/actionpad_widget.xml:14-35) : en primaire avec, à droite, une ligne par famille
+    « Pizzas [1] » quand il y a quelque chose à envoyer ; gris et inactif sinon ; au-delà de deux familles, le mot
+    « J'envoie » laisse la place aux compteurs, sur deux colonnes. ``compteurs`` = [(famille, nombre)]. Les
+    compteurs se changent par ``texte`` (<id>-env-<n>-v) et se montrent par la classe ``on`` ; la classe
+    ``actif`` met le bouton en primaire."""
+    cpts = ''.join('<span class="rs-cpt%s" id="%s-env-%d"><span id="%s-env-%d-f">%s</span><i id="%s-env-%d-v">%s</i>'
+                   '</span>' % (' on' if n else '', ident, k, ident, k, e(f), ident, k, e(n or ''))
+                   for k, (f, n) in enumerate(compteurs))
+    actif = any(n for _f, n in compteurs)
+    return ('<span class="rs-envoyer%s%s" id="%s-envoyer"><b class="rs-envoyer-t">J\'envoie</b>'
+            '<span class="rs-cpts" id="%s-cpts">%s</span></span>'
+            % (' actif' if actif else '', ' deux-col' if len([1 for _f, n in compteurs if n]) > 2 else '', ident, ident,
+               cpts))
+
+
+def resto_commande(ident, etat, lignes_html, total, personnes, familles_html, tuiles_html, compteurs=(),
+                   encaisser=False, vide=False, initiale=False, addition=True, prix_actif=False):
+    """L'écran de commande (O/point_of_sale ProductScreen + O/pos_restaurant + S/overrides) : à gauche la phrase
+    d'état (S/overrides/product_screen.xml:13-16 ; ``etat_commande``), l'addition (``lignes_html`` de
+    ``resto_ligne``) et son total, la rangée « N personnes · Addition · Client · Note cuisine · Actions »
+    (S/overrides/control_buttons.xml:17-34 ; « Addition » grisé sans ligne), le pavé, « J'envoie » et « J'encaisse »
+    (primaire quand tout est envoyé : O/pos_restaurant/…/actionpad_widget.js:56-62 ; classe ``actif``) ; à droite
+    les familles (``resto_familles``) et les tuiles (``resto_tuiles``).
+
+    ``vide`` : l'addition sans ligne (O/point_of_sale/…/order_widget.xml:38-42 ; O/pos_restaurant/…/order_summary.xml
+    :7-10) : panier, « Commencez à ajouter des produits », « Libérer la table » ; pavé et « J'encaisse » cachés
+    (product_screen.xml:13-20). Pour passer au premier article : ``cacher('#<id>-vide')``, ``montrer`` la ligne,
+    ``montrer('#<id>-pave')``, ``montrer('#<id>-tot')``, ``montrer('#<id>-encaisser')``.
+    Pas de ligne « Taxes » : la société de démonstration est sans TVA (DESIGN.md).
+    Identifiants : <id>-etat, <id>-ticket, <id>-vide, <id>-liberer, <id>-lignes, <id>-tot, <id>-total, <id>-pers,
+    <id>-addition, <id>-client, <id>-note, <id>-actions, <id>-pave et ses touches, <id>-envoyer, <id>-env-<n>,
+    <id>-encaisser."""
+    vide_html = ('<div class="rs-vide%s" id="%s-vide"><span class="rs-panier">%s</span>'
+                 '<span>Commencez à ajouter des produits</span>'
+                 '<span class="rs-bt-prim rs-liberer" id="%s-liberer">Libérer la table</span></div>'
+                 % ('' if vide else ' masque', ident, ICONES['panier'], ident))
+    tot = ('<div class="rs-tot%s" id="%s-tot"><span>Total</span><span id="%s-total">%s</span></div>'
+           % (' masque' if vide else '', ident, ident, e(total)))
+    ctrl = ''.join('<span class="%s" id="%s-%s">%s</span>' % (c, ident, i, e(t)) for i, t, c in (
+        ('pers', TEXTES_RESTO['personnes'](personnes), ''),
+        ('addition', TEXTES_RESTO['addition'], 'gris' if vide else '') if addition else ('', '', 'absent'),
+        ('client', 'Client', ''), ('note', 'Note cuisine', ''), ('actions', 'Actions', 'dr')) if c != 'absent')
+    gauche = ('<div class="rs-g"><div class="rs-cmd-etat" id="%s-etat">%s</div>'
+              '<div class="rs-ticket" id="%s-ticket">%s<div class="rs-lignes" id="%s-lignes">%s</div>%s</div>'
+              '<div class="rs-ctrl">%s</div>%s'
+              '<div class="rs-act">%s<span class="rs-encaisser%s%s" id="%s-encaisser">J\'encaisse</span></div></div>'
+              % (ident, e(etat), ident, vide_html, ident, lignes_html, tot, ctrl,
+                 resto_pave(ident, prix_actif=prix_actif, cache=vide), resto_envoi(ident, compteurs),
+                 ' actif' if encaisser else '', ' masque' if vide else '', ident))
+    droite = '<div class="rs-d">%s%s</div>' % (familles_html, tuiles_html)
+    return _vue(ident, initiale, '<div class="rs-cmd">%s%s</div>' % (gauche, droite), classe='vue rs-vue')
+
+
+# -------------------------------------------------- la fenêtre d'annulation --
+
+def resto_annulation(ident, titre, sous_titre='', quantites=(), motifs=(), code=True, haut=96, erreur=''):
+    """La fenêtre d'annulation (AiteAnnulationPopup, S/components/annulation_popup/annulation_popup.xml:7-82 ;
+    taille « md ») : titre, sous-titre (R9 quand un chef de salle doit taper son code, ``dejaEnvoye`` sinon),
+    puis trois étapes dans la même fenêtre — « Combien ? » (un bouton primaire par quantité, le dernier « n (tout) » ;
+    ``quantites`` = [1, 2] ; seulement si plus d'une unité est partie), « Code d'un chef de salle » (points et pavé,
+    sans « Retour » dans le pavé ; ``code``), « Pourquoi ? » (un bouton contour par motif, primaire une fois choisi :
+    classe ``choisi`` ; un motif à précision montre « Précision » et « Valider ») — et « Retour » en bas.
+
+    Comme ``resto_code`` : une tête (titre, sous-titre) et des panneaux empilés au même endroit, chacun avec son
+    fond et sa copie de « Retour » (le même bouton dans l'application, sous l'étape en cours) : la première étape
+    est visible, les autres cachées (``cacher`` / ``montrer``). ``motifs`` = noms (R/data/restaurant_motif_data.xml:
+    8-28). ``erreur`` : la ligne d'erreur sous les motifs (R24), cachée.
+    Identifiants : <id>-voile, <id>, <id>-titre, <id>-st, <id>-q (« Combien ? ») et <id>-q1…, <id>-c (code) et
+    <id>-p0…3, <id>-k0…9, <id>-eff, <id>-m (« Pourquoi ? ») et <id>-m1…, <id>-prec (« Précision » et son champ,
+    caché), <id>-prec-v (texte du champ), <id>-valider, <id>-err ; « Retour » : <id>-retour-q, -c, -m."""
+    etapes = []
+    premiere = True
+
+    def retour(cle):
+        return ('<span class="rs-kb rs-k-retour rs-k-large rs-k-plein" id="%s-retour-%s">%s</span>'
+                % (ident, cle, e(TEXTES_RESTO['retour'])))
+
+    if quantites:
+        bq = ''.join('<span class="rs-kb rs-k-prim" id="%s-q%d">%s</span>'
+                     % (ident, q, e(TEXTES_RESTO['tout'](q) if k == len(quantites) - 1 else nombre_resto(q)))
+                     for k, q in enumerate(quantites))
+        etapes.append('<div class="rs-pan" id="%s-q"><div class="rs-question">%s</div><div class="rs-kbs">%s</div>%s'
+                      '</div>' % (ident, e(TEXTES_RESTO['combien']), bq, retour('q')))
+        premiere = False
+    if code:
+        etapes.append('<div class="rs-pan%s" id="%s-c"><div class="rs-question">%s</div>%s%s%s</div>'
+                      % ('' if premiere else ' masque', ident, e(TEXTES_RESTO['codeChef']), _points(ident),
+                         _pave_code(ident, retour=False), retour('c')))
+        premiere = False
+    bm = ''.join('<span class="rs-kb rs-motif" id="%s-m%d">%s</span>' % (ident, k, e(m)) for k, m in enumerate(motifs, 1))
+    err = '<div class="rs-err masque" id="%s-err">%s</div>' % (ident, e(erreur)) if erreur else ''
+    etapes.append('<div class="rs-pan%s" id="%s-m"><div class="rs-question">%s</div><div class="rs-kbs">%s</div>'
+                  '<div class="rs-prec masque" id="%s-prec"><label>%s</label><span class="rs-champ"><span id="%s-prec-v">'
+                  '</span></span><span class="rs-kb rs-k-prim rs-k-large" id="%s-valider">%s</span></div>%s%s</div>'
+                  % ('' if premiere else ' masque', ident, e(TEXTES_RESTO['pourquoi']), bm, ident,
+                     e(TEXTES_RESTO['precision']), ident, ident, e(TEXTES_RESTO['valider']), err, retour('m')))
+    st = '<div class="rs-st" id="%s-st">%s</div>' % (ident, e(sous_titre)) if sous_titre else ''
+    corps = ('<div class="rs-fen-h"><div class="rs-titre" id="%s-titre">%s</div>%s</div><div class="rs-pans">%s</div>'
+             % (ident, e(titre), st, ''.join(etapes)))
+    return superpose('<div class="voile masque rs-voile" id="%s-voile"></div>'
+                     '<div class="rs-fen rs-annul masque" id="%s" style="top:%dpx">%s</div>' % (ident, ident, haut, corps))
+
+
+# ------------------------------------------------------ l'écran de paiement --
+# Les icônes des modes, d'après celles d'Odoo (payment_screen.js:413-421) : espèces, banque.
+ICO_ESPECES_POS = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">'
+                   '<rect x="2" y="4.5" width="13.5" height="8.5" rx="1"/><circle cx="8.75" cy="8.75" r="1.9"/>'
+                   '<path d="M4.5 15h12.5V7.5"/><ellipse cx="18.5" cy="15.2" rx="3.5" ry="1.4"/>'
+                   '<path d="M15 15.2v3.4c0 .8 1.6 1.4 3.5 1.4s3.5-.6 3.5-1.4v-3.4M15 16.9c0 .8 1.6 1.4 3.5 1.4s3.5-.6 '
+                   '3.5-1.4"/></svg>')
+ICO_BANQUE_POS = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round">'
+                  '<rect x="2.5" y="4.5" width="19" height="15" rx="1"/><path d="M2.5 7.6h19M2.5 10.2h19"/>'
+                  '<rect x="5" y="14.6" width="6.4" height="2.6" rx="1.3"/>'
+                  '<path d="M17.4 13v6M18.7 14.2c-.3-.4-.7-.6-1.3-.6-.7 0-1.3.4-1.3 1s.6.9 1.3 1 1.3.4 1.3 1-.6 1-1.3 1'
+                  'c-.6 0-1-.2-1.3-.6" stroke-linecap="round"/></svg>')
+
+
+def resto_paiement(ident, du, modes=(('esp', 'Espèces', 'especes'), ('mm', 'Mobile Money', 'banque')), convives=0,
+                   ligne_mode='Espèces', initiale=False):
+    """L'écran de paiement de la caisse du restaurant (O/point_of_sale/…/payment_screen/payment_screen.xml ;
+    capture 13) : les modes posés d'office (« Espèces », « Mobile Money » : R/models/pos_config.py:83-84), Client /
+    Facture, le pavé (+10, +20, +50), « Retour » / « Valider » ; à droite le montant dû en vert (payment_screen.xml:
+    63), « 1 500 FCFA / Convive » s'il y a plus d'une personne (O/pos_restaurant/static/src/overrides/components/
+    payment_screen/payment_screen.xml:24-29 ; « / Convive » : O/pos_restaurant/i18n/fr.po:45-46), puis l'état
+    « Restant » et la ligne de paiement. Ni « Mettre sur ardoise » ni « payer plus tard » : réservés au manager en
+    mode restaurant (S/overrides/payment_screen.js ; notes de version :165-168 ; cas R101).
+
+    États, empilés et cachés : <id>-msg (« Veuillez sélectionner un mode de paiement », visible au départ),
+    <id>-du (« Restant » rouge, <id>-du-v), <id>-ok (« Restant 0 FCFA » vert), <id>-mon (« Monnaie », <id>-mon-v) ;
+    la ligne <id>-pl (mode, <id>-pl-v). « Valider » reste pâle tant que le paiement n'est pas complet (classe
+    ``off`` à retirer). Identifiants : <id>-<clé du mode>, <id>-client, <id>-facture, le pavé, <id>-retour,
+    <id>-valider."""
+    icones = {'especes': ICO_ESPECES_POS, 'banque': ICO_BANQUE_POS}
+    m = ''.join('<div class="rs-mode" id="%s-%s"><span class="ico">%s</span><span>%s</span></div>'
+                % (ident, c, icones.get(ic, ICO_BANQUE_POS), e(l)) for c, l, ic in modes)
+    gauche = ('<div class="rs-g"><div class="rs-modes">%s</div><div class="rs-cf"><span id="%s-client"><span class="ico">'
+              '%s</span>Client</span><span id="%s-facture"><span class="ico">%s</span>Facture<i></i></span></div>%s'
+              '<div class="rs-rv"><span id="%s-retour">Retour</span><span class="v off" id="%s-valider" data-layout-ignore>'
+              'Valider</span></div></div>'
+              % (m, ident, ICONES['personne'], ident, ICONES['document'], resto_pave(ident, TOUCHES_PAIEMENT), ident,
+                 ident))
+    convive = ('<div class="rs-convive">%s / Convive</div>' % e(fcfa(round(du / float(convives)))) if convives > 1
+               else '')
+    droite = ('<div class="rs-pd"><div class="rs-du-bloc"><div class="rs-du-v" id="%s-dueg">%s</div>%s</div>'
+              '<div class="rs-pzone"><div class="rs-choix" id="%s-msg">Veuillez sélectionner un mode de paiement</div>'
+              '<div class="rs-etats"><div class="rs-stt rouge masque" id="%s-du"><span>Restant</span><b id="%s-du-v">%s</b>'
+              '</div><div class="rs-stt vert masque" id="%s-ok"><span>Restant</span><b>%s</b></div>'
+              '<div class="rs-stt vert masque" id="%s-mon"><span>Monnaie</span><b id="%s-mon-v">%s</b></div></div>'
+              '<div class="rs-pl masque" id="%s-pl"><span>%s</span><span id="%s-pl-v">%s</span><span class="x">×</span>'
+              '</div></div></div>'
+              % (ident, e(fcfa(du)), convive, ident, ident, ident, e(fcfa(du)), ident, e(fcfa(0)), ident, ident,
+                 e(fcfa(0)), ident, e(ligne_mode), ident, e(fcfa(du))))
+    return _vue(ident, initiale, '<div class="rs-paie">%s%s</div>' % (gauche, droite), classe='vue rs-vue')
+
+
+# ------------------------------------------------------------ le menu ≡ --
+
+def resto_menu(ident, commandes=0, imprimante=False):
+    """Le menu ≡ de la caisse au service à table contrôlé (O/point_of_sale/static/src/app/navbar/navbar.xml:34-72 ;
+    S/overrides/navbar.xml:17-43) : « Commandes » (pastille du nombre, badge text-bg-info), « Entrée ou sortie
+    d'espèces » (remplace « Cash In/Out »), « Imprimer le rapport » avec une imprimante seulement (navbar.xml:60-62),
+    « Fermer la caisse » ; sans « Installer l'application », « Changer de vue de salle », cadenas ni « Backend »
+    (caché tant que l'employé n'a pas le compte de la session : O/pos_hr/…/navbar.js:5-8). Recette R14.
+    Identifiants : <id>, <id>-commandes, <id>-especes, <id>-rapport, <id>-fermer."""
+    badge = '<b class="rs-menu-b">%d</b>' % commandes if commandes else ''
+    rapport = '<div id="%s-rapport">Imprimer le rapport</div>' % ident if imprimante else ''
+    return superpose('<div class="rs-menu-l masque" id="%s"><div id="%s-commandes">Commandes%s</div>'
+                     '<div id="%s-especes">%s</div>%s<div id="%s-fermer">Fermer la caisse</div></div>'
+                     % (ident, ident, badge, ident, e(TEXTES_RESTO['especes']), rapport, ident))
+
+
+# -------------------------------------------- les fenêtres d'Odoo sur la caisse --
+
+def _dialogue(ident, titre, corps, pied, largeur, haut, droite_titre='', classe_=''):
+    return superpose('<div class="voile masque rs-voile" id="%s-voile"></div>'
+                     '<div class="rs-dlg masque%s" id="%s" style="top:%dpx;width:%dpx;margin-left:-%dpx">'
+                     '<div class="rs-dlg-h"><span>%s</span>%s</div><div class="rs-dlg-c" id="%s-c">%s</div>'
+                     '<div class="rs-dlg-p">%s</div></div>'
+                     % (ident, classe_, ident, haut, largeur, largeur // 2, e(titre), droite_titre, ident, corps, pied))
+
+
+def resto_ouverture(ident, fond='0', haut=200):
+    """« Contrôle à l'ouverture » (O/point_of_sale/static/src/app/store/opening_control_popup/
+    opening_control_popup.xml:5-26 ; capture 02) : « Espèces à l'ouverture » (montant sans symbole, croix
+    d'effacement, bouton billets : le solde compté à la dernière fermeture, opening_control_popup.js:29-32),
+    « Note d'ouverture » et son texte indicatif, un seul bouton « J'ouvre la caisse » (S/overrides/
+    opening_control_popup.xml:7-11 ; pas d'« Ignorer » avec la connexion par code : O/pos_hr/…/
+    opening_control_popup.xml:4-6). Identifiants : <id>-voile, <id>, <id>-fond, <id>-ok."""
+    corps = ('<div class="rs-lab">Espèces à l\'ouverture</div><div class="rs-in-l"><span class="rs-champ" id="%s-fond">'
+             '<span>%s</span><span class="rs-x">%s</span></span><span class="rs-btn-ic">%s</span></div>'
+             '<div class="rs-lab">Note d\'ouverture</div><div class="rs-zone-txt">Ajouter une note d\'ouverture...</div>'
+             % (ident, e(fond), ICONES['croix-pleine'], ICONES['billets']))
+    pied = '<span class="rs-bt rs-bt-p" id="%s-ok">J\'ouvre la caisse</span>' % ident
+    return _dialogue(ident, "Contrôle à l'ouverture", corps, pied, 1060, haut)
+
+
+def resto_fermeture(ident, nb_commandes, total, ouverture, especes, mouvements=0, compte=None, autres=(),
+                    note='', haut=62):
+    """« Fermeture de la caisse » avec les textes d'AITE (S/overrides/closing_popup.xml:12-37 ; capture 14) :
+    « 1 commande : 6 000 FCFA » accordé ; le bloc Espèces (attendu, Ouverture, ▸ Paiements, ▸ Entrées et sorties
+    d'espèces, Compté, Différence) ; un bloc par autre mode ``autres`` = [(nom, montant)] (▸ Paiements, Différence) ;
+    « Comptage de caisse » (champ, billets, copier) ; un champ « <mode> Nombre » par mode de type banque qui a des
+    paiements (O/point_of_sale, closing_popup.xml ; « Count » traduit « Nombre ») ; « Note de clôture » ; puis
+    « Fermer la caisse », « Ignorer », « Entrée ou sortie d'espèces », « Ventes du jour ⤓ ». Le corps défile
+    (<id>-defil, geste ``defiler``). ``compte`` : le montant compté (None : champ vide, différence = −attendu).
+    Identifiants : <id>-voile, <id>, <id>-n, <id>-esp, <id>-compte, <id>-diff, <id>-diffl, <id>-in (champ,
+    <id>-in-val), <id>-ok, <id>-ignorer, <id>-especes, <id>-ventes."""
+    attendu = ouverture + especes + mouvements
+    compte_v = attendu if compte is None else compte
+    diff = compte_v - attendu if compte is not None else -attendu
+    acc = '' if mouvements else ' off'
+    blocs = ('<div class="rs-cl-b" id="%s-esp"><div class="rs-cl-t"><span>Espèces</span><span>%s</span></div>'
+             '<div class="rs-cl-s"><span>Ouverture</span><span>%s</span></div>'
+             '<div class="rs-cl-s fonce"><span><i class="rs-tri">%s</i>Paiements</span><span>+ %s</span></div>'
+             '<div class="rs-cl-s fonce%s"><span><i class="rs-tri">%s</i>%s</span><span>+ %s</span></div>'
+             '<div class="rs-cl-s"><span>Compté</span><span id="%s-compte">%s</span></div>'
+             '<div class="rs-cl-s%s" id="%s-diffl"><span>Différence</span><span id="%s-diff">%s</span></div></div>'
+             % (ident, e(fcfa(attendu)), e(fcfa(ouverture)), ICONES['triangle'], e(fcfa(especes)), acc, ICONES['triangle'],
+                e(TEXTES_RESTO['mouvementsEspeces']), e(fcfa(mouvements)), ident,
+                e(fcfa(compte_v if compte is not None else 0)), ' rouge' if diff else '', ident, ident, e(fcfa(diff))))
+    for nom, montant in autres:
+        blocs += ('<div class="rs-cl-b"><div class="rs-cl-t"><span>%s</span><span>%s</span></div>'
+                  '<div class="rs-cl-s fonce%s"><span><i class="rs-tri">%s</i>Paiements</span><span>+ %s</span></div>'
+                  '<div class="rs-cl-s"><span>Différence</span><span>%s</span></div></div>'
+                  % (e(nom), e(fcfa(montant)), '' if montant else ' off', ICONES['triangle'], e(fcfa(montant)),
+                     e(fcfa(0))))
+    nombres = ''.join('<div class="rs-lab">%s Nombre</div><div class="rs-in-l"><span class="rs-champ rs-plein"><span>%s'
+                      '</span><span class="rs-x">%s</span></span></div>' % (e(nom), e(entier(montant)),
+                                                                              ICONES['croix-pleine'])
+                      for nom, montant in autres if montant)
+    comptage = ('<div class="rs-lab">Comptage de caisse</div><div class="rs-in-l"><span class="rs-champ rs-plein rs-saisie" '
+                'id="%s-in"><span class="val" id="%s-in-val">%s</span><span class="rs-x">%s</span></span>'
+                '<span class="rs-btn-ic">%s</span><span class="rs-btn-ic">%s</span></div>'
+                % (ident, ident, e(str(compte)) if compte is not None else '', ICONES['croix-pleine'],
+                   ICONES['billets'], ICONES['copier']))
+    corps = ('<div class="rs-cl-defil" id="%s-defil">%s<hr>%s%s<div class="rs-lab">Note de clôture</div>'
+             '<div class="rs-zone-txt">%s</div></div>'
+             % (ident, blocs, comptage, nombres, e(note) if note else 'Ajouter une note de fermeture...'))
+    pied = ('<span class="rs-bt rs-bt-p" id="%s-ok">Fermer la caisse</span><span class="rs-bt" id="%s-ignorer">Ignorer'
+            '</span><span class="rs-bt rs-dr" id="%s-especes">%s</span><span class="rs-bt" id="%s-ventes">Ventes du jour'
+            '<span class="ico">%s</span></span>'
+            % (ident, ident, ident, e(TEXTES_RESTO['especes']), ident, ICONES['telecharger']))
+    droite = '<b class="rs-cl-n" id="%s-n">%s %s</b>' % (ident, e(TEXTES_RESTO['commandes'](nb_commandes)), e(fcfa(total)))
+    return _dialogue(ident, 'Fermeture de la caisse', corps, pied, 1060, haut, droite_titre=droite, classe_=' rs-clo')
+
+
+def resto_confirmation(ident, titre, texte, ok, autre, haut=230, largeur=880):
+    """La ConfirmationDialog d'Odoo posée sur la caisse (capture 15) : en-tête et croix, texte, bouton primaire,
+    bouton gris. À la fermeture avec des tables ouvertes : ``TITRES_RESTO['fermerLaCaisse']``,
+    ``TEXTES_RESTO['tablesOuvertes'](1, '12')``, « Voir les tables », « Annuler ces tables »
+    (S/overrides/closing_popup.js:54-79). Identifiants : <id>-voile, <id>, <id>-ok, <id>-autre."""
+    corps = '<p class="rs-conf">%s</p>' % e(texte)
+    pied = ('<span class="rs-bt rs-bt-p" id="%s-ok">%s</span><span class="rs-bt" id="%s-autre">%s</span>'
+            % (ident, e(ok), ident, e(autre)))
+    return _dialogue(ident, titre, corps, pied, largeur, haut, droite_titre='<span class="rs-x">%s</span>' % ICONES['croix'])
+
+
+# ------------------------------------------------- le rapport en PDF --
+
+def visionneuse_pdf(ident, fichier, pages_html, pager='1 / 1'):
+    """La visionneuse PDF du navigateur (comme scenarios/t06_registre.py) : barre sombre avec le nom du fichier et
+    la page, puis les pages blanches (``pages_html``). Cachée ; ``montrer('#<id>')``. Le contenu défile :
+    <id>-defil (geste ``defiler``)."""
+    return superpose('<div class="rs-pdf masque" id="%s"><div class="rs-pdf-b"><span>%s</span><span class="rs-pdf-p">%s'
+                     '</span></div><div class="rs-pdf-z"><div class="rs-pdf-pages" id="%s-defil">%s</div></div></div>'
+                     % (ident, e(fichier), e(pager), ident, pages_html))
+
+
+def rapport_section(titre, contenu, identifiant=None):
+    """Une section du rapport de session d'Odoo (O/point_of_sale/views/pos_session_sales_details.xml) : un titre
+    sur fond gris (h6 bg-secondary), puis son contenu."""
+    return '<div class="rs-rp-s"%s><h6>%s</h6>%s</div>' % (_id(identifiant), e(titre), contenu)
+
+
+def rapport_tables_annulations(tables, personnes, sans_table, annulations, ident='rp'):
+    """Le bloc d'AITE du rapport de fermeture (R/views/report_saledetails.xml:11-80 ; capture 26) : « Tables et
+    personnes » (« Nombre de tables », « Nombre de personnes », « Ventes sans table »), puis « Annulations » :
+    colonnes « Table », « Produit », « Quantité », « Montant », « Motif », « Autorisée par » et une ligne « Total »
+    (``annulations`` = [(table, produit, quantité, montant, motif, autorisée par ou '')]) ; sans annulation :
+    « Aucune annulation sur cette période. ». Montants « 1 000 FCFA » (espace insécable, :52-57)."""
+    tp = ''.join('<tr><td>%s</td><td class="d">%s</td></tr>' % (e(l), e(v)) for l, v in (
+        ('Nombre de tables', tables), ('Nombre de personnes', personnes), ('Ventes sans table', sans_table)))
+    if annulations:
+        lignes = ''.join('<tr><td>%s</td><td>%s</td><td class="d">%s</td><td class="d">%s</td><td>%s</td><td>%s</td></tr>'
+                         % (e(t), e(p), e(nombre_resto(q)), e(fcfa(m)), e(mo), e(a or '—'))
+                         for t, p, q, m, mo, a in annulations)
+        total = ('<tr class="gras"><td colspan="2">Total</td><td class="d">%s</td><td class="d">%s</td><td colspan="2"></td></tr>'
+                 % (e(nombre_resto(sum(a[2] for a in annulations))), e(fcfa(sum(a[3] for a in annulations)))))
+        ann = ('<table class="rs-rp-t"><tr class="tete"><td>Table</td><td>Produit</td><td class="d">Quantité</td>'
+               '<td class="d">Montant</td><td>Motif</td><td>Autorisée par</td></tr>%s%s</table>' % (lignes, total))
+    else:
+        ann = '<p class="rs-rp-p">Aucune annulation sur cette période.</p>'
+    return (rapport_section('Tables et personnes', '<table class="rs-rp-t">%s</table>' % tp, ident + '-tp')
+            + rapport_section('Annulations', ann, ident + '-ann'))
+
+
+def rapport_page(ident, contenu):
+    """Une page A4 du rapport, à l'échelle de la visionneuse."""
+    return '<div class="rs-rp-page" id="%s">%s</div>' % (ident, contenu)
+
+
+# =================================================== gestion : réglages --
+# La page des réglages d'Odoo 18 (O/web/static/src/webclient/settings_form_view/) dans le thème MuK : panneau
+# « Enregistrer » / « Ignorer » / « Paramètres » / recherche (O/web/i18n/fr.po:5629-5630, 2205-2206, 5761-5762),
+# barre des applications réglables à gauche, puis la page de l'application : bande d'en-tête (setting
+# type="header", settings/setting_header.xml:4 : fond bg-warning à 25 %), blocs titrés et réglages sur deux
+# colonnes (case, titre, phrase grise). Modèle visuel : capture 25.
+
+def reglage(ident, titre, aide='', case=None, contenu='', point=False):
+    """Un réglage : ``case`` True / False (case à cocher, cochée ou non), None (pas de case) ; ``titre`` ; ``aide``
+    (la phrase grise, <id>-aide) ; ``contenu`` : HTML posé sous l'aide (champ, étiquettes, lien) ; ``point`` : le
+    « ? » de la documentation (O/web/…/settings/setting.xml). Identifiants : <id>, <id>-case, <id>-aide."""
+    c = ('<span class="rg-case%s" id="%s-case">%s</span>' % (' coche' if case else '', ident, ICONES['coche'])
+         if case is not None else '<span class="rg-case rg-sans"></span>')
+    p = '<span class="rg-doc">?</span>' if point else ''
+    a = '<div class="rg-aide" id="%s-aide">%s</div>' % (ident, e(aide)) if aide else ''
+    return ('<div class="rg-reglage" id="%s">%s<div class="rg-droite"><div class="rg-titre">%s%s</div>%s%s</div></div>'
+            % (ident, c, e(titre), p, a, contenu))
+
+
+def bloc_reglages(titre, reglages, identifiant=None):
+    """Un bloc (« Mode restaurant », « Paiement ») : son titre, puis ses réglages sur deux colonnes."""
+    return ('<div class="rg-bloc"%s><div class="rg-bloc-t">%s</div><div class="rg-grille">%s</div></div>'
+            % (_id(identifiant), e(titre), ''.join(reglages)))
+
+
+def etiquettes(valeurs, identifiant=None):
+    """Un champ many2many_tags : des étiquettes grises avec leur croix, soulignées comme un champ d'Odoo."""
+    t = ''.join('<span class="rg-etiq">%s<i>×</i></span>' % e(v) for v in valeurs)
+    return '<span class="rg-etiqs"%s>%s<span class="rg-dd">▾</span></span>' % (_id(identifiant), t)
+
+
+def lien_fleche(texte, identifiant=None):
+    """Un bouton-lien d'Odoo avec la flèche oi-arrow-right (« → Salles », « → Modes de paiement »)."""
+    return '<div class="rg-lien"%s><span class="ico">%s</span>%s</div>' % (_id(identifiant), ICONES['fleche-droite'],
+                                                                         e(texte))
+
+
+def page_reglages(ident, apps, active, entete, blocs, initiale=False):
+    """La page « Paramètres » : ``apps`` = [(nom, clé de l'icône : un nom de fichier de produire.ICONES_APPS, ou None)] (la barre de gauche),
+    ``active`` = le nom surligné ; ``entete`` = (libellé, valeur, lien) de la bande d'en-tête de l'application
+    (« Point de Vente », « Restaurant », « + Nouvelle boutique ») ; ``blocs`` = HTML de ``bloc_reglages``. Le
+    contenu défile : <id>-defil. Identifiants : <id>-enr, <id>-ign, <id>-app-<clé>, <id>-sel (la valeur)."""
+    cp = ('<div class="cp rg-cp"><span class="bt primaire" id="%s-enr">Enregistrer</span>'
+          '<span class="bt gris" id="%s-ign">Ignorer</span><span class="titre">Paramètres</span>%s</div>'
+          % (ident, ident, recherche()))
+    gauche = ''.join('<div class="rg-app%s" id="%s-app-%s">%s<span>%s</span></div>'
+                     % (' actif' if nom == active else '', ident, cle or 'x',
+                        '<img class="muk-ico" src="assets/icones/%s.png" alt="">' % cle if cle else '', e(nom))
+                     for nom, cle in apps)
+    lib, val, lien_ = entete
+    tete = ('<div class="rg-entete"><span class="rg-entete-l">%s</span><span class="rg-sel" id="%s-sel">%s'
+            '<span class="rg-dd">▾</span></span><span class="rg-nouv">%s</span></div>' % (e(lib), ident, e(val), e(lien_)))
+    contenu = ('<div class="rg-page">%s<div class="rg-apps">%s</div><div class="rg-defil-cadre" data-layout-allow-overflow '
+               'data-layout-allow-occlusion><div class="rg-defil" id="%s-defil" data-layout-allow-overflow '
+               'data-layout-allow-occlusion>%s%s</div></div></div>' % (cp, gauche, ident, tete, ''.join(blocs)))
+    return _vue(ident, initiale, contenu)
+
+
+# ============================================== gestion : la fiche employé --
+
+def fiche_employe(ident, nom, initiale, couleur, niveau='', code='', pager='1 / 1', aide_niveau='', aide_code='',
+                  options=(), initiale_vue=False):
+    """La fiche employé d'Odoo 18 (O/hr/views/hr_employee_views.xml:58-110) avec le groupe d'AITE « Caisse du
+    restaurant » (R/views/hr_employee_views.xml:11-44) : panneau (« Nouveau », fil d'Ariane « Employés » / nom,
+    engrenage, bouton intelligent « Contacts 1 », pagination), « Plan de lancement », la feuille : nom en grand,
+    « Titre du poste », avatar carré à l'initiale, les champs de travail (e-mail, téléphones, étiquettes ;
+    département, poste, manager, mentor « ? »), puis CAISSE DU RESTAURANT : « Niveau en caisse ? » (liste
+    déroulante, ``options``), sa phrase, « Code caisse ? », sa phrase ; les onglets. Modèle visuel : capture 24.
+
+    Les boutons d'enregistrement (nuage, croix : O/web/…/form_status_indicator.xml) sont cachés : ``montrer``.
+    ``aide_niveau`` : la phrase sous le niveau, d'un bloc, ou découpée en phrases (une liste, jointe par des
+    espaces : le texte reste celui du code) pour les désigner une à une.
+    Identifiants : <id>-fil, <id>-statut (les boutons d'enregistrement), <id>-save, <id>-annul, <id>-niveau
+    (champ ``entree`` : <id>-niveau-val), <id>-liste (la liste déroulante, cachée), <id>-opt-<n>, <id>-niveau-aide
+    et ses phrases <id>-aide-1, -2…, <id>-code (le code, <id>-code-val), <id>-code-aide, <id>-defil."""
+    cp = ('<div class="cp fe-cp"><span class="bt contour">Nouveau</span><div class="fil" id="%s-fil">'
+          '<span class="parent">Employés</span><span class="ref">%s <span class="fe-eng">%s</span>'
+          '<span class="fe-statut masque" id="%s-statut"><span class="fe-ic" id="%s-save">%s</span>'
+          '<span class="fe-ic" id="%s-annul">%s</span></span></span></div>'
+          '<span class="stat fe-stat"><span class="sic">%s</span><span class="st-t"><span>Contacts</span><b>1</b></span>'
+          '</span><span class="pager">%s</span><span class="fe-nav">‹</span><span class="fe-nav">›</span></div>'
+          % (ident, e(nom), ICONES['engrenage'], ident, ident, ICONES['nuage'], ident, ICONES['x'], ICONES['contacts'],
+             e(pager)))
+    bande = '<div class="fe-bande"><span class="bt gris">Plan de lancement</span></div>'
+
+    def ch(lib, val='', ph='', aide=False, ident_=None):
+        q = '<sup class="fe-q">?</sup>' if aide else ''
+        # le texte indicatif d'Odoo est pâle (volontairement peu contrasté) : soustrait au contrôle de contraste
+        v = ('<span class="fe-v">%s</span>' % e(val)) if val else '<span class="fe-ph" data-layout-ignore>%s</span>' % e(ph)
+        return '<div class="fe-ch"%s><span class="fe-l">%s%s</span>%s</div>' % (_id(ident_), e(lib), q, v)
+
+    gauche = (ch('Adresse e-mail professionnelle', ph='par ex. johndoe@example.com') + ch('Téléphone professionnel')
+              + ch('Téléphone portable professionnel') + ch('Étiquettes', ph='Étiquettes'))
+    droite = (ch('Département') + ch('Poste', ph='par ex. Directeur Commercial') + ch('Manager')
+              + ch('Mentor', aide=True))
+    phrases = [aide_niveau] if isinstance(aide_niveau, str) else list(aide_niveau or ())
+    aide_n = ' '.join('<span id="%s-aide-%d">%s</span>' % (ident, k, e(p)) for k, p in enumerate(phrases, 1))
+    liste = ''.join('<div class="fe-opt" id="%s-opt-%d">%s</div>' % (ident, k, e(o) or '&nbsp;')
+                    for k, o in enumerate(options))
+    caisse = ('<div class="fe-grp-t">Caisse du restaurant</div>'
+              '<div class="fe-ch fe-ch-l"><span class="fe-l">Niveau en caisse<sup class="fe-q">?</sup></span>'
+              '<div class="fe-sel">%s<span class="fe-dd">▾</span><div class="fe-liste masque" id="%s-liste">%s</div>'
+              '</div></div>'
+              '<div class="fe-aide" id="%s-niveau-aide">%s</div>'
+              '<div class="fe-ch fe-ch-l"><span class="fe-l">Code caisse<sup class="fe-q">?</sup></span>%s</div>'
+              '<div class="fe-aide" id="%s-code-aide">%s</div>'
+              % (entree(ident + '-niveau', '', niveau, classe='entree fe-in'), ident, liste, ident, aide_n,
+                 entree(ident + '-code', '', code, classe='entree fe-in fe-code'), ident, e(aide_code)))
+    onglets_ = onglets(['CV', 'Informations professionnelles', 'Informations privées', 'Paramètres'])
+    feuille = ('<div class="fe-feuille"><div class="fe-tete"><div><div class="fe-nom">%s</div>'
+               '<div class="fe-poste" data-layout-ignore>Titre du poste</div></div><div class="fe-avatar" style="background:%s">%s</div></div>'
+               '<div class="fe-cols"><div>%s</div><div>%s</div></div>%s%s</div>'
+               % (e(nom), couleur, e(initiale), gauche, droite, caisse, onglets_))
+    contenu = ('%s<div class="fe-cadre" data-layout-allow-overflow data-layout-allow-occlusion><div class="fe-defil" '
+               'id="%s-defil" data-layout-allow-overflow data-layout-allow-occlusion>%s%s</div></div>'
+               % (cp, ident, bande, feuille))
+    return _vue(ident, initiale_vue, contenu)
+
+
+# ---------------------------------------- la pastille du personnage, par étape --
+
+def css_personnage(selecteur, nom, role, initiale):
+    """Les règles qui font dire à la pastille du personnage (``marketing.Tutoriel``, #tu-perso) un autre nom, un
+    autre rôle et une autre initiale, tant que ``selecteur`` (par exemple ``#tu-perso.t17-pc`` ou
+    ``#tu-perso:not(.t16-moi)``) s'applique : le geste ``classe('#tu-perso', …)`` passe d'un personnage à l'autre
+    (mécanisme de scenarios/t04_note_chambre.py, ``pastille_css``)."""
+    return ('%(s)s > span:last-child { font-size: 0; }\n'
+            '%(s)s > span:last-child::before { content: "%(n)s"; font-size: 21px; font-weight: 700; }\n'
+            '%(s)s > span:last-child::after { content: " · %(r)s"; font-size: 21px; white-space: pre; }\n'
+            '%(s)s .av { font-size: 0; }\n'
+            '%(s)s .av::before { content: "%(i)s"; font-size: 20px; }\n'
+            % {'s': selecteur, 'n': nom, 'r': role, 'i': initiale})

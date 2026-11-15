@@ -274,8 +274,8 @@ class Tutoriel(moteur.Video):
                 '<div class="cta-bouton" id="cta-b">%s</div>'
                 '<div class="cta-contacts" id="cta-c">%s</div>'
                 '<div class="cta-chaine" id="cta-ch">%s</div>%s</div></div>'
-                % (e(MARQUE), e(SOUS_MARQUE), e(c.get('appel', 'Demandez votre démonstration')), contacts,
-                   e(CHAINE), suivant))
+                % (e(MARQUE), e(c.get('sous_marque', SOUS_MARQUE)), e(c.get('appel', 'Demandez votre démonstration')),
+                   contacts, e(CHAINE), suivant))
         self.clip('sc-cta', t, d, html, 4)
         self.entree('#cta-logo', t + 0.1, d=0.6, y=30, echelle=0.9)
         self.entree('#cta-m', t + 0.4, d=0.6, y=30)
