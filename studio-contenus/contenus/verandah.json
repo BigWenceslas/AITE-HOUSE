@@ -1285,24 +1285,65 @@
       ]
     },
     {
-      "serie": "Week-end 14-15 novembre — au choix",
+      "serie": "Dimanche 15 novembre — au choix (nouvelles propositions)",
       "jour": "dimanche",
       "modele": "vd-sombre",
       "titre": "",
       "points": [],
-      "id": "VD-DIM-4",
-      "moment": "dimanche 11h",
-      "etiquette": "Bon dimanche",
-      "photo": "blazer",
+      "id": "VD-DIM-5",
+      "moment": "dimanche 10h",
+      "etiquette": "Journée mondiale du souvenir",
+      "photo": "tunique",
       "alcool": false,
-      "texte": "Dimanche, mola, la marmite se repose à la maison, viens *manger avec les tiens* à La Vérandah.",
-      "legende": "Le dimanche, celui qui cuisine toute la semaine mérite aussi de se reposer. Viens à table avec tes proches, on s’occupe de vous. Chez toi, qui mérite une pause cuisine ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "texte": "Aujourd’hui, le monde se souvient des *victimes de la route* : ce soir, aie une *pensée* pour ceux qui les pleurent.",
+      "legende": "Ce dimanche 15 novembre, troisième dimanche du mois, c’est la Journée mondiale du souvenir des victimes de la route, reconnue par l’ONU en 2005. Pas d’annonce aujourd’hui, seulement une pensée pour les familles qui, à Douala comme ailleurs, ont perdu un proche sur la route. Le mot d’ordre de la journée tient en trois verbes : se souvenir, soutenir, agir. Ce soir, à qui vas-tu dire « rentre doucement » ?",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#SecuriteRoutiere",
+        "#WDoR2026"
+      ]
+    },
+    {
+      "serie": "Dimanche 15 novembre — au choix (nouvelles propositions)",
+      "points": [],
+      "etiquette": "",
+      "id": "VD-DIM-6",
+      "jour": "dimanche",
+      "moment": "dimanche 15h",
+      "modele": "vd-ambiance",
+      "titre": "Séance levée, cahier fermé !",
+      "texte": "LA *CAUSERIE DE LA RÉUNION* CONTINUE À LA VÉRANDAH, À MAKEPE",
+      "photo": null,
+      "alcool": false,
+      "legende": "À Douala, le dimanche, c’est souvent jour de réunion : on cotise, on fait les comptes, on règle les affaires du groupe. Quand la séance est levée, la causerie peut continuer à Makepe. Ta réunion, elle tombe quel dimanche du mois ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
       "hashtags": [
         "#LaVerandah",
         "#Douala",
         "#Makepe",
-        "#BonDimanche",
-        "#Famille"
+        "#Reunion",
+        "#BonDimanche"
+      ]
+    },
+    {
+      "serie": "Dimanche 15 novembre — au choix (nouvelles propositions)",
+      "points": [],
+      "etiquette": "",
+      "id": "VD-DIM-7",
+      "jour": "dimanche",
+      "moment": "dimanche 18h",
+      "modele": "vd-ambiance",
+      "titre": "Demain, les Lions !",
+      "texte": "APRÈS LE *2-0 DE JAPOMA*, ON GARDE LA MÊME FAIM À *GABORONE*",
+      "photo": null,
+      "alcool": false,
+      "legende": "Jeudi à Japoma, les Lions indomptables ont battu la Namibie 2-0 et mènent le groupe G avec 7 points. Demain lundi à 14 h (heure de Douala), ils retrouvent la Namibie à Gaborone, au Botswana, pour les éliminatoires de la CAN 2027. Le soir, on refait le match ensemble à La Vérandah. 🦁 Ton pronostic pour Gaborone ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#LionsIndomptables",
+        "#CAN2027",
+        "#Makepe"
       ]
     }
   ]

@@ -2572,24 +2572,68 @@
       ]
     },
     {
-      "serie": "Week-end 14-15 novembre — au choix",
+      "serie": "Dimanche 15 novembre — au choix (nouvelles propositions)",
       "semaine": null,
       "jour": "dimanche",
-      "moment": "dimanche 9h",
+      "moment": "dimanche",
+      "modele": "affiche",
+      "etiquette": "Journée du souvenir",
+      "titre": "",
+      "points": [],
+      "numero": null,
+      "id": "DIM-5",
+      "photo": "veste-pied",
+      "theme": "Journée mondiale du souvenir des victimes de la route (WDoR), 3e dimanche de novembre, soi",
+      "texte": "Aucun rendez-vous client ne vaut un excès de vitesse : arrive *en retard*, mais arrive *entier*.",
+      "legende": "Ce dimanche 15 novembre, c’est la Journée mondiale du souvenir des victimes de la route. Une pensée pour les familles que la route a endeuillées. Un rendez-vous se décale, une vie ne se remplace pas : si tu reprends la route demain pour le travail, pars plus tôt et lève le pied. Et toi, quand tu es en retard, tu appelles ou tu accélères ?",
+      "hashtags": [
+        "#AITEConsulting",
+        "#SecuriteRoutiere",
+        "#WDoR2026",
+        "#Douala"
+      ]
+    },
+    {
+      "serie": "Dimanche 15 novembre — au choix (nouvelles propositions)",
+      "semaine": null,
+      "jour": "dimanche",
+      "moment": "dimanche",
       "modele": "affiche",
       "etiquette": "Bon dimanche",
       "titre": "",
       "points": [],
       "numero": null,
-      "id": "DIM-4",
-      "photo": "ndop",
-      "theme": "Idée humaine et nouvelle, jamais traitée : la solidarité de quartier, très parla",
-      "texte": "Dimanche, prends le temps de saluer *tes voisins du quartier* : ce sont eux qui veillent quand tu n’es pas là.",
-      "legende": "En semaine, on part tôt et on rentre tard, souvent sans voir personne. Le dimanche, c’est l’occasion de passer dire bonjour, de prendre des nouvelles de la vieille d’à côté. Le quartier, c’est aussi une famille. Et toi, à quand remonte ta dernière causerie avec tes voisins ?",
+      "id": "DIM-6",
+      "photo": "ndop-pied",
+      "theme": "Réunions et tontines du dimanche à Douala (Cameroon Tribune, Bepanda ; camer.be). Le geste",
+      "texte": "Trésorier de la réunion, si ton cahier des cotisations n’existe qu’en *un seul exemplaire*, ce soir, *photographie-le*.",
+      "legende": "À Douala, le dimanche est souvent jour de réunion : cotisations, entraide, et une séance qui change souvent de maison. Si le cahier se mouille ou se perd, des mois de confiance partent avec lui. Une photo des pages du jour, envoyée au président ou au secrétaire, et les comptes du groupe existent enfin en deux exemplaires. Dans ta réunion, qui garde une copie du cahier ?",
       "hashtags": [
         "#AITEConsulting",
-        "#BonDimanche",
-        "#Quartier",
+        "#Tontine",
+        "#Sauvegarde",
+        "#Douala"
+      ]
+    },
+    {
+      "serie": "Dimanche 15 novembre — au choix (nouvelles propositions)",
+      "semaine": null,
+      "jour": "dimanche",
+      "moment": "dimanche",
+      "modele": "affiche",
+      "etiquette": "Bon dimanche",
+      "titre": "",
+      "points": [],
+      "numero": null,
+      "id": "DIM-7",
+      "photo": "blazer",
+      "theme": "FAQ officielle WhatsApp « À propos des appareils connectés » (faq.whatsapp.com/37827980443",
+      "texte": "Ton bureau est fermé aujourd’hui, mais ton WhatsApp y est peut-être *resté ouvert* : *déconnecte-le* depuis ton téléphone.",
+      "legende": "Sur ton téléphone, ouvre le menu à trois points (Réglages sur iPhone), puis Appareils connectés : touche l’ordinateur oublié et choisis Déconnexion. Bureau, cyber, ordinateur d’un collègue : tant qu’un appareil reste dans cette liste, il peut afficher tes discussions. Combien d’appareils vois-tu dans ta liste ce soir ?",
+      "hashtags": [
+        "#AITEConsulting",
+        "#WhatsApp",
+        "#Cybersecurite",
         "#Douala"
       ]
     }
