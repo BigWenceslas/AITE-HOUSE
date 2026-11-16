@@ -23,6 +23,15 @@
 #     Vente, Employés « Agent », Facturation, Manager des analyses AITE) et
 #     « chef » (Restaurant : lecture des rapports).
 #
+# Avec AITE_SANS_CARTE_DEMO=1 dans l'environnement (dev/setup_env.sh
+# --restaurant --carte-messager), ni les familles ni la carte de démonstration
+# ne sont posées : la carte du client vient ensuite (seed_carte_messager.py).
+# Une base qui porte déjà la carte d'un client (paramètre système
+# aite.carte_client, écrit par seed_carte_messager.py, ou société « Restaurant
+# Le Messager ») ne reçoit jamais la carte de démonstration, même sans la
+# variable : rejouer « dev/setup_env.sh --restaurant » sur aite_messager pour
+# une mise à niveau ne mélange pas les deux cartes.
+#
 # Rejouable : rien n'est créé deux fois (recherche par nom), une table ou un
 # produit existant n'est pas modifié, le stock de départ n'est saisi que pour
 # une bière qui n'a encore aucun mouvement de stock.
@@ -30,6 +39,9 @@
 # Usage (Odoo 18 à côté, dans ../odoo18) :
 #   cd ../odoo18 && $PYTHON odoo-bin shell -c ../AITE-HOUSE/dev/odoo.conf -d aite_resto \
 #       --no-http < ../AITE-HOUSE/dev/seeds/seed_restaurant.py
+import os
+
+SANS_CARTE_DEMO = os.environ.get('AITE_SANS_CARTE_DEMO') == '1'
 company = env.company
 compte = {'tables': 0, 'familles': 0, 'categories': 0, 'produits': 0,
           'employes': 0, 'comptes': 0, 'stocks': 0}
@@ -39,6 +51,14 @@ caisse_pos = env['pos.config'].search([
 if not caisse_pos:
     raise SystemExit("✗ aucune caisse au service à table contrôlé : installer d'abord "
                      "aite_pos_restaurant (dev/setup_env.sh --restaurant)")
+
+carte_client = env['ir.config_parameter'].sudo().get_param('aite.carte_client')
+if not carte_client and company.name == "Restaurant Le Messager":
+    carte_client = 'messager'
+if carte_client and not SANS_CARTE_DEMO:
+    SANS_CARTE_DEMO = True
+    print("ℹ base à la carte du client (%s) : la carte de démonstration n'est pas posée"
+          % carte_client)
 
 # Une base créée par l'écran de création garde le nom de société d'Odoo :
 # la graine donne un nom fictif, rien de plus.
@@ -106,7 +126,8 @@ def descendre(branches, parent_famille=None, parent_categorie=None):
         descendre(enfants, famille, categorie)
 
 
-descendre(ARBRE)
+if not SANS_CARTE_DEMO:
+    descendre(ARBRE)
 
 # ------------------------------------------------------------------ la carte
 # (nom, famille de rangement, prix FCFA, suivi en stock, stock de départ)
@@ -147,7 +168,7 @@ CARTE = [
 ]
 Produits = env['product.template'].with_context(active_test=False)
 entrepot = caisse_pos.picking_type_id.warehouse_id
-for nom, famille, prix, suivi, depart in CARTE:
+for nom, famille, prix, suivi, depart in ([] if SANS_CARTE_DEMO else CARTE):
     modele = Produits.search([('name', '=', nom)], limit=1)
     if not modele:
         modele = Produits.create({
@@ -210,4 +231,6 @@ print("seed restaurant OK — créés : %(tables)d tables, %(familles)d familles
       "%(comptes)d comptes, %(stocks)d stocks de départ" % compte
       + " | en place : %d tables, %d produits à la carte, %d employés à niveau" % (
           len(salle.table_ids), env['product.template'].search_count([('available_in_pos', '=', True)]),
-          env['hr.employee'].search_count([('aite_niveau_caisse', '!=', False)])))
+          env['hr.employee'].search_count([('aite_niveau_caisse', '!=', False)]))
+      + (" | carte de démonstration non posée (%s)" % (carte_client or "AITE_SANS_CARTE_DEMO=1")
+         if SANS_CARTE_DEMO else ""))

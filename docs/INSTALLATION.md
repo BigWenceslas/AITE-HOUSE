@@ -393,6 +393,32 @@ comptes « caisse », « manager », « chef ») et refuse une base existante qu
 n'est pas celle du restaurant (une base hôtelière, par exemple) ;
 `dev/run_tests.sh restaurant` la teste, même après un service (les captures,
 elles, se prennent sur une copie : voir `tests/restaurant/shots.py`).
+
+**Base de démonstration à la carte du client** (« Restaurant Le Messager »,
+Douala) : `PG_HOST=localhost PYTHON=../venv312/bin/python dev/setup_env.sh
+--restaurant --carte-messager` crée la base `aite_messager` (`ODOO_DB` est
+facultatif) de la même façon (salle, équipe, comptes), mais pose la vraie
+carte du client au lieu de la carte de démonstration : 101 produits aux prix
+de la carte, familles de caisse = sections de la carte (trois niveaux au
+plus), tailles en produits séparés (une touche), accompagnement au choix sans
+supplément sur les plats de la page 2, boissons revendues suivies en stock
+avec un coût et un stock de départ, aucune taxe. La graine
+`dev/seeds/seed_carte_messager.py` se rejoue (`odoo-bin shell … <
+dev/seeds/seed_carte_messager.py`) : rien n'est créé deux fois (chaque
+produit a une clé stable : pour le renommer, on change son nom dans le
+script, jamais sa clé), un nom, un prix ou un coût changé dans le script est
+remis à jour, un produit retiré du script quitte la caisse ; elle refuse une
+base qui porte la carte de démonstration, et `seed_restaurant.py` ne pose
+jamais sa carte de démonstration dans une base à la carte du client (même en
+rejouant `dev/setup_env.sh --restaurant` dessus). Les coûts, les produits
+hors carte (eaux, jus, sodas, bières, café, thé) et les points douteux de la
+carte sont listés en tête du script et marqués « À valider » dans les notes
+internes des produits. Seules les boissons ont un coût : dans l'analyse AITE
+(marge et CMV), un plat paraît à 100 % de marge tant que le client n'a pas
+fourni son coût de revient (fiche recette) — en démonstration, filtrer
+l'analyse sur la famille « Bar ». `ODOO_DB=aite_messager dev/run_tests.sh
+restaurant` la teste aussi.
+
 **Enterprise** : non essayé à ce jour (aucune base disponible).
 
 ---

@@ -24,9 +24,15 @@
 #                                        aite_pos_analytics_hr s'installe seule), graine
 #                                        dev/seeds/seed_restaurant.py ; ni socle hôtelier ni
 #                                        graine LAVERANDAH (--all est ignoré)
+#          dev/setup_env.sh --restaurant --carte-messager
+#                                        idem, mais avec la carte du client « Restaurant
+#                                        Le Messager » (dev/seeds/seed_carte_messager.py) au
+#                                        lieu de la carte de démonstration, sur sa propre
+#                                        base (ODOO_DB facultatif : aite_messager par défaut)
 # Variables : PYTHON (interpréteur, ex. venv Python 3.12), ODOO_DIR (clone), PG_HOST (défaut : /tmp = socket local ;
 #             mettre localhost pour un service système), ODOO_DB (aite_dev ; aite_resto avec
-#             --restaurant ; une base existante doit être du bon genre — hôtel ou
+#             --restaurant ; aite_messager avec --carte-messager ; une base existante doit
+#             être du bon genre — hôtel ou
 #             restaurant —, sinon le script s'arrête sans rien y installer : dev/etat_base.py),
 #             MUK_DIR (clone des modules MuK IT, LGPL-3 ; défaut : à côté de ce dossier)
 # ============================================================================
@@ -36,11 +42,16 @@ ODOO_DIR=${ODOO_DIR:-$ROOT/../odoo18}
 PG_HOST=${PG_HOST:-/tmp}
 PYTHON=${PYTHON:-python3}
 MUK_DIR=${MUK_DIR:-$ROOT/../muk_addons}
-ALL=0; MUK=0; RESTO=0
+ALL=0; MUK=0; RESTO=0; MESSAGER=0
 for a in "$@"; do
-  case "$a" in --all) ALL=1 ;; --muk) MUK=1 ;; --restaurant) RESTO=1 ;; esac
+  case "$a" in --all) ALL=1 ;; --muk) MUK=1 ;; --restaurant) RESTO=1 ;; --carte-messager) MESSAGER=1 ;; esac
 done
-if [ $RESTO = 1 ]; then ODOO_DB=${ODOO_DB:-aite_resto}; else ODOO_DB=${ODOO_DB:-aite_dev}; fi
+if [ $MESSAGER = 1 ] && [ $RESTO = 0 ]; then
+  echo "✗ --carte-messager va avec --restaurant : dev/setup_env.sh --restaurant --carte-messager (base aite_messager)"
+  exit 1
+fi
+if [ $MESSAGER = 1 ]; then ODOO_DB=${ODOO_DB:-aite_messager}
+elif [ $RESTO = 1 ]; then ODOO_DB=${ODOO_DB:-aite_resto}; else ODOO_DB=${ODOO_DB:-aite_dev}; fi
 PIPFLAGS=""; "$PYTHON" -m pip install --help 2>/dev/null | grep -q break-system-packages && PIPFLAGS="--break-system-packages"
 
 step() { printf '\n\033[1;35m▶ %s\033[0m\n' "$*"; }
@@ -195,8 +206,12 @@ fi
 # ---------------------------------------------------------- 7. seeds
 if [ $RESTO = 1 ]; then
   step "6/6 jeu de données du restaurant (salle, carte, équipe, comptes)"
-  (cd "$ODOO_DIR" && "$PYTHON" odoo-bin shell -c "$ROOT/dev/odoo.conf" -d "$ODOO_DB" --no-http \
-      < "$ROOT/dev/seeds/seed_restaurant.py" 2>/dev/null | tail -1)
+  (cd "$ODOO_DIR" && AITE_SANS_CARTE_DEMO=$MESSAGER "$PYTHON" odoo-bin shell -c "$ROOT/dev/odoo.conf" \
+      -d "$ODOO_DB" --no-http < "$ROOT/dev/seeds/seed_restaurant.py" 2>/dev/null | tail -1)
+  if [ $MESSAGER = 1 ]; then
+    (cd "$ODOO_DIR" && "$PYTHON" odoo-bin shell -c "$ROOT/dev/odoo.conf" -d "$ODOO_DB" --no-http \
+        < "$ROOT/dev/seeds/seed_carte_messager.py" 2>/dev/null | tail -1)
+  fi
   cat <<EOF
 
 ✔ Environnement du restaurant prêt (base $ODOO_DB).
