@@ -204,6 +204,13 @@ Pour un restaurant, un bar ou une pizzeria **sans hébergement** : la caisse
 de service à table (`aite_pos_restaurant`), ses analyses et l'ardoise.
 Aucun module hôtelier n'est installé. Ce qui change à la caisse est décrit
 dans [`NOTES_DE_VERSION_restaurant_lot1.md`](NOTES_DE_VERSION_restaurant_lot1.md).
+Le guide d'utilisation, poste par poste, est
+[`guides/AITE_Guide_Restaurant.pdf`](guides/AITE_Guide_Restaurant.pdf) ; les scénarios de
+recette (22 scénarios couvrant les cas R01 à R104) sont dans
+[`guides/AITE_Restaurant_Scenarios_de_tests.pdf`](guides/AITE_Restaurant_Scenarios_de_tests.pdf),
+avec le classeur à cocher
+[`guides/AITE_Restaurant_Scenarios_de_tests.xlsx`](guides/AITE_Restaurant_Scenarios_de_tests.xlsx)
+(sources et `build.sh` dans `guides/src/`).
 
 ### 9.1 Ce que le client installe
 

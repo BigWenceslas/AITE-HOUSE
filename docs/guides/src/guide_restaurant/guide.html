@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>AITE Restaurant — service à table contrôlé · Guide d'utilisation</title>
+<meta name="author" content="AITE Consulting">
+<link rel="stylesheet" href="guide.css">
+</head>
+<body>
+
+<!-- ===================================================================
+     Couverture. Toutes les captures sont celles du produit
+     (captures/restaurant/, prises par tests/restaurant/shots.py sur la base
+     de démonstration : l'équipe est celle de dev/seeds/seed_restaurant.py).
+     Chaque libellé cité entre « » existe mot pour mot dans le code.
+     =================================================================== -->
+<div class="entete">
+  <div>
+    <div class="surtitre">Guide d'utilisation</div>
+    <h1>AITE Restaurant — service à table contrôlé</h1>
+    <p class="sous-titre">Un code par employé, un plan verrouillé, ce qui est parti en cuisine ne s'annule plus sans un chef de salle</p>
+  </div>
+  <img src="../../../logo_aite.jpg" alt="AITE Consulting">
+</div>
+
+<table class="carte-identite">
+  <tr><th>Public visé</th><td>Serveurs, caissière, chef de salle, manager d'un restaurant, d'un bar ou d'une pizzeria qui sert à table, avec ou sans hôtel ; AITE pour l'installation</td></tr>
+  <tr><th>Modules</th><td><code>aite_pos_restaurant</code> 18.0.1.0.6 (la caisse) · <code>aite_pos_analytics</code> 18.0.2.1.6 (ventes par famille) · <code>aite_pos_analytics_hr</code> 18.0.1.0.0 (le serveur dans les analyses) · <code>aite_pos_credit</code> 18.0.2.0.6 (ardoises) · <code>aite_resto_carte_messager</code> 18.0.1.0.0 (carte de démonstration) — Odoo 18</td></tr>
+  <tr><th>Éditeur</th><td>AITE CONSULTING — Novembre 2026</td></tr>
+  <tr><th>Illustrations</th><td>Captures réelles de l'application, prises sur la base de démonstration du restaurant (Odoo 18 Community, tablette 1 280 × 800). L'équipe des exemples est fictive : Brice et Nadège (serveurs, codes 1001 et 1002), Clarisse (caissière, 2001), Hervé (chef de salle, 3001), Sandrine (manager, 4001).</td></tr>
+</table>
+
+<h3 style="margin-top:2mm">Sommaire</h3>
+<ol class="sommaire">
+  <li>Le principe</li>
+  <li>Installer et mettre en place</li>
+  <li>La caissière</li>
+  <li>Le serveur</li>
+  <li>Le chef de salle</li>
+  <li>Le manager</li>
+  <li>Le plan en couleurs</li>
+  <li>Les messages de la caisse et quoi faire</li>
+  <li>La carte de démonstration</li>
+  <li>Questions fréquentes et limites</li>
+  <li>Annexe : le nombre de touches de chaque geste</li>
+</ol>
+
+<h2>1. Le principe</h2>
+<p>Chaque tablette de la salle affiche le <b>plan de salle</b>. Personne n'y est « connecté » : pour toucher une table, encaisser ou annuler, l'employé tape <b>son code personnel à 4 chiffres</b>. La caisse sait ainsi qui a ouvert la table, qui a ajouté chaque produit, qui a encaissé et qui a autorisé chaque annulation. Le manager le relit le soir dans ses rapports.</p>
+
+<p><b>Le parcours en trois règles</b></p>
+<ol class="etapes">
+  <li><b>Toucher une table demande toujours le code.</b> Les 4 chiffres sont validés seuls, au quatrième. Une table libre demande ensuite le nombre de personnes, dans la même fenêtre (huit gros boutons, 1 à 8).</li>
+  <li><b>Le plan est l'écran de repos, toujours verrouillé.</b> Tout retour au plan fait oublier l'employé : après <span class="b">J'envoie</span>, après l'encaissement, après <span class="b">Plan</span>, et après 5 minutes sans toucher l'écran. La personne suivante tape son propre code.</li>
+  <li><b>Ce qui est parti en cuisine ou au bar ne s'annule qu'avec un chef de salle.</b> Une seule fenêtre : combien, le code d'un chef de salle (vérifié par le serveur), le motif. Ce qui n'est pas encore parti se retire librement.</li>
+</ol>
+
+<figure class="moyen">
+  <img src="../../../../captures/restaurant/03_plan_verrouille.jpg" alt="Plan verrouillé">
+  <figcaption>Écran 1 — Le plan verrouillé, écran de repos de chaque tablette : « Touchez une table, puis tapez votre code. » La légende des couleurs est en bas.</figcaption>
+</figure>
+
+<h3>Quatre niveaux, et ce que chacun peut faire</h3>
+<p>Chaque employé reçoit un <b>« Niveau en caisse »</b> sur sa fiche. Un niveau fait tout ce que fait le niveau d'avant, et plus. Ce tableau est la règle appliquée par la caisse et par le serveur (un seul tableau des droits dans le module).</p>
+<table class="t droits">
+  <tr><th>Geste</th><th class="c">Serveur</th><th class="c">Caissière</th><th class="c">Chef de salle ou superviseur</th><th class="c">Manager</th></tr>
+  <tr><td>Ouvrir <b>ses</b> tables, commander, envoyer, imprimer l'addition, changer le nombre de personnes, diviser, déplacer ou réunir ses tables</td><td class="c oui">oui</td><td class="c oui">oui</td><td class="c oui">oui</td><td class="c oui">oui</td></tr>
+  <tr><td>Retirer un produit pas encore envoyé (sans code, sans trace)</td><td class="c oui">oui</td><td class="c oui">oui</td><td class="c oui">oui</td><td class="c oui">oui</td></tr>
+  <tr><td>Toucher la table d'un collègue</td><td class="c non">non</td><td class="c oui">oui</td><td class="c oui">oui</td><td class="c oui">oui</td></tr>
+  <tr><td>Ouvrir la caisse le matin</td><td class="c non">non</td><td class="c oui">oui</td><td class="c oui">oui</td><td class="c oui">oui</td></tr>
+  <tr><td>Encaisser</td><td class="c non">non</td><td class="c oui">oui</td><td class="c oui">oui</td><td class="c oui">oui</td></tr>
+  <tr><td>Imprimer le rapport des ventes (menu ≡)</td><td class="c non">non</td><td class="c oui">oui</td><td class="c oui">oui</td><td class="c oui">oui</td></tr>
+  <tr><td>Vente sans table (si le réglage l'autorise)</td><td class="c non">non</td><td class="c oui">oui</td><td class="c oui">oui</td><td class="c oui">oui</td></tr>
+  <tr><td>Annuler ce qui est parti : un produit, une table, les tables encore ouvertes à la fermeture</td><td class="c non">non</td><td class="c non">non</td><td class="c oui">oui</td><td class="c oui">oui</td></tr>
+  <tr><td>Entrée ou sortie d'espèces</td><td class="c non">non</td><td class="c non">non</td><td class="c oui">oui</td><td class="c oui">oui</td></tr>
+  <tr><td>Fermer la caisse</td><td class="c non">non</td><td class="c non">non</td><td class="c oui">oui</td><td class="c oui">oui</td></tr>
+  <tr><td>Fermer quand l'écart de caisse dépasse le maximum (s'il est réglé)</td><td class="c non">non</td><td class="c non">non</td><td class="c non">non</td><td class="c oui">oui</td></tr>
+  <tr><td>Rembourser une addition payée</td><td class="c non">non</td><td class="c non">non</td><td class="c non">non</td><td class="c oui">oui</td></tr>
+  <tr><td>« Mettre sur ardoise »</td><td class="c non">non</td><td class="c non">non</td><td class="c non">non</td><td class="c oui">oui</td></tr>
+  <tr><td>Changer un prix (touche « Prix »), créer un produit</td><td class="c non">non</td><td class="c non">non</td><td class="c non">non</td><td class="c oui">oui</td></tr>
+</table>
+<p class="petit">Les remises sont désactivées pour tout le monde sur une caisse au service à table contrôlé (c'est un réglage, pas un droit). Un employé sans niveau n'apparaît pas sur la caisse.</p>
+
+<div class="encadre or"><p><span class="titre">Règle d'or —</span> un code ne se prête pas. Tout ce qui est fait sous un code est écrit au nom de son titulaire : « Ouverte par », « Encaissée par », le journal des saisies, « Autorisée par » sur chaque annulation.</p></div>
+
+<!-- =================================================================== -->
+<h2>2. Installer et mettre en place</h2>
+
+<h3>2.1 Ce que fait AITE : installer les modules</h3>
+<p>Un restaurant seul (sans hôtel) reçoit 4 dossiers : <code>aite_pos_restaurant</code>, <code>aite_pos_analytics</code>, <code>aite_pos_analytics_hr</code>, <code>aite_pos_credit</code>. Odoo installe avec eux Point de Vente, Restaurant, Employés, Inventaire, Facturation et Ventes.</p>
+<ol class="etapes">
+  <li><b>Créer la base</b> avec l'écran de création d'Odoo : pays <b>Cameroun</b>, langue <b>Français</b>, sans données de démonstration. La société naît en <b>FCFA</b>. Ne pas lancer le scénario « Restaurant » qu'Odoo propose sur un Point de Vente vide : le module pose lui-même sa caisse.</li>
+  <li><b>Déposer</b> les 4 dossiers à côté des autres dossiers d'addons (jamais remplacer le répertoire entier), puis <b>redémarrer</b> Odoo.</li>
+  <li>Activer le mode développeur, puis <span class="chemin">Apps → « Mettre à jour la liste des Apps »</span>.</li>
+  <li>Apps → retirer le filtre « Apps » → chercher <b>« service à table »</b> → « AITE — Restaurant (service à table) » → <span class="b">Activer</span>. Puis « POS Analytics » et « Crédit clients » → <span class="b">Activer</span>. La passerelle « AITE — Analyses du restaurant par employé » s'installe seule.</li>
+  <li><b>Ctrl+Shift+R</b> dans le navigateur.</li>
+</ol>
+<p>À l'installation, sans rien régler : une caisse <b>« Restaurant »</b> (modes <b>Espèces</b> et <b>Mobile Money</b>, salle <b>« Salle »</b>), la case <b>« Service à table contrôlé »</b> cochée, et les cinq motifs d'annulation.</p>
+
+<p><b>Les comptes Odoo</b> (Paramètres → Utilisateurs &amp; Sociétés → Utilisateurs). Les employés de salle n'ont <b>pas</b> de compte Odoo : ils ont un code.</p>
+<table class="t">
+  <tr><th>Compte</th><th>Droits à donner</th><th>Pourquoi</th></tr>
+  <tr><td><b>la caisse</b> (ouvert sur chaque tablette)</td><td>Point de Vente : Utilisateur ; Comptabilité : Facturation ; un courriel</td><td>sans Facturation, les entrées et sorties d'espèces sont refusées ; jamais « Administrateur »</td></tr>
+  <tr><td><b>le manager</b></td><td>Point de Vente : Administrateur ; Employés : Gestionnaire : Gérer tous les employés ; Comptabilité : <b>Facturation</b> ; POS Analytics AITE : Manager — Analyses POS</td><td>les niveaux et les codes des employés ; sans Facturation, Odoo refuse le rapport de session dès qu'une vente est payée</td></tr>
+  <tr><td><b>le chef de salle</b> qui lit les rapports</td><td>Restaurant AITE : « Restaurant : lecture des rapports », rien d'autre</td><td>il lit les annulations sans aucun accès à la caisse</td></tr>
+</table>
+
+<h3>2.2 La case « Service à table contrôlé » et ses réglages</h3>
+<p><span class="chemin">Point de Vente → Configuration → Paramètres</span> → la caisse → bloc Restaurant, juste après « Est un bar/restaurant ». Ces réglages sont réservés à l'administrateur d'Odoo (AITE). Chacun dit sous lui ce qui va se passer :</p>
+<figure>
+  <img src="../../../../captures/restaurant/25_reglages_service_a_table_controle.jpg" alt="Réglages du service à table contrôlé">
+  <figcaption>Écran 2 — Le bloc Restaurant des réglages : la case, le délai avant l'orange, la vente sans table, le refus des produits épuisés.</figcaption>
+</figure>
+<table class="t">
+  <tr><th style="width:27%">Réglage (d'office)</th><th>La phrase « ce qui va se passer », mot pour mot</th></tr>
+  <tr><td><b>Service à table contrôlé</b><br>(coché sur la caisse « Restaurant »)</td><td>« Coché : chaque employé tape son code à 4 chiffres pour ouvrir une table, encaisser ou annuler ; la caisse applique les quatre niveaux (serveur, caissière, chef de salle, manager), revient au plan après chaque envoi, verrouille ce qui est parti en cuisine ou au bar et garde la trace des saisies et des annulations. Cocher règle aussi, ci-dessous : connexion par code, contrôle des prix, remises désactivées, partage et impression de l'addition. Décocher arrête tout cela sur cette caisse. Se change seulement caisse fermée. »</td></tr>
+  <tr><td><b>Délai avant l'orange (minutes)</b><br>(60)</td><td>« Une table ouverte depuis plus de 60 minutes passe à l'orange sur le plan, sans que personne ne touche l'écran : c'est le moment de demander au client s'il veut l'addition. La durée s'affiche sous le numéro de chaque table. » (la phrase suit le nombre tapé ; moins d'une minute est refusé)</td></tr>
+  <tr><td><b>Autoriser la vente sans table</b><br>(décoché)</td><td>« Décoché : chaque vente se fait sur une table ; le bouton « + » n'apparaît pas. Un numéro de table tapé qui n'est pas sur le plan ouvre une table à ce nom, avec son nombre de personnes. Coché : le bouton « + » ouvre une vente au comptoir ou à emporter, sans table ni nombre de personnes ; elle compte 0 personne et n'entre pas dans le nombre de tables. Seuls la caissière, le chef de salle et le manager peuvent l'ouvrir. Se change seulement caisse fermée. »</td></tr>
+  <tr><td><b>Refuser la vente des produits épuisés</b><br>(coché)</td><td>« Coché : un produit dont vous suivez le stock (case « Suivre l'inventaire » de sa fiche, par exemple une bière) ne peut plus être ajouté à une table quand il n'en reste plus, en comptant ce qui est déjà parti sur les tables ouvertes ; il redevient vendable moins d'une minute après l'enregistrement d'une entrée de stock. Les produits sans suivi (plats, pizzas, café) se vendent toujours. Saisissez le stock de départ avant le premier service, sinon ces produits seront refusés. »</td></tr>
+</table>
+
+<div class="encadre or"><p><span class="titre">Règle d'or —</span> réglez la case et « Autoriser la vente sans table » <b>avant d'ouvrir la caisse pour la première fois</b>. Après chaque fermeture, la tablette rouvre d'elle-même une session en « Contrôle à l'ouverture » qui grise ces deux réglages, et l'administrateur ne peut pas la supprimer. Le délai de l'orange et le refus des épuisés, eux, se changent à tout moment (ils s'appliquent à la réouverture).</p></div>
+<div class="encadre"><p><span class="titre">Bon réflexe —</span> ne cochez jamais « Suivi des modifications de commandes » : avec des employés sans courriel, une baisse de quantité échoue, et le journal AITE suffit. Décocher « Se connecter avec Employés » ou « Est un bar/restaurant » est refusé tant que la case est cochée.</p></div>
+
+<h3>2.3 Ce que fait le manager avant le premier service</h3>
+<p><b>L'équipe.</b> <span class="chemin">Employés → Nouveau</span> : le nom, puis, dans « Caisse du restaurant », le <b>« Niveau en caisse »</b> (Serveur, Caissière, Chef de salle ou superviseur, Manager). Le <b>« Code caisse »</b> est proposé d'office quand on choisit le niveau. Aucun courriel.</p>
+<figure>
+  <img src="../../../../captures/restaurant/24_fiche_employe_niveau_et_code.jpg" alt="Fiche employé">
+  <figcaption>Écran 3 — La fiche de Brice : « Niveau en caisse » Serveur, « Code caisse » 1001, et sous chaque champ ce qu'il veut dire.</figcaption>
+</figure>
+<ul>
+  <li>Le code fait exactement 4 chiffres et n'appartient qu'à un employé de la société. Un code déjà pris est refusé <b>sans dire à qui il est</b>. Ne le communiquez qu'à l'employé.</li>
+  <li>« Dupliquer » une fiche donne une copie sans niveau ni code. Un employé parti : archivez-le, son code ne sert plus.</li>
+</ul>
+<p><b>Les motifs d'annulation.</b> <span class="chemin">Point de Vente → Configuration → Motifs d'annulation</span>. Cinq motifs sont posés d'office : « Erreur de saisie », « Client parti », « Plat refusé », « Produit manquant », « Autre ». La case « Précision obligatoire » (cochée sur « Autre ») oblige le chef de salle à écrire quelques mots. Un motif ne se supprime pas : on l'archive.</p>
+<p><b>La salle et les tables.</b> <span class="chemin">Point de Vente → Configuration → Plans de salle</span> → « Salle » : les tables, avec leur numéro et leurs places. Le plan ne se modifie pas depuis la caisse.</p>
+<p><b>La carte et les familles.</b> <span class="chemin">Point de Vente → Configuration → Produits → Catégories de produits du PdV</span> : les familles de l'écran de commande, sur trois niveaux (par exemple Nourriture &gt; Pizzas ; Boisson &gt; Alcoolisé &gt; Bière). Les mêmes noms en catégories de produit (Inventaire → Configuration → Produits → Catégories de produits), que lisent encore le tableau de bord AITE et l'onglet « Par catégorie ». Sur chaque produit : le prix en FCFA, la case « Point de Vente », sa famille dans l'onglet « Point de Vente », et <b>« Suivre l'inventaire »</b> sur les seules boissons vendues à l'unité.</p>
+<p><b>Le stock de départ.</b> Sur la fiche de chaque produit suivi : <span class="b">Mettre la quantité à jour</span>. Un produit suivi sans stock est refusé à la caisse.</p>
+<div class="encadre"><p><span class="titre">Bon réflexe —</span> la TVA. Odoo pose d'office sur chaque nouveau produit la TVA de 19,25 % <b>hors taxes</b> : un prix de 1 000 FCFA est encaissé 1 193 FCFA. Pour des prix de carte taxes comprises, AITE règle avec le comptable une taxe « prix TTC » <b>avant</b> la saisie de la carte.</p></div>
+
+<!-- =================================================================== -->
+<h2>3. La caissière</h2>
+
+<h3>Ouvrir la caisse le matin <span class="touches">5 touches</span></h3>
+<p>Sur chaque tablette : se connecter avec le compte de la caisse → Point de Vente → « Restaurant » → <span class="b">Ouvrir la caisse</span>. Le plan s'affiche et la fenêtre du code s'ouvre d'elle-même.</p>
+<ol class="etapes">
+  <li>Dans « Votre code pour ouvrir la caisse », tapez vos 4 chiffres (Clarisse : 2001).</li>
+  <li>« Contrôle à l'ouverture » : vérifiez les « Espèces à l'ouverture » (le fond est prérempli à partir du lendemain), puis <span class="b">J'ouvre la caisse</span>.</li>
+  <li>Le plan reste affiché, verrouillé. Votre nom n'y est plus : chacun tapera son code.</li>
+</ol>
+<div style="display:flex; gap:4mm; align-items:flex-start" class="sans-saut">
+  <figure style="width:60mm; margin:0">
+    <div class="recadre" style="width:60mm;height:77.6mm"><img src="../../../../captures/restaurant/01_ouverture_code_de_la_caissiere.jpg" style="width:225.9mm;left:-82.9mm;top:-31.8mm" alt=""></div>
+    <figcaption>Écran 4 — La fenêtre du code s'ouvre d'elle-même.</figcaption>
+  </figure>
+  <figure style="width:110mm; margin:0">
+    <div class="recadre" style="width:110mm;height:66.3mm"><img src="../../../../captures/restaurant/02_ouverture_j_ouvre_la_caisse.jpg" style="width:207.1mm;left:-48.5mm;top:-31.5mm" alt=""></div>
+    <figcaption>Écran 5 — Clarisse est reconnue : « J'ouvre la caisse ».</figcaption>
+  </figure>
+</div>
+<p class="petit">Si la fenêtre a été fermée par <span class="b">Retour</span>, un bandeau reste sur le plan : « La caisse est fermée. La caissière ou un chef de salle tape son code pour l'ouvrir. », avec le bouton <span class="b">Ouvrir la caisse</span>. Un serveur qui tape son code reçoit : « La caisse n'est pas encore ouverte. La caissière ou un chef de salle doit l'ouvrir avec son code. »</p>
+
+<h3>Encaisser une table en espèces, somme exacte <span class="touches">8 touches</span></h3>
+<ol class="etapes">
+  <li>Touchez la table sur le plan, tapez votre code.</li>
+  <li><span class="b">J'encaisse</span>.</li>
+  <li><span class="b">Espèces</span> (ou <span class="b">Mobile Money</span>), puis <span class="b">Valider</span>. L'addition est payée, « Encaissée par » prend votre nom, et la caisse revient au plan verrouillé.</li>
+</ol>
+<figure class="moyen">
+  <img src="../../../../captures/restaurant/13_paiement_especes.jpg" alt="Paiement">
+  <figcaption>Écran 6 — Clarisse encaisse la table 4 : 6 000 FCFA en Espèces, « Restant 0 FCFA », puis « Valider ».</figcaption>
+</figure>
+<div class="encadre"><p><span class="titre">Bon réflexe —</span> encaissez toujours sous votre propre code : « Encaissée par » est écrit par le serveur au nom de la personne identifiée au moment du paiement, et le manager le relit dans « Personnes et tables ».</p></div>
+
+<h3>Encaisser au poste d'un serveur resté identifié <span class="touches">7 touches</span></h3>
+<p>Le serveur est encore sur la table : touchez <span class="b">J'encaisse</span>. La fenêtre « Code de la personne qui encaisse » dit, par exemple, « Brice ne peut pas encaisser : la caissière tape son code ici. » Tapez votre code, puis <span class="b">Espèces</span> et <span class="b">Valider</span>.</p>
+
+<h3>Deux parts d'une addition divisée <span class="touches">14 + n touches</span></h3>
+<ol class="etapes">
+  <li>Touchez la table, tapez votre code, <span class="b">Actions</span> → <span class="b">Diviser l'addition</span>.</li>
+  <li>Touchez les produits de la première part (n touches), puis <span class="b">Créer l'addition à part</span>.</li>
+  <li><span class="b">J'encaisse</span>, le mode de paiement, <span class="b">Valider</span>. La caisse revient d'elle-même à la table, vous toujours identifiée.</li>
+  <li>Même chose pour la seconde part : <span class="b">J'encaisse</span>, le mode, <span class="b">Valider</span>, sans retaper le code.</li>
+</ol>
+<p class="petit">Mesuré : 15 touches pour une part d'un seul produit. Une part porte le numéro de la table suivi d'une lettre (« 4B ») ; elle reste rattachée à son origine et ne compte pas une seconde fois dans les tables et les personnes.</p>
+
+<!-- =================================================================== -->
+<h2>4. Le serveur</h2>
+
+<h3>Ouvrir une table et envoyer <span class="touches">7 + n touches</span></h3>
+<ol class="etapes">
+  <li>Touchez la table libre (grise) sur le plan.</li>
+  <li>« Table 4 — votre code » : tapez vos 4 chiffres (Brice : 1001).</li>
+  <li>« Table 4 — combien de personnes ? » : touchez le nombre (1 à 8). Au-delà : <span class="b">9 et plus</span>, tapez le nombre, <span class="b">Valider</span>. La table est aussitôt réservée sur tous les postes.</li>
+  <li>Choisissez les produits par famille (n touches).</li>
+  <li><span class="b">J'envoie</span> : les bons partent en cuisine et au bar, une notification « Envoyé : … » s'affiche, et la caisse revient au plan verrouillé.</li>
+</ol>
+<div style="display:flex; gap:6mm; justify-content:center" class="sans-saut">
+  <figure style="width:60mm; margin:0">
+    <div class="recadre" style="width:60mm;height:77.6mm"><img src="../../../../captures/restaurant/04_table_4_votre_code.jpg" style="width:225.9mm;left:-82.9mm;top:-31.8mm" alt=""></div>
+    <figcaption>Écran 7 — Le code, au toucher de la table 4.</figcaption>
+  </figure>
+  <figure style="width:60mm; margin:0">
+    <div class="recadre" style="width:60mm;height:68.8mm"><img src="../../../../captures/restaurant/05_table_4_combien_de_personnes.jpg" style="width:225.9mm;left:-82.9mm;top:-35.3mm" alt=""></div>
+    <figcaption>Écran 8 — Puis les personnes, dans la même fenêtre.</figcaption>
+  </figure>
+</div>
+
+<figure>
+  <img src="../../../../captures/restaurant/06_ecran_de_commande_familles.jpg" alt="Écran de commande">
+  <figcaption>Écran 9 — L'écran de commande : en tête « Table 4 · ouverte par Brice · 0 min » ; les familles (Boisson &gt; Alcoolisé &gt; Bière) ; « 4 personnes », « Addition » ; en bas « J'envoie » (avec son compteur « Bière 2 ») et « J'encaisse ».</figcaption>
+</figure>
+<figure class="moyen">
+  <img src="../../../../captures/restaurant/07_apres_j_envoie_plan_verrouille.jpg" alt="Après J'envoie">
+  <figcaption>Écran 10 — Après « J'envoie » : « Envoyé : 1 Pizzas, 2 Bière. », retour au plan ; la table 4 est verte, ouverte depuis « 0 min ».</figcaption>
+</figure>
+
+<h3>Les autres gestes du serveur</h3>
+<table class="t">
+  <tr><th style="width:30%">Geste</th><th>Comment</th><th class="c" style="width:16%">Touches</th></tr>
+  <tr><td>Ajouter à sa table</td><td>la table, son code, les produits, <span class="b">J'envoie</span></td><td class="n">6 + n</td></tr>
+  <tr><td>Imprimer l'addition</td><td>la table, son code, <span class="b">Addition</span> ; retour au plan s'il y a une imprimante (sans imprimante, Odoo affiche un aperçu : une touche de plus pour le fermer)</td><td class="n">6</td></tr>
+  <tr><td>Retirer un produit <b>pas encore envoyé</b></td><td>la ligne, ⌫, ⌫ (sans code, sans trace). La pastille rouge sur le plan signale une table qui a des produits pas encore envoyés.</td><td class="n">3 (2 si la ligne est déjà sélectionnée)</td></tr>
+  <tr><td>Changer le nombre de personnes</td><td><span class="b">4 personnes</span>, puis le bon nombre</td><td class="n">2</td></tr>
+  <tr><td>Revenir au plan</td><td><span class="b">Plan</span> : l'addition est enregistrée à votre nom et le poste se verrouille</td><td class="n">1</td></tr>
+  <tr><td>Diviser, déplacer ou réunir sa table</td><td><span class="b">Actions</span> → <span class="b">Diviser l'addition</span> ou <span class="b">Déplacer ou réunir</span></td><td class="n">—</td></tr>
+</table>
+
+<h3>Un produit épuisé <span class="touches">1 touche, rien n'est ajouté</span></h3>
+<p>Une boisson suivie en stock dont il ne reste plus rien (en comptant ce qui est déjà parti sur les tables ouvertes) n'est pas ajoutée. La caisse affiche « Produit épuisé » et dit quoi faire. Une entrée de stock enregistrée par le manager rend la vente en moins d'une minute, sans recharger la caisse.</p>
+<figure>
+  <img src="../../../../captures/restaurant/09_produit_epuise.jpg" alt="Produit épuisé">
+  <figcaption>Écran 11 — « Produit épuisé » : « Plus de Guinness 33 cl en stock. Si la bouteille est bien là, demandez au manager d'enregistrer l'entrée de stock : la vente repassera aussitôt. »</figcaption>
+</figure>
+
+<div class="encadre"><p><span class="titre">Bon réflexe —</span> la table d'un collègue est refusée (« Table 4 : c'est la table de Brice. Seuls Brice, la caissière ou un chef de salle peuvent la modifier. »). Ne tapez jamais le code d'un autre : demandez à la caissière ou au chef de salle.</p></div>
+<div class="encadre or"><p><span class="titre">Règle d'or —</span> envoyez tout de suite. Tant qu'un produit n'est pas parti, il se retire sans trace ; une fois parti, il ne s'annule plus qu'avec le code d'un chef de salle et un motif. Touchez « J'envoie » à chaque commande, pas à la fin du repas.</p></div>
+
+<!-- =================================================================== -->
+<h2>5. Le chef de salle</h2>
+
+<h3>Annuler un produit envoyé, sur le poste du serveur <span class="touches">3 + 5 touches</span></h3>
+<ol class="etapes">
+  <li>Le serveur touche la ligne, puis ⌫ ⌫. La fenêtre « Annuler Castel 65 cl — table 4 » s'ouvre : « Déjà envoyé : 2 Castel 65 cl. Pour l'annuler, un chef de salle tape son code. »</li>
+  <li>« Combien ? » : touchez la quantité à annuler (<span class="b">1</span>, … , <span class="b">2 (tout)</span>). Cette étape n'existe que si plus d'une unité est partie (+ 1 touche).</li>
+  <li>« Code d'un chef de salle » : le chef de salle tape son code (Hervé : 3001), vérifié par le serveur.</li>
+  <li>« Pourquoi ? » : touchez le motif. Avec « Autre », écrivez la « Précision », puis <span class="b">Valider</span>.</li>
+  <li>« Annulation faite : 1 Castel 65 cl, par Hervé. » Le serveur reste identifié et continue sa table.</li>
+</ol>
+<div class="duo">
+  <figure>
+    <div class="recadre" style="width:84mm;height:35.8mm"><img src="../../../../captures/restaurant/10_annulation_combien.jpg" style="width:158.1mm;left:-37.1mm;top:-31.5mm" alt=""></div>
+    <figcaption>Écran 12 — « Combien ? »</figcaption>
+  </figure>
+  <figure>
+    <div class="recadre" style="width:84mm;height:46.3mm"><img src="../../../../captures/restaurant/11_annulation_pourquoi.jpg" style="width:158.1mm;left:-37.1mm;top:-26.3mm" alt=""></div>
+    <figcaption>Écran 13 — « Pourquoi ? » : les cinq motifs.</figcaption>
+  </figure>
+</div>
+<figure class="moyen">
+  <img src="../../../../captures/restaurant/12_annulation_faite_brice_reste_identifie.jpg" alt="Annulation faite">
+  <figcaption>Écran 14 — « Annulation faite : 1 Castel 65 cl, par Hervé. » La ligne passe à 1, le total à 6 000 FCFA ; Brice reste identifié.</figcaption>
+</figure>
+
+<table class="t">
+  <tr><th style="width:34%">Geste du chef de salle seul</th><th>Comment</th><th class="c" style="width:12%">Touches</th></tr>
+  <tr><td>Annuler un produit envoyé</td><td>la table, son code, la ligne, ⌫ ⌫, le motif (+ 1 si plus d'une unité). Un chef de salle déjà identifié ne retape pas son code.</td><td class="n">9</td></tr>
+  <tr><td>Annuler une table qui a des produits envoyés</td><td>la table, son code, <span class="b">Actions</span> → <span class="b">Annuler la table</span>, le motif (« Annuler la table 4 », « Déjà envoyé : … »)</td><td class="n">8</td></tr>
+  <tr><td>Sortir ou entrer des espèces</td><td>≡ → <span class="b">Entrée ou sortie d'espèces</span>, son code (« Votre code — entrée ou sortie d'espèces »), puis dans la fenêtre d'Odoo : « Cash sortant » (déjà choisi) ou « Cash entrant », le montant, le « Motif », <span class="b">Confirmer</span>. Odoo confirme : « Vous avez réussi à faire un out en espèces de 1 000 FCFA. »</td><td class="n">7 + saisie</td></tr>
+</table>
+
+<h3>Fermer la caisse le soir <span class="touches">7 + chiffres</span></h3>
+<ol class="etapes">
+  <li>≡ → <span class="b">Fermer la caisse</span>, puis votre code (« Votre code pour fermer la caisse »).</li>
+  <li>« Fermeture de la caisse » : comptez les espèces du tiroir et tapez-les dans « Comptage de caisse » ; la « Différence » se calcule.</li>
+  <li><span class="b">Fermer la caisse</span>. Si le compté diffère de l'attendu, Odoo demande d'abord « Écart de règlement » : <span class="b">Poursuivre</span> enregistre la différence, <span class="b">Ignorer</span> revient au comptage. Le bouton <span class="b">Ventes du jour</span> télécharge le rapport de fermeture.</li>
+</ol>
+<figure class="moyen">
+  <img src="../../../../captures/restaurant/14_fermeture_de_la_caisse.jpg" alt="Fermeture de la caisse">
+  <figcaption>Écran 15 — « Fermeture de la caisse » sous le code d'Hervé : « 1 commande : 6 000 FCFA », Espèces comptées 6 000, « Entrée ou sortie d'espèces », « Ventes du jour ».</figcaption>
+</figure>
+
+<h3>Des tables sont encore ouvertes <span class="touches">+ 2 touches</span></h3>
+<p>La caisse ne ferme pas avec des tables ouvertes : « 1 table est encore ouverte : 7. Encaissez-la, ou annulez-la avec un motif, avant de fermer. » Deux choix :</p>
+<ul>
+  <li><span class="b">Voir les tables</span> : retour au plan pour faire encaisser ces tables.</li>
+  <li><span class="b">Annuler ces tables</span> : « Annuler les tables encore ouvertes : 7 » → « Pourquoi ? » → le motif. Votre code est déjà tapé : 2 touches en tout.</li>
+</ul>
+<div class="duo">
+  <figure>
+    <div class="recadre" style="width:84mm;height:28.5mm"><img src="../../../../captures/restaurant/15_fermeture_une_table_encore_ouverte.jpg" style="width:158.1mm;left:-37.1mm;top:-35.2mm" alt=""></div>
+    <figcaption>Écran 16 — Une table encore ouverte.</figcaption>
+  </figure>
+  <figure>
+    <div class="recadre" style="width:84mm;height:42.0mm"><img src="../../../../captures/restaurant/16_fermeture_annuler_ces_tables.jpg" style="width:158.1mm;left:-37.1mm;top:-28.4mm" alt=""></div>
+    <figcaption>Écran 17 — « Annuler ces tables » : un motif pour toutes.</figcaption>
+  </figure>
+</div>
+
+<h3>Le rapport « Annulations »</h3>
+<p><span class="chemin">Restaurant → Annulations</span> s'ouvre sur « Aujourd'hui ». Filtres « Cette semaine », « Ce mois », « Cette année », « Période », et <b>« Sans code »</b> (ce qui a été retiré sans autorisation : « Retrait sans code », « Annulation sans code ») ; regroupements par « Motif », « Demandée par », « Autorisée par », « Produit », « Jour ». Le chef de salle y accède avec le profil « Restaurant : lecture des rapports », sans aucun accès à la caisse.</p>
+<figure style="width:160mm;margin:3mm auto 3.5mm">
+    <div class="recadre" style="width:160mm;height:33.8mm"><img src="../../../../captures/restaurant/22_annulations_du_jour.jpg" style="width:160.0mm;left:-0.0mm;top:-0.0mm" alt=""></div>
+    <figcaption>Écran 18 — Les annulations du jour : table, produit, quantité, « Montant TTC », « Demandée par », « Autorisée par », « Motif », « Précision ».</figcaption>
+  </figure>
+<div class="encadre"><p><span class="titre">Bon réflexe —</span> regardez le filtre « Sans code » chaque soir : il doit être vide. Une ligne y signale une baisse arrivée sans le code d'un chef de salle (depuis la gestion, ou un poste resté sur une copie ancienne).</p></div>
+
+<!-- =================================================================== -->
+<h2>6. Le manager</h2>
+
+<h3>À la caisse</h3>
+<table class="t">
+  <tr><th style="width:34%">Geste</th><th>Comment</th><th class="c" style="width:12%">Touches</th></tr>
+  <tr><td>Prendre la main sur une addition ouverte au nom d'une caissière, puis encaisser</td><td>touchez le nom en haut de l'écran : « Qui prend la main ? Tapez votre code » ; votre code (Sandrine : 4001), <span class="b">J'encaisse</span>, <span class="b">Espèces</span>, <span class="b">Valider</span></td><td class="n">8</td></tr>
+  <tr><td>Encaisser une table ouverte par un autre</td><td>comme la caissière ; « Ouverte par » reste figé au nom du serveur</td><td class="n">8</td></tr>
+  <tr><td>Rembourser, changer un prix, « Mettre sur ardoise »</td><td>réservés au manager ; l'ardoise n'est proposée que si la caisse a un mode « ardoise », et ne naît que d'une addition réglée</td><td class="n">—</td></tr>
+  <tr><td>Rendre un produit épuisé vendable</td><td>dans la gestion, fiche du produit → <span class="b">Mettre la quantité à jour</span></td><td class="n">—</td></tr>
+</table>
+
+<h3>Personnes et tables</h3>
+<p><span class="chemin">Point de Vente → Analyse → Personnes et tables</span> : tables, personnes, ventes sans table, articles et total, par jour, session, « Ouverte par », « Encaissée par ». Seules les additions réglées comptent ; une division ne compte qu'une fois, une réunion additionne les personnes, un remboursement ne compte pas.</p>
+<figure style="width:95mm;margin:3mm auto 3.5mm">
+    <div class="recadre" style="width:95mm;height:43.1mm"><img src="../../../../captures/restaurant/20_personnes_et_tables.jpg" style="width:162.1mm;left:-0.0mm;top:-0.0mm" alt=""></div>
+    <figcaption>Écran 19 — Le tableau croisé : 1 table, 4 personnes, 0 vente sans table, 6 000.</figcaption>
+  </figure>
+<figure style="width:160mm;margin:3mm auto 3.5mm">
+    <div class="recadre" style="width:160mm;height:28.8mm"><img src="../../../../captures/restaurant/21_personnes_et_tables_liste.jpg" style="width:160.0mm;left:-0.0mm;top:-0.0mm" alt=""></div>
+    <figcaption>Écran 20 — La liste : table 4, « Ouverte par » Brice, « Encaissée par » Clarisse.</figcaption>
+  </figure>
+
+<h3>Les ventes par famille</h3>
+<p><span class="chemin">Point de Vente → Analyse → Analyse AITE → Tableau croisé &amp; graphique</span>, favori partagé <b>« Ventes par famille »</b> : les lignes Famille &gt; Sous-famille, une colonne « Total » avec CA HT, CMV, Marge, Taux marge (%). Le champ de recherche <b>« Famille »</b> retrouve une famille par son nom exact (« Alcoolisé » ne ramène pas « Non alcoolisé »). Un article rangé plus bas que le troisième niveau compte sous son ancêtre de 3ᵉ niveau.</p>
+<figure style="width:105mm;margin:3mm auto 3.5mm">
+    <div class="recadre" style="width:105mm;height:61.6mm"><img src="../../../../captures/restaurant/23_ventes_par_famille.jpg" style="width:179.2mm;left:-0.0mm;top:-0.0mm" alt=""></div>
+    <figcaption>Écran 21 — « Ventes par famille » : Nourriture 5 000, Boisson 1 000. Un produit sans coût paraît à 100 % de marge.</figcaption>
+  </figure>
+
+<h3>Le serveur et la caissière dans les analyses</h3>
+<p>Avec la passerelle <code>aite_pos_analytics_hr</code>, l'analyse AITE gagne deux champs : <b>« Serveur (ouverte par) »</b> et <b>« Encaissée par »</b>, à chercher ou regrouper (« Serveur », « Encaissée par »). L'ancien regroupement par utilisateur s'appelle <b>« Compte Odoo »</b> : sur une tablette ouverte sous le compte de la caisse, il ne dit pas qui a servi.</p>
+
+<h3>La fiche de l'addition et le rapport de fermeture</h3>
+<p>Dans <span class="chemin">Point de Vente → Commandes</span>, la fiche d'une addition porte « Ouverte par », « Heure d'ouverture » (horloge du serveur), « Encaissée par », et deux boutons : <span class="b">Saisies</span> (qui a ajouté chaque produit, à quelle heure) et <span class="b">Annulations</span>. Le <b>rapport de fermeture</b> (bouton « Ventes du jour » de la fermeture, ou Point de Vente → Analyse → Détails des ventes) ajoute aux chiffres d'Odoo les tables, les personnes, les ventes sans table et les annulations de la session, avec leur motif et qui les a autorisées. Les quantités vendues de chaque produit se lisent dans « Détails des ventes ».</p>
+<figure class="moyen">
+  <img src="../../../../captures/restaurant/26_rapport_de_fermeture.jpg" alt="Rapport de fermeture">
+  <figcaption>Écran 22 — Le rapport de fermeture : « Tables et personnes » (1 table, 4 personnes, 0 vente sans table) et « Annulations » (2 lignes, 2 000 FCFA, « Autorisée par » Hervé).</figcaption>
+</figure>
+<div class="encadre or"><p><span class="titre">Règle d'or —</span> le soir, trois lectures : le rapport de fermeture signé par le chef de salle, le filtre « Sans code » des annulations (vide), et « Personnes et tables » du jour.</p></div>
+
+<!-- =================================================================== -->
+<h2 class="saut">7. Le plan en couleurs</h2>
+<p>Le plan se met à jour seul toutes les 30 secondes, sans que personne ne touche l'écran. La légende, en bas de chaque plan, dit mot pour mot :</p>
+<p style="text-align:center; font-weight:bold">« Gris : libre · Vert : ouverte · Orange : ouverte depuis plus de 60 min, proposez l'addition · Pastille rouge : pas encore envoyé »</p>
+<table class="t">
+  <tr><th style="width:22%">Couleur</th><th>Ce qu'elle veut dire</th><th style="width:34%">Ce que fait l'équipe</th></tr>
+  <tr><td><b>Gris</b></td><td>table libre</td><td>la toucher pour l'ouvrir (code, personnes)</td></tr>
+  <tr><td><b style="color:#1e9d4a">Vert</b></td><td>table ouverte ; sous le numéro, la durée depuis l'ouverture (« 35 min », puis « 1 h 05 »), comptée depuis l'ouverture même après un déplacement</td><td>servir</td></tr>
+  <tr><td><b style="color:#ED9720">Orange</b></td><td>ouverte depuis le délai réglé ou plus (60 minutes d'office)</td><td>proposer l'addition</td></tr>
+  <tr><td><b style="color:#c62828">Pastille rouge</b></td><td>des produits de la table ne sont pas encore envoyés</td><td>le serveur de la table touche « J'envoie »</td></tr>
+</table>
+<figure class="moyen">
+  <img src="../../../../captures/restaurant/08_plan_en_couleurs.jpg" alt="Plan en couleurs">
+  <figcaption>Écran 23 — Les tables 4 et 7 ouvertes depuis « 1 h 15 » passent à l'orange.</figcaption>
+</figure>
+<div class="encadre"><p><span class="titre">Bon réflexe —</span> gardez les tablettes à l'heure : l'heure d'ouverture vient du serveur, mais la durée et la couleur sont comptées par chaque tablette.</p></div>
+
+<!-- =================================================================== -->
+<h2 class="saut">8. Les messages de la caisse et quoi faire</h2>
+<p>Chaque refus est court et dit quoi faire. Les noms et numéros changent selon la table ; le reste est mot pour mot.</p>
+<table class="t">
+  <tr><th style="width:44%">Message</th><th style="width:22%">Quand</th><th>Que faire</th></tr>
+  <tr><td>« Code inconnu. Retapez votre code. »</td><td>code faux (dans la fenêtre)</td><td>retaper ses 4 chiffres ; code oublié : le manager le relit sur la fiche employé</td></tr>
+  <tr><td>« La caisse n'est pas encore ouverte. La caissière ou un chef de salle doit l'ouvrir avec son code. »</td><td>table touchée ou ouverture tentée par un serveur, caisse fermée</td><td>appeler la caissière ou le chef de salle</td></tr>
+  <tr><td>« Table 4 : c'est la table de Brice. Seuls Brice, la caissière ou un chef de salle peuvent la modifier. »</td><td>un serveur touche la table d'un collègue</td><td>laisser la table à son serveur, ou appeler la caissière ou le chef de salle</td></tr>
+  <tr><td>« Vente sans table 2 : c'est la vente de Clarisse. Seuls Clarisse, la caissière ou un chef de salle peuvent la modifier. »</td><td>même cas, sur une vente sans table</td><td>idem</td></tr>
+  <tr><td>« Il faut au moins une personne à table. »</td><td>0 tapé après « 9 et plus » (rien ne s'affiche tant que rien n'est tapé : « Valider » reste simplement grisé)</td><td>taper le nombre de personnes</td></tr>
+  <tr><td>« Vous ne pouvez pas encaisser. Appelez la caissière : elle tapera son code ici. »</td><td>code d'un serveur sur « J'encaisse »</td><td>appeler la caissière</td></tr>
+  <tr><td>« Ce code ne peut pas annuler. Il faut celui d'un chef de salle, d'un superviseur ou du manager. »</td><td>code d'un serveur ou d'une caissière dans la fenêtre d'annulation</td><td>appeler le chef de salle</td></tr>
+  <tr><td>« Déjà envoyé : 2 Castel 65 cl. Pour l'annuler, un chef de salle tape son code. »</td><td>⌫ sur un produit parti</td><td>le chef de salle tape son code, puis le motif</td></tr>
+  <tr><td>« Écrivez en quelques mots pourquoi. »</td><td>motif « Autre » sans précision</td><td>écrire la précision, « Valider »</td></tr>
+  <tr><td>« Ce produit vient d'être annulé sur un autre poste. Rien n'a changé ici. »</td><td>annulation déjà faite ailleurs</td><td>vérifier l'addition ; rien à refaire</td></tr>
+  <tr><td>« Plus de Guinness 33 cl en stock. Si la bouteille est bien là, demandez au manager d'enregistrer l'entrée de stock : la vente repassera aussitôt. » (titre « Produit épuisé »)</td><td>produit suivi épuisé</td><td>proposer autre chose, ou le manager saisit l'entrée de stock</td></tr>
+  <tr><td>« Pas de quantité négative sur une addition : pour retirer un produit, touchez ⌫. » (titre « Quantité négative »)</td><td>« +/- » qui ferait une ligne négative</td><td>retirer avec ⌫</td></tr>
+  <tr><td>« Rien n'est parti : un autre poste a modifié cette table. Vérifiez l'addition, puis touchez de nouveau « J'envoie ». »</td><td>deux postes sur la même table</td><td>relire l'addition, « J'envoie »</td></tr>
+  <tr><td>« Toute l'addition est sélectionnée : il n'y a rien à diviser. Encaissez la table directement. »</td><td>division avec tous les produits</td><td>« J'encaisse » sur la table</td></tr>
+  <tr><td>« La table 7 est celle de Nadège : la caissière ou un chef de salle peut réunir ces tables. »</td><td>un serveur réunit vers la table d'un collègue</td><td>appeler la caissière ou le chef de salle</td></tr>
+  <tr><td>« La vente sans table n'est pas ouverte ici. Ouvrez une table du plan. »</td><td>« + » refusé (réglage décoché ou niveau serveur)</td><td>ouvrir une table du plan</td></tr>
+  <tr><td>« Seul un chef de salle ou le manager ferme la caisse. »</td><td>fermeture sous un code insuffisant</td><td>appeler le chef de salle</td></tr>
+  <tr><td>« L'écart de caisse dépasse le maximum autorisé : seul le manager peut fermer. Recomptez, ou appelez le manager. »</td><td>écart au-delà du maximum réglé</td><td>recompter ; sinon le manager ferme</td></tr>
+  <tr><td>« Seul un chef de salle ou le manager peut sortir ou entrer des espèces. »</td><td>espèces sous un code insuffisant</td><td>appeler le chef de salle</td></tr>
+  <tr><td>« Seul le manager peut rembourser une addition payée. »</td><td>remboursement</td><td>appeler le manager</td></tr>
+  <tr><td>« Seuls la caissière, le chef de salle et le manager impriment le rapport des ventes. »</td><td>« Imprimer le rapport » par un serveur</td><td>demander à la caissière</td></tr>
+  <tr><td>« Pas de réseau : annuler est impossible pour l'instant. Réessayez dans un moment. » (aussi « ouvrir la caisse », « fermer la caisse »)</td><td>réseau coupé</td><td>attendre le retour du réseau ; la vente, elle, continue</td></tr>
+  <tr><td>« Sélectionnez d'abord un client pour une vente à crédit. »</td><td>ardoise sans client</td><td>choisir le client, puis « Mettre sur ardoise »</td></tr>
+</table>
+<p><b>Dans la gestion</b> (fiche employé, réglages) :</p>
+<table class="t">
+  <tr><th style="width:56%">Message</th><th>Que faire</th></tr>
+  <tr><td>« Donnez un code à 4 chiffres à Brice : sans code, il ne peut pas utiliser la caisse. »</td><td>remplir « Code caisse »</td></tr>
+  <tr><td>« Le code doit faire exactement 4 chiffres. »</td><td>4 chiffres, ni lettre ni espace</td></tr>
+  <tr><td>« Le code 1001 est déjà celui d'un autre employé. Choisissez quatre autres chiffres : chaque employé a son propre code. »</td><td>changer les chiffres</td></tr>
+  <tr><td>« Décochez d'abord « Service à table contrôlé » : sans les codes personnels, la caisse ne saurait plus qui fait quoi. »</td><td>décocher la case d'abord, caisse fermée</td></tr>
+  <tr><td>« Le délai avant l'orange doit être d'au moins 1 minute. »</td><td>taper 1 ou plus</td></tr>
+</table>
+
+<!-- =================================================================== -->
+<h2>9. La carte de démonstration</h2>
+<p>Le module <code>aite_resto_carte_messager</code> (« AITE — Carte du restaurant Le Messager (démonstration) ») pose, dans la caisse au service à table contrôlé, la carte d'un restaurant client de Douala. Il sert aux démonstrations ; il ne remplace pas la saisie de la carte du client.</p>
+<p><b>Ce qu'il pose</b></p>
+<ul>
+  <li>Les familles de la caisse sur trois niveaux au plus : Petit déjeuner, Plats, Pizzas &amp; burgers, Afternoon tea, Bar — et les mêmes noms en catégories de produit.</li>
+  <li>Les 101 produits de la carte, prix en FCFA, sans taxe (la TVA se règle avec le comptable). Une taille = un produit, donc une touche en caisse (pizzas « Petit » / « Grand », par exemple).</li>
+  <li>L'accompagnement au choix des plats (riz nature, riz Messager, frites plantain, frites pomme), sans supplément : la caisse ouvre une petite fenêtre, « Riz nature » est déjà coché, et le choix part sur le bon de cuisine.</li>
+  <li>Pour les boissons revendues : un coût d'achat, le suivi en stock et un stock de départ. Les plats cuisinés n'ont ni coût ni stock.</li>
+</ul>
+<p><b>Installer</b> : déposer le dossier à côté des modules du restaurant, puis Apps → « Mettre à jour la liste des Apps » → chercher « Messager » → <span class="b">Activer</span>. Sans plan comptable, la carte est posée juste après son chargement. Le module ne renomme pas la société ; le désinstaller ne retire pas la carte. <b>Refus</b> : si la base porte déjà la carte de démonstration du jeu d'essai (Castel 65 cl, Pizza Margherita…), rien n'est posé et l'installation s'arrête avec un message (« cette base porte la carte de démonstration… ») ; installez la carte sur une base sans cette démonstration.</p>
+<div class="encadre or"><p><span class="titre">À faire valider par le client</span> (chaque produit concerné le dit dans sa note interne) : les boissons ajoutées hors carte (eaux, jus, sodas, bières, café, thé) et leurs prix ; tous les coûts d'achat, estimés ; le prix du whisky « Black » (40 000 FCFA provisoires) ; les stocks de départ ; la TVA.</p></div>
+<div class="encadre"><p><span class="titre">Bon réflexe —</span> seules les boissons ont un coût : dans l'analyse AITE (marge et CMV), un plat paraît à 100 % de marge tant que le client n'a pas fourni son coût de revient. En démonstration, filtrez l'analyse sur la famille « Bar ».</p></div>
+
+<!-- =================================================================== -->
+<h2>10. Questions fréquentes et limites</h2>
+<table class="t">
+  <tr><th style="width:36%">Situation</th><th>Réponse</th></tr>
+  <tr><td>« Le poste est revenu au plan tout seul. »</td><td>C'est voulu : après 5 minutes sans toucher l'écran, le poste revient au plan verrouillé (ce délai n'est pas réglable). L'addition est enregistrée ; retapez votre code.</td></tr>
+  <tr><td>« La barre du plan dit « Tableau » au lieu de « Table ». »</td><td>Collision de traductions d'Odoo (« Table » traduit « Tableau » par des modules installés avec le Point de Vente), constatée de façon instable. Elle est à traiter avec les traductions.</td></tr>
+  <tr><td>« La notification dit « 1 Pizzas ». »</td><td>Elle compte par famille la plus fine du produit et reprend son nom tel quel (« Envoyé : 1 Pizzas, 2 Bière. »).</td></tr>
+  <tr><td>« Le réseau est coupé. »</td><td>On vend, mais sans contrôle de stock, sans annulation, sans ouverture ni fermeture de caisse. Les saisies faites pendant la coupure sont attribuées à la personne identifiée quand l'addition est enfin enregistrée.</td></tr>
+  <tr><td>« Je ne peux plus cocher « Service à table contrôlé » ni la vente sans table. »</td><td>Une session « Contrôle à l'ouverture » existe (Odoo la rouvre après chaque fermeture) : ces deux réglages se font avant la mise en service.</td></tr>
+  <tr><td>« La fenêtre des espèces dit « Cash entrant », « Cash sortant », puis « un out en espèces ». »</td><td>Ce sont des textes d'Odoo, que le module ne reprend pas (la fenêtre d'Odoo est gardée telle quelle) : « Cash sortant » = sortie, « Cash entrant » = entrée ; « out » = sortie, « in » = entrée.</td></tr>
+  <tr><td>« Les articles s'affichent « 2,00 », les montants du tableau croisé sans FCFA. »</td><td>Format d'Odoo : « Articles » est un décimal (un produit pesé compte 0,5).</td></tr>
+  <tr><td>« Une seconde caisse (un bar) partage la base. »</td><td>Elle reçoit ses propres Espèces (« Espèces Bar »). Attention : « Personnes et tables » et « Ventes sans table » comptent aussi ses ventes.</td></tr>
+  <tr><td>« La passerelle des analyses par employé n'est pas installée. »</td><td>Sur une base où l'analyse et le restaurant étaient déjà installés : Apps → retirer le filtre « Apps » → chercher « par employé » → <span class="b">Activer</span>.</td></tr>
+  <tr><td>« Hôtel avec restaurant. »</td><td>AITE règle d'abord le « Journal des encaissements » de la réception sur un journal d'espèces propre, sinon réception et caisse partagent le même journal d'espèces.</td></tr>
+</table>
+
+<h3>Limites à connaître</h3>
+<ul class="petit">
+  <li><b>L'identité est affirmée par le poste</b> : le code suffit pour savoir qui a fait quoi, ce n'est pas une sécurité forte. Les codes d'ouverture, de fermeture et d'annulation sont vérifiés par le serveur.</li>
+  <li><b>Deux postes</b> peuvent encore ouvrir la même table libre dans la seconde qui sépare la relecture du serveur de l'enregistrement.</li>
+  <li><b>Le refus des épuisés est fait par la tablette</b> ; un produit suivi vendu dans une formule n'est pas contrôlé ; le stock suppose le mode « temps réel » d'Odoo.</li>
+  <li>Le <b>prix et la remise d'une ligne envoyée</b> ne sont pas surveillés (la touche « Prix » est réservée au manager, les remises sont décochées).</li>
+  <li>Une tablette doit être ouverte sous le <b>compte de la caisse</b> : sinon les traces « sans code » sont attribuées à un autre compte.</li>
+  <li>Le pavé d'Odoo ignore deux touches trop rapprochées : ⌫ ⌫ tapé trop vite est perdu.</li>
+  <li>Non essayé à ce jour : <b>Odoo Enterprise</b> (écran de cuisine, réservation de tables), une imprimante de cuisine réelle, deux postes réels sur la même table, la tablette et le réseau du client.</li>
+</ul>
+
+<!-- =================================================================== -->
+<h2 class="saut">Annexe — le nombre de touches de chaque geste</h2>
+<p>Un code compte 4 touches ; <i>n</i> = le choix des produits. Prévu = spécification ; mesuré = service complet joué à l'écran par le tour automatique <code>AiteParcoursTour</code> (Chrome, 1 280 × 800).</p>
+<table class="t">
+  <tr><th>Rôle — geste</th><th class="c">Prévu</th><th class="c">Mesuré</th></tr>
+  <tr><td>Tous — prendre son poste</td><td class="n">0</td><td class="n">0</td></tr>
+  <tr><td>Caissière — ouvrir la caisse le matin</td><td class="n">5</td><td class="n">5</td></tr>
+  <tr><td>Serveur — ouvrir une table et envoyer</td><td class="n">7 + n</td><td class="n">9 (n = 2)</td></tr>
+  <tr><td>Serveur — ajouter à sa table et envoyer</td><td class="n">6 + n</td><td class="n">7 (n = 1)</td></tr>
+  <tr><td>Serveur — imprimer l'addition</td><td class="n">6</td><td class="n">6</td></tr>
+  <tr><td>Serveur — retirer un produit pas encore envoyé</td><td class="n">3 (2)</td><td class="n">2</td></tr>
+  <tr><td>Serveur — changer le nombre de personnes</td><td class="n">2</td><td class="n">2</td></tr>
+  <tr><td>Serveur — produit épuisé refusé</td><td class="n">—</td><td class="n">1</td></tr>
+  <tr><td>Serveur + chef — annuler un produit envoyé, sur le poste du serveur</td><td class="n">3 + 5 (+ 1)</td><td class="n">9</td></tr>
+  <tr><td>Chef seul — annuler un produit envoyé</td><td class="n">9</td><td class="n">9</td></tr>
+  <tr><td>Chef seul — annuler une table qui a des produits envoyés</td><td class="n">8</td><td class="n">8</td></tr>
+  <tr><td>Caissière — encaisser en espèces, somme exacte</td><td class="n">8</td><td class="n">8</td></tr>
+  <tr><td>Caissière — encaisser au poste d'un serveur resté identifié</td><td class="n">7</td><td class="n">7</td></tr>
+  <tr><td>Manager — prendre la main, puis encaisser</td><td class="n">8</td><td class="n">8</td></tr>
+  <tr><td>Caissière — deux parts d'une addition divisée</td><td class="n">14 + n</td><td class="n">15 (n = 1)</td></tr>
+  <tr><td>Chef — sortir des espèces</td><td class="n">7 + saisie</td><td class="n">18 (« 1000 » et « Monnaie »)</td></tr>
+  <tr><td>Chef — fermer la caisse, sans table ouverte</td><td class="n">7 + chiffres</td><td class="n">11</td></tr>
+  <tr><td>Chef — fermer avec des tables ouvertes et les annuler</td><td class="n">+ 2</td><td class="n">13</td></tr>
+  <tr><td>Manager — encaisser une table ouverte par un autre</td><td class="n">8</td><td class="n">8</td></tr>
+  <tr><td>Une table servie de bout en bout</td><td class="n">27 + n</td><td class="n">30 (n = 3)</td></tr>
+</table>
+<p class="petit">Comptées sur Chrome à 1 280 × 800, pas encore sur la tablette du client. Ce guide est tiré du code du module (textes de la caisse, réglages, droits), des notes de version du lot 1 du restaurant et du cahier de recette (domaine R, 104 cas).</p>
+
+</body>
+</html>
