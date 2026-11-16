@@ -402,8 +402,14 @@ carte du client au lieu de la carte de démonstration : 101 produits aux prix
 de la carte, familles de caisse = sections de la carte (trois niveaux au
 plus), tailles en produits séparés (une touche), accompagnement au choix sans
 supplément sur les plats de la page 2, boissons revendues suivies en stock
-avec un coût et un stock de départ, aucune taxe. La graine
-`dev/seeds/seed_carte_messager.py` se rejoue (`odoo-bin shell … <
+avec un coût et un stock de départ, aucune taxe. Sur la base d'un client, la carte s'installe comme un module : déposer
+`aite_resto_carte_messager` à côté des modules du restaurant, puis Apps →
+« Mettre à jour la liste des Apps » → chercher « Messager » → **Activer**. Il
+pose la carte dans la caisse « Restaurant » (s'il n'y a pas encore de plan
+comptable, juste après son chargement) et ne renomme pas la société ; le
+désinstaller ne retire pas la carte. La source unique est
+`addons/aite_resto_carte_messager/data/carte.py`. La graine
+`dev/seeds/seed_carte_messager.py` (qui joue ce fichier) se rejoue (`odoo-bin shell … <
 dev/seeds/seed_carte_messager.py`) : rien n'est créé deux fois (chaque
 produit a une clé stable : pour le renommer, on change son nom dans le
 script, jamais sa clé), un nom, un prix ou un coût changé dans le script est
