@@ -74,14 +74,20 @@ patch(ControlButtons.prototype, {
         if (!this.pos.aiteActif) {
             return super.clickPrintBill(...arguments);
         }
+        const order = this.pos.get_order();
         const imprime = await this.printer.print(OrderReceipt, {
-            data: this.pos.orderExportForPrinting(this.pos.get_order()),
+            data: this.pos.orderExportForPrinting(order),
             formatCurrency: this.env.utils.formatCurrency,
         });
         if (imprime) {
-            // L'addition est partie à l'imprimante : retour au plan verrouillé.
             this.dialog.closeAll();
-            this.pos.showScreen("FloorScreen");
+            // L'addition d'une table est partie à l'imprimante : retour au plan
+            // verrouillé. Une part divisée (« 4B ») n'a pas de table : sur le
+            // plan, on ne la retrouverait pas ; la caisse reste sur elle, pour
+            // l'encaisser (constat du client).
+            if (order?.table_id) {
+                this.pos.showScreen("FloorScreen");
+            }
         } else {
             this.dialog.add(BillScreen);
         }

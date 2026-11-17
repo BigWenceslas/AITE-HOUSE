@@ -360,6 +360,15 @@ class TestToursTable(AiteToursModeCommon):
 
 
 @tagged('post_install', '-at_install', 'aite_pos_restaurant')
+@tagged('post_install', '-at_install', 'aite_pos_restaurant')
+class TestToursAdditionPart(AiteToursModeCommon):
+    """L'addition d'une part divisée s'imprime (constat du client)."""
+
+    def test_addition_d_une_part(self):
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteAdditionPartTour', login='pos_user')
+
+
 class TestToursAnnulation(AiteToursModeCommon):
     """Incrément 4 : verrou après envoi, code d'un responsable, motifs,
     journal des annulations (AiteAnnulationTour, AiteAnnulerTableTour,
