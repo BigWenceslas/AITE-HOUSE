@@ -96,6 +96,13 @@ moment-là :
 
 ## 4. Installation
 
+> **Le plus simple : un seul module.** Après le dépôt et la mise à jour de la
+> liste des Apps, activer **« AITE HOUSE — Hôtel (tout installer) »**
+> (`aite_house_hotel`) installe toute la suite hôtelière ; sur Odoo
+> Enterprise, il installe aussi le planning Gantt des chambres
+> (`aite_hotel_gantt`), y compris à la mise à niveau d'une base existante. Le
+> jeu d'essai (`aite_demo_data`) reste à part.
+
 1. **Déposer** les 16 dossiers de `addons/` dans le répertoire des addons
    personnalisés du serveur — celui déclaré dans `addons_path` de
    `odoo.conf`. Les déposer **à côté** des dossiers existants ; ne jamais
@@ -239,6 +246,13 @@ Facturation et Ventes. Les autres modules AITE ne sont pas nécessaires.
   caisse « Restaurant ».
 
 ### 9.3 Installer, dans cet ordre
+
+> **Le plus simple : un seul module.** Activer **« AITE HOUSE — Restaurant
+> (tout installer) »** (`aite_house_restaurant`) installe les quatre modules du
+> restaurant et, sur Odoo Enterprise, l'**écran de cuisine**
+> (`pos_preparation_display`), aussi à la mise à niveau s'il manque. Pour une
+> démonstration, activer à la place la carte du Messager
+> (`aite_resto_carte_messager`), qui installe `aite_house_restaurant`.
 
 1. **Déposer** les 4 dossiers du §9.1 à côté des autres dossiers d'addons
    (`addons_path` de `odoo.conf`) ; ne jamais remplacer le répertoire entier.

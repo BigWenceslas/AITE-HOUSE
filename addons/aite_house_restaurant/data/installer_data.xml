@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Sans noupdate : à l'installation et à chaque mise à niveau. -->
+    <function model="ir.module.module" name="_aite_restaurant_installer_optionnels"/>
+</odoo>

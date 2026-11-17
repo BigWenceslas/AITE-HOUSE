@@ -9,7 +9,8 @@ Carte du restaurant Le Messager (Douala)
 
 Activer ce seul module installe tout le restaurant AITE : la caisse au service
 à table contrôlé (aite_pos_restaurant), l'ardoise (aite_pos_credit), l'analyse
-des ventes (aite_pos_analytics) et sa passerelle (aite_pos_analytics_hr).
+des ventes (aite_pos_analytics) et sa passerelle (aite_pos_analytics_hr), et
+sur Odoo Enterprise l'écran de cuisine (module aite_house_restaurant).
 
 À l'installation, le module pose dans la caisse au service à table contrôlé
 (module « AITE — Restaurant ») :
@@ -35,14 +36,14 @@ chaque société qui a un plan comptable (sinon juste après son chargement), et
 à la demande : Point de Vente → Configuration → « Poser la carte Le Messager »
 (une notification dit ce qui a été fait). Le nom de la société n'est pas changé. Désinstaller le module ne retire pas la carte.
 """,
-    'version': '18.0.1.1.0',
+    'version': '18.0.1.2.0',
     'category': 'Sales/Point of Sale',
     'author': "AITE Consulting",
     'website': "https://aiteconsulting.com",
     'license': 'LGPL-3',
-    # Activer ce seul module installe tout le restaurant : caisse au service à table
-    # (avec pos_restaurant et pos_hr), ardoise, analyse des ventes et sa passerelle.
-    'depends': ['aite_pos_restaurant', 'aite_pos_credit', 'aite_pos_analytics', 'aite_pos_analytics_hr'],
+    # Activer ce seul module installe tout le restaurant (aite_house_restaurant :
+    # caisse au service à table, ardoise, analyses, écran de cuisine sur Enterprise).
+    'depends': ['aite_house_restaurant'],
     'data': ['data/carte_data.xml', 'views/carte_views.xml'],
     'installable': True,
     'application': False,
