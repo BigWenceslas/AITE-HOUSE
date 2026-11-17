@@ -1346,6 +1346,132 @@
         "#LionsIndomptables",
         "#BonDimanche"
       ]
+    },
+    {
+      "serie": "Lundi 16 novembre — au choix",
+      "jour": "lundi",
+      "id": "VD-LUN-2",
+      "moment": "lundi 17h",
+      "alcool": false,
+      "points": [],
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#AfterWork",
+        "#BonLundi"
+      ],
+      "legende": "Lundi, on attaque fort. Et quand la journée est finie, on se pose à La Vérandah. Tu commences ta semaine comment ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "modele": "vd-sombre",
+      "titre": "",
+      "etiquette": "Bon lundi",
+      "photo": "tunique",
+      "texte": "Nouvelle semaine, mola ! Le boulot d’abord, *la détente* ce soir à La Vérandah."
+    },
+    {
+      "serie": "Lundi 16 novembre — au choix",
+      "jour": "lundi",
+      "id": "VD-LUN-3",
+      "moment": "lundi 17h",
+      "alcool": false,
+      "points": [],
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#AfterWork",
+        "#BonLundi"
+      ],
+      "legende": "Le premier jour est fait. On se capte ce soir à La Vérandah, à Makepe. Tu viens avec qui ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "modele": "vd-ambiance",
+      "titre": "Après le boulot",
+      "etiquette": "",
+      "photo": null,
+      "texte": "CE SOIR, ON SE *CAPTE* À LA VÉRANDAH"
+    },
+    {
+      "serie": "Lundi 16 novembre — au choix",
+      "jour": "lundi",
+      "id": "VD-LUN-4",
+      "moment": "lundi 17h",
+      "alcool": false,
+      "points": [],
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#AfterWork",
+        "#BonLundi"
+      ],
+      "legende": "Les dossiers, les réunions, les embouteillages… et le soir, les gars à La Vérandah. Qui tu retrouves ce soir ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "modele": "vd-sombre",
+      "titre": "",
+      "etiquette": "Bon lundi",
+      "photo": "blazer",
+      "texte": "Le lundi passe plus vite quand tu sais *qui t’attend* le soir."
+    },
+    {
+      "serie": "Mardi 17 novembre — au choix",
+      "jour": "mardi",
+      "id": "VD-MAR-1",
+      "moment": "mardi 17h",
+      "alcool": false,
+      "points": [],
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#LionsIndomptables",
+        "#CAN2027"
+      ],
+      "legende": "Namibie 0 - 3 Cameroun hier à Gaborone : les Lions restent premiers du groupe, invaincus. Ce soir, on en parle à La Vérandah. Tu as vu le match ? ⚽\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "modele": "vd-sombre",
+      "titre": "",
+      "etiquette": "Bon mardi",
+      "photo": "veste-pied",
+      "texte": "Après le *3-0* contre la Namibie, on se capte à La Vérandah, au calme."
+    },
+    {
+      "serie": "Mardi 17 novembre — au choix",
+      "jour": "mardi",
+      "id": "VD-MAR-2",
+      "moment": "mardi 17h",
+      "alcool": false,
+      "points": [],
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#LionsIndomptables",
+        "#CAN2027"
+      ],
+      "legende": "Nagida, Ryan Fosso, Saidou Alioum Moubarak : le travail est fait. Ce soir, la famille refait le match à La Vérandah, à Makepe. C’est quel but qui t’a fait lever ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "modele": "vd-ambiance",
+      "titre": "Namibie 0 - 3 Lions",
+      "etiquette": "",
+      "photo": null,
+      "texte": "CE MARDI, ON REFAIT LE MATCH À LA *VÉRANDAH*"
+    },
+    {
+      "serie": "Mardi 17 novembre — au choix",
+      "jour": "mardi",
+      "id": "VD-MAR-3",
+      "moment": "mardi 17h",
+      "alcool": false,
+      "points": [],
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#AfterWork",
+        "#BonMardi"
+      ],
+      "legende": "Tu tiens ta journée, et le soir on se retrouve à La Vérandah. Tu en es où de ta semaine ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "modele": "vd-sombre",
+      "titre": "",
+      "etiquette": "Bon mardi",
+      "photo": "ndop",
+      "texte": "Mardi, mola : la semaine est lancée, *tiens bon* jusqu’au soir."
     }
   ]
 }

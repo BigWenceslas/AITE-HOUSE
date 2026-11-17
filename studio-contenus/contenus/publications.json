@@ -2703,6 +2703,180 @@
         "#Repos",
         "#Douala"
       ]
+    },
+    {
+      "serie": "Lundi 16 novembre — au choix",
+      "semaine": null,
+      "jour": "lundi",
+      "moment": "lundi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-28",
+      "etiquette": "Conseil du lundi",
+      "photo": "blazer",
+      "theme": "Rapprochement bancaire hebdomadaire pour préparer la clôture",
+      "titre": "Banque : rapprochez *chaque semaine*, pas à la clôture",
+      "points": [
+        "Importez le relevé bancaire de la semaine dans l’ERP dès lundi matin",
+        "Pointez chaque ligne avec une facture ou une pièce justificative",
+        "Notez chaque écart non expliqué et nommez qui le règle cette semaine",
+        "Faites valider le solde rapproché par le DAF ou le DG le jour même"
+      ],
+      "legende": "Lundi matin à Douala, le comptable ouvre le relevé bancaire : un virement client sans référence, des frais que personne ne reconnaît, un chèque jamais encaissé. Si on attend la clôture pour tout pointer, ça va gâter. Fait chaque semaine, le rapprochement reste court : on importe le relevé dans l’ERP (Odoo sait le faire), on pointe chaque ligne avec une facture ou une pièce, on note chaque écart avec un nom et une date pour le régler, puis la direction valide le solde. À la clôture de l’exercice, il ne reste plus de mystère sur le compte. Chez vous, de quand date le dernier rapprochement bancaire ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Douala",
+        "#PMECameroun",
+        "#Comptabilite",
+        "#Odoo"
+      ]
+    },
+    {
+      "serie": "Lundi 16 novembre — au choix",
+      "semaine": null,
+      "jour": "lundi",
+      "moment": "lundi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-29",
+      "etiquette": "Conseil du lundi",
+      "photo": "ndop-pied",
+      "theme": "Réception des marchandises et contrôle commande-réception-facture",
+      "titre": "Réception fournisseur : *comptez avant de signer* le bon",
+      "points": [
+        "Comparez la livraison au bon de commande, article par article",
+        "Comptez et vérifiez l’état des colis avant de signer le bon de livraison",
+        "Saisissez la réception dans l’ERP le jour même, écarts compris",
+        "Payez la facture seulement si commande, réception et facture concordent"
+      ],
+      "legende": "Le camion du fournisseur arrive en fin de journée, le chauffeur est pressé, le magasinier signe le bon sans compter. Quelques semaines plus tard, la facture arrive pour la quantité commandée, pas pour la quantité reçue, et personne ne peut plus prouver l’écart. Le contrôle se fait au quai : comparer avec la commande, compter et vérifier l’état avant de signer, enregistrer la réception dans l’ERP le jour même, écarts compris. Ensuite, la comptabilité ne paie que si commande, réception et facture disent la même chose : c’est ce qu’Odoo vérifie quand la facturation fournisseur se fait sur les quantités reçues. Dans votre entreprise, qui compte la marchandise avant de signer ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Cameroun",
+        "#GestionDeStock",
+        "#Achats",
+        "#Odoo"
+      ]
+    },
+    {
+      "serie": "Lundi 16 novembre — au choix",
+      "semaine": null,
+      "jour": "lundi",
+      "moment": "lundi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-30",
+      "etiquette": "Alerte sécurité",
+      "photo": "tunique",
+      "theme": "Faille Outlook exploitée (Patch Tuesday de novembre 2026)",
+      "titre": "Faille Outlook exploitée : mettez à jour *Office aussi*",
+      "points": [
+        "Installez les correctifs du 10 novembre sur tous les postes Windows",
+        "Mettez à jour Office et Outlook : vérifiez la version de chaque poste",
+        "Commencez par la direction, la comptabilité et ceux qui paient",
+        "Activez la double authentification sur tous les comptes Microsoft 365"
+      ],
+      "legende": "Le 10 novembre, Microsoft a publié plus de 1 000 correctifs, dont 63 critiques. Une faille d’Outlook est déjà exploitée par des pirates : CVE-2026-124194. Il suffit qu’un employé ouvre un message ou une pièce jointe piégés pour qu’Outlook livre l’empreinte (le « hachage ») de ses identifiants. L’agence américaine CISA a donné jusqu’au 24 novembre à ses administrations pour corriger.\n\nPar prudence, ne vous contentez pas de Windows Update : vérifiez qu’Office est à jour poste par poste, commencez par ceux qui valident les paiements, et activez la double authentification pour limiter les dégâts si un mot de passe fuit.\n\nAujourd’hui, savez-vous combien de vos postes ont reçu le correctif ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Cybersecurite",
+        "#Microsoft365",
+        "#Outlook",
+        "#Cameroun"
+      ]
+    },
+    {
+      "serie": "Mardi 17 novembre — au choix",
+      "semaine": null,
+      "jour": "mardi",
+      "moment": "mardi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-31",
+      "etiquette": "Conseil du mardi",
+      "photo": "veste-pied",
+      "theme": "Loi de finances 2027 : préparer les paramètres fiscaux de l’ERP et de la paie",
+      "titre": "Loi de finances 2027 : *préparez votre ERP* dès maintenant",
+      "points": [
+        "Désignez une personne chargée de suivre le texte voté et ses décrets",
+        "Listez les taxes, taux et retenues paramétrés dans l’ERP et la paie",
+        "Testez chaque changement sur une copie de la base avant le 1er janvier",
+        "N’appliquez un nouveau taux qu’une fois le texte promulgué et publié"
+      ],
+      "legende": "Depuis le 10 novembre, les députés examinent à Yaoundé le projet de loi de finances 2027. Le ministre des Finances annonce une « hausse considérable » du budget, mais les mesures fiscales ne sont pas encore connues. Le risque pour une PME : découvrir en janvier qu’une facture, une retenue ou un bulletin de paie est calculé avec l’ancien taux. Préparez-vous sans deviner : une personne suit le texte voté, vous listez dès maintenant tous les paramètres fiscaux de l’ERP et de la paie, vous testez les changements sur une copie de la base, et vous n’appliquez rien avant la promulgation. Chez vous, qui mettra à jour les taux dans le logiciel en janvier ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Cameroun",
+        "#LoiDeFinances2027",
+        "#Fiscalite",
+        "#ERP"
+      ]
+    },
+    {
+      "serie": "Mardi 17 novembre — au choix",
+      "semaine": null,
+      "jour": "mardi",
+      "moment": "mardi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-32",
+      "etiquette": "Conseil du mardi",
+      "photo": "boubou",
+      "theme": "Séparation des tâches et droits d’accès dans l’ERP",
+      "titre": "Droits dans l’ERP : *qui commande ne paie pas*",
+      "points": [
+        "Séparez celui qui commande, celui qui réceptionne et celui qui paie",
+        "Donnez à chaque employé les droits de son poste, pas ceux de son chef",
+        "Fermez le compte d’un employé le jour même de son départ",
+        "Revoyez chaque trimestre la liste des utilisateurs et de leurs droits"
+      ],
+      "legende": "Dans beaucoup de PME, le même employé de confiance crée le fournisseur, passe la commande, valide la facture et prépare le paiement. Tant que tout va bien, personne ne regarde. Le jour où il y a une erreur ou une fraude, rien ne permet de la voir à temps. La règle : celui qui commande ne réceptionne pas et ne paie pas. Dans l’ERP, chacun reçoit les droits de son poste, pas ceux du patron, le compte d’un partant est fermé le jour même, et la liste des utilisateurs est revue chaque trimestre. Mola, ce n’est pas de la méfiance : c’est une protection pour tout le monde, l’employé compris. Dans votre ERP, combien de personnes peuvent créer un fournisseur et le payer ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Douala",
+        "#ControleInterne",
+        "#ERP",
+        "#PMECameroun"
+      ]
+    },
+    {
+      "serie": "Mardi 17 novembre — au choix",
+      "semaine": null,
+      "jour": "mardi",
+      "moment": "mardi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-33",
+      "etiquette": "Conseil téléphone",
+      "photo": "ndop",
+      "theme": "Vol de numéro par carte SIM et comptes de l’entreprise",
+      "titre": "Carte SIM : 4 règles contre *le vol de numéro*",
+      "points": [
+        "Enregistrez les puces de l’entreprise à son nom, pièces à jour",
+        "Activez le code PIN de la carte SIM sur chaque téléphone de service",
+        "Pour Microsoft 365, préférez l’application Authenticator au SMS",
+        "Plus de réseau sans raison ? Appelez l’opérateur sans attendre"
+      ],
+      "legende": "Le 4 novembre à Douala, l’ART a réuni administrations, opérateurs de téléphonie mobile et associations de consommateurs sur les arnaques au mobile money et les réidentifications frauduleuses de cartes SIM. Le principe est simple : un fraudeur obtient une nouvelle puce à votre numéro, et il reçoit vos codes de validation à votre place.\n\nPour l’entreprise, le numéro est une clé. Enregistrez les puces au nom de la société, protégez-les par un code PIN, ne comptez pas sur le seul SMS pour sécuriser Microsoft 365, et réagissez tout de suite si un téléphone perd le réseau sans explication.\n\nVos comptes importants sont-ils liés au numéro personnel d’un employé ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Cybersecurite",
+        "#MobileMoney",
+        "#Microsoft365",
+        "#Cameroun"
+      ]
     }
   ]
 }
