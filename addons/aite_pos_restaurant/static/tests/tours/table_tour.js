@@ -361,6 +361,17 @@ registry.category("web_tour.tours").add("AiteSaisieOngletTour", {
             Aite.identifie("Paul"),
             ...Aite.ecranCommande(),
             ProductScreen.clickDisplayedProduct("Water"),
+            // Une version plus ancienne d'Odoo 18 n'a pas `getCommand` sur les
+            // commandes (constaté en production : « order.getCommand is not a
+            // function » en touchant un onglet) : la même addition sans elle doit
+            // se lire sans erreur.
+            Aite.verifier("une commande sans getCommand (Odoo 18 plus ancien) ne bloque pas l'onglet", () => {
+                // Une addition enregistrée, sans changement en attente, telle
+                // que la donne un Odoo 18 sans `getCommand`.
+                const order = posmodel.get_order();
+                const ancienne = { id: 987654, finalized: false, isBooked: true, lines: [], model: order.model };
+                return posmodel.aiteAModifier(ancienne) === false;
+            }),
             // Il quitte la table 5 par l'onglet « 99 ».
             Aite.onglet("99"),
             ...Aite.ecranCommande(),

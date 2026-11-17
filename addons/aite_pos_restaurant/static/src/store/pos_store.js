@@ -223,8 +223,8 @@ patch(PosStore.prototype, {
         if (
             this.pendingOrder.write.has(order.id) ||
             commandes["pos.order"]?.update.has(order.id) ||
-            order.getCommand("delete", "lines") ||
-            order.getCommand("unlink", "lines")
+            this.aiteCommandeEnAttente(order, "delete", "lines") ||
+            this.aiteCommandeEnAttente(order, "unlink", "lines")
         ) {
             return true;
         }
@@ -232,6 +232,24 @@ patch(PosStore.prototype, {
             (line) =>
                 typeof line.id !== "number" || commandes["pos.order.line"]?.update.has(line.id)
         );
+    },
+
+    /** Une ligne retirée de l'addition attend-elle d'être envoyée au serveur ?
+     * `getCommand` n'existe que dans les versions récentes d'Odoo 18 : sur une
+     * version plus ancienne (constaté en production : « order.getCommand is not
+     * a function » en touchant l'onglet d'une part « 1B »), on lit la même
+     * file de commandes directement ; si elle a une autre forme, on répond
+     * « oui » : l'addition est renvoyée au serveur, ce qui est sans effet si
+     * rien n'a changé. */
+    aiteCommandeEnAttente(order, commande, champ) {
+        if (typeof order.getCommand === "function") {
+            return order.getCommand(commande, champ);
+        }
+        const file = this.models.commands?.[order.model?.modelName || "pos.order"]?.[commande];
+        if (file && typeof file.has === "function") {
+            return file.has(`${champ}_${order.id}`);
+        }
+        return true;
     },
 
     /** Attend la fin d'une synchronisation déjà en cours de l'addition : Odoo
