@@ -252,7 +252,12 @@ Facturation et Ventes. Les autres modules AITE ne sont pas nécessaires.
 > restaurant et, sur Odoo Enterprise, l'**écran de cuisine**
 > (`pos_preparation_display`), aussi à la mise à niveau s'il manque. Pour une
 > démonstration, activer à la place la carte du Messager
-> (`aite_resto_carte_messager`), qui installe `aite_house_restaurant`.
+> (`aite_resto_carte_messager`), qui installe `aite_house_restaurant` et pose
+> aussi une salle de 12 tables, une équipe fictive aux quatre niveaux (serveurs
+> Brice 1001, Nadège 1002, Loïc 1003 ; caissières Clarisse 2001, Prisca 2002 ;
+> chef de salle Hervé 3001 ; manager Sandrine 4001) et trois comptes Odoo de
+> démonstration « caisse », « manager », « chef » (mot de passe = identifiant,
+> à changer).
 
 1. **Déposer** les 4 dossiers du §9.1 à côté des autres dossiers d'addons
    (`addons_path` de `odoo.conf`) ; ne jamais remplacer le répertoire entier.

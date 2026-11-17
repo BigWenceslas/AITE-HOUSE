@@ -15,6 +15,13 @@ sur Odoo Enterprise l'écran de cuisine (module aite_house_restaurant).
 À l'installation, le module pose dans la caisse au service à table contrôlé
 (module « AITE — Restaurant ») :
 
+* une salle de 12 tables ;
+* une équipe fictive aux quatre niveaux, avec son code de caisse : serveurs
+  Brice 1001, Nadège 1002, Loïc 1003 ; caissières Clarisse 2001, Prisca 2002 ;
+  chef de salle Hervé 3001 ; manager Sandrine 4001 ;
+* trois comptes Odoo de démonstration (mot de passe = identifiant, à changer) :
+  « caisse » (la tablette), « manager », « chef » (rapports du restaurant) ;
+
 * les familles de la caisse sur trois niveaux au plus (Petit déjeuner, Plats,
   Pizzas & burgers, Afternoon tea, Bar), et les mêmes noms en catégories de
   produit ;
@@ -36,7 +43,7 @@ chaque société qui a un plan comptable (sinon juste après son chargement), et
 à la demande : Point de Vente → Configuration → « Poser la carte Le Messager »
 (une notification dit ce qui a été fait). Le nom de la société n'est pas changé. Désinstaller le module ne retire pas la carte.
 """,
-    'version': '18.0.1.2.0',
+    'version': '18.0.1.3.0',
     'category': 'Sales/Point of Sale',
     'author': "AITE Consulting",
     'website': "https://aiteconsulting.com",

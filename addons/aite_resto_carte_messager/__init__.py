@@ -19,14 +19,20 @@ _logger = logging.getLogger(__name__)
 
 
 def jouer_carte(env, mode_module=True):
-    """Pose (ou remet à jour) la carte dans la société courante de ``env`` ;
+    """Pose (ou remet à jour) la salle, l'équipe et la carte dans la société courante de ``env`` ;
     rend la phrase de bilan."""
-    chemin = os.path.join(os.path.dirname(__file__), 'data', 'carte.py')
-    with open(chemin, encoding='utf-8') as fichier:
-        code = compile(fichier.read(), chemin, 'exec')
-    contexte = {'env': env, 'MODE_MODULE': mode_module, '__name__': 'aite_resto_carte_messager.carte'}
-    exec(code, contexte)  # noqa: S102 — script du module, jamais une saisie
-    return contexte.get('RESULTAT')
+    bilans = []
+    # la salle et l'équipe d'abord (en mode module seulement : la base de
+    # développement les reçoit de dev/seeds/seed_restaurant.py), puis la carte
+    etapes = [('equipe.py', 'RESULTAT_EQUIPE')] if mode_module else []
+    for nom, cle in etapes + [('carte.py', 'RESULTAT')]:
+        chemin = os.path.join(os.path.dirname(__file__), 'data', nom)
+        with open(chemin, encoding='utf-8') as fichier:
+            code = compile(fichier.read(), chemin, 'exec')
+        contexte = {'env': env, 'MODE_MODULE': mode_module, '__name__': 'aite_resto_carte_messager.' + nom[:-3]}
+        exec(code, contexte)  # noqa: S102 — script du module, jamais une saisie
+        bilans.append(contexte.get(cle) or '')
+    return " ; ".join(b for b in bilans if b)
 
 
 def caisse_restaurant(env, company):

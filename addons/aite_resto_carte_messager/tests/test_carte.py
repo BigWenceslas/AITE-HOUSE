@@ -23,3 +23,14 @@ class TestCarteMessager(TransactionCase):
         nom = self.env.company.name
         jouer_carte(self.env)
         self.assertEqual(self.env.company.name, nom)
+
+    def test_salle_et_equipe(self):
+        caisse = self.env['pos.config'].search([('aite_mode_restaurant', '=', True)], limit=1)
+        self.assertGreaterEqual(len(caisse.floor_ids[:1].table_ids), 12)
+        niveaux = set(self.env['hr.employee'].search([('aite_niveau_caisse', '!=', False)]).mapped('aite_niveau_caisse'))
+        self.assertEqual(niveaux, {'serveur', 'caissiere', 'superviseur', 'manager'})
+        for login in ('caisse', 'manager', 'chef'):
+            self.assertTrue(self.env['res.users'].search_count([('login', '=', login)]), login)
+        avant = self.env['hr.employee'].search_count([])
+        jouer_carte(self.env)
+        self.assertEqual(self.env['hr.employee'].search_count([]), avant, "rejouer ne crée rien")
