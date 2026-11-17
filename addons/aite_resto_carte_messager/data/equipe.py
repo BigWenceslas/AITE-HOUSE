@@ -71,19 +71,28 @@ def groupes(*refs):
     return [(6, 0, [env.ref(r).id for r in ('base.group_user',) + refs])]
 
 
+# Chaque compte a un courriel : Odoo écrit l'ouverture, la fermeture et la
+# validation de la caisse au nom du compte connecté, et refuse sans courriel
+# (« Impossible d'envoyer le message, veuillez configurer l'adresse e-mail de
+# l'expéditeur »). Adresses de démonstration, à remplacer par celles du client.
 COMPTES = [
-    ('caisse', "Caisse de la salle", groupes('point_of_sale.group_pos_user', 'account.group_account_invoice')),
-    ('manager', "Manager de la salle", groupes(
+    ('caisse', "Caisse de la salle", 'caisse@restaurant.example',
+     groupes('point_of_sale.group_pos_user', 'account.group_account_invoice')),
+    ('manager', "Manager de la salle", 'manager@restaurant.example', groupes(
         'point_of_sale.group_pos_manager', 'hr.group_hr_user', 'account.group_account_invoice',
         'aite_pos_analytics.group_aite_pos_analytics_manager')),
-    ('chef', "Chef de salle (rapports)", groupes('aite_pos_restaurant.group_lecture_rapports')),
+    ('chef', "Chef de salle (rapports)", 'chef@restaurant.example',
+     groupes('aite_pos_restaurant.group_lecture_rapports')),
 ]
-for login, nom, droits in COMPTES:
-    if not Users.search([('login', '=', login)], limit=1):
-        Users.create({'login': login, 'name': nom, 'password': login, 'lang': 'fr_FR',
-                      'company_id': company.id, 'company_ids': [(6, 0, company.ids)],
-                      'groups_id': droits})
+for login, nom, courriel, droits in COMPTES:
+    user = Users.search([('login', '=', login)], limit=1)
+    if not user:
+        Users.create({'login': login, 'name': nom, 'email': courriel, 'password': login,
+                      'lang': 'fr_FR', 'company_id': company.id,
+                      'company_ids': [(6, 0, company.ids)], 'groups_id': droits})
         equipe_compte['comptes'] += 1
+    elif not user.email:
+        user.email = courriel   # compte de démonstration posé sans courriel (18.0.1.3.0)
 
 RESULTAT_EQUIPE = ("équipe : %(tables)d tables, %(employes)d employés, %(comptes)d comptes créés"
                    % equipe_compte + " | en place : %d tables, %d employés à niveau" % (

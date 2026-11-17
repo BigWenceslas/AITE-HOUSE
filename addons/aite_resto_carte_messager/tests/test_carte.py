@@ -34,3 +34,16 @@ class TestCarteMessager(TransactionCase):
         avant = self.env['hr.employee'].search_count([])
         jouer_carte(self.env)
         self.assertEqual(self.env['hr.employee'].search_count([]), avant, "rejouer ne crée rien")
+
+    def test_comptes_avec_courriel(self):
+        """Odoo écrit l'ouverture et la validation de la caisse au nom du compte
+        connecté : sans courriel, « Impossible d'envoyer le message, veuillez
+        configurer l'adresse e-mail de l'expéditeur » (constaté chez le client)."""
+        for login in ('caisse', 'manager', 'chef'):
+            user = self.env['res.users'].search([('login', '=', login)])
+            self.assertTrue(user.email, login)
+        # un compte de démonstration resté sans courriel est complété à la mise à niveau
+        caisse = self.env['res.users'].search([('login', '=', 'caisse')])
+        caisse.email = False
+        jouer_carte(self.env)
+        self.assertTrue(caisse.email)
