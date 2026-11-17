@@ -411,9 +411,13 @@ plus), tailles en produits séparés (une touche), accompagnement au choix sans
 supplément sur les plats de la page 2, boissons revendues suivies en stock
 avec un coût et un stock de départ, aucune taxe. Sur la base d'un client, la carte s'installe comme un module : déposer
 `aite_resto_carte_messager` à côté des modules du restaurant, puis Apps →
-« Mettre à jour la liste des Apps » → chercher « Messager » → **Activer**. Il
-pose la carte dans la caisse « Restaurant » (s'il n'y a pas encore de plan
-comptable, juste après son chargement) et ne renomme pas la société ; le
+« Mettre à jour la liste des Apps » → chercher « Messager » → **Activer** :
+ce seul module installe aussi tout le restaurant (aite_pos_restaurant,
+aite_pos_credit, aite_pos_analytics, aite_pos_analytics_hr). Il pose la
+carte dans la caisse « Restaurant » de chaque société, à l'installation et à
+chaque mise à niveau (s'il n'y a pas encore de plan comptable, juste après son
+chargement), et à la demande : Point de Vente → Configuration → « Poser la
+carte Le Messager » (une notification dit ce qui a été fait) et ne renomme pas la société ; le
 désinstaller ne retire pas la carte. La source unique est
 `addons/aite_resto_carte_messager/data/carte.py`. La graine
 `dev/seeds/seed_carte_messager.py` (qui joue ce fichier) se rejoue (`odoo-bin shell … <

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Sans noupdate : jouée à l'installation ET à chaque mise à niveau du module
+         (rejouable : rien n'est créé deux fois). -->
+    <function model="pos.config" name="_aite_poser_carte_messager"/>
+</odoo>

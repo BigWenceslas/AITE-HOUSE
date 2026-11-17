@@ -7,6 +7,10 @@
 Carte du restaurant Le Messager (Douala)
 ========================================
 
+Activer ce seul module installe tout le restaurant AITE : la caisse au service
+à table contrôlé (aite_pos_restaurant), l'ardoise (aite_pos_credit), l'analyse
+des ventes (aite_pos_analytics) et sa passerelle (aite_pos_analytics_hr).
+
 À l'installation, le module pose dans la caisse au service à table contrôlé
 (module « AITE — Restaurant ») :
 
@@ -26,17 +30,20 @@ sodas, bières, café, thé) et leurs prix ; les coûts d'achat, tous estimés ;
 le prix du whisky « Black » (40 000 provisoire). Chaque produit concerné le
 dit dans sa note interne.
 
-Installer sur une base où la caisse « Restaurant » existe déjà. Le nom de la
-société n'est pas changé. Désinstaller le module ne retire pas la carte.
+La carte est posée à l'installation et à chaque mise à niveau du module, dans
+chaque société qui a un plan comptable (sinon juste après son chargement), et
+à la demande : Point de Vente → Configuration → « Poser la carte Le Messager »
+(une notification dit ce qui a été fait). Le nom de la société n'est pas changé. Désinstaller le module ne retire pas la carte.
 """,
-    'version': '18.0.1.0.0',
+    'version': '18.0.1.1.0',
     'category': 'Sales/Point of Sale',
     'author': "AITE Consulting",
     'website': "https://aiteconsulting.com",
     'license': 'LGPL-3',
-    'depends': ['aite_pos_restaurant'],
-    'data': [],
-    'post_init_hook': 'poser_carte',
+    # Activer ce seul module installe tout le restaurant : caisse au service à table
+    # (avec pos_restaurant et pos_hr), ardoise, analyse des ventes et sa passerelle.
+    'depends': ['aite_pos_restaurant', 'aite_pos_credit', 'aite_pos_analytics', 'aite_pos_analytics_hr'],
+    'data': ['data/carte_data.xml', 'views/carte_views.xml'],
     'installable': True,
     'application': False,
 }
