@@ -1,0 +1,105 @@
+/* Guide de l'intégrateur AITE (restaurant, stock, achats, Direction).
+   Charte AITE : violet #902C8F pour les titres, orange #ED9720 pour désigner,
+   texte sombre, police sans empattement (Carlito, comme les autres guides). */
+
+@page {
+    size: A4;
+    margin: 16mm 16mm 18mm 16mm;
+    @bottom-center {
+        content: "AITE CONSULTING — Guide de l'intégrateur · Page " counter(page);
+        font-family: Carlito, "Inter", "DejaVu Sans", sans-serif;
+        font-size: 8.5pt;
+        color: #555;
+    }
+}
+
+:root {
+    --violet: #902C8F;
+    --orange: #ED9720;
+    --texte: #222;
+    --gris: #f3f1f4;
+    --trait: #d9d2db;
+}
+
+html { font-family: Carlito, "Inter", "DejaVu Sans", sans-serif; font-size: 10pt; color: var(--texte); line-height: 1.33; }
+body { margin: 0; }
+
+h1, h2, h3 { color: var(--violet); font-weight: bold; line-height: 1.15; }
+h1 { font-size: 24pt; margin: 2mm 0 1mm; }
+h2 { font-size: 15pt; margin: 7mm 0 2.5mm; break-after: avoid; border-bottom: 0.6pt solid var(--trait); padding-bottom: 1mm; }
+h3 { font-size: 12pt; margin: 4.5mm 0 1.5mm; break-after: avoid; }
+h2.saut { break-before: page; margin-top: 0; }
+p { margin: 1.2mm 0 2mm; }
+ul, ol { margin: 1mm 0 2.5mm; padding-left: 6mm; }
+li { margin: 0.6mm 0; }
+code { font-family: "DejaVu Sans Mono", monospace; font-size: 8.8pt; background: var(--gris); padding: 0 1mm; }
+
+/* Couverture */
+.surtitre { text-transform: uppercase; font-weight: bold; font-size: 9pt; letter-spacing: 0.06em; color: #555; margin-top: 2mm; }
+.sous-titre { font-size: 12.5pt; color: var(--orange); margin: 0 0 4mm; font-weight: bold; }
+.entete { display: flex; justify-content: space-between; align-items: flex-start; }
+.entete img { width: 34mm; }
+table.carte-identite { width: 100%; border-collapse: collapse; margin: 3mm 0 4mm; font-size: 9.8pt; }
+table.carte-identite th { text-align: left; width: 34mm; background: var(--gris); }
+table.carte-identite th, table.carte-identite td { border: 0.5pt solid var(--trait); padding: 1.4mm 2mm; vertical-align: top; }
+
+/* Tableaux */
+table.t { width: 100%; border-collapse: collapse; margin: 2mm 0 3.5mm; font-size: 9.4pt; break-inside: auto; }
+table.t th { background: var(--violet); color: white; text-align: left; font-weight: bold; }
+table.t th, table.t td { border: 0.5pt solid var(--trait); padding: 1.1mm 1.8mm; vertical-align: top; }
+table.t tr { break-inside: avoid; }
+table.t tr:nth-child(even) td { background: #faf8fb; }
+table.t td.c, table.t th.c { text-align: center; }
+table.t td.n { text-align: right; font-weight: bold; white-space: nowrap; }
+.oui { color: #1e7d3a; font-weight: bold; }
+.non { color: #aaa; }
+table.droits td:first-child { width: 46%; }
+
+/* Repères orange : boutons, libellés à toucher */
+.b { color: var(--orange); font-weight: bold; }
+.touches { display: inline-block; background: var(--orange); color: white; font-weight: bold; border-radius: 2mm; padding: 0 2mm; font-size: 9pt; margin-left: 1mm; white-space: nowrap; }
+.chemin { font-weight: bold; }
+
+ol.etapes { counter-reset: e; list-style: none; padding-left: 0; }
+ol.etapes > li { counter-increment: e; position: relative; padding-left: 8mm; margin: 1.3mm 0; }
+ol.etapes > li::before { content: counter(e); position: absolute; left: 0; top: 0.2mm; width: 5.2mm; height: 5.2mm; border-radius: 50%; background: var(--violet); color: white; font-weight: bold; font-size: 8.5pt; text-align: center; line-height: 5.2mm; }
+
+/* Encadrés */
+.encadre { border-left: 1.6mm solid var(--orange); background: #fdf4e7; padding: 2mm 3mm; margin: 3mm 0; break-inside: avoid; }
+.encadre.or { border-left-color: var(--violet); background: #f6ecf6; }
+.encadre .titre { font-weight: bold; color: var(--orange); }
+.encadre.or .titre { color: var(--violet); }
+.encadre p { margin: 0.6mm 0; }
+
+/* Captures */
+figure { margin: 3mm 0 3.5mm; break-inside: avoid; text-align: center; }
+figure img { width: 74%; border: 0.5pt solid #bbb; }
+figure.moyen img { width: 62%; }
+figcaption { font-size: 8.6pt; font-style: italic; color: #555; margin-top: 1mm; }
+.duo { display: flex; gap: 4mm; break-inside: avoid; margin: 3mm 0; }
+.duo figure { flex: 1; margin: 0; }
+.duo figure img { width: 74%; }
+
+.recadre { overflow: hidden; border: 0.5pt solid #bbb; position: relative; margin: 0 auto; }
+.recadre img { border: none; position: absolute; }
+
+.sommaire { columns: 2; column-gap: 8mm; font-size: 10pt; margin: 2mm 0 0; padding-left: 5mm; }
+.sommaire li { margin: 0.4mm 0; }
+.petit { font-size: 9pt; color: #444; }
+.sans-saut { break-inside: avoid; }
+
+/* Propre au guide de l'intégrateur */
+table.t.serre { font-size: 8.8pt; }
+table.t.serre th, table.t.serre td { padding: 0.9mm 1.5mm; }
+table.qui td.c { font-size: 9pt; }
+table.qui th.c { font-size: 8pt; }
+.schema { margin: 3mm 0 4mm; text-align: center; break-inside: avoid; }
+.schema svg { width: 100%; }
+ul.cocher { list-style: none; padding-left: 0; }
+ul.cocher li { padding-left: 6mm; position: relative; margin: 1mm 0; }
+ul.cocher li::before { content: ""; position: absolute; left: 0; top: 0.6mm; width: 3.2mm; height: 3.2mm; border: 0.3mm solid #888; border-radius: 0.5mm; }
+dl.glossaire dt { font-weight: bold; color: var(--violet); margin-top: 1.6mm; break-after: avoid; }
+dl.glossaire dd { margin: 0.3mm 0 0 5mm; }
+h2 { break-before: auto; }
+figure.etroit img { width: 60%; }
+dl.glossaire { columns: 2; column-gap: 8mm; font-size: 9.4pt; } dl.glossaire dd { break-before: avoid; }

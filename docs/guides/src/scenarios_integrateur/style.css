@@ -1,0 +1,112 @@
+/* Scénarios de l'intégrateur — charte AITE : violet #902C8F pour les
+   titres, orange #ED9720 pour désigner, texte sombre, police sans empattement. */
+:root { --violet: #902C8F; --orange: #ED9720; --texte: #222; --gris: #6b6b6b; --pale: #f6eef6; }
+
+@page {
+  size: A4;
+  margin: 16mm 15mm 18mm 15mm;
+  @bottom-center {
+    content: "AITE CONSULTING — Scénarios de l'intégrateur · Page " counter(page);
+    font-family: "Inter", "Liberation Sans", "DejaVu Sans", sans-serif;
+    font-size: 7.5pt; color: #777;
+  }
+}
+
+html { font-family: "Inter", "Liberation Sans", "DejaVu Sans", sans-serif; font-size: 9pt;
+       color: var(--texte); line-height: 1.38; }
+body { margin: 0; }
+p { margin: 0 0 2.2mm 0; }
+
+h1, h2, h3, h4 { color: var(--violet); font-weight: 700; }
+h2 { font-size: 14pt; margin: 6mm 0 3mm; padding-bottom: 1mm; border-bottom: 0.6mm solid var(--violet);
+     break-after: avoid; }
+h2.annexe, h2.saut { break-before: page; }
+h3 { font-size: 11.5pt; margin: 0 0 2mm; break-after: avoid; }
+h4 { font-size: 10pt; margin: 4mm 0 1.5mm; break-after: avoid; }
+
+/* Couverture */
+.couverture { break-after: page; padding-top: 12mm; }
+.couverture .logo { width: 42mm; }
+.surtitre { color: var(--orange); font-weight: 700; letter-spacing: 0.08em; margin-top: 22mm; font-size: 10pt; }
+.couverture h1 { font-size: 30pt; margin: 2mm 0 3mm; }
+.soustitre { font-size: 12.5pt; color: #444; margin-bottom: 12mm; max-width: 160mm; }
+table.fiche { border-collapse: collapse; width: 100%; font-size: 9.5pt; }
+table.fiche th { text-align: left; width: 34mm; color: var(--violet); vertical-align: top;
+                 padding: 2.2mm 2mm; border-top: 0.2mm solid #ddd; }
+table.fiche td { padding: 2.2mm 2mm; border-top: 0.2mm solid #ddd; }
+.version { color: var(--orange); font-weight: 700; }
+
+/* Tableaux simples */
+table.simple { border-collapse: collapse; width: 100%; margin: 1mm 0 3mm; font-size: 8.5pt; }
+table.simple th { background: var(--violet); color: #fff; text-align: left; padding: 1.4mm 1.8mm; font-weight: 600; }
+table.simple td { border-bottom: 0.2mm solid #ddd; padding: 1.3mm 1.8mm; vertical-align: top; }
+table.simple tr { break-inside: avoid; }
+table.simple thead { display: table-header-group; }
+table.simple.bloc { break-inside: avoid; }
+table.simple td.code { font-weight: 700; color: var(--orange); white-space: nowrap; }
+table.simple td.nb { text-align: center; }
+table.droits td.oui { color: #1d7a3a; font-weight: 700; text-align: center; }
+table.droits td.non { color: #aaa; text-align: center; }
+table.droits th:not(:first-child) { text-align: center; }
+table.sommaire tr.partie td { background: var(--pale); color: var(--violet); font-weight: 700; }
+table.couverture-r { font-size: 7.6pt; }
+table.couverture-r td { padding: 0.8mm 1.5mm; }
+
+ol.principe li, ul.conventions li { margin-bottom: 1.2mm; }
+
+/* Scénario */
+.scenario { margin: 0 0 7mm; }
+.tete { break-inside: avoid; break-after: avoid; }
+.scenario h3 { border-left: 1.6mm solid var(--violet); padding-left: 2.5mm; }
+.sid { color: var(--orange); margin-right: 1.5mm; }
+table.meta { border-collapse: collapse; width: 100%; font-size: 8.4pt; margin-bottom: 2mm;
+             background: var(--pale); break-inside: avoid; }
+table.meta th { text-align: left; color: var(--violet); width: 25mm; padding: 1mm 2mm; vertical-align: top; }
+table.meta td { padding: 1mm 2mm; }
+p.but { font-size: 8.8pt; }
+
+table.etapes { border-collapse: collapse; width: 100%; font-size: 8.4pt; margin: 1mm 0 2.5mm; }
+table.etapes thead { display: table-header-group; }
+table.etapes th { background: var(--violet); color: #fff; text-align: left; padding: 1.3mm 1.6mm; font-weight: 600; }
+table.etapes td { border-bottom: 0.2mm solid #ddd; padding: 1.4mm 1.6mm; vertical-align: top; }
+table.etapes tr { break-inside: avoid; }
+table.etapes td.n { width: 6mm; text-align: center; font-weight: 700; color: var(--orange); }
+table.etapes th.n { width: 6mm; }
+table.etapes td:nth-child(2) { width: 36%; }
+table.etapes th.c, table.etapes td.c { width: 15mm; }
+table.etapes th.ok, table.etapes td.ok, table.simple th.ok, table.simple td.ok { width: 8mm; text-align: center; }
+.case { display: inline-block; width: 3.2mm; height: 3.2mm; border: 0.3mm solid #888; border-radius: 0.5mm; }
+.cas { display: inline-block; font-size: 7pt; font-weight: 700; color: var(--violet);
+       border: 0.2mm solid #d9b8d8; border-radius: 0.8mm; padding: 0 0.6mm; margin: 0 0.4mm 0.4mm 0; }
+.sans { color: #bbb; }
+.ecran { font-weight: 500; color: #3d1a3c; }
+.fleche { color: var(--orange); font-weight: 700; }
+
+/* Encadrés */
+.encadre { margin: 2mm 0 3mm; padding: 2mm 3mm; font-size: 8.6pt; break-inside: avoid; }
+.encadre.reflexe { border-left: 1.4mm solid var(--orange); background: #fdf3e3; }
+.encadre.regle { border-left: 1.4mm solid var(--violet); background: var(--pale); }
+.encadre.attention { border-left: 1.4mm solid #8a8a8a; background: #f2f2f2; }
+.encadre strong { color: var(--violet); }
+.encadre.reflexe strong { color: #b86d00; }
+
+/* Captures */
+figure { margin: 2mm auto 4mm; text-align: center; break-inside: avoid; }
+figure img { width: 150mm; border: 0.3mm solid #ccc; }
+figcaption { font-size: 8pt; color: var(--gris); margin-top: 1.2mm; font-style: italic; }
+
+/* Annexes : lignes plus serrées, pour que l'annexe B tienne sans page presque vide */
+table.simple.couverture-r td { padding: 0.7mm 1.8mm; }
+table.simple.ecarts { font-size: 8pt; }
+table.simple.ecarts td { padding: 1mm 1.8mm; }
+
+/* Propre au cahier de l'intégrateur */
+.joue { display: inline-block; font-size: 7pt; font-weight: 700; color: #fff; background: #1d7a3a;
+        border-radius: 0.8mm; padding: 0.2mm 1.2mm; margin-left: 2mm; vertical-align: middle; }
+h2.partie { break-before: auto; margin-top: 9mm; }
+table.simple.ecartes td:first-child { width: 14mm; }
+figure.petite img { width: 120mm; }
+figure img { width: 125mm; }
+.duo { display: flex; gap: 4mm; break-inside: avoid; margin: 2mm 0 4mm; }
+.duo figure { flex: 1 1 0; margin: 0; }
+.duo figure img { width: 100%; }

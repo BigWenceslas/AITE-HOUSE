@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>AITE — Guide de l'intégrateur · restaurant, stock, achats, Direction</title>
+<meta name="author" content="AITE Consulting">
+<link rel="stylesheet" href="guide.css">
+</head>
+<body>
+
+<!-- ===================================================================
+     Guide de l'intégrateur junior. Chaque libellé cité entre « » existe
+     mot pour mot dans le code des modules (vues, gabarits, messages) ou
+     dans les traductions françaises d'Odoo 18 (addons/*/i18n/fr.po).
+     Captures : captures/restaurant/ (base du restaurant AITE) et
+     captures/integrateur/ (base de recette jetable, novembre 2026).
+     Équipe et comptes : ceux, fictifs, de la démonstration « Le Messager ».
+     =================================================================== -->
+<div class="entete">
+  <div>
+    <div class="surtitre">Guide de l'intégrateur</div>
+    <h1>AITE — Restaurant, stock, achats, Direction</h1>
+    <p class="sous-titre">Installer, paramétrer et vérifier chez le client, sans rien oublier</p>
+  </div>
+  <img src="../../../logo_aite.jpg" alt="AITE Consulting">
+</div>
+
+<table class="carte-identite">
+  <tr><th>Public visé</th><td>Intégrateur junior (AITE ou partenaire) qui met en service le restaurant AITE et ses tableaux de bord chez un client. Aucune expérience d'Odoo n'est supposée ; savoir déposer un dossier sur le serveur et redémarrer Odoo suffit.</td></tr>
+  <tr><th>Modules</th><td><code>aite_house_restaurant</code> (tout installer) · <code>aite_pos_restaurant</code> 18.0.1.0.8 · <code>aite_pos_credit</code> 18.0.2.0.6 · <code>aite_pos_analytics</code> 18.0.2.1.6 · <code>aite_pos_analytics_hr</code> 18.0.1.0.0 · <code>aite_resto_carte_messager</code> 18.0.1.3.1 · <code>aite_stock_dashboard</code> 18.0.1.1.3 · <code>aite_purchase_dashboard</code> 18.0.1.0.5 · <code>aite_direction_dashboard</code> 18.0.1.1.2 · <code>aite_exec_dashboard</code> 18.0.1.1.2 (hôtel) — et les modules Odoo Point de Vente, Inventaire, Achats</td></tr>
+  <tr><th>À utiliser avec</th><td>Les scénarios de l'intégrateur (<code>AITE_Scenarios_Integrateur.pdf</code> et son classeur <code>.xlsx</code>) : chaque chapitre de ce guide y renvoie. Pour les gestes de la salle : <code>AITE_Guide_Restaurant.pdf</code>.</td></tr>
+  <tr><th>Éditeur</th><td>AITE CONSULTING — Novembre 2026 — Odoo 18 Community et Enterprise</td></tr>
+</table>
+
+<h3 style="margin-top:2mm">Sommaire</h3>
+<ol class="sommaire">
+  <li>Vue d'ensemble : quel module fait quoi</li>
+  <li>Prérequis du serveur</li>
+  <li>Installer pas à pas</li>
+  <li>Paramétrer la caisse du restaurant</li>
+  <li>Paramétrer l'ardoise et l'analyse des ventes</li>
+  <li>Paramétrer le stock</li>
+  <li>Paramétrer les achats</li>
+  <li>Les tableaux de bord : droits et ce que lit chaque indicateur</li>
+  <li>Droits et profils : qui voit quoi</li>
+  <li>Contrôles avant la mise en service</li>
+  <li>Dépannage</li>
+  <li>Glossaire</li>
+  <li>Aide-mémoire de l'intégrateur</li>
+</ol>
+
+<div class="encadre or"><p><span class="titre">Les trois règles de l'intégrateur —</span> (1) on ne travaille jamais d'abord sur la base de production : une copie ou une base neuve ; (2) on ne retire jamais le dossier d'un module installé, et on ne désinstalle jamais « pour réinstaller propre » ; (3) après chaque installation ou mise à niveau, on recharge les navigateurs (Ctrl+Maj+R) et on relit le journal d'Odoo : aucune ligne <code>ERROR</code>.</p></div>
+
+<!-- =================================================================== -->
+<h2>1. Vue d'ensemble : quel module fait quoi</h2>
+
+<table class="t serre">
+  <tr><th style="width:27%">Module (nom dans Apps)</th><th>Ce qu'il apporte</th><th style="width:25%">Dépend de</th></tr>
+  <tr><td><b>AITE HOUSE — Restaurant (tout installer)</b><br><code>aite_house_restaurant</code></td><td>Rien par lui-même : il installe les quatre modules du restaurant ci-dessous et, sur Odoo Enterprise seulement, l'écran de cuisine (<code>pos_preparation_display</code>), aussi à chaque mise à niveau s'il manque.</td><td>les quatre modules suivants</td></tr>
+  <tr><td><b>AITE — Restaurant (service à table)</b><br><code>aite_pos_restaurant</code></td><td>La caisse au service à table contrôlé : code personnel à 4 chiffres, quatre niveaux, plan verrouillé, personnes à table, annulations sous code avec motif, couleurs des tables, refus des produits épuisés ; menus <b>Restaurant → Annulations</b>, <b>Personnes et tables</b>, <b>Motifs d'annulation</b>.</td><td>Point de Vente, Restaurant (<code>pos_restaurant</code>), Employés au Point de Vente (<code>pos_hr</code>)</td></tr>
+  <tr><td><b>AITE — Crédit clients (Ardoises POS &amp; Ventes)</b><br><code>aite_pos_credit</code></td><td>L'ardoise : née d'une addition réglée avec le mode « Ardoise client », réservée au manager en restaurant ; menu <b>POS Crédit</b> (Recouvrement, Ardoises, Remboursements).</td><td>Point de Vente, Ventes, Facturation</td></tr>
+  <tr><td><b>AITE — POS Analytics (LAVERANDAH)</b><br><code>aite_pos_analytics</code></td><td>L'analyse des ventes : chiffre d'affaires, marge, CMV, familles sur trois niveaux, caisses, sessions, écarts de caisse ; menu <b>Point de Vente → Analyse → Analyse AITE</b>. Le nom vient du client pilote.</td><td>Point de Vente, Facturation</td></tr>
+  <tr><td><b>AITE — Analyses du restaurant par employé</b><br><code>aite_pos_analytics_hr</code></td><td>Passerelle : « Serveur » et « Encaissée par » dans l'analyse ; s'installe seule quand les deux modules précédents sont là.</td><td>les deux précédents</td></tr>
+  <tr><td><b>AITE — Carte du restaurant Le Messager (démonstration)</b><br><code>aite_resto_carte_messager</code></td><td>Données de démonstration : salle de 12 tables, équipe fictive aux quatre niveaux, trois comptes Odoo avec courriel, 101 produits en familles, coûts et stocks des boissons. Bouton <b>« Poser la carte Le Messager »</b>. <b>Jamais en production.</b></td><td>tout installer</td></tr>
+  <tr><td><b>AITE — Stock &amp; Inventaire (Tableau de bord)</b><br><code>aite_stock_dashboard</code></td><td>Menu <b>Inventaire → Tableau de bord AITE</b> : valeur du stock, alertes et quantités à commander, rotation et dormants, écarts d'inventaire et coulage.</td><td>Inventaire</td></tr>
+  <tr><td><b>AITE — Achats &amp; Fournisseurs (Tableau de bord)</b><br><code>aite_purchase_dashboard</code></td><td>Menu <b>Achats → Tableau de bord AITE</b> : dettes et échéancier, ponctualité (OTIF), prix d'achat, consignes de casiers.</td><td>Achats, Facturation</td></tr>
+  <tr><td><b>AITE — Direction (vue consolidée)</b><br><code>aite_direction_dashboard</code></td><td>Menu <b>Direction</b> : le cockpit du gérant, qui reprend les quatre tableaux précédents (mêmes chiffres) et ajoute le cash à risque, la position clients/fournisseurs et la liste « À traiter ».</td><td>POS Analytics, Crédit clients, Stock, Achats</td></tr>
+  <tr><td><b>AITE — Direction (activité par pôle)</b><br><code>aite_exec_dashboard</code></td><td>L'activité par pôle d'un complexe hôtelier (Hôtel → Activité par pôle) : hébergement, restauration, prestations, RevPAR. <b>Il installe le socle hôtelier</b> : jamais chez un restaurant seul.</td><td>Point de Vente, socle hôtelier, Espaces &amp; prestations</td></tr>
+</table>
+
+<div class="schema">
+<svg viewBox="0 0 760 250" xmlns="http://www.w3.org/2000/svg" font-family="Carlito, DejaVu Sans, sans-serif" font-size="12">
+  <defs><marker id="f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#902C8F"/></marker></defs>
+  <g fill="#f6ecf6" stroke="#902C8F" stroke-width="1.2">
+    <rect x="10" y="10" width="200" height="34" rx="5"/>
+    <rect x="10" y="80" width="170" height="34" rx="5"/>
+    <rect x="195" y="80" width="170" height="34" rx="5"/>
+    <rect x="380" y="80" width="170" height="34" rx="5"/>
+    <rect x="565" y="80" width="185" height="34" rx="5"/>
+    <rect x="290" y="10" width="220" height="34" rx="5"/>
+    <rect x="195" y="160" width="170" height="34" rx="5"/>
+    <rect x="380" y="160" width="170" height="34" rx="5"/>
+    <rect x="565" y="160" width="185" height="34" rx="5"/>
+  </g>
+  <g fill="#fdf4e7" stroke="#ED9720" stroke-width="1.2">
+    <rect x="10" y="210" width="740" height="30" rx="5"/>
+  </g>
+  <g fill="#222" text-anchor="middle">
+    <text x="110" y="25" font-weight="bold">Carte « Le Messager »</text><text x="110" y="39" font-size="10">démonstration</text>
+    <text x="400" y="25" font-weight="bold">Restaurant (tout installer)</text><text x="400" y="39" font-size="10">+ écran de cuisine si Enterprise</text>
+    <text x="95" y="102">Caisse service à table</text>
+    <text x="280" y="102">Ardoise (POS Crédit)</text>
+    <text x="465" y="102">Analyse AITE</text>
+    <text x="657" y="96">Analyses par employé</text><text x="657" y="109" font-size="10">s'installe seule</text>
+    <text x="280" y="182">Tableau de bord Stock</text>
+    <text x="465" y="182">Tableau de bord Achats</text>
+    <text x="657" y="176" font-weight="bold">Direction</text><text x="657" y="189" font-size="10">vue consolidée</text>
+    <text x="380" y="229">Odoo 18 : Point de Vente · Restaurant · Employés · Inventaire · Achats · Facturation · Ventes</text>
+  </g>
+  <g stroke="#902C8F" stroke-width="1.2" fill="none" marker-end="url(#f)">
+    <path d="M210,27 L288,27"/>
+    <path d="M330,44 L110,78"/><path d="M370,44 L280,78"/><path d="M430,44 L465,78"/><path d="M480,44 L640,78"/>
+    <path d="M657,158 L465,116"/><path d="M657,158 L300,116"/><path d="M620,177 L552,177"/><path d="M600,170 L367,170"/>
+  </g>
+</svg>
+<div class="petit">Une flèche va du module qu'on active vers ce qu'il installe avec lui. « Direction » installe le stock et les achats ; « tout installer » ne les installe pas.</div>
+</div>
+
+<div class="encadre"><p><span class="titre">À savoir —</span> dans Apps, une recherche « Direction » montre deux cartes « AITE — Direction ». Chez un restaurant, on active <b>« AITE — Direction (vue consolidée) »</b> ; « (activité par pôle) » est réservée aux clients qui ont l'hôtel AITE (voir les cas K01 à K04, écartés des scénarios).</p></div>
+
+<!-- =================================================================== -->
+<h2>2. Prérequis du serveur</h2>
+<table class="t serre">
+  <tr><th style="width:26%">Élément</th><th>Ce qu'il faut</th></tr>
+  <tr><td>Odoo</td><td><b>Odoo 18</b>, Community ou Enterprise, <b>à jour</b> (une version récente de la branche 18.0). Une version plus ancienne d'Odoo 18 a provoqué « order.getCommand is not a function » à la caisse : corrigé dans <code>aite_pos_restaurant</code> 18.0.1.0.7 ; livrer la <b>18.0.1.0.8</b> ou plus récente.</td></tr>
+  <tr><td>Édition</td><td>Tout fonctionne sur Community. Seul l'<b>écran de cuisine</b> est réservé à Enterprise : « tout installer » l'ajoute s'il trouve le module sur le serveur, sinon il ne fait rien.</td></tr>
+  <tr><td>Python, base de données</td><td>Python 3.10 à 3.12 (celui d'Odoo 18), PostgreSQL ; un accès au serveur pour déposer les dossiers et redémarrer le service.</td></tr>
+  <tr><td>Où déposer les modules</td><td>Dans le répertoire des modules personnalisés déclaré dans <code>addons_path</code> du fichier <code>odoo.conf</code> ; chaque dossier <code>aite_*</code> <b>à côté</b> des dossiers existants. Ne jamais remplacer le répertoire entier.</td></tr>
+  <tr><td>La société</td><td>Pays et plan comptable chargés (Odoo exige un journal de banque pour créer une caisse) ; devise <b>XAF (FCFA)</b> avant toute écriture : Odoo refuse ensuite de la changer. Le plus sûr : créer la base par l'écran de création d'Odoo, pays Cameroun, langue Français.</td></tr>
+  <tr><td>Postes et tablettes</td><td>Un navigateur récent (Chrome ou Edge) ; une tablette par poste de salle, connectée avec le compte de la caisse ; réseau Wi-Fi stable (la caisse vend hors connexion, mais n'annule ni ne ferme sans réseau).</td></tr>
+</table>
+
+<!-- =================================================================== -->
+<h2>3. Installer pas à pas</h2>
+
+<h3>3.1 Base neuve (cas le plus courant)</h3>
+<ol class="etapes">
+  <li><b>Créer la base</b> par l'écran de création d'Odoo (<code>/web/database/manager</code>, en anglais) : « Database Name », « Language » Français, « Country » Cameroun, « Demo Data » décoché, puis « Create database ». La société naît en FCFA, avec le plan comptable camerounais. Ne pas lancer le scénario « Restaurant » qu'Odoo propose sur un Point de Vente vide.</li>
+  <li><b>Déposer</b> les dossiers de <code>addons/</code> à côté des autres, puis <b>redémarrer</b> le service Odoo.</li>
+  <li>Paramètres → tout en bas → <span class="b">Activer le mode développeur</span>. Puis Apps → <span class="b">Mettre à jour la liste des Apps</span> → <span class="b">Mettre à jour</span>.</li>
+  <li>Apps → retirer le filtre « Apps » de la recherche → taper <b>« AITE »</b> → carte <b>« AITE HOUSE — Restaurant (tout installer) »</b> → <span class="b">Activer</span>. Une à deux minutes plus tard, l'accueil propose Restaurant, POS Crédit, Point de Vente, Facturation, Inventaire, Employés.</li>
+  <li>Même recherche → <b>« AITE — Direction (vue consolidée) »</b> → <span class="b">Activer</span> : il installe avec lui Achats et les tableaux de bord du stock et des achats.</li>
+  <li><b>Ctrl+Maj+R</b> sur chaque poste. Sur une tablette (sans clavier) : fermer l'onglet de la caisse et le rouvrir, ou vider le cache du navigateur.</li>
+</ol>
+<figure class="moyen">
+  <img src="../../../../captures/integrateur/01_apps_modules_aite.jpg" alt="Apps, recherche AITE">
+  <figcaption>Écran 1 — Apps, recherche « AITE » (filtre « Apps » retiré) : « AITE HOUSE — Restaurant (tout installer) » et les deux « AITE — Direction ».</figcaption>
+</figure>
+<p class="petit">En ligne de commande, c'est équivalent à <code>odoo-bin -c &lt;odoo.conf&gt; -d &lt;base&gt; -i aite_house_restaurant,aite_direction_dashboard --stop-after-init</code>. Lire ensuite le journal : aucune ligne <code>ERROR</code>. Scénarios : I01, I03.</p>
+
+<p><b>Ce que l'installation règle seule.</b> Une caisse <b>« Restaurant »</b> (modes <b>Espèces</b> et <b>Mobile Money</b>, salle <b>« Salle »</b> avec une table), la case <b>« Service à table contrôlé »</b> cochée, les cinq motifs d'annulation (Erreur de saisie, Client parti, Plat refusé, Produit manquant, Autre). Une caisse créée ensuite (un bar) reçoit ses propres Espèces (« Espèces Bar ») et Mobile Money. Une caisse qui existait déjà n'est jamais modifiée.</p>
+
+<h3>3.2 Données de démonstration (formation, recette)</h3>
+<p>Sur une base de démonstration seulement : Apps → chercher « Messager » → <b>« AITE — Carte du restaurant Le Messager (démonstration) »</b> → <span class="b">Activer</span>. Il installe « tout installer » s'il ne l'est pas, puis pose la salle de 12 tables, l'équipe et la carte. Le menu <span class="chemin">Point de Vente → Configuration → Poser la carte Le Messager</span> la repose à la demande et dit ce qu'il a fait ; rejoué, il ne crée rien deux fois.</p>
+<table class="t serre">
+  <tr><th>Équipe fictive (code)</th><th>Comptes Odoo (mot de passe = identifiant, à changer)</th></tr>
+  <tr><td>Serveurs Brice 1001, Nadège 1002, Loïc 1003 ; caissières Clarisse 2001, Prisca 2002 ; chef de salle Hervé 3001 ; manager Sandrine 4001</td><td><b>caisse</b> (la tablette), <b>manager</b>, <b>chef</b> (lecture des rapports) — chacun avec une adresse e-mail de démonstration (…@restaurant.example), à remplacer</td></tr>
+</table>
+<figure class="moyen">
+  <img src="../../../../captures/integrateur/03_poser_la_carte_le_messager.jpg" alt="Poser la carte Le Messager">
+  <figcaption>Écran 2 — « Poser la carte Le Messager » rejoué : « créés : 0 … », « en place : 12 tables, 7 employés à niveau », « 101 produits à la carte (101 attendus) ».</figcaption>
+</figure>
+
+<h3>3.3 Mettre à niveau une base existante</h3>
+<ol class="etapes">
+  <li><b>Sauvegarder</b> la base et le <code>filestore</code> ; <b>fermer toutes les caisses</b>.</li>
+  <li>Remplacer chaque dossier AITE livré par sa nouvelle version, dossier par dossier ; redémarrer Odoo.</li>
+  <li>Apps → <span class="b">Mettre à jour la liste des Apps</span> ; ouvrir « AITE HOUSE — Restaurant (tout installer) » → <span class="b">Mettre à niveau</span> ; idem pour « AITE — Direction (vue consolidée) » et, sur une base de démonstration, la carte « Le Messager ». En ligne de commande : <code>-u aite_house_restaurant,aite_direction_dashboard</code>.</li>
+  <li>Apps, vue Liste : la colonne « Dernière version » d'« AITE — Restaurant (service à table) » doit dire <b>18.0.1.0.8</b>.</li>
+  <li>Recharger <b>chaque tablette</b> (Ctrl+Maj+R, ou fermer et rouvrir l'onglet) : sinon elle garde l'ancien code de la caisse.</li>
+  <li>Jouer les scénarios de non-régression H01 et H02.</li>
+</ol>
+<div class="encadre or"><p><span class="titre">Règle d'or —</span> ne jamais retirer les fichiers d'un module installé : Odoo ne trouve plus ses vues (« champ … is undefined ») et la base se bloque. Pour enlever un module : Apps → <span class="b">Désinstaller</span> d'abord (en sachant qu'on perd ses données), retirer le dossier ensuite.</p></div>
+
+<!-- =================================================================== -->
+<h2>4. Paramétrer la caisse du restaurant</h2>
+<p>Ordre conseillé : réglages de la caisse (administrateur), comptes Odoo, équipe, salle, carte, stock de départ. Scénarios B01 et B02.</p>
+
+<h3>4.1 La case « Service à table contrôlé » et ses réglages</h3>
+<p><span class="chemin">Point de Vente → Configuration → Paramètres</span> → choisir la caisse → bloc Restaurant. Chaque réglage dit sous lui ce qui va se passer.</p>
+<figure>
+  <img src="../../../../captures/restaurant/25_reglages_service_a_table_controle.jpg" alt="Réglages">
+  <figcaption>Écran 3 — « Est un bar/restaurant », « Service à table contrôlé », « Délai avant l'orange (minutes) », « Autoriser la vente sans table », « Refuser la vente des produits épuisés ».</figcaption>
+</figure>
+<ul>
+  <li><b>« Service à table contrôlé »</b> (coché d'office sur « Restaurant ») règle aussi « Se connecter avec Employés », le contrôle des prix, les remises désactivées, le partage et l'impression de l'addition. Décocher « Se connecter avec Employés » est refusé tant qu'elle est cochée.</li>
+  <li><b>« Autoriser la vente sans table »</b> (décoché) : à décider avec le client <b>avant la première ouverture</b>, comme la case elle-même : ensuite Odoo garde une session « Contrôle à l'ouverture » qui grise ces deux réglages.</li>
+  <li><b>« Délai avant l'orange (minutes) »</b> (60) et <b>« Refuser la vente des produits épuisés »</b> (coché) se changent à tout moment ; ils s'appliquent à la réouverture de la caisse.</li>
+  <li><b>« Modes de paiement »</b> (bloc Paiement) : ajouter <b>« Ardoise client »</b> si le client fait crédit (§5.1).</li>
+  <li><b>« Imprimantes de préparation »</b> : une par poste (cuisine, bar), avec ses familles. Sur Enterprise, l'écran de cuisine remplace ou complète l'imprimante.</li>
+  <li>Ne jamais cocher « Suivi des modifications de commandes » : avec des employés sans courriel, une baisse de quantité échoue ; le journal AITE suffit.</li>
+</ul>
+
+<h3>4.2 Les comptes Odoo : un courriel pour chacun</h3>
+<p><span class="chemin">Paramètres → Utilisateurs &amp; Sociétés → Utilisateurs → Nouveau</span>. Les employés de salle n'ont <b>pas</b> de compte : ils ont un code.</p>
+<table class="t serre">
+  <tr><th style="width:20%">Compte</th><th style="width:45%">Droits à donner (onglet « Droits d'accès »)</th><th>Pourquoi</th></tr>
+  <tr><td><b>la caisse</b> (chaque tablette)</td><td>Point de Vente : Utilisateur ; Comptabilité : <b>Facturation</b> ; une <b>« Adresse e-mail »</b></td><td>sans Facturation, les entrées et sorties d'espèces sont refusées ; sans courriel, la validation d'un paiement échoue (écran 4). Jamais Administrateur.</td></tr>
+  <tr><td><b>le manager</b> du restaurant</td><td>Point de Vente : Administrateur ; Employés : « Gestionnaire : Gérer tous les employés » ; Comptabilité : <b>Facturation</b> ; POS Analytics AITE : « Manager — Analyses POS » ; POS Crédit : Utilisateur ; courriel</td><td>les niveaux et codes des employés ; sans Facturation, Odoo refuse le rapport de session dès qu'une vente est payée ; POS Crédit pour ouvrir Direction (§8)</td></tr>
+  <tr><td><b>le chef de salle</b> qui lit les rapports</td><td>Restaurant AITE : « Restaurant : lecture des rapports », rien d'autre</td><td>il lit les annulations sans accès à la caisse</td></tr>
+</table>
+<figure class="moyen">
+  <img src="../../../../captures/integrateur/20_caisse_sans_courriel.jpg" alt="Opération invalide">
+  <figcaption>Écran 4 — Le compte de la tablette sans adresse e-mail : « Opération invalide », « Impossible d'envoyer le message, veuillez configurer l'adresse e-mail de l'expéditeur. »</figcaption>
+</figure>
+
+<h3>4.3 L'équipe : niveau et code</h3>
+<p><span class="chemin">Employés → Nouveau</span> (compte manager) : le nom, puis dans le groupe « Caisse du restaurant » le <b>« Niveau en caisse »</b> (Serveur, Caissière, Chef de salle ou superviseur, Manager). Le <b>« Code caisse »</b> (4 chiffres) est proposé d'office. Aucun courriel. Un code déjà pris est refusé sans dire à qui il est ; un employé sans niveau n'apparaît pas à la caisse ; un employé parti s'archive.</p>
+<figure class="moyen">
+  <img src="../../../../captures/restaurant/24_fiche_employe_niveau_et_code.jpg" alt="Fiche employé">
+  <figcaption>Écran 5 — La fiche de Brice : « Niveau en caisse » Serveur, « Code caisse » 1001.</figcaption>
+</figure>
+
+<h3>4.4 La salle, la carte, le stock de départ</h3>
+<ul>
+  <li><b>Salle et tables</b> — <span class="chemin">Point de Vente → Configuration → Plans de salle</span> → « Salle » : les tables, leur numéro, leurs places. Le plan ne se modifie pas depuis la caisse.</li>
+  <li><b>Familles</b> — <span class="chemin">Point de Vente → Configuration → Catégories de produits du PdV</span> : trois niveaux au plus (Bar &gt; Vins &gt; Vins rouges). Créer <b>les mêmes noms</b> dans <span class="chemin">Inventaire → Configuration → Catégories de produits</span> : le tableau de bord du stock et l'onglet « Par catégorie » lisent ces catégories-là.</li>
+  <li><b>Produits</b> — sur chaque fiche : le prix de vente en FCFA, la case « Point de Vente », la famille dans l'onglet « Point de Vente », le <b>« Coût »</b> (sans lui, la marge paraît à 100 %), et <b>« Suivre l'inventaire »</b> sur les seules boissons vendues à l'unité (pas sur les plats cuisinés).</li>
+  <li><b>Taxes</b> — Odoo pose d'office la TVA de 19,25 % hors taxes sur chaque nouveau produit (1 000 FCFA encaissés 1 193). Pour des prix de carte taxes comprises, régler avec le comptable une taxe « prix TTC » <b>avant</b> de saisir la carte. La carte de démonstration n'a aucune taxe.</li>
+  <li><b>Stock de départ</b> — sur chaque produit suivi : <span class="b">Mettre la quantité à jour</span>, ou en masse par <span class="chemin">Inventaire → Opérations → Inventaire physique</span> (§6.3). Un produit suivi sans stock est refusé à la caisse (« Produit épuisé »).</li>
+</ul>
+
+<!-- =================================================================== -->
+<h2>5. Paramétrer l'ardoise et l'analyse des ventes</h2>
+<h3>5.1 L'ardoise (POS Crédit)</h3>
+<ol class="etapes">
+  <li><span class="chemin">Point de Vente → Configuration → Modes de paiement</span> → <b>« Ardoise client »</b> (créé à l'installation) : la case « Vente à crédit (ardoise) » est cochée ; pas de journal, « Identifier le client » coché. Il n'y a pas de plafond par client.</li>
+  <li>L'ajouter aux « Modes de paiement » de chaque caisse qui fait crédit (§4.1). En restaurant, seul le manager (code 4001 en démonstration) voit « Mettre sur ardoise ».</li>
+  <li>Avec le comptable : <span class="chemin">Point de Vente → Configuration → Paramètres</span>, bloc <b>« Ardoises / Crédit POS »</b> : « Comptabiliser les remboursements d'ardoise », « Compte client (ardoises) » (411), « Journal des remboursements d'ardoise ».</li>
+  <li>Droits : POS Crédit : Utilisateur (consulter, enregistrer un remboursement), Responsable (annuler, rouvrir). L'administrateur a Responsable d'office.</li>
+</ol>
+<p>Le suivi se fait dans <span class="chemin">POS Crédit → Recouvrement</span> ; une ardoise se rembourse par <span class="b">Enregistrer un remboursement</span> (« Montant à encaisser », « Moyen de paiement » : Espèces, MTN Mobile Money, Orange Money…). Scénarios C01 à C03.</p>
+
+<h3>5.2 L'analyse des ventes (Analyse AITE)</h3>
+<ul>
+  <li>Droits : POS Analytics AITE : « Utilisateur — Analyses POS » (lecture) ou « Manager — Analyses POS » (qui donne aussi Point de Vente : Administrateur). L'administrateur a Manager d'office.</li>
+  <li>Rien d'autre à régler : l'analyse lit les commandes payées ou facturées. Les marges ne sont justes que si le « Coût » des produits est renseigné (§4.4).</li>
+  <li>Menu : <span class="chemin">Point de Vente → Analyse → Analyse AITE</span> → « Tableau de bord », « Par caisse », « Sessions POS », « Par catégorie », « Écarts de caisse », « Tableau croisé &amp; graphique » (favori « Ventes par famille » ; regroupements « Serveur », « Encaissée par », « Compte Odoo » grâce à la passerelle).</li>
+</ul>
+<figure class="moyen">
+  <img src="../../../../captures/integrateur/15_analyse_aite_tableau_de_bord.jpg" alt="Analyse AITE">
+  <figcaption>Écran 6 — Analyse AITE → Tableau de bord après une table : 4 000 FCFA, marge 2 300, CMV 1 700.</figcaption>
+</figure>
+
+<!-- =================================================================== -->
+<h2>6. Paramétrer le stock</h2>
+<h3>6.1 L'entrepôt et les emplacements</h3>
+<p>Odoo crée un entrepôt (nom court <b>WH</b>) avec l'emplacement <b>WH/Stock</b>, d'où la caisse vend. Pour suivre une cave et un bar séparés : <span class="chemin">Inventaire → Configuration → Paramètres</span> → cocher <b>« Emplacements de stockage »</b> ; puis <span class="chemin">Configuration → Emplacements</span> → Nouveau (« Emplacement parent » WH, « Type d'emplacement » « Emplacement interne »). Les déplacements se font par <span class="chemin">Opérations → Transferts</span> (« Transferts internes »). Attention : la caisse ne vend que depuis l'emplacement de son type d'opération ; une boisson déplacée ailleurs devient « épuisée » pour elle.</p>
+
+<div class="sans-saut"><h3>6.2 Deux sortes d'alertes : ne pas les confondre</h3>
+<table class="t serre">
+  <tr><th style="width:22%"></th><th>Alertes AITE (tableau de bord)</th><th>Règles de réapprovisionnement d'Odoo</th></tr>
+  <tr><td>Où</td><td><span class="chemin">Paramètres → AITE Stock</span> (valeurs de la société) ; fiche produit, onglet <b>« Réappro AITE »</b> ; bouton « ⚙ Configurer les alertes »</td><td><span class="chemin">Inventaire → Opérations → Réassort</span> (« Quantité min », « Quantité max ») ; le produit doit avoir la route « Acheter » et un fournisseur</td></tr>
+  <tr><td>Ce qu'elles font</td><td>Classent chaque boisson Rupture, Critique, Sous seuil, OK ; calculent « À commander » d'après les ventes des 30 derniers jours</td><td>Proposent des demandes de prix aux fournisseurs</td></tr>
+  <tr><td>Conseil</td><td>À régler pour tous les clients (valeurs d'office : sécurité 2 j, horizon 7 j, critique 3 j, dormant 60 j, délai 3 j, coulage 2,0 %)</td><td>Facultatif : seulement si le client veut des commandes proposées automatiquement</td></tr>
+</table></div>
+<div class="duo">
+  <figure><img src="../../../../captures/integrateur/06_reglages_aite_stock.jpg" alt="AITE Stock"><figcaption>Écran 7 — Paramètres → AITE Stock.</figcaption></figure>
+  <figure><img src="../../../../captures/integrateur/07_configurer_les_alertes.jpg" alt="Configurer les alertes"><figcaption>Écran 8 — « ⚙ Configurer les alertes ».</figcaption></figure>
+</div>
+<p class="petit">Sur la fiche produit, onglet « Réappro AITE » : « Délai réappro (jours) » à 0 = délai de la société ; « Seuil manuel (point de commande) » à 0 = calcul automatique ; « Alerte de réappro active » décochée = produit ignoré.</p>
+
+<h3>6.3 L'inventaire de départ, puis les inventaires tournants</h3>
+<ol class="etapes">
+  <li><span class="chemin">Inventaire → Opérations → Inventaire physique</span> : pour chaque boisson suivie, la « Quantité comptée », puis <span class="b">Appliquer</span>.</li>
+  <li>Le « Coût » de chaque produit suivi doit être juste avant : la valeur du stock et les écarts en dépendent. Avec le comptable, choisir la « Méthode de coût » des catégories de produits (« Prix standard » d'office : le coût ne suit pas les achats ; « Coût moyen (AVCO) » : il les suit).</li>
+  <li>Ensuite, chaque semaine, compter une famille (inventaire tournant) et saisir les écarts de la même façon. Le tableau de bord les valorise et calcule le coulage.</li>
+</ol>
+<div class="encadre"><p><span class="titre">À savoir —</span> le stock de départ saisi ainsi est un ajustement d'inventaire : le premier mois, « Écarts d'inventaire (période) » et « Écart net » sont gonflés. Le coulage, lui, ne lit que les écarts négatifs et la casse. Prévenir le client.</p></div>
+
+<!-- =================================================================== -->
+<h2>7. Paramétrer les achats</h2>
+<ul>
+  <li><b>Fournisseurs</b> — <span class="chemin">Achats → Commandes → Fournisseurs</span> : un contact société par fournisseur (nom, téléphone, conditions de paiement).</li>
+  <li><b>Prix d'achat</b> — fiche produit, onglet « Achats » : une ligne par fournisseur avec « Prix » et « Délai de livraison ». Le prix est proposé dans les demandes de prix ; le délai sert à l'OTIF.</li>
+  <li><b>Cycle</b> — <span class="chemin">Achats → Commandes → Demandes de prix</span> → Nouveau → « Confirmer la commande » → « Réceptionner les produits » → « Valider » (une réception partielle propose « Créer un reliquat ») → « Créer une facture fournisseur » → « Date de facturation », « Date d'échéance » → « Confirmer ». Le tableau de bord ne lit les dettes que sur les factures comptabilisées.</li>
+  <li><b>Réglages</b> — <span class="chemin">Paramètres → AITE Achats</span> : « Alerte échéance » (7 j), « Tolérance retard livraison » (2 j), « Seuil de dépendance fournisseur » (40 %), « Seuil de hausse de prix » (5 %).</li>
+  <li><b>Consignes de casiers</b> — <span class="chemin">Achats → Configuration → Consignes fournisseurs</span> (responsables Achats seulement) : « Casiers consignés », « Consigne / casier ». Le registre se tient à la main : le comptage des casiers fait foi.</li>
+</ul>
+<figure class="moyen">
+  <img src="../../../../captures/integrateur/13_tableau_de_bord_achats.jpg" alt="Tableau de bord Achats">
+  <figcaption>Écran 9 — Achats → Tableau de bord AITE après une commande reçue en partie et sa facture à 14 jours.</figcaption>
+</figure>
+
+<!-- =================================================================== -->
+<h2>8. Les tableaux de bord : droits et ce que lit chaque indicateur</h2>
+<table class="t serre">
+  <tr><th style="width:20%">Tableau</th><th style="width:30%">Droits pour l'ouvrir</th><th>Ce que lisent les indicateurs</th></tr>
+  <tr><td><b>Analyse AITE</b><br>Point de Vente → Analyse</td><td>POS Analytics AITE : Utilisateur ou Manager</td><td>Commandes de caisse payées ou facturées : « Chiffre d'affaires » (HT), « CMV (coût marchandises) » = quantités × « Coût », « Marge brute » = CA − CMV, « Transactions », « Panier moyen ».</td></tr>
+  <tr><td><b>POS Crédit — Recouvrement</b></td><td>POS Crédit : Utilisateur</td><td>« Encours total (dû) » = reste dû des ardoises ouvertes ; « Recouvré (période) » = remboursements ; « Taux de recouvrement » = recouvré / (encours + recouvré) ; balance âgée par date d'ouverture.</td></tr>
+  <tr><td><b>Stock &amp; Inventaire</b><br>Inventaire → Tableau de bord AITE</td><td>Inventaire : Utilisateur (le bouton ⚙ et les réglages : Administrateur)</td><td>« Valeur stock — coût d'achat » = quantités des emplacements internes × « Coût » ; « Ventes/j » = sorties vers les clients des 30 derniers jours ; « Couverture » = stock / ventes par jour ; « Point de cmde » = ventes/j × (délai + sécurité) ; « À commander » = ventes/j × (délai + horizon) − stock ; « Pertes (écarts négatifs + casse) » ; « Coulage » = pertes / « CA estimé » (sorties × prix de vente).</td></tr>
+  <tr><td><b>Achats &amp; Fournisseurs</b><br>Achats → Tableau de bord AITE</td><td>Achats : Utilisateur (⚙, réglages, consignes : Administrateur)</td><td>« Achats (période) » = commandes confirmées ; « Dette fournisseurs (401) » = factures fournisseurs comptabilisées non soldées ; échéancier par « Date d'échéance » ; « Livré à temps et complet (OTIF) » = reçu à l'heure <b>et</b> complet ; « Créances fournisseurs (409) » = consignes + avoirs + acomptes ; « Prix & variations » = lignes d'achat des 45 derniers jours contre celles d'il y a 4 à 7 mois.</td></tr>
+  <tr><td><b>Direction</b><br>(vue consolidée)</td><td>Point de Vente : Administrateur ; POS Analytics AITE ; <b>POS Crédit : Utilisateur</b> ; Comptabilité : Facturation (sinon « Erreur d'accès », écran 11)</td><td>Les mêmes moteurs que les quatre tableaux (mêmes chiffres). En plus : « Cash à risque » = ardoises de plus de 30 jours + pertes du stock ; « Crédits clients − dettes fournisseurs » ; « À traiter ». Cartes « période » (suivent les filtres) et « photo » (instantanés : encours, dettes, stock). Caisse, heure et jours ne filtrent que les ventes.</td></tr>
+</table>
+<div class="duo">
+  <figure><img src="../../../../captures/integrateur/16_direction_vue_consolidee.jpg" alt="Direction"><figcaption>Écran 10 — Direction — Vue consolidée.</figcaption></figure>
+  <figure><img src="../../../../captures/integrateur/18_direction_erreur_d_acces.jpg" alt="Erreur d'accès"><figcaption>Écran 11 — Un manager sans POS Crédit ouvre Direction.</figcaption></figure>
+</div>
+<p class="petit">Un tableau de bord vide n'est pas une panne : soit il n'y a rien sur la période (changer la période), soit le compte n'a pas le droit (un message « Erreur d'accès » le dit), soit les données de base manquent (pas de « Coût », pas de facture comptabilisée, pas de vente depuis 30 jours).</p>
+
+<!-- =================================================================== -->
+<h2>9. Droits et profils : qui voit quoi</h2>
+<table class="t qui">
+  <tr><th>Profil (compte Odoo)</th><th class="c">Caisse</th><th class="c">Employés, carte, salle</th><th class="c">Restaurant → Annulations</th><th class="c">Analyse AITE</th><th class="c">POS Crédit</th><th class="c">TdB Stock</th><th class="c">TdB Achats</th><th class="c">Direction</th></tr>
+  <tr><td>Tablette de la caisse</td><td class="c oui">oui</td><td class="c non">non</td><td class="c non">non</td><td class="c non">non</td><td class="c non">non</td><td class="c non">non</td><td class="c non">non</td><td class="c non">non</td></tr>
+  <tr><td>Chef de salle (rapports)</td><td class="c non">non</td><td class="c non">non</td><td class="c oui">oui</td><td class="c non">non</td><td class="c non">non</td><td class="c non">non</td><td class="c non">non</td><td class="c non">non</td></tr>
+  <tr><td>Manager du restaurant (§4.2)</td><td class="c oui">oui</td><td class="c oui">oui</td><td class="c oui">oui</td><td class="c oui">oui</td><td class="c oui">oui</td><td class="c oui">oui</td><td class="c non">non*</td><td class="c oui">oui</td></tr>
+  <tr><td>Magasinier (Inventaire : Utilisateur)</td><td class="c non">non</td><td class="c non">non</td><td class="c non">non</td><td class="c non">non</td><td class="c non">non</td><td class="c oui">oui</td><td class="c non">non</td><td class="c non">non</td></tr>
+  <tr><td>Acheteur (Achats : Utilisateur)</td><td class="c non">non</td><td class="c non">non</td><td class="c non">non</td><td class="c non">non</td><td class="c non">non</td><td class="c non">non</td><td class="c oui">oui</td><td class="c non">non</td></tr>
+  <tr><td>Administrateur (intégrateur)</td><td class="c oui">oui</td><td class="c oui">oui</td><td class="c oui">oui</td><td class="c oui">oui</td><td class="c oui">oui</td><td class="c oui">oui</td><td class="c oui">oui</td><td class="c oui">oui</td></tr>
+</table>
+<p class="petit">* Ajouter Achats : Utilisateur au manager s'il gère les fournisseurs. Les gestes en salle (encaisser, annuler, fermer…) ne dépendent pas du compte Odoo mais du <b>niveau</b> de l'employé qui tape son code : voir le tableau des droits du guide du restaurant.</p>
+
+<!-- =================================================================== -->
+<h2>10. Contrôles avant la mise en service</h2>
+<p>À cocher sur la base de production, la veille du premier service (les scénarios détaillés sont dans le cahier de l'intégrateur).</p>
+<ul class="cocher">
+  <li>Société en XAF ; plan comptable chargé ; aucun menu Hôtel chez un restaurant seul.</li>
+  <li>Apps : « AITE — Restaurant (service à table) » en 18.0.1.0.8 ; les tableaux de bord installés ; aucune carte « Le Messager » en production.</li>
+  <li>Caisse « Restaurant » : « Service à table contrôlé » coché, vente sans table décidée, modes Espèces, Mobile Money (et Ardoise client si crédit) ; jamais ouverte avant ces réglages.</li>
+  <li>Chaque compte Odoo a une « Adresse e-mail » ; la tablette a Facturation ; le manager a Facturation et POS Crédit.</li>
+  <li>Chaque employé de salle a son niveau et son code ; codes remis en main propre.</li>
+  <li>Plan de salle conforme ; familles du PdV et catégories de produits aux mêmes noms.</li>
+  <li>Chaque boisson suivie a un « Coût » et un stock compté ; aucun plat n'est suivi en stock.</li>
+  <li>Une vente test complète : ouverture (code caissière), table, envoi, encaissement, fermeture (code chef de salle) ; puis annuler la vente test ou la garder comme essai convenu avec le client.</li>
+  <li>Analyse AITE, POS Crédit → Recouvrement, Inventaire → Tableau de bord AITE, Achats → Tableau de bord AITE et Direction s'ouvrent avec le compte du manager, sans erreur.</li>
+  <li>Chaque tablette rechargée après la dernière mise à niveau.</li>
+</ul>
+
+<!-- =================================================================== -->
+<h2>11. Dépannage</h2>
+<table class="t serre">
+  <tr><th style="width:28%">Symptôme</th><th style="width:30%">Cause</th><th>Solution</th></tr>
+  <tr><td>« Opération invalide » : « Impossible d'envoyer le message, veuillez configurer l'adresse e-mail de l'expéditeur. » à la validation, à l'ouverture ou à la fermeture</td><td>Le compte Odoo connecté (souvent celui de la tablette) n'a pas d'adresse e-mail : Odoo écrit à son nom</td><td>Paramètres → Utilisateurs → le compte → « Adresse e-mail » ; puis valider de nouveau. La carte « Le Messager » 18.0.1.3.1 pose des courriels de démonstration.</td></tr>
+  <tr><td>« Oups ! » avec « order.getCommand is not a function » en touchant l'onglet d'une part (« 1B »)</td><td>Version d'Odoo 18 plus ancienne que celle du module</td><td>Mettre à niveau <code>aite_pos_restaurant</code> en 18.0.1.0.8 (corrigé dès 18.0.1.0.7) ; idéalement mettre Odoo 18 à jour ; recharger la tablette.</td></tr>
+  <tr><td>Une part divisée (« 6B ») est introuvable sur le plan</td><td>Une part n'a pas de table</td><td>≡ → « Commandes », code de la caissière : la part est dans la liste. En 18.0.1.0.8, la caisse reste sur la part après « Addition ».</td></tr>
+  <tr><td>La carte de démonstration n'apparaît pas</td><td>Module déposé sans mise à niveau, plan comptable absent, ou pas de caisse au service à table contrôlé</td><td>Apps → « AITE — Carte du restaurant Le Messager » → « Mettre à niveau », ou Point de Vente → Configuration → « Poser la carte Le Messager » : la notification dit ce qui manque.</td></tr>
+  <tr><td>Un produit n'apparaît pas à la caisse</td><td>Case « Point de Vente » décochée, pas de catégorie du PdV, ou la tablette a chargé les produits avant</td><td>Corriger la fiche ; puis recharger la caisse (fermer et rouvrir l'onglet, Ctrl+Maj+R).</td></tr>
+  <tr><td>« Produit épuisé » sur une bouteille bien présente</td><td>Stock non saisi ou déjà parti sur des tables ouvertes</td><td>Le manager enregistre l'entrée de stock (« Mettre la quantité à jour ») : la vente repasse en moins d'une minute.</td></tr>
+  <tr><td>Pas d'écran de cuisine</td><td>Odoo Community : l'écran de cuisine est réservé à Enterprise</td><td>Comportement normal ; utiliser les « Imprimantes de préparation ». Sur Enterprise : « Mettre à niveau » « tout installer ».</td></tr>
+  <tr><td>Tableau de bord vide</td><td>Pas de données sur la période, ou droits manquants</td><td>Changer la période ; vérifier les droits (§8, §9) ; vérifier les « Coût », factures comptabilisées, ventes.</td></tr>
+  <tr><td>« Erreur d'accès » … « Ardoise POS (vente à crédit) » (aite.pos.credit) en ouvrant Direction</td><td>Le compte n'a pas POS Crédit</td><td>Donner POS Crédit : Utilisateur au compte.</td></tr>
+  <tr><td>Marges à 100 %, CMV nul</td><td>« Coût » vide sur les produits</td><td>Renseigner le « Coût » (boissons) ; les plats sans coût restent à 100 %.</td></tr>
+  <tr><td>« Service à table contrôlé » grisé</td><td>Une session de la caisse existe (même « Contrôle à l'ouverture »)</td><td>Régler la case avant la première ouverture ; sinon voir AITE.</td></tr>
+  <tr><td>Écran blanc ou ancien comportement après une mise à niveau</td><td>Cache du navigateur</td><td>Ctrl+Maj+R ; sur tablette, fermer et rouvrir l'onglet.</td></tr>
+  <tr><td>« champ aite_… is undefined » sur Paramètres</td><td>Dossier d'un module installé absent du serveur</td><td>Redéposer le dossier, redémarrer, « Mettre à jour la liste des Apps ».</td></tr>
+</table>
+<p class="petit">En cas de blocage, transmettre à AITE les lignes <code>ERROR</code> ou <code>Traceback</code> du journal d'Odoo, le contenu d'<code>addons_path</code>, la version des modules (Apps, vue Liste) et une capture de l'écran.</p>
+
+<!-- =================================================================== -->
+<h2>12. Glossaire</h2>
+<dl class="glossaire">
+  <dt>Addons, addons_path</dt><dd>Les dossiers de modules d'Odoo ; <code>addons_path</code> (dans <code>odoo.conf</code>) liste où Odoo les cherche.</dd>
+  <dt>Ardoise</dt><dd>Crédit accordé à un client à la caisse, avec le mode « Ardoise client » ; se rembourse dans POS Crédit.</dd>
+  <dt>Balance âgée</dt><dd>Répartition d'un encours par ancienneté (0–30, 31–60, 61–90, +90 jours).</dd>
+  <dt>CMV</dt><dd>Coût des marchandises vendues : quantités vendues × « Coût ».</dd>
+  <dt>Code caisse, niveau en caisse</dt><dd>Les 4 chiffres et le rôle (Serveur, Caissière, Chef de salle ou superviseur, Manager) d'un employé de salle.</dd>
+  <dt>Coulage</dt><dd>Pertes de stock (écarts d'inventaire négatifs + casse), rapportées au chiffre d'affaires estimé.</dd>
+  <dt>Couverture</dt><dd>Nombre de jours que le stock tiendra au rythme des ventes des 30 derniers jours.</dd>
+  <dt>DPO</dt><dd>Délai moyen de paiement des fournisseurs.</dd>
+  <dt>Mettre à niveau</dt><dd>Faire lire par Odoo la nouvelle version d'un module déjà installé (bouton dans Apps, ou <code>-u</code>).</dd>
+  <dt>Mode développeur</dt><dd>Mode d'Odoo qui montre les menus techniques (dont « Mettre à jour la liste des Apps »).</dd>
+  <dt>OTIF</dt><dd>« On time, in full » : part des commandes reçues à l'heure et complètes.</dd>
+  <dt>Part</dt><dd>Addition créée en divisant celle d'une table (« 5B ») ; elle n'a pas de table.</dd>
+  <dt>Reliquat</dt><dd>Ce qui reste à recevoir d'une commande fournisseur reçue en partie.</dd>
+  <dt>Session de caisse</dt><dd>La période entre l'ouverture et la fermeture de la caisse ; son rapport donne les ventes, les écarts, les annulations.</dd>
+  <dt>Tablette</dt><dd>Le poste de salle, connecté avec le compte Odoo de la caisse ; chaque employé y tape son code.</dd>
+</dl>
+
+<!-- =================================================================== -->
+<h2>Aide-mémoire de l'intégrateur</h2>
+<table class="t serre">
+  <tr><th style="width:30%">Pour…</th><th>Faire</th></tr>
+  <tr><td>Installer en ligne de commande</td><td><code>odoo-bin -c &lt;odoo.conf&gt; -d &lt;base&gt; -i aite_house_restaurant,aite_direction_dashboard --stop-after-init</code></td></tr>
+  <tr><td>Poser la démonstration</td><td><code>… -i aite_resto_carte_messager --stop-after-init</code> (base de démonstration seulement)</td></tr>
+  <tr><td>Mettre à niveau</td><td><code>… -u aite_house_restaurant,aite_direction_dashboard --stop-after-init</code>, après sauvegarde et caisses fermées</td></tr>
+  <tr><td>Contrôler le journal</td><td>Chercher <code>ERROR</code> et <code>Traceback</code> dans le journal d'Odoo après chaque installation ou mise à niveau</td></tr>
+  <tr><td>Sauvegarder une base</td><td>Écran de gestion des bases d'Odoo (<code>/web/database/manager</code>, bouton « Backup », avec le filestore)</td></tr>
+  <tr><td>Recharger un poste</td><td>Ctrl+Maj+R ; sur tablette, fermer l'onglet de la caisse et le rouvrir</td></tr>
+  <tr><td>Recetter</td><td><code>AITE_Scenarios_Integrateur.pdf</code> et son classeur <code>.xlsx</code> (36 scénarios, cas D, F, H, I, J, R du cahier de recette)</td></tr>
+  <tr><td>Former la salle</td><td><code>AITE_Guide_Restaurant.pdf</code> (poste par poste) et <code>AITE_Restaurant_Scenarios_de_tests.pdf</code></td></tr>
+  <tr><td>Détails d'installation</td><td><code>docs/INSTALLATION.md</code>, §9 « Restaurant seul » ; notes de version du restaurant</td></tr>
+</table>
+
+</body>
+</html>

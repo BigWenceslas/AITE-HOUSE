@@ -185,6 +185,14 @@ En cas de blocage, transmettre à AITE Consulting les lignes `ERROR` /
 - **Guides utilisateur** (PDF illustrés) : Note de chambre, Réservation en
   ligne, Fidélité, Espaces & prestations, Tableau de bord Direction.
 - **Fiches produit** : POS Analytics, POS Crédit.
+- **Pour l'intégrateur** (restaurant, stock, achats, Direction) :
+  [`guides/AITE_Guide_Integrateur.pdf`](guides/AITE_Guide_Integrateur.pdf) — installer,
+  paramétrer module par module, droits, contrôles avant la mise en service, dépannage ;
+  [`guides/AITE_Scenarios_Integrateur.pdf`](guides/AITE_Scenarios_Integrateur.pdf) et son
+  classeur à cocher [`guides/AITE_Scenarios_Integrateur.xlsx`](guides/AITE_Scenarios_Integrateur.xlsx)
+  — 36 scénarios de bout en bout couvrant les cas D, F, H, I, J et R du cahier de recette
+  (K01 à K04 écartés : ils exigent l'hôtel). Sources et `build.sh` dans
+  `guides/src/guide_integrateur/` et `guides/src/scenarios_integrateur/`.
 - **Plaquette commerciale** AITE HOUSE (19 pages) et **flyer**.
 
 ### Documentation de test
@@ -217,7 +225,11 @@ recette (22 scénarios couvrant les cas R01 à R104) sont dans
 [`guides/AITE_Restaurant_Scenarios_de_tests.pdf`](guides/AITE_Restaurant_Scenarios_de_tests.pdf),
 avec le classeur à cocher
 [`guides/AITE_Restaurant_Scenarios_de_tests.xlsx`](guides/AITE_Restaurant_Scenarios_de_tests.xlsx)
-(sources et `build.sh` dans `guides/src/`).
+(sources et `build.sh` dans `guides/src/`). L'intégrateur qui installe et paramètre
+le restaurant avec le stock, les achats et la Direction suit
+[`guides/AITE_Guide_Integrateur.pdf`](guides/AITE_Guide_Integrateur.pdf) et recette avec
+[`guides/AITE_Scenarios_Integrateur.pdf`](guides/AITE_Scenarios_Integrateur.pdf)
+([`.xlsx`](guides/AITE_Scenarios_Integrateur.xlsx)).
 
 ### 9.1 Ce que le client installe
 
