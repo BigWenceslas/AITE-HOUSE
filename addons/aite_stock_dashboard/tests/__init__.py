@@ -4,3 +4,4 @@ from . import test_dashboard_api
 from . import test_display
 from . import test_opening_stock
 from . import test_js_utils
+from . import test_onglets

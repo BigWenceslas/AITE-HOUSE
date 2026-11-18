@@ -48,7 +48,7 @@ Compatible Odoo 18. Dépend uniquement de Stock (pas de POS requis).
     'author': "AITE CONSULTING",
     'website': "https://aiteconsulting.com",
     'category': 'Inventory/Inventory',
-    'version': '18.0.1.1.4',
+    'version': '18.0.1.1.5',
     'license': 'LGPL-3',
 
     'depends': [
@@ -67,6 +67,7 @@ Compatible Odoo 18. Dépend uniquement de Stock (pas de POS requis).
     ],
 
     'assets': {
+        'web.assets_tests': ['aite_stock_dashboard/static/tests/tours/**/*'],
         'web.assets_backend': [
             'aite_stock_dashboard/static/src/scss/stock_dashboard.scss',
             'aite_stock_dashboard/static/src/js/services/utils.js',

@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { Component, useState, useRef, onWillStart, onMounted, onWillUnmount } from "@odoo/owl";
+import { Component, useState, useRef, onWillStart, onMounted, onPatched, onWillUnmount } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { loadChart, destroyChart } from "../services/chartjs_loader";
 import { KpiCard } from "../components/kpi_card";
@@ -83,6 +83,15 @@ export class StockDashboardView extends Component {
             await this.loadAll();
         });
         onMounted(() => this.renderTabCharts());
+        // Un changement d'onglet (ou un rechargement) est dessiné une fois
+        // qu'OWL a affiché l'onglet : avant, ses canevas n'existent pas encore
+        // et les graphiques restaient vides au premier clic.
+        onPatched(() => {
+            if (this._dessinEnAttente) {
+                this._dessinEnAttente = false;
+                this.renderTabCharts();
+            }
+        });
         onWillUnmount(() => this.destroyAllCharts());
     }
 
@@ -115,13 +124,16 @@ export class StockDashboardView extends Component {
     }
 
     async refresh() {
+        this._dessinEnAttente = true;
         await this.loadAll();
-        this.renderTabCharts();
     }
 
     setTab(tab) {
+        if (tab === this.state.tab) {
+            return;
+        }
+        this._dessinEnAttente = true;
         this.state.tab = tab;
-        this.renderTabCharts();
     }
 
     async setPeriod(key) {
