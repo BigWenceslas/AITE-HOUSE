@@ -27,11 +27,11 @@ VERSION = "1.0 — novembre 2026"
 MODULES = [
     ("aite_house_restaurant", "18.0.1.0.1", "« tout installer » : les quatre modules du restaurant (et l'écran de cuisine sur Enterprise), l'« Ardoise client » sur la caisse au service à table"),
     ("aite_pos_restaurant", "18.0.1.0.9", "la caisse au service à table contrôlé"),
-    ("aite_pos_credit", "18.0.2.0.6", "les ardoises et leur recouvrement"),
+    ("aite_pos_credit", "18.0.2.0.7", "les ardoises et leur recouvrement"),
     ("aite_pos_analytics", "18.0.2.1.6", "l'analyse des ventes : familles, marges, caisses"),
     ("aite_pos_analytics_hr", "18.0.1.0.0", "le serveur et « Encaissée par » dans les analyses (s'installe seule)"),
     ("aite_resto_carte_messager", "18.0.1.3.3", "données de démonstration : salle, équipe, comptes, carte"),
-    ("aite_stock_dashboard", "18.0.1.1.3", "le tableau de bord du stock (Inventaire)"),
+    ("aite_stock_dashboard", "18.0.1.1.5", "le tableau de bord du stock (Inventaire)"),
     ("aite_purchase_dashboard", "18.0.1.0.5", "le tableau de bord des achats (Achats)"),
     ("aite_direction_dashboard", "18.0.1.1.2", "Direction — Vue consolidée"),
 ]
@@ -823,13 +823,19 @@ SCENARIOS = [
              "L'encours se répartit par caisse ; le total est retrouvé sur « Toutes les caisses ».", "F11"),
             ("Contact « Client Ardoise C » → bouton « Ardoises ».",
              "La liste de ses ardoises avec « Date d'ouverture », « Montant initial », « Déjà "
-             "remboursé », « Reste dû » et leurs totaux : c'est le relevé à remettre (Imprimer ou "
-             "exporter la liste). La relance se fait à la main.", "F12"),
+             "remboursé », « Reste dû » et leurs totaux. La relance se fait à la main.", "F12"),
+            ("Sur la fiche du contact « Client Ardoise C » : Imprimer → « Relevé d'ardoises ».",
+             "Un PDF : en-tête de la société, client, période (jj/mm/aaaa), une ligne par ardoise "
+             "ouverte ou réglée de la période (date, ardoise, ticket, état, montant, réglé, reste), "
+             "« Total dû » en FCFA. Depuis POS Crédit → Ardoises, en cochant les ardoises de deux "
+             "clients puis Imprimer → « Relevé d'ardoises » : un relevé par client. Un client "
+             "sans ardoise : « Aucune ardoise sur la période : ce client ne doit rien », total dû "
+             "0 FCFA.", "F13"),
         ],
         captures=[("integrateur/19_pos_credit_recouvrement.jpg",
                    "POS Crédit → Recouvrement sur une base neuve.")],
-        encadres=[("attention", "Il n'y a pas de relevé imprimable dédié : la liste des ardoises "
-                   "du client, filtrée, sert de relevé.")],
+        encadres=[("reflexe", "Le relevé d'ardoises (aite_pos_credit 18.0.2.0.7) se remet au "
+                   "client ; il est réservé aux utilisateurs POS Crédit.")],
     ),
     # ═════════════════════════ D. ANALYSE DES VENTES ══════════════════════
     dict(

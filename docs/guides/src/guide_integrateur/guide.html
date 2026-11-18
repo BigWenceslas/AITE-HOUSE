@@ -27,7 +27,7 @@
 
 <table class="carte-identite">
   <tr><th>Public visé</th><td>Intégrateur junior (AITE ou partenaire) qui met en service le restaurant AITE et ses tableaux de bord chez un client. Aucune expérience d'Odoo n'est supposée ; savoir déposer un dossier sur le serveur et redémarrer Odoo suffit.</td></tr>
-  <tr><th>Modules</th><td><code>aite_house_restaurant</code> (tout installer) 18.0.1.0.1 · <code>aite_pos_restaurant</code> 18.0.1.0.9 · <code>aite_pos_credit</code> 18.0.2.0.6 · <code>aite_pos_analytics</code> 18.0.2.1.6 · <code>aite_pos_analytics_hr</code> 18.0.1.0.0 · <code>aite_resto_carte_messager</code> 18.0.1.3.3 · <code>aite_stock_dashboard</code> 18.0.1.1.3 · <code>aite_purchase_dashboard</code> 18.0.1.0.5 · <code>aite_direction_dashboard</code> 18.0.1.1.2 · <code>aite_exec_dashboard</code> 18.0.1.1.2 (hôtel) — et les modules Odoo Point de Vente, Inventaire, Achats</td></tr>
+  <tr><th>Modules</th><td><code>aite_house_restaurant</code> (tout installer) 18.0.1.0.1 · <code>aite_pos_restaurant</code> 18.0.1.0.9 · <code>aite_pos_credit</code> 18.0.2.0.7 · <code>aite_pos_analytics</code> 18.0.2.1.6 · <code>aite_pos_analytics_hr</code> 18.0.1.0.0 · <code>aite_resto_carte_messager</code> 18.0.1.3.3 · <code>aite_stock_dashboard</code> 18.0.1.1.5 · <code>aite_purchase_dashboard</code> 18.0.1.0.5 · <code>aite_direction_dashboard</code> 18.0.1.1.2 · <code>aite_exec_dashboard</code> 18.0.1.1.2 (hôtel) — et les modules Odoo Point de Vente, Inventaire, Achats</td></tr>
   <tr><th>À utiliser avec</th><td>Les scénarios de l'intégrateur (<code>AITE_Scenarios_Integrateur.pdf</code> et son classeur <code>.xlsx</code>) : chaque chapitre de ce guide y renvoie. Pour les gestes de la salle : <code>AITE_Guide_Restaurant.pdf</code>.</td></tr>
   <tr><th>Éditeur</th><td>AITE CONSULTING — Novembre 2026 — Odoo 18 Community et Enterprise</td></tr>
 </table>
@@ -220,7 +220,7 @@
   <li>Avec le comptable : <span class="chemin">Point de Vente → Configuration → Paramètres</span>, bloc <b>« Ardoises / Crédit POS »</b> : « Comptabiliser les remboursements d'ardoise », « Compte client (ardoises) » (411), « Journal des remboursements d'ardoise ».</li>
   <li>Droits : POS Crédit : Utilisateur (consulter, enregistrer un remboursement), Responsable (annuler, rouvrir). L'administrateur a Responsable d'office.</li>
 </ol>
-<p>Le suivi se fait dans <span class="chemin">POS Crédit → Recouvrement</span> ; une ardoise se rembourse par <span class="b">Enregistrer un remboursement</span> (« Montant à encaisser », « Moyen de paiement » : Espèces, MTN Mobile Money, Orange Money…). Scénarios C01 à C03.</p>
+<p>Le suivi se fait dans <span class="chemin">POS Crédit → Recouvrement</span> ; une ardoise se rembourse par <span class="b">Enregistrer un remboursement</span> (« Montant à encaisser », « Moyen de paiement » : Espèces, MTN Mobile Money, Orange Money…). Le <b>relevé à remettre au client</b> s'imprime depuis sa fiche ou depuis la liste des ardoises : <span class="chemin">Imprimer → « Relevé d'ardoises »</span> (PDF : période, ardoises ouvertes et réglées, « Total dû » ; un relevé par client si plusieurs sont cochés). Scénarios C01 à C03.</p>
 
 <h3>5.2 L'analyse des ventes (Analyse AITE)</h3>
 <ul>

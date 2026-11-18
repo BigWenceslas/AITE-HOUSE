@@ -29,10 +29,10 @@ AITE_HOUSE/
 | aite_slot_booking | 18.0.1.0.5 | Espaces & prestations réservables au créneau (salles, piscine, billard…) |
 | aite_website_booking | 18.0.1.0.2 | Réservation en ligne depuis le site web, acompte |
 | aite_hotel_pos_link | 18.0.1.0.3 | **Note de chambre** : report des consommations du bar sur le folio |
-| aite_pos_credit | 18.0.2.0.6 | Crédit clients (ardoises) : plafonds, encours, recouvrement ; l'ardoise ne naît que d'une commande réglée |
+| aite_pos_credit | 18.0.2.0.7 | Crédit clients (ardoises) : plafonds, encours, recouvrement ; l'ardoise ne naît que d'une commande réglée ; relevé d'ardoises imprimable |
 | aite_loyalty | 18.0.1.0.3 | Fidélité : points, niveaux VIP & VVIP |
 | aite_pos_analytics | 18.0.2.1.6 | Analyses des ventes : heures de pointe, marges, CMV, ventes par famille sur trois niveaux |
-| aite_stock_dashboard | 18.0.1.1.3 | Stock : ruptures, coulage, couverture, inventaires |
+| aite_stock_dashboard | 18.0.1.1.5 | Stock : ruptures, coulage, couverture, inventaires |
 | aite_purchase_dashboard | 18.0.1.0.5 | Achats : échéancier fournisseurs, OTIF, hausses de prix |
 | aite_direction_dashboard | 18.0.1.1.2 | **Cockpit Direction** : vue consolidée, cash à risque, actions |
 | aite_exec_dashboard | 18.0.1.1.2 | **Activité par pôle** (Hôtel → Activité par pôle) : hébergement, restauration, prestations, RevPAR, pickup, pace |
@@ -238,7 +238,7 @@ le restaurant avec le stock, les achats et la Direction suit
 | `aite_pos_restaurant` | 18.0.1.0.9 | la caisse du restaurant : code personnel, quatre niveaux, plan verrouillé, personnes, annulations sous code, couleurs, produits épuisés, rapports |
 | `aite_pos_analytics` | 18.0.2.1.6 | analyses des ventes, dont les ventes par famille sur trois niveaux |
 | `aite_pos_analytics_hr` | 18.0.1.0.0 | passerelle : le serveur et la caissière dans les analyses ; s'installe seule |
-| `aite_pos_credit` | 18.0.2.0.6 | ardoises : réservées au manager en caisse, créées seulement sur une addition réglée |
+| `aite_pos_credit` | 18.0.2.0.7 | ardoises : réservées au manager en caisse, créées seulement sur une addition réglée |
 
 Odoo installe avec eux, sans rien demander : Point de Vente, Restaurant,
 Employés et la connexion des employés au Point de Vente, Inventaire,
