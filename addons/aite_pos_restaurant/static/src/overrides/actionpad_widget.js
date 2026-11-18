@@ -22,7 +22,9 @@ patch(ActionpadWidget.prototype, {
         }
         const order = this.currentOrder;
         const compte = this.pos.categoryCount
-            .map((ligne) => `${this.env.utils.formatProductQty(ligne.count, false)} ${ligne.name}`)
+            .map((ligne) =>
+                TEXTES.familleQuantite(ligne.name, this.env.utils.formatProductQty(ligne.count, false))
+            )
             .join(", ");
         try {
             await super.submitOrder(...arguments);

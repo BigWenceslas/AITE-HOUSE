@@ -299,7 +299,8 @@ class TestInstallation(RestaurantCommon):
         self.config.basic_employee_ids = [(6, 0, self.awa.ids)]
         donnees = self._charger_caisse()
         noms = {e['name'] for e in donnees['hr.employee']['data']}
-        self.assertEqual(noms, {"Awa", "Moussa", "Carine", "Paul", "Fanta"})
+        self.assertLessEqual({"Awa", "Moussa", "Carine", "Paul", "Fanta"}, noms)
+        self.assertEqual(noms, self._employes_a_niveau())
         self.assertEqual(self.config.basic_employee_ids, self.awa)
 
     # ------------------------------------------------------------------

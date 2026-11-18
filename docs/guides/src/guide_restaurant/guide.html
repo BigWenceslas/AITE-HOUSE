@@ -212,7 +212,7 @@
 </figure>
 <figure class="moyen">
   <img src="../../../../captures/restaurant/07_apres_j_envoie_plan_verrouille.jpg" alt="Après J'envoie">
-  <figcaption>Écran 10 — Après « J'envoie » : « Envoyé : 1 Pizzas, 2 Bière. », retour au plan ; la table 4 est verte, ouverte depuis « 0 min ».</figcaption>
+  <figcaption>Écran 10 — Après « J'envoie » : « Envoyé : Pizzas × 1, Bière × 2. », retour au plan ; la table 4 est verte, ouverte depuis « 0 min ».</figcaption>
 </figure>
 
 <h3>Les autres gestes du serveur</h3>
@@ -422,7 +422,7 @@
   <tr><th style="width:36%">Situation</th><th>Réponse</th></tr>
   <tr><td>« Le poste est revenu au plan tout seul. »</td><td>C'est voulu : après 5 minutes sans toucher l'écran, le poste revient au plan verrouillé (ce délai n'est pas réglable). L'addition est enregistrée ; retapez votre code.</td></tr>
   <tr><td>« La barre du plan dit « Tableau » au lieu de « Table ». »</td><td>Collision de traductions d'Odoo (« Table » traduit « Tableau » par des modules installés avec le Point de Vente), constatée de façon instable. Elle est à traiter avec les traductions.</td></tr>
-  <tr><td>« La notification dit « 1 Pizzas ». »</td><td>Elle compte par famille la plus fine du produit et reprend son nom tel quel (« Envoyé : 1 Pizzas, 2 Bière. »).</td></tr>
+  <tr><td>« La notification dit « Pizzas × 1 ». »</td><td>Elle compte par famille la plus fine du produit, sous la forme « famille × quantité » (« Envoyé : Pizzas × 1, Bière × 2. ») : le nom de la famille est repris tel quel, sans accord à faire.</td></tr>
   <tr><td>« Le réseau est coupé. »</td><td>On vend, mais sans contrôle de stock, sans annulation, sans ouverture ni fermeture de caisse. Les saisies faites pendant la coupure sont attribuées à la personne identifiée quand l'addition est enfin enregistrée.</td></tr>
   <tr><td>« Je ne peux plus cocher « Service à table contrôlé » ni la vente sans table. »</td><td>Une session « Contrôle à l'ouverture » existe (Odoo la rouvre après chaque fermeture) : ces deux réglages se font avant la mise en service.</td></tr>
   <tr><td>« La fenêtre des espèces dit « Cash entrant », « Cash sortant », puis « un out en espèces ». »</td><td>Ce sont des textes d'Odoo, que le module ne reprend pas (la fenêtre d'Odoo est gardée telle quelle) : « Cash sortant » = sortie, « Cash entrant » = entrée ; « out » = sortie, « in » = entrée.</td></tr>

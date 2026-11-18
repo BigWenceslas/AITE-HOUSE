@@ -29,7 +29,10 @@
 #     envoie donc « (Riz nature) » en cuisine —, il part sur le bon de cuisine ;
 #   - les boissons revendues (eaux, jus en bouteille, sodas, bières, vins,
 #     whiskies) sont suivies en stock (« Suivre l'inventaire »), avec un coût
-#     (standard_price) et un stock de départ ; les plats cuisinés n'ont ni
+#     (standard_price) et un stock de départ ; leurs catégories de produits
+#     (« Bar » et ses sous-catégories) sont en « Coût moyen (AVCO) » : le coût
+#     suit les achats (« Prix standard », d'office dans Odoo, le laissait à
+#     650 après un achat de Bière blonde à 700 : recette) ; les plats cuisinés n'ont ni
 #     stock ni coût (aucun coût n'est inventé pour eux) ; le café, le thé et le
 #     jus pressé maison ont un coût estimé, sans stock.
 #   - conséquence pour l'analyse AITE (marge et CMV) : la marge n'a de sens
@@ -82,7 +85,7 @@ from odoo.tools import html2plaintext
 
 company = env.company
 compte = {'familles': 0, 'categories': 0, 'produits': 0, 'mis_a_jour': 0, 'stocks': 0,
-          'accompagnements': 0, 'retires': 0}
+          'accompagnements': 0, 'retires': 0, 'couts_moyens': 0}
 
 caisse_pos = env['pos.config'].search([
     ('company_id', '=', company.id), ('aite_mode_restaurant', '=', True)], order='id', limit=1)
@@ -171,6 +174,18 @@ def descendre(branches, parent_famille=None, parent_categorie=None):
 
 
 descendre(ARBRE)
+
+# Les boissons revendues (« Bar » et ses sous-catégories) en « Coût moyen
+# (AVCO) » : à chaque réception d'un achat, le coût devient la moyenne du stock
+# et de l'achat. Le champ vient de stock_account (installé avec point_of_sale) :
+# sans lui, rien n'est posé. Posé avant les produits et leur stock de départ ;
+# une catégorie remise en « Prix standard » à la main l'est de nouveau ici.
+if 'property_cost_method' in env['product.category']._fields:
+    boissons = env['product.category'].search([('id', 'child_of', categories["Bar"].id)])
+    a_regler = boissons.filtered(lambda c: c.property_cost_method != 'average')
+    if a_regler:
+        a_regler.write({'property_cost_method': 'average'})
+        compte['couts_moyens'] += len(a_regler)
 
 # ------------------------------------------------------------------ la carte
 A_VALIDER = "À valider par le client (Le Messager) : "
@@ -351,6 +366,14 @@ Identifiants = env['ir.model.data'].sudo()
 poses = env['product.template']
 
 
+def cout_suit_les_achats(modele):
+    """Vrai pour un produit en coût moyen qui a déjà reçu un achat : son coût
+    est alors celui des achats, pas l'estimation du script."""
+    return getattr(modele, 'cost_method', None) == 'average' and bool(Mouvements.search_count([
+        ('product_id', 'in', modele.product_variant_ids.ids), ('state', '=', 'done'),
+        ('location_id.usage', '=', 'supplier')]))
+
+
 def retrouver(cle, nom):
     """Le produit de clé ``cle`` : par son identifiant externe, sinon par son
     nom (base posée avant les clés, produit créé à la main) ; l'identifiant
@@ -386,6 +409,8 @@ def poser_produit(cle, nom, famille, prix, cout, suivi, depart, note):
         'pos_categ_ids': familles[famille], 'categ_id': categories[famille],
     }
     modele = retrouver(cle, nom)
+    if modele and cout_suit_les_achats(modele):
+        attendu['standard_price'] = None   # le coût moyen des achats n'est jamais écrasé
     if not modele:
         modele = Produits.create({
             'name': nom, 'type': 'consu', 'is_storable': suivi, 'available_in_pos': True,
@@ -467,10 +492,38 @@ env['ir.config_parameter'].sudo().set_param('aite.carte_client', 'messager')
 
 if not MODE_MODULE:
     env.cr.commit()
+
+
+def nombre(n, singulier, pluriel=None):
+    return "%d %s" % (n, singulier if n in (0, 1) else (pluriel or singulier + 's'))
+
+
+# Le bilan lisible du bouton « Poser la carte Le Messager » (mode module) :
+# ce qui est en place, puis ce qui vient d'être fait (__init__.jouer_carte).
+nb_en_place = Produits.search_count([('available_in_pos', '=', True),
+                                     ('pos_categ_ids', 'in', toutes_familles.ids)])
+BILAN = "Carte posée : %s en %s" % (nombre(nb_en_place, "produit"),
+                                     nombre(len(toutes_familles), "famille"))
+BILAN_CREES = [nombre(n, singulier, pluriel) for n, singulier, pluriel in (
+    (compte['familles'], "famille", None), (compte['produits'], "produit", None),
+    (compte['stocks'], "stock de départ", "stocks de départ"),
+    (compte['accompagnements'], "choix d'accompagnement", "choix d'accompagnement")) if n]
+BILAN_AUTRES = []
+if compte['mis_a_jour']:
+    BILAN_AUTRES.append("%s aux valeurs de la carte" % nombre(
+        compte['mis_a_jour'], "produit remis", "produits remis"))
+if compte['couts_moyens']:
+    BILAN_AUTRES.append("%s en coût moyen (AVCO)" % nombre(
+        compte['couts_moyens'], "catégorie de boissons passée", "catégories de boissons passées"))
+if orphelins:
+    BILAN_AUTRES.append("%s de la caisse (%s)" % (
+        nombre(len(orphelins), "produit retiré", "produits retirés"),
+        ", ".join(orphelins.mapped('name'))))
+
 RESULTAT = ("seed carte Le Messager OK — créés : %(familles)d familles, %(categories)d catégories, "
       "%(produits)d produits, %(stocks)d stocks de départ, %(accompagnements)d choix "
       "d'accompagnement ; mis à jour : %(mis_a_jour)d produits ; retirés de la caisse : "
-      "%(retires)d" % compte
+      "%(retires)d ; catégories passées en coût moyen : %(couts_moyens)d" % compte
       + (" (%s)" % ", ".join(orphelins.mapped('name')) if orphelins else "")
       + " | en place : %d produits à la carte (%d attendus), %d dans les familles de la "
         "carte, société « %s »" % (

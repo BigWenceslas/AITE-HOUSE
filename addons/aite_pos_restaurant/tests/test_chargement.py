@@ -33,8 +33,9 @@ class TestChargement(RestaurantCommon):
         donnees = self._charger_caisse()
         self.assertNotIn('error', donnees['hr.employee'])
         employes = self._employes(donnees)
-        self.assertEqual(set(employes),
-                         {"Awa", "Moussa", "Carine", "Paul", "Fanta"})
+        self.assertLessEqual({"Awa", "Moussa", "Carine", "Paul", "Fanta"}, set(employes))
+        self.assertNotIn("Comptable", employes, "sans niveau, pas en caisse")
+        self.assertEqual(set(employes), self._employes_a_niveau())
 
     def test_niveau_role_et_badge(self):
         employes = self._employes(self._charger_caisse())

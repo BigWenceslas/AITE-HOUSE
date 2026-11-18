@@ -27,7 +27,7 @@
 
 <table class="carte-identite">
   <tr><th>Public visé</th><td>Intégrateur junior (AITE ou partenaire) qui met en service le restaurant AITE et ses tableaux de bord chez un client. Aucune expérience d'Odoo n'est supposée ; savoir déposer un dossier sur le serveur et redémarrer Odoo suffit.</td></tr>
-  <tr><th>Modules</th><td><code>aite_house_restaurant</code> (tout installer) · <code>aite_pos_restaurant</code> 18.0.1.0.8 · <code>aite_pos_credit</code> 18.0.2.0.6 · <code>aite_pos_analytics</code> 18.0.2.1.6 · <code>aite_pos_analytics_hr</code> 18.0.1.0.0 · <code>aite_resto_carte_messager</code> 18.0.1.3.1 · <code>aite_stock_dashboard</code> 18.0.1.1.3 · <code>aite_purchase_dashboard</code> 18.0.1.0.5 · <code>aite_direction_dashboard</code> 18.0.1.1.2 · <code>aite_exec_dashboard</code> 18.0.1.1.2 (hôtel) — et les modules Odoo Point de Vente, Inventaire, Achats</td></tr>
+  <tr><th>Modules</th><td><code>aite_house_restaurant</code> (tout installer) 18.0.1.0.1 · <code>aite_pos_restaurant</code> 18.0.1.0.9 · <code>aite_pos_credit</code> 18.0.2.0.6 · <code>aite_pos_analytics</code> 18.0.2.1.6 · <code>aite_pos_analytics_hr</code> 18.0.1.0.0 · <code>aite_resto_carte_messager</code> 18.0.1.3.3 · <code>aite_stock_dashboard</code> 18.0.1.1.3 · <code>aite_purchase_dashboard</code> 18.0.1.0.5 · <code>aite_direction_dashboard</code> 18.0.1.1.2 · <code>aite_exec_dashboard</code> 18.0.1.1.2 (hôtel) — et les modules Odoo Point de Vente, Inventaire, Achats</td></tr>
   <tr><th>À utiliser avec</th><td>Les scénarios de l'intégrateur (<code>AITE_Scenarios_Integrateur.pdf</code> et son classeur <code>.xlsx</code>) : chaque chapitre de ce guide y renvoie. Pour les gestes de la salle : <code>AITE_Guide_Restaurant.pdf</code>.</td></tr>
   <tr><th>Éditeur</th><td>AITE CONSULTING — Novembre 2026 — Odoo 18 Community et Enterprise</td></tr>
 </table>
@@ -148,7 +148,7 @@
 </table>
 <figure class="moyen">
   <img src="../../../../captures/integrateur/03_poser_la_carte_le_messager.jpg" alt="Poser la carte Le Messager">
-  <figcaption>Écran 2 — « Poser la carte Le Messager » rejoué : « créés : 0 … », « en place : 12 tables, 7 employés à niveau », « 101 produits à la carte (101 attendus) ».</figcaption>
+  <figcaption>Écran 2 — « Poser la carte Le Messager » rejoué (capture de la version 18.0.1.3.2, au bilan technique). Depuis 18.0.1.3.3, la notification dit : « Carte posée : 101 produits en 30 familles ; salle : 12 tables ; équipe : 7 employés, 3 comptes. Rien n'a été créé en double. »</figcaption>
 </figure>
 
 <h3>3.3 Mettre à niveau une base existante</h3>
@@ -156,7 +156,7 @@
   <li><b>Sauvegarder</b> la base et le <code>filestore</code> ; <b>fermer toutes les caisses</b>.</li>
   <li>Remplacer chaque dossier AITE livré par sa nouvelle version, dossier par dossier ; redémarrer Odoo.</li>
   <li>Apps → <span class="b">Mettre à jour la liste des Apps</span> ; ouvrir « AITE HOUSE — Restaurant (tout installer) » → <span class="b">Mettre à niveau</span> ; idem pour « AITE — Direction (vue consolidée) » et, sur une base de démonstration, la carte « Le Messager ». En ligne de commande : <code>-u aite_house_restaurant,aite_direction_dashboard</code>.</li>
-  <li>Apps, vue Liste : la colonne « Dernière version » d'« AITE — Restaurant (service à table) » doit dire <b>18.0.1.0.8</b>.</li>
+  <li>Apps, vue Liste : la colonne « Dernière version » d'« AITE — Restaurant (service à table) » doit dire <b>18.0.1.0.9</b>.</li>
   <li>Recharger <b>chaque tablette</b> (Ctrl+Maj+R, ou fermer et rouvrir l'onglet) : sinon elle garde l'ancien code de la caisse.</li>
   <li>Jouer les scénarios de non-régression H01 et H02.</li>
 </ol>
@@ -176,7 +176,7 @@
   <li><b>« Service à table contrôlé »</b> (coché d'office sur « Restaurant ») règle aussi « Se connecter avec Employés », le contrôle des prix, les remises désactivées, le partage et l'impression de l'addition. Décocher « Se connecter avec Employés » est refusé tant qu'elle est cochée.</li>
   <li><b>« Autoriser la vente sans table »</b> (décoché) : à décider avec le client <b>avant la première ouverture</b>, comme la case elle-même : ensuite Odoo garde une session « Contrôle à l'ouverture » qui grise ces deux réglages.</li>
   <li><b>« Délai avant l'orange (minutes) »</b> (60) et <b>« Refuser la vente des produits épuisés »</b> (coché) se changent à tout moment ; ils s'appliquent à la réouverture de la caisse.</li>
-  <li><b>« Modes de paiement »</b> (bloc Paiement) : ajouter <b>« Ardoise client »</b> si le client fait crédit (§5.1).</li>
+  <li><b>« Modes de paiement »</b> (bloc Paiement) : Espèces, Mobile Money et <b>« Ardoise client »</b>, posé d'office par « tout installer » (à l'installation et à chaque mise à niveau, sans doublon) ; seul le manager s'en sert à la caisse. Un client qui ne fait pas crédit : <b>archiver</b> le mode (<span class="chemin">Point de Vente → Configuration → Modes de paiement</span>) ; un mode archivé n'est jamais remis, un mode seulement retiré de la caisse revient à la mise à niveau suivante (§5.1).</li>
   <li><b>« Imprimantes de préparation »</b> : une par poste (cuisine, bar), avec ses familles. Sur Enterprise, l'écran de cuisine remplace ou complète l'imprimante.</li>
   <li>Ne jamais cocher « Suivi des modifications de commandes » : avec des employés sans courriel, une baisse de quantité échoue ; le journal AITE suffit.</li>
 </ul>
@@ -205,6 +205,7 @@
 <ul>
   <li><b>Salle et tables</b> — <span class="chemin">Point de Vente → Configuration → Plans de salle</span> → « Salle » : les tables, leur numéro, leurs places. Le plan ne se modifie pas depuis la caisse.</li>
   <li><b>Familles</b> — <span class="chemin">Point de Vente → Configuration → Catégories de produits du PdV</span> : trois niveaux au plus (Bar &gt; Vins &gt; Vins rouges). Créer <b>les mêmes noms</b> dans <span class="chemin">Inventaire → Configuration → Catégories de produits</span> : le tableau de bord du stock et l'onglet « Par catégorie » lisent ces catégories-là.</li>
+  <li><b>Méthode de coût des produits revendus</b> — sur chaque catégorie de produits des boissons revendues (Bar et ses sous-catégories), <span class="chemin">Inventaire → Configuration → Catégories de produits</span> → la catégorie → « Méthode de coût » : <b>« Coût moyen (AVCO) »</b>, <b>avant</b> le stock de départ et les premiers achats. Ce qui va se passer : à chaque réception d'un achat, le « Coût » du produit devient la moyenne du stock et de l'achat (48 Bière blonde à 650 et 48 achetées à 700 : 675). Avec « Prix standard », le réglage d'office d'Odoo, le « Coût » reste celui saisi sur la fiche (650 après un achat à 700) et les marges et la valeur du stock sont fausses dès que les prix d'achat changent. La carte « Le Messager » pose déjà « Coût moyen (AVCO) » sur le Bar.</li>
   <li><b>Produits</b> — sur chaque fiche : le prix de vente en FCFA, la case « Point de Vente », la famille dans l'onglet « Point de Vente », le <b>« Coût »</b> (sans lui, la marge paraît à 100 %), et <b>« Suivre l'inventaire »</b> sur les seules boissons vendues à l'unité (pas sur les plats cuisinés).</li>
   <li><b>Taxes</b> — Odoo pose d'office la TVA de 19,25 % hors taxes sur chaque nouveau produit (1 000 FCFA encaissés 1 193). Pour des prix de carte taxes comprises, régler avec le comptable une taxe « prix TTC » <b>avant</b> de saisir la carte. La carte de démonstration n'a aucune taxe.</li>
   <li><b>Stock de départ</b> — sur chaque produit suivi : <span class="b">Mettre la quantité à jour</span>, ou en masse par <span class="chemin">Inventaire → Opérations → Inventaire physique</span> (§6.3). Un produit suivi sans stock est refusé à la caisse (« Produit épuisé »).</li>
@@ -215,7 +216,7 @@
 <h3>5.1 L'ardoise (POS Crédit)</h3>
 <ol class="etapes">
   <li><span class="chemin">Point de Vente → Configuration → Modes de paiement</span> → <b>« Ardoise client »</b> (créé à l'installation) : la case « Vente à crédit (ardoise) » est cochée ; pas de journal, « Identifier le client » coché. Il n'y a pas de plafond par client.</li>
-  <li>L'ajouter aux « Modes de paiement » de chaque caisse qui fait crédit (§4.1). En restaurant, seul le manager (code 4001 en démonstration) voit « Mettre sur ardoise ».</li>
+  <li>Les caisses au service à table contrôlé le reçoivent d'office (§4.1) ; l'ajouter à la main aux « Modes de paiement » des autres caisses qui font crédit (un bar, par exemple). En restaurant, seul le manager (code 4001 en démonstration) voit « Mettre sur ardoise ».</li>
   <li>Avec le comptable : <span class="chemin">Point de Vente → Configuration → Paramètres</span>, bloc <b>« Ardoises / Crédit POS »</b> : « Comptabiliser les remboursements d'ardoise », « Compte client (ardoises) » (411), « Journal des remboursements d'ardoise ».</li>
   <li>Droits : POS Crédit : Utilisateur (consulter, enregistrer un remboursement), Responsable (annuler, rouvrir). L'administrateur a Responsable d'office.</li>
 </ol>
@@ -253,7 +254,7 @@
 <h3>6.3 L'inventaire de départ, puis les inventaires tournants</h3>
 <ol class="etapes">
   <li><span class="chemin">Inventaire → Opérations → Inventaire physique</span> : pour chaque boisson suivie, la « Quantité comptée », puis <span class="b">Appliquer</span>.</li>
-  <li>Le « Coût » de chaque produit suivi doit être juste avant : la valeur du stock et les écarts en dépendent. Avec le comptable, choisir la « Méthode de coût » des catégories de produits (« Prix standard » d'office : le coût ne suit pas les achats ; « Coût moyen (AVCO) » : il les suit).</li>
+  <li>Le « Coût » de chaque produit suivi doit être juste avant : la valeur du stock et les écarts en dépendent. La « Méthode de coût » des catégories des produits revendus est « Coût moyen (AVCO) » (§4.4) : le coût suit les achats (« Prix standard », d'office dans Odoo, ne les suit pas) ; à confirmer avec le comptable.</li>
   <li>Ensuite, chaque semaine, compter une famille (inventaire tournant) et saisir les écarts de la même façon. Le tableau de bord les valorise et calcule le coulage.</li>
 </ol>
 <div class="encadre"><p><span class="titre">À savoir —</span> le stock de départ saisi ainsi est un ajustement d'inventaire : le premier mois, « Écarts d'inventaire (période) » et « Écart net » sont gonflés. Le coulage, lui, ne lit que les écarts négatifs et la casse. Prévenir le client.</p></div>
@@ -306,12 +307,12 @@
 <p>À cocher sur la base de production, la veille du premier service (les scénarios détaillés sont dans le cahier de l'intégrateur).</p>
 <ul class="cocher">
   <li>Société en XAF ; plan comptable chargé ; aucun menu Hôtel chez un restaurant seul.</li>
-  <li>Apps : « AITE — Restaurant (service à table) » en 18.0.1.0.8 ; les tableaux de bord installés ; aucune carte « Le Messager » en production.</li>
-  <li>Caisse « Restaurant » : « Service à table contrôlé » coché, vente sans table décidée, modes Espèces, Mobile Money (et Ardoise client si crédit) ; jamais ouverte avant ces réglages.</li>
+  <li>Apps : « AITE — Restaurant (service à table) » en 18.0.1.0.9 ; les tableaux de bord installés ; aucune carte « Le Messager » en production.</li>
+  <li>Caisse « Restaurant » : « Service à table contrôlé » coché, vente sans table décidée, modes Espèces, Mobile Money et Ardoise client (mode archivé si le client ne fait pas crédit) ; jamais ouverte avant ces réglages.</li>
   <li>Chaque compte Odoo a une « Adresse e-mail » ; la tablette a Facturation ; le manager a Facturation et POS Crédit.</li>
   <li>Chaque employé de salle a son niveau et son code ; codes remis en main propre.</li>
   <li>Plan de salle conforme ; familles du PdV et catégories de produits aux mêmes noms.</li>
-  <li>Chaque boisson suivie a un « Coût » et un stock compté ; aucun plat n'est suivi en stock.</li>
+  <li>Chaque boisson suivie a un « Coût » et un stock compté ; ses catégories sont en « Coût moyen (AVCO) » ; aucun plat n'est suivi en stock.</li>
   <li>Une vente test complète : ouverture (code caissière), table, envoi, encaissement, fermeture (code chef de salle) ; puis annuler la vente test ou la garder comme essai convenu avec le client.</li>
   <li>Analyse AITE, POS Crédit → Recouvrement, Inventaire → Tableau de bord AITE, Achats → Tableau de bord AITE et Direction s'ouvrent avec le compte du manager, sans erreur.</li>
   <li>Chaque tablette rechargée après la dernière mise à niveau.</li>

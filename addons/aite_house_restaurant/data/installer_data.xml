@@ -2,4 +2,7 @@
 <odoo>
     <!-- Sans noupdate : à l'installation et à chaque mise à niveau. -->
     <function model="ir.module.module" name="_aite_restaurant_installer_optionnels"/>
+    <!-- Le mode « Ardoise client » d'aite_pos_credit sur la caisse au service
+         à table contrôlé (jamais en double ; un mode archivé n'est pas remis). -->
+    <function model="pos.config" name="_aite_restaurant_ajouter_ardoise"/>
 </odoo>

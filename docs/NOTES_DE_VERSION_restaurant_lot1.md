@@ -576,9 +576,13 @@ incrément.
   captures de `captures/restaurant/` montrent « Table ». Le client du
   restaurant peut donc le voir. À traiter avec les traductions (AH-09).
 - La notification après « J'envoie » reprend, comme les compteurs du bouton
-  d'Odoo, le nom de la famille la plus fine du produit, tel quel :
-  « Envoyé : 1 Pizzas, 2 Bière. » avec la carte de démonstration (la partie
-  1.4 donnait l'exemple « 2 Boisson, 1 Nourriture »).
+  d'Odoo, le nom de la famille la plus fine du produit, tel quel, sous la
+  forme « famille × quantité » : « Envoyé : Pizzas × 1, Bière × 2. » avec la
+  carte de démonstration (la partie 1.4 donnait l'exemple « 2 Boisson,
+  1 Nourriture »). Jusqu'en 18.0.1.0.8, elle disait « 1 Pizzas, 2 Bière » : le
+  nom de la famille n'était pas accordé au nombre (recette) ; la forme
+  « famille × quantité » n'en demande aucun. Les vidéos de `docs/guides/videos`
+  montrent encore l'ancien texte (`docs/videos/ECARTS.md`).
 - **Après chaque fermeture, la tablette rouvre une session** en « Contrôle
   d'ouverture » (comportement d'Odoo : la page se recharge et Odoo crée la
   session suivante). Tant qu'elle existe, Odoo grise « Service à table
@@ -882,10 +886,11 @@ la revue) ; ceux des incréments 1 à 6a sont dans les corps de leurs commits.
     la supprimer. Accepte-t-on cette contrainte d'Odoo (faire ces réglages
     avant la mise en service), ou faut-il un moyen de les changer ensuite ?
 26. **Compte de la notification « Envoyé : … »** : par famille la plus fine
-    du produit, comme les compteurs du bouton « J'envoie » d'Odoo (« 1 Pizzas,
-    2 Bière ») ; le nom de la famille est repris tel quel, d'où « 1 Pizzas ».
+    du produit, comme les compteurs du bouton « J'envoie » d'Odoo, sous la
+    forme « famille × quantité » (« Pizzas × 1, Bière × 2 ») : le nom de la
+    famille est repris tel quel, sans accord à faire.
     Garde-t-on ce compte, ou compte-t-on par famille de premier niveau
-    (« 1 Nourriture, 2 Boisson », l'exemple de la partie 1.4) ?
+    (« Nourriture × 1, Boisson × 2 », l'exemple de la partie 1.4) ?
 27. **Marges d'`aite_pos_analytics`** (constat de la chasse aux régressions,
     antérieur au lot 1, voir le §7) : garde-t-on le coût figé à la vente sous
     les noms des champs d'Odoo, ou renomme-t-on les champs AITE (migration

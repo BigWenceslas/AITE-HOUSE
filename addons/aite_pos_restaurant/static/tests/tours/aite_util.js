@@ -143,6 +143,15 @@ export function notificationQuiCommencePar(debut) {
     );
 }
 
+/** Une notification dont le texte est exactement `texte`. */
+export function notificationExacte(texte) {
+    return verifier(`notification « ${texte} »`, () =>
+        [...document.querySelectorAll(".o_notification_content")].some(
+            (c) => c.textContent.trim() === texte
+        )
+    );
+}
+
 export function jEnvoie() {
     return { content: "« J'envoie »", trigger: ".actionpad .submit-order", run: "click" };
 }

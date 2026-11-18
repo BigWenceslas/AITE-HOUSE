@@ -41,7 +41,7 @@ AITE_HOUSE/
 | aite_city_tax | 18.0.1.0.2 | **Taxe de séjour** automatique : barèmes par pays et étoiles, ligne sur le folio, état mensuel |
 | aite_guest_registry | 18.0.1.0.3 | **Registre des clients** : fiche d'enregistrement au check-in, registre de police, statistiques |
 | aite_housekeeping | 18.0.1.0.6 | **Gouvernante & maintenance** : tableau des chambres, « Ma journée », inspections, pannes, objets trouvés |
-| aite_pos_restaurant | 18.0.1.0.8 | **Restaurant (service à table)** : code personnel et quatre niveaux, plan de salle verrouillé, personnes, annulations sous code et leur journal, couleurs des tables, refus des produits épuisés, « Personnes et tables » — voir §9 |
+| aite_pos_restaurant | 18.0.1.0.9 | **Restaurant (service à table)** : code personnel et quatre niveaux, plan de salle verrouillé, personnes, annulations sous code et leur journal, couleurs des tables, refus des produits épuisés, « Personnes et tables » — voir §9 |
 | aite_pos_analytics_hr | 18.0.1.0.0 | Passerelle : serveur (« ouverte par ») et « encaissée par » dans les analyses AITE ; s'installe seule avec les deux modules précédents |
 
 ## 3. Prérequis
@@ -235,7 +235,7 @@ le restaurant avec le stock, les achats et la Direction suit
 
 | Dossier à déposer | Version | Rôle |
 |---|---|---|
-| `aite_pos_restaurant` | 18.0.1.0.8 | la caisse du restaurant : code personnel, quatre niveaux, plan verrouillé, personnes, annulations sous code, couleurs, produits épuisés, rapports |
+| `aite_pos_restaurant` | 18.0.1.0.9 | la caisse du restaurant : code personnel, quatre niveaux, plan verrouillé, personnes, annulations sous code, couleurs, produits épuisés, rapports |
 | `aite_pos_analytics` | 18.0.2.1.6 | analyses des ventes, dont les ventes par famille sur trois niveaux |
 | `aite_pos_analytics_hr` | 18.0.1.0.0 | passerelle : le serveur et la caissière dans les analyses ; s'installe seule |
 | `aite_pos_credit` | 18.0.2.0.6 | ardoises : réservées au manager en caisse, créées seulement sur une addition réglée |
@@ -262,7 +262,10 @@ Facturation et Ventes. Les autres modules AITE ne sont pas nécessaires.
 > **Le plus simple : un seul module.** Activer **« AITE HOUSE — Restaurant
 > (tout installer) »** (`aite_house_restaurant`) installe les quatre modules du
 > restaurant et, sur Odoo Enterprise, l'**écran de cuisine**
-> (`pos_preparation_display`), aussi à la mise à niveau s'il manque. Pour une
+> (`pos_preparation_display`), aussi à la mise à niveau s'il manque ; il ajoute
+> aussi le mode « Ardoise client » à la caisse au service à table contrôlé
+> (à chaque mise à niveau, jamais en double ; archiver le mode chez un client
+> qui ne fait pas crédit). Pour une
 > démonstration, activer à la place la carte du Messager
 > (`aite_resto_carte_messager`), qui installe `aite_house_restaurant` et pose
 > aussi une salle de 12 tables, une équipe fictive aux quatre niveaux (serveurs

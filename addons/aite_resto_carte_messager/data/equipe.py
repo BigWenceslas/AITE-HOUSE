@@ -98,6 +98,18 @@ for login, nom, courriel, droits in COMPTES:
         if manquants:   # droit ajouté depuis (POS Crédit du manager, 18.0.1.3.2)
             user.groups_id = [(4, g) for g in manquants]
 
+# Le bilan lisible du bouton « Poser la carte Le Messager » (__init__.jouer_carte).
+def nombre(n, singulier):
+    return "%d %s" % (n, singulier if n in (0, 1) else singulier + 's')
+
+
+nb_employes = Employes.search_count([('aite_niveau_caisse', '!=', False), ('company_id', '=', company.id)])
+nb_comptes = Users.search_count([('login', 'in', [c[0] for c in COMPTES])])
+BILAN_EQUIPE = "salle : %s ; équipe : %s, %s" % (
+    nombre(len(salle.table_ids), "table"), nombre(nb_employes, "employé"), nombre(nb_comptes, "compte"))
+BILAN_EQUIPE_CREES = [nombre(equipe_compte[cle], mot) for cle, mot in (
+    ('tables', "table"), ('employes', "employé"), ('comptes', "compte")) if equipe_compte[cle]]
+
 RESULTAT_EQUIPE = ("équipe : %(tables)d tables, %(employes)d employés, %(comptes)d comptes créés"
                    % equipe_compte + " | en place : %d tables, %d employés à niveau" % (
                        len(salle.table_ids),

@@ -17,11 +17,18 @@ Activer ce module installe tout le restaurant AITE :
   installé s'il est disponible sur le serveur ; sur Community, il n'existe pas
   et rien n'est fait.
 
+La caisse au service à table contrôlé (« Restaurant ») reçoit d'office le mode
+de paiement « Ardoise client » d'aite_pos_credit, à l'installation et à chaque
+mise à niveau, jamais en double ; à la caisse, seul le manager s'en sert (règles
+d'aite_pos_restaurant). Un client qui ne fait pas crédit archive le mode
+(Point de Vente → Configuration → Modes de paiement) : un mode archivé n'est
+jamais remis ; seulement retiré de la caisse, il revient à la mise à niveau.
+
 Les modules optionnels sont aussi installés à la mise à niveau de ce module
 s'ils manquent. Aucune donnée de démonstration : la carte de démonstration est
 le module « AITE — Carte du restaurant Le Messager ».
 """,
-    'version': '18.0.1.0.0',
+    'version': '18.0.1.0.1',
     'category': 'Sales/Point of Sale',
     'author': "AITE Consulting",
     'website': "https://aiteconsulting.com",

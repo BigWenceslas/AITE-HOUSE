@@ -219,7 +219,7 @@ SCENARIOS = [
             ("Toucher « Nourriture », « Pizzas », « Pizza Margherita ».",
              "Ligne « Pizza Margherita » 1,00, 5 000 FCFA ; total 7 000 FCFA.", ""),
             ("Toucher « J'envoie ».",
-             "Notification « Envoyé : 1 Pizzas, 2 Bière. », retour au plan, plus aucun nom en haut ; "
+             "Notification « Envoyé : Pizzas × 1, Bière × 2. », retour au plan, plus aucun nom en haut ; "
              "la table 4 est verte avec « 0 min » sous son numéro (écran 9).", "R08 R64"),
             ("Toucher de nouveau la table 4.",
              "La fenêtre « Table 4 — votre code » s'ouvre : le code est redemandé après chaque "
@@ -248,7 +248,7 @@ SCENARIOS = [
              "salle peuvent la modifier. » ; rien ne s'ouvre.", "R24"),
             ("Nadège touche la table 7, tape 1002, touche 2, ajoute deux fois « Café expresso » "
              "(Boisson > Non alcoolisé > Café), puis « J'envoie ».",
-             "Notification « Envoyé : 2 Café. » ; retour au plan ; la table 7 est verte.", ""),
+             "Notification « Envoyé : Café × 2. » ; retour au plan ; la table 7 est verte.", ""),
             ("Sur le second poste, regarder le plan.",
              "Les tables 4 et 7 y sont vertes, avec leur durée.", "R24 R64"),
             ("Nadège touche « Table » dans la barre du plan, tape 12, touche « Aller à/au ».",
@@ -260,11 +260,11 @@ SCENARIOS = [
              "La table 12, ouverte sans produit, est verte sur les deux postes ; les tables libres "
              "sont grises.", "R24 R64"),
             ("Nadège rouvre la table 12 (code 1002), ajoute « Top Ananas 35 cl » (Sodas), « J'envoie ».",
-             "Notification « Envoyé : 1 Sodas. »", ""),
+             "Notification « Envoyé : Sodas × 1. »", ""),
             ("Nadège : « Table », tape 99, « Aller à/au », tape 1002, touche 2.",
              "Une table « 99 » s'ouvre à 2 personnes (le refus d'un numéro inconnu est au lot 2).",
              "R18"),
-            ("Ajouter « Thé » (Café), « J'envoie ».", "Notification « Envoyé : 1 Café. »", "R18"),
+            ("Ajouter « Thé » (Café), « J'envoie ».", "Notification « Envoyé : Café × 1. »", "R18"),
             ("Brice touche la table 3, tape 1001, touche 1, ajoute « Coca-Cola 33 cl », « J'envoie ».",
              "La table 3 est verte (elle servira au scénario S08).", ""),
             ("Nadège touche la table 7, tape 1002, touche « Client » et choisit un contact (en créer "
@@ -976,8 +976,8 @@ FAQ = [
     ("Je ne peux plus cocher « Service à table contrôlé » ni « Autoriser la vente sans table ».",
      "Une session « Contrôle à l'ouverture » existe depuis la première ouverture : ces deux cases "
      "se règlent avant (point 25). Pour la vente sans table, jouer S21 sur une base neuve."),
-    ("La notification dit « Envoyé : 1 Pizzas, 2 Bière. »",
-     "Elle compte par famille la plus fine du produit, nom repris tel quel (point 26)."),
+    ("La notification dit « Envoyé : Pizzas × 1, Bière × 2. »",
+     "Elle compte par famille la plus fine du produit, sous la forme « famille × quantité » : le nom de la famille est repris tel quel, sans accord à faire (point 26)."),
     ("Un poste a été laissé sur l'écran de commande et est revenu au plan.",
      "Retour automatique après 5 minutes sans toucher l'écran (point 1, écart Q17)."),
     ("La fenêtre d'espèces dit « Cash entrant » / « Cash sortant ».",

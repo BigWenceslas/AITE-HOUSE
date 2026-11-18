@@ -100,6 +100,10 @@ export const TEXTES = {
     ouvrirLaCaisse: "Ouvrir la caisse",
     neSaitPasEncaisser: (nom) =>
         `${nom} ne peut pas encaisser${ESP}: la caissière tape son code ici.`,
+    // « Envoyé : Pizzas × 1, Bière × 2. » : le nom de la famille est repris
+    // tel quel ; la forme « famille × quantité » ne demande aucun accord
+    // (« 1 Pizzas, 2 Bière » ne s'accordait pas : recette).
+    familleQuantite: (famille, quantite) => `${famille}${ESP}×${ESP}${quantite}`,
     envoye: (compte) => `Envoyé${ESP}: ${compte}.`,
     retour: "Retour",
     // Incrément 3 : la table

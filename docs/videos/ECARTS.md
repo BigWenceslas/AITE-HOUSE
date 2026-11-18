@@ -301,6 +301,7 @@ tutoriels 21 à 23 (n° 108 à 127 ; numéros provisoires des relecteurs renumé
 | 125 | Notes §7 ; captures 20 et 23 | Vues croisées : montants sans devise, à deux décimales ; « Articles » décimal (« 61,00 »). Connu (notes §7). | Règle 6 (montants en FCFA) | t23 | Rejoué tel quel | Formats unifiés (avec le n° 88) |
 | 126 | `rec` R102 ; `addons/aite_pos_analytics_hr/views/pos_analytics_report_views.xml:16-24` | La recette dit « Serveur (ouverte par) » ; le regroupement s'appelle « Serveur ». | Recette R102 | aucun (pas montré) | — | Corriger la recette |
 | 127 | `O/web/static/src/search/search_bar_menu/search_bar_menu.xml:29, 46, 175` (`text-truncate`) | Les entrées du panneau de recherche peuvent être coupées par « … » (« Enregistrer la recherche actuelle ») ; aucune capture ne permet de trancher. À vérifier. | Règle 6 | t23 | Libellés montrés en entier | Capture à prendre, puis rejouer |
+| 128 | `S/utils/messages.js` (`TEXTES.envoye`) et `S/overrides/actionpad_widget.js` ; suite du n° 84 | **Corrigé** (`aite_pos_restaurant` 18.0.1.0.9) : la notification dit « Envoyé : Pizzas × 1, Bière × 2. » (famille × quantité, sans accord à faire) ; tours `AiteVerrouTour` et `AiteParcoursTour` sur le texte exact. Les vidéos de `docs/guides/videos` montrent encore l'ancien texte « Envoyé : 1 Pizzas, 2 Bière. » : non refaites. | Règle 6 | t17, t18, t20 | Ancien texte, à refaire au prochain rendu | — |
 
 **Hors produit (série vidéo).** La marque de fin des tutoriels dit « Suite
 hôtelière sur Odoo 18 » (`moteur.SOUS_MARQUE`) : pour un restaurant sans

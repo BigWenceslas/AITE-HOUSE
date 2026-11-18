@@ -35,7 +35,8 @@ registry.category("web_tour.tours").add("AiteVerrouTour", {
             Aite.jEnvoie(),
             // Après « J'envoie » : le plan, verrouillé, et la notification.
             ...Aite.planVerrouille(),
-            Aite.notificationQuiCommencePar("Envoyé\u00a0: "),
+            // « Famille × quantité » : pas d'accord à faire (« 1 Sodas »).
+            Aite.notificationExacte("Envoyé\u00a0: Drinks\u00a0×\u00a01."),
             { content: "plus de nom en haut", trigger: ".pos-rightheader:not(:has(.cashier-name))" },
             // La table demande de nouveau le code ; « Retour » laisse le plan.
             FloorScreen.clickTable("5"),

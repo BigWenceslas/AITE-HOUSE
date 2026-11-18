@@ -25,12 +25,12 @@ TITRE = "AITE — scénarios de l'intégrateur (restaurant, stock, achats, Direc
 VERSION = "1.0 — novembre 2026"
 
 MODULES = [
-    ("aite_house_restaurant", "18.0.1.0.0", "« tout installer » : les quatre modules du restaurant (et l'écran de cuisine sur Enterprise)"),
-    ("aite_pos_restaurant", "18.0.1.0.8", "la caisse au service à table contrôlé"),
+    ("aite_house_restaurant", "18.0.1.0.1", "« tout installer » : les quatre modules du restaurant (et l'écran de cuisine sur Enterprise), l'« Ardoise client » sur la caisse au service à table"),
+    ("aite_pos_restaurant", "18.0.1.0.9", "la caisse au service à table contrôlé"),
     ("aite_pos_credit", "18.0.2.0.6", "les ardoises et leur recouvrement"),
     ("aite_pos_analytics", "18.0.2.1.6", "l'analyse des ventes : familles, marges, caisses"),
     ("aite_pos_analytics_hr", "18.0.1.0.0", "le serveur et « Encaissée par » dans les analyses (s'installe seule)"),
-    ("aite_resto_carte_messager", "18.0.1.3.1", "données de démonstration : salle, équipe, comptes, carte"),
+    ("aite_resto_carte_messager", "18.0.1.3.3", "données de démonstration : salle, équipe, comptes, carte"),
     ("aite_stock_dashboard", "18.0.1.1.3", "le tableau de bord du stock (Inventaire)"),
     ("aite_purchase_dashboard", "18.0.1.0.5", "le tableau de bord des achats (Achats)"),
     ("aite_direction_dashboard", "18.0.1.1.2", "Direction — Vue consolidée"),
@@ -143,10 +143,11 @@ SCENARIOS = [
              "Le menu se termine par « Motifs d'annulation » et « Poser la carte Le Messager » "
              "(écran #1).", ""),
             ("Toucher « Poser la carte Le Messager ».",
-             "Notification « Carte Le Messager » qui reste affichée : « … en place : 12 tables, 7 "
-             "employés à niveau ; … en place : 101 produits à la carte (101 attendus) … » ; la seconde "
-             "fois, « créés : 0 familles, 0 catégories, 0 produits » : rien n'est créé deux fois "
-             "(écran #2).", ""),
+             "Notification « Carte Le Messager » qui reste affichée : « <société> : Carte posée : 101 "
+             "produits en 30 familles ; salle : 12 tables ; équipe : 7 employés, 3 comptes. Rien n'a "
+             "été créé en double. » ; la première fois, elle dit aussi ce qui vient d'être créé "
+             "(« Créés cette fois : … ») ; la seconde fois, rien n'est créé (écran #2, capture de "
+             "la version 18.0.1.3.2, au bilan technique).", ""),
             ("Employés.",
              "Sept fiches : Brice, Nadège, Loïc, Clarisse, Prisca, Hervé, Sandrine ; chacune a un "
              "« Niveau en caisse » et un « Code caisse » (1001, 1002, 1003, 2001, 2002, 3001, 4001).", ""),
@@ -160,6 +161,10 @@ SCENARIOS = [
             ("Inventaire → Produits → Produits → « Bière blonde 65 cl ».",
              "Prix de vente 1 500 FCFA, « Coût » 650 FCFA, « Suivre l'inventaire » coché, stock de "
              "départ 48 ; « Poulet DG » (5 000 FCFA) n'a ni coût ni suivi.", ""),
+            ("Inventaire → Configuration → Catégories de produits → « Bar / Bières ».",
+             "« Méthode de coût » : « Coût moyen (AVCO) » (comme « Bar » et toutes ses "
+             "sous-catégories) ; « Plats » reste en « Prix standard ». Un achat de Bière blonde à "
+             "700 FCFA fera monter son « Coût » (moyenne du stock et de l'achat).", ""),
         ],
         captures=[("integrateur/02_menu_configuration_point_de_vente.jpg",
                    "Point de Vente → Configuration : « Motifs d'annulation » et « Poser la carte Le Messager »."),
@@ -211,7 +216,7 @@ SCENARIOS = [
         prerequis="Sauvegarde de la base et du filestore ; toutes les caisses fermées ; nouvelles "
                   "versions des dossiers AITE reçues.",
         but="Passer aux versions livrées sans rien perdre ; vérifier la version de la caisse "
-            "(aite_pos_restaurant 18.0.1.0.8).",
+            "(aite_pos_restaurant 18.0.1.0.9).",
         etapes=[
             ("Remplacer chaque dossier AITE livré par sa nouvelle version, dossier par dossier "
              "(jamais le répertoire addons entier) ; redémarrer le service Odoo.",
@@ -228,7 +233,7 @@ SCENARIOS = [
              "Messager ».",
              "Mise à niveau sans erreur ; la carte posée n'est pas doublée.", ""),
             ("Apps, vue Liste : relire « AITE — Restaurant (service à table) ».",
-             "« Dernière version » : 18.0.1.0.8 ; « Statut » : Installé.", ""),
+             "« Dernière version » : 18.0.1.0.9 ; « Statut » : Installé.", ""),
             ("Sur chaque tablette et chaque poste : Ctrl+Maj+R (sur tablette : vider le cache du "
              "navigateur ou fermer et rouvrir l'onglet).",
              "La caisse se recharge sur le plan verrouillé ; les tableaux de bord s'affichent.", ""),
@@ -279,7 +284,7 @@ SCENARIOS = [
         titre="Les réglages de la caisse « Restaurant », avant la première ouverture",
         role="Intégrateur (admin)", base=BASE,
         prerequis="I01 et I02 joués ; la caisse « Restaurant » n'a jamais été ouverte.",
-        but="Vérifier ce que l'installation a réglé et ajouter le mode « Ardoise client ».",
+        but="Vérifier ce que l'installation a réglé, mode « Ardoise client » compris.",
         etapes=[
             ("Point de Vente → Configuration → Paramètres ; choisir « Restaurant » ; bloc Restaurant.",
              "« Est un bar/restaurant » et « Service à table contrôlé » cochés ; la phrase commence par "
@@ -291,8 +296,10 @@ SCENARIOS = [
              "caisse ne saurait plus qui fait quoi. » ; « Ignorer ».", ""),
             ("Cocher « Autoriser la vente sans table », « Enregistrer ».",
              "La case s'enregistre (aucune session n'existe encore).", "R19"),
-            ("Bloc Paiement, « Modes de paiement » : ajouter « Ardoise client », « Enregistrer ».",
-             "La caisse a trois modes : Espèces, Mobile Money, Ardoise client.", "F01"),
+            ("Bloc Paiement, « Modes de paiement ».",
+             "La caisse a déjà trois modes, posés par l'installation : Espèces, Mobile Money, "
+             "Ardoise client (rien à ajouter ; un client sans crédit : archiver le mode « Ardoise client », sinon la mise à niveau suivante le remet).",
+             "F01"),
             ("Point de Vente → Configuration → Motifs d'annulation.",
              "Cinq motifs : Erreur de saisie, Client parti, Plat refusé, Produit manquant, Autre.", ""),
         ],
@@ -366,7 +373,7 @@ SCENARIOS = [
         encadres=[],
     ),
     dict(
-        id="B04", partie="B", joue='partiel', vu="Table 4 par Brice (1001, 2 personnes), Bar > Bières, deux Bière blonde 65 cl et un Soda 33 cl, « J'envoie » : « Envoyé : 2 Bières, 1 Sodas. », retour au plan. Vente sans table, jus et vin non joués.",
+        id="B04", partie="B", joue='partiel', vu="Table 4 par Brice (1001, 2 personnes), Bar > Bières, deux Bière blonde 65 cl et un Soda 33 cl, « J'envoie » : « Envoyé : Bières × 2, Sodas × 1. », retour au plan. Vente sans table, jus et vin non joués.",
         titre="Ouvrir une table, commander, envoyer",
         role="Serveur (Brice 1001)", base=BASE,
         prerequis="B03 joué : caisse ouverte, plan affiché.",
@@ -403,7 +410,7 @@ SCENARIOS = [
              "« Verre de vin rouge » est proposé sous Vins rouges (écran #1). Retirer le jus "
              "(⌫, ⌫).", "R13 R33"),
             ("Toucher « J'envoie ».",
-             "Notification « Envoyé : 2 Bières, 1 Sodas. » ; retour au plan, plus aucun nom ; la "
+             "Notification « Envoyé : Bières × 2, Sodas × 1. » ; retour au plan, plus aucun nom ; la "
              "table 4 est verte, « 0 min ».", "R08 R64"),
             ("Toucher de nouveau la table 4.",
              "La fenêtre « Table 4 — votre code » s'ouvre : le code est redemandé. « Retour ».", "R08"),
@@ -1218,7 +1225,7 @@ SCENARIOS = [
 FAQ = [
     ("La caisse affiche « Oups ! » avec « order.getCommand is not a function ».",
      "Version d'Odoo 18 plus ancienne que celle de développement : mettre à niveau "
-     "aite_pos_restaurant en 18.0.1.0.8 (I04), puis Ctrl+Maj+R sur la tablette."),
+     "aite_pos_restaurant en 18.0.1.0.9 (I04), puis Ctrl+Maj+R sur la tablette."),
     ("Une part divisée (« 6B ») a disparu du plan.",
      "Une part n'a pas de table : ≡ → « Commandes », code de la caissière, la retrouver dans la "
      "liste."),

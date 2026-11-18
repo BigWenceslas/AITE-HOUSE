@@ -256,6 +256,15 @@ class RestaurantCommon(TestPoSCommon):
         addition.record = commande
         return commande
 
+    def _employes_a_niveau(self, config=None):
+        """Les noms des employés de la société de la caisse qui ont un niveau
+        et un code : ceux du test, plus ceux d'une base qui en porte déjà (la
+        carte « Le Messager » pose son équipe dans la société principale)."""
+        config = config or self.config
+        return set(self.env['hr.employee'].search([
+            ('company_id', 'in', [config.company_id.id, False]),
+            ('aite_niveau_caisse', '!=', False), ('pin', '!=', False)]).mapped('name'))
+
     def _charger_caisse(self, config=None, user=None):
         """Ce que la caisse reçoit au démarrage : ``load_data`` sous le
         compte de la caisse (sans droit sur les Employés)."""

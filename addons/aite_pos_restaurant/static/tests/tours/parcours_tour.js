@@ -250,7 +250,7 @@ registry.category("web_tour.tours").add("AiteParcoursTour", {
             touche(1, ProductScreen.clickDisplayedProduct("Coca-Cola")),
             touche(1, ProductScreen.clickDisplayedProduct("Water")),
             touche(1, Aite.jEnvoie()),
-            rien(...Aite.planVerrouille(), Aite.notificationQuiCommencePar("Envoyé : ")),
+            rien(...Aite.planVerrouille(), Aite.notificationExacte("Envoyé\u00a0: Drinks\u00a0×\u00a02.")),
         ]);
         const ajouter = geste("Serveur — ajouter à sa table et envoyer (n = 1)", 6 + 1, [
             ...ouvrirSaTable("1111"),
