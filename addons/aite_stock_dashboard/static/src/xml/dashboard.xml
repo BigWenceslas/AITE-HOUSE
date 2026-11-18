@@ -401,6 +401,16 @@
                         </div>
                     </div>
 
+                    <!-- Stock de départ : le premier inventaire d'un produit qui
+                         n'avait jamais bougé n'est ni un écart ni du coulage
+                         (recette de novembre 2026). -->
+                    <div class="asd-note" t-if="state.kpis.opening_refs">
+                        <b>Stock de départ saisi sur la période :</b>
+                        <t t-esc="' ' + money(state.kpis.opening_value) + ' (' + plural(state.kpis.opening_refs, 'référence', 'références') + ').'"/>
+                        C'est le premier inventaire de produits qui n'avaient encore aucun
+                        mouvement : il n'est compté ni dans les écarts ni dans le coulage.
+                    </div>
+
                     <div class="asd-card" style="margin-top:10px;">
                         <h3>Journal des écarts &amp; casses</h3>
                         <div class="asd-tablewrap">
@@ -454,7 +464,7 @@
                                  sub="'réassort entre emplacements'"/>
                         <KpiCard label="'Ajustements &amp; casse'"
                                  value="money(state.moves.totals.adj)"
-                                 sub="'inventaires + rebuts'"/>
+                                 sub="state.moves.totals.opening ? 'inventaires + rebuts · stock de départ à part : ' + money(state.moves.totals.opening) : 'inventaires + rebuts'"/>
                     </div>
 
                     <div class="asd-card" style="margin-top:14px;">

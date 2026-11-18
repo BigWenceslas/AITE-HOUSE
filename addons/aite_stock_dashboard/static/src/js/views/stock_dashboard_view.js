@@ -262,6 +262,10 @@ export class StockDashboardView extends Component {
         }
         const agg = {};
         for (const g of this.state.gaps) {
+            // Le stock de départ (premier inventaire) n'est pas un écart.
+            if (g.opening) {
+                continue;
+            }
             const k = byId[g.product_id] || "Autres";
             agg[k] = (agg[k] || 0) + g.value;
         }

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============ Relevé d'ardoises ============
+         Imprimer → « Relevé d'ardoises » sur la fiche (et la liste) des
+         clients, et sur la liste des ardoises (un relevé par client).
+         Réservé aux utilisateurs POS Crédit. -->
+
+    <record id="action_report_releve_ardoises_partner" model="ir.actions.report">
+        <field name="name">Relevé d'ardoises</field>
+        <field name="model">res.partner</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">aite_pos_credit.report_releve_partner</field>
+        <field name="report_file">aite_pos_credit.report_releve_partner</field>
+        <field name="print_report_name">"Relevé d'ardoises - %s" % (object.name or '')</field>
+        <field name="binding_model_id" ref="base.model_res_partner"/>
+        <field name="binding_type">report</field>
+        <field name="groups_id" eval="[(6, 0, [ref('aite_pos_credit.group_pos_credit_user')])]"/>
+    </record>
+
+    <record id="action_report_releve_ardoises" model="ir.actions.report">
+        <field name="name">Relevé d'ardoises</field>
+        <field name="model">aite.pos.credit</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">aite_pos_credit.report_releve_ardoises</field>
+        <field name="report_file">aite_pos_credit.report_releve_ardoises</field>
+        <field name="print_report_name">"Relevé d'ardoises"</field>
+        <field name="binding_model_id" ref="model_aite_pos_credit"/>
+        <field name="binding_type">report</field>
+        <field name="groups_id" eval="[(6, 0, [ref('aite_pos_credit.group_pos_credit_user')])]"/>
+    </record>
+
+    <!-- Une page par client : en-tête de la société, client, période,
+         ardoises, total dû. -->
+    <template id="report_releve_document">
+        <t t-set="company" t-value="st['company']"/>
+        <t t-set="o" t-value="st['partner']"/>
+        <t t-call="web.external_layout">
+            <t t-set="address">
+                <div t-field="o.self"
+                     t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True}'/>
+            </t>
+            <div class="page">
+                <h2>Relevé d'ardoises</h2>
+                <div class="row mt-3 mb-3">
+                    <div class="col-6">
+                        <strong>Client :</strong> <span t-esc="o.name"/>
+                    </div>
+                    <div class="col-6 text-end">
+                        <strong>Période :</strong>
+                        du <span t-esc="st['date_from']"/>
+                        au <span t-esc="st['date_to']"/>
+                        <br/>
+                        <span class="text-muted">Édité le <t t-esc="st['printed_on']"/></span>
+                    </div>
+                </div>
+
+                <table class="table table-sm o_main_table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Ardoise</th>
+                            <th>Ticket / commande</th>
+                            <th>État</th>
+                            <th class="text-end">Montant</th>
+                            <th class="text-end">Réglé</th>
+                            <th class="text-end">Reste</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="st['lines']" t-as="line">
+                            <t t-set="f" t-value="st['fmt']['lines'][line_index]"/>
+                            <td><span t-esc="line['date']"/></td>
+                            <td><span t-esc="line['name']"/></td>
+                            <td><span t-esc="line['origin']"/></td>
+                            <td><span t-esc="line['state']"/></td>
+                            <td class="text-end text-nowrap"><span t-esc="f['amount']"/></td>
+                            <td class="text-end text-nowrap"><span t-esc="f['paid']"/></td>
+                            <td class="text-end text-nowrap"><span t-esc="f['residual']"/></td>
+                        </tr>
+                        <tr t-if="not st['lines']">
+                            <td colspan="7" class="text-center text-muted">
+                                Aucune ardoise sur la période : ce client ne doit rien.
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr class="border-black">
+                            <td colspan="4"><strong>Totaux</strong></td>
+                            <td class="text-end text-nowrap"><strong t-esc="st['fmt']['total_amount']"/></td>
+                            <td class="text-end text-nowrap"><strong t-esc="st['fmt']['total_paid']"/></td>
+                            <td class="text-end text-nowrap"><strong t-esc="st['fmt']['total_due']"/></td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <div class="row justify-content-end mt-3">
+                    <div class="col-6">
+                        <table class="table table-sm">
+                            <tr class="border-black">
+                                <td><strong>Total dû</strong></td>
+                                <td class="text-end text-nowrap"><strong t-esc="st['fmt']['total_due']"/></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <p class="text-muted small mt-4">
+                    Montants en <t t-esc="'FCFA' if st['currency'].name in ('XAF', 'XOF') else st['currency'].name"/>.
+                    Les ardoises ouvertes figurent quelle que soit leur date, puisqu'elles restent dues ;
+                    les ardoises réglées sont celles ouvertes ou soldées sur la période.
+                    Les ardoises annulées n'y figurent pas.
+                </p>
+            </div>
+        </t>
+    </template>
+
+    <template id="report_releve_partner">
+        <t t-call="web.html_container">
+            <t t-foreach="statements" t-as="st">
+                <t t-call="aite_pos_credit.report_releve_document"/>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_releve_ardoises">
+        <t t-call="web.html_container">
+            <t t-foreach="statements" t-as="st">
+                <t t-call="aite_pos_credit.report_releve_document"/>
+            </t>
+        </t>
+    </template>
+
+</odoo>

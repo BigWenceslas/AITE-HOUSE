@@ -39,7 +39,7 @@ Compatible Odoo 18 Enterprise.
     'author': "AITE CONSULTING",
     'website': "https://aiteconsulting.com",
     'category': 'Point of Sale',
-    'version': '18.0.2.0.6',
+    'version': '18.0.2.0.7',
     'license': 'LGPL-3',
 
     'depends': [
@@ -62,6 +62,7 @@ Compatible Odoo 18 Enterprise.
         'wizard/pos_credit_repay_wizard_views.xml',
         'views/pos_credit_dashboard_actions.xml',
         'views/pos_credit_menus.xml',
+        'report/report_releve_ardoises.xml',
     ],
 
     'assets': {

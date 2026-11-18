@@ -190,6 +190,74 @@ class AiteStockDashboard(models.AbstractModel):
                 return label + ref[len(source):]
         return ref
 
+    def _display_location(self, location):
+        """Libellé d'un emplacement dans le journal des mouvements.
+
+        Les emplacements virtuels d'Odoo portent des noms techniques
+        anglais (« Virtual Locations/Inventory adjustment »,
+        « Partners/Customers », « Partners/Vendors ») que rien ne traduit
+        sur une base en français : on les nomme d'après leur TYPE
+        (``usage``). Les emplacements internes gardent leur nom complet
+        (« WH/Stock », « BJ/Stock ») — celui du filtre des emplacements
+        (écart n° 68).
+        """
+        if not location:
+            return ""
+        if location.scrap_location:
+            return _("Casse / rebut")
+        labels = {
+            'inventory': _("Ajustement d'inventaire"),
+            'customer': _("Client"),
+            'supplier': _("Fournisseur"),
+            'production': _("Production"),
+            'transit': _("Transit"),
+        }
+        if location.usage in labels:
+            return labels[location.usage]
+        # « internal » et « view » (regroupement d'un entrepôt) : le nom
+        # que le client a lui-même donné.
+        return location.complete_name or location.display_name or ""
+
+    def _opening_move_ids(self, moves):
+        """Ajustements d'inventaire qui sont un **stock de départ**.
+
+        Un ajustement qui fait ENTRER du stock dans un emplacement interne
+        où le produit n'avait encore jamais bougé (aucun mouvement fait,
+        entrant ou sortant, plus ancien) ne mesure pas un écart : c'est la
+        saisie du stock d'ouverture. Sur une base neuve, le premier
+        inventaire comptait jusqu'ici comme un écart (848 600 FCFA le
+        premier mois en recette). Le critère est par emplacement : le
+        stock de départ du magasin et celui du bar, appliqués ensemble,
+        sont deux départs.
+
+        :param moves: ``stock.move`` (n'importe lesquels)
+        :returns: ``set`` des ids de ``moves`` qui sont un stock de départ
+        """
+        candidates = moves.filtered(
+            lambda m: getattr(m, 'is_inventory', False)
+            and m.location_dest_id.usage == 'internal')
+        if not candidates:
+            return set()
+        self.env['stock.move'].flush_model(
+            ['state', 'product_id', 'location_id', 'location_dest_id',
+             'date'])
+        self.env.cr.execute("""
+            SELECT m.id
+              FROM stock_move m
+             WHERE m.id IN %s
+               AND NOT EXISTS (
+                    SELECT 1
+                      FROM stock_move p
+                     WHERE p.state = 'done'
+                       AND p.id != m.id
+                       AND p.product_id = m.product_id
+                       AND (p.location_id = m.location_dest_id
+                            OR p.location_dest_id = m.location_dest_id)
+                       AND (p.date < m.date
+                            OR (p.date = m.date AND p.id < m.id)))
+        """, [tuple(candidates.ids)])
+        return {row[0] for row in self.env.cr.fetchall()}
+
     def _company_cfg(self):
         c = self.env.company
         return {
@@ -385,7 +453,11 @@ class AiteStockDashboard(models.AbstractModel):
         cmd_value = sum(r['cmd'] * r['cost'] for r in rows)
         rot_moy = (total_vday * 30.0 / total_units) if total_units > 0 else 0.0
 
-        gaps = self._inventory_gaps(dt_from, dt_to, location_id, categ_id)
+        all_gaps = self._inventory_gaps(dt_from, dt_to, location_id, categ_id)
+        # Le stock de départ (premier inventaire) n'est ni un écart ni du
+        # coulage : il est montré à part.
+        opening = [g for g in all_gaps if g['opening']]
+        gaps = [g for g in all_gaps if not g['opening']]
         pertes = sum(-g['value'] for g in gaps if g['value'] < 0)
         ca_est = self._estimated_revenue(dt_from, dt_to, categ_id)
         coul_pct = (pertes / ca_est * 100.0) if ca_est > 0 else 0.0
@@ -413,6 +485,8 @@ class AiteStockDashboard(models.AbstractModel):
             'coul_seuil': cfg['coul_seuil'],
             'gap_net': sum(g['value'] for g in gaps),
             'gap_refs': len(set(g['product_id'] for g in gaps)),
+            'opening_value': sum(g['value'] for g in opening),
+            'opening_refs': len(set(g['product_id'] for g in opening)),
             'in_value': flux['in_value'],
             'out_value': flux['out_value'],
             'cfg': cfg,
@@ -515,7 +589,8 @@ class AiteStockDashboard(models.AbstractModel):
             end = (datetime(yy + (mm == 12), (mm % 12) + 1, 1).date()
                    - timedelta(days=1))
             gaps = self._inventory_gaps(start, end, None, categ_id)
-            pertes = sum(-g['value'] for g in gaps if g['value'] < 0)
+            pertes = sum(-g['value'] for g in gaps
+                         if g['value'] < 0 and not g['opening'])
             ca = self._estimated_revenue(start, end, categ_id)
             pct = (pertes / ca * 100.0) if ca > 0 else 0.0
             out.append({'period': MONTHS_FR[mm - 1],
@@ -543,9 +618,11 @@ class AiteStockDashboard(models.AbstractModel):
         ]
         categ_set = self._categ_children(categ_id)
         moves = Move.search(domain, order='date desc', limit=limit * 3)
+        opening_ids = self._opening_move_ids(moves)
 
         out = []
-        totals = {'in': 0.0, 'out': 0.0, 'tr': 0.0, 'adj': 0.0}
+        totals = {'in': 0.0, 'out': 0.0, 'tr': 0.0, 'adj': 0.0,
+                  'opening': 0.0}
         for mv in moves:
             if categ_set is not None and \
                     mv.product_id.categ_id.id not in categ_set:
@@ -556,7 +633,12 @@ class AiteStockDashboard(models.AbstractModel):
             qty = getattr(mv, qty_field, 0.0) or 0.0
             cost = mv.product_id.standard_price or 0.0
             src, dst = mv.location_id, mv.location_dest_id
-            if getattr(mv, 'is_inventory', False):
+            if mv.id in opening_ids:
+                # Stock de départ : ni ajustement ni réception.
+                mtype, cls = _("Stock de départ"), 'gray'
+                signed = qty
+                totals['opening'] += signed * cost
+            elif getattr(mv, 'is_inventory', False):
                 mtype, cls = _("Ajustement inv."), 'amber'
                 signed = qty if dst.usage == 'internal' else -qty
                 totals['adj'] += signed * cost
@@ -590,7 +672,8 @@ class AiteStockDashboard(models.AbstractModel):
                 'type': mtype, 'type_cls': cls,
                 'product': mv.product_id.display_name,
                 'qty': signed,
-                'src': src.display_name, 'dst': dst.display_name,
+                'src': self._display_location(src),
+                'dst': self._display_location(dst),
                 'value': signed * cost,
             })
             if len(out) >= limit:
@@ -694,6 +777,10 @@ class AiteStockDashboard(models.AbstractModel):
         """
         Écarts d'inventaire (moves ``is_inventory``) et casse (rebuts),
         signés et valorisés au coût.
+
+        Chaque ligne porte ``opening`` : vrai pour un stock de départ
+        (:meth:`_opening_move_ids`), que les indicateurs écartent des
+        écarts et du coulage et que le journal affiche à part.
         """
         Move = self.env['stock.move']
         qty_field = self._move_qty_field()
@@ -705,7 +792,7 @@ class AiteStockDashboard(models.AbstractModel):
         categ_set = self._categ_children(categ_id)
         out = []
 
-        def push(mv, signed_qty, gtype, cls):
+        def push(mv, signed_qty, gtype, cls, opening=False):
             if categ_set is not None and \
                     mv.product_id.categ_id.id not in categ_set:
                 return
@@ -721,16 +808,23 @@ class AiteStockDashboard(models.AbstractModel):
                 'qty': signed_qty,
                 'value': signed_qty * cost,
                 'gtype': gtype, 'gtype_cls': cls,
+                'opening': opening,
                 'ref': self._display_reference(
                     mv.reference or mv.origin or ""),
             })
 
         if 'is_inventory' in Move._fields:
-            for mv in Move.search(base + [('is_inventory', '=', True)]):
+            inventory = Move.search(base + [('is_inventory', '=', True)])
+            opening_ids = self._opening_move_ids(inventory)
+            for mv in inventory:
                 qty = getattr(mv, qty_field, 0.0) or 0.0
                 signed = qty if mv.location_dest_id.usage == 'internal' \
                     else -qty
-                push(mv, signed, _("Ajustement inv."), 'amber')
+                if mv.id in opening_ids:
+                    push(mv, signed, _("Stock de départ"), 'gray',
+                         opening=True)
+                else:
+                    push(mv, signed, _("Ajustement inv."), 'amber')
 
         for mv in Move.search(base + [
                 ('location_dest_id.scrap_location', '=', True)]):

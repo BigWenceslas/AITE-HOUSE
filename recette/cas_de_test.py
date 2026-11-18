@@ -395,6 +395,20 @@ CAS = [
      "1. Générer le relevé de compte du client.",
      "Le document liste les créances avec leurs dates et le solde dû "
      "exact."),
+    ("F13", "F", 2, "Client avec une ardoise ouverte partiellement "
+     "remboursée, une ardoise réglée et un client sans ardoise",
+     "Imprimer le relevé d'ardoises d'un client",
+     "1. Ouvrir la fiche du client → Imprimer → « Relevé d'ardoises ».\n"
+     "2. Ouvrir POS Crédit → Ardoises, cocher des ardoises de deux "
+     "clients → Imprimer → « Relevé d'ardoises ».\n3. Imprimer le "
+     "relevé d'un client qui n'a aucune ardoise.",
+     "Le PDF porte l'en-tête de la société, le client et la période "
+     "(jj/mm/aaaa) ; chaque ardoise ouverte ou réglée de la période "
+     "donne sa date, le ticket ou la commande, le montant, le réglé et "
+     "le reste en FCFA ; le total dû est exact ; les ardoises annulées "
+     "n'y figurent pas. Depuis la liste, un relevé par client. Un "
+     "client sans ardoise obtient un relevé vide propre (« Aucune "
+     "ardoise sur la période », total dû 0 FCFA)."),
 
     # ══════════ G — FIDÉLITÉ ══════════
     ("G01", "G", 1, "Module installé",
