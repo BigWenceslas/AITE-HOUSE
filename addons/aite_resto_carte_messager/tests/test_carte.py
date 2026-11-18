@@ -47,3 +47,12 @@ class TestCarteMessager(TransactionCase):
         caisse.email = False
         jouer_carte(self.env)
         self.assertTrue(caisse.email)
+
+    def test_manager_lit_les_ardoises(self):
+        """Le tableau de bord Direction lit les ardoises : sans « POS Crédit », le
+        manager de la démonstration recevait « Erreur d'accès » (aite.pos.credit)."""
+        manager = self.env['res.users'].search([('login', '=', 'manager')])
+        self.assertTrue(manager.has_group('aite_pos_credit.group_pos_credit_user'))
+        manager.groups_id -= self.env.ref('aite_pos_credit.group_pos_credit_user')
+        jouer_carte(self.env)
+        self.assertTrue(manager.has_group('aite_pos_credit.group_pos_credit_user'))

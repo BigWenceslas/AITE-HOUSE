@@ -41,7 +41,7 @@ AITE_HOUSE/
 | aite_city_tax | 18.0.1.0.2 | **Taxe de séjour** automatique : barèmes par pays et étoiles, ligne sur le folio, état mensuel |
 | aite_guest_registry | 18.0.1.0.3 | **Registre des clients** : fiche d'enregistrement au check-in, registre de police, statistiques |
 | aite_housekeeping | 18.0.1.0.6 | **Gouvernante & maintenance** : tableau des chambres, « Ma journée », inspections, pannes, objets trouvés |
-| aite_pos_restaurant | 18.0.1.0.6 | **Restaurant (service à table)** : code personnel et quatre niveaux, plan de salle verrouillé, personnes, annulations sous code et leur journal, couleurs des tables, refus des produits épuisés, « Personnes et tables » — voir §9 |
+| aite_pos_restaurant | 18.0.1.0.8 | **Restaurant (service à table)** : code personnel et quatre niveaux, plan de salle verrouillé, personnes, annulations sous code et leur journal, couleurs des tables, refus des produits épuisés, « Personnes et tables » — voir §9 |
 | aite_pos_analytics_hr | 18.0.1.0.0 | Passerelle : serveur (« ouverte par ») et « encaissée par » dans les analyses AITE ; s'installe seule avec les deux modules précédents |
 
 ## 3. Prérequis
@@ -235,7 +235,7 @@ le restaurant avec le stock, les achats et la Direction suit
 
 | Dossier à déposer | Version | Rôle |
 |---|---|---|
-| `aite_pos_restaurant` | 18.0.1.0.6 | la caisse du restaurant : code personnel, quatre niveaux, plan verrouillé, personnes, annulations sous code, couleurs, produits épuisés, rapports |
+| `aite_pos_restaurant` | 18.0.1.0.8 | la caisse du restaurant : code personnel, quatre niveaux, plan verrouillé, personnes, annulations sous code, couleurs, produits épuisés, rapports |
 | `aite_pos_analytics` | 18.0.2.1.6 | analyses des ventes, dont les ventes par famille sur trois niveaux |
 | `aite_pos_analytics_hr` | 18.0.1.0.0 | passerelle : le serveur et la caissière dans les analyses ; s'installe seule |
 | `aite_pos_credit` | 18.0.2.0.6 | ardoises : réservées au manager en caisse, créées seulement sur une addition réglée |

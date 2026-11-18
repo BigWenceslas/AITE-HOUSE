@@ -80,7 +80,7 @@ COMPTES = [
      groupes('point_of_sale.group_pos_user', 'account.group_account_invoice')),
     ('manager', "Manager de la salle", 'manager@restaurant.example', groupes(
         'point_of_sale.group_pos_manager', 'hr.group_hr_user', 'account.group_account_invoice',
-        'aite_pos_analytics.group_aite_pos_analytics_manager')),
+        'aite_pos_analytics.group_aite_pos_analytics_manager', 'aite_pos_credit.group_pos_credit_user')),
     ('chef', "Chef de salle (rapports)", 'chef@restaurant.example',
      groupes('aite_pos_restaurant.group_lecture_rapports')),
 ]
@@ -91,8 +91,12 @@ for login, nom, courriel, droits in COMPTES:
                       'lang': 'fr_FR', 'company_id': company.id,
                       'company_ids': [(6, 0, company.ids)], 'groups_id': droits})
         equipe_compte['comptes'] += 1
-    elif not user.email:
-        user.email = courriel   # compte de démonstration posé sans courriel (18.0.1.3.0)
+    else:
+        if not user.email:
+            user.email = courriel   # compte de démonstration posé sans courriel (18.0.1.3.0)
+        manquants = [g for g in droits[0][2] if g not in user.groups_id.ids]
+        if manquants:   # droit ajouté depuis (POS Crédit du manager, 18.0.1.3.2)
+            user.groups_id = [(4, g) for g in manquants]
 
 RESULTAT_EQUIPE = ("équipe : %(tables)d tables, %(employes)d employés, %(comptes)d comptes créés"
                    % equipe_compte + " | en place : %d tables, %d employés à niveau" % (

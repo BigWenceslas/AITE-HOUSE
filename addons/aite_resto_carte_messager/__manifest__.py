@@ -43,7 +43,7 @@ chaque société qui a un plan comptable (sinon juste après son chargement), et
 à la demande : Point de Vente → Configuration → « Poser la carte Le Messager »
 (une notification dit ce qui a été fait). Le nom de la société n'est pas changé. Désinstaller le module ne retire pas la carte.
 """,
-    'version': '18.0.1.3.1',
+    'version': '18.0.1.3.2',
     'category': 'Sales/Point of Sale',
     'author': "AITE Consulting",
     'website': "https://aiteconsulting.com",
