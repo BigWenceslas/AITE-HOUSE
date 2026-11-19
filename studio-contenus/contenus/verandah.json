@@ -1472,6 +1472,69 @@
       "etiquette": "Bon mardi",
       "photo": "ndop",
       "texte": "Mardi, mola : la semaine est lancée, *tiens bon* jusqu’au soir."
+    },
+    {
+      "serie": "Jeudi 19 novembre — au choix",
+      "jour": "jeudi",
+      "id": "VD-JEU-19-1",
+      "moment": "jeudi 17h",
+      "alcool": false,
+      "points": [],
+      "legende": "Encore un effort demain et la semaine est bouclée. Ce soir, on se capte à La Vérandah, entre amis, au calme. Tu viens avec qui ? 🙌\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#AfterWork",
+        "#BonJeudi"
+      ],
+      "modele": "vd-sombre",
+      "titre": "",
+      "etiquette": "Bon jeudi",
+      "photo": "boubou",
+      "texte": "C’est jeudi, mola ! Le week-end est *tout proche*, on se capte ce soir à La Vérandah."
+    },
+    {
+      "serie": "Jeudi 19 novembre — au choix",
+      "jour": "jeudi",
+      "id": "VD-JEU-19-2",
+      "moment": "jeudi 17h",
+      "alcool": false,
+      "points": [],
+      "legende": "Plus qu’une journée avant le week-end. Ce soir, viens te poser à La Vérandah avec ceux qui comptent. Tu ramènes qui ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#AfterWork",
+        "#BonJeudi"
+      ],
+      "modele": "vd-ambiance",
+      "titre": "Demain, c’est vendredi",
+      "etiquette": "",
+      "photo": null,
+      "texte": "LA FAMILLE *T’ATTEND* CE SOIR À MAKEPE"
+    },
+    {
+      "serie": "Jeudi 19 novembre — au choix",
+      "jour": "jeudi",
+      "id": "VD-JEU-19-3",
+      "moment": "jeudi 17h",
+      "alcool": false,
+      "points": [],
+      "legende": "Vous avez tenu la semaine à deux, alors on se capte à La Vérandah pour souffler un peu. Tu l’invites ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#AfterWork",
+        "#BonJeudi"
+      ],
+      "modele": "vd-sombre",
+      "titre": "",
+      "etiquette": "Bon jeudi",
+      "photo": "tunique",
+      "texte": "Ton collègue a porté *la semaine* avec toi : invite-le ce soir à La Vérandah."
     }
   ]
 }

@@ -1183,3 +1183,53 @@ La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp 
 
 #LaVerandah #Douala #Makepe #AfterWork #BonMardi
 ```
+
+## Jeudi 19 novembre — au choix
+
+### Jeudi 17h — Pensée (photo ronde) · undefined
+
+![VD-JEU-19-1](VD-JEU-19-1-vd-sombre.jpg)
+
+**Visuel :** Bon jeudi — C’est jeudi, mola ! Le week-end est tout proche, on se capte ce soir à La Vérandah.
+
+**Légende à publier :**
+
+```text
+Encore un effort demain et la semaine est bouclée. Ce soir, on se capte à La Vérandah, entre amis, au calme. Tu viens avec qui ? 🙌
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #Douala #Makepe #AfterWork #BonJeudi
+```
+
+### Jeudi 17h — Ambiance · undefined
+
+![VD-JEU-19-2](VD-JEU-19-2-vd-ambiance.jpg)
+
+**Visuel :** Demain, c’est vendredi — LA FAMILLE T’ATTEND CE SOIR À MAKEPE
+
+**Légende à publier :**
+
+```text
+Plus qu’une journée avant le week-end. Ce soir, viens te poser à La Vérandah avec ceux qui comptent. Tu ramènes qui ?
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #Douala #Makepe #AfterWork #BonJeudi
+```
+
+### Jeudi 17h — Pensée (photo ronde) · undefined
+
+![VD-JEU-19-3](VD-JEU-19-3-vd-sombre.jpg)
+
+**Visuel :** Bon jeudi — Ton collègue a porté la semaine avec toi : invite-le ce soir à La Vérandah.
+
+**Légende à publier :**
+
+```text
+Vous avez tenu la semaine à deux, alors on se capte à La Vérandah pour souffler un peu. Tu l’invites ?
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #Douala #Makepe #AfterWork #BonJeudi
+```

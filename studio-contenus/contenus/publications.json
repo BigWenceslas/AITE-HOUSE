@@ -2877,6 +2877,93 @@
         "#Microsoft365",
         "#Cameroun"
       ]
+    },
+    {
+      "serie": "Jeudi 19 novembre — au choix",
+      "semaine": null,
+      "jour": "jeudi",
+      "moment": "jeudi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-34",
+      "etiquette": "Fournisseurs",
+      "photo": "veste-pied",
+      "theme": "Suivi des contrats et reconductions tacites",
+      "titre": "Contrats fournisseurs : 4 règles contre *la reconduction*",
+      "points": [
+        "Recensez tous vos contrats : bail, assurances, licences, maintenance",
+        "Notez pour chacun la date d’échéance et le délai de préavis",
+        "Programmez une alerte trois mois avant chaque date limite de préavis",
+        "Rangez l’original signé dans la GED, avec un responsable désigné"
+      ],
+      "legende": "Le contrat de maintenance du groupe électrogène s’est renouvelé tout seul pour un an. Le prestataire ne passe plus, mais la facture tombe. Quand vous retrouvez enfin le contrat, au fond du tiroir de l’ancienne assistante, la date de préavis est dépassée depuis deux mois. Beaucoup de contrats se reconduisent tacitement : ce qui coûte, ce n’est pas le montant, c’est la date manquée. Un registre simple suffit pour commencer : échéance, préavis, responsable. Dans une GED ou un ERP, le contrat signé, ses avenants et les rappels automatiques vivent au même endroit, consultables par la direction en deux clics. Combien de vos contrats pourriez-vous renégocier demain, si vous saviez où ils sont et quand ils expirent ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Cameroun",
+        "#GestionDesContrats",
+        "#GED",
+        "#PME"
+      ]
+    },
+    {
+      "serie": "Jeudi 19 novembre — au choix",
+      "semaine": null,
+      "jour": "jeudi",
+      "moment": "jeudi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-35",
+      "etiquette": "RH",
+      "photo": "ndop",
+      "theme": "Départ d'un collaborateur : passation et accès",
+      "titre": "Départ d’un salarié : 4 étapes pour *ne rien perdre*",
+      "points": [
+        "Coupez ses accès le dernier jour : messagerie, ERP, Wi-Fi, banque",
+        "Transférez sa boîte mail et ses fichiers à un collègue désigné",
+        "Récupérez PC, téléphone, badges et clés contre une décharge signée",
+        "Listez ses dossiers en cours et les clients ou fournisseurs à prévenir"
+      ],
+      "legende": "Le comptable est parti vendredi. Lundi, personne n’a le mot de passe de sa session, ses fichiers sont restés sur son PC personnel, et un fournisseur continue d’écrire à une adresse que plus personne ne lit. Là, ça commence à gâter. Un départ se prépare comme une passation, pas comme une porte qu’on referme. Il faut une check-list unique, tenue ensemble par les RH et l’informatique : accès coupés le jour J, boîte mail et fichiers transférés, matériel rendu contre décharge, dossiers en cours listés. Avec Microsoft 365, sa boîte peut être convertie en boîte partagée, que son remplaçant consulte sans rien perdre de l’historique. Si un collaborateur clé partait demain, sauriez-vous tout récupérer en une journée ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Douala",
+        "#RessourcesHumaines",
+        "#Microsoft365",
+        "#PME"
+      ]
+    },
+    {
+      "serie": "Jeudi 19 novembre — au choix",
+      "semaine": null,
+      "jour": "jeudi",
+      "moment": "jeudi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-36",
+      "etiquette": "Dématérialisation",
+      "photo": "blazer",
+      "theme": "Notes de frais dématérialisées",
+      "titre": "Notes de frais : 4 règles contre *les reçus perdus*",
+      "points": [
+        "Photographiez chaque reçu le jour même, depuis votre téléphone",
+        "Fixez un plafond par type de dépense, connu de toute l’équipe",
+        "Faites valider par le responsable direct avant tout remboursement",
+        "Remboursez à date fixe, une ou deux fois par mois, pas à la demande"
+      ],
+      "legende": "Le commercial revient de Yaoundé avec une enveloppe de reçus froissés : péage, carburant, hôtel, un taxi sans justificatif. Le comptable passe l’après-midi à reconstituer, le remboursement attend deux semaines, et personne n’est content. Le problème n’est pas le reçu, c’est le circuit. Quatre règles suffisent : photo du justificatif le jour même, plafonds connus de tous, validation par le chef direct, remboursement à date fixe. Dans Odoo, le module Notes de frais reçoit le reçu photographié avec la dépense, fait suivre la validation et prépare l’écriture comptable sans ressaisie. Le contrôle devient plus simple, et le collaborateur sait quand il sera remboursé. Combien d’heures votre comptable passe-t-il chaque mois sur les notes de frais ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Cameroun",
+        "#Dematerialisation",
+        "#Odoo",
+        "#PME"
+      ]
     }
   ]
 }
