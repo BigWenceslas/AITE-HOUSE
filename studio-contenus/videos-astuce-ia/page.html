@@ -408,6 +408,49 @@ B.biblio=(s)=>{const el=h(`<div class="scene"><div class="vue"><div class="cam">
   if(e==2){const a=ctr(plus,cam),b=ctr(mb,cam),c=ctr(mb2,cam);if(t<1.0)curseur(cur,onde,t,[800,900],a,0,.6,.7);else if(t<1.8)curseur(cur,onde,t,a,b,1.0,.5,1.6);else curseur(cur,onde,t,b,c,1.8,.5,2.4)}
   if(e==4)curseur(cur,onde,t,[800,900],ctr(src,cam),0,.6,.8);
  }}};
+
+// ------------------------------------------------- vulgarisation : lecture
+B.lecture=(s)=>{const el=h(`<div class="scene"><div class="vue"><div class="cam">
+ <div class="grand t" style="position:absolute;left:64px;top:60px;width:950px;font-size:80px"></div>
+ <div class="ia" style="position:absolute;left:390px;top:640px;width:300px;height:300px;border-radius:50%;background:linear-gradient(160deg,#9C319C,#43124A);display:flex;align-items:center;justify-content:center;color:#fff;font-family:SG;font-size:96px;box-shadow:0 0 0 0 rgba(142,42,142,.3)">IA</div>
+ </div></div></div>`);
+ const T=el.querySelector('.t'),mots=motsMasques(T,rel(s.titre||'Elle a *lu énormément* de textes')),ia=el.querySelector('.ia'),cam=el.querySelector('.cam');
+ const DOCS=(s.docs||['Livres','Articles','Sites web','Forums','Code','Encyclopédies','Documents','Manuels']).map((d,i)=>{const c=h(`<div class="carte" style="position:absolute;padding:16px 24px;font-family:SG;font-size:32px;color:var(--vn);display:flex;gap:12px;align-items:center"><span style="width:34px;height:42px;border-radius:6px;background:${COUL[i%4]};display:inline-block"></span>${d}</div>`);cam.appendChild(c);return c});
+ const DEP=[[60,380],[700,380],[40,1060],[720,1080],[20,720],[760,720],[300,1180],[420,330]];
+ DOCS.forEach((d,i)=>ev(.6+i*.35,'pop'));
+ return {el,u(t,d){revelerMots(mots,t,0);const p=bp(t,.2,.6);ia.style.transform=`scale(${p*(1+.06*Math.sin(t*5))})`;
+  ia.style.boxShadow=`0 0 0 ${20+20*Math.sin(t*4)}px rgba(142,42,142,.12)`;
+  DOCS.forEach((c,i)=>{const t0=.6+i*.35,a=bp(t,t0,.45),v=eio((t-t0-.9)/.9);const [x,y]=DEP[i%8];c.style.opacity=cl((t-t0)/.12)*(1-cl((t-t0-1.6)/.3));
+   c.style.transform=`translate(${lerp(x,470,v)}px,${lerp(y,760,v)}px) scale(${a*(1-.7*v)})`})}}};
+// ------------------------------------------------ vulgarisation : prédiction
+B.prediction=(s)=>{const el=h(`<div class="scene"><div class="vue"><div class="cam">
+ <div class="grand t" style="position:absolute;left:64px;top:40px;width:950px;font-size:76px"></div>
+ <div class="carte ph" style="position:absolute;left:56px;top:330px;width:968px;padding:44px;font-size:56px;line-height:1.35;font-family:SG;color:var(--vn)"><span class="deb"></span><span class="mot" style="color:var(--o)"></span><span class="caret"></span></div>
+ <div class="barres" style="position:absolute;left:56px;top:640px;width:968px"></div>
+ <div class="note" style="position:absolute;left:56px;top:1130px;width:968px;font-size:28px;color:var(--g);text-align:center">Chiffres pour illustrer le principe</div>
+ </div></div></div>`);
+ const Q=el.querySelector.bind(el),mots=motsMasques(Q('.t'),rel(s.titre||'Elle devine *le mot suivant*')),deb=Q('.deb'),mot=Q('.mot'),B_=Q('.barres'),note=Q('.note');
+ const PH=s.phrase||'Le ndolé se mange avec du ',OPT=s.options||[['plantain',62],['riz',23],['bâton de manioc',11]];
+ const bars=OPT.map((o,i)=>{const b=h(`<div style="margin-top:26px"><div style="display:flex;justify-content:space-between;font-size:40px;font-weight:600"><span>${o[0]}</span><span class="pc">0 %</span></div><div style="height:30px;border-radius:15px;background:#EBDDF0;margin-top:10px;overflow:hidden"><i style="display:block;height:100%;width:0;border-radius:15px;background:${i?'#C9A6D1':'var(--o)'}"></i></div></div>`);B_.appendChild(b);return b});
+ ev(.4,'pop');ev(2.6,'pop');
+ return {el,u(t,d){revelerMots(mots,t,0);taper(deb,PH,(t-.4)/1.2,false);
+  bars.forEach((b,i)=>{const p=eio((t-1.7-i*.15)/1);b.querySelector('i').style.width=(OPT[i][1]*p)+'%';b.querySelector('.pc').textContent=Math.round(OPT[i][1]*p)+' %';b.style.opacity=cl((t-1.6-i*.15)/.2);
+   b.style.transform=i==0&&t>2.6?`scale(${1+.04*Math.sin(Math.PI*cl((t-2.6)/.4))})`:''});
+  mot.textContent=t>2.8?OPT[0][0]+'.':'';mot.style.opacity=ap(t,2.8,.3);note.style.opacity=ap(t,2,.4)}}};
+// -------------------------------------------- vulgarisation : erreur assurée
+B.erreur=(s)=>{const el=h(`<div class="scene"><div class="vue"><div class="cam">
+ <div class="grand t" style="position:absolute;left:64px;top:40px;width:950px;font-size:76px"></div>
+ <div class="carte" style="position:absolute;left:56px;top:330px;width:968px;padding:40px">
+  <div class="eq" style="margin-left:auto;max-width:700px;background:var(--m);border-radius:30px 30px 6px 30px;padding:24px 30px;font-size:38px"></div>
+  <div class="er" style="margin-top:30px;font-size:42px;line-height:1.4;font-weight:600"></div></div>
+ <div class="tampon" style="position:absolute;left:250px;top:840px;border:8px solid #B3261E;color:#B3261E;font-family:SG;font-size:70px;padding:14px 40px;border-radius:20px;transform:rotate(-8deg);opacity:0">À VÉRIFIER</div>
+ <div class="corr carte" style="position:absolute;left:56px;top:1060px;width:968px;padding:30px 36px;font-size:36px;opacity:0;border-left:12px solid #3E9B5A"></div>
+ </div></div></div>`);
+ const Q=el.querySelector.bind(el),mots=motsMasques(Q('.t'),rel(s.titre||'Elle peut se tromper *avec assurance*')),q=Q('.eq'),r=Q('.er'),tp=Q('.tampon'),corr=Q('.corr');
+ const QQ=s.question||'Combien de régions compte le Cameroun ?',RR=s.reponse||'Le Cameroun compte 8 régions. 😊',CC=s.correction||'Vérifié : le Cameroun compte 10 régions.';
+ ev(2.6,'clic');ev(3.2,'pop');
+ return {el,u(t,d){revelerMots(mots,t,0);taper(q,QQ,(t-.3)/.9,false);taper(r,RR,(t-1.3)/1,false);
+  const p=bp(t,2.6,.4);tp.style.opacity=cl((t-2.6)/.1);tp.style.transform=`rotate(-8deg) scale(${2-p})`;corr.style.opacity=ap(t,3.2);corr.textContent=CC}}};
 // --------------------------------------------------------------- montage
 let PLAN,OBJ=[],MOTS=[];
 window.charger=(plan)=>{PLAN=plan;document.getElementById('badge').textContent='Astuce IA · n°'+plan.numero;

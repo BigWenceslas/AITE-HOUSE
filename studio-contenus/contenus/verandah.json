@@ -1535,6 +1535,69 @@
       "etiquette": "Bon jeudi",
       "photo": "tunique",
       "texte": "Ton collègue a porté *la semaine* avec toi : invite-le ce soir à La Vérandah."
+    },
+    {
+      "serie": "Vendredi 20 novembre — au choix",
+      "jour": "vendredi",
+      "id": "VD-VEN-20-1",
+      "moment": "vendredi 12h",
+      "alcool": false,
+      "points": [],
+      "legende": "Le vendredi, on boucle vite et on ne traîne pas au bureau. Ce soir, on se capte à La Vérandah. Tu viens avec qui ? 🙌\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#Vendredi",
+        "#AfterWork"
+      ],
+      "modele": "vd-sombre",
+      "titre": "",
+      "etiquette": "Bon vendredi",
+      "photo": "veste-pied",
+      "texte": "Vendredi, on ne dure pas au boulot : *on se capte* à La Vérandah."
+    },
+    {
+      "serie": "Vendredi 20 novembre — au choix",
+      "jour": "vendredi",
+      "id": "VD-VEN-20-2",
+      "moment": "vendredi 16h",
+      "alcool": false,
+      "points": [],
+      "legende": "Le vendredi, pas d’heures sup. Ferme l’ordi, laisse le reste à lundi et viens te poser à La Vérandah. Tu sors à quelle heure aujourd’hui ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#Vendredi",
+        "#AfterWork"
+      ],
+      "modele": "vd-ambiance",
+      "titre": "Vendredi, on ne dure pas",
+      "etiquette": "",
+      "photo": null,
+      "texte": "FERME L’ORDI, *LA VÉRANDAH* T’ATTEND À MAKEPE"
+    },
+    {
+      "serie": "Vendredi 20 novembre — au choix",
+      "jour": "vendredi",
+      "id": "VD-VEN-20-3",
+      "moment": "vendredi 19h",
+      "alcool": false,
+      "points": [],
+      "legende": "La semaine est finie, la famille. Ce soir, on se retrouve à La Vérandah, à Makepe. Tu viens avec qui ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#Vendredi",
+        "#AfterWork"
+      ],
+      "modele": "vd-ambiance",
+      "titre": "Vendredi soir",
+      "etiquette": "",
+      "photo": null,
+      "texte": "LA SEMAINE EST DERRIÈRE TOI, *LA FAMILLE* EST ICI"
     }
   ]
 }

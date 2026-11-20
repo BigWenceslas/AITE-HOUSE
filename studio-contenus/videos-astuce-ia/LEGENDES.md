@@ -61,3 +61,16 @@ Pour mettre l'IA au travail dans votre entreprise : Diagnostic Digital 360° gra
 - Microsoft Support (fr-fr) : « Démarrage avec Copilot dans Excel » (icône en bas à droite, modes, mode Plan), FAQ Copilot dans Excel (licences, mise en garde sur les finances), « Conseils » et invite officielle « Expliquer la formule dans la cellule sélectionnée. », fin de la fonction =COPILOT() le 14 septembre 2026.
 - Mistral AI : docs.mistral.ai/fr/vibe/work/libraries (Bibliothèques, Nouvelle bibliothèque, + › Bibliothèques, Sources), mistral.ai/fr/news/vibe-agent (Le Chat devenu Vibe, mai 2026), mistral.ai/fr/pricing, aide sur l'entraînement des modèles et sa désactivation.
 - Libellés non confirmés à l'écran (bouton de validation du plan, titre du volet Copilot, autres modes) : volontairement non affichés dans la maquette.
+
+## N°6 — Comment une IA vous répond (vulgarisation)
+
+Vendredi, on ne traîne pas au bureau ! En 50 secondes, comment ChatGPT, Gemini, Copilot ou Claude vous répondent ?
+
+1. Elle a appris en lisant une quantité énorme de textes : livres, sites web, articles, code.
+2. Elle répond mot après mot, en choisissant parmi les suites les plus probables. « Le ndolé se mange avec du… » plantain !
+3. Elle ne « sait » pas comme vous : elle peut se tromper avec assurance. Relisez et vérifiez toujours.
+
+Et pas de contrats, de salaires ni de fichiers clients sur un compte personnel : passez par un compte professionnel.
+
+Bon week-end ! Pour utiliser l’IA en toute sécurité dans votre entreprise : Diagnostic Digital 360° gratuit (90 min), écrivez-nous sur WhatsApp au (+237) 656 80 10 98.
+#AITEConsulting #AstuceIA #IA #ChatGPT #PME #Douala

@@ -101,3 +101,24 @@ VIDEOS['astuce-ia-5-mistral-bibliotheques'] = dict(numero=5, scenes=[
        sous="Compte personnel : vos échanges peuvent entraîner les modèles. Désactivez l’option et anonymisez vos documents."),
   dict(type='fin', voix=CTA_VOIX, sous=CTA_SOUS),
 ])
+
+VIDEOS['astuce-ia-6-comment-ia-repond'] = dict(numero=6, scenes=[
+  dict(type='titre', kicker='Astuce IA du vendredi', titre='Comment une IA *vous répond* ?', photo=True,
+       voix="Vendredi, on ne traîne pas au bureau. Alors en cinquante secondes : comment Tchatte Gé Pé Té, Gémini, Copilote ou Claude vous répondent ?",
+       sous="Vendredi, on ne traîne pas ! En 50 secondes : comment ChatGPT, Gemini, Copilot ou Claude vous répondent ?"),
+  dict(type='lecture', titre='1. Elle a *lu énormément* de textes',
+       voix="Un : l'intelligence artificielle a appris en lisant une quantité énorme de textes : des livres, des sites ouèbe, des articles, du code.",
+       sous="1. Elle a appris en lisant une quantité énorme de textes : livres, sites web, articles, code."),
+  dict(type='prediction', titre='2. Elle devine *le mot suivant*', phrase='Le ndolé se mange avec du ', options=[['plantain',62],['bâton de manioc',23],['riz',15]],
+       voix="Deux : elle répond mot après mot, en choisissant parmi les suites les plus probables. Le ndolé se mange avec du… plantain !",
+       sous="2. Elle répond mot après mot, en choisissant parmi les suites les plus probables."),
+  dict(type='erreur', titre='3. Elle peut se tromper *avec assurance*',
+       question='Combien de régions compte le Cameroun ?', reponse='Le Cameroun compte 8 régions. 😊', correction='Vérifié : le Cameroun compte 10 régions.',
+       voix="Trois : elle ne sait pas comme vous. Elle peut se tromper avec beaucoup d'assurance. Le Cameroun compte dix régions, pas huit : relisez, et vérifiez toujours.",
+       sous="3. Elle ne « sait » pas comme vous : elle peut se tromper avec assurance. Relisez et vérifiez toujours."),
+  dict(type='alerte', titre='Données *confidentielles* ?', ok='Un compte professionnel sécurisé', non='Jamais votre compte personnel',
+       voix="Et pas de contrats, de salaires ni de fichiers clients sur un compte personnel : passez par un compte professionnel.",
+       sous="Pas de contrats, salaires ou fichiers clients sur un compte personnel : passez par un compte professionnel."),
+  dict(type='fin', voix="Bon ouikènde ! Pour utiliser l'intelligence artificielle en toute sécurité dans votre entreprise, écrivez-nous sur Ouatsape.",
+       sous="Bon week-end ! Pour utiliser l’IA en toute sécurité dans votre entreprise, écrivez-nous sur WhatsApp."),
+])

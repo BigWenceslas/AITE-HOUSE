@@ -2964,6 +2964,93 @@
         "#Odoo",
         "#PME"
       ]
+    },
+    {
+      "serie": "Vendredi 20 novembre — au choix",
+      "semaine": null,
+      "jour": "vendredi",
+      "moment": "vendredi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-37",
+      "etiquette": "Conseil commerce",
+      "photo": "boubou",
+      "theme": "Paramétrer les promotions Black Friday dans la caisse et l'ERP",
+      "titre": "Black Friday : réglez vos *promotions dans l’ERP* avant le 27",
+      "points": [
+        "Créez la promotion avec une date de fin, sans toucher au prix de base",
+        "Fixez une remise maximale par caissier, avec validation au-delà",
+        "Testez un ticket complet en caisse la veille, avant l’ouverture",
+        "Comparez lundi les marges réalisées aux marges prévues, article par article"
+      ],
+      "legende": "Vendredi prochain, 27 novembre, c’est le Black Friday. Dans beaucoup de boutiques de Douala, la promo se fait à la main : on baisse le prix de l’article dans le logiciel le matin… et en janvier, il est toujours à −30 %. Personne n’a pensé à le remonter.\n\nUne promotion bien faite se paramètre comme une règle de prix, avec une date de début et une date de fin. Le prix de base ne bouge pas, la remise s’arrête toute seule et chaque ticket garde la trace de la remise accordée. Ajoutez un plafond par caissier : au-delà, un responsable valide. Le lundi, vous voyez enfin si l’opération a rapporté du chiffre ou seulement mangé la marge.\n\nVos promotions de fin d’année s’arrêtent-elles toutes seules, ou faut-il que quelqu’un s’en souvienne ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#BlackFriday",
+        "#Odoo",
+        "#Commerce",
+        "#Douala"
+      ]
+    },
+    {
+      "serie": "Vendredi 20 novembre — au choix",
+      "semaine": null,
+      "jour": "vendredi",
+      "moment": "vendredi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-38",
+      "etiquette": "Conseil sécurité",
+      "photo": "tunique",
+      "theme": "Sécuriser l'accès à distance au serveur pour le travail du week-end",
+      "titre": "Week-end : *un accès à distance* propre, pas bricolé",
+      "points": [
+        "Passez par un VPN sécurisé, jamais par un port ouvert sur le serveur",
+        "Exigez une double authentification pour chaque connexion extérieure",
+        "Donnez l’accès nominativement, avec une date de fin s’il est temporaire",
+        "Consultez le lundi le journal des connexions du week-end"
+      ],
+      "legende": "Vendredi, 17 h. Le comptable range son sac : « Patron, je finis la déclaration ce week-end depuis la maison. » Belle volonté. Mais comment se connecte-t-il au serveur ? Souvent avec un logiciel de prise en main installé un jour de dépannage, le même mot de passe depuis des années, et personne ne sait qui d’autre l’utilise.\n\nUn accès à distance se conçoit : un VPN ou une passerelle sécurisée, une double authentification, un compte par personne et un journal que l’on regarde. C’est ce qui sépare le télétravail d’une porte laissée entrouverte sur vos données comptables pendant 48 heures.\n\nCe soir, savez-vous exactement qui peut entrer dans votre serveur depuis l’extérieur ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Cybersecurite",
+        "#Teletravail",
+        "#PME",
+        "#Douala"
+      ]
+    },
+    {
+      "serie": "Vendredi 20 novembre — au choix",
+      "semaine": null,
+      "jour": "vendredi",
+      "moment": "vendredi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-39",
+      "etiquette": "Conseil ERP",
+      "photo": "ndop-pied",
+      "theme": "Reconnaître le moment où Excel ne suffit plus et où un ERP s'impose",
+      "titre": "Excel ou ERP : quand vos *tableurs vous coûtent cher*",
+      "points": [
+        "Comptez les heures passées chaque mois à recopier d’un fichier à l’autre",
+        "Repérez les chiffres qui diffèrent entre ventes, stock et comptabilité",
+        "Notez ce qui bloque quand la personne qui tient le fichier s’absente",
+        "Vérifiez si vous savez qui a modifié un chiffre, et quand"
+      ],
+      "legende": "Fin de mois dans une PME de Bonabéri. Trois fichiers Excel : les ventes chez le commercial, le stock chez le magasinier, la compta chez le comptable. Le DG demande le chiffre du mois : trois réponses différentes, et deux jours pour savoir laquelle est juste. Le jour où le comptable est absent, personne n’ose ouvrir « BILAN_V3_final_vrai.xlsx ».\n\nExcel est un excellent outil, mais ce n’est pas un système de gestion : il ne garde pas la trace de qui a changé quoi, et chaque copie crée une nouvelle vérité. Quand ces signes s’accumulent, un ERP comme Odoo finit souvent par coûter moins cher que le temps perdu. La holding JMJ Participation a franchi le pas : les processus de ses 10 entreprises sont dématérialisés avec Odoo.\n\nCombien d’heures votre équipe passe-t-elle chaque mois à réconcilier des fichiers ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Odoo",
+        "#ERP",
+        "#PME",
+        "#Cameroun"
+      ]
     }
   ]
 }
