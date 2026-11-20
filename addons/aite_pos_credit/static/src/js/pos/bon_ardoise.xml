@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="aite_pos_credit.BonArdoise">
+        <div class="pos-receipt p-2 aite-bon-ardoise">
+            <ReceiptHeader data="props.data.headerData"/>
+            <div class="text-center fw-bolder fs-4 mt-2">BON D'ARDOISE</div>
+            <div class="text-center mb-2">Vente à crédit</div>
+            <div>Client : <span class="fw-bolder" t-esc="props.client.name"/></div>
+            <div t-if="props.client.phone or props.client.mobile">Téléphone : <t t-esc="props.client.phone or props.client.mobile"/></div>
+            <div>Date : <t t-esc="props.date"/></div>
+            <div t-if="props.table">Table : <t t-esc="props.table"/></div>
+            <div>Réf. : <t t-esc="props.data.name"/></div>
+            <div class="text-center">--------------------------------</div>
+            <OrderWidget t-if="props.data.orderlines?.length" lines="props.data.orderlines" t-slot-scope="scope">
+                <Orderline line="omit(scope.line, 'customerNote')" class="{ 'px-0': true }"/>
+            </OrderWidget>
+            <div class="text-center">--------------------------------</div>
+            <div class="pos-receipt-amount receipt-total">
+                Montant dû
+                <span class="pos-receipt-right-align" t-esc="props.formatCurrency(props.montant)"/>
+            </div>
+            <div class="mt-3">Je reconnais devoir la somme ci-dessus.</div>
+            <div class="mt-4">Signature du client :</div>
+            <div class="mt-5">________________________________</div>
+            <div class="text-center mt-3 small">Exemplaire à conserver par l'établissement</div>
+        </div>
+    </t>
+</templates>

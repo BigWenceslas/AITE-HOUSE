@@ -29,3 +29,19 @@ class TestArdoiseHorsMode(TestPointOfSaleHttpCommon):
         # Rien n'a été encaissé : l'aide a été affichée, la vente attend.
         self.assertFalse(self.env['pos.order'].search_count([
             ('config_id', '=', config.id), ('state', 'in', ('paid', 'done', 'invoiced'))]))
+
+
+@tagged('post_install', '-at_install', 'aite_pos_credit')
+class TestBonArdoise(TestPointOfSaleHttpCommon):
+    """Le « Bon d'ardoise » imprimé à la caisse au toucher de « Mettre sur
+    ardoise » (demande du client : une facture d'ardoise que le client signe)."""
+
+    def test_bon_imprime(self):
+        config = self.main_pos_config
+        credit = self.env['pos.payment.method'].create({
+            'name': "Ardoise client", 'is_aite_credit': True, 'company_id': config.company_id.id})
+        config.payment_method_ids = [(4, credit.id)]
+        config.with_user(self.pos_user).open_ui()
+        self.start_pos_tour('AiteBonArdoiseTour', login='pos_user')
+        commande = self.env['pos.order'].search([('config_id', '=', config.id)], limit=1)
+        self.assertIn(commande.state, ('paid', 'done', 'invoiced'))

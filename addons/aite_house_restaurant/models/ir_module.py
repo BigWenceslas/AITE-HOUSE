@@ -10,7 +10,7 @@ from odoo import api, models
 _logger = logging.getLogger(__name__)
 
 # L'écran de cuisine (« Preparation Display ») : module d'Odoo Enterprise.
-OPTIONNELS_RESTAURANT = ['pos_preparation_display']
+OPTIONNELS_RESTAURANT = ['pos_preparation_display', 'pos_restaurant_preparation_display', 'pos_hr_preparation_display']
 
 
 class IrModuleModule(models.Model):

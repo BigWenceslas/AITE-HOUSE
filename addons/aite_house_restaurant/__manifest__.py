@@ -13,7 +13,7 @@ Activer ce module installe tout le restaurant AITE :
 * AITE — Crédit clients (ardoise) : aite_pos_credit ;
 * AITE — POS Analytics (analyse des ventes, familles, marges) : aite_pos_analytics ;
 * AITE — Analyses du restaurant par employé : aite_pos_analytics_hr ;
-* sur Odoo Enterprise seulement, l'écran de cuisine (pos_preparation_display),
+* sur Odoo Enterprise seulement, l'écran de cuisine (pos_preparation_display, avec ses passerelles restaurant et employés),
   installé s'il est disponible sur le serveur ; sur Community, il n'existe pas
   et rien n'est fait.
 
@@ -28,7 +28,7 @@ Les modules optionnels sont aussi installés à la mise à niveau de ce module
 s'ils manquent. Aucune donnée de démonstration : la carte de démonstration est
 le module « AITE — Carte du restaurant Le Messager ».
 """,
-    'version': '18.0.1.0.1',
+    'version': '18.0.1.0.2',
     'category': 'Sales/Point of Sale',
     'author': "AITE Consulting",
     'website': "https://aiteconsulting.com",

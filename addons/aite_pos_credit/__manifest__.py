@@ -39,7 +39,7 @@ Compatible Odoo 18 Enterprise.
     'author': "AITE CONSULTING",
     'website': "https://aiteconsulting.com",
     'category': 'Point of Sale',
-    'version': '18.0.2.0.7',
+    'version': '18.0.2.0.8',
     'license': 'LGPL-3',
 
     'depends': [
@@ -80,6 +80,8 @@ Compatible Odoo 18 Enterprise.
             'aite_pos_credit/static/src/scss/pos_credit_pos.scss',
             'aite_pos_credit/static/src/js/pos/payment_screen_button.js',
             'aite_pos_credit/static/src/js/pos/payment_screen_button.xml',
+            'aite_pos_credit/static/src/js/pos/bon_ardoise.js',
+            'aite_pos_credit/static/src/js/pos/bon_ardoise.xml',
         ],
         # Tours de la caisse (tests seulement).
         'web.assets_tests': [

@@ -3,6 +3,7 @@
 import { patch } from "@web/core/utils/patch";
 import { PaymentScreen } from "@point_of_sale/app/screens/payment_screen/payment_screen";
 import { _t } from "@web/core/l10n/translation";
+import { BonArdoise } from "@aite_pos_credit/js/pos/bon_ardoise";
 
 /**
  * Geste « Mettre sur ardoise » ajouté à l'écran de paiement POS.
@@ -113,7 +114,52 @@ patch(PaymentScreen.prototype, {
             }
         }
 
+        // Ce que portera le bon d'ardoise, pris avant la validation (la
+        // caisse passe ensuite à l'addition suivante).
+        const bon = this._aiteDonneesBon(order, partner, due);
+
         // Valide la commande → synchro serveur → ardoise + écriture 411.
         await this.validateOrder(false);
+
+        // Le bon d'ardoise, signé par le client et gardé par l'établissement.
+        if (bon && order.finalized) {
+            await this._aiteImprimerBon(bon);
+        }
+    },
+
+    /** Les données du « Bon d'ardoise » (ticket que le client signe). */
+    _aiteDonneesBon(order, partner, montant) {
+        try {
+            const employe = order.employee_id || this.pos.cashier;
+            return {
+                data: this.pos.orderExportForPrinting(order),
+                client: { name: partner.name || "", phone: partner.phone || "", mobile: partner.mobile || "" },
+                montant,
+                date: new Date().toLocaleString("fr-FR", {
+                    day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit",
+                }),
+                table: order.table_id?.table_number ? String(order.table_id.table_number) : "",
+                servi: employe?.name || "",
+                formatCurrency: this.env.utils.formatCurrency,
+            };
+        } catch (erreur) {
+            console.error("Bon d'ardoise : données indisponibles", erreur);
+            return null;
+        }
+    },
+
+    /** Imprime le bon sur l'imprimante de tickets ; sans imprimante, par
+     * l'impression du navigateur. Une panne d'impression ne défait pas
+     * l'ardoise : elle est dite, et le bon peut être réimprimé depuis
+     * POS Crédit → Ardoises (Relevé d'ardoises). */
+    async _aiteImprimerBon(bon) {
+        try {
+            await this.printer.print(BonArdoise, bon, { webPrintFallback: true });
+        } catch {
+            this.notification.add(
+                _t("Ardoise enregistrée, mais le bon d'ardoise n'a pas pu être imprimé : vérifiez l'imprimante."),
+                { type: "warning" }
+            );
+        }
     },
 });
