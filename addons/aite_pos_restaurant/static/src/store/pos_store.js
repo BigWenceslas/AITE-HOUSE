@@ -904,7 +904,17 @@ patch(PosStore.prototype, {
     /** Vrai si la table (ou sa table parente) n'a aucune addition ouverte sur
      * ce poste. */
     aiteTableLibre(tete) {
-        return !this.getActiveOrdersOnTable(tete).length;
+        // Libre seulement si le plan la montre libre aussi : sur une version
+        // plus ancienne d'Odoo 18, la table peut être verte sur le plan sans
+        // que la liste des additions du poste la contienne encore (constat du
+        // client : la table ouverte redemandait le nombre de personnes).
+        if (this.tableHasOrders?.(tete)) {
+            return false;
+        }
+        const commandes = this.getActiveOrdersOnTable
+            ? this.getActiveOrdersOnTable(tete)
+            : this.models["pos.order"].filter((o) => o.table_id?.id === tete.id && !o.finalized);
+        return !commandes.length;
     },
 
     /** Avant l'étape « personnes » : la table semble libre ? L'état des
@@ -917,9 +927,15 @@ patch(PosStore.prototype, {
             return false;
         }
         try {
-            await this.deviceSync.readDataFromServer();
-        } catch (erreur) {
-            console.warn("Restaurant : relecture des tables impossible", erreur);
+            // `deviceSync` n'existe que dans les versions récentes d'Odoo 18 :
+            // sinon, les additions de la table sont relues autrement.
+            if (this.deviceSync?.readDataFromServer) {
+                await this.deviceSync.readDataFromServer();
+            } else {
+                await this.syncAllOrders({ table_ids: [tete.id] });
+            }
+        } catch {
+            // hors connexion : l'état connu du poste fait foi
         }
         return this.aiteTableLibre(tete) ? TITRES.personnes(tete.table_number) : false;
     },

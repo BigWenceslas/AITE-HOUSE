@@ -361,6 +361,21 @@ class TestToursTable(AiteToursModeCommon):
 
 @tagged('post_install', '-at_install', 'aite_pos_restaurant')
 @tagged('post_install', '-at_install', 'aite_pos_restaurant')
+class TestToursTableOuverte(AiteToursModeCommon):
+    """Une table déjà ouverte ne redemande pas les personnes à une autre
+    personne ni à un autre poste (constat du client)."""
+
+    def test_table_deja_ouverte(self):
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteTableOuverteTour', login='pos_user')
+        additions = self.env['pos.order'].search([
+            ('config_id', '=', self.pos_config.id), ('table_id.table_number', '=', 2),
+            ('state', '=', 'draft')])
+        self.assertEqual(len(additions), 1)
+        self.assertEqual(additions.customer_count, 2)
+
+
+@tagged('post_install', '-at_install', 'aite_pos_restaurant')
 class TestToursAdditionPart(AiteToursModeCommon):
     """L'addition d'une part divisée s'imprime (constat du client)."""
 

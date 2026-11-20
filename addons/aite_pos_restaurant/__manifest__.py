@@ -118,7 +118,7 @@ Incrément 6 (les rapports) :
 
 Aucune dépendance au socle hôtelier.
 """,
-    'version': '18.0.1.0.9',
+    'version': '18.0.1.0.10',
     'author': "AITE Consulting",
     'website': "https://aiteconsulting.com",
     'category': 'Point of Sale',
