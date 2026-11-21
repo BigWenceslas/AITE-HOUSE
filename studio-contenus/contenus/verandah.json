@@ -1598,6 +1598,69 @@
       "etiquette": "",
       "photo": null,
       "texte": "LA SEMAINE EST DERRIÈRE TOI, *LA FAMILLE* EST ICI"
+    },
+    {
+      "serie": "Week-end 21-22 novembre — au choix",
+      "jour": "samedi",
+      "id": "VD-WE-11",
+      "moment": "samedi 12h",
+      "alcool": false,
+      "points": [],
+      "legende": "Le Cameroun est officiellement qualifié pour la CAN 2027, la CAF l’a annoncé mardi. Ce samedi soir, on fête ça entre supporters à Makepe. 🦁 Tu viens avec qui ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#LionsIndomptables",
+        "#CAN2027"
+      ],
+      "modele": "vd-ambiance",
+      "titre": "Lions qualifiés, mola !",
+      "etiquette": "",
+      "photo": null,
+      "texte": "CE SAMEDI, ON FÊTE ÇA À LA *VÉRANDAH*"
+    },
+    {
+      "serie": "Week-end 21-22 novembre — au choix",
+      "jour": "samedi",
+      "id": "VD-WE-12",
+      "moment": "samedi 17h",
+      "alcool": false,
+      "points": [],
+      "legende": "Les messages, c’est bien ; se voir, c’est mieux. Ce samedi soir, les gars, on se capte à Makepe. Qui envoie le message dans le groupe ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#SamediSoir",
+        "#BonWeekEnd"
+      ],
+      "modele": "vd-ambiance",
+      "titre": "Le groupe parle depuis lundi",
+      "etiquette": "",
+      "photo": null,
+      "texte": "CE SOIR, ON SE VOIT *EN VRAI* À LA VÉRANDAH"
+    },
+    {
+      "serie": "Week-end 21-22 novembre — au choix",
+      "jour": "dimanche",
+      "id": "VD-DIM-14",
+      "moment": "dimanche 12h",
+      "alcool": false,
+      "points": [],
+      "legende": "Avant de repartir, on souffle un peu, sans pression. La Vérandah t’attend à Makepe. Tu viens seul ou en famille ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#BonDimanche",
+        "#AuCalme"
+      ],
+      "modele": "vd-sombre",
+      "titre": "",
+      "etiquette": "Bon dimanche",
+      "photo": "boubou",
+      "texte": "La semaine reprend demain, mola : aujourd’hui, on se capte *au calme* à La Vérandah."
     }
   ]
 }

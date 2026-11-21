@@ -3051,6 +3051,72 @@
         "#PME",
         "#Cameroun"
       ]
+    },
+    {
+      "serie": "Week-end 21-22 novembre — au choix",
+      "semaine": null,
+      "jour": "samedi",
+      "moment": "samedi",
+      "modele": "affiche",
+      "etiquette": "Bon week-end",
+      "titre": "",
+      "points": [],
+      "numero": null,
+      "id": "WE-11",
+      "photo": "ndop",
+      "theme": "week-end",
+      "texte": "Ce samedi, appelle *ta mère* avant qu’elle ne t’appelle la première.",
+      "legende": "Pendant la semaine, on dit toujours « je la rappelle demain ». Ce samedi, prends un moment rien que pour elle. Sa voix te fera plus de bien que n’importe quelle pause. 📞\n\nTu l’appelles quand ?",
+      "hashtags": [
+        "#AITEConsulting",
+        "#BonWeekEnd",
+        "#Famille",
+        "#Douala"
+      ]
+    },
+    {
+      "serie": "Week-end 21-22 novembre — au choix",
+      "semaine": null,
+      "jour": "samedi",
+      "moment": "samedi",
+      "modele": "affiche",
+      "etiquette": "Bon week-end",
+      "titre": "",
+      "points": [],
+      "numero": null,
+      "id": "WE-12",
+      "photo": "veste-pied",
+      "theme": "week-end",
+      "texte": "Ce samedi, va voir ton enfant jouer au foot : *il te cherche* du regard.",
+      "legende": "Le match du samedi matin, pour lui, c’est la Coupe du monde. Ta présence au bord du terrain, il s’en souviendra longtemps.\n\nTon enfant joue à quel poste ?",
+      "hashtags": [
+        "#AITEConsulting",
+        "#BonWeekEnd",
+        "#Famille",
+        "#Douala"
+      ]
+    },
+    {
+      "serie": "Week-end 21-22 novembre — au choix",
+      "semaine": null,
+      "jour": "dimanche",
+      "moment": "dimanche",
+      "modele": "affiche",
+      "etiquette": "Bon dimanche",
+      "titre": "",
+      "points": [],
+      "numero": null,
+      "id": "DIM-14",
+      "photo": "tunique",
+      "theme": "week-end",
+      "texte": "Ce dimanche, laisse les enfants te *battre au ludo* : tu as toute la journée.",
+      "legende": "Pas d’horaire aujourd’hui, pas de course. Juste le plateau sur la table, les cris de victoire et les revanches.\n\nQui est le champion du ludo chez toi ?",
+      "hashtags": [
+        "#AITEConsulting",
+        "#BonDimanche",
+        "#Famille",
+        "#Douala"
+      ]
     }
   ]
 }
