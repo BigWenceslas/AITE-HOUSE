@@ -95,3 +95,4 @@ Refusés : « saluer tes voisins » (pas original), puis un dimanche sur la Jour
 - pas le même thème que La Vérandah le même jour.
 
 - Consigne du DG (15 novembre) : le dimanche d'AITE, c'est **le repos et profiter en famille**, ou une **citation** vérifiée (moderne, pas littéraire : ex. Anne Lamott, TED 2017, « Presque tout se remet à fonctionner si on le débranche quelques minutes… vous y compris. »). Retenus : « ton seul programme, c'est de rire avec ceux que tu aimes », « une sieste après le ndolé du dimanche ».
+- Week-end du 21-22 novembre : le DG a refusé les scènes de famille douces (appelle ta mère, le match de l'enfant, le ludo) et demandé **de la motivation** (bilan de la semaine, recharger pour attaquer lundi) **et une citation vérifiée** (retenue : Thomas Sankara, « Il faut oser inventer l'avenir. », entretien de 1985).

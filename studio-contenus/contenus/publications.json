@@ -3053,7 +3053,7 @@
       ]
     },
     {
-      "serie": "Week-end 21-22 novembre — au choix",
+      "serie": "Week-end 21-22 novembre — version 2",
       "semaine": null,
       "jour": "samedi",
       "moment": "samedi",
@@ -3062,42 +3062,43 @@
       "titre": "",
       "points": [],
       "numero": null,
-      "id": "WE-11",
+      "id": "WE-13",
+      "photo": "blazer",
+      "theme": "bilan de la semaine",
+      "texte": "Ce que tu as *bâti* cette semaine, personne ne pourra te le reprendre.",
+      "legende": "Les coupures de courant, les embouteillages de Bonabéri, les délais serrés : tu as quand même avancé. Chaque brique posée ces cinq jours reste à toi. Lundi, on en pose d’autres.\n\nQu’est-ce que tu as construit de solide cette semaine ?",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Motivation",
+        "#Travail",
+        "#Douala"
+      ]
+    },
+    {
+      "id": "CIT-8",
+      "serie": "Week-end 21-22 novembre — version 2",
+      "semaine": null,
+      "jour": "samedi",
+      "moment": "samedi",
+      "modele": "sombre",
+      "theme": "citation · Thomas Sankara (entretien avec J.-Ph. Rapp, 1985, dans Ziegler et Rapp, « Thomas Sankara. Un nouveau pouvoir africain », 1986)",
+      "etiquette": "Citation du week-end",
+      "texte": "« Il faut oser *inventer l’avenir*. »",
+      "auteur": "Thomas Sankara",
+      "titre": "",
+      "points": [],
+      "numero": null,
       "photo": "ndop",
-      "theme": "week-end",
-      "texte": "Ce samedi, appelle *ta mère* avant qu’elle ne t’appelle la première.",
-      "legende": "Pendant la semaine, on dit toujours « je la rappelle demain ». Ce samedi, prends un moment rien que pour elle. Sa voix te fera plus de bien que n’importe quelle pause. 📞\n\nTu l’appelles quand ?",
+      "legende": "Thomas Sankara l’a dit en 1985, dans un entretien avec le journaliste Jean-Philippe Rapp (publié dans « Thomas Sankara. Un nouveau pouvoir africain », 1986). À Douala, inventer l’avenir, c’est la petite boutique d’Akwa qui devient une PME, ou l’employé qui monte enfin son projet le soir après le boulot. Personne ne le fera à notre place.\n\nLa semaine est bouclée : qu’est-ce que tu vas oser lancer la semaine prochaine ?",
       "hashtags": [
         "#AITEConsulting",
-        "#BonWeekEnd",
-        "#Famille",
+        "#ThomasSankara",
+        "#EntrepreneuriatAfricain",
         "#Douala"
       ]
     },
     {
-      "serie": "Week-end 21-22 novembre — au choix",
-      "semaine": null,
-      "jour": "samedi",
-      "moment": "samedi",
-      "modele": "affiche",
-      "etiquette": "Bon week-end",
-      "titre": "",
-      "points": [],
-      "numero": null,
-      "id": "WE-12",
-      "photo": "veste-pied",
-      "theme": "week-end",
-      "texte": "Ce samedi, va voir ton enfant jouer au foot : *il te cherche* du regard.",
-      "legende": "Le match du samedi matin, pour lui, c’est la Coupe du monde. Ta présence au bord du terrain, il s’en souviendra longtemps.\n\nTon enfant joue à quel poste ?",
-      "hashtags": [
-        "#AITEConsulting",
-        "#BonWeekEnd",
-        "#Famille",
-        "#Douala"
-      ]
-    },
-    {
-      "serie": "Week-end 21-22 novembre — au choix",
+      "serie": "Week-end 21-22 novembre — version 2",
       "semaine": null,
       "jour": "dimanche",
       "moment": "dimanche",
@@ -3106,15 +3107,15 @@
       "titre": "",
       "points": [],
       "numero": null,
-      "id": "DIM-14",
-      "photo": "tunique",
-      "theme": "week-end",
-      "texte": "Ce dimanche, laisse les enfants te *battre au ludo* : tu as toute la journée.",
-      "legende": "Pas d’horaire aujourd’hui, pas de course. Juste le plateau sur la table, les cris de victoire et les revanches.\n\nQui est le champion du ludo chez toi ?",
+      "id": "DIM-15",
+      "photo": "veste-pied",
+      "theme": "recharger avant lundi",
+      "texte": "Le lion aussi se repose avant de chasser : demain, tu *attaques*.",
+      "legende": "Le plus fort sait poser la patte avant le grand bond. Aujourd’hui, tu recharges : sommeil, bon repas, tête claire. Demain, tu reviens avec la faim, mola.\n\nQuel objectif tu attaques en premier lundi ?",
       "hashtags": [
         "#AITEConsulting",
+        "#Motivation",
         "#BonDimanche",
-        "#Famille",
         "#Douala"
       ]
     }
