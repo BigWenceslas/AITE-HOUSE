@@ -1333,3 +1333,53 @@ La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp 
 
 #LaVerandah #Douala #Makepe #BonDimanche #FinDeWeekEnd
 ```
+
+## Lundi 23 novembre — au choix
+
+### Lundi 12h — Pensée (photo ronde) · undefined
+
+![VD-LUN-5](VD-LUN-5-vd-sombre.jpg)
+
+**Visuel :** Bon lundi — Ton patron a eu ta journée, La Vérandah aura ta soirée, mola.
+
+**Légende à publier :**
+
+```text
+Lundi, tu as donné ta journée au boulot, c’est normal. Le soir, c’est pour toi et les gars : on se capte à La Vérandah. Tu arrives à quelle heure ?
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #Douala #Makepe #BonLundi #AfterWork
+```
+
+### Lundi 17h — Ambiance · undefined
+
+![VD-LUN-6](VD-LUN-6-vd-ambiance.jpg)
+
+**Visuel :** Lundi soir à Makepe — LA SEMAINE COMMENCE ICI, ON EST ENSEMBLE
+
+**Légende à publier :**
+
+```text
+Nouvelle semaine, même famille. Après le boulot, passe à La Vérandah, on la lance ensemble 🔥 Tu viens avec qui ce soir ?
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #Douala #Makepe #BonLundi #AfterWork
+```
+
+### Lundi 19h — Pensée (photo ronde) · undefined
+
+![VD-LUN-7](VD-LUN-7-vd-sombre.jpg)
+
+**Visuel :** Bon lundi — Mola, on lance la semaine ensemble : ce soir, ça va chauffer à Makepe.
+
+**Légende à publier :**
+
+```text
+Une bonne semaine, ça se lance dès le lundi soir. On t’attend à La Vérandah. Tu es dedans ou bien ?
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #Douala #Makepe #BonLundi #AfterWork
+```

@@ -3118,6 +3118,93 @@
         "#BonDimanche",
         "#Douala"
       ]
+    },
+    {
+      "serie": "Lundi 23 novembre — au choix",
+      "semaine": null,
+      "jour": "lundi",
+      "moment": "lundi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-40",
+      "etiquette": "Conseil budget",
+      "photo": "tunique",
+      "theme": "Budget 2027 (fin d'année, gestion)",
+      "titre": "Budget 2027 : 4 étapes pour le *boucler avant janvier*",
+      "points": [
+        "Partez des réalisations 2026 extraites de l’ERP, pas de mémoire",
+        "Faites chiffrer chaque service par son responsable, ligne par ligne",
+        "Séparez les charges fixes des dépenses que vous pouvez différer",
+        "Saisissez le budget dans l’ERP et comparez-le au réel chaque mois"
+      ],
+      "legende": "Fin novembre, dans beaucoup de PME de Douala, le budget se prépare la veille de la réunion : on reprend le fichier de l’an dernier, on change l’année, et c’est bon. En mars, plus personne ne l’ouvre. Un budget utile part de ce que l’entreprise a vraiment dépensé en 2026, chiffré par ceux qui engagent la dépense. Dans Odoo, le budget saisi par compte analytique se compare au réel chaque mois, sans ressortir les tableurs. La loi de finances 2027 n’est pas encore publiée et ses mesures fiscales restent à connaître : gardez une ligne à réviser en janvier.\n\nVotre budget 2027, il sera prêt avant les fêtes, ou on attend février ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Douala",
+        "#PMECameroun",
+        "#Budget2027",
+        "#Odoo"
+      ]
+    },
+    {
+      "serie": "Lundi 23 novembre — au choix",
+      "semaine": null,
+      "jour": "lundi",
+      "moment": "lundi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-41",
+      "etiquette": "Conseil Microsoft 365",
+      "photo": "blazer",
+      "theme": "OneDrive et SharePoint : maîtriser les liens de partage qui restent ouverts",
+      "titre": "OneDrive : gardez la main sur vos *liens de partage*",
+      "points": [
+        "Partagez avec des personnes précises plutôt qu’avec « tout le monde »",
+        "Fixez une date d’expiration aux liens envoyés hors de l’entreprise",
+        "Ouvrez « Gérer l’accès » chaque mois sur les dossiers sensibles",
+        "Retirez l’accès des prestataires dès la fin de leur mission"
+      ],
+      "legende": "Un contrat envoyé à un prestataire de Bonamoussadi par un lien OneDrive ouvert à « toute personne disposant du lien ». La mission est finie depuis des mois, mais le lien marche toujours. Il a été transféré dans un groupe WhatsApp, puis dans un autre. Le dossier se balade, et plus personne ne sait qui le lit.\n\nDans Microsoft 365, un lien de partage reste actif tant qu’on ne le supprime pas, sauf si une date d’expiration a été fixée. Le bon réflexe : choisir des personnes précises, limiter dans le temps les liens vers l’extérieur et passer chaque mois sur « Gérer l’accès » des dossiers RH, finance et contrats.\n\nAujourd’hui, pouvez-vous dire qui a encore accès à vos dossiers de paie ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Microsoft365",
+        "#OneDrive",
+        "#SecuriteDesDonnees",
+        "#Douala"
+      ]
+    },
+    {
+      "serie": "Lundi 23 novembre — au choix",
+      "semaine": null,
+      "jour": "lundi",
+      "moment": "lundi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-42",
+      "etiquette": "Conseil clients",
+      "photo": "ndop-pied",
+      "theme": "Suivi des réclamations clients",
+      "titre": "Réclamations clients : 4 règles pour *ne plus en perdre*",
+      "points": [
+        "Enregistrez chaque plainte au même endroit, même reçue sur WhatsApp",
+        "Désignez un responsable et une date de réponse pour chacune",
+        "Rappelez le client une fois le problème réglé pour vérifier",
+        "Passez en revue les plaintes du mois pour corriger leur cause"
+      ],
+      "legende": "Le client a écrit au commercial sur WhatsApp, appelé la secrétaire, puis il est passé au bureau. Trois personnes au courant, aucune ne s’en occupe : chacun pense que l’autre a géré. Deux semaines après, il signe chez le concurrent, et vous l’apprenez par hasard. Là, ça a déjà gâté. Une réclamation oubliée ne vous coûte pas une facture : elle vous coûte le client. Dans un ERP comme Odoo, un ticket ou une activité planifiée donne à chaque plainte un responsable, une échéance et un historique visible de tous. Le lundi, quelques minutes suffisent pour voir ce qui traîne.\n\nChez vous, qui sait combien de réclamations sont encore ouvertes ce matin ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Cameroun",
+        "#RelationClient",
+        "#PMECameroun",
+        "#Odoo"
+      ]
     }
   ]
 }

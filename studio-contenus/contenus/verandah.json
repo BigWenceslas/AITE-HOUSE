@@ -1661,6 +1661,69 @@
       "etiquette": "Bon dimanche",
       "photo": "tunique",
       "texte": "Lundi peut attendre, mola : on finit le week-end *en beauté* à La Vérandah."
+    },
+    {
+      "serie": "Lundi 23 novembre — au choix",
+      "jour": "lundi",
+      "id": "VD-LUN-5",
+      "moment": "lundi 12h",
+      "alcool": false,
+      "points": [],
+      "legende": "Lundi, tu as donné ta journée au boulot, c’est normal. Le soir, c’est pour toi et les gars : on se capte à La Vérandah. Tu arrives à quelle heure ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#BonLundi",
+        "#AfterWork"
+      ],
+      "modele": "vd-sombre",
+      "titre": "",
+      "etiquette": "Bon lundi",
+      "photo": "boubou",
+      "texte": "Ton patron a eu ta *journée*, La Vérandah aura ta *soirée*, mola."
+    },
+    {
+      "serie": "Lundi 23 novembre — au choix",
+      "jour": "lundi",
+      "id": "VD-LUN-6",
+      "moment": "lundi 17h",
+      "alcool": false,
+      "points": [],
+      "legende": "Nouvelle semaine, même famille. Après le boulot, passe à La Vérandah, on la lance ensemble 🔥 Tu viens avec qui ce soir ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#BonLundi",
+        "#AfterWork"
+      ],
+      "modele": "vd-ambiance",
+      "titre": "Lundi soir à Makepe",
+      "etiquette": "",
+      "photo": null,
+      "texte": "LA SEMAINE COMMENCE ICI, ON EST *ENSEMBLE*"
+    },
+    {
+      "serie": "Lundi 23 novembre — au choix",
+      "jour": "lundi",
+      "id": "VD-LUN-7",
+      "moment": "lundi 19h",
+      "alcool": false,
+      "points": [],
+      "legende": "Une bonne semaine, ça se lance dès le lundi soir. On t’attend à La Vérandah. Tu es dedans ou bien ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#BonLundi",
+        "#AfterWork"
+      ],
+      "modele": "vd-sombre",
+      "titre": "",
+      "etiquette": "Bon lundi",
+      "photo": "veste-pied",
+      "texte": "Mola, on *lance* la semaine ensemble : ce soir, ça va *chauffer* à Makepe."
     }
   ]
 }
