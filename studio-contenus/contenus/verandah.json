@@ -1724,6 +1724,69 @@
       "etiquette": "Bon lundi",
       "photo": "veste-pied",
       "texte": "Mola, on *lance* la semaine ensemble : ce soir, ça va *chauffer* à Makepe."
+    },
+    {
+      "serie": "Mercredi 25 novembre — au choix",
+      "jour": "mercredi",
+      "id": "VD-MER-8",
+      "moment": "mercredi 12h",
+      "alcool": false,
+      "points": [],
+      "legende": "Pas besoin d’attendre la fin de la semaine pour se retrouver. Ce soir, La Vérandah t’attend, viens avec la famille. Tu viens avec qui ? 🎉\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#BonMercredi",
+        "#AfterWork"
+      ],
+      "modele": "vd-sombre",
+      "titre": "",
+      "etiquette": "Bon mercredi",
+      "photo": "tunique",
+      "texte": "Le mercredi, c’est le *petit vendredi* : on se capte ce soir, mola !"
+    },
+    {
+      "serie": "Mercredi 25 novembre — au choix",
+      "jour": "mercredi",
+      "id": "VD-MER-9",
+      "moment": "mercredi 17h",
+      "alcool": false,
+      "points": [],
+      "legende": "Trois jours de boulot, tu as mérité ta pause. Ferme le dossier, appelle les gars et viens. Tu arrives à quelle heure ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#BonMercredi",
+        "#AfterWork"
+      ],
+      "modele": "vd-sombre",
+      "titre": "",
+      "etiquette": "Bon mercredi",
+      "photo": "blazer",
+      "texte": "Depuis lundi tu *gères* ? Ce soir, mola, viens te *mettre bien* à La Vérandah."
+    },
+    {
+      "serie": "Mercredi 25 novembre — au choix",
+      "jour": "mercredi",
+      "id": "VD-MER-10",
+      "moment": "mercredi 19h",
+      "alcool": false,
+      "points": [],
+      "legende": "Un message dans le groupe, et la soirée est lancée. On t’attend à La Vérandah avec toute la bande. Tu préviens qui en premier ? 📲\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#BonMercredi",
+        "#AfterWork"
+      ],
+      "modele": "vd-ambiance",
+      "titre": "Mercredi soir, mola",
+      "etiquette": "",
+      "photo": null,
+      "texte": "APPELLE LES GARS, ON SE MET BIEN CE SOIR"
     }
   ]
 }

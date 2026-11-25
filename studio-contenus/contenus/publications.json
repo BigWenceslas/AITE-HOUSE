@@ -3205,6 +3205,93 @@
         "#PMECameroun",
         "#Odoo"
       ]
+    },
+    {
+      "serie": "Mercredi 25 novembre — au choix",
+      "semaine": null,
+      "jour": "mercredi",
+      "moment": "mercredi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-43",
+      "etiquette": "Conseil stock",
+      "photo": "boubou",
+      "theme": "Emballages consignés (casiers, bouteilles)",
+      "titre": "Casiers et bouteilles : *suivez vos consignes* dans l’ERP",
+      "points": [
+        "Créez les emballages consignés comme des articles à part dans l’ERP",
+        "Facturez la consigne au client avec chaque livraison de boissons",
+        "Enregistrez chaque casier vide rendu, client par client, sur un bon",
+        "Rapprochez chaque mois votre stock de vides avec le fournisseur"
+      ],
+      "legende": "Dans un dépôt de boissons de Bonabéri, le gérant compte les casiers vides derrière le magasin. Le distributeur en réclame plus qu’il n’en voit. Certains sont chez les bars clients, d’autres ont disparu, et personne n’a de liste. La consigne, c’est de l’argent posé dans le plastique.\n\nUn ERP comme Odoo peut suivre les emballages consignés comme des articles : la consigne part avec la livraison, revient avec le casier vide, et chaque client a son solde. En fin de mois, vous savez ce que vous devez au fournisseur et ce que vos clients vous doivent, en casiers comme en francs.\n\nAujourd’hui, pouvez-vous dire combien de vos casiers sont dehors, et chez qui ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Douala",
+        "#GestionDeStock",
+        "#Odoo",
+        "#PME"
+      ]
+    },
+    {
+      "serie": "Mercredi 25 novembre — au choix",
+      "semaine": null,
+      "jour": "mercredi",
+      "moment": "mercredi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-44",
+      "etiquette": "Conseil informatique",
+      "photo": "veste-pied",
+      "theme": "Fin de support Windows 11 23H2 (Entreprise, Éducation) et Exchange 2016/2019",
+      "titre": "Windows 11 23H2 : *fin des mises à jour* ce mois-ci",
+      "points": [
+        "Listez les PC en 23H2 : Paramètres, Système, Informations système",
+        "Passez-les à une version récente, en commençant par la direction",
+        "Sauvegardez les données de chaque poste avant de lancer la mise à niveau",
+        "Exchange 2016 ou 2019 : planifiez la migration, il n’est plus suivi"
+      ],
+      "legende": "Lundi matin, au service comptable. Le PC démarre, Excel s’ouvre, tout semble normal. Pourtant, dans les informations système, il est écrit « Windows 11 23H2 ». Pour les éditions Entreprise et Éducation, la mise à jour de novembre 2026 est la dernière : après, plus aucun correctif de sécurité.\n\nUn poste sans correctifs, c’est une porte que plus personne ne referme, et il suffit d’un seul pour exposer le réseau. Même chose côté serveur : Exchange 2016 et 2019 ne sont plus pris en charge par Microsoft. Si votre messagerie tourne encore dessus, la migration doit entrer au budget maintenant, pas après l’incident.\n\nChez vous, combien de postes tournent encore en 23H2, et qui en tient la liste ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Windows11",
+        "#Cybersecurite",
+        "#PME",
+        "#Douala"
+      ]
+    },
+    {
+      "serie": "Mercredi 25 novembre — au choix",
+      "semaine": null,
+      "jour": "mercredi",
+      "moment": "mercredi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-45",
+      "etiquette": "Conseil ventes",
+      "photo": "ndop",
+      "theme": "Retours clients et avoirs",
+      "titre": "Retours clients : *pas d’avoir* sans marchandise reçue",
+      "points": [
+        "Exigez un bon de retour signé avant toute reprise de marchandise",
+        "Contrôlez l’état et la quantité au magasin avant d’émettre l’avoir",
+        "Liez chaque avoir à sa facture d’origine et à son motif dans l’ERP",
+        "Faites valider les gros avoirs par une autre personne que le vendeur"
+      ],
+      "legende": "Un client de la quincaillerie appelle : dix sacs de ciment sont arrivés abîmés. Pour garder la relation, le commercial fait l’avoir au téléphone. Le camion ne ramène que six sacs. À l’inventaire, le stock ne colle plus et une partie du chiffre d’affaires a fondu sans que personne ne sache pourquoi.\n\nUn avoir, c’est de l’argent qui sort. Il doit suivre le même circuit qu’une dépense : un bon de retour, un contrôle au magasin, une validation. Dans l’ERP, l’avoir lié à sa facture d’origine remet le stock à jour et garde le motif. Vous voyez enfin quels produits et quels clients reviennent le plus souvent.\n\nQui, chez vous, peut émettre un avoir sans que la marchandise soit rentrée ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Cameroun",
+        "#PME",
+        "#ERP",
+        "#Facturation"
+      ]
     }
   ]
 }

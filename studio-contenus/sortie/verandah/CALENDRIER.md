@@ -1383,3 +1383,53 @@ La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp 
 
 #LaVerandah #Douala #Makepe #BonLundi #AfterWork
 ```
+
+## Mercredi 25 novembre — au choix
+
+### Mercredi 12h — Pensée (photo ronde) · undefined
+
+![VD-MER-8](VD-MER-8-vd-sombre.jpg)
+
+**Visuel :** Bon mercredi — Le mercredi, c’est le petit vendredi : on se capte ce soir, mola !
+
+**Légende à publier :**
+
+```text
+Pas besoin d’attendre la fin de la semaine pour se retrouver. Ce soir, La Vérandah t’attend, viens avec la famille. Tu viens avec qui ? 🎉
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #Douala #Makepe #BonMercredi #AfterWork
+```
+
+### Mercredi 17h — Pensée (photo ronde) · undefined
+
+![VD-MER-9](VD-MER-9-vd-sombre.jpg)
+
+**Visuel :** Bon mercredi — Depuis lundi tu gères ? Ce soir, mola, viens te mettre bien à La Vérandah.
+
+**Légende à publier :**
+
+```text
+Trois jours de boulot, tu as mérité ta pause. Ferme le dossier, appelle les gars et viens. Tu arrives à quelle heure ?
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #Douala #Makepe #BonMercredi #AfterWork
+```
+
+### Mercredi 19h — Ambiance · undefined
+
+![VD-MER-10](VD-MER-10-vd-ambiance.jpg)
+
+**Visuel :** Mercredi soir, mola — APPELLE LES GARS, ON SE MET BIEN CE SOIR
+
+**Légende à publier :**
+
+```text
+Un message dans le groupe, et la soirée est lancée. On t’attend à La Vérandah avec toute la bande. Tu préviens qui en premier ? 📲
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #Douala #Makepe #BonMercredi #AfterWork
+```
