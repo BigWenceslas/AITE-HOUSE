@@ -46,7 +46,7 @@ chaque société qui a un plan comptable (sinon juste après son chargement), et
 exemple « Carte posée : 101 produits en 30 familles ; salle : 12 tables ;
 équipe : 7 employés, 3 comptes. Rien n'a été créé en double. »). Le nom de la société n'est pas changé. Désinstaller le module ne retire pas la carte.
 """,
-    'version': '18.0.1.3.3',
+    'version': '18.0.1.3.4',
     'category': 'Sales/Point of Sale',
     'author': "AITE Consulting",
     'website': "https://aiteconsulting.com",

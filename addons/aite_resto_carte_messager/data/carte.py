@@ -115,6 +115,10 @@ DEMO = ["Castel 65 cl", "33 Export 65 cl", "Pizza Margherita", "Pizza Reine",
         "Petit déjeuner complet", "Beignets haricots bouillie"]
 Produits = env['product.template'].with_context(active_test=False)
 demo = Produits.search([('name', 'in', DEMO), ('available_in_pos', '=', True)])
+if demo and MODE_MODULE:
+    refuser("la carte de démonstration Le Messager n'est pas posée : cette base vend déjà "
+            "d'autres produits (%s). Ce module de démonstration est fait pour une base neuve ; "
+            "il ne mélange pas deux cartes." % ", ".join(demo.mapped('name')))
 if demo:
     refuser("✗ cette base porte la carte de démonstration de seed_restaurant.py (%s) : rien "
             "n'est posé ; créer une base avec « ODOO_DB=aite_messager dev/setup_env.sh "

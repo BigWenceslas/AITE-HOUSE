@@ -118,3 +118,23 @@ class TestCarteMessager(TransactionCase):
                       % (self.env.company.name, nb_familles), message)
         for technique in ("seed", "OK", "créés :", "en place", "|", "attendus"):
             self.assertNotIn(technique, message)
+
+    # ------------------------------------------------------------------
+    # Une base qui a déjà une autre carte : la mise à niveau ne bloque pas
+    # ------------------------------------------------------------------
+
+    def test_autre_carte_ne_bloque_pas_la_mise_a_niveau(self):
+        """Une base qui vend déjà « Castel 65 cl » (carte de démonstration de
+        seed_restaurant.py, ou vrai produit d'un bar) : la carte n'est pas
+        posée, mais l'installation et la mise à niveau des modules passent ;
+        le bilan dit pourquoi, en français de manager."""
+        self.env['product.template'].create({'name': "Castel 65 cl", 'available_in_pos': True})
+        avant = self.env['product.template'].search_count([])
+        employes = self.env['hr.employee'].search_count([])
+        bilans = self.env['pos.config']._aite_poser_carte_messager()
+        texte = "\n".join(bilans)
+        self.assertIn("Castel 65 cl", texte)
+        self.assertIn("n'est pas posée", texte)
+        self.assertNotIn("setup_env", texte)
+        self.assertEqual(self.env['product.template'].search_count([]), avant, "rien n'est posé")
+        self.assertEqual(self.env['hr.employee'].search_count([]), employes, "ni l'équipe")

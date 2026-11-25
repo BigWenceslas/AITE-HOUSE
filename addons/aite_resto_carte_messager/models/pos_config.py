@@ -2,6 +2,7 @@
 import logging
 
 from odoo import _, api, models
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -25,7 +26,17 @@ class PosConfig(models.Model):
                 bilan = _("%s : aucune caisse au service à table contrôlé — la carte n'est pas "
                           "posée.", company.name)
             else:
-                bilan = "%s : %s" % (company.name, jouer_carte(env))
+                # Un refus (la base a déjà une autre carte) ne doit jamais bloquer
+                # l'installation ni la mise à niveau des modules : rien n'est posé
+                # pour cette société (retour au point de sauvegarde), le bilan dit pourquoi.
+                try:
+                    with self.env.cr.savepoint():
+                        bilan = "%s : %s" % (company.name, jouer_carte(env))
+                except UserError as refus:
+                    bilan = "%s : %s" % (company.name, refus.args[0])
+                    _logger.warning("Carte Le Messager — %s", bilan)
+                    bilans.append(bilan)
+                    continue
             _logger.info("Carte Le Messager — %s", bilan)
             bilans.append(bilan)
         return bilans
