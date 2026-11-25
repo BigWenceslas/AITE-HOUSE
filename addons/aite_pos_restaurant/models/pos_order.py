@@ -70,7 +70,7 @@ CHAMPS_SERVEUR = (
     'aite_mode_restaurant',
 )
 # Posés par la caisse à la création, puis figés.
-CHAMPS_FIGES = ('aite_ouverte_par_id', 'aite_origine_uuid')
+CHAMPS_FIGES = ('aite_ouverte_par_id', 'aite_origine_uuid', 'aite_groupe_uuid')
 ETATS_REGLES = ('paid', 'done', 'invoiced')
 PRECISION = 6
 NATURES_AUTORISEES = ('produit', 'table', 'fermeture')
@@ -95,6 +95,13 @@ class PosOrder(models.Model):
     aite_origine_uuid = fields.Char(
         string="Addition d'origine", readonly=True, copy=False,
         help="Rempli sur une part née d'une division (12B).")
+    aite_groupe_uuid = fields.Char(
+        string="Table divisée", readonly=True, copy=False,
+        help="Rempli sur une part née d'une division : l'addition divisée la "
+             "première fois (la table), pour toutes ses parts, parts de parts "
+             "comprises (12B, 12BB). « Addition » montre ensemble les additions "
+             "ouvertes d'un même groupe, même quand une part intermédiaire est "
+             "déjà payée.")
     # Le bouton « Saisies » de la fiche suit le mode de la caisse, et non
     # « Ouverte par » : une addition ouverte avant la mise à niveau, ou une
     # copie ancienne, a des saisies sans « ouverte par ».

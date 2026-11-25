@@ -88,18 +88,22 @@ class TestCommande(RestaurantCommon):
         _addition, origine = self._table_12()
         part = Addition(personnes=0, ouverte_par=self.awa, nom="12B")
         part.valeurs['aite_origine_uuid'] = origine.uuid
+        part.valeurs['aite_groupe_uuid'] = origine.uuid
         part.valeurs['aite_heure_ouverture'] = fields.Datetime.to_string(
             origine.aite_heure_ouverture)
         part.ajouter(self.castel, 1)
         commande = self._commande_caisse(part, self.awa, deplacement=True)
         self.assertEqual(commande.aite_origine_uuid, origine.uuid)
+        self.assertEqual(commande.aite_groupe_uuid, origine.uuid)
         self.assertEqual(commande.aite_heure_ouverture, origine.aite_heure_ouverture)
         self.assertEqual(commande.aite_ouverte_par_id, self.awa)
         self.assertEqual(commande.customer_count, 0)
         # L'origine est figée, comme « ouverte par ».
         part.valeurs['aite_origine_uuid'] = 'autre'
+        part.valeurs['aite_groupe_uuid'] = 'autre'
         self._commande_caisse(part, self.awa)
         self.assertEqual(commande.aite_origine_uuid, origine.uuid)
+        self.assertEqual(commande.aite_groupe_uuid, origine.uuid)
 
     def test_table_a_zero_personne_ramenee_a_un(self):
         addition = Addition(self.table_12, 0, self.awa)

@@ -116,9 +116,22 @@ Incrément 6 (les rapports) :
 * la fenêtre de fermeture dit « Entrée ou sortie d'espèces », comme le menu
   de la caisse, et « 1 commande » au singulier (18.0.1.0.6).
 
+Table divisée (18.0.1.0.11) :
+
+* « Addition » sur une table divisée (l'origine, une part ou la part d'une
+  part) imprime toutes les additions encore ouvertes de la table, un ticket
+  par addition, dans l'ordre de création ; sans imprimante, une seule
+  fenêtre les montre empilées (nom, lignes, total) et « J'imprime les
+  additions » les imprime depuis le navigateur ; une addition payée n'y
+  figure plus ; sans division, rien ne change ; une part portée sur une
+  autre table devient l'addition de cette table ; le groupe tient même
+  quand une part intermédiaire est payée et la caisse rechargée (champ
+  « Table divisée ») ; une imprimante en panne en cours de route ne fait
+  reprendre que les additions pas encore imprimées.
+
 Aucune dépendance au socle hôtelier.
 """,
-    'version': '18.0.1.0.10',
+    'version': '18.0.1.0.11',
     'author': "AITE Consulting",
     'website': "https://aiteconsulting.com",
     'category': 'Point of Sale',

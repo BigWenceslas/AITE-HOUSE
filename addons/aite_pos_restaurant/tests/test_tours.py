@@ -383,6 +383,49 @@ class TestToursAdditionPart(AiteToursModeCommon):
         self._ouvrir_la_caisse()
         self.start_pos_tour('AiteAdditionPartTour', login='pos_user')
 
+    def test_addition_de_toutes_les_parts(self):
+        """« Addition » sur une table divisée montre et imprime toutes les
+        additions encore ouvertes du groupe : l'origine, ses parts et la part
+        d'une part ; une part payée n'y figure plus (constat du client,
+        table 7B)."""
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteAdditionToutesLesPartsTour', login='pos_user')
+        additions = self.env['pos.order'].search([
+            ('config_id', '=', self.pos_config.id),
+            ('floating_order_name', '=', '5BB')])
+        self.assertEqual(additions.mapped('state'), ['paid'])
+
+    def test_addition_sans_division(self):
+        """Sans division, « Addition » garde l'aperçu d'Odoo, pour cette
+        addition seule."""
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteAdditionSansDivisionTour', login='pos_user')
+
+    def test_addition_d_une_part_deplacee(self):
+        """Une part portée sur une table libre est l'addition de cette table :
+        « Addition » sur chacune des deux tables ne montre que la sienne."""
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteAdditionPartDeplaceeTour', login='pos_user')
+
+    def test_addition_apres_rechargement(self):
+        """Une part intermédiaire payée (5B) : après un rechargement, 5BB
+        reste avec la table 5 ; une imprimante en panne au second ticket ne
+        fait reprendre que l'addition non imprimée."""
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteAdditionApresRechargementTour', login='pos_user')
+        par_nom = {
+            nom: self.env['pos.order'].search([
+                ('config_id', '=', self.pos_config.id), ('floating_order_name', '=', nom)])
+            for nom in ('5B', '5BB')}
+        origine = self.env['pos.order'].search([
+            ('config_id', '=', self.pos_config.id), ('table_id.table_number', '=', 5)])
+        self.assertEqual(par_nom['5B'].state, 'paid')
+        self.assertEqual(par_nom['5BB'].state, 'draft')
+        self.assertEqual(par_nom['5BB'].aite_origine_uuid, par_nom['5B'].uuid)
+        # La clé du groupe : l'addition divisée la première fois, la table 5.
+        self.assertEqual(par_nom['5B'].aite_groupe_uuid, origine.uuid)
+        self.assertEqual(par_nom['5BB'].aite_groupe_uuid, origine.uuid)
+
 
 class TestToursAnnulation(AiteToursModeCommon):
     """Incrément 4 : verrou après envoi, code d'un responsable, motifs,

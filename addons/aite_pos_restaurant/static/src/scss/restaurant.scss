@@ -159,3 +159,33 @@ $aite-orange: rgb(255, 152, 0);
         border-radius: 50%;
     }
 }
+
+// « Addition » sur une table divisée : les additions empilées dans une seule
+// fenêtre (AiteAdditionsPopup) ; à l'impression du navigateur, un ticket par
+// page.
+.aite-additions {
+    // Le nom et le total de chaque addition, en bandeau au-dessus du ticket.
+    .aite-addition-entete {
+        background-color: var(--bs-gray-200, #e9ecef);
+        border-radius: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        font-size: 1.4rem;
+        font-weight: 700;
+    }
+    .aite-additions-somme {
+        font-size: 1.25rem;
+        font-weight: 700;
+    }
+    .aite-addition + .aite-addition {
+        border-top: 2px dashed var(--bs-gray-400, #ced4da);
+        padding-top: 1rem;
+    }
+}
+@media print {
+    .aite-additions-impression > .pos-receipt {
+        break-after: page;
+    }
+    .aite-additions-impression > .pos-receipt:last-child {
+        break-after: auto;
+    }
+}

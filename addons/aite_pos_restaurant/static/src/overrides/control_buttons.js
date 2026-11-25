@@ -11,13 +11,20 @@
  * - incrément 3 : « {p} personnes » ouvre l'étape personnes de notre fenêtre
  *   (huit gros boutons, pas de zéro) au lieu de la fenêtre numérique d'Odoo
  *   (« Des convives ? », touche 0, virgule, « Discard ») ; après une
- *   « Addition » imprimée, le poste revient au plan verrouillé. */
+ *   « Addition » imprimée, le poste revient au plan verrouillé ;
+ * - « Addition » sur une table divisée (constat du client, table 7B) : toutes
+ *   les additions encore ouvertes du groupe (l'origine et ses parts,
+ *   `aiteAdditionsDuGroupe`) partent à l'imprimante, un ticket par addition,
+ *   dans l'ordre de création ; sans imprimante, une seule fenêtre les montre
+ *   empilées (`AiteAdditionsPopup`). Sans division, une seule addition : le
+ *   comportement d'avant (l'aperçu d'Odoo sans imprimante). */
 import { patch } from "@web/core/utils/patch";
 import { ControlButtons } from "@point_of_sale/app/screens/product_screen/control_buttons/control_buttons";
 import { OrderReceipt } from "@point_of_sale/app/screens/receipt_screen/receipt/order_receipt";
 import "@pos_restaurant/app/control_buttons/control_buttons";
 import { BillScreen } from "@pos_restaurant/app/bill_screen/bill_screen";
 import { MESSAGES, TEXTES, TITRES } from "@aite_pos_restaurant/utils/messages";
+import { AiteAdditionsPopup } from "@aite_pos_restaurant/components/additions_popup/additions_popup";
 
 patch(ControlButtons.prototype, {
     setup() {
@@ -75,10 +82,21 @@ patch(ControlButtons.prototype, {
             return super.clickPrintBill(...arguments);
         }
         const order = this.pos.get_order();
-        const imprime = await this.printer.print(OrderReceipt, {
-            data: this.pos.orderExportForPrinting(order),
-            formatCurrency: this.env.utils.formatCurrency,
-        });
+        const additions = this.pos.aiteAdditionsDuGroupe(order);
+        let imprime = false;
+        let rang = 0;
+        for (; rang < additions.length; rang++) {
+            if (rang) {
+                await this.pos.aiteAttendreRendu();
+            }
+            imprime = await this.printer.print(OrderReceipt, {
+                data: this.pos.orderExportForPrinting(additions[rang]),
+                formatCurrency: this.env.utils.formatCurrency,
+            });
+            if (!imprime) {
+                break; // pas d'imprimante (ou panne) : l'aperçu, ci-dessous
+            }
+        }
         if (imprime) {
             this.dialog.closeAll();
             // L'addition d'une table est partie à l'imprimante : retour au plan
@@ -88,6 +106,12 @@ patch(ControlButtons.prototype, {
             if (order?.table_id) {
                 this.pos.showScreen("FloorScreen");
             }
+        } else if (additions.length > 1) {
+            // Une panne au milieu : seulement les additions pas encore parties.
+            this.dialog.add(AiteAdditionsPopup, {
+                orders: additions.slice(rang),
+                dejaImprimees: rang,
+            });
         } else {
             this.dialog.add(BillScreen);
         }

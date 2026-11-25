@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- Les additions d'une table divisée, empilées (AiteAdditionsPopup) :
+         pour chacune, son nom, son total et son ticket ; en bas, le total des
+         additions et « J'imprime les additions » (impression du navigateur). -->
+    <t t-name="aite_pos_restaurant.AiteAdditionsPopup">
+        <Dialog title="titre" contentClass="'aite-additions'">
+            <div class="aite-additions-sous-titre text-center text-muted mb-3">
+                <t t-esc="textes.additionsOuvertes(additions.length)"/>
+                <t t-if="props.dejaImprimees">
+                    <br/><t t-esc="textes.additionsDejaImprimees(props.dejaImprimees)"/>
+                </t>
+            </div>
+            <t t-foreach="additions" t-as="order" t-key="order.uuid">
+                <div class="aite-addition mb-4" t-att-data-aite-addition="pos.aiteNomAddition(order)">
+                    <div class="aite-addition-entete d-flex justify-content-between align-items-baseline mb-2">
+                        <span class="aite-addition-nom" t-esc="nom(order)"/>
+                        <span class="aite-addition-total" t-esc="total(order)"/>
+                    </div>
+                    <div class="text-center">
+                        <div class="d-inline-block p-3 border rounded bg-view">
+                            <OrderReceipt data="donnees(order)" formatCurrency="env.utils.formatCurrency"/>
+                        </div>
+                    </div>
+                </div>
+            </t>
+            <div class="aite-additions-somme d-flex justify-content-between border-top pt-2 px-1">
+                <span t-esc="textes.totalDesAdditions"/>
+                <span t-esc="totalGeneral"/>
+            </div>
+            <t t-set-slot="footer">
+                <div class="d-flex w-100 justify-content-start gap-2">
+                    <button class="btn btn-lg btn-primary aite-additions-imprimer" t-on-click="imprimer"
+                            t-att-disabled="state.enCours">
+                        <i t-attf-class="fa {{state.enCours ? 'fa-fw fa-spin fa-circle-o-notch' : 'fa-print'}} me-1"
+                           role="img" aria-label="Imprimer" title="Imprimer"/>
+                        <t t-esc="textes.imprimerLesAdditions"/>
+                    </button>
+                </div>
+            </t>
+        </Dialog>
+    </t>
+
+</templates>

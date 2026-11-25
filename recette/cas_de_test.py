@@ -1475,4 +1475,20 @@ CAS = [
      "de la caisse « Restaurant ». Étape 3 : « Bar » a « Espèces » et "
      "« Mobile Money » ; ses Espèces sont sur un nouveau journal « Espèces "
      "Bar » ; aucun journal d'espèces n'est resté sans mode de paiement."),
+    ("R105", "R", 1, "Caisse au service à table contrôlé, sans imprimante "
+     "de tickets ; table 7 avec trois produits envoyés",
+     "18.0.1.0.11 — « Addition » sur une table divisée montre toutes les "
+     "additions",
+     "1. Diviser la table 7 (une part 7B), puis diviser 7B (7BB).\n2. Sur "
+     "7, 7B puis 7BB : toucher « Addition ».\n3. « J'imprime les "
+     "additions ».\n4. Payer 7B, recharger la page, table 7 → "
+     "« Addition ».\n5. Diviser une table 4, porter la part sur une table "
+     "libre, « Addition » sur chacune.\n6. Une table sans division : "
+     "« Addition ».",
+     "Étape 2 : la même fenêtre « Les additions de la table 7 », avec 7, "
+     "7B et 7BB dans cet ordre, chacune avec son nom, ses lignes et son "
+     "total, puis le total des additions. Étape 3 : un ticket par page. "
+     "Étape 4 : 7 et 7BB (7B payée n'y est plus). Étape 5 : chaque table "
+     "n'a que son addition (l'aperçu habituel). Étape 6 : l'aperçu "
+     "habituel, une seule addition."),
 ]

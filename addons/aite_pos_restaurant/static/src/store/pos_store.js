@@ -604,6 +604,81 @@ patch(PosStore.prototype, {
         );
     },
 
+    /** Les additions d'une table divisée (constat du client, table 7B) :
+     * l'origine et toutes ses parts — parts de parts comprises — encore
+     * ouvertes dans la session, dans l'ordre de création. Sans division,
+     * l'addition seule.
+     *
+     * - Le groupe : `aite_groupe_uuid`, posé à la division (la première
+     *   addition divisée), le même pour 12B et 12BB ; il ne dépend pas de ce
+     *   que le poste a chargé (12B payée puis la page rechargée : 12BB reste
+     *   avec 12). Une part plus ancienne, sans groupe, remonte la chaîne
+     *   `aite_origine_uuid` jusqu'à une addition sans origine ou qui n'est
+     *   plus sur le poste.
+     * - La table : celle de la première addition ouverte du groupe qui a une
+     *   table (l'origine). Une part portée sur une autre table devient
+     *   l'addition de cette table : elle quitte le groupe, seule. */
+    aiteAdditionsDuGroupe(order) {
+        if (!order) {
+            return [];
+        }
+        const additions = this.models["pos.order"].getAll();
+        const parUuid = new Map(additions.map((o) => [o.uuid, o]));
+        const cle = (addition) => {
+            if (addition.aite_groupe_uuid) {
+                return addition.aite_groupe_uuid;
+            }
+            const vues = new Set();
+            let uuid = addition.uuid;
+            let courante = addition;
+            while (courante?.aite_origine_uuid && !vues.has(uuid)) {
+                vues.add(uuid);
+                uuid = courante.aite_origine_uuid;
+                courante = parUuid.get(uuid);
+            }
+            return courante?.aite_groupe_uuid || uuid;
+        };
+        const sienne = cle(order);
+        const session = order.session_id?.id;
+        // L'ordre de création : le numéro du serveur ; une addition pas encore
+        // enregistrée vient après, dans l'ordre où le poste l'a créée.
+        const rang = (o) => (typeof o.id === "number" ? o.id : Infinity);
+        const membres = additions
+            .filter(
+                (o) =>
+                    o === order ||
+                    (!o.finalized && o.session_id?.id === session && cle(o) === sienne)
+            )
+            .sort((a, b) => rang(a) - rang(b));
+        const tableDuGroupe = membres.find((o) => o.table_id)?.table_id?.id;
+        if (order.table_id && order.table_id.id !== tableDuGroupe) {
+            return [order];
+        }
+        return membres.filter((o) => !o.table_id || o.table_id.id === tableDuGroupe);
+    },
+
+    /** Entre deux rendus de tickets (`renderer.toHtml`) : le conteneur de
+     * rendu d'Odoo se vide après chaque ticket ; un second ticket demandé
+     * dans la même image d'écran n'est jamais monté (le conteneur ne voit pas
+     * le changement) et la promesse ne se résout pas. On laisse passer deux
+     * images d'écran. */
+    async aiteAttendreRendu() {
+        for (let i = 0; i < 2; i++) {
+            await new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve)));
+        }
+    },
+
+    /** Le titre de la fenêtre des additions : la table du groupe
+     * (« Les additions de la table 5 ») ; sans table (l'origine payée), les
+     * noms des additions (« Les additions 3B, 3C ») : une part n'est pas une
+     * table. */
+    aiteTitreDesAdditions(orders) {
+        const surLePlan = orders.find((o) => o.table_id);
+        return surLePlan
+            ? TITRES.additions(this.aiteNomAddition(surLePlan))
+            : TITRES.additionsSansTable(orders.map((o) => this.aiteNomAddition(o)));
+    },
+
     aiteTitreEcran(name, order) {
         if (name === "TicketScreen") {
             return TITRES.commandes;

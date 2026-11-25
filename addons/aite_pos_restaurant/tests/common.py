@@ -43,6 +43,7 @@ class Addition:
             'floating_order_name': nom,
             'aite_heure_ouverture': False,
             'aite_origine_uuid': False,
+            'aite_groupe_uuid': False,
         }
         self.lignes = {}        # uuid de ligne → {'id', 'produit', 'qty', 'modifiee'}
         self.supprimees = []    # identifiants des lignes retirées depuis la synchronisation
@@ -246,7 +247,7 @@ class RestaurantCommon(TestPoSCommon):
         addition.supprimees = []
         addition.preparation = json.loads(lu['last_order_preparation_change'] or '{}') \
             or addition.preparation
-        for champ in ('customer_count', 'aite_ouverte_par_id', 'aite_origine_uuid',
+        for champ in ('customer_count', 'aite_ouverte_par_id', 'aite_origine_uuid', 'aite_groupe_uuid',
                       'employee_id', 'table_id'):
             if champ in lu:
                 addition.valeurs[champ] = lu[champ]

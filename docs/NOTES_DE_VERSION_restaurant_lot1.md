@@ -235,6 +235,32 @@ inchangée (aucune vue ni donnée) : un **redémarrage** suffit.
   les touches de chaque ligne de la partie 1.2 (partie 3 ci-dessous).
 - Cahier de recette : domaine **R** (`recette/cas_de_test.py`).
 
+### Corrections après livraison
+
+- **`aite_pos_restaurant` 18.0.1.0.11 — « Addition » sur une table divisée**
+  (constat du client, table 7B : « je ne vois que l'autre partie ») :
+  « Addition » depuis l'origine, une part ou la part d'une part imprime
+  toutes les additions encore ouvertes de la table, un ticket par addition,
+  dans l'ordre de création ; sans imprimante, la fenêtre « Les additions de
+  la table 7 » les empile (nom, total, ticket d'Odoo), avec le total des
+  additions et « J'imprime les additions » (impression du navigateur, un
+  ticket par page). Une addition payée n'y figure plus ; le groupe tient
+  quand une part intermédiaire est payée et la caisse rechargée (nouveau
+  champ « Table divisée », `aite_groupe_uuid`, posé à la division) ; une
+  part portée sur une autre table devient l'addition de cette table ; une
+  imprimante en panne en cours de route ne fait reprendre que les additions
+  pas encore imprimées. Sans division, ou hors « service à table
+  contrôlé », rien ne change. Tests : `TestToursAdditionPart` (5 tours, dont
+  `AiteAdditionPartDeplaceeTour` et `AiteAdditionApresRechargementTour`) ;
+  recette R105. Limites : une part divisée avant cette version, dont
+  l'addition intermédiaire est payée et n'est plus sur le poste, n'a pas de
+  groupe et n'est plus rattachée au reste de la table ; une part dont
+  l'origine est payée garde un titre sans table (« Les additions 3B, 3C »).
+  Hors de ce changement, signalé pour une livraison séparée : une mise à
+  niveau avec le français actif et un mode « Cash » non traduit, utilisé par
+  une session ouverte, échoue (`_aite_traduire_especes`) : fermer les
+  caisses avant de « Mettre à niveau ».
+
 ## 3. Le parcours mesuré à l'écran (`AiteParcoursTour`)
 
 Un service complet, de l'ouverture de la caisse à sa fermeture, puis le

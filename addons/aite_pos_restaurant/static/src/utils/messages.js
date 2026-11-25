@@ -91,6 +91,11 @@ export const TITRES = {
     fermerLaCaisse: "Fermer la caisse",
     // Incrément 5 : R11 (REST-19 critère 1)
     produitEpuise: "Produit épuisé",
+    /** La fenêtre des additions d'une table divisée (constat du client). */
+    additions: (table) => `Les additions de la table ${table}`,
+    /** La même fenêtre quand aucune addition n'est plus sur une table
+     * (l'origine payée) : les noms des additions. */
+    additionsSansTable: (noms) => `Les additions ${noms.join(", ")}`,
 };
 
 export const TEXTES = {
@@ -115,6 +120,19 @@ export const TEXTES = {
     deplacer: "Déplacer ou réunir",
     annulerLaTable: "Annuler la table",
     creerLaPart: "Créer l'addition à part",
+    // « Addition » sur une table divisée : toutes les additions ouvertes.
+    additionsOuvertes: (nombreDAdditions) =>
+        nombreDAdditions > 1
+            ? `${nombreDAdditions} additions encore ouvertes, une par ticket.`
+            : "1 addition encore ouverte.",
+    /** Une imprimante tombée en panne en cours de route : les tickets déjà
+     * partis ne sont pas repris dans la fenêtre. */
+    additionsDejaImprimees: (nombre) =>
+        nombre > 1
+            ? `${nombre} additions déjà imprimées ne sont pas reprises ici.`
+            : "1 addition déjà imprimée n'est pas reprise ici.",
+    totalDesAdditions: "Total des additions",
+    imprimerLesAdditions: "J'imprime les additions",
     table: (numero) => `Table ${numero}`,
     venteSansTable: "Vente sans table",
     ouvertePar: (nom) => `ouverte par ${nom}`,

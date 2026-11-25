@@ -6,8 +6,8 @@
  *   (Odoo l'écarterait, et la part et l'origine seraient enregistrées
  *   ensemble avec les mêmes produits) ; la division est ensuite signalée au
  *   serveur comme un déplacement : ni saisie, ni retrait ;
- * - la part (« 12B ») reçoit l'origine, l'heure d'ouverture et « ouverte
- *   par » de l'addition divisée, et 0 personne : les personnes restent sur
+ * - la part (« 12B ») reçoit l'origine, le groupe (la première addition
+ *   divisée), l'heure d'ouverture et « ouverte par » de l'addition divisée, et 0 personne : les personnes restent sur
  *   l'origine (Odoo lui en retire une). */
 import { patch } from "@web/core/utils/patch";
 import { SplitBillScreen } from "@pos_restaurant/app/split_bill_screen/split_bill_screen";
@@ -42,6 +42,9 @@ patch(SplitBillScreen.prototype, {
         if (this.pos.aiteActif) {
             newOrder.update({
                 aite_origine_uuid: originalOrder.uuid,
+                // La clé du groupe (« Addition » sur une table divisée) : la
+                // première addition divisée, pour les parts de parts aussi.
+                aite_groupe_uuid: originalOrder.aite_groupe_uuid || originalOrder.uuid,
                 aite_heure_ouverture: originalOrder.aite_heure_ouverture || false,
                 aite_ouverte_par_id: originalOrder.aite_ouverte_par_id || this.pos.cashier,
             });
