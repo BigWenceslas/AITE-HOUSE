@@ -1789,13 +1789,13 @@
       "texte": "APPELLE LES GARS, ON SE MET BIEN CE SOIR"
     },
     {
-      "serie": "Jeudi 26 novembre — au choix",
+      "serie": "Jeudi 26 novembre — version 2",
       "jour": "jeudi",
       "id": "VD-JEU-26-1",
       "moment": "jeudi 12h",
       "alcool": false,
       "points": [],
-      "legende": "La semaine est presque finie et le corps est déjà prêt. Ce soir on se met en jambes à La Vérandah, la famille est là. Tu arrives à quelle heure ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "legende": "Pourquoi garder la bonne humeur pour demain ? Ce soir, les gars se retrouvent à La Vérandah, la famille. Tu arrives à quelle heure ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
       "hashtags": [
         "#LaVerandah",
         "#Douala",
@@ -1806,17 +1806,17 @@
       "modele": "vd-sombre",
       "titre": "",
       "etiquette": "Bon jeudi",
-      "photo": "boubou",
-      "texte": "Jeudi soir, mola : on *chauffe le moteur*, demain ça va gâter !"
+      "photo": "tunique",
+      "texte": "Le jeudi, on n’attend pas vendredi pour *se capter*, mola."
     },
     {
-      "serie": "Jeudi 26 novembre — au choix",
+      "serie": "Jeudi 26 novembre — version 2",
       "jour": "jeudi",
       "id": "VD-JEU-26-2",
       "moment": "jeudi 17h",
       "alcool": false,
       "points": [],
-      "legende": "Pendant que tout le monde guette les promos, toi tu sais déjà où passer ton jeudi soir. On cause, on rit, on se met bien. Tu ramènes qui ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "legende": "La semaine a été longue, ce soir on se met ensemble. Appelle tes gars, La Vérandah vous attend à Makepe. Vous serez combien ? 🙌\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
       "hashtags": [
         "#LaVerandah",
         "#Douala",
@@ -1828,16 +1828,16 @@
       "titre": "",
       "etiquette": "Bon jeudi",
       "photo": "veste-pied",
-      "texte": "Black Friday, c’est demain. Ce soir, la *vraie affaire*, c’est les gars à La Vérandah."
+      "texte": "Ce jeudi, mola, on ne compte pas les heures : on compte *les amis*."
     },
     {
-      "serie": "Jeudi 26 novembre — au choix",
+      "serie": "Jeudi 26 novembre — version 2",
       "jour": "jeudi",
       "id": "VD-JEU-26-3",
       "moment": "jeudi 19h",
       "alcool": false,
       "points": [],
-      "legende": "Pas besoin d’attendre vendredi : l’ambiance se met en place dès ce soir, entre amis et collègues. Tu viens avec qui ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "legende": "Un ami t’appelle pour sortir ce soir ? Ne cherche pas d’excuse, dis oui. On vous attend à La Vérandah. Qui est le premier sur ta liste ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
       "hashtags": [
         "#LaVerandah",
         "#Douala",
@@ -1846,10 +1846,10 @@
         "#AfterWork"
       ],
       "modele": "vd-ambiance",
-      "titre": "Jeudi, ça chauffe déjà",
+      "titre": "Mola, c’est jeudi",
       "etiquette": "",
       "photo": null,
-      "texte": "LE WEEK-END COMMENCE CE SOIR À LA *VÉRANDAH*"
+      "texte": "UN JEUDI *ENTRE AMIS*, ÇA NE SE REFUSE PAS"
     }
   ]
 }

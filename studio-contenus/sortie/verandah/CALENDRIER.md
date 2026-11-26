@@ -1434,18 +1434,18 @@ La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp 
 #LaVerandah #Douala #Makepe #BonMercredi #AfterWork
 ```
 
-## Jeudi 26 novembre — au choix
+## Jeudi 26 novembre — version 2
 
 ### Jeudi 12h — Pensée (photo ronde) · undefined
 
 ![VD-JEU-26-1](VD-JEU-26-1-vd-sombre.jpg)
 
-**Visuel :** Bon jeudi — Jeudi soir, mola : on chauffe le moteur, demain ça va gâter !
+**Visuel :** Bon jeudi — Le jeudi, on n’attend pas vendredi pour se capter, mola.
 
 **Légende à publier :**
 
 ```text
-La semaine est presque finie et le corps est déjà prêt. Ce soir on se met en jambes à La Vérandah, la famille est là. Tu arrives à quelle heure ?
+Pourquoi garder la bonne humeur pour demain ? Ce soir, les gars se retrouvent à La Vérandah, la famille. Tu arrives à quelle heure ?
 
 La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
 
@@ -1456,12 +1456,12 @@ La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp 
 
 ![VD-JEU-26-2](VD-JEU-26-2-vd-sombre.jpg)
 
-**Visuel :** Bon jeudi — Black Friday, c’est demain. Ce soir, la vraie affaire, c’est les gars à La Vérandah.
+**Visuel :** Bon jeudi — Ce jeudi, mola, on ne compte pas les heures : on compte les amis.
 
 **Légende à publier :**
 
 ```text
-Pendant que tout le monde guette les promos, toi tu sais déjà où passer ton jeudi soir. On cause, on rit, on se met bien. Tu ramènes qui ?
+La semaine a été longue, ce soir on se met ensemble. Appelle tes gars, La Vérandah vous attend à Makepe. Vous serez combien ? 🙌
 
 La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
 
@@ -1472,12 +1472,12 @@ La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp 
 
 ![VD-JEU-26-3](VD-JEU-26-3-vd-ambiance.jpg)
 
-**Visuel :** Jeudi, ça chauffe déjà — LE WEEK-END COMMENCE CE SOIR À LA VÉRANDAH
+**Visuel :** Mola, c’est jeudi — UN JEUDI ENTRE AMIS, ÇA NE SE REFUSE PAS
 
 **Légende à publier :**
 
 ```text
-Pas besoin d’attendre vendredi : l’ambiance se met en place dès ce soir, entre amis et collègues. Tu viens avec qui ?
+Un ami t’appelle pour sortir ce soir ? Ne cherche pas d’excuse, dis oui. On vous attend à La Vérandah. Qui est le premier sur ta liste ?
 
 La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
 
