@@ -64,12 +64,33 @@
 #   - la TVA, avec le comptable du client (prix saisis tels quels, sans taxe).
 #
 # Rejouable : rien n'est créé deux fois (recherche par clé stable, voir plus
-# bas) ; un nom, un prix, un coût, une famille, une note ou une taxe qui
-# diffère du script est remis à jour ; un produit des familles de la carte qui
-# n'est plus dans le script est retiré de la caisse ;
-# le stock de départ n'est saisi que pour un produit suivi qui n'a encore
-# aucun mouvement de stock ; le suivi en stock n'est changé que tant que le
-# produit n'a aucun mouvement (Odoo le refuse ensuite).
+# bas). Deux comportements selon qui joue le script :
+#   - GRAINE (odoo-bin shell, base de développement) : un nom, un prix, un
+#     coût, une famille, une note ou une taxe qui diffère du script est remis
+#     à jour ; un produit des familles de la carte qui n'est plus dans le
+#     script est retiré de la caisse ; le stock de départ n'est saisi que pour
+#     un produit suivi qui n'a encore aucun mouvement de stock ; le suivi en
+#     stock n'est changé que tant que le produit n'a aucun mouvement (Odoo le
+#     refuse ensuite).
+#   - MODULE (installation, mise à niveau, menu « Poser la carte Le
+#     Messager ») : la première fois, la carte est posée comme ci-dessus.
+#     ENSUITE LA CARTE APPARTIENT AU CLIENT (il la corrige à la main ou par un
+#     import Excel, colonne « id » = __aite_messager__.produit_<clé>) :
+#       * aucun produit existant n'est modifié (nom, prix, coût, familles,
+#         catégorie, note, taxes, suivi en stock, accompagnement, disponibilité
+#         en caisse, archivage) et aucun produit n'est retiré de la caisse ;
+#       * aucune famille, catégorie ni valeur d'accompagnement existante n'est
+#         renommée, re-rangée ni repassée en coût moyen ;
+#       * ce qui manque n'est créé que si la base ne l'a jamais reçu : un
+#         élément de la carte que le client a supprimé ne revient pas (un
+#         produit archivé, retiré de la caisse ou renommé existe toujours, il
+#         est retrouvé par son identifiant externe et laissé tel quel) ; un
+#         nouveau produit d'une famille supprimée par le client n'est pas créé.
+#     Ce que la base a déjà reçu est retenu dans le paramètre système
+#     aite_resto_carte_messager.elements_poses (une base posée avant ce
+#     registre, en 18.0.1.3.4, est reconnue à ses identifiants externes : elle
+#     est réputée avoir reçu la carte de la 1.3.4, figée dans LIVRE_1_3_4_* ;
+#     ce qui a été ajouté au script depuis lui est posé).
 # Refuse une base qui porte la carte de démonstration de seed_restaurant.py
 # (Castel, Pizza Margherita...) : la base se crée avec --carte-messager. Écrit
 # le paramètre système aite.carte_client = messager : seed_restaurant.py ne
@@ -81,6 +102,10 @@
 # ou, sur une base du restaurant créée sans carte de démonstration :
 #   cd ../odoo18 && $PYTHON odoo-bin shell -c ../AITE-HOUSE/dev/odoo.conf -d aite_messager \
 #       --no-http < ../AITE-HOUSE/dev/seeds/seed_carte_messager.py
+import json
+import re
+import unicodedata
+
 from odoo.tools import html2plaintext
 
 company = env.company
@@ -110,11 +135,67 @@ if not caisse_pos:
     refuser("✗ aucune caisse au service à table contrôlé : installer d'abord le "
             "restaurant (dev/setup_env.sh --restaurant --carte-messager)")
 
+MODULE = '__aite_messager__'
+Identifiants = env['ir.model.data'].sudo()
+Parametres = env['ir.config_parameter'].sudo()
+
+# Ce que la base a déjà reçu de la carte (« produit:<clé> », « famille:<nom> »,
+# « categorie:<nom> », « accompagnement », « accompagnement:<valeur> »).
+REGISTRE = 'aite_resto_carte_messager.elements_poses'
+deja = set(json.loads(Parametres.get_param(REGISTRE) or '[]'))
+# Base posée avant le registre (18.0.1.3.4) : reconnue à ses identifiants externes.
+AVANT_REGISTRE = not deja and bool(Identifiants.search_count(
+    [('module', '=', MODULE), ('model', '=', 'product.template')]))
+# Ce que la 18.0.1.3.4 posait (FIGÉ : ne jamais compléter ces listes ; un
+# produit, une famille ou un accompagnement ajouté à la carte ensuite n'y
+# figure pas, et une base 1.3.4 le reçoit donc à sa mise à niveau). La 1.3.4
+# reposait tout à chaque mise à niveau : ce qui en manque dans une telle base
+# a été supprimé par le client et ne revient pas.
+LIVRE_1_3_4_PRODUITS = """
+    omelette_nature omelette_legumes omelette_champignons omelette_fromage
+    omelette_jambon_fromage oeufs_brouilles oeuf_benedict acai_bowl dejeuner_francais
+    petit_dejeuner_americain petit_dejeuner_continental poulet_yassa poulet_ail roti_poulet
+    roti_porc roti_gesier poulet_mayo ndole_viande poulet_dg porc_dg crevettes_dg gambas_dg
+    poulet_pane_3_morceaux poulet_pane_6_morceaux poulet_pane_12_morceaux poulet_pane_quart_dg
+    poulet_pane_demi_dg poulet_pane_entier filet_capitaine bar_petite_piece bar_grosse_piece
+    sole_petite_piece sole_grosse_piece crevettes gambas pizza_marguerite_petit
+    pizza_marguerite_grand pizza_vegetarienne_petit pizza_vegetarienne_grand pizza_poulet_petit
+    pizza_poulet_grand pizza_viande_petit pizza_viande_grand pizza_thon_petit pizza_thon_grand
+    pizza_trois_fromages_petit pizza_trois_fromages_grand pizza_jambon_calzone_petit
+    pizza_jambon_calzone_grand burger_viande burger_poulet big_mac mini_burger nuggets
+    penne_arrabiata spaghetti_bolognaise tagliatelles_poulet steak_boeuf crepe_nature
+    crepe_chocolat_banana crepe_biscoff_oreo gaufre_fraise glace_1_boule glace_2_boules
+    glace_3_boules posset_citron tiramisu gateau_miel macaron_chocolat victoria_sponge financier
+    scones_fruits sandwich_oeuf_mayo sandwich_le_messager rouleau_dinde croissant_jambon_fromage
+    tea_time_2_pers tea_time_2_pers_avec_rose_joven tea_time_2_pers_avec_moscato
+    tour_de_cantelou_blanc bordeaux_blanc tour_de_cantelou_rouge bordeaux_rouge medoc rose
+    moscato yby jack_daniel monkey_shoulder chivas_12 black eau_minerale_05_l eau_minerale_15_l
+    jus_de_fruits_33_cl jus_naturel_presse soda_33_cl biere_blonde_65_cl biere_brune_65_cl
+    biere_importee_33_cl cafe_expresso the""".split()
+LIVRE_1_3_4_FAMILLES = (
+    "Petit déjeuner|Omelettes|Spécial petit déj|Plats|Plats chauds|Poulet DG|Poulet pané|"
+    "Fruits de mer|Pizzas & burgers|Pizzas|Burgers|Pastas|Crêpes & glaces|Afternoon tea|"
+    "Sucrée|Salée|Tea Time|Bar|Vins|Vins blancs|Vins rouges|Rosés|Vins mousseux|Whisky|"
+    "Bières|Sans alcool|Eaux|Jus|Sodas|Café & thé").split('|')
+LIVRE_1_3_4_ACCOMPAGNEMENTS = ["Riz nature", "Riz Messager", "Frites plantain", "Frites pomme"]
+if AVANT_REGISTRE:
+    deja |= {'produit:' + c for c in LIVRE_1_3_4_PRODUITS} | {'accompagnement'} \
+        | {'accompagnement:' + n for n in LIVRE_1_3_4_ACCOMPAGNEMENTS} \
+        | {'%s:%s' % (p, n) for n in LIVRE_1_3_4_FAMILLES for p in ('famille', 'categorie')}
+# En mode module, une carte déjà posée appartient au client : rien d'existant
+# n'est modifié, rien n'est retiré de la caisse (voir l'en-tête).
+CARTE_DU_CLIENT = MODE_MODULE and bool(deja or AVANT_REGISTRE)
+recus = set()   # ce que la carte a trouvé ou posé cette fois
+
 # Des noms propres à la carte de démonstration (aucun n'est sur la carte du client).
 DEMO = ["Castel 65 cl", "33 Export 65 cl", "Pizza Margherita", "Pizza Reine",
         "Petit déjeuner complet", "Beignets haricots bouillie"]
 Produits = env['product.template'].with_context(active_test=False)
 demo = Produits.search([('name', 'in', DEMO), ('available_in_pos', '=', True)])
+# Une carte déjà posée n'est jamais prise pour une « autre carte » : le client
+# peut ajouter « Castel 65 cl » à ses bières.
+if CARTE_DU_CLIENT:
+    demo = Produits
 if demo and MODE_MODULE:
     refuser("la carte de démonstration Le Messager n'est pas posée : cette base vend déjà "
             "d'autres produits (%s). Ce module de démonstration est fait pour une base neuve ; "
@@ -149,14 +230,60 @@ ARBRE = [
     ]),
 ]
 familles, categories = {}, {}
+categories_creees = env['product.category']
+
+
+def ident(nom):
+    """Le nom en identifiant externe (« Café & thé » → « cafe_the »)."""
+    ascii_ = unicodedata.normalize('NFKD', nom).encode('ascii', 'ignore').decode()
+    return re.sub(r'[^a-z0-9]+', '_', ascii_.lower()).strip('_')
+
+
+def par_identifiant(modele, nom_lien):
+    lien = Identifiants.search([('module', '=', MODULE), ('name', '=', nom_lien),
+                                ('model', '=', modele)], limit=1)
+    return env[modele].with_context(active_test=False).browse(lien.res_id).exists() if lien else env[modele]
+
+
+def marquer(modele, nom_lien, enregistrement):
+    """Pose (ou fait pointer) l'identifiant externe __aite_messager__.<nom_lien>."""
+    lien = Identifiants.search([('module', '=', MODULE), ('name', '=', nom_lien),
+                                ('model', '=', modele)], limit=1)
+    if not lien:
+        Identifiants.create({'module': MODULE, 'name': nom_lien, 'model': modele,
+                             'res_id': enregistrement.id, 'noupdate': True})
+    elif lien.res_id != enregistrement.id:
+        lien.res_id = enregistrement.id
 
 
 def poser(modele, nom, parent, rang, cle, couleur=None):
     """La famille (pos.category) ou la catégorie (product.category) ``nom``
-    sous ``parent`` : trouvée, sinon créée."""
-    enregistrement = env[modele].search(
-        [('name', '=', nom), ('parent_id', '=', parent.id if parent else False)], limit=1)
+    sous ``parent`` (False : à la racine) : trouvée, sinon créée. Carte du
+    client : trouvée d'abord par son identifiant externe (renommée ou
+    re-rangée par le client, elle reste telle quelle) ; jamais recréée si la
+    base l'a déjà reçue (supprimée par le client) ni sous une famille absente :
+    rend alors un enregistrement vide."""
+    global categories_creees
+    prefixe = 'famille' if modele == 'pos.category' else 'categorie'
+    element, nom_lien = '%s:%s' % (prefixe, nom), '%s_%s' % (prefixe, ident(nom))
+    enregistrement = par_identifiant(modele, nom_lien)
+    if enregistrement and not CARTE_DU_CLIENT and (
+            enregistrement.name != nom or enregistrement.parent_id != (parent or env[modele])):
+        # Graine : la famille renommée ou re-rangée reprend le nom et la place du
+        # script (au lieu d'une famille en double, qui laisserait en caisse les
+        # produits ajoutés dans l'ancienne).
+        enregistrement.write({'name': nom, 'parent_id': parent.id if parent else False})
+    if not enregistrement and (parent is False or parent):
+        enregistrement = env[modele].search(
+            [('name', '=', nom), ('parent_id', '=', parent.id if parent else False)], limit=1)
+    if not enregistrement and CARTE_DU_CLIENT:
+        # Base 1.3.4 (familles sans identifiant) : une sous-famille dont le client a
+        # renommé le parent, ou qu'il a re-rangée, est retrouvée par son nom seul
+        # (unique dans la carte) et laissée à sa place.
+        enregistrement = env[modele].search([('name', '=', nom)], limit=1)
     if not enregistrement:
+        if CARTE_DU_CLIENT and (element in deja or parent is not False and not parent):
+            return env[modele]
         valeurs = {'name': nom, 'parent_id': parent.id if parent else False}
         if modele == 'pos.category':
             valeurs['sequence'] = rang
@@ -164,10 +291,14 @@ def poser(modele, nom, parent, rang, cle, couleur=None):
                 valeurs['color'] = couleur
         enregistrement = env[modele].create(valeurs)
         compte[cle] += 1
+        if modele == 'product.category':
+            categories_creees |= enregistrement
+    marquer(modele, nom_lien, enregistrement)
+    recus.add(element)
     return enregistrement
 
 
-def descendre(branches, parent_famille=None, parent_categorie=None):
+def descendre(branches, parent_famille=False, parent_categorie=False):
     for rang, branche in enumerate(branches, start=1):
         nom, couleur, enfants = branche if len(branche) == 3 else (branche[0], None, branche[1])
         assert nom not in familles, "famille en double : %s" % nom
@@ -183,9 +314,12 @@ descendre(ARBRE)
 # (AVCO) » : à chaque réception d'un achat, le coût devient la moyenne du stock
 # et de l'achat. Le champ vient de stock_account (installé avec point_of_sale) :
 # sans lui, rien n'est posé. Posé avant les produits et leur stock de départ ;
-# une catégorie remise en « Prix standard » à la main l'est de nouveau ici.
-if 'property_cost_method' in env['product.category']._fields:
+# une catégorie remise en « Prix standard » à la main l'est de nouveau ici —
+# sauf carte du client : seules les catégories créées cette fois sont réglées.
+if 'property_cost_method' in env['product.category']._fields and categories["Bar"]:
     boissons = env['product.category'].search([('id', 'child_of', categories["Bar"].id)])
+    if CARTE_DU_CLIENT:
+        boissons &= categories_creees
     a_regler = boissons.filtered(lambda c: c.property_cost_method != 'average')
     if a_regler:
         a_regler.write({'property_cost_method': 'average'})
@@ -201,9 +335,11 @@ COUT_ESTIME = A_VALIDER + "coût estimé (ordre de grandeur), à remplacer par l
 # produit par cette clé (identifiant externe __aite_messager__.produit_<clé>),
 # puis par son nom pour une base posée avant les clés. Pour renommer un produit
 # une fois validé par le client (« Black », « Rosé », « Soda 33 cl »...), on
-# change le NOM, jamais la clé : le produit est renommé, pas dupliqué. Un
-# produit retiré du script est retiré de la caisse (pas supprimé : il garde
-# son historique et son stock).
+# change le NOM, jamais la clé : le produit est renommé, pas dupliqué — dans
+# la graine seulement : une fois la carte posée par le module, le nom est celui
+# du client. Un produit retiré du script est retiré de la caisse par la graine
+# (pas supprimé : il garde son historique et son stock), jamais par le module
+# une fois la carte posée.
 #
 # Plats cuisinés : (clé, nom, famille, prix FCFA[, note]) — ni stock, ni coût.
 PLATS = [
@@ -349,24 +485,36 @@ noms = [p[1] for p in PLATS] + [b[1] for b in BOISSONS]
 assert len(cles) == len(set(cles)), "clé de produit en double dans la carte"
 assert len(noms) == len(set(noms)), "nom de produit en double dans la carte"
 
-# L'accompagnement : un choix sans supplément et sans variante.
+# L'accompagnement : un choix sans supplément et sans variante. Carte du
+# client : l'attribut et ses valeurs ne sont jamais renommés ; une valeur (ou
+# l'attribut) supprimée par le client ne revient pas ; un nouveau plat reçoit
+# les valeurs que le client a gardées (et celles qu'il a ajoutées).
 Attributs = env['product.attribute']
-accompagnement = Attributs.search([('name', '=', "Accompagnement")], limit=1) or Attributs.create({
-    'name': "Accompagnement", 'create_variant': 'no_variant', 'display_type': 'pills'})
+accompagnement = par_identifiant('product.attribute', 'attribut_accompagnement') if CARTE_DU_CLIENT \
+    else Attributs
+accompagnement = accompagnement or Attributs.search([('name', '=', "Accompagnement")], limit=1)
+if not accompagnement and not (CARTE_DU_CLIENT and 'accompagnement' in deja):
+    accompagnement = Attributs.create({
+        'name': "Accompagnement", 'create_variant': 'no_variant', 'display_type': 'pills'})
 valeurs_acc = env['product.attribute.value']
-for rang, nom in enumerate(ACCOMPAGNEMENTS, start=1):
-    valeur = accompagnement.value_ids.filtered(lambda v, n=nom: v.name == n)
-    if not valeur:
-        valeur = env['product.attribute.value'].create(
-            {'name': nom, 'attribute_id': accompagnement.id, 'sequence': rang})
-    valeurs_acc |= valeur
+if accompagnement:
+    marquer('product.attribute', 'attribut_accompagnement', accompagnement)
+    recus.add('accompagnement')
+    for rang, nom in enumerate(ACCOMPAGNEMENTS, start=1):
+        valeur = accompagnement.value_ids.filtered(lambda v, n=nom: v.name == n)
+        if not valeur and not (CARTE_DU_CLIENT and 'accompagnement:' + nom in deja):
+            valeur = env['product.attribute.value'].create(
+                {'name': nom, 'attribute_id': accompagnement.id, 'sequence': rang})
+        if valeur:
+            recus.add('accompagnement:' + nom)
+        valeurs_acc |= valeur
+    if CARTE_DU_CLIENT:
+        valeurs_acc = accompagnement.value_ids
 
 entrepot = caisse_pos.picking_type_id.warehouse_id
 Mouvements = env['stock.move']
 
 
-MODULE = '__aite_messager__'
-Identifiants = env['ir.model.data'].sudo()
 poses = env['product.template']
 
 
@@ -406,13 +554,22 @@ def lier(cle, modele, lien=None):
 
 def poser_produit(cle, nom, famille, prix, cout, suivi, depart, note):
     """Le produit de clé ``cle`` à la carte : créé, sinon remis aux valeurs
-    du script (nom compris)."""
+    du script (nom compris). Carte du client : un produit existant est laissé
+    tel quel ; un produit absent n'est créé que si la base ne l'a jamais reçu
+    et que sa famille existe."""
     global poses
     attendu = {
         'list_price': prix, 'standard_price': cout,  # cout None : plat, coût jamais touché
         'pos_categ_ids': familles[famille], 'categ_id': categories[famille],
     }
     modele = retrouver(cle, nom)
+    if CARTE_DU_CLIENT and modele:
+        poses |= modele
+        recus.add('produit:' + cle)
+        return
+    if CARTE_DU_CLIENT and ('produit:' + cle in deja or not familles[famille]
+                            or not categories[famille]):
+        return
     if modele and cout_suit_les_achats(modele):
         attendu['standard_price'] = None   # le coût moyen des achats n'est jamais écrasé
     if not modele:
@@ -453,7 +610,8 @@ def poser_produit(cle, nom, famille, prix, cout, suivi, depart, note):
         if valeurs:
             modele.write(valeurs)
             compte['mis_a_jour'] += 1
-    if famille in AVEC_ACCOMPAGNEMENT:
+    recus.add('produit:' + cle)
+    if famille in AVEC_ACCOMPAGNEMENT and valeurs_acc:
         ligne = modele.attribute_line_ids.filtered(lambda l: l.attribute_id == accompagnement)
         if not ligne:
             env['product.template.attribute.line'].create({
@@ -483,9 +641,11 @@ for cle, nom, famille, prix, cout, suivi, depart, note in BOISSONS:
 # Un produit des familles de la carte qui n'est plus dans le script (renommé
 # avec une nouvelle clé, retiré par le client) quitte la caisse ; il n'est
 # pas supprimé (historique des ventes, stock).
-toutes_familles = env['pos.category'].browse([f.id for f in familles.values()])
-orphelins = Produits.search([('available_in_pos', '=', True), ('id', 'not in', poses.ids),
-                             ('pos_categ_ids', 'in', toutes_familles.ids)])
+# Carte du client : jamais (ses produits ajoutés restent en caisse).
+toutes_familles = env['pos.category'].browse([f.id for f in familles.values() if f])
+orphelins = Produits if CARTE_DU_CLIENT else Produits.search([
+    ('available_in_pos', '=', True), ('id', 'not in', poses.ids),
+    ('pos_categ_ids', 'in', toutes_familles.ids)])
 if orphelins:
     orphelins.write({'available_in_pos': False})
     compte['retires'] += len(orphelins)
@@ -493,6 +653,10 @@ if orphelins:
 # La base porte la carte du client : seed_restaurant.py n'y posera jamais la
 # carte de démonstration.
 env['ir.config_parameter'].sudo().set_param('aite.carte_client', 'messager')
+
+# Le registre de ce que la base a reçu (lu à la prochaine mise à niveau).
+if deja | recus != set(json.loads(Parametres.get_param(REGISTRE) or '[]')):
+    Parametres.set_param(REGISTRE, json.dumps(sorted(deja | recus), ensure_ascii=False))
 
 if not MODE_MODULE:
     env.cr.commit()
@@ -504,7 +668,7 @@ def nombre(n, singulier, pluriel=None):
 
 # Le bilan lisible du bouton « Poser la carte Le Messager » (mode module) :
 # ce qui est en place, puis ce qui vient d'être fait (__init__.jouer_carte).
-nb_en_place = Produits.search_count([('available_in_pos', '=', True),
+nb_en_place = env['product.template'].search_count([('available_in_pos', '=', True),   # archivés exclus
                                      ('pos_categ_ids', 'in', toutes_familles.ids)])
 BILAN = "Carte posée : %s en %s" % (nombre(nb_en_place, "produit"),
                                      nombre(len(toutes_familles), "famille"))
@@ -523,6 +687,16 @@ if orphelins:
     BILAN_AUTRES.append("%s de la caisse (%s)" % (
         nombre(len(orphelins), "produit retiré", "produits retirés"),
         ", ".join(orphelins.mapped('name'))))
+
+# La règle, dite au manager (__init__.jouer_carte).
+BILAN_REGLE = (
+    "La carte est à vous : une mise à niveau ne modifie aucun de vos produits (nom, prix, "
+    "coût, famille, présence en caisse) et ne fait revenir aucun produit que vous avez "
+    "archivé, supprimé ou sorti de la caisse"
+    if CARTE_DU_CLIENT else
+    "Dès maintenant, la carte est à vous : une mise à niveau ne modifie aucun de vos produits "
+    "(nom, prix, coût, famille, présence en caisse) et ne fait revenir aucun produit que vous "
+    "avez archivé, supprimé ou sorti de la caisse")
 
 RESULTAT = ("seed carte Le Messager OK — créés : %(familles)d familles, %(categories)d catégories, "
       "%(produits)d produits, %(stocks)d stocks de départ, %(accompagnements)d choix "

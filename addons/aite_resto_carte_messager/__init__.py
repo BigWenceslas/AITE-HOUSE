@@ -5,7 +5,9 @@ La source unique est data/carte.py (aussi jouée par la graine de
 développement dev/seeds/seed_carte_messager.py). Elle est jouée :
 - à l'installation ET à chaque mise à niveau du module
   (data/carte_data.xml → pos.config._aite_poser_carte_messager), pour chaque
-  société qui a un plan comptable ;
+  société qui a un plan comptable ; une fois posée, la carte appartient au
+  client : la mise à niveau ne crée que ce qui manque et n'a jamais été posé,
+  sans rien modifier ni retirer de la caisse ;
 - juste après le premier chargement d'un plan comptable (base neuve installée
   d'un seul geste : Odoo charge le plan APRÈS les données des modules) ;
 - à la demande : Point de Vente → Configuration → « Poser la carte Le Messager ».
@@ -35,7 +37,10 @@ def jouer_carte(env, mode_module=True):
     En mode module (bouton « Poser la carte Le Messager », installation, mise à
     niveau), un bilan lisible par un manager : « Carte posée : 101 produits en
     30 familles ; salle : 12 tables ; équipe : 7 employés, 3 comptes. Rien n'a
-    été créé en double. », précédé de ce qui vient d'être créé ou remis à jour.
+    été créé en double. La carte est à vous : une mise à niveau ne modifie
+    aucun de vos produits… », avec ce qui vient d'être créé ou remis à jour.
+    Une fois la carte posée, plus rien d'existant n'est remis à jour (voir
+    l'en-tête de data/carte.py).
     Hors mode module (graine dev/seeds/seed_carte_messager.py), le bilan
     technique de la carte."""
     if not mode_module:
@@ -50,7 +55,7 @@ def jouer_carte(env, mode_module=True):
         bilan += " Créés cette fois : %s." % ", ".join(crees)
     if carte['BILAN_AUTRES']:
         bilan += " Mis à jour : %s." % " ; ".join(carte['BILAN_AUTRES'])
-    return bilan + " Rien n'a été créé en double."
+    return bilan + " Rien n'a été créé en double. %s." % carte['BILAN_REGLE']
 
 
 def caisse_restaurant(env, company):

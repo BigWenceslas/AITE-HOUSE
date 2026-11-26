@@ -260,6 +260,41 @@ inchangée (aucune vue ni donnée) : un **redémarrage** suffit.
   niveau avec le français actif et un mode « Cash » non traduit, utilisé par
   une session ouverte, échoue (`_aite_traduire_especes`) : fermer les
   caisses avant de « Mettre à niveau ».
+- **`aite_resto_carte_messager` 18.0.1.3.5 — la carte appartient au client
+  une fois posée** (avant l'envoi au client de l'Excel de ses produits à
+  corriger puis à réimporter) : jusqu'en 18.0.1.3.4, chaque mise à niveau
+  du module remettait nom, prix, coût, familles, catégories, notes, taxes
+  vidées, présence en caisse et réactivation, et retirait de la caisse tout
+  produit ajouté par le client dans les familles de la carte. Désormais, la
+  carte de démonstration n'est posée qu'une fois ; une mise à niveau — et le
+  menu « Poser la carte Le Messager », qui suit la même règle — ne modifie
+  plus aucun produit, aucune famille, catégorie (nom, place, méthode de coût)
+  ni valeur d'accompagnement existante, ne retire rien de la caisse et ne
+  crée que ce que la base n'a jamais reçu (un produit ajouté à la carte par
+  une version suivante) : un produit archivé, sorti de la caisse, renommé ou
+  supprimé par le client ne revient pas. Ce que la base a reçu est retenu
+  dans le paramètre système `aite_resto_carte_messager.elements_poses` ; une
+  base posée en 1.3.4 est réputée avoir reçu la carte de la 1.3.4 (figée
+  dans `LIVRE_1_3_4_*`, donc une base qui saute des livraisons reçoit les
+  ajouts suivants), ses sous-familles sans identifiant sont retrouvées par
+  leur nom même si le client a renommé la famille parente. La notification
+  énonce la règle. La graine de développement
+  (`dev/seeds/seed_carte_messager.py`) remet toujours les valeurs du script
+  et, désormais, rend son nom et sa place à une famille renommée au lieu de
+  la créer en double. Tests : `test_carte_du_client.py` (16 tests).
+  **Import Excel des produits (procédure AITE)** : colonne `id` =
+  `__aite_messager__.produit_<clé>` (vide = nouveau produit) ; famille de
+  caisse en colonne `pos_categ_ids/id` = `__aite_messager__.famille_<nom>`
+  (le libellé « Bar / Bières » d'un export standard fait échouer tout
+  l'import : la recherche d'une famille ne porte que sur son nom) ;
+  catégorie de produit en `categ_id` (« Bar / Bières » passe) ; pour une
+  ligne nouvelle, colonne `available_in_pos` = 1 (sinon le produit n'est pas
+  en caisse) et colonnes `taxes_id/id` et `supplier_taxes_id/id` présentes
+  et vides (sinon Odoo pose les taxes par défaut de la société et la caisse
+  vendrait ce produit TVA en sus, alors que la carte est saisie taxes
+  comprises) ; le coût (`standard_price`) dépend de la société : importer
+  dans la société du restaurant. La mise à niveau suivante ne touche à rien
+  de ce qui a été importé.
 
 ## 3. Le parcours mesuré à l'écran (`AiteParcoursTour`)
 

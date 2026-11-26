@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- Sans noupdate : jouée à l'installation ET à chaque mise à niveau du module
-         (rejouable : rien n'est créé deux fois). -->
+         (rejouable : rien n'est créé deux fois ; une fois la carte posée, plus aucun
+         produit existant n'est modifié ni retiré de la caisse : voir data/carte.py). -->
     <function model="pos.config" name="_aite_poser_carte_messager"/>
 </odoo>

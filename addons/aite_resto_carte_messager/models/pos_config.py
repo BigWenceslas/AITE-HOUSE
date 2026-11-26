@@ -43,7 +43,13 @@ class PosConfig(models.Model):
 
     @api.model
     def _aite_action_poser_carte_messager(self):
-        """Le bouton du menu : pose (ou remet à jour) la carte et dit ce qui s'est passé."""
+        """Le menu « Poser la carte Le Messager » : la même règle que la mise à
+        niveau (pose ce qui manque et n'a jamais été posé, ne modifie rien
+        d'existant, ne retire rien de la caisse) et dit ce qui s'est passé. Ce
+        n'est volontairement pas un « remettre la carte de démonstration » :
+        dans la base de production du client, un clic écraserait son travail
+        validé ; remettre la démonstration reste le rôle de la graine
+        (dev/seeds/seed_carte_messager.py, base de développement)."""
         bilans = self._aite_poser_carte_messager()
         return {
             'type': 'ir.actions.client', 'tag': 'display_notification',

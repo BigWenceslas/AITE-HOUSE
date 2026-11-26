@@ -39,14 +39,36 @@ sodas, bières, café, thé) et leurs prix ; les coûts d'achat, tous estimés ;
 le prix du whisky « Black » (40 000 provisoire). Chaque produit concerné le
 dit dans sa note interne.
 
-La carte est posée à l'installation et à chaque mise à niveau du module, dans
-chaque société qui a un plan comptable (sinon juste après son chargement), et
-à la demande : Point de Vente → Configuration → « Poser la carte Le Messager »
-(une notification dit ce qui est en place et ce qui vient d'être fait, par
+La carte est posée UNE FOIS : à l'installation, dans chaque société qui a un
+plan comptable (sinon juste après son chargement). Ensuite elle appartient au
+client, qui la corrige à la main ou par un import Excel (colonne « id » =
+identifiant externe __aite_messager__.produit_<clé> ; famille de caisse en
+colonne « pos_categ_ids/id » = __aite_messager__.famille_<nom> ; procédure
+complète dans les notes de version du restaurant). Une mise à niveau du
+module (et le menu Point de Vente → Configuration → « Poser la carte Le
+Messager ») :
+
+* ne modifie AUCUN produit existant : nom, prix, coût, familles, catégorie,
+  note, taxes, suivi en stock, accompagnement, présence en caisse, archivage
+  restent ceux du client ;
+* ne retire aucun produit de la caisse (les produits ajoutés par le client
+  restent en vente) ;
+* ne renomme, ne re-range ni ne repasse en coût moyen aucune famille ni
+  catégorie existante ;
+* ne pose que ce qui manque ET que la base n'a jamais reçu (un produit ajouté
+  à la carte dans une version suivante du module) : un produit archivé, sorti
+  de la caisse, renommé ou supprimé par le client ne revient pas (ce que la
+  base a reçu est retenu dans le paramètre système
+  aite_resto_carte_messager.elements_poses) ;
+* complète la salle et l'équipe de démonstration si elles manquent.
+
+Une notification dit ce qui est en place et ce qui vient d'être fait, par
 exemple « Carte posée : 101 produits en 30 familles ; salle : 12 tables ;
-équipe : 7 employés, 3 comptes. Rien n'a été créé en double. »). Le nom de la société n'est pas changé. Désinstaller le module ne retire pas la carte.
+équipe : 7 employés, 3 comptes. Rien n'a été créé en double. La carte est à
+vous : une mise à niveau ne modifie aucun de vos produits… ». Le nom de la
+société n'est pas changé. Désinstaller le module ne retire pas la carte.
 """,
-    'version': '18.0.1.3.4',
+    'version': '18.0.1.3.5',
     'category': 'Sales/Point of Sale',
     'author': "AITE Consulting",
     'website': "https://aiteconsulting.com",

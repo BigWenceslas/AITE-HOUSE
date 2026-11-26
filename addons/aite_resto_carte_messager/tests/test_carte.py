@@ -127,7 +127,13 @@ class TestCarteMessager(TransactionCase):
         """Une base qui vend déjà « Castel 65 cl » (carte de démonstration de
         seed_restaurant.py, ou vrai produit d'un bar) : la carte n'est pas
         posée, mais l'installation et la mise à niveau des modules passent ;
-        le bilan dit pourquoi, en français de manager."""
+        le bilan dit pourquoi, en français de manager.
+        (La base de test porte déjà la carte : on efface ce qui la marque comme
+        posée — identifiants externes et registre —, sinon « Castel 65 cl » serait
+        une bière ajoutée par le client, voir test_carte_du_client.)"""
+        self.env['ir.model.data'].search([('module', '=', '__aite_messager__')]).unlink()
+        self.env['ir.config_parameter'].search(
+            [('key', '=', 'aite_resto_carte_messager.elements_poses')]).unlink()
         self.env['product.template'].create({'name': "Castel 65 cl", 'available_in_pos': True})
         avant = self.env['product.template'].search_count([])
         employes = self.env['hr.employee'].search_count([])
