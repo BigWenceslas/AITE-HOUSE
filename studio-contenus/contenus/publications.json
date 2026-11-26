@@ -3451,6 +3451,94 @@
         "#OneDrive",
         "#PMECameroun"
       ]
+    },
+    {
+      "serie": "Jeudi 26 novembre — version 4 (décision, preuve, offre)",
+      "semaine": null,
+      "jour": "jeudi",
+      "moment": "jeudi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-52",
+      "etiquette": "Avant de signer",
+      "photo": "blazer",
+      "theme": "Choisir un intégrateur ERP",
+      "titre": "Intégrateur ERP : *4 questions à poser* avant de signer",
+      "points": [
+        "Demandez un projet comparable au vôtre, et un client à appeler",
+        "Exigez le nom du chef de projet qui sera chez vous chaque semaine",
+        "Faites écrire qui reprend vos données et qui les contrôle",
+        "Fixez par écrit le support après démarrage : qui, en combien de temps"
+      ],
+      "legende": "Choisir un intégrateur ERP, ce n’est pas comparer des brochures : la belle démo, tout le monde la réussit. Ce qui coûte cher à une PME de Douala ou de Yaoundé se découvre après la signature : un consultant junior à la place de celui de l’avant-vente, des données reprises à moitié, un support qui ne répond plus une fois le démarrage passé. Là, ça commence à gâter.\n\nQuatre questions suffisent souvent à trier. Un projet comparable au vôtre, avec un client que vous pouvez appeler. Un nom de chef de projet, pas « une équipe ». Une ligne claire sur la reprise des données. Un engagement écrit sur l’après-démarrage. Un prestataire sérieux répond sans hésiter ; celui qui botte en touche vous a déjà répondu.\n\nLors de votre dernier choix de prestataire, laquelle de ces questions avez-vous vraiment posée ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#ERP",
+        "#Odoo",
+        "#PME",
+        "#Douala"
+      ]
+    },
+    {
+      "serie": "Jeudi 26 novembre — version 4 (décision, preuve, offre)",
+      "semaine": null,
+      "jour": "jeudi",
+      "moment": "jeudi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-53",
+      "etiquette": "Référence client",
+      "photo": "ndop-pied",
+      "theme": "Dématérialisation multi-sociétés avec Odoo (JMJ Participation, 10 entreprises)",
+      "titre": "*10 entreprises*, un seul ERP : 4 leçons pour un groupe",
+      "points": [
+        "Cartographiez les processus de chaque société avant tout paramétrage",
+        "Harmonisez plan comptable, articles et tiers avant de démarrer",
+        "Démarrez par une société pilote, puis étendez aux autres une à une",
+        "Nommez dans chaque entreprise un responsable des validations"
+      ],
+      "legende": "Dématérialiser une entreprise, c’est déjà un chantier. Dix à la fois, c’est une autre affaire : chaque société a ses habitudes, ses circuits de validation, ses fichiers Excel. Le logiciel est rarement le problème ; ce sont les règles communes qu’on n’a pas fixées avant de commencer.\n\nPour la holding JMJ Participation, AITE a dématérialisé les processus de 10 entreprises avec Odoo. La leçon vaut pour tout groupe ou toute PME camerounaise à plusieurs activités : décidez d’abord ce qui sera commun (comptes, articles, validations) et ce qui restera propre à chaque société. Sinon, ça va gâter dès la mise en route.\n\nVos sociétés travaillent-elles aujourd’hui avec les mêmes règles, ou chacune à sa manière ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Odoo",
+        "#Dematerialisation",
+        "#PME",
+        "#Cameroun"
+      ]
+    },
+    {
+      "serie": "Jeudi 26 novembre — version 4 (décision, preuve, offre)",
+      "semaine": null,
+      "jour": "jeudi",
+      "moment": "jeudi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-54",
+      "etiquette": "Pilote Odoo",
+      "photo": "tunique",
+      "theme": "Pilote Odoo cadré de 2 à 4 semaines : tester un processus avant d'engager tout le projet ERP",
+      "titre": "Pilote Odoo : *testez sur un processus* avant de tout engager",
+      "points": [
+        "Choisissez un seul processus à tester : achats, stock, ventes ou caisse",
+        "Travaillez sur vos vraies données, avec vos vrais utilisateurs",
+        "Fixez dès le départ les critères qui décideront de la suite",
+        "Tranchez au bout de 2 à 4 semaines : étendre, ajuster ou arrêter"
+      ],
+      "legende": "Le grand risque d’un ERP, ce n’est pas le logiciel : c’est de tout engager avant d’avoir vu vos équipes l’utiliser. Le pilote Odoo cadré limite ce risque. Pendant 2 à 4 semaines, un seul processus tourne dans Odoo, avec vos données et les personnes qui le font chaque jour.\n\nÀ la fin, vous décidez sur du concret : ce qui marche, ce qui coince, ce qu’il faut ajuster. Nos ingénieurs, qui ont mené plus de 15 déploiements Odoo, se déplacent chez vous à Douala ou à Yaoundé pour le cadrer avec vos équipes. Vous n’achetez pas une promesse, vous jugez sur pièces.\n\nQuel processus de votre entreprise mériterait d’être testé en premier ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Odoo",
+        "#ERP",
+        "#PME",
+        "#Douala",
+        "#Cameroun"
+      ]
     }
   ]
 }
