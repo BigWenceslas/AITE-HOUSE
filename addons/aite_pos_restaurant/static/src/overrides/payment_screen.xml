@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- Partager à parts égales (demande du Messager), en mode seulement :
+         le bouton sous « Client » / « Facture », le bandeau sous le montant
+         dû (« Part 1 sur 3 : 33 333 FCFA », la monnaie à rendre d'une part
+         payée en espèces, « Annuler le partage » tant que toutes les parts
+         ne sont pas encaissées). Les deux
+         sous-gabarits servent à l'écran large et à l'écran étroit. -->
+    <t t-name="aite_pos_restaurant.PaymentScreenButtons" t-inherit="point_of_sale.PaymentScreenButtons" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('payment-buttons')]" position="inside">
+            <button t-if="aitePeutPartager"
+                    class="button aite-partage-btn btn btn-light btn-lg w-100 lh-lg"
+                    t-on-click="() => this.aitePartager()">
+                <i class="fa fa-pie-chart me-2" role="img" t-att-title="aiteTextes.partager"
+                   t-att-aria-label="aiteTextes.partager"/>
+                <span t-esc="aiteTextes.partager"/>
+            </button>
+        </xpath>
+    </t>
+
+    <t t-name="aite_pos_restaurant.PaymentScreenDue" t-inherit="point_of_sale.PaymentScreenDue" t-inherit-mode="extension">
+        <xpath expr="//section[hasclass('paymentlines-container')]" position="after">
+            <div t-if="aitePart" class="aite-partage-bandeau d-flex align-items-center gap-2 rounded-3 px-3 py-2"
+                 t-att-class="aitePart.reglee ? 'aite-partage-fini' : ''">
+                <div class="flex-grow-1">
+                    <div class="aite-partage-part fs-3 fw-bold" t-esc="aiteTexteDeLaPart"/>
+                    <div t-if="aiteMonnaieDeLaPart" class="aite-partage-monnaie fs-4 fw-bold" t-esc="aiteMonnaieDeLaPart"/>
+                    <div t-if="aiteResteDuPartage" class="aite-partage-reste" t-esc="aiteResteDuPartage"/>
+                </div>
+                <button t-if="!aitePart.complet" class="btn btn-light btn-lg aite-partage-annuler" t-on-click="() => this.aiteAnnulerLePartage()">
+                    <i class="fa fa-times me-2" role="img" t-att-title="aiteTextes.annulerLePartage"
+                       t-att-aria-label="aiteTextes.annulerLePartage"/>
+                    <span t-esc="aiteTextes.annulerLePartage"/>
+                </button>
+            </div>
+        </xpath>
+    </t>
+
+</templates>

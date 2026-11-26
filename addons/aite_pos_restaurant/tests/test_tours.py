@@ -908,3 +908,186 @@ class TestToursParcours(AiteToursStockCommon):
         self.assertFalse(lendemain[0].order_ids)
         self.assertEqual(lendemain[1].state, 'opening_control')
         self.assertEqual(self.pos_config.current_session_id, lendemain[1])
+
+
+@tagged('post_install', '-at_install', 'aite_pos_restaurant')
+class TestToursPartsEgales(AiteToursModeCommon):
+    """Partager l'addition à parts égales (demande du Messager : « diviser
+    la facture à part égale par le nombre de personnes qui doivent payer »).
+
+    La caisse est en francs CFA (aucune décimale), comme au Messager ; trois
+    modes : Cash, Bank et Mobile Money. Le ticket s'imprime à la validation
+    (« Impression automatique du reçu ») sur une imprimante simulée par le
+    tour. Coca-Cola 60 000, Water 40 000, Minute Maid 15 001."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        journal = cls.env['account.journal'].create({
+            'name': "Mobile Money", 'code': 'MOMO', 'type': 'bank',
+            'company_id': cls.env.company.id})
+        cls.mobile_money = cls.env['pos.payment.method'].create({
+            'name': "Mobile Money", 'journal_id': journal.id,
+            'company_id': cls.env.company.id})
+        cls.pos_config.write({
+            'payment_method_ids': [(4, cls.mobile_money.id)],
+            'iface_print_auto': True,
+        })
+        Produit = cls.env['product.product']
+        for nom, prix in (("Coca-Cola", 60000), ("Water", 40000), ("Minute Maid", 15001)):
+            Produit.search([('name', '=', nom)], limit=1).product_tmpl_id.list_price = prix
+
+    def _en_francs_cfa(self):
+        """La société et les listes de prix en francs CFA (comme le test
+        « zero decimal places » d'Odoo)."""
+        xaf = self.env.ref('base.XAF')
+        xaf.active = True
+        self.env.company.currency_id = xaf
+        self.pos_config.available_pricelist_ids.write({'currency_id': xaf.id})
+        self.assertEqual(xaf.decimal_places, 0)
+
+    def _addition(self, numero):
+        return self.env['pos.order'].search([
+            ('config_id', '=', self.pos_config.id),
+            ('table_id.table_number', '=', numero)], order='id desc', limit=1)
+
+    def _paiements(self, addition):
+        """Les paiements, sans la ligne de monnaie d'Odoo (`is_change`)."""
+        return [(p.payment_method_id.name, p.amount)
+                for p in addition.payment_ids.sorted('id') if not p.is_change]
+
+    def test_parts_egales(self):
+        """Table de 3 personnes, 100 000 FCFA : 33 333 en espèces, 33 333 par
+        carte, 33 334 en Mobile Money ; une seule addition payée, qui garde
+        ses personnes et « Ouverte par » / « Encaissée par »."""
+        self._en_francs_cfa()
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AitePartsEgalesTour', login='pos_user')
+        addition = self._addition(5)
+        self.assertEqual(addition.state, 'paid')
+        self.assertEqual(addition.amount_total, 100000)
+        self.assertEqual(self._paiements(addition),
+                         [("Cash", 33333), ("Bank", 33333), ("Mobile Money", 33334)])
+        self.assertEqual(addition.amount_return, 0)
+        self.assertFalse(addition.payment_ids.filtered('is_change'))
+        self.assertEqual(addition.aite_parts_egales, 3)
+        self.assertEqual(addition.customer_count, 3)
+        self.assertEqual(addition.aite_ouverte_par_id, self.employes["Awa"])
+        self.assertEqual(addition.aite_encaissee_par_id, self.employes["Carine"])
+        self.assertEqual(sorted(addition.lines.product_id.mapped('name')), ["Coca-Cola", "Water"])
+        self.assertEqual(self.env['pos.order'].search_count([
+            ('config_id', '=', self.pos_config.id), ('state', '!=', 'cancel')]), 1)
+
+    def test_parts_egales_changer_d_avis(self):
+        """La caissière choisit 2 au lieu des 3 personnes : 37 500 + 37 501 ;
+        40 000 donnés en espèces pour la dernière part : 2 499 rendus."""
+        self._en_francs_cfa()
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AitePartsEgalesChangerTour', login='pos_user')
+        addition = self._addition(4)
+        self.assertEqual(addition.state, 'paid')
+        self.assertEqual(self._paiements(addition), [("Bank", 37500), ("Cash", 40000)])
+        self.assertEqual(addition.amount_return, 2499)
+        # La monnaie de la dernière part : une seule ligne de rendu, en espèces.
+        self.assertEqual([(p.payment_method_id.name, p.amount)
+                          for p in addition.payment_ids if p.is_change], [("Cash", -2499)])
+        self.assertEqual(addition.aite_parts_egales, 2)
+
+    def test_parts_egales_annuler(self):
+        """Un paiement avant le partage, retour au panier, puis « Annuler le
+        partage » : Odoo reprend la main ; le ticket ne parle pas de partage."""
+        self._en_francs_cfa()
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AitePartsEgalesAnnulerTour', login='pos_user')
+        addition = self._addition(2)
+        self.assertEqual(addition.state, 'paid')
+        self.assertEqual(self._paiements(addition),
+                         [("Cash", 10000), ("Bank", 15000), ("Mobile Money", 30001)])
+        self.assertEqual(addition.aite_parts_egales, 0)
+
+    def test_parts_egales_arrondi_des_especes(self):
+        """L'arrondi des espèces d'Odoo (pas de 25, espèces seulement) : les
+        parts sont des multiples de 25, la dernière est arrondie par Odoo ;
+        la validation passe sans « Rounding error »."""
+        self._en_francs_cfa()
+        self._arrondi_de_25()
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AitePartsEgalesArrondiTour', login='pos_user')
+        addition = self._addition(5)
+        self.assertEqual(addition.state, 'paid')
+        self.assertEqual(self._paiements(addition),
+                         [("Cash", 33325), ("Bank", 33325), ("Cash", 33350)])
+        self.assertEqual(addition.aite_parts_egales, 3)
+
+
+    # Après la revue
+
+    def test_parts_egales_monnaie_d_une_part(self):
+        """La 1re personne donne 50 000 en espèces pour une part de 33 333 :
+        la caisse dit « Monnaie à rendre : 16 667 » et enregistre 33 333 en
+        espèces (ce qui reste dans le tiroir) ; la dernière part reste
+        33 334. Une ligne ramenée à 0 ne compte pas ; la dernière part créée
+        hors des boutons (comme « Mettre sur ardoise ») compte."""
+        self._en_francs_cfa()
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AitePartsEgalesMonnaieTour', login='pos_user')
+        addition = self._addition(5)
+        self.assertEqual(addition.state, 'paid')
+        self.assertEqual(self._paiements(addition),
+                         [("Cash", 33333), ("Bank", 33333), ("Mobile Money", 33334)])
+        self.assertEqual(addition.amount_return, 0)
+        self.assertFalse(addition.payment_ids.filtered('is_change'))
+        self.assertEqual(addition.aite_parts_egales, 3)
+
+    def _arrondi_de_25(self):
+        arrondi = self.env['account.cash.rounding'].create({
+            'name': "25 FCFA", 'rounding': 25, 'rounding_method': 'HALF-UP',
+            'strategy': 'add_invoice_line',
+            'profit_account_id': self.company_data['default_account_revenue'].id,
+            'loss_account_id': self.company_data['default_account_expense'].id,
+        })
+        self.pos_config.write({'cash_rounding': True, 'rounding_method': arrondi.id,
+                               'only_round_cash_method': True})
+
+    def test_parts_egales_arrondi_reparti(self):
+        """Arrondi de 25, 8 010 en 3 : 2 650 et 2 675 (les pas restants vont
+        aux dernières personnes, pas tous au dernier), puis le reste,
+        2 685, arrondi à 2 675 en espèces."""
+        self._en_francs_cfa()
+        self._arrondi_de_25()
+        self.env['product.product'].search(
+            [('name', '=', "Minute Maid")], limit=1).product_tmpl_id.list_price = 8010
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AitePartsEgalesArrondiRepartiTour', login='pos_user')
+        addition = self._addition(5)
+        self.assertEqual(addition.state, 'paid')
+        self.assertEqual(self._paiements(addition),
+                         [("Cash", 2650), ("Bank", 2675), ("Cash", 2675)])
+        self.assertEqual(addition.aite_parts_egales, 3)
+
+    def test_parts_egales_pourboire(self):
+        """Un pourboire ajouté sur l'écran de paiement : le partage est
+        oublié (les parts ne portent plus sur le bon total) et se refait."""
+        self._en_francs_cfa()
+        self.pos_config.write({
+            'iface_tipproduct': True,
+            'tip_product_id': self.env.ref('point_of_sale.product_product_tip').id,
+        })
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AitePartsEgalesPourboireTour', login='pos_user')
+        addition = self._addition(5)
+        self.assertEqual(addition.state, 'paid')
+        self.assertEqual(addition.amount_total, 105000)
+        self.assertEqual(self._paiements(addition),
+                         [("Cash", 33333), ("Bank", 35833), ("Mobile Money", 35834)])
+        self.assertEqual(addition.aite_parts_egales, 2)
+
+@tagged('post_install', '-at_install', 'aite_pos_restaurant')
+class TestToursPartsEgalesHorsMode(AiteToursCommon):
+    """Une caisse de restaurant hors « Service à table contrôlé » : pas de
+    bouton « Partager à parts égales »."""
+
+    def test_pas_de_partage_hors_mode(self):
+        self.assertFalse(self.pos_config.aite_mode_restaurant)
+        self.pos_config.with_user(self.pos_user).open_ui()
+        self.start_pos_tour('AitePartsEgalesHorsModeTour', login='pos_user')

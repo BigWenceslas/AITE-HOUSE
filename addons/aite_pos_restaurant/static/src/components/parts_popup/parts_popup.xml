@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- « Combien de personnes paient ? » (partage à parts égales) : sans
+         en-tête d'Odoo, comme la fenêtre du code ; gros boutons pour la
+         tablette, la phrase « ce qui va se passer », « Valider », « Retour ». -->
+    <t t-name="aite_pos_restaurant.AitePartsPopup">
+        <Dialog header="false" footer="false" size="'md'" contentClass="'aite-parts-popup'">
+            <h4 class="aite-parts-titre text-center mb-3" t-esc="titre"/>
+            <div class="aite-parts-boutons">
+                <t t-foreach="boutons" t-as="nombre" t-key="nombre">
+                    <button class="btn btn-lg aite-touche aite-parts-nombre"
+                            t-att-class="state.nombre === nombre ? 'btn-primary aite-parts-choisi' : 'btn-light'"
+                            t-att-data-aite-parts="nombre" t-att-disabled="!possible(nombre)"
+                            t-on-click="() => this.choisir(nombre)" t-esc="nombre"/>
+                </t>
+                <button t-if="!state.plus" class="btn btn-light btn-lg aite-touche aite-parts-plus"
+                        data-aite-parts="plus" t-on-click="() => this.state.plus = true"
+                        t-esc="textes.plusDePersonnes"/>
+            </div>
+            <div t-if="state.plus" class="aite-parts-boutons aite-parts-autres mt-2">
+                <t t-foreach="autres" t-as="nombre" t-key="nombre">
+                    <button class="btn aite-touche aite-parts-nombre"
+                            t-att-class="state.nombre === nombre ? 'btn-primary aite-parts-choisi' : 'btn-light'"
+                            t-att-data-aite-parts="nombre" t-att-disabled="!possible(nombre)"
+                            t-on-click="() => this.choisir(nombre)" t-esc="nombre"/>
+                </t>
+            </div>
+            <div t-if="props.surLeReste" class="aite-parts-reste text-center text-muted mt-3" t-esc="reste"/>
+            <div class="aite-parts-phrase text-center fs-4 fw-bold mt-2 mb-3" t-esc="phrase"/>
+            <button class="btn btn-primary btn-lg w-100 aite-touche aite-parts-valider"
+                    t-on-click="() => this.valider()" t-esc="textes.valider"/>
+            <button class="btn btn-secondary btn-lg w-100 mt-2 aite-touche aite-parts-retour"
+                    t-on-click="() => this.props.close()" t-esc="textes.retour"/>
+        </Dialog>
+    </t>
+
+</templates>

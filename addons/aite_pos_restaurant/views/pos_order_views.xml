@@ -32,6 +32,7 @@
                 <field name="aite_encaissee_par_id" invisible="not aite_encaissee_par_id"
                        options="{'no_open': True}"/>
                 <field name="aite_fusionnee" invisible="not aite_fusionnee"/>
+                <field name="aite_parts_egales" invisible="not aite_parts_egales"/>
             </xpath>
         </field>
     </record>

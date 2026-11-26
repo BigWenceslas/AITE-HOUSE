@@ -189,3 +189,49 @@ $aite-orange: rgb(255, 152, 0);
         break-after: auto;
     }
 }
+
+// Partager à parts égales (demande du Messager) : la fenêtre « Combien de
+// personnes paient ? » (gros boutons) et le bandeau de l'écran de paiement.
+.aite-parts-popup {
+    .aite-parts-titre {
+        font-weight: 600;
+    }
+    .aite-parts-boutons {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.5rem;
+    }
+    .aite-touche {
+        min-height: 4.5rem;
+        font-size: 2rem;
+        font-weight: 600;
+    }
+    .aite-parts-autres .aite-touche {
+        min-height: 3.25rem;
+        font-size: 1.5rem;
+    }
+    .aite-parts-plus,
+    .aite-parts-valider,
+    .aite-parts-retour {
+        font-size: 1.25rem;
+    }
+    .aite-parts-valider,
+    .aite-parts-retour {
+        min-height: 3.25rem;
+    }
+}
+
+.payment-screen {
+    .aite-partage-bandeau {
+        background-color: var(--bs-info-bg-subtle, #cff4fc);
+        border: 2px solid var(--bs-info, #0dcaf0);
+    }
+    .aite-partage-bandeau.aite-partage-fini {
+        background-color: var(--bs-success-bg-subtle, #d1e7dd);
+        border-color: var(--bs-success, #198754);
+    }
+    // La monnaie d'une part payée en espèces : à rendre tout de suite.
+    .aite-partage-monnaie {
+        color: var(--bs-danger-text-emphasis, #842029);
+    }
+}

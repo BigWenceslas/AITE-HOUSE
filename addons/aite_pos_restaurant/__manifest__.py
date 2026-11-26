@@ -129,9 +129,42 @@ Table divisée (18.0.1.0.11) :
   « Table divisée ») ; une imprimante en panne en cours de route ne fait
   reprendre que les additions pas encore imprimées.
 
+Partager à parts égales (18.0.1.0.12) :
+
+* sur l'écran de paiement, « Partager à parts égales » ouvre « Combien de
+  personnes paient ? » : gros boutons 2 à 8 et « Plus » jusqu'à 20, le
+  nombre de personnes de la table présélectionné (2 s'il y en a moins), la
+  phrase « Chaque personne paiera 33 333 FCFA ; le dernier paie ce qui
+  reste. » ;
+* un bandeau dit la part en cours (« Part 1 sur 3 : 33 333 FCFA ») : toucher
+  un mode de paiement crée une ligne du montant de la part, la dernière est
+  exactement le reste dû (100 000 en 3 : 33 333, 33 333, 33 334) ; avec des
+  paiements déjà faits, le reste dû est partagé et le bandeau le dit ;
+  supprimer une ligne (ou la ramener à 0) remet le compteur en cohérence ;
+  « Annuler le partage » rend le comportement habituel, tant que toutes les
+  parts ne sont pas encaissées ;
+* monnaie : une part intermédiaire ne dépasse jamais le reste dû ; si la
+  caissière tape ce que la personne donne en espèces (50 000 pour 33 333),
+  le bandeau dit « Monnaie à rendre : 16 667 FCFA » et la ligne revient à la
+  part au mode suivant ou à la validation (la caisse enregistre ce qui reste
+  dans le tiroir) ; sur la dernière part, la monnaie d'Odoo, comme
+  d'habitude ;
+* arrondi des espèces : chaque part intermédiaire est un multiple de
+  l'arrondi, les pas restants vont un chacun aux dernières personnes (1 000
+  en 7 au pas de 25 : 125, 125, 150 × 5) ; la dernière part en espèces est
+  arrondie par Odoo et le bandeau dit les deux montants ;
+* revenir au panier puis au paiement retrouve le partage, tant que le total
+  (produits, pourboire) n'a pas changé ; sinon il se refait d'un toucher ;
+* le ticket dit « Partagée en 3 parts égales » sous les paiements (champ
+  « Partagée à parts égales » de l'addition, gardé pour la réimpression ; le
+  serveur ne garde qu'un nombre possible) ; l'addition reste une seule
+  commande (stock, cuisine, rapports, personnes, Ouverte par / Encaissée
+  par inchangés) ; une table divisée se partage addition par addition ;
+  une caisse hors mode n'a pas le bouton.
+
 Aucune dépendance au socle hôtelier.
 """,
-    'version': '18.0.1.0.11',
+    'version': '18.0.1.0.12',
     'author': "AITE Consulting",
     'website': "https://aiteconsulting.com",
     'category': 'Point of Sale',

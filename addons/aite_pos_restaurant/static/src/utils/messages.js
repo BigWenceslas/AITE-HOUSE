@@ -96,6 +96,8 @@ export const TITRES = {
     /** La même fenêtre quand aucune addition n'est plus sur une table
      * (l'origine payée) : les noms des additions. */
     additionsSansTable: (noms) => `Les additions ${noms.join(", ")}`,
+    /** Partager à parts égales (demande du Messager). */
+    combienPaient: `Combien de personnes paient${ESP}?`,
 };
 
 export const TEXTES = {
@@ -183,6 +185,29 @@ export const TEXTES = {
         TEXTES.legendeParties(delai)
             .map((partie) => partie.texte)
             .join(" · "),
+    // Partager à parts égales (demande du Messager : « diviser la facture à
+    // part égale par le nombre de personnes qui doivent payer »). Les
+    // montants arrivent au format de la caisse (« 33 333 FCFA »).
+    partager: "Partager à parts égales",
+    plusDePersonnes: "Plus",
+    chaquePersonne: (montant) =>
+        `Chaque personne paiera ${montant}${ESP}; le dernier paie ce qui reste.`,
+    /** Avec l'arrondi des espèces, les parts peuvent différer d'un pas. */
+    chaquePersonneEntre: (min, max) =>
+        `Chaque personne paiera entre ${min} et ${max}${ESP}; le dernier paie ce qui reste.`,
+    /** Des paiements sont déjà faits : le partage porte sur le reste dû. */
+    resteAPartager: (montant) => `Reste dû partagé${ESP}: ${montant}.`,
+    part: (rang, nombre, montant) => `Part ${rang} sur ${nombre}${ESP}: ${montant}`,
+    /** La dernière part, quand l'arrondi des espèces la change. */
+    partEspeces: (rang, nombre, montant, especes) =>
+        `Part ${rang} sur ${nombre}${ESP}: ${montant} (${especes} en espèces)`,
+    /** Une part intermédiaire payée en espèces au-delà de la part. */
+    monnaieARendre: (montant) => `Monnaie à rendre${ESP}: ${montant}`,
+    partsReglees: (nombre) => `Les ${nombre} parts sont encaissées. Validez le paiement.`,
+    additionReglee: "Toute l'addition est encaissée. Validez le paiement.",
+    annulerLePartage: "Annuler le partage",
+    /** Sous les paiements, sur le ticket. */
+    partagee: (nombre) => `Partagée en ${nombre} parts égales`,
     /** « 35 min » ; à partir d'une heure, « 1 h 05 ». */
     duree: (minutes) => {
         if (minutes < 60) {

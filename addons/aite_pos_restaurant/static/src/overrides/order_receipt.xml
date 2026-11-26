@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- Le ticket d'une addition partagée à parts égales : « Partagée en 3
+         parts égales », sous les paiements (et la monnaie). Rien d'autre ne
+         change ; une addition sans partage n'a pas cette ligne. -->
+    <t t-name="aite_pos_restaurant.OrderReceipt" t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('receipt-change')]" position="after">
+            <div t-if="props.data.aitePartage" class="aite-ticket-partage text-center mt-1"
+                 t-esc="props.data.aitePartage"/>
+        </xpath>
+    </t>
+
+</templates>

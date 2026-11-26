@@ -1491,4 +1491,29 @@ CAS = [
      "Étape 4 : 7 et 7BB (7B payée n'y est plus). Étape 5 : chaque table "
      "n'a que son addition (l'aperçu habituel). Étape 6 : l'aperçu "
      "habituel, une seule addition."),
+    ("R106", "R", 1, "Caisse au service à table contrôlé, en FCFA ; table "
+     "5 ouverte pour 3 personnes, 100 000 FCFA envoyés ; modes Espèces, "
+     "Carte et Mobile Money",
+     "18.0.1.0.12 — partager l'addition à parts égales entre les personnes "
+     "qui paient",
+     "1. Écran de paiement : « Partager à parts égales ».\n2. Laisser 3 "
+     "(présélectionné), « Valider ».\n3. Toucher « Espèces », taper "
+     "50 000 au pavé.\n4. Toucher « Carte ».\n5. Supprimer la ligne de la "
+     "carte, puis toucher de nouveau « Carte ».\n6. Toucher « Mobile "
+     "Money », puis « Valider ».\n7. Sur une autre table, partager en 2, "
+     "encaisser une part, revenir au panier puis au paiement, puis "
+     "« Annuler le partage ».",
+     "Étape 1 : « Combien de personnes paient ? », 3 choisi, « Chaque "
+     "personne paiera 33 333 FCFA ; le dernier paie ce qui reste. ». Étape "
+     "2 : bandeau « Part 1 sur 3 : 33 333 FCFA ». Étape 3 : la ligne "
+     "affiche 50 000, le bandeau dit « Monnaie à rendre : 16 667 FCFA » et "
+     "« Part 2 sur 3 : 33 333 FCFA ». Étape 4 : la ligne des espèces "
+     "revient à 33 333, une ligne Carte de 33 333, « Part 3 sur 3 : 33 334 "
+     "FCFA », plus de monnaie. Étape 5 : le bandeau repasse à « Part 2 sur "
+     "3 », puis « Part 3 sur 3 ». Étape 6 : « Les 3 parts sont encaissées. "
+     "Validez le paiement. » (sans « Annuler le partage ») ; le ticket "
+     "porte « Partagée en 3 parts égales » sous les paiements ; une seule "
+     "addition payée, sans monnaie. Étape 7 : le partage est retrouvé au "
+     "retour ; après l'annulation, le bandeau disparaît et la ligne "
+     "suivante paie tout le reste dû."),
 ]

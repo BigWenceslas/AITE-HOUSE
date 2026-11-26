@@ -184,6 +184,21 @@
 </ol>
 <p class="petit">Mesuré : 15 touches pour une part d'un seul produit. Une part porte le numéro de la table suivi d'une lettre (« 4B ») ; elle reste rattachée à son origine et ne compte pas une seconde fois dans les tables et les personnes.</p>
 
+<h3>Partager à parts égales <span class="touches">3 + 1 touche par personne</span></h3>
+<p>Trois amis veulent payer chacun leur part d'une addition de 100 000 FCFA : vous n'avez rien à calculer.</p>
+<ol class="etapes">
+  <li>Sur l'écran de paiement, touchez <span class="b">Partager à parts égales</span>. La fenêtre « Combien de personnes paient ? » propose déjà le nombre de personnes de la table ; touchez un autre nombre si besoin (<span class="b">Plus</span> pour aller au-delà de 8, jusqu'à 20). La phrase dit ce qui va se passer : « Chaque personne paiera 33 333 FCFA ; le dernier paie ce qui reste. »</li>
+  <li><span class="b">Valider</span>. Un bandeau dit la part en cours : « Part 1 sur 3 : 33 333 FCFA ».</li>
+  <li>Pour chaque personne, touchez son mode de paiement (<span class="b">Espèces</span>, <span class="b">Mobile Money</span>, la carte…) : la ligne a déjà le montant de sa part et le bandeau passe à la suivante. La dernière part est exactement ce qui reste (33 334).</li>
+  <li>« Les 3 parts sont encaissées. Validez le paiement. » : <span class="b">Valider</span>. Le ticket porte « Partagée en 3 parts égales » sous les paiements.</li>
+</ol>
+<figure class="moyen">
+  <img src="../../../../captures/restaurant/31_parts_egales_bandeau.jpg" alt="Partage à parts égales">
+  <figcaption>La table 4, 8 000 FCFA en 3 : la 1re personne a donné 5 000 en espèces, le bandeau dit « Part 2 sur 3 : 2 666 FCFA » et « Monnaie à rendre : 2 334 FCFA ».</figcaption>
+</figure>
+<div class="encadre"><p><span class="titre">La monnaie d'une part —</span> une personne donne un billet plus gros que sa part : tapez ce qu'elle donne au pavé, le bandeau dit « Monnaie à rendre » ; rendez-la, puis touchez le mode de la personne suivante : la ligne revient au montant de la part, comme l'argent qui reste dans le tiroir. Pour la dernière personne, la monnaie s'affiche comme d'habitude.</p></div>
+<p class="petit">Si un paiement était déjà fait, c'est le reste dû qui se partage, et le bandeau le dit. Supprimer une ligne fait reculer le compteur. <span class="b">Annuler le partage</span> revient au paiement habituel (la ligne suivante paie tout le reste). Revenir au panier puis au paiement retrouve le partage ; un produit ou un pourboire ajouté l'efface : touchez de nouveau <span class="b">Partager à parts égales</span>. Avec l'arrondi des espèces, les parts peuvent différer d'un pas (« entre 2 650 et 2 675 FCFA ») et le bandeau de la dernière part dit aussi le montant en espèces. Terminez un partage sur le poste où vous l'avez commencé. L'addition reste une seule vente (stock, cuisine, rapports inchangés).</p>
+
 <!-- =================================================================== -->
 <h2>4. Le serveur</h2>
 
@@ -463,13 +478,14 @@
   <tr><td>Caissière — encaisser au poste d'un serveur resté identifié</td><td class="n">7</td><td class="n">7</td></tr>
   <tr><td>Manager — prendre la main, puis encaisser</td><td class="n">8</td><td class="n">8</td></tr>
   <tr><td>Caissière — deux parts d'une addition divisée</td><td class="n">14 + n</td><td class="n">15 (n = 1)</td></tr>
+  <tr><td>Caissière — partager à parts égales (3 personnes)</td><td class="n">3 + 3</td><td class="n">—</td></tr>
   <tr><td>Chef — sortir des espèces</td><td class="n">7 + saisie</td><td class="n">18 (« 1000 » et « Monnaie »)</td></tr>
   <tr><td>Chef — fermer la caisse, sans table ouverte</td><td class="n">7 + chiffres</td><td class="n">11</td></tr>
   <tr><td>Chef — fermer avec des tables ouvertes et les annuler</td><td class="n">+ 2</td><td class="n">13</td></tr>
   <tr><td>Manager — encaisser une table ouverte par un autre</td><td class="n">8</td><td class="n">8</td></tr>
   <tr><td>Une table servie de bout en bout</td><td class="n">27 + n</td><td class="n">30 (n = 3)</td></tr>
 </table>
-<p class="petit">Comptées sur Chrome à 1 280 × 800, pas encore sur la tablette du client. Ce guide est tiré du code du module (textes de la caisse, réglages, droits), des notes de version du lot 1 du restaurant et du cahier de recette (domaine R, 104 cas).</p>
+<p class="petit">Comptées sur Chrome à 1 280 × 800, pas encore sur la tablette du client. Ce guide est tiré du code du module (textes de la caisse, réglages, droits), des notes de version du lot 1 du restaurant et du cahier de recette (domaine R, 106 cas).</p>
 
 </body>
 </html>

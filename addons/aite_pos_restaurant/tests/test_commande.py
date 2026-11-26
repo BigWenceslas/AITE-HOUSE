@@ -190,6 +190,41 @@ class TestCommande(RestaurantCommon):
         self.assertEqual(commande.aite_ouverte_par_id, self.awa)
         self.assertNotIn("n'a pas le droit d'encaisser", self._notes(commande))
 
+    def _payee_en_parts(self, parts, paiements):
+        """L'addition payée en ``paiements`` montants d'espèces, la caisse
+        disant ``aite_parts_egales = parts``."""
+        addition, commande = self._table_12()
+        addition.ajouter(self.castel, 3)
+        addition.envoyer()
+        self._commande_caisse(addition, self.awa)
+        total = self.castel.lst_price * 3
+        maintenant = fields.Datetime.to_string(fields.Datetime.now())
+        montants = [total / paiements] * paiements
+        self._commande_caisse(addition, self.carine, etat='paid', en_plus={
+            'aite_parts_egales': parts,
+            'amount_paid': total,
+            'payment_ids': [[0, 0, {'amount': montant, 'name': maintenant,
+                                    'payment_method_id': self.especes.id}]
+                            for montant in montants],
+        })
+        return commande
+
+    def test_parts_egales_gardees(self):
+        """« Partagée en 3 parts égales » : le nombre envoyé par la caisse est
+        gardé sur l'addition (le ticket le réimprime)."""
+        commande = self._payee_en_parts(3, 3)
+        self.assertEqual(commande.state, 'paid')
+        self.assertEqual(commande.aite_parts_egales, 3)
+
+    def test_parts_egales_impossibles_ignorees(self):
+        """Un nombre de parts impossible (hors de 2 à 20, ou plus de parts que
+        de paiements) n'est pas gardé : 0, pas de mention sur le ticket."""
+        for parts, paiements in ((1, 1), (25, 2), (3, 2), (-2, 1)):
+            with self.subTest(parts=parts, paiements=paiements):
+                commande = self._payee_en_parts(parts, paiements)
+                self.assertEqual(commande.state, 'paid')
+                self.assertEqual(commande.aite_parts_egales, 0)
+
     def test_encaissement_par_un_serveur_accepte_et_note(self):
         addition, commande = self._table_12()
         addition.ajouter(self.castel, 1)

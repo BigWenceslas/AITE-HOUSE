@@ -102,6 +102,14 @@ class PosOrder(models.Model):
              "comprises (12B, 12BB). « Addition » montre ensemble les additions "
              "ouvertes d'un même groupe, même quand une part intermédiaire est "
              "déjà payée.")
+    aite_parts_egales = fields.Integer(
+        string="Partagée à parts égales", readonly=True, copy=False,
+        help="Le nombre de personnes entre lesquelles la caissière a partagé "
+             "l'addition à parts égales sur l'écran de paiement (0 : pas de "
+             "partage). Le ticket l'écrit sous les paiements : « Partagée en "
+             "3 parts égales », même réimprimé. Le serveur ne garde qu'un "
+             "nombre possible (2 à 20, et pas plus que de paiements). "
+             "L'addition reste une seule commande.")
     # Le bouton « Saisies » de la fiche suit le mode de la caisse, et non
     # « Ouverte par » : une addition ouverte avant la mise à niveau, ou une
     # copie ancienne, a des saisies sans « ouverte par ».
@@ -182,6 +190,8 @@ class PosOrder(models.Model):
         config = (existing_order or self.env['pos.session'].browse(
             order.get('session_id')).exists()).config_id
         if len(config) != 1 or not config._aite_actif():
+            # Le partage à parts égales n'existe qu'au service à table contrôlé.
+            order.pop('aite_parts_egales', None)
             return super()._process_order(order, existing_order)
 
         # 1. Ce que le serveur tient seul est retiré de la charge reçue.
@@ -216,8 +226,26 @@ class PosOrder(models.Model):
             order, existing_order.with_context(**synchro) if existing_order else existing_order)
 
         commande = self.browse(order_id).with_context(**contexte_serveur())
+        commande._aite_verifier_parts_egales()
         commande._aite_apres_synchronisation(avant, heure_recue, etait_reglee)
         return order_id
+
+    @staticmethod
+    def _aite_parts_possibles(parts, paiements):
+        """« Partagée en N parts égales » est possible : 2 à 20 personnes, et
+        au moins autant de paiements encaissés (hors monnaie rendue)."""
+        return 2 <= parts <= 20 and parts <= paiements
+
+    def _aite_verifier_parts_egales(self):
+        """Le nombre de parts vient de la caisse : il n'est gardé que s'il est
+        possible, sinon l'addition dit « pas de partage » (0) et le ticket
+        n'en parle pas."""
+        for commande in self.filtered('aite_parts_egales'):
+            paiements = commande.payment_ids.filtered(
+                lambda paiement: not paiement.is_change
+                and not commande.currency_id.is_zero(paiement.amount))
+            if not self._aite_parts_possibles(commande.aite_parts_egales, len(paiements)):
+                commande.aite_parts_egales = 0
 
     def _aite_apres_synchronisation(self, avant, heure_recue, etait_reglee):
         """Après l'écriture d'Odoo : heure, personnes, « encaissée par »,

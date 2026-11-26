@@ -235,6 +235,70 @@ inchangée (aucune vue ni donnée) : un **redémarrage** suffit.
   les touches de chaque ligne de la partie 1.2 (partie 3 ci-dessous).
 - Cahier de recette : domaine **R** (`recette/cas_de_test.py`).
 
+### Évolutions demandées par le client
+
+- **`aite_pos_restaurant` 18.0.1.0.12 — partager l'addition à parts égales**
+  (demande du Messager : « diviser la facture à part égale par le nombre de
+  personnes qui doivent payer » ; avant, la caissière calculait chaque part
+  et la tapait). Seulement sur une caisse au service à table contrôlé.
+  - **Le geste.** Écran de paiement → **Partager à parts égales** →
+    « Combien de personnes paient ? » : gros boutons 2 à 8, **Plus** jusqu'à
+    20 ; les personnes de la table sont présélectionnées (2 s'il y en a
+    moins) ; la phrase « Chaque personne paiera 33 333 FCFA ; le dernier
+    paie ce qui reste. » (« entre 2 650 et 2 675 FCFA » quand les parts
+    diffèrent d'un pas). Un bandeau dit la part en cours (« Part 1 sur 3 :
+    33 333 FCFA ») : toucher un mode de paiement crée une ligne du montant
+    de la part ; la dernière est exactement le reste dû (100 000 en 3 :
+    33 333, 33 333, 33 334). Avec un paiement déjà fait, c'est le reste dû
+    qui se partage et le bandeau le dit. Supprimer une ligne (ou la ramener
+    à 0) fait reculer le compteur. **Annuler le partage** rend le
+    comportement habituel (les lignes déjà créées restent, la suivante paie
+    le reste) ; il n'est plus proposé quand toutes les parts sont encaissées
+    (« Les 3 parts sont encaissées. Validez le paiement. »).
+  - **Monnaie rendue.** Odoo ne calcule la monnaie que sur l'addition
+    entière. Si la caissière tape ce que la personne donne en espèces pour
+    une part intermédiaire (50 000 pour 33 333), le bandeau dit « Monnaie à
+    rendre : 16 667 FCFA » ; au mode suivant (ou à la validation) la ligne
+    revient à 33 333 : la caisse enregistre ce qui reste dans le tiroir, et
+    la dernière part ne change pas. Un autre mode que les espèces ne rend pas
+    de monnaie : un montant tapé au-delà de la part y est payé et la
+    dernière part diminue d'autant. Sur la dernière part, la monnaie d'Odoo
+    s'affiche comme d'habitude (40 000 donnés pour 37 501 → 2 499 rendus).
+  - **Arrondi des espèces d'Odoo.** Sans arrondi, chaque part est le
+    montant divisé par le nombre de personnes, arrondi au franc inférieur,
+    et le dernier paie ce qui reste (moins d'un franc de plus par personne).
+    Avec l'arrondi, le montant se compte en pas de l'arrondi : laissé au
+    dernier, le reste de la division pouvait lui faire payer le double des
+    autres (1 000 en 7 au pas de 25 : 125 × 6 et 250). Chaque personne
+    reçoit donc le même nombre de pas, les pas restants vont un chacun aux
+    dernières personnes, et la dernière part prend ce qui reste
+    (1 000 en 7 au pas de 25 : 125, 125, 150, 150, 150, 150, 150 ; 8 010 en
+    3 : 2 650, 2 675, 2 685). Chaque part intermédiaire est un multiple de
+    l'arrondi et passe le contrôle d'arrondi d'Odoo dans tous les modes ; la
+    dernière, en espèces, est arrondie par Odoo et le bandeau dit les deux
+    montants (« Part 3 sur 3 : 2 685 FCFA (2 675 FCFA en espèces) »).
+  - **Retour au panier.** Le partage est gardé sur l'addition (mémoire du
+    poste) et retrouvé au retour au paiement tant que le total n'a pas
+    changé ; un produit ajouté ou retiré, ou un pourboire ajouté sur l'écran
+    de paiement, le fait oublier (il se refait d'un toucher, sur le nouveau
+    reste dû). Après un rechargement de la caisse, il est perdu.
+  - **Le ticket** dit « Partagée en 3 parts égales » sous les paiements
+    quand toutes les parts ont été encaissées (y compris une dernière part
+    mise sur ardoise par **Mettre sur ardoise**). Le nombre est gardé sur
+    l'addition (champ « Partagée à parts égales », sur la fiche) pour la
+    réimpression ; le serveur ne garde qu'un nombre possible (2 à 20, et pas
+    plus que de paiements encaissés), sinon 0. L'addition reste une seule
+    commande : stock, cuisine, rapports, personnes, « Ouverte par » /
+    « Encaissée par » inchangés ; une table divisée se partage addition par
+    addition.
+  - **Limite.** Le partage et les lignes de paiement ne vivent que sur le
+    poste qui encaisse, comme les paiements d'Odoo avant validation : un
+    partage se termine sur le poste où il a commencé.
+  - Tests : `TestToursPartsEgales` (7 tours : 3 personnes, changer d'avis,
+    annuler, arrondi, monnaie d'une part, arrondi réparti, pourboire),
+    `TestToursPartsEgalesHorsMode`, `TestCommande.test_parts_egales_*` ;
+    recette R106.
+
 ### Corrections après livraison
 
 - **`aite_pos_restaurant` 18.0.1.0.11 — « Addition » sur une table divisée**
