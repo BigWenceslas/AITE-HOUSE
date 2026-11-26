@@ -3292,6 +3292,93 @@
         "#ERP",
         "#Facturation"
       ]
+    },
+    {
+      "serie": "Jeudi 26 novembre — au choix",
+      "semaine": null,
+      "jour": "jeudi",
+      "moment": "jeudi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-46",
+      "etiquette": "Conseil marge",
+      "photo": "ndop-pied",
+      "theme": "Coût de revient et prix de vente avant les fêtes",
+      "titre": "Avant les fêtes : *recalculez votre marge* article par article",
+      "points": [
+        "Mettez à jour le coût d’achat à chaque facture fournisseur reçue",
+        "Ajoutez transport, manutention et frais de douane au coût de revient",
+        "Comparez chaque prix de vente au coût réel, référence par référence",
+        "Corrigez les prix des articles vendus à perte avant le rush de décembre"
+      ],
+      "legende": "Au comptoir à Akwa, le patron vend encore le carton au prix fixé l’an dernier. Entre-temps, le fournisseur a augmenté, le transport depuis le port aussi. En décembre, la boutique ne désemplit pas et la caisse est pleine. En janvier, on se demande où est passé l’argent : on a vendu beaucoup, mais à perte sur certains articles.\n\nUn ERP qui intègre les frais d’approche dans le coût de revient montre la vraie marge de chaque article, pas celle qu’on croit. Avant la période la plus chargée de l’année, c’est le moment de corriger, pas après.\n\nQuand avez-vous comparé pour la dernière fois vos prix de vente à vos coûts réels ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Douala",
+        "#Marge",
+        "#GestionCommerciale",
+        "#PME"
+      ]
+    },
+    {
+      "serie": "Jeudi 26 novembre — au choix",
+      "semaine": null,
+      "jour": "jeudi",
+      "moment": "jeudi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-47",
+      "etiquette": "Conseil sécurité",
+      "photo": "blazer",
+      "theme": "Postes de travail : retirer les droits administrateur aux comptes du quotidien",
+      "titre": "Droits administrateur : *retirez-les des postes* du bureau",
+      "points": [
+        "Créez un compte Windows standard pour le travail quotidien de chacun",
+        "Gardez un compte administrateur distinct, réservé à l’informatique",
+        "Faites passer chaque installation de logiciel par une demande validée",
+        "Revoyez la liste des administrateurs de chaque PC tous les trimestres"
+      ],
+      "legende": "Le commercial voulait envoyer son devis plus vite. Il a installé un « convertisseur PDF gratuit » trouvé sur Internet. Avec lui sont arrivés des publicités, une barre d’outils et un programme qui tourne en fond. Le gars était pressé, et il a pu le faire parce que son compte Windows est administrateur, comme sur la plupart des PC de l’équipe.\n\nUn compte standard bloque ce genre d’installation et limite ce qu’un logiciel malveillant peut toucher sur le poste. Le travail quotidien ne change presque pas : e-mails, Odoo, Excel, tout marche. Les installations passent simplement par la personne qui gère l’informatique.\n\nSur vos PC, savez-vous aujourd’hui qui est administrateur, et pourquoi ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Douala",
+        "#Cybersecurite",
+        "#Infogerance",
+        "#PME"
+      ]
+    },
+    {
+      "serie": "Jeudi 26 novembre — au choix",
+      "semaine": null,
+      "jour": "jeudi",
+      "moment": "jeudi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-48",
+      "etiquette": "Conseil RH",
+      "photo": "tunique",
+      "theme": "Échéances des CDD et des périodes d'essai",
+      "titre": "CDD et essais : *ne laissez plus filer* les dates de fin",
+      "points": [
+        "Saisissez la date de fin de chaque contrat dans la fiche salarié",
+        "Programmez une alerte au responsable un mois avant chaque échéance",
+        "Faites trancher avant la date : renouveler, embaucher ou arrêter",
+        "Faites valider chaque renouvellement par votre conseil juridique"
+      ],
+      "legende": "Lundi matin, la responsable RH s’aperçoit que le contrat du commercial de Yaoundé est arrivé à terme il y a trois semaines. Il travaille toujours, personne n’a rien signé, et le chef répond « on va voir ». À ce stade, ce n’est plus une simple formalité : c’est un risque à faire examiner sans attendre.\n\nLe problème n’est pas la loi, c’est l’oubli. Une date saisie dans la fiche salarié de l’ERP et une alerte envoyée au bon responsable suffisent pour que la décision se prenne à temps, et non après coup, dans la précipitation.\n\nQui, chez vous, sait aujourd’hui quels contrats arrivent à échéance en janvier ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Yaounde",
+        "#RessourcesHumaines",
+        "#ERP",
+        "#PME"
+      ]
     }
   ]
 }
