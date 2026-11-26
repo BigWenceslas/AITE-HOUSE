@@ -3364,6 +3364,93 @@
         "#PME",
         "#Douala"
       ]
+    },
+    {
+      "serie": "Jeudi 26 novembre — version 3 (format conseil)",
+      "semaine": null,
+      "jour": "jeudi",
+      "moment": "jeudi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-49",
+      "etiquette": "Conseil réseau",
+      "photo": "veste-pied",
+      "theme": "Imprimante partagée qui disparaît du réseau après une coupure",
+      "titre": "Imprimante introuvable : donnez-lui une *adresse IP fixe*",
+      "points": [
+        "Réservez une adresse IP fixe à l’imprimante dans la box ou le routeur",
+        "Installez-la sur chaque poste par cette adresse, pas par son nom",
+        "Collez l’adresse IP et le nom du pilote sur le flanc de l’imprimante",
+        "Videz la file d’attente du poste avant de redémarrer l’imprimante"
+      ],
+      "legende": "8 h, Bonapriso. Le client attend sa facture au comptoir, la comptable clique sur « Imprimer » et Windows répond « imprimante hors ligne ». Pourtant, la secrétaire imprime depuis son poste. On éteint, on rallume, on secoue le câble, et vingt minutes passent.\n\nLa cause est souvent simple : après une coupure, la box redémarre et redistribue les adresses du réseau. L’imprimante change d’adresse, certains postes cherchent encore l’ancienne. Une adresse réservée dans la box règle le problème durablement, et l’étiquette collée sur l’imprimante évite d’appeler le technicien pour chaque nouveau PC.\n\nDans votre bureau, combien de fois par mois l’imprimante devient-elle « hors ligne » ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Douala",
+        "#PMECameroun",
+        "#Reseau",
+        "#Imprimante"
+      ]
+    },
+    {
+      "serie": "Jeudi 26 novembre — version 3 (format conseil)",
+      "semaine": null,
+      "jour": "jeudi",
+      "moment": "jeudi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-50",
+      "etiquette": "Conseil WhatsApp Business",
+      "photo": "tunique",
+      "theme": "Commandes WhatsApp perdues dans le fil des messages",
+      "titre": "WhatsApp Business : *étiquetez chaque commande* reçue",
+      "points": [
+        "Créez des étiquettes : nouvelle commande, en attente, payé, livré",
+        "Préparez des réponses rapides pour les prix, horaires et localisation",
+        "Activez le message d’absence pour les soirs et les jours fériés",
+        "Ajoutez votre catalogue pour envoyer un article en un seul clic"
+      ],
+      "legende": "Samedi, Bonamoussadi. Quarante messages depuis ce matin. Une cliente écrit : « J’ai déjà payé par Mobile Money hier, on livre quand ? » La vendeuse remonte le fil, ne retrouve ni la commande ni la capture du paiement. La cliente s’énerve, et ça commence à gâter.\n\nWhatsApp Business sait ranger vos conversations, encore faut-il le paramétrer. Avec des étiquettes, chaque discussion passe de « nouvelle commande » à « payé » puis « livré » : on voit d’un coup d’œil ce qui attend. Les réponses rapides évitent de retaper dix fois le prix et l’adresse.\n\nSi votre vendeuse est absente lundi, qui saurait dire quelles commandes sont payées mais pas livrées ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Douala",
+        "#WhatsAppBusiness",
+        "#PMECameroun",
+        "#Commerce"
+      ]
+    },
+    {
+      "serie": "Jeudi 26 novembre — version 3 (format conseil)",
+      "semaine": null,
+      "jour": "jeudi",
+      "moment": "jeudi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-51",
+      "etiquette": "Conseil Microsoft 365",
+      "photo": "boubou",
+      "theme": "Travailler sans Internet grâce aux fichiers OneDrive disponibles hors ligne",
+      "titre": "Connexion coupée : gardez vos *fichiers clés hors ligne*",
+      "points": [
+        "Marquez vos dossiers clés « Toujours conserver sur cet appareil »",
+        "Vérifiez le rond vert plein : le fichier est bien sur votre PC",
+        "Travaillez normalement : OneDrive synchronise au retour du réseau",
+        "Laissez Outlook en mode mis en cache pour lire vos e-mails hors ligne"
+      ],
+      "legende": "14 h, chez un client à Bonabéri. La présentation est prête, le directeur s’installe, et la connexion tombe. Le fichier est « dans OneDrive », mais seulement dans le nuage : sur le PC, il ne s’ouvre pas.\n\nOneDrive peut garder une vraie copie de vos dossiers sur l’ordinateur. Un clic droit, « Toujours conserver sur cet appareil », et le fichier s’ouvre même sans réseau. Vous le modifiez, OneDrive renvoie les changements dès que la connexion revient. Le rond vert plein confirme que la copie est là ; le petit nuage bleu signifie qu’elle ne l’est pas.\n\nSi Internet tombait ce matin chez vous, quels fichiers vos équipes pourraient-elles encore ouvrir ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Douala",
+        "#Microsoft365",
+        "#OneDrive",
+        "#PMECameroun"
+      ]
     }
   ]
 }
