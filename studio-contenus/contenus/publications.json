@@ -3539,6 +3539,93 @@
         "#Douala",
         "#Cameroun"
       ]
+    },
+    {
+      "serie": "Vendredi 27 novembre — au choix",
+      "semaine": null,
+      "jour": "vendredi",
+      "moment": "vendredi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-55",
+      "etiquette": "Conseil réseau",
+      "photo": "veste-pied",
+      "theme": "Réseau multi-sites : choisir la liaison entre deux sites",
+      "titre": "Multi-sites : 4 questions avant *de choisir la liaison*",
+      "points": [
+        "Listez ce qui doit circuler : ERP, fichiers, téléphonie, caméras",
+        "Prévoyez une liaison de secours d’une autre technologie",
+        "Exigez par écrit le délai de rétablissement en cas de coupure",
+        "Faites chiffrer le trafic entre les sites, jamais en clair"
+      ],
+      "legende": "Relier un deuxième site, ce n’est pas acheter le plus gros débit du marché. Une liaison se choisit sur ce qu’elle doit transporter (l’ERP, les fichiers partagés, la téléphonie, les caméras) et sur ce qui se passe le jour où elle tombe. Car quand ça coupe entre Douala et Yaoundé, ça gâte vite : factures bloquées, stock invisible, clients qui attendent.\n\nPour Zenithe Insurance, AITE a mis en place des liaisons internet multi-sites Douala–Yaoundé, avec Starlink. La bonne architecture prévoit deux technologies différentes, un délai de rétablissement écrit dans le contrat et un trafic chiffré entre les sites.\n\nSi la liaison de votre deuxième site tombe demain matin, combien de temps votre équipe peut-elle continuer à travailler ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#ReseauMultiSites",
+        "#Starlink",
+        "#Douala",
+        "#Yaounde"
+      ]
+    },
+    {
+      "serie": "Vendredi 27 novembre — au choix",
+      "semaine": null,
+      "jour": "vendredi",
+      "moment": "vendredi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-56",
+      "etiquette": "Référence client",
+      "photo": "ndop",
+      "theme": "ERP Odoo hôtelier et application mobile : piloter le taux d'occupation",
+      "titre": "Hôtellerie : +30 % de *taux d’occupation* chez RRP",
+      "points": [
+        "Reliez réservations, chambres et facturation dans un seul outil",
+        "Suivez votre taux d’occupation chaque semaine, pas en fin de mois",
+        "Pensez mobile : vos clients et vos équipes y sont déjà",
+        "Formez la réception avant le démarrage, pas après les erreurs"
+      ],
+      "legende": "RRP Immobilier, à Madagascar : ERP Odoo hôtelier et application mobile, +30 % de taux d’occupation. Pour un hôtel, une chambre vide ce soir est une recette perdue pour de bon. Le logiciel ne remplit pas les chambres à votre place, mais il montre où elles se perdent : réservation mal notée, chambre libérée trop tard, information qui n’arrive pas à la réception.\n\nPour les hôteliers de Douala, Kribi ou Garoua, la leçon est simple : une seule source pour les réservations, les chambres et la facturation, un taux d’occupation suivi chaque semaine, et une équipe formée avant le démarrage. Le reste, c’est de la discipline, la famille.\n\nVotre taux d’occupation de la semaine dernière, vous le connaissez sans ouvrir un cahier ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Douala",
+        "#Hotellerie",
+        "#Odoo",
+        "#ERP"
+      ]
+    },
+    {
+      "serie": "Vendredi 27 novembre — au choix",
+      "semaine": null,
+      "jour": "vendredi",
+      "moment": "vendredi",
+      "modele": "conseil",
+      "texte": "",
+      "numero": null,
+      "appel": "Diagnostic 360° gratuit · WhatsApp 656 80 10 98",
+      "id": "CP-57",
+      "etiquette": "Diagnostic 360°",
+      "photo": "boubou",
+      "theme": "Diagnostic Digital 360° gratuit : comment bien le préparer",
+      "titre": "Diagnostic 360° : préparez bien vos *90 minutes*",
+      "points": [
+        "Venez avec la liste de vos outils : logiciels, Excel, messagerie",
+        "Montrez le processus qui fait perdre le plus de temps à l’équipe",
+        "Apportez un vrai dossier qui a traîné : facture, commande, contrat",
+        "Venez avec la personne qui connaît le terrain, pas seulement le chef"
+      ],
+      "legende": "Aujourd’hui, c’est le Black Friday : partout, on vous promet des remises. Nous, on vous propose autre chose : 90 minutes pour regarder votre gestion en face, à partir de vos vrais outils et de vos vrais dossiers, pas d’une présentation commerciale.\n\nLe Diagnostic Digital 360° est gratuit, et il est d’autant plus utile que vous le préparez : la liste de vos logiciels et de vos fichiers Excel, un exemple réel de facture ou de commande qui a traîné, et la personne qui connaît le terrain. Plus le cas est concret, plus les priorités qui en sortent sont claires. Ce que vous en faites ensuite, c’est votre décision.\n\nSi vous deviez nous montrer un seul blocage, lequel serait-ce ?\n\nDiagnostic Digital 360° gratuit (90 min) : écrivez-nous sur WhatsApp au (+237) 656 80 10 98.",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Diagnostic360",
+        "#TransformationDigitale",
+        "#PME",
+        "#Douala"
+      ]
     }
   ]
 }

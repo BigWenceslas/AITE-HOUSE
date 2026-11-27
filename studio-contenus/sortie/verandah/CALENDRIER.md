@@ -1483,3 +1483,53 @@ La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp 
 
 #LaVerandah #Douala #Makepe #BonJeudi #AfterWork
 ```
+
+## Vendredi 27 novembre — au choix
+
+### Vendredi 12h — Pensée (photo ronde) · undefined
+
+![VD-VEN-27-1](VD-VEN-27-1-vd-sombre.jpg)
+
+**Visuel :** Bon vendredi — Black Friday, mola : la seule vraie promo du vendredi, ce sont les amis.
+
+**Légende à publier :**
+
+```text
+Aujourd’hui, c’est Black Friday partout. Chez nous à La Vérandah, la vraie bonne affaire ce soir, c’est la table pleine et les amis autour. Tu ramènes qui ?
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #Douala #Makepe #Vendredi #AfterWork
+```
+
+### Vendredi 17h — Ambiance · undefined
+
+![VD-VEN-27-2](VD-VEN-27-2-vd-ambiance.jpg)
+
+**Visuel :** Ça va chauffer, mola — LES GARS SONT DÉJÀ LÀ, IL NE MANQUE QUE TOI
+
+**Légende à publier :**
+
+```text
+Vendredi, on ne se fait pas prier : ça va chauffer ce soir à La Vérandah. Préviens ton groupe et viens mettre l’ambiance avec nous. Tu ramènes toute l’équipe ?
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #Douala #Makepe #Vendredi #AfterWork
+```
+
+### Vendredi 19h — Ambiance · undefined
+
+![VD-VEN-27-3](VD-VEN-27-3-vd-ambiance.jpg)
+
+**Visuel :** Vendredi, c’est comment ? — LA CRAVATE DANS LE SAC, LA JOIE SUR LE VISAGE
+
+**Légende à publier :**
+
+```text
+Le boulot est fini, la famille, place à la détente. Du bureau, tu passes directement à La Vérandah, on t’attend 🙌 Tu viens seul ou en groupe ?
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #Douala #Makepe #Vendredi #AfterWork
+```
