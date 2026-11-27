@@ -1,0 +1,34 @@
+KIT DE L'INTÉGRATEUR — CAISSE DU RESTAURANT LE MESSAGER
+AITE Consulting, Douala — édition du 27/11/2026
+=======================================================
+
+Ce kit met en service les nouveautés de la caisse du restaurant
+(Odoo 18 Community, serveur Ubuntu). Il ne couvre que ces nouveautés.
+
+VERSIONS LIVRÉES
+  aite_pos_restaurant          18.0.1.0.14  (nouveautés 18.0.1.0.11 à 18.0.1.0.14)
+  aite_resto_carte_messager    18.0.1.3.6   (nouveautés 18.0.1.3.5 et 18.0.1.3.6)
+  Les autres modules AITE du restaurant ne changent pas.
+  Le module Epson d'Odoo (pos_epson_printer) est déjà sur le serveur.
+
+CONTENU
+  modules/                                            les 2 dossiers à copier sur le serveur
+  AITE_Guide_Integrateur_Restaurant_v18.0.1.0.14.pdf  le guide (installation, réglages, dépannage)
+  AITE_Scenarios_Test_Restaurant_v18.0.1.0.14.pdf     les 33 scénarios de test, à imprimer
+  AITE_Scenarios_Test_Restaurant_v18.0.1.0.14.xlsx    les mêmes scénarios, à remplir (OK / KO)
+  NOTES_DE_VERSION_restaurant_lot1.md                 le détail technique des versions
+  LISEZMOI.txt                                        ce fichier
+
+ORDRE DE LECTURE
+  1. Le guide, chapitres 1 et 2 : ce qui change, ce qu'il vous faut.
+  2. Le guide, chapitre 3 : la mise à niveau du serveur, étape par étape.
+     Fermez les caisses et sauvegardez chaque base AVANT de commencer.
+  3. Le guide, chapitre 4 : les réglages (imprimantes, addition groupée).
+  4. Le cahier de scénarios (Excel ou PDF) : jouez ST-01 à ST-33 dans l'ordre.
+  5. Le guide, chapitres 5 et 9 : la démonstration et les décisions avec le gérant.
+  En cas de problème : guide, chapitre 7 (dépannage) et chapitre 8 (retour arrière).
+
+TROIS RÈGLES
+  - Remplacez le dossier d'un module, jamais le répertoire addons entier.
+  - Ne désinstallez jamais un module pour « repartir propre ».
+  - Un KO dans les scénarios : n'improvisez pas de correction, appelez AITE.

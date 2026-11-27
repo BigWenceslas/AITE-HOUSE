@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Guide de l'intégrateur — Restaurant 18.0.1.0.14</title>
+<meta name="author" content="AITE Consulting">
+<!-- ===================================================================
+     Guide de l'intégrateur junior — NOUVELLES FONCTIONNALITÉS SEULEMENT
+     (aite_pos_restaurant 18.0.1.0.11 à 18.0.1.0.14, aite_resto_carte_messager
+     18.0.1.3.5 et 18.0.1.3.6). Source : inventaire vérifié en base jetable
+     (27/11/2026). Les libellés entre « » sont ceux de l'écran (code des
+     modules ou traduction française d'Odoo 18).
+     Rendu : weasyprint --base-url docs/kit_integrateur/ guide_integrateur.html
+             AITE_Guide_Integrateur_Restaurant_v18.0.1.0.14.pdf
+     Charte : celle des guides AITE (docs/guides/src), violet #902C8F,
+     orange #ED9720, police Carlito.
+     =================================================================== -->
+<style>
+@page {
+    size: A4;
+    margin: 15mm 15mm 17mm 15mm;
+    @bottom-center {
+        content: "AITE CONSULTING — Guide de l'intégrateur · Restaurant 18.0.1.0.14 · Page " counter(page) " / " counter(pages);
+        font-family: Carlito, "DejaVu Sans", sans-serif; font-size: 8.5pt; color: #555;
+    }
+}
+:root { --violet: #902C8F; --orange: #ED9720; --texte: #222; --gris: #f3f1f4; --trait: #d9d2db; }
+html { font-family: Carlito, "DejaVu Sans", sans-serif; font-size: 10pt; color: var(--texte); line-height: 1.33; }
+body { margin: 0; }
+h1, h2, h3 { color: var(--violet); font-weight: bold; line-height: 1.15; }
+h1 { font-size: 23pt; margin: 2mm 0 1mm; }
+h2 { font-size: 15pt; margin: 6mm 0 2.5mm; break-after: avoid; border-bottom: 0.6pt solid var(--trait); padding-bottom: 1mm; }
+h2.saut { break-before: page; margin-top: 0; }
+h3 { font-size: 12pt; margin: 4.5mm 0 1.5mm; break-after: avoid; }
+p { margin: 1.2mm 0 2mm; }
+ul, ol { margin: 1mm 0 2.5mm; padding-left: 6mm; }
+li { margin: 0.6mm 0; }
+code { font-family: "DejaVu Sans Mono", monospace; font-size: 8.4pt; background: var(--gris); padding: 0 0.8mm; }
+pre { font-family: "DejaVu Sans Mono", monospace; font-size: 8pt; background: #2b2230; color: #f4eef6; padding: 2mm 3mm; margin: 1.5mm 0 2mm; white-space: pre-wrap; word-break: break-all; border-radius: 1mm; break-inside: avoid; line-height: 1.35; }
+pre .c { color: #c9b3cc; }
+.surtitre { text-transform: uppercase; font-weight: bold; font-size: 9pt; letter-spacing: 0.06em; color: #555; margin-top: 2mm; }
+.sous-titre { font-size: 12.5pt; color: var(--orange); margin: 0 0 4mm; font-weight: bold; }
+.entete { display: flex; justify-content: space-between; align-items: flex-start; }
+.entete img { width: 34mm; }
+table.carte-identite { width: 100%; border-collapse: collapse; margin: 3mm 0 4mm; font-size: 9.6pt; }
+table.carte-identite th { text-align: left; width: 32mm; background: var(--gris); }
+table.carte-identite th, table.carte-identite td { border: 0.5pt solid var(--trait); padding: 1.3mm 2mm; vertical-align: top; }
+table.t { width: 100%; border-collapse: collapse; margin: 2mm 0 3.5mm; font-size: 9.1pt; }
+table.t th { background: var(--violet); color: white; text-align: left; font-weight: bold; }
+table.t th, table.t td { border: 0.5pt solid var(--trait); padding: 1mm 1.6mm; vertical-align: top; }
+table.t tr { break-inside: avoid; }
+table.t tr:nth-child(even) td { background: #faf8fb; }
+table.t td.c, table.t th.c { text-align: center; }
+.b { color: var(--orange); font-weight: bold; }
+.chemin { font-weight: bold; }
+.voir { color: #1e6b37; }
+.voir::before { content: "Vous devez voir : "; font-weight: bold; }
+ol.etapes { counter-reset: e; list-style: none; padding-left: 0; }
+ol.etapes > li { counter-increment: e; position: relative; padding-left: 8mm; margin: 1.6mm 0; }
+ol.etapes > li::before { content: counter(e); position: absolute; left: 0; top: 0.2mm; width: 5.2mm; height: 5.2mm; border-radius: 50%; background: var(--violet); color: white; font-weight: bold; font-size: 8.5pt; text-align: center; line-height: 5.2mm; }
+.encadre { border-left: 1.6mm solid var(--orange); background: #fdf4e7; padding: 2mm 3mm; margin: 3mm 0; break-inside: avoid; }
+.encadre.or { border-left-color: var(--violet); background: #f6ecf6; }
+.encadre.rouge { border-left-color: #b3261e; background: #fbeceb; }
+.encadre .titre { font-weight: bold; color: var(--orange); }
+.encadre.or .titre { color: var(--violet); }
+.encadre.rouge .titre { color: #b3261e; }
+.encadre p { margin: 0.6mm 0; }
+figure { margin: 3mm 0 3.5mm; break-inside: avoid; text-align: center; }
+figure img { width: 80%; border: 0.5pt solid #bbb; }
+figure.moyen img { width: 64%; }
+figure.etroit img { width: 46%; }
+figcaption { font-size: 8.6pt; font-style: italic; color: #555; margin-top: 1mm; }
+.duo { display: flex; gap: 5mm; break-inside: avoid; margin: 3mm 0; align-items: flex-start; }
+.duo figure { flex: 1; margin: 0; }
+.duo figure img { width: 100%; }
+.sommaire { columns: 2; column-gap: 8mm; font-size: 10pt; margin: 2mm 0 0; padding-left: 5mm; }
+.petit { font-size: 8.8pt; color: #444; }
+ul.cocher { list-style: none; padding-left: 0; }
+ul.cocher li { padding-left: 7mm; position: relative; margin: 1.3mm 0; break-inside: avoid; }
+ul.cocher li::before { content: ""; position: absolute; left: 0; top: 0.6mm; width: 3.4mm; height: 3.4mm; border: 0.3mm solid #888; border-radius: 0.5mm; }
+.sans-saut { break-inside: avoid; }
+table.garde { break-inside: avoid; }
+</style>
+</head>
+<body>
+
+<div class="entete">
+  <div>
+    <div class="surtitre">Guide de l'intégrateur · nouvelles fonctionnalités</div>
+    <h1>Restaurant AITE — caisse 18.0.1.0.14</h1>
+    <p class="sous-titre">Mettre à jour le serveur, régler les imprimantes et l'addition, montrer au client, vérifier</p>
+  </div>
+  <img src="../logo_aite.jpg" alt="AITE Consulting">
+</div>
+
+<table class="carte-identite">
+  <tr><th>Client</th><td>Restaurant Le Messager, Douala. Montants en FCFA. Odoo 18 Community sur un serveur Ubuntu.</td></tr>
+  <tr><th>Public</th><td>Intégrateur junior. Vous savez vous connecter au serveur en SSH et utiliser Odoo. Vous ne connaissez pas encore les modules AITE : ce guide vous suffit.</td></tr>
+  <tr><th>Périmètre</th><td><b>Seulement les nouveautés</b> de <code>aite_pos_restaurant</code> 18.0.1.0.11 à 18.0.1.0.14 et de <code>aite_resto_carte_messager</code> 18.0.1.3.5 et 18.0.1.3.6. Le reste du restaurant est décrit dans le Guide de l'intégrateur général et le Guide Restaurant.</td></tr>
+  <tr><th>À utiliser avec</th><td>Le cahier de scénarios du même kit, <code>AITE_Scenarios_Test_Restaurant_v18.0.1.0.14</code> (PDF à imprimer, Excel à remplir) : 33 scénarios ST-01 à ST-33, rattachés aux cas R105 à R112. Le chapitre 6 y renvoie.</td></tr>
+  <tr><th>Édition</th><td>AITE CONSULTING — 27/11/2026</td></tr>
+</table>
+
+<h3 style="margin-top:2mm">Sommaire</h3>
+<ol class="sommaire">
+  <li>À qui s'adresse ce guide, ce qui est livré</li>
+  <li>Avant de commencer</li>
+  <li>Installer et mettre à niveau pas à pas</li>
+  <li>Paramétrer chaque fonctionnalité</li>
+  <li>Montrer au client</li>
+  <li>Vérifier que tout marche</li>
+  <li>Dépannage</li>
+  <li>Retour arrière</li>
+  <li>Limites connues et points à décider</li>
+</ol>
+
+<div class="encadre or"><p><span class="titre">Les quatre règles de cette mise à jour —</span>
+(1) Toutes les caisses sont <b>fermées</b> avant de commencer.
+(2) Chaque base est <b>sauvegardée</b> avant d'être mise à niveau.
+(3) Vous remplacez le <b>dossier d'un module</b>, jamais le répertoire <code>addons</code> entier.
+(4) Vous ne <b>désinstallez jamais</b> un module pour « repartir propre ».</p></div>
+
+<!-- =================================================================== -->
+<h2>1. À qui s'adresse ce guide, ce qui est livré</h2>
+
+<p>Ce guide sert à mettre en service, chez le client, neuf nouveautés de la caisse du restaurant. Il dit quoi taper, où cliquer et ce que vous devez voir à chaque étape.</p>
+
+<h3>Les deux modules livrés</h3>
+<table class="t">
+  <tr><th style="width:36%">Module (nom dans Apps)</th><th style="width:16%">Version</th><th>Ce qui change pour vous</th></tr>
+  <tr><td><b>AITE — Restaurant (service à table)</b><br><code>aite_pos_restaurant</code></td><td>18.0.1.0.14</td><td>Les fonctionnalités F1 à F7. Nouvelle dépendance : <code>pos_epson_printer</code> (module d'Odoo, déjà sur le serveur).</td></tr>
+  <tr><td><b>AITE — Carte du restaurant Le Messager (démonstration)</b><br><code>aite_resto_carte_messager</code></td><td>18.0.1.3.6</td><td>F8 et F9 : la mise à niveau ne touche plus aux produits du client ; le réglage « grouper par famille » est coché une seule fois.</td></tr>
+</table>
+<p class="petit">Les autres modules du restaurant ne changent pas : <code>aite_house_restaurant</code> 18.0.1.0.2, <code>aite_pos_credit</code> 18.0.2.0.8, <code>aite_pos_analytics</code> 18.0.2.1.6, <code>aite_pos_analytics_hr</code> 18.0.1.0.0. S'ils sont plus anciens sur le serveur, il faut aussi les livrer (voir chapitre 2).</p>
+
+<h3>Les neuf nouveautés</h3>
+<table class="t garde">
+  <tr><th style="width:5%">#</th><th>Nouveauté, en une phrase</th><th style="width:12%">Version</th><th style="width:19%">Qui s'en sert</th><th style="width:13%">À régler ?</th><th style="width:10%">Test</th></tr>
+  <tr><td>F1</td><td>« Addition » montre et imprime <b>toutes les additions</b> d'une table divisée (7, 7B, 7C…).</td><td>1.0.11</td><td>serveur, caissière</td><td>non</td><td>R105</td></tr>
+  <tr><td>F2</td><td>Partager l'addition <b>à parts égales</b> : bouton à l'écran de paiement, monnaie à rendre, arrondi, mention sur le ticket.</td><td>1.0.12</td><td>caissière</td><td>non</td><td>R106</td></tr>
+  <tr><td>F3</td><td>Bon de cuisine en <b>N exemplaires</b> par imprimante (« Exemplaire k/N »), bons en français, une seule alerte en cas de panne.</td><td>1.0.13</td><td>gérant, serveur</td><td><b>oui</b></td><td>R107</td></tr>
+  <tr><td>F4</td><td><b>Notes de commande</b> fiables : six corrections (note cuisine, « Ignorer », note au client, note générale, « Table »).</td><td>1.0.13</td><td>serveur, caissière</td><td>non</td><td>R108, R109</td></tr>
+  <tr><td>F5</td><td>Chaque imprimante reçoit <b>ses familles</b> (sous-familles comprises) ; imprimante « Autre » ; familles oubliées signalées en orange.</td><td>1.0.14</td><td>intégrateur, serveur</td><td><b>oui</b></td><td>R110, R112</td></tr>
+  <tr><td>F6</td><td>Impression <b>directe sur les Epson</b> en Wi-Fi, en http ou en https (certificat).</td><td>1.0.14</td><td>intégrateur</td><td><b>oui</b></td><td>R110</td></tr>
+  <tr><td>F7</td><td>Addition et ticket <b>groupés par famille</b>, avec un sous-total par famille.</td><td>1.0.14</td><td>caissière</td><td>à contrôler</td><td>R111, R112</td></tr>
+  <tr><td>F8</td><td>La carte appartient au client : une mise à niveau <b>n'écrase plus</b> ses produits.</td><td>carte 1.3.5</td><td>intégrateur, gérant</td><td>non</td><td>ST-03, ST-04</td></tr>
+  <tr><td>F9</td><td>La carte coche « grouper par famille » <b>une seule fois</b>.</td><td>carte 1.3.6</td><td>intégrateur</td><td>à contrôler</td><td>R111</td></tr>
+</table>
+
+<div class="encadre"><p><span class="titre">Condition commune à F1 à F7 —</span> la caisse doit avoir la case <b>« Service à table contrôlé »</b> cochée (<span class="chemin">Point de Vente → Configuration → Paramètres</span>, bloc « Mode restaurant »). Une autre caisse de la même base garde le comportement d'Odoo : pas de bouton de partage, bons d'Odoo, pas d'imprimante « Autre », ticket non groupé.</p></div>
+
+<p><b>Profils.</b> Dans ce guide, « serveur », « caissière » et « manager » sont les niveaux de la fiche employé (« Niveau en caisse »). « Gérant » désigne le responsable du restaurant. Les <b>réglages de la caisse</b> (Configuration → Paramètres) demandent un compte <b>administrateur</b> : c'est vous qui les faites.</p>
+
+<!-- =================================================================== -->
+<h2 class="saut">2. Avant de commencer</h2>
+
+<h3>2.1 Ce qu'il vous faut</h3>
+<table class="t">
+  <tr><th style="width:28%">Élément</th><th>Ce qu'il faut, et comment le vérifier</th></tr>
+  <tr><td>Accès au serveur</td><td>Un compte SSH avec <code>sudo</code>. Testez : <code>sudo -v</code> demande votre mot de passe et ne dit rien d'autre.</td></tr>
+  <tr><td>Accès à Odoo</td><td>Un compte <b>administrateur</b> sur chaque base du client (pour Apps et les paramètres de la caisse).</td></tr>
+  <tr><td>Le kit</td><td>Le fichier <code>AITE_Kit_Integrateur_Restaurant_v18.0.1.0.14.zip</code>. À sa racine : le dossier <code>modules/</code> (avec <code>aite_pos_restaurant</code> et <code>aite_resto_carte_messager</code>), ce guide, le cahier de scénarios (PDF et Excel), les notes de version et <code>LISEZMOI.txt</code>.</td></tr>
+  <tr><td>Odoo</td><td>Odoo 18 <b>Community</b> installé par le paquet Ubuntu : code dans <code>/usr/lib/python3/dist-packages/odoo/addons</code>, service <code>odoo</code>, réglages dans <code>/etc/odoo/odoo.conf</code>. Ce répertoire est <b>partagé par toutes les bases</b>.</td></tr>
+  <tr><td>Module Epson d'Odoo</td><td><code>ls /usr/lib/python3/dist-packages/odoo/addons/pos_epson_printer</code> doit lister des fichiers (dont <code>__manifest__.py</code>). Il fait partie d'Odoo : rien à copier.</td></tr>
+  <tr><td>Imprimantes (F3, F5, F6)</td><td>Des imprimantes Epson ePOS en réseau (TM-m30III chez le client), chacune avec une <b>adresse IP fixe</b> (réservée dans la box).</td></tr>
+  <tr><td>Imprimante de tickets (F7)</td><td>Seulement si le client veut le ticket final groupé imprimé seul au paiement (voir chapitre 9).</td></tr>
+  <tr><td>Un créneau</td><td>Environ 1 heure <b>sans service</b> : les caisses seront fermées et Odoo arrêté pendant la mise à niveau.</td></tr>
+</table>
+
+<h3>2.2 Pourquoi fermer les caisses et sauvegarder</h3>
+<ul>
+  <li>Dès le redémarrage, <b>toutes les bases</b> utilisent le nouveau code. Chaque base qui a ces modules doit être mise à niveau ; sinon, ses caisses tombent en erreur.</li>
+  <li>Une mise à niveau échoue si une session de caisse est ouverte et utilise un mode de paiement « Cash » non traduit (défaut connu). Caisses fermées : pas de problème.</li>
+  <li>Le seul retour arrière sûr est la restauration de la sauvegarde (chapitre 8).</li>
+</ul>
+
+<h3>2.3 Préparer une variable de date</h3>
+<p>Les commandes de ce guide utilisent la date du jour dans le nom des sauvegardes. Dans votre session SSH, tapez une fois :</p>
+<pre>J=$(date +%Y%m%d) ; B=/var/backups/aite ; echo $J</pre>
+<p class="voir">la date du jour, par exemple <code>20261127</code> pour le 27/11/2026. Si vous ouvrez une nouvelle session SSH, retapez cette ligne (et la ligne <code>F=…</code> du chapitre 3, étape 3).</p>
+<p class="petit">Conseil : copiez les commandes bloc par bloc. Une ligne qui finit par <code>\</code> continue sur la ligne suivante.</p>
+
+<!-- =================================================================== -->
+<h2 class="saut">3. Installer et mettre à niveau pas à pas</h2>
+
+<p>Suivez les étapes dans l'ordre. Ne passez pas à l'étape suivante si vous ne voyez pas ce qui est attendu.</p>
+
+<ol class="etapes">
+<li><b>Fermer toutes les caisses.</b> Dans chaque base : <span class="chemin">Point de Vente</span> → sur chaque caisse ouverte, <span class="b">Fermer la session</span>, compter, valider.
+<p class="voir">aucune carte de caisse ne porte « En cours » (ou « Ouverte »).</p></li>
+
+<li><b>Lister les bases du serveur.</b>
+<pre>sudo -u postgres psql -Atc "select datname from pg_database where not datistemplate"</pre>
+<p class="voir">une base par ligne (par exemple <code>postgres</code> et les bases du client).</p>
+<p>Pour <b>chaque</b> base du client, notez l'état des modules (remplacez <code>BASE</code>) :</p>
+<pre>sudo -u postgres psql -d BASE -Atc "select name, latest_version, state from ir_module_module where name like 'aite_%' or name = 'pos_epson_printer' order by name"</pre>
+<p class="voir">une ligne par module, par exemple <code>aite_pos_restaurant|18.0.1.0.10|installed</code>. Notez les bases où <code>aite_pos_restaurant</code> est <code>installed</code>, et si <code>aite_resto_carte_messager</code> l'est aussi. Si <code>aite_house_restaurant</code>, <code>aite_pos_credit</code>, <code>aite_pos_analytics</code> ou <code>aite_pos_analytics_hr</code> ont une version plus petite que celles du chapitre 1, appelez AITE pour recevoir ces dossiers avant de continuer.</p></li>
+
+<li><b>Trouver le dossier des pièces jointes (filestore).</b>
+<pre>grep -E "^data_dir" /etc/odoo/odoo.conf || echo "pas de data_dir"
+F=/var/lib/odoo/.local/share/Odoo/filestore
+sudo ls $F</pre>
+<p class="voir">le nom de chaque base dans la liste. Si la première commande affiche une ligne <code>data_dir = …</code>, retapez <code>F=&lt;ce chemin&gt;/filestore</code> avec ce chemin, puis <code>sudo ls $F</code>.</p></li>
+
+<li><b>Arrêter Odoo.</b>
+<pre>sudo systemctl stop odoo ; systemctl is-active odoo</pre>
+<p class="voir"><code>inactive</code>. Les tablettes affichent alors une erreur de connexion : c'est normal.</p></li>
+
+<li><b>Sauvegarder chaque base concernée et son filestore</b> (répétez pour chaque <code>BASE</code>) :
+<pre>sudo mkdir -p $B
+sudo -u postgres pg_dump -Fc -f /tmp/BASE_$J.dump BASE
+sudo mv /tmp/BASE_$J.dump $B/
+sudo tar czf $B/BASE_filestore_$J.tgz -C $F BASE</pre>
+<p>Puis sauvegardez les <b>anciens dossiers</b> des deux modules (une seule fois) :</p>
+<pre>cd /usr/lib/python3/dist-packages/odoo/addons
+sudo tar czf $B/aite_modules_$J.tgz aite_pos_restaurant aite_resto_carte_messager</pre>
+<p class="voir"><code>sudo ls -lh $B</code> montre un fichier <code>.dump</code> et un <code>_filestore_….tgz</code> par base (taille non nulle), et <code>aite_modules_….tgz</code>. Si la carte n'est pas sur le serveur, <code>tar</code> le signale : sauvegardez seulement <code>aite_pos_restaurant</code>.</p></li>
+
+<li><b>Déposer le kit sur le serveur.</b> Depuis votre poste :
+<pre>scp AITE_Kit_Integrateur_Restaurant_v18.0.1.0.14.zip \
+  utilisateur@serveur:/tmp/kit.zip</pre>
+<p>puis sur le serveur :</p>
+<pre>mkdir -p /tmp/kit &amp;&amp; cd /tmp/kit &amp;&amp; unzip -o /tmp/kit.zip
+find /tmp/kit -maxdepth 5 -name __manifest__.py</pre>
+<p class="voir">deux lignes : <code>/tmp/kit/modules/aite_pos_restaurant/__manifest__.py</code> et <code>/tmp/kit/modules/aite_resto_carte_messager/__manifest__.py</code>. Le dossier qui les contient s'appelle <code>KIT</code> ci-dessous : ici <code>/tmp/kit/modules</code>.</p></li>
+
+<li class="sans-saut"><b>Remplacer les deux dossiers de modules</b>, et eux seuls :
+<pre>KIT=/tmp/kit/modules    <span class="c"># adaptez si l'étape 6 a donné un autre chemin</span>
+A=/usr/lib/python3/dist-packages/odoo/addons
+for m in aite_pos_restaurant aite_resto_carte_messager; do
+  sudo rm -rf "${A:?}/${m:?}" &amp;&amp; sudo cp -r "${KIT:?}/$m" "$A/"
+  sudo find "$A/$m" -name __pycache__ -prune -exec rm -rf {} +
+  sudo chown -R root:root "$A/$m" &amp;&amp; sudo chmod -R u=rwX,go=rX "$A/$m"
+done
+grep "'version'" $A/aite_pos_restaurant/__manifest__.py
+grep "'version'" $A/aite_resto_carte_messager/__manifest__.py</pre>
+<p class="voir"><code>'version': '18.0.1.0.14'</code> et <code>'version': '18.0.1.3.6'</code>. Si une commande répond <code>parameter null or not set</code>, la ligne <code>A=…</code> ou <code>KIT=…</code> n'a pas été tapée (nouvelle session SSH) : rien n'a été supprimé ; retapez ces deux lignes et recommencez.</p></li>
+
+<li><b>Mettre à niveau chaque base</b>, Odoo toujours arrêté (répétez pour chaque <code>BASE</code> notée à l'étape 2) :
+<pre>sudo -u odoo odoo -c /etc/odoo/odoo.conf -d BASE \
+  -u aite_pos_restaurant,aite_resto_carte_messager \
+  --stop-after-init --log-level=info \
+  --logfile=/tmp/maj_BASE.log ; echo "code de sortie : $?"
+grep -E " (ERROR|CRITICAL) " /tmp/maj_BASE.log
+grep -c "Registry loaded" /tmp/maj_BASE.log</pre>
+<p>Si la carte n'est pas installée sur cette base, écrivez seulement <code>-u aite_pos_restaurant</code>. Odoo met les modules dans le bon ordre et installe <code>pos_epson_printer</code> s'il manquait. Le journal va <b>dans le fichier</b> <code>/tmp/maj_BASE.log</code>, pas à l'écran : c'est voulu.</p>
+<p class="voir">après une à quelques minutes, <code>code de sortie : 0</code> ; puis <b>rien</b> pour le premier <code>grep</code> ; puis <code>1</code> (ou plus) pour le second. Si le second affiche <code>0</code>, la mise à niveau n'est pas allée au bout : lisez la fin du fichier (<code>tail -n 30 /tmp/maj_BASE.log</code>) et le chapitre 7. Une ligne <code>WARNING … (ERROR/3) Unexpected indentation</code> n'est pas une erreur ; le premier <code>grep</code> ne l'affiche pas.</p></li>
+
+<li><b>Redémarrer Odoo.</b>
+<pre>sudo systemctl start odoo ; sleep 10 ; systemctl is-active odoo
+systemctl cat odoo | grep -o "logfile[ =][^ ]*"
+grep -E "^logfile" /etc/odoo/odoo.conf</pre>
+<p class="voir"><code>active</code>, puis le chemin du journal d'Odoo. Avec le paquet Ubuntu, c'est <code>logfile /var/log/odoo/odoo-server.log</code>. Si les deux commandes donnent un chemin, c'est celui de <code>systemctl cat</code> qui compte. On l'appelle <code>L</code> :</p>
+<pre>L=/var/log/odoo/odoo-server.log   <span class="c"># le chemin lu ci-dessus</span>
+sudo tail -n 200 $L | grep -E " (ERROR|CRITICAL) "
+sudo tail -n 3 $L</pre>
+<p class="voir">rien pour la première commande ; la seconde montre des lignes datées d'il y a moins d'une minute (sinon, ce n'est pas le bon fichier). Si aucun chemin n'est trouvé, le journal est dans <code>sudo journalctl -u odoo -n 200 --no-pager</code>.</p></li>
+
+<li><b>Contrôler les versions dans Odoo</b>, dans chaque base : activez le mode développeur (<span class="chemin">Paramètres</span> → en bas, <span class="b">Activer le mode développeur</span>), puis <span class="chemin">Apps</span>, retirez le filtre « Apps » de la recherche et cherchez « AITE ». Passez en vue liste (icône liste, en haut à droite) : le scénario ST-01 du cahier détaille ce contrôle.
+<p class="voir">colonne « Dernière version » : « AITE — Restaurant (service à table) » 18.0.1.0.14 et « AITE — Carte du restaurant Le Messager (démonstration) » 18.0.1.3.6, Statut « Installé » ; en cherchant « Epson » : « Imprimante Epson PdV » « Installé ».</p></li>
+
+<li><b>Recharger chaque tablette et chaque poste de caisse.</b> Ouvrez la caisse, puis <b>Ctrl+Maj+R</b> (ou vider le cache du navigateur sur tablette), et rouvrez la session.
+<p class="voir">à l'écran de paiement d'une table, le bouton <span class="b">Partager à parts égales</span> (sous « Client » / « Facture »). S'il manque : chapitre 7.</p></li>
+</ol>
+
+<div class="encadre"><p><span class="titre">Autre méthode, par l'interface —</span> Apps → <span class="b">Mettre à jour la liste des Apps</span> → ouvrir chaque module → <span class="b">Mettre à niveau</span>. Elle marche aussi, mais il faut la refaire dans <b>chaque</b> base, et une base oubliée tombe en erreur. Préférez la commande de l'étape 8.</p></div>
+
+<!-- =================================================================== -->
+<h2 class="saut">4. Paramétrer chaque fonctionnalité</h2>
+
+<div class="encadre or"><p><span class="titre">Rien à régler pour F1, F2, F4 et F8 —</span> l'addition d'une table divisée, le partage à parts égales, les corrections des notes et la protection de la carte marchent dès la mise à niveau, sur toute caisse au service à table contrôlé. Il n'y a ni case ni menu à chercher. Seul conseil : mettre en français les modèles de notes d'Odoo (4.6).</p></div>
+
+<p>Après <b>tout</b> changement de réglage de caisse ou d'imprimante : <b>fermez puis rouvrez la caisse</b>, ou rechargez la page sur chaque tablette. La caisse lit ses réglages à l'ouverture.</p>
+
+<h3>4.1 Vérifier le mode de la caisse</h3>
+<ol class="etapes">
+<li>Ouvrez <span class="chemin">Point de Vente → Configuration → Paramètres</span>. En haut, dans « Point de Vente », choisissez la caisse du restaurant.</li>
+<li>Descendez au bloc <b>« Mode restaurant »</b>.
+<p class="voir">« Est un bar/restaurant » coché et <b>« Service à table contrôlé »</b> coché, avec sa phrase qui commence par « Coché : chaque employé tape son code à 4 chiffres… ».</p></li>
+</ol>
+<figure class="moyen"><img src="img/42_bloc_mode_restaurant.jpg" alt="Bloc Mode restaurant"><figcaption>Paramètres de la caisse, bloc « Mode restaurant » : « Service à table contrôlé » et, plus bas, « Grouper les produits par famille sur l'addition et le ticket ».</figcaption></figure>
+
+<h3>4.2 Créer les imprimantes de préparation (F3, F5, F6)</h3>
+
+<div class="encadre"><p><span class="titre">Où est le menu ? —</span> Dans Odoo 18, la liste des imprimantes est dans <span class="chemin">Point de Vente → Commandes → Imprimantes de préparation</span>, et non dans « Configuration ». Ce menu reste <b>caché</b> tant qu'aucune caisse n'a la case « Imprimantes de préparation » cochée. Le chemin sûr est donc celui des paramètres, ci-dessous.</p></div>
+
+<p><b>Avant</b>, pour chaque imprimante Epson : branchez-la sur le Wi-Fi, imprimez sa page d'état (bouton <i>Feed</i> maintenu à l'allumage) et lisez son adresse IP. Dans la box, <b>réservez cette IP</b> (bail DHCP fixe). Sans réservation, l'IP peut changer et les bons ne sortent plus.</p>
+
+<ol class="etapes">
+<li><span class="chemin">Point de Vente → Configuration → Paramètres</span> → la caisse → bloc <b>« Préparation »</b> → cochez <b>« Imprimantes de préparation »</b> (« Imprimer les commandes en cuisine, au bar, etc. ») → <span class="b">Enregistrer</span>.
+<p class="voir">sous la case, le champ « Imprimantes » et le lien <span class="b">→ Imprimantes</span>.</p></li>
+<li>Cliquez sur <span class="b">→ Imprimantes</span>, puis <span class="b">Nouveau</span>. Remplissez :
+<table class="t garde">
+  <tr><th style="width:38%">Champ (libellé exact)</th><th>Que mettre</th></tr>
+  <tr><td>« Nom de l'imprimante »</td><td>Odoo pré-remplit « Printer » : effacez-le et tapez le nom du poste (Chaud, Pizza, Froid, Bar, Autre). Ce nom apparaît dans les alertes.</td></tr>
+  <tr><td>« Type d'imprimante »</td><td><b>« Utiliser une imprimante Epson »</b>. Ne laissez pas « Utiliser une imprimante connectée à l'IoT Box » (posé d'office) : sans boîtier IoT, rien ne sort. Le champ « Adresse IP du proxy » disparaît quand vous choisissez Epson.</td></tr>
+  <tr><td>« Adresse IP de l'imprimante Epson »</td><td>L'IP réservée, par exemple <code>192.168.1.51</code>. <b>Toujours la remplir</b> : Odoo n'empêche pas d'enregistrer sans.</td></tr>
+  <tr><td>« Catégories de produit imprimées »</td><td><span class="b">Ajouter une ligne</span> par famille de la carte que ce poste prépare (tableau ci-dessous). Cocher une famille envoie aussi ses sous-familles.</td></tr>
+  <tr><td>« Nombre d'exemplaires du bon »</td><td>De 1 à 5. Par défaut 1. Mettez 3 si la cuisine veut trois bons identiques.</td></tr>
+  <tr><td>« Prend tout ce qu'aucune autre imprimante ne prend »</td><td>À cocher sur <b>une seule</b> imprimante, « Autre ». Décochée sur les autres.</td></tr>
+</table>
+<p class="voir">sous « Nombre d'exemplaires du bon », la phrase qui dit ce qui va se passer. À 3 : « Chaque nouveau bon envoyé à cette imprimante sort en 3 exemplaires identiques, marqués « Exemplaire 1/3 » à « Exemplaire 3/3 ». Les annulations et les notes seules sortent en un exemplaire. »</p></li>
+<li><span class="b">Enregistrer</span>, puis recommencez pour chaque poste.
+<p class="voir">la liste des imprimantes. Sa colonne « Adresse IP du proxy » reste <b>vide</b> pour les Epson : c'est normal. Pour contrôler l'IP d'une Epson, ouvrez l'imprimante.</p></li>
+<li>Revenez aux paramètres de la caisse. Dans « Imprimantes », ajoutez les cinq imprimantes → <span class="b">Enregistrer</span>.
+<p class="voir"><b>aucun cadre orange</b> sous « Imprimantes ». S'il en reste un, il nomme les familles qu'aucune imprimante ne prend : cochez-les sur une imprimante, ou ajoutez l'imprimante « Autre ».</p></li>
+<li>Fermez puis rouvrez la caisse (ou rechargez chaque tablette).</li>
+</ol>
+
+<h3>Configuration type du Restaurant Le Messager</h3>
+<table class="t">
+  <tr><th style="width:18%">Imprimante</th><th style="width:44%">« Catégories de produit imprimées »</th><th>Remarque</th></tr>
+  <tr><td>Chaud</td><td>Plats, Petit déjeuner, Burgers, Pastas</td><td>Exemplaires : selon la demande de la cuisine (3 par exemple).</td></tr>
+  <tr><td>Pizza</td><td>Pizzas</td><td></td></tr>
+  <tr><td>Froid</td><td>Crêpes &amp; glaces, Afternoon tea</td><td></td></tr>
+  <tr><td>Bar</td><td>Bar</td><td>Couvre aussi Vins, Bières, Sans alcool…</td></tr>
+  <tr><td>Autre</td><td>aucune</td><td>Case « Prend tout ce qu'aucune autre imprimante ne prend » <b>cochée</b>.</td></tr>
+</table>
+<p class="petit">Burgers, Pastas, Pizzas et Crêpes &amp; glaces sont des sous-familles de « Pizzas &amp; burgers ». Si le client a créé d'autres familles, vérifiez-les dans <span class="chemin">Point de Vente → Configuration → Catégories de produits du PdV</span>.</p>
+
+<div class="duo">
+  <figure><img src="img/41_imprimante_chaud_cadre_orange.jpg" alt="Imprimante Chaud"><figcaption>Imprimante « Chaud » : type Epson, IP, famille Plats, 3 exemplaires. Le cadre orange liste les familles encore prises par aucune imprimante.</figcaption></figure>
+  <figure><img src="../../captures/restaurant/35_imprimante_autre.jpg" alt="Imprimante Autre"><figcaption>Imprimante « Autre » : aucune famille, case « Prend tout ce qu'aucune autre imprimante ne prend » cochée, avec sa phrase.</figcaption></figure>
+</div>
+
+<figure class="moyen"><img src="img/40_parametres_preparation_cadre_orange.jpg" alt="Bloc Préparation"><figcaption>Paramètres de la caisse, bloc « Préparation » : case « Imprimantes de préparation », champ « Imprimantes », cadre orange des familles oubliées et lien « → Imprimantes ».</figcaption></figure>
+
+<h3>Ce que veut dire le cadre orange</h3>
+<p>Le texte est par exemple : « Ces familles de la carte ne sont prises par aucune imprimante : Petit déjeuner, Pizzas &amp; burgers, Afternoon tea, Bar. Leurs plats ne sortiront sur aucun bon de préparation. » Il se met à jour pendant la saisie. Il disparaît dès qu'une imprimante « Autre » est sur la caisse. Si la caisse a « Limiter les catégories » (bloc « Produit &amp; catégories PdV »), seules ses familles sont signalées.</p>
+
+<h3>Messages de refus que vous pouvez voir</h3>
+<ul>
+  <li>Exemplaires hors de 1 à 5 : « Le nombre d'exemplaires du bon doit être entre 1 et 5 (imprimante « Cuisine »). »</li>
+  <li>Deux imprimantes « Autre » sur une caisse (les deux noms dépendent de vos imprimantes) : « La caisse « Restaurant » ne peut avoir qu'une seule imprimante « Autre » (case « Prend tout ce qu'aucune autre imprimante ne prend ») ; elle en a 2 : Bar, Autre. Décochez la case sur l'une d'elles, ou retirez-la de la caisse. »</li>
+</ul>
+
+<h3>4.3 Odoo ouvert en https : le certificat des Epson (F6)</h3>
+<p>Regardez l'adresse d'Odoo sur une tablette. Si elle commence par <code>http://</code>, il n'y a rien de plus à faire. Si elle commence par <code>https://</code>, la tablette parle à l'imprimante en https : il faut qu'elle accepte le certificat de chaque imprimante.</p>
+<ol class="etapes">
+<li>Une fois par imprimante : ouvrez sa page de réglage (<code>http://&lt;IP&gt;</code> dans un navigateur) et activez <b>SSL/TLS</b> et <b>ePOS-Print</b> (voir la notice Epson).</li>
+<li>Sur <b>chaque tablette</b> et pour <b>chaque imprimante</b> : ouvrez <code>https://&lt;IP&gt;</code>, puis <b>Paramètres avancés → Continuer</b> pour accepter le certificat.
+<p class="voir">la page de l'imprimante s'affiche. Revenez à la caisse : les bons sortent.</p></li>
+</ol>
+<p>Si vous l'oubliez, l'alerte « Bon non imprimé » ajoute : « Odoo est ouvert en https : si c'est la première fois sur cette tablette, ouvrez une fois https://&lt;IP&gt; dans le navigateur et acceptez le certificat de l'imprimante, puis revenez à la caisse. »</p>
+
+<h3>4.4 Grouper l'addition par famille (F7, F9)</h3>
+<ol class="etapes">
+<li><span class="chemin">Point de Vente → Configuration → Paramètres</span> → la caisse → bloc « Mode restaurant ».
+<p class="voir">la case <b>« Grouper les produits par famille sur l'addition et le ticket »</b>. Elle n'apparaît que si « Service à table contrôlé » est coché.</p></li>
+<li>La carte 18.0.1.3.6 l'a cochée <b>une fois</b>, à la mise à niveau. Demandez au gérant s'il veut la garder. S'il la décoche, une prochaine mise à niveau ne la recochera pas.</li>
+<li>Fermez puis rouvrez la caisse si vous changez la case.</li>
+</ol>
+
+<h3>4.5 Impression automatique du ticket final (à décider)</h3>
+<p>L'addition (bouton « Addition ») est groupée dès que la case 4.4 est cochée. Le <b>ticket final</b>, lui, ne sort seul au paiement que si deux conditions sont remplies :</p>
+<ul>
+  <li><span class="chemin">Paramètres</span> → bloc <b>« Factures &amp; Reçus »</b> → <b>« Impression automatique du reçu »</b> coché ;</li>
+  <li>une imprimante de tickets est réglée (bloc « Périphériques connectés », <b>« Imprimante ePos »</b> et l'IP de l'imprimante de reçus).</li>
+</ul>
+<p>Sinon, la caissière le réimprime depuis <span class="chemin">Point de Vente → Commandes</span>. La carte ne coche pas cette case : sans imprimante de tickets, chaque paiement ouvrirait la fenêtre d'impression du navigateur. <b>Décidez avec le client</b> (chapitre 9).</p>
+<figure class="moyen"><img src="img/43_impression_automatique_recu.jpg" alt="Factures et reçus"><figcaption>Bloc « Factures &amp; Reçus » : la case « Impression automatique du reçu » (décochée d'office).</figcaption></figure>
+
+<h3>4.6 Conseillé : les modèles de notes en français</h3>
+<p>Les fenêtres « Note cuisine » et « Note générale » proposent des boutons tout faits. Odoo les crée en anglais : <b>Wait</b>, <b>To Serve</b>, <b>Emergency</b>, <b>No Dressing</b>. Ce n'est pas une nouveauté AITE, mais le serveur les voit à chaque note.</p>
+<ol class="etapes">
+<li><span class="chemin">Point de Vente → Configuration → Modèles de notes</span>.
+<p class="voir">la liste des quatre modèles en anglais.</p></li>
+<li>Touchez chaque nom et remplacez-le, par exemple : Attendre, À servir, Urgent, Sans sauce. Ou supprimez ceux que le restaurant n'utilise pas. Demandez au gérant les mots de son équipe.
+<p class="voir">les nouveaux noms dans la liste, enregistrés.</p></li>
+<li>Fermez puis rouvrez la caisse.
+<p class="voir">dans « Note cuisine », les boutons en français.</p></li>
+</ol>
+
+<!-- =================================================================== -->
+<h2 class="saut">5. Montrer au client</h2>
+<p>Faites la démonstration sur la vraie caisse, avec le gérant, une caissière et un serveur. Prévoyez 30 minutes. Annulez ensuite les commandes d'essai.</p>
+
+<h3>5.1 Au serveur</h3>
+<div class="encadre"><p><span class="titre">À dire au serveur —</span> après <span class="b">J'envoie</span>, attendez le retour au plan des tables avant de poser la tablette, de la verrouiller ou de recharger la page. Avec plusieurs exemplaires, cela peut prendre quelques secondes (8 secondes mesurées avec 3 exemplaires). Si la page est fermée trop tôt, les bons peuvent être sortis alors que la commande n'est pas enregistrée en caisse.</p></div>
+<table class="t">
+  <tr><th style="width:30%">Nouveauté</th><th>Le geste</th><th style="width:33%">Ce qu'il doit voir</th></tr>
+  <tr><td><b>Bons sur chaque poste</b> (F3, F5)</td><td>Saisir un plat, une pizza, une bière, puis <span class="b">J'envoie</span>.</td><td>Chaque bon sort sur son imprimante, sans fenêtre. Un seul bon par imprimante, en français (« Sur place », « Table 7 », « Nouveau »). Avec 3 exemplaires : « Exemplaire 1/3 » à « 3/3 ».</td></tr>
+  <tr><td><b>Note cuisine</b> (F4)</td><td>Toucher la ligne → <span class="b">Note cuisine</span> → taper « bien cuit » → <span class="b">Appliquer</span> → <span class="b">J'envoie</span>.</td><td>Le bon porte la note sous le plat. Sur un plat déjà parti, la note va à la nouvelle unité seulement.</td></tr>
+  <tr><td><b>Ignorer</b> (F4)</td><td>Ouvrir une note, taper, puis <span class="b">Ignorer</span> (bouton de la fenêtre de note).</td><td>Rien ne change. Pour effacer une note : vider le champ puis <span class="b">Appliquer</span> ; le bon dit « Note retirée : … ».</td></tr>
+  <tr><td><b>Note générale</b> (F4)</td><td><span class="b">Actions</span> → <span class="b">Note générale</span> → « Client pressé » → <span class="b">Appliquer</span> → <span class="b">J'envoie</span>.</td><td>« J'envoie » affiche « Note générale 1 ». Notification « Envoyé : Note générale × 1. » Elle va en cuisine et au bar, <b>jamais</b> sur l'addition ni sur l'écran client.</td></tr>
+  <tr><td><b>Note au client</b> (F4)</td><td>Toucher la ligne → <span class="b">Actions</span> → <span class="b">Note au client</span>.</td><td>La note est sur l'addition et le ticket ; elle ne va pas en cuisine. Marche aussi sur un plat déjà envoyé.</td></tr>
+  <tr><td><b>Table divisée</b> (F1)</td><td><span class="b">Actions</span> → <span class="b">Diviser l'addition</span> → produits de la part → <span class="b">Créer l'addition à part</span> ; puis <span class="b">Addition</span>.</td><td>Avec imprimante de tickets : un ticket par addition ouverte. Sans : la fenêtre « Les additions de la table 7 », le « Total des additions », et <span class="b">J'imprime les additions</span>.</td></tr>
+</table>
+<div class="duo">
+  <figure><img src="../../captures/restaurant/33_bon_cuisine_exemplaire_2_sur_3.jpg" alt="Bon de cuisine"><figcaption>Bon de cuisine, 2ᵉ exemplaire sur 3, en français.</figcaption></figure>
+  <figure><img src="../../captures/restaurant/34_j_envoie_note_generale.jpg" alt="Note générale"><figcaption>« J'envoie » avec « Note générale 1 » ; la note est dans la commande, pas sur l'addition.</figcaption></figure>
+</div>
+
+<h3>5.2 À la caissière</h3>
+<table class="t garde">
+  <tr><th style="width:30%">Nouveauté</th><th>Le geste</th><th style="width:36%">Ce qu'elle doit voir</th></tr>
+  <tr><td><b>Parts égales</b> (F2)<br>exemple : 100 000 FCFA à 3</td><td><span class="b">J'encaisse</span> → <span class="b">Partager à parts égales</span> → « Combien de personnes paient ? » : toucher 3 (ou <span class="b">Plus</span> pour 9 à 20) → <span class="b">Valider</span>. Puis toucher le mode de paiement de chaque personne.</td><td>Bandeau « Part 1 sur 3 : 33 333 FCFA ». La dernière part paie le reste (33 334). À la fin : « Les 3 parts sont encaissées. Validez le paiement. » → <span class="b">Valider</span>. Le ticket porte « Partagée en 3 parts égales ».</td></tr>
+  <tr><td><b>Monnaie d'une part</b></td><td>La personne donne 50 000 en espèces : taper 50 000 au pavé.</td><td>« Monnaie à rendre : 16 667 FCFA ». La ligne revient à 33 333 au mode suivant.</td></tr>
+  <tr><td><b>Annuler</b></td><td><span class="b">Annuler le partage</span>.</td><td>Retour au paiement habituel ; la ligne suivante paie tout le reste.</td></tr>
+  <tr><td><b>Addition groupée</b> (F7)</td><td><span class="b">Addition</span>.</td><td>Titres en majuscules (PLATS, PIZZAS &amp; BURGERS, BAR, AUTRES), « Sous-total … » par famille ; pourboire et remise après ; total inchangé.</td></tr>
+</table>
+<div class="duo">
+  <figure><img src="../../captures/restaurant/31_parts_egales_bandeau.jpg" alt="Parts égales"><figcaption>Partage à 3 : « Part 2 sur 3 : 2 666 FCFA » et « Monnaie à rendre : 2 334 FCFA ».</figcaption></figure>
+  <figure style="flex:0.55"><img src="../../captures/restaurant/36_addition_groupee.jpg" alt="Addition groupée" style="width:auto;max-height:78mm"><figcaption>Addition groupée par famille, total 31 500 FCFA. (Base d'essai : « My Company », « Your logo ».)</figcaption></figure>
+</div>
+
+<h3>5.3 Au gérant</h3>
+<ul>
+  <li><b>Les imprimantes</b> : où elles se règlent (chapitre 4.2), ce que dit le cadre orange, pourquoi l'imprimante « Autre » évite qu'un plat se perde.</li>
+  <li><b>La panne</b> : si une imprimante ne répond pas, une seule alerte « Bon non imprimé » dit quel poste prévenir de vive voix. La commande est quand même enregistrée comme envoyée.</li>
+  <li><b>La carte est à lui</b> (F8) : il peut renommer, changer un prix, archiver ou ajouter des produits ; une mise à niveau ne les touche plus. Le menu <span class="chemin">Point de Vente → Configuration → Poser la carte Le Messager</span> ne crée que ce qui n'a jamais été posé et affiche « Rien n'a été créé en double. La carte est à vous… ».</li>
+  <li><b>Le changement visible en cuisine</b> : les bons sont en français et regroupés. Annoncez-le à l'équipe avant le service.</li>
+  <li><b>Les décisions</b> du chapitre 9.</li>
+</ul>
+
+<!-- =================================================================== -->
+<h2 class="saut">6. Vérifier que tout marche</h2>
+<p>Le cahier de scénarios du kit (<code>AITE_Scenarios_Test_Restaurant_v18.0.1.0.14</code>, PDF et Excel) décrit chaque test pas à pas : 33 scénarios, ST-01 à ST-33, dans les blocs A à G. La colonne « Recette » de chaque scénario donne son cas. Correspondance :</p>
+<table class="t">
+  <tr><th style="width:12%">Cas</th><th style="width:12%">Version</th><th>Ce qu'il vérifie</th></tr>
+  <tr><td>R105</td><td>1.0.11</td><td>Additions d'une table divisée : fenêtre, impression, part payée, part déplacée.</td></tr>
+  <tr><td>R106</td><td>1.0.12</td><td>Parts égales : 3 personnes, monnaie d'une part, ligne supprimée, annulation.</td></tr>
+  <tr><td>R107</td><td>1.0.13</td><td>Exemplaires (3, refus de 0 et 6), bon d'annulation, panne.</td></tr>
+  <tr><td>R108</td><td>1.0.13</td><td>Note d'un plat parti, « Ignorer », note au client.</td></tr>
+  <tr><td>R109</td><td>1.0.13</td><td>Note générale seule, absente de l'addition et de l'écran client.</td></tr>
+  <tr><td>R110</td><td>1.0.14</td><td>Cinq imprimantes, cadre orange, refus d'une 2ᵉ « Autre », routage, annulation.</td></tr>
+  <tr><td>R111</td><td>1.0.14</td><td>Addition et ticket groupés, table divisée, réglage décoché.</td></tr>
+  <tr><td>R112</td><td>1.0.14</td><td>Cadre pendant la saisie, « Autre » hors mode, pourboire hors bon et hors rubrique.</td></tr>
+  <tr><td>ST-03, ST-04</td><td>1.3.5 / 1.3.6</td><td>Un produit renommé et un réglage décoché restent tels quels après une mise à niveau.</td></tr>
+</table>
+<p class="petit">R110 et R112 utilisent une seconde caisse « Bar piscine » hors mode : ne les jouez que sur une base de test, pas sur la base du client.</p>
+
+<h3>Check-list rapide (10 points, 15 minutes)</h3>
+<ul class="cocher">
+  <li>Apps : « AITE — Restaurant (service à table) » en 18.0.1.0.14, la carte en 18.0.1.3.6, « Imprimante Epson PdV » installé, dans <b>chaque</b> base.</li>
+  <li>Journal d'Odoo (<code>$L</code>, chapitre 3, étape 9) sans ligne <code>ERROR</code> depuis le redémarrage.</li>
+  <li>Paramètres de la caisse : « Service à table contrôlé » coché ; aucun cadre orange sous « Imprimantes ».</li>
+  <li>Chaque imprimante, fiche ouverte : type « Utiliser une imprimante Epson », IP remplie (la liste ne l'affiche pas), bonnes familles ; une seule « Autre ».</li>
+  <li>Un plat, une pizza, une bière → <span class="b">J'envoie</span> : chaque bon sort sur son poste, en français, avec le bon nombre d'exemplaires. Notez le temps avant le retour au plan.</li>
+  <li>Un produit sans famille → <span class="b">J'envoie</span> : il sort sur « Autre » seulement.</li>
+  <li>Imprimante « Bar » débranchée → <span class="b">J'envoie</span> : une seule alerte « Bon non imprimé » qui nomme « Bar ». Rebranchez-la.</li>
+  <li><span class="b">Addition</span> : familles en majuscules et sous-totaux (si F7 gardé) ; pas de note générale dessus.</li>
+  <li>Paiement à 3 parts égales : bandeau, dernière part = reste, « Partagée en 3 parts égales » sur le ticket.</li>
+  <li>Table divisée → <span class="b">Addition</span> : toutes les additions ouvertes, ou la fenêtre « Les additions de la table … ».</li>
+</ul>
+
+<!-- =================================================================== -->
+<h2 class="saut">7. Dépannage</h2>
+<table class="t">
+  <tr><th style="width:27%">Symptôme</th><th style="width:30%">Cause probable</th><th>Que faire</th></tr>
+  <tr><td>Erreur rouge à l'ouverture de la caisse ou d'un écran, avec <code>UndefinedColumn</code> (par exemple « column pos_printer.aite_exemplaires does not exist »).</td><td>Cette base n'a pas été mise à niveau : le code est nouveau, la base est ancienne.</td><td>Arrêter Odoo, faire l'étape 8 du chapitre 3 sur <b>cette</b> base, redémarrer.</td></tr>
+  <tr><td>Mise à niveau en <code>ERROR</code> : « Veuillez fermer et valider les sessions PdV ouvertes suivantes avant de modifier ce mode de paiement. »</td><td>Une session de caisse était ouverte (défaut connu sur le mode « Cash »).</td><td>Redémarrer Odoo, fermer la session (Fermer la session, valider), arrêter Odoo, relancer la commande de mise à niveau.</td></tr>
+  <tr><td>Pas de bouton « Partager à parts égales », bons encore en anglais (« New », « Tableau 7 »).</td><td>La tablette garde l'ancien code de la caisse en cache, ou la caisse n'est pas au service à table contrôlé.</td><td>Ctrl+Maj+R (ou vider le cache) et rouvrir la caisse. Vérifier la case « Service à table contrôlé ». Vérifier la version dans Apps.</td></tr>
+  <tr><td>Le menu « Imprimantes de préparation » est introuvable.</td><td>Il est sous « Commandes », et caché tant qu'aucune caisse n'a la case cochée.</td><td>Passer par Paramètres → bloc « Préparation » → lien « → Imprimantes » (chapitre 4.2).</td></tr>
+  <tr><td>« Bon non imprimé » à chaque envoi pour un poste.</td><td>Imprimante éteinte, IP changée, type resté sur « IoT Box », ou certificat https non accepté.</td><td>Vérifier l'alimentation et le réseau ; réimprimer la page d'état et comparer l'IP ; type « Utiliser une imprimante Epson » ; en https, chapitre 4.3.</td></tr>
+  <tr><td>Un plat ne sort sur aucun bon.</td><td>Sa famille n'est cochée sur aucune imprimante et il n'y a pas d'« Autre ».</td><td>Lire le cadre orange des paramètres ; cocher la famille ou ajouter l'imprimante « Autre ».</td></tr>
+  <tr><td>Un plat sort sur deux postes.</td><td>Sa famille (ou une famille parente) est cochée sur deux imprimantes.</td><td>Retirer la famille d'une des deux imprimantes. Rappel : cocher « Bar » couvre toutes ses sous-familles.</td></tr>
+  <tr><td>Les réglages changés ne s'appliquent pas.</td><td>La caisse lit ses réglages à l'ouverture.</td><td>Fermer puis rouvrir la caisse, ou recharger chaque tablette.</td></tr>
+  <tr><td>Addition non groupée.</td><td>Case « Grouper les produits par famille… » décochée, ou caisse hors service à table contrôlé.</td><td>Chapitre 4.4. La facture comptable (PDF) n'est jamais groupée : c'est normal.</td></tr>
+  <tr><td>Le ticket final groupé ne sort pas au paiement.</td><td>« Impression automatique du reçu » décoché, ou pas d'imprimante de tickets.</td><td>Réimprimer depuis Commandes, ou régler selon la décision du client (chapitre 4.5).</td></tr>
+  <tr><td>Le partage a disparu en cours de paiement.</td><td>Page rechargée, autre tablette, ou produit / pourboire ajouté.</td><td>Toucher à nouveau « Partager à parts égales » sur la même tablette. Les paiements déjà faits restent.</td></tr>
+  <tr><td>« 2 667 FCFA / Convive » alors que la part vaut 2 666.</td><td>Affichage d'Odoo arrondi au plus proche.</td><td>Rien : le bandeau AITE donne le bon montant.</td></tr>
+  <tr><td>« Mettre à niveau » refuse : <code>rm</code>/<code>cp</code> « Permission non accordée », ou Odoo ne voit pas le module.</td><td>Droits des dossiers.</td><td>Refaire les commandes <code>chown</code> et <code>chmod</code> de l'étape 7.</td></tr>
+</table>
+<p>Si le problème reste : gardez le fichier <code>/tmp/maj_BASE.log</code> et les 100 dernières lignes du journal (<code>sudo tail -n 100 $L</code>, chapitre 3, étape 9), faites une photo de l'écran, et appelez AITE.</p>
+
+<!-- =================================================================== -->
+<h2 class="saut">8. Retour arrière</h2>
+<div class="encadre rouge"><p><span class="titre">À lire avant —</span> le retour arrière remet chaque base dans l'état de la sauvegarde. <b>Les ventes faites depuis la mise à niveau sont perdues.</b> Ne le faites qu'avant toute vente ; sinon, appelez AITE. Ne désinstallez <b>jamais</b> un module pour revenir en arrière : vous perdriez des données.</p></div>
+<ol class="etapes">
+<li>Arrêter Odoo : <code>sudo systemctl stop odoo ; systemctl is-active odoo</code>
+<p class="voir"><code>inactive</code>.</p></li>
+<li>Remettre les anciens dossiers des modules :
+<pre>A=/usr/lib/python3/dist-packages/odoo/addons
+sudo rm -rf "${A:?}/aite_pos_restaurant" \
+  "${A:?}/aite_resto_carte_messager"
+sudo tar xzf $B/aite_modules_$J.tgz -C $A
+sudo chown -R root:root $A/aite_pos_restaurant $A/aite_resto_carte_messager
+sudo chmod -R u=rwX,go=rX $A/aite_pos_restaurant $A/aite_resto_carte_messager
+grep "'version'" $A/aite_pos_restaurant/__manifest__.py</pre>
+<p class="voir">l'ancienne version, celle notée au chapitre 3, étape 2. Nouvelle session SSH ? Retapez d'abord <code>B=/var/backups/aite</code>, <code>J=&lt;date de la sauvegarde&gt;</code> (par exemple <code>J=20261127</code>) et la ligne <code>F=…</code> du chapitre 3, étape 3.</p></li>
+<li>Restaurer <b>chaque</b> base mise à niveau, et son filestore (remplacez <code>BASE</code>) :
+<pre>sudo -u postgres dropdb BASE
+sudo -u postgres createdb -O odoo BASE
+sudo -u postgres pg_restore -d BASE --no-owner --role=odoo $B/BASE_$J.dump
+sudo rm -rf "${F:?}/BASE"
+sudo tar xzf $B/BASE_filestore_$J.tgz -C $F
+sudo chown -R odoo:odoo $F/BASE</pre>
+<p class="voir">aucune erreur. <code>dropdb</code> refuse si quelqu'un est encore connecté : vérifiez qu'Odoo est bien arrêté.</p></li>
+<li>Redémarrer : <code>sudo systemctl start odoo</code>, puis contrôler les versions dans Apps (chapitre 3, étape 10).
+<p class="voir">les anciennes versions. <code>pos_epson_printer</code> revient aussi à son état d'avant.</p></li>
+<li>Recharger chaque tablette (Ctrl+Maj+R).</li>
+</ol>
+
+<!-- =================================================================== -->
+<h2>9. Limites connues et points à décider avec le client</h2>
+
+<h3>9.1 Ce qui n'a pas été essayé</h3>
+<ul>
+  <li>Rien n'a été essayé sur une <b>vraie imprimante Epson</b> : les tests utilisent des imprimantes simulées. Faites la check-list du chapitre 6 avec les vraies imprimantes avant le premier service.</li>
+  <li>Rien n'a été essayé sur une <b>vraie tablette en https</b>, ni sur Odoo Enterprise.</li>
+</ul>
+
+<h3>9.2 Limites à annoncer</h3>
+<ul>
+  <li>Pas de bouton « Réimprimer le dernier bon ». Avec 3 exemplaires, « J'envoie » prend quelques secondes (8 secondes mesurées sur imprimantes simulées) : le serveur doit attendre le retour au plan avant de poser la tablette. Mesurez ce temps avec les vraies Epson.</li>
+  <li>Sans aucune imprimante de préparation, la caisse dit quand même « Envoyé ».</li>
+  <li>La <b>facture comptable (PDF)</b> n'est pas groupée par famille. Sur l'addition, un produit est rangé sous sa famille de premier niveau : une crêpe reste sous PIZZAS &amp; BURGERS, même si elle part sur « Froid ».</li>
+  <li>Le partage à parts égales vit sur la tablette qui encaisse : il se perd si on recharge la page ou si on change de tablette.</li>
+  <li>« Note générale » reste grisée sur une table sans plat (règle d'Odoo).</li>
+  <li>Une part divisée <b>avant</b> cette mise à jour, dont la partie intermédiaire est payée, n'est plus rattachée au reste de la table.</li>
+  <li>Un pourboire saisi avant « J'envoie » est marqué envoyé sans être imprimé (c'est voulu : il ne va pas en cuisine).</li>
+</ul>
+
+<h3>9.3 À décider avec le gérant</h3>
+<table class="t garde">
+  <tr><th style="width:38%">Question</th><th>Ce qu'il faut savoir</th></tr>
+  <tr><td>Combien d'exemplaires par poste ?</td><td>De 1 à 5 par imprimante. Les annulations et les notes seules sortent toujours en un exemplaire.</td></tr>
+  <tr><td>Garder l'addition groupée par famille ?</td><td>Cochée par la carte à la mise à niveau. Elle change l'addition et le ticket, pas le total.</td></tr>
+  <tr><td>Imprimer le ticket final seul au paiement ?</td><td>Il faut une imprimante de tickets et « Impression automatique du reçu ». Sinon, réimpression depuis Commandes.</td></tr>
+  <tr><td>Une imprimante « Autre » ?</td><td>Conseillée : un plat sans famille cochée ne se perd jamais. Sans elle, surveiller le cadre orange après chaque nouvelle famille.</td></tr>
+  <tr><td>Odoo en http ou en https ?</td><td>En https, chaque tablette doit accepter le certificat de chaque imprimante (chapitre 4.3), et le refaire sur une tablette neuve.</td></tr>
+</table>
+
+<div class="encadre or"><p><span class="titre">En fin d'intervention —</span> notez dans le compte rendu : les bases mises à niveau, les versions lues dans Apps, les IP des imprimantes, le nombre d'exemplaires choisi, les décisions du tableau 9.3, et l'emplacement des sauvegardes (<code>/var/backups/aite</code>). Gardez les sauvegardes au moins 30 jours.</p></div>
+
+</body>
+</html>

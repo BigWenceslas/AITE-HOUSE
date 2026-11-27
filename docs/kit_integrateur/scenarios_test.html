@@ -1,0 +1,613 @@
+<!DOCTYPE html><html lang='fr'><head><meta charset='utf-8'>
+<title>Scénarios de test — Restaurant 18.0.1.0.14</title>
+<meta name='author' content='AITE Consulting'>
+<style>
+@page { size: A4; margin: 14mm 13mm 16mm 13mm;
+  @bottom-center { content: "AITE CONSULTING — Scénarios de test · Restaurant 18.0.1.0.14 · Page " counter(page) " / " counter(pages);
+    font-family: Carlito, "DejaVu Sans", sans-serif; font-size: 8pt; color: #666; } }
+html { font-family: Carlito, "DejaVu Sans", sans-serif; font-size: 9.6pt; color: #222; line-height: 1.28; }
+body { margin: 0; }
+h1 { color: #902C8F; font-size: 21pt; margin: 1mm 0 0.5mm; }
+h2 { color: #902C8F; font-size: 14pt; margin: 5mm 0 2mm; border-bottom: 0.6pt solid #d9d2db; padding-bottom: 1mm; break-after: avoid; }
+h2.saut { break-before: page; margin-top: 0; }
+.sous-titre { color: #ED9720; font-weight: bold; font-size: 11.5pt; margin: 0 0 3mm; }
+.entete { display: flex; justify-content: space-between; align-items: flex-start; }
+.entete img { width: 30mm; }
+table { border-collapse: collapse; width: 100%; }
+table.info th, table.info td { border: 0.5pt solid #d9d2db; padding: 1.1mm 1.8mm; vertical-align: top; text-align: left; }
+table.info th { background: #902C8F; color: white; }
+table.info td.l { background: #f3f1f4; font-weight: bold; width: 42mm; }
+table.ident td { border: 0.5pt solid #d9d2db; padding: 2.2mm 2mm; }
+table.ident td.l { width: 52mm; background: #f3f1f4; font-weight: bold; }
+p { margin: 1mm 0 1.8mm; }
+.sc { border: 0.7pt solid #cdbfd0; border-radius: 1.5mm; margin: 0 0 4mm; break-inside: avoid; }
+.sc.long { break-inside: auto; }
+.sc-tete { background: #902C8F; color: white; padding: 1.4mm 2.5mm; display: flex; justify-content: space-between; align-items: baseline; border-radius: 1.3mm 1.3mm 0 0; }
+.sc-tete .id { font-weight: bold; font-size: 11pt; }
+.sc-tete .titre { font-weight: bold; font-size: 10.5pt; flex: 1; margin: 0 3mm; }
+.sc-tete .f { font-size: 8.5pt; white-space: nowrap; }
+.sc-meta { display: flex; gap: 3mm; padding: 1.4mm 2.5mm 0.6mm; font-size: 8.8pt; color: #333; flex-wrap: wrap; }
+.sc-meta b { color: #902C8F; }
+.sc-corps { padding: 0.8mm 2.5mm 2mm; }
+.sc-corps .pre { background: #f6f3f7; padding: 1.2mm 2mm; margin: 0.8mm 0 1.5mm; font-size: 8.9pt; }
+table.et th { background: #f3f1f4; color: #902C8F; font-size: 8.5pt; text-align: left; border: 0.5pt solid #d9d2db; padding: 0.8mm 1.5mm; }
+table.et td { border: 0.5pt solid #d9d2db; padding: 1mm 1.5mm; vertical-align: top; font-size: 9pt; }
+table.et tr { break-inside: avoid; }
+table.et td.n { width: 5mm; text-align: center; font-weight: bold; color: #902C8F; }
+table.et td.a { width: 44%; }
+table.et td.v { color: #1e5b33; }
+table.et td.c { width: 7mm; text-align: center; }
+.case { display: inline-block; width: 3.4mm; height: 3.4mm; border: 0.35mm solid #666; border-radius: 0.5mm; vertical-align: -0.6mm; }
+.attendu { border-left: 1.4mm solid #ED9720; background: #fdf4e7; padding: 1.2mm 2.2mm; margin: 1.6mm 0 1.2mm; break-inside: avoid; }
+.verifie { font-size: 8.2pt; color: #555; font-style: italic; margin: 0.6mm 0 1.4mm; }
+.resultat { display: flex; gap: 5mm; align-items: center; border-top: 0.5pt dashed #bbb; padding-top: 1.6mm; font-size: 9.3pt; break-inside: avoid; }
+.resultat .ligne { flex: 1; border-bottom: 0.5pt solid #999; height: 4mm; }
+.obs { border-bottom: 0.5pt solid #999; height: 6mm; margin-top: 0.5mm; }
+.bloc { color: #ED9720; font-weight: bold; text-transform: uppercase; letter-spacing: 0.04em; font-size: 10pt; margin: 3mm 0 2mm; break-after: avoid; }
+table.syn th { background: #902C8F; color: white; font-size: 8.8pt; border: 0.5pt solid #d9d2db; padding: 1mm 1.5mm; }
+table.syn td { border: 0.5pt solid #d9d2db; padding: 1.4mm 1.5mm; font-size: 9pt; }
+table.syn td.c { text-align: center; }
+</style></head><body>
+<div class='entete'><div><h1>Scénarios de test</h1><div class='sous-titre'>Restaurant Le Messager — nouvelles fonctionnalités de la caisse (aite_pos_restaurant 18.0.1.0.14, carte 18.0.1.3.6)</div></div><img src='../logo_aite.jpg' alt='AITE Consulting'></div>
+<table class='ident'>
+<tr><td class='l'>Client</td><td>Restaurant Le Messager</td></tr>
+<tr><td class='l'>Base(s) testée(s)</td><td></td></tr>
+<tr><td class='l'>Adresse d'Odoo (http / https)</td><td></td></tr>
+<tr><td class='l'>Testeur</td><td></td></tr>
+<tr><td class='l'>Date (JJ/MM/AAAA)</td><td></td></tr>
+</table>
+<h2>Mode d'emploi</h2><table class='info'>
+<tr><td class='l'>À quoi sert ce cahier</td><td>Vérifier chez le client, après la mise à niveau, les nouvelles fonctionnalités de la caisse du restaurant (aite_pos_restaurant 18.0.1.0.11 à 18.0.1.0.14) et de la carte Le Messager (18.0.1.3.5 et 18.0.1.3.6). Il ne teste rien d'autre.</td></tr>
+<tr><td class='l'>Avant de commencer</td><td>1. La mise à niveau est faite sur chaque base (guide de l'intégrateur, procédure du serveur). 2. Choisissez un moment sans service : les tests envoient de vrais bons en cuisine et enregistrent de vraies ventes. 3. Si possible, jouez sur une copie de la base (base de recette) ; sinon, prévenez le gérant : les ventes de test resteront dans les rapports du jour. 4. Ayez sous la main les codes d'un serveur, d'une caissière, d'un chef de salle et du manager.</td></tr>
+<tr><td class='l'>Comment jouer un scénario</td><td>Lisez le prérequis et les données. Faites chaque étape dans l'ordre : une action, puis vérifiez que vous voyez exactement ce qui est écrit (mêmes mots, mêmes montants). Les libellés entre « » sont ceux de l'écran. Les montants sont en FCFA, les dates au format JJ/MM/AAAA.</td></tr>
+<tr><td class='l'>Comment noter le résultat</td><td>OK : tout ce qui est écrit est vu. KO : une seule différence suffit ; écrivez dans « Observations » l'étape et ce que vous avez vu (une photo de l'écran aide). S.O. (sans objet) : le scénario ne s'applique pas chez ce client (ex. Odoo n'est pas en https). Bloqué : impossible de le jouer (dites pourquoi). Remplissez aussi « Testeur » et « Date ».</td></tr>
+<tr><td class='l'>Ordre conseillé</td><td>Les blocs A à G dans l'ordre : A (contrôles après la mise à niveau), B (réglage des imprimantes), C (envoi), D (notes), E (addition), F (paiement à parts égales), G (non-régression). Plusieurs scénarios reprennent la table du précédent : ne sautez pas d'étape.</td></tr>
+<tr><td class='l'>Noms et tables</td><td>Les prénoms, codes et numéros de table sont ceux de la base de démonstration. Chez le client, prenez un employé réel du même niveau et toute table libre ; écrivez dans « Observations » la table utilisée. Si un mode de paiement porte un autre nom, prenez l'équivalent.</td></tr>
+<tr><td class='l'>Prix du client</td><td>Les montants attendus viennent des prix de la carte de démonstration (tableau « Prix de référence »). Avant de commencer, comparez ces prix à ceux de la caisse du client. Si un prix diffère, refaites le calcul avec le prix du client : ce n'est pas un KO. Notez dans « Observations » le prix utilisé et le montant obtenu.</td></tr>
+<tr><td class='l'>Textes d'Odoo en anglais</td><td>Les boutons de modèles des fenêtres de note (Wait, To Serve, Emergency, No Dressing) sont créés par Odoo en anglais : ce n'est pas un KO. Le guide (4.6) explique comment les renommer.</td></tr>
+<tr><td class='l'>Après la recette</td><td>Archivez le produit de test « Bougie d'anniversaire » (ST-05). Remettez les réglages choisis par le gérant. Envoyez le classeur rempli à AITE. Un KO : ne pas improviser de correction, appeler AITE.</td></tr>
+</table>
+<h2>Les personnes du test</h2><table class='info'><tr><th>Rôle</th><th>Niveau en caisse</th><th>Démo : prénom</th><th>Démo : code</th></tr>
+<tr><td>Serveur 1</td><td>Serveur</td><td>Brice</td><td>1001</td></tr>
+<tr><td>Serveur 2</td><td>Serveur</td><td>Nadège</td><td>1002</td></tr>
+<tr><td>Caissière</td><td>Caissière</td><td>Clarisse</td><td>2001</td></tr>
+<tr><td>Chef de salle</td><td>Chef de salle ou superviseur</td><td>Hervé</td><td>3001</td></tr>
+<tr><td>Manager</td><td>Manager</td><td>Sandrine</td><td>4001</td></tr>
+<tr><td>Intégrateur</td><td>Compte Odoo administrateur</td><td>—</td><td>mot de passe admin</td></tr>
+</table>
+<h2>Les cinq imprimantes</h2><table class='info'><tr><th>Imprimante</th><th>Adresse IP (exemple)</th><th>Catégories de produit imprimées</th></tr>
+<tr><td>Chaud</td><td>192.168.1.51</td><td>Plats, Petit déjeuner, Pizzas &amp; burgers / Burgers, Pizzas &amp; burgers / Pastas</td></tr>
+<tr><td>Pizza</td><td>192.168.1.52</td><td>Pizzas &amp; burgers / Pizzas</td></tr>
+<tr><td>Froid</td><td>192.168.1.53</td><td>Pizzas &amp; burgers / Crêpes &amp; glaces, Afternoon tea</td></tr>
+<tr><td>Bar</td><td>192.168.1.54</td><td>Bar</td></tr>
+<tr><td>Autre</td><td>192.168.1.55</td><td>aucune famille ; case « Prend tout ce qu'aucune autre imprimante ne prend » cochée</td></tr>
+</table>
+<h2>Prix de référence</h2><table class='info'><tr><th>Produit (carte de démonstration)</th><th>Prix (FCFA)</th><th>Prix chez le client (FCFA)</th></tr>
+<tr><td>Poulet DG</td><td>5 000</td><td></td></tr>
+<tr><td>Ndolé viande</td><td>3 000</td><td></td></tr>
+<tr><td>Pizza Marguerite Petit</td><td>5 000</td><td></td></tr>
+<tr><td>Pizza Marguerite Grand</td><td>10 000</td><td></td></tr>
+<tr><td>Crêpe nature</td><td>2 000</td><td></td></tr>
+<tr><td>Bière blonde 65 cl</td><td>1 500</td><td></td></tr>
+<tr><td>Tea Time 2 pers avec Moscato</td><td>20 000</td><td></td></tr>
+<tr><td>Eau minérale 0,5 L</td><td>500</td><td></td></tr>
+<tr><td>Café expresso</td><td>1 000</td><td></td></tr>
+<tr><td>Gambas DG</td><td>10 000</td><td></td></tr>
+<tr><td>Bougie d'anniversaire (créée en ST-05)</td><td>500</td><td></td></tr>
+</table>
+<h2>Les scénarios</h2>
+<div class='bloc'>A. Contrôles après la mise à niveau</div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-01</span><span class='titre'>Les bonnes versions sont installées</span><span class='f'>F8 · 18.0.1.0.14 / 1.3.6</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> La carte appartient au client (mise à niveau sans écrasement)</span><span><b>Rôle :</b> Intégrateur (compte admin)</span><span><b>Recette :</b> —</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> La mise à niveau du serveur est faite (procédure du guide, étapes 1 à 8).<br><b>Données :</b> Aucune.</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Dans le navigateur, ajoutez ?debug=1 après /odoo dans l'adresse (ex. https://votre-serveur/odoo?debug=1), puis ouvrez Apps.</td><td class='v'>Une petite icône d'insecte apparaît en haut : le mode développeur est actif.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>Dans la barre de recherche, retirez le filtre « Apps » (croix), puis passez en vue liste (icône liste, en haut à droite).</td><td class='v'>La liste des modules, avec les colonnes « Nom technique », « Dernière version » et « Statut ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>Cherchez aite_pos_restaurant.</td><td class='v'>« AITE — Restaurant (service à table) » : Dernière version 18.0.1.0.14, Statut « Installé ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>4</td><td class='a'>Cherchez aite_resto_carte_messager.</td><td class='v'>« AITE — Carte du restaurant Le Messager (démonstration) » : 18.0.1.3.6, « Installé ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>5</td><td class='a'>Cherchez pos_epson_printer.</td><td class='v'>« Imprimante Epson PdV » : Statut « Installé ».</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> Les trois modules sont « Installé », aux versions 18.0.1.0.14 et 18.0.1.3.6. Faites ce contrôle sur CHAQUE base mise à niveau.</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme.</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-02</span><span class='titre'>Le réglage « grouper par famille » a été coché une fois par la mise à niveau</span><span class='f'>F9 · carte 18.0.1.3.6</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> Réglage « grouper par famille » posé une seule fois</span><span><b>Rôle :</b> Intégrateur (compte admin)</span><span><b>Recette :</b> R111 (préalable)</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> ST-01 OK.<br><b>Données :</b> Aucune.</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Ouvrez Point de Vente → Configuration → Paramètres ; en haut, la caisse « Restaurant » est choisie. Descendez jusqu'au bloc « Mode restaurant ».</td><td class='v'>La case « Service à table contrôlé » est cochée.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>Juste en dessous, lisez la case « Grouper les produits par famille sur l'addition et le ticket ».</td><td class='v'>Elle est cochée. Sa phrase commence par « Coché : sur l'addition (bouton « Addition », y compris les additions d'une table divisée) et sur le ticket remis au client… ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>Montrez ce réglage au gérant et demandez-lui s'il le garde.</td><td class='v'>S'il ne le veut pas : décochez, « Enregistrer ». Notez sa décision dans « Observations ».</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> Après la mise à niveau, la case est cochée (posée une seule fois par la carte 18.0.1.3.6).</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme.</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-03</span><span class='titre'>Un produit modifié par le client n'est pas écrasé</span><span class='f'>F8 · carte 18.0.1.3.5</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> La carte appartient au client (mise à niveau sans écrasement)</span><span><b>Rôle :</b> Intégrateur (compte admin)</span><span><b>Recette :</b> — (tests test_carte_du_client.py)</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> ST-01 OK. Le produit « Poulet DG » existe (5 000 FCFA). Faites ce test hors service.<br><b>Données :</b> Nom de test « Poulet DG maison », prix de test 7 777 FCFA.</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Point de Vente → Produits → Produits. Cherchez « Poulet DG », ouvrez la fiche.</td><td class='v'>La fiche « Poulet DG », Prix de vente 5 000 FCFA.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>Renommez-la « Poulet DG maison », mettez le prix de vente à 7 777, « Enregistrer » (icône nuage).</td><td class='v'>La fiche est enregistrée.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>Point de Vente → Configuration → « Poser la carte Le Messager ».</td><td class='v'>Une notification « Carte Le Messager » : « &lt;société&gt; : Carte posée : 101 produits en 30 familles ; salle : 12 tables ; équipe : 7 employés, 3 comptes. Rien n'a été créé en double. La carte est à vous : une mise à niveau ne modifie aucun de vos produits… » (les nombres peuvent différer chez le client).</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>4</td><td class='a'>Retournez dans Produits, cherchez « Poulet DG ».</td><td class='v'>Une seule fiche : « Poulet DG maison », « Prix : 7 777,00 FCFA ». Aucun nouveau « Poulet DG » n'a été créé.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>5</td><td class='a'>Remettez le nom « Poulet DG » et le prix 5 000, « Enregistrer ».</td><td class='v'>La fiche est revenue à son état de départ.</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> Le nom et le prix modifiés restent ; rien n'est créé en double. (Une mise à niveau du module se comporte comme ce menu.)</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme.</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-04</span><span class='titre'>Un produit archivé ne revient pas ; le réglage décoché reste décoché</span><span class='f'>F8 · carte 18.0.1.3.5 / 1.3.6</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> La carte appartient au client (mise à niveau sans écrasement)</span><span><b>Rôle :</b> Intégrateur (compte admin)</span><span><b>Recette :</b> —</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> ST-03 OK.<br><b>Données :</b> Produit de test « Gambas DG » (10 000 FCFA).</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Produits → ouvrez « Gambas DG » → roue dentée ⚙ à côté du nom → « Archiver » → confirmez « Archiver ».</td><td class='v'>La fiche porte le bandeau « Archivé ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>Ouvrez Point de Vente → Configuration → Paramètres ; en haut, la caisse « Restaurant » est choisie, décochez « Grouper les produits par famille sur l'addition et le ticket », « Enregistrer ».</td><td class='v'>La case est décochée.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>Point de Vente → Configuration → « Poser la carte Le Messager ».</td><td class='v'>La notification « … Rien n'a été créé en double… ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>4</td><td class='a'>Produits : cherchez « Gambas DG ».</td><td class='v'>Aucune fiche trouvée : le produit reste archivé.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>5</td><td class='a'>Paramètres : relisez la case « Grouper les produits… ».</td><td class='v'>Elle est toujours décochée.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>6</td><td class='a'>Remettez en état : recochez la case (si le gérant la garde, voir ST-02), « Enregistrer » ; Produits → filtre « Archivé » → « Gambas DG » → roue dentée ⚙ → « Désarchiver ».</td><td class='v'>« Gambas DG » est de nouveau en vente.</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> Le produit archivé ne revient pas, le réglage décoché n'est pas recoché.</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme.</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='bloc'>B. Réglage des imprimantes</div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-05</span><span class='titre'>Préparer un produit de test sans famille</span><span class='f'>F5 · 18.0.1.0.14</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> Une imprimante par poste, imprimante « Autre », familles oubliées</span><span><b>Rôle :</b> Intégrateur (compte admin)</span><span><b>Recette :</b> —</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> Aucun. Ce produit sert à ST-07, ST-11, ST-13 et ST-21 ; archivez-le à la fin de la recette.<br><b>Données :</b> « Bougie d'anniversaire », 500 FCFA, sans taxe, sans famille de caisse.</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Point de Vente → Produits → Produits → « Nouveau ».</td><td class='v'>Une fiche produit vide.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>Nom « Bougie d'anniversaire » ; Prix de vente 500 ; dans « Taxes de vente », retirez la taxe proposée (croix sur l'étiquette « 19.25% »).</td><td class='v'>Prix de vente 500 FCFA, aucune taxe. Sous le nom, la case « Point de Vente » est cochée (cochez-la sinon).</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>Onglet « Point de Vente » : laissez le champ « Catégorie » vide. « Enregistrer » (icône nuage).</td><td class='v'>La fiche est enregistrée, sans famille de caisse.</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> Le produit existe, à 500 FCFA sans taxe, en vente en caisse, sans famille. (Sans retirer la taxe, la caisse ajouterait la TVA : 596 FCFA.)</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme.</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='sc long'>
+<div class='sc-tete'><span class='id'>ST-06</span><span class='titre'>Créer les cinq imprimantes Epson et les relier à la caisse</span><span class='f'>F5 · 18.0.1.0.14</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> Une imprimante par poste, imprimante « Autre », familles oubliées</span><span><b>Rôle :</b> Intégrateur (compte admin)</span><span><b>Recette :</b> R110</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> Les Epson sont allumées, en Wi-Fi, avec une adresse IP réservée dans la box (voir le guide). Une caisse fermée, ou rechargée après le réglage.<br><b>Données :</b> Chaud 192.168.1.51 · Pizza .52 · Froid .53 · Bar .54 · Autre .55 (remplacez par les vraies adresses). Familles : voir le tableau du mode d'emploi.</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Ouvrez Point de Vente → Configuration → Paramètres ; en haut, la caisse « Restaurant » est choisie. Bloc « Préparation » : cochez « Imprimantes de préparation » (« Imprimer les commandes en cuisine, au bar, etc. »), « Enregistrer ».</td><td class='v'>Sous la case : un champ « Imprimantes » et un lien « → Imprimantes ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>Touchez le lien « → Imprimantes », puis « Nouveau ».</td><td class='v'>Le fil d'Ariane dit « Paramètres / Imprimantes de préparation ». Le formulaire a les champs « Nom de l'imprimante », « Type d'imprimante », « Catégories de produit imprimées », « Nombre d'exemplaires du bon », « Prend tout ce qu'aucune autre imprimante ne prend ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>Nom : effacez « Printer » (pré-rempli par Odoo) et tapez « Chaud » ; Type d'imprimante « Utiliser une imprimante Epson » ; « Adresse IP de l'imprimante Epson » = l'adresse réservée (ne la laissez jamais vide).</td><td class='v'>Avant le choix du type, le formulaire montre « Adresse IP du proxy » (IoT Box). Dès que « Utiliser une imprimante Epson » est choisi, ce champ disparaît et « Adresse IP de l'imprimante Epson » apparaît.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>4</td><td class='a'>« Catégories de produit imprimées » → « Ajouter une ligne » → cochez Plats, Petit déjeuner, « Pizzas &amp; burgers / Burgers », « Pizzas &amp; burgers / Pastas » → « Sélectionner ». « Enregistrer ».</td><td class='v'>Les 4 familles sont listées. Sous « Nombre d'exemplaires du bon » (1) : « Chaque nouveau bon envoyé à cette imprimante sort en un seul exemplaire. »</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>5</td><td class='a'>Revenez à « Imprimantes de préparation » (fil d'Ariane) et créez de même Pizza, Froid, Bar et Autre (Autre : aucune famille, case « Prend tout… » laissée décochée pour l'instant).</td><td class='v'>La liste montre 5 imprimantes, avec les colonnes « Exemplaires » et « Autre ». La colonne « Adresse IP du proxy » reste vide pour les Epson : c'est normal ; l'IP se contrôle en ouvrant l'imprimante.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>6</td><td class='a'>Revenez aux Paramètres. Dans le champ « Imprimantes » du bloc « Préparation », ajoutez les 5 imprimantes. « Enregistrer ».</td><td class='v'>Les 5 noms sont dans le champ. Un cadre orange dit : « 1 produit sans famille (Bougie d'anniversaire). Leurs plats ne sortiront sur aucun bon de préparation. Cochez ces familles sur une imprimante, ou cochez « Prend tout ce qu'aucune autre imprimante ne prend » sur votre imprimante « Autre ». » Si une famille n'est cochée nulle part, la phrase commence par « Ces familles de la carte ne sont prises par aucune imprimante : … ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>7</td><td class='a'>Ouvrez le menu « Commandes » en haut.</td><td class='v'>Il contient maintenant « Imprimantes de préparation ».</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> Cinq imprimantes Epson avec leur adresse IP et leurs familles, reliées à la caisse. Le cadre orange ne cite que ce qu'aucune imprimante ne prend (ici la bougie).</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme.</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-07</span><span class='titre'>Une famille oubliée est signalée pendant la saisie</span><span class='f'>F5 · 18.0.1.0.14</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> Une imprimante par poste, imprimante « Autre », familles oubliées</span><span><b>Rôle :</b> Intégrateur (compte admin)</span><span><b>Recette :</b> R110, R112</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> ST-06 OK ; la case « Prend tout… » de « Autre » est encore décochée.<br><b>Données :</b> Imprimante « Froid », famille « Afternoon tea ».</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Ouvrez l'imprimante « Froid » (Point de Vente → Configuration → Paramètres → bloc « Préparation » → lien « → Imprimantes » (ou, une fois la case cochée, Point de Vente → Commandes → Imprimantes de préparation)).</td><td class='v'>Ses familles : « Pizzas &amp; burgers / Crêpes &amp; glaces » et « Afternoon tea ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>Touchez la croix ✖ au bout de la ligne « Afternoon tea ». N'enregistrez pas.</td><td class='v'>Aussitôt, un cadre orange : « Ces familles de la carte ne sont prises par aucune imprimante : Afternoon tea. 1 produit sans famille (Bougie d'anniversaire). Leurs plats ne sortiront sur aucun bon de préparation. Cochez ces familles sur une imprimante, ou cochez « Prend tout ce qu'aucune autre imprimante ne prend » sur votre imprimante « Autre ». »</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>Touchez la croix ✖ à droite du nuage, en haut à côté du nom (infobulle « Ignorer tous les changements »).</td><td class='v'>La modification est abandonnée : « Afternoon tea » reste sur Froid.</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> Le cadre orange nomme la famille oubliée avant même l'enregistrement.</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme.</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-08</span><span class='titre'>L'imprimante « Autre » prend tout ce que les autres ne prennent pas</span><span class='f'>F5 · 18.0.1.0.14</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> Une imprimante par poste, imprimante « Autre », familles oubliées</span><span><b>Rôle :</b> Intégrateur (compte admin)</span><span><b>Recette :</b> R110</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> ST-07 OK.<br><b>Données :</b> Imprimante « Autre ».</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Ouvrez l'imprimante « Autre ». Cochez « Prend tout ce qu'aucune autre imprimante ne prend ».</td><td class='v'>La phrase devient : « Tout plat qu'aucune autre imprimante de la caisse ne prend (sa famille n'est cochée nulle part, ou il n'a pas de famille) sort sur cette imprimante, en plus des familles cochées ici : un plat envoyé n'est jamais perdu. … Il ne peut y avoir qu'une seule imprimante « Autre » par caisse. … »</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>« Enregistrer ». Ouvrez les Paramètres, bloc « Préparation ».</td><td class='v'>Plus de cadre orange.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>Rejouez ST-07 (Froid, retirer « Afternoon tea »), puis la croix ✖ à droite du nuage (Ignorer).</td><td class='v'>Cette fois, aucun cadre orange : la famille partirait sur « Autre ».</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> Avec une imprimante « Autre », plus aucune famille n'est signalée.</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme.</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-09</span><span class='titre'>Une seule imprimante « Autre » par caisse</span><span class='f'>F5 · 18.0.1.0.14</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> Une imprimante par poste, imprimante « Autre », familles oubliées</span><span><b>Rôle :</b> Intégrateur (compte admin)</span><span><b>Recette :</b> R110</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> ST-08 OK.<br><b>Données :</b> Imprimante « Bar ».</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Ouvrez l'imprimante « Bar », cochez « Prend tout ce qu'aucune autre imprimante ne prend », « Enregistrer ».</td><td class='v'>Une fenêtre « Oh mince ! » : « La caisse « Restaurant » ne peut avoir qu'une seule imprimante « Autre » (case « Prend tout ce qu'aucune autre imprimante ne prend ») ; elle en a 2 : Bar, Autre. Décochez la case sur l'une d'elles, ou retirez-la de la caisse. »</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>Dans la fenêtre, touchez « Rester sur la page », puis la croix ✖ à droite du nuage (Ignorer).</td><td class='v'>« Bar » garde sa case décochée. (La fenêtre n'a pas de croix « fermer » : ses boutons sont « Rester sur la page » et « Ignorer les changements ».)</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> La seconde « Autre » est refusée par un message qui nomme les deux imprimantes.</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme.</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-10</span><span class='titre'>Nombre d'exemplaires du bon : refus hors de 1 à 5, puis 3 exemplaires</span><span class='f'>F3 · 18.0.1.0.13</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> Bon de cuisine en plusieurs exemplaires, bons en français, alerte de panne</span><span><b>Rôle :</b> Intégrateur (compte admin)</span><span><b>Recette :</b> R107</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> ST-06 OK.<br><b>Données :</b> Imprimante « Chaud » ; valeurs 6, 0, puis 3.</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Ouvrez « Chaud ». « Nombre d'exemplaires du bon » = 6, « Enregistrer ».</td><td class='v'>Fenêtre « Oh mince ! » : « Le nombre d'exemplaires du bon doit être entre 1 et 5 (imprimante « Chaud »). » Ses boutons : « Rester sur la page » et « Ignorer les changements ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>Touchez « Rester sur la page ». Mettez 0, « Enregistrer ».</td><td class='v'>Le même message.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>Touchez « Rester sur la page ». Mettez 3.</td><td class='v'>La phrase dit : « Chaque nouveau bon envoyé à cette imprimante sort en 3 exemplaires identiques, marqués « Exemplaire 1/3 » à « Exemplaire 3/3 ». Les annulations et les notes seules sortent en un exemplaire. »</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>4</td><td class='a'>« Enregistrer ». Revenez à la liste des imprimantes.</td><td class='v'>Colonne « Exemplaires » : 3 pour Chaud, 1 pour les autres.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>5</td><td class='a'>Sur la tablette : rechargez la page (touche F5 ou glisser vers le bas), ou fermez puis rouvrez la caisse.</td><td class='v'>La caisse se recharge (elle lit les imprimantes à son ouverture).</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> 0 et 6 sont refusés ; 3 est accepté avec sa phrase. Après le test, gardez le nombre choisi par le gérant (3 dans la suite).</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme.</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='bloc'>C. Envoi en cuisine et au bar</div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-11</span><span class='titre'>Un seul « J'envoie » : chaque plat sort sur son poste (Epson en direct)</span><span class='f'>F5 · 18.0.1.0.14</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> Une imprimante par poste, imprimante « Autre », familles oubliées</span><span><b>Rôle :</b> Serveur 1</span><span><b>Recette :</b> R110 (étape 4), R107</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> ST-05 à ST-10 OK, caisse rechargée. Les 5 imprimantes sont allumées, avec du papier.<br><b>Données :</b> Table 5 (ou toute table libre), 2 personnes. Poulet DG (accompagnement « Riz nature ») 5 000, Penne arrabiata 3 000, Pizza Marguerite Petit 5 000, Crêpe nature 2 000, Tour de Cantelou blanc 10 000, Bougie d'anniversaire 500 → total 25 500 FCFA.</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Sur le plan, touchez la table 5, tapez le code du serveur, touchez « 2 ».</td><td class='v'>L'écran de commande de la table 5.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>Touchez Poulet DG.</td><td class='v'>La fenêtre « Sélection d'attributs » s'ouvre : « Accompagnement » Riz nature, Riz Messager, Frites plantain, Frites pomme. Gardez « Riz nature », touchez « Ajouter ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>Ajoutez Penne arrabiata, Pizza Marguerite Petit, Crêpe nature, Tour de Cantelou blanc, Bougie d'anniversaire (cherchez-la par la loupe, en haut).</td><td class='v'>6 lignes ; total : 25 500 FCFA.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>4</td><td class='a'>Touchez « J'envoie ».</td><td class='v'>Aucune fenêtre, aucun aperçu d'impression. Retour au plan. Notification : « Envoyé : Sans famille × 1, Poulet DG × 1, Pizzas × 1, Pastas × 1, Crêpes &amp; glaces × 1, Vins blancs × 1. »</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>5</td><td class='a'>Allez voir chaque imprimante.</td><td class='v'>Chaud : 3 bons identiques (Poulet DG et Penne). Pizza : 1 bon (Pizza Marguerite Petit). Froid : 1 bon (Crêpe nature). Bar : 1 bon (Tour de Cantelou blanc — un vin blanc, sous-famille de Bar). Autre : 1 bon (Bougie d'anniversaire).</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> 7 feuilles en tout, chacune sur le bon poste, sans geste de plus que « J'envoie ».</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme. (Epson simulées au niveau du réseau : la caisse a réellement envoyé 7 requêtes ePOS aux adresses .51 ×3, .52, .53, .54, .55.)</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-12</span><span class='titre'>Le bon est en français et numéroté « Exemplaire k/N »</span><span class='f'>F3 · 18.0.1.0.13</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> Bon de cuisine en plusieurs exemplaires, bons en français, alerte de panne</span><span><b>Rôle :</b> Serveur 1 (lecture des bons)</span><span><b>Recette :</b> R107</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> ST-11 fait : gardez les bons.<br><b>Données :</b> Les 3 bons de « Chaud » et le bon de « Pizza » de ST-11.</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Prenez les 3 bons de Chaud.</td><td class='v'>En haut, dans un cadre : « Exemplaire 1/3 », « Exemplaire 2/3 », « Exemplaire 3/3 ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>Lisez l'en-tête d'un bon.</td><td class='v'>« Sur place », « Restaurant : &lt;heure&gt; », « Par : &lt;prénom du serveur&gt; » (démo : Brice), « Table 5 # &lt;numéro&gt; ». Le mot « Table » (jamais « Tableau »).</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>Lisez le corps.</td><td class='v'>Section « Nouveau » : « 1 Poulet DG », « - Riz nature », « 1 Penne arrabiata ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>4</td><td class='a'>Prenez le bon de Pizza.</td><td class='v'>Pas de cadre « Exemplaire » (1 seul exemplaire).</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> Un seul bon par imprimante et par envoi, tout en français, numéroté quand N &gt; 1. (Avant : jusqu'à 4 feuilles « New / Cancelled / Note / Message ». Prévenez la cuisine.)</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme.</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-13</span><span class='titre'>Une annulation sort en 1 exemplaire, sur le bon poste</span><span class='f'>F3 · 18.0.1.0.13 / 1.0.14</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> Bon de cuisine en plusieurs exemplaires, bons en français, alerte de panne</span><span><b>Rôle :</b> Serveur 1 + Chef de salle</span><span><b>Recette :</b> R107, R110</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> ST-11 fait (table 5 envoyée).<br><b>Données :</b> Table 5 : annuler la Bougie d'anniversaire, puis le Poulet DG.</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Touchez la table 5, code du serveur. Touchez la ligne « Bougie d'anniversaire », puis ⌫ deux fois.</td><td class='v'>La fenêtre d'annulation demande le « Code d'un chef de salle ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>Le chef de salle tape son code (démo : 3001), puis touche un motif.</td><td class='v'>Notification : « Annulation faite : 1 Bougie d'anniversaire, par &lt;chef de salle&gt;. Bon d'annulation envoyé. » Un seul bon sort, sur « Autre » : section « Annulé », « 1 Bougie d'anniversaire ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>Faites de même avec la ligne « Poulet DG ».</td><td class='v'>Un seul bon sur « Chaud » (pas 3), sans cadre « Exemplaire » : « Annulé », « 1 Poulet DG - Riz nature ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>4</td><td class='a'>Lisez le total.</td><td class='v'>20 000 FCFA.</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> Les annulations sortent en un exemplaire, sur l'imprimante qui avait reçu le plat (même « Autre »).</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme.</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-14</span><span class='titre'>Une imprimante en panne : une seule alerte, la commande est gardée</span><span class='f'>F3 · 18.0.1.0.13</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> Bon de cuisine en plusieurs exemplaires, bons en français, alerte de panne</span><span><b>Rôle :</b> Serveur 1</span><span><b>Recette :</b> R107</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> ST-13 fait. Prévenez le poste pizza.<br><b>Données :</b> Table 5 : ajouter 1 Pizza Marguerite Petit (5 000). Débranchez l'imprimante « Pizza » (ou son câble réseau).</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Débranchez l'imprimante Pizza. Touchez la table 5, code du serveur, ajoutez Pizza Marguerite Petit, « J'envoie ».</td><td class='v'>Après quelques secondes, UNE fenêtre « Bon non imprimé » : « L'imprimante « Pizza » n'a pas répondu : le bon n'est pas sorti. La commande est enregistrée comme envoyée : prévenez le poste de vive voix, puis vérifiez que l'imprimante est allumée et reliée au réseau. »</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>Touchez le bouton de la fenêtre (« Ok »).</td><td class='v'>Retour au plan. Notification : « Envoyé : Pizzas × 1, mais le bon « Pizza » n'est pas sorti : prévenez de vive voix. »</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>Rebranchez l'imprimante. Rouvrez la table 5.</td><td class='v'>La ligne Pizza Marguerite Petit est à 2 et « J'envoie » est grisé : la pizza est comptée comme partie. Il n'y a pas de bouton « Réimprimer » : le poste est prévenu de vive voix.</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> Une seule alerte, qui nomme l'imprimante ; la pizza est enregistrée ; le serveur sait qu'il doit prévenir de vive voix.</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme. (panne simulée : connexion refusée à l'adresse de Pizza.)</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-15</span><span class='titre'>Odoo en https : accepter le certificat de chaque Epson</span><span class='f'>F6 · 18.0.1.0.14</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> Impression directe sur les Epson (http et https)</span><span><b>Rôle :</b> Intégrateur, sur chaque tablette</span><span><b>Recette :</b> R110 (étape 4)</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> Seulement si l'adresse d'Odoo commence par https:// (sinon : cochez S.O.). SSL/TLS et ePOS-Print activés dans la page de réglage de chaque Epson (voir le guide).<br><b>Données :</b> Les 5 adresses IP des imprimantes.</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Sur une tablette qui n'a jamais imprimé : ouvrez une table, ajoutez un Café expresso, « J'envoie ».</td><td class='v'>Si le certificat n'est pas encore accepté : la fenêtre « Bon non imprimé » se termine par « Odoo est ouvert en https : si c'est la première fois sur cette tablette, ouvrez une fois https://&lt;IP&gt; dans le navigateur et acceptez le certificat de l'imprimante, puis revenez à la caisse. »</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>Dans un nouvel onglet, ouvrez https://&lt;IP de l'imprimante&gt; → « Paramètres avancés » → « Continuer ».</td><td class='v'>La page de l'imprimante Epson s'affiche.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>Faites de même pour les 5 adresses, revenez à la caisse, rechargez la page, renvoyez un produit.</td><td class='v'>Le bon sort, sans fenêtre.</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> Après acceptation des 5 certificats, chaque tablette imprime en https sans alerte.</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Non joué : il faut une vraie Epson et un Odoo servi en https. Le texte de l'alerte est celui du code (messages.js).</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='bloc'>D. Notes de commande</div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-16</span><span class='titre'>Note cuisine sur un plat dont une partie est déjà partie</span><span class='f'>F4 · 18.0.1.0.13</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> Notes de commande (6 corrections)</span><span><b>Rôle :</b> Serveur 1</span><span><b>Recette :</b> R108</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> ST-10 fait (Chaud en 3 exemplaires).<br><b>Données :</b> Table 6, 4 personnes : 3 Poulet DG (Riz nature) envoyés, puis un 4e avec la note « bien cuit ».</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Table 6, code du serveur, « 4 ». Ajoutez 3 fois Poulet DG (Riz nature), « J'envoie ».</td><td class='v'>« Envoyé : Poulet DG × 3. »</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>Rouvrez la table 6. Ajoutez 1 Poulet DG (Riz nature).</td><td class='v'>La ligne passe à 4 ; total 20 000 FCFA.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>La ligne Poulet DG choisie, touchez « Note cuisine », tapez « bien cuit », « Appliquer ».</td><td class='v'>La fenêtre s'appelait « Ajouter Note cuisine » ; ses boutons de modèles (Wait, To Serve… en anglais, sauf si le guide 4.6 a été fait) ne servent pas ici. Pas de fenêtre des accompagnements. Deux lignes : Poulet DG × 3 (sans note) et Poulet DG × 1 « bien cuit ». Total toujours 20 000 FCFA.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>4</td><td class='a'>« J'envoie ».</td><td class='v'>« Envoyé : Poulet DG × 1. » Sur Chaud, 3 exemplaires : « Nouveau », « 1 Poulet DG », « - Riz nature », « bien cuit ».</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> La note va au seul 4e poulet ; la quantité et le total ne changent pas.</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme.</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-17</span><span class='titre'>« Ignorer » ne change rien ; effacer une note la retire du poste</span><span class='f'>F4 · 18.0.1.0.13</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> Notes de commande (6 corrections)</span><span><b>Rôle :</b> Serveur 2</span><span><b>Recette :</b> R108</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> Aucun.<br><b>Données :</b> Table 8, 2 personnes : Bière blonde 65 cl (1 500) avec la note « sans glaçon ».</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Table 8, code du serveur 2 (démo : 1002), « 2 ». Ajoutez Bière blonde 65 cl, « Note cuisine », « sans glaçon », « Appliquer », « J'envoie ».</td><td class='v'>Bar : « Nouveau », « 1 Bière blonde 65 cl », « sans glaçon ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>Rouvrez la table 8, touchez la ligne, « Note cuisine ». Remplacez par « avec glaçon », puis « Ignorer ».</td><td class='v'>La fenêtre s'ouvrait avec « sans glaçon ». Après « Ignorer » : toujours une seule ligne, note « sans glaçon ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>« Note cuisine » de nouveau : videz le champ, « Appliquer ». « J'envoie ».</td><td class='v'>« Envoyé : Note × 1. » Bar : section « Note », « 1 Bière blonde 65 cl », « Note retirée : sans glaçon ».</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> « Ignorer » (ou la croix) n'efface rien ; vider puis « Appliquer » prévient le bar.</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme.</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-18</span><span class='titre'>Note au client sur un plat déjà parti</span><span class='f'>F4 · 18.0.1.0.13</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> Notes de commande (6 corrections)</span><span><b>Rôle :</b> Serveur 1</span><span><b>Recette :</b> R108</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> ST-16 fait (table 6).<br><b>Données :</b> Table 6 : note au client « Anniversaire de Paul » sur la ligne Poulet DG × 3.</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Rouvrez la table 6, touchez la ligne Poulet DG × 3, puis « Actions » → « Note au client ».</td><td class='v'>La fenêtre « Ajouter Note au client » s'ouvre (avant, la caisse plantait).</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>Tapez « Anniversaire de Paul », « Appliquer ».</td><td class='v'>La ligne reste à 3 (elle n'est pas coupée) et porte la note. Aucun bon ne sort : la note au client ne va pas en cuisine.</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> La note au client s'enregistre sur un plat parti, sans couper la ligne.</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme.</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-19</span><span class='titre'>Note générale tapée seule : elle part, en 1 exemplaire, au bon poste</span><span class='f'>F4 · 18.0.1.0.13</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> Notes de commande (6 corrections)</span><span><b>Rôle :</b> Serveur 1</span><span><b>Recette :</b> R109</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> ST-18 fait (table 6 ouverte).<br><b>Données :</b> Table 6 : note générale « Servir le dessert à 21 h ».</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Sur la table 6 : « Actions » → « Note générale », tapez « Servir le dessert à 21 h », « Appliquer ».</td><td class='v'>La fenêtre s'appelait « Ajouter Note générale ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>« J'envoie ».</td><td class='v'>Notification : « Envoyé : Note générale × 1. » (plus « Message »).</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>Regardez les imprimantes.</td><td class='v'>Un seul bon, sur Chaud (le poste qui a servi la table), en 1 exemplaire : section « Note générale », « Servir le dessert à 21 h ». Rien sur Pizza, Froid, Bar, Autre.</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> La note générale seule est imprimée, une fois, sur les postes qui ont servi la table.</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme.</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-20</span><span class='titre'>L'addition montre la note au client, jamais la note générale</span><span class='f'>F4 · 18.0.1.0.13</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> Notes de commande (6 corrections)</span><span><b>Rôle :</b> Serveur 1</span><span><b>Recette :</b> R109</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> ST-19 fait (table 6).<br><b>Données :</b> Table 6 : 4 Poulet DG = 20 000 FCFA.</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Rouvrez la table 6, touchez « Addition ».</td><td class='v'>Avec une imprimante de tickets : le ticket sort. Sans : la fenêtre « Impression de l'addition » montre le ticket et un bouton « Imprimer ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>Lisez l'addition.</td><td class='v'>Rubrique PLATS ; « Anniversaire de Paul » sous la ligne Poulet DG × 3 ; « Servir le dessert à 21 h » n'apparaît nulle part ; « Sous-total Plats : 20 000 FCFA » ; « TOTAL 20 000 FCFA » ; la mention « PRO FORMA » (addition non payée).</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>S'il y a un écran tourné vers le client : regardez-le.</td><td class='v'>Même règle : la note au client y est, la note générale non (si pas d'écran client : notez « pas d'écran »).</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> La note générale reste interne (cuisine et bar) ; la note au client est imprimée pour le client.</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme. (sans imprimante de tickets ; l'écran client n'a pas été essayé.)</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='bloc'>E. Addition</div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-21</span><span class='titre'>Addition groupée par famille, avec sous-totaux</span><span class='f'>F7 · 18.0.1.0.14</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> Addition et ticket groupés par famille</span><span><b>Rôle :</b> Serveur 1</span><span><b>Recette :</b> R111, R112</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> ST-02 : case « Grouper les produits par famille… » cochée. ST-05 fait.<br><b>Données :</b> Table 9, 4 personnes : Poulet DG 5 000, Ndolé viande 3 000, Pizza Marguerite Petit 5 000, Crêpe nature 2 000, 2 × Bière blonde 65 cl 3 000, Bougie d'anniversaire 500 → 18 500 FCFA.</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Table 9, code du serveur, « 4 ». Ajoutez les produits (Riz nature pour les plats à accompagnement), « J'envoie ».</td><td class='v'>Total 18 500 FCFA.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>Rouvrez la table 9, touchez « Addition ».</td><td class='v'>Le ticket (ou la fenêtre « Impression de l'addition »).</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>Lisez l'addition de haut en bas.</td><td class='v'>PLATS : Poulet DG, Ndolé viande, « Sous-total Plats : 8 000 FCFA » ; PIZZAS &amp; BURGERS : Pizza Marguerite Petit, Crêpe nature, « Sous-total Pizzas &amp; burgers : 7 000 FCFA » ; BAR : Bière blonde 65 cl × 2, « Sous-total Bar : 3 000 FCFA » ; AUTRES : Bougie d'anniversaire, « Sous-total Autres : 500 FCFA » ; « TOTAL 18 500 FCFA ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>4</td><td class='a'>Vérifiez : 8 000 + 7 000 + 3 000 + 500.</td><td class='v'>= 18 500 FCFA, le TOTAL.</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> Les produits sont rangés par famille de 1er niveau (la crêpe est sous PIZZAS &amp; BURGERS), chaque famille a son sous-total, le total ne change pas.</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme. (avec une imprimante de tickets simulée.)</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-22</span><span class='titre'>Réglage décoché : l'addition redevient celle d'Odoo</span><span class='f'>F7 · 18.0.1.0.14</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> Addition et ticket groupés par famille</span><span><b>Rôle :</b> Intégrateur + Serveur 1</span><span><b>Recette :</b> R111</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> ST-21 fait (table 9 ouverte).<br><b>Données :</b> Table 9.</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Point de Vente → Configuration → Paramètres ; en haut, la caisse « Restaurant » est choisie : décochez « Grouper les produits par famille sur l'addition et le ticket », « Enregistrer ». Sur la tablette : rechargez la page (touche F5 ou glisser vers le bas), ou fermez puis rouvrez la caisse.</td><td class='v'>La caisse se recharge.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>Table 9, code du serveur, « Addition ».</td><td class='v'>Plus de titres ni de « Sous-total » : les produits dans l'ordre de la saisie (Poulet DG, Ndolé viande, Pizza…, Crêpe…, Bière…, Bougie…) ; « TOTAL 18 500 FCFA ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>Recochez la case (ou laissez-la selon la décision du gérant), « Enregistrer », rechargez la caisse.</td><td class='v'>Réglage remis comme le gérant le veut.</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> Décoché, l'addition est la liste habituelle ; le total est le même.</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme.</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-23</span><span class='titre'>Ticket final groupé, et sa réimpression</span><span class='f'>F7 · 18.0.1.0.14</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> Addition et ticket groupés par famille</span><span><b>Rôle :</b> Caissière</span><span><b>Recette :</b> R111</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> ST-22 fait, case recochée et caisse rechargée.<br><b>Données :</b> Table 9 (18 500 FCFA), payée en espèces avec 20 000 FCFA.</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Table 9, code de la caissière (démo : 2001), « J'encaisse ». Touchez « Espèces », tapez 20000 au pavé.</td><td class='v'>La ligne « Monnaie » affiche -1 500 FCFA (Odoo écrit la monnaie avec un signe moins) : rendez 1 500 FCFA.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>« Valider ».</td><td class='v'>Retour au plan. Si « Impression automatique du reçu » est coché (Paramètres) et qu'une imprimante de tickets est réglée, le ticket sort seul. Sinon, rien ne sort : c'est normal.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>touchez ≡ (en haut à droite) → « Commandes 1… » → tapez le code de la caissière si demandé → touchez le filtre « Toutes les commandes actives » → « Payé » → touchez la commande en haut de la liste → « Imprimer le ticket ».</td><td class='v'>Le ticket est groupé comme l'addition (sous-totaux 8 000, 7 000, 3 000, 500), « TOTAL 18 500 FCFA », « Espèces 20 000 FCFA », « MONNAIE 1 500 FCFA ».</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> Le ticket final et sa réimpression sont groupés par famille ; les paiements ne changent pas.</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme. (sans « Impression automatique du reçu » : ticket obtenu par réimpression.)</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-24</span><span class='titre'>Table divisée : « Addition » montre toutes les additions</span><span class='f'>F1 · 18.0.1.0.11</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> « Addition » sur une table divisée</span><span><b>Rôle :</b> Serveur 2</span><span><b>Recette :</b> R105</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> Aucun.<br><b>Données :</b> Table 7, 4 personnes : Poulet DG 5 000, Pizza Marguerite Petit 5 000, Bière blonde 65 cl 1 500, Crêpe nature 2 000 → 13 500 FCFA. Parts : la pizza (7B), puis la bière (7C).</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Table 7, code du serveur 2, « 4 ». Ajoutez les 4 produits, « J'envoie ».</td><td class='v'>Retour au plan.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>Rouvrez la table 7 : « Actions » → « Diviser l'addition » → touchez Pizza Marguerite Petit → « Créer l'addition à part ».</td><td class='v'>La caisse est sur la part « 7B » (en haut : un onglet « 7B »).</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>Retour au plan (« Plan »), rouvrez la table 7, divisez de nouveau : Bière blonde 65 cl.</td><td class='v'>Une part « 7C ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>4</td><td class='a'>Rouvrez la table 7, touchez « Addition ». Sans imprimante de tickets :</td><td class='v'>Fenêtre « Les additions de la table 7 », « 3 additions encore ouvertes, une par ticket. » : « Table 7 » 7 000 FCFA, « Table 7B » 5 000 FCFA, « Table 7C » 1 500 FCFA, chacune avec son ticket ; « Total des additions 13 500 FCFA » ; bouton « J'imprime les additions ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>5</td><td class='a'>Touchez « J'imprime les additions » (avec une imprimante de tickets : touchez « Addition »).</td><td class='v'>Sans imprimante : l'impression du navigateur, un ticket par page. Avec : 3 tickets d'un seul geste.</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> Toutes les additions encore ouvertes de la table sont montrées et imprimées ensemble.</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme. (les deux cas : sans imprimante de tickets, et avec une imprimante simulée.)</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-25</span><span class='titre'>Une part payée n'est plus reprise</span><span class='f'>F1 · 18.0.1.0.11</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> « Addition » sur une table divisée</span><span><b>Rôle :</b> Caissière + Serveur 2</span><span><b>Recette :</b> R105</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> ST-24 fait.<br><b>Données :</b> La part 7B (5 000 FCFA), payée en espèces.</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>En haut, touchez l'onglet « 7B » (code si demandé), « J'encaisse », code de la caissière, « Espèces », « Valider ».</td><td class='v'>Retour au plan.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>Rouvrez la table 7, « Addition ».</td><td class='v'>« 2 additions encore ouvertes, une par ticket. » : « Table 7 » 7 000 FCFA, « Table 7C » 1 500 FCFA ; « Total des additions 8 500 FCFA ». 7B n'y est plus.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>Fermez la fenêtre (croix). Encaissez 7 et 7C (ou annulez-les avec un motif) pour libérer la table.</td><td class='v'>La table 7 redevient grise.</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> Seules les additions encore ouvertes sont montrées.</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme.</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='bloc'>F. Paiement à parts égales</div>
+<div class='sc long'>
+<div class='sc-tete'><span class='id'>ST-26</span><span class='titre'>100 000 FCFA à 3 personnes : 33 333, 33 333, 33 334</span><span class='f'>F2 · 18.0.1.0.12</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> Partager l'addition à parts égales</span><span><b>Rôle :</b> Serveur 1 + Caissière</span><span><b>Recette :</b> R106</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> Aucun.<br><b>Données :</b> Table 3, 3 personnes : 5 × Tea Time 2 pers avec Moscato (20 000) = 100 000 FCFA. Paiements : Espèces, Mobile Money, Espèces.</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Table 3, code du serveur, « 3 ». Ajoutez 5 Tea Time 2 pers avec Moscato, « J'envoie ».</td><td class='v'>Total 100 000 FCFA.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>Rouvrez la table 3 avec le code de la caissière, « J'encaisse ».</td><td class='v'>Sous « Client » et « Facture », le bouton « Partager à parts égales » (icône camembert).</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>Touchez « Partager à parts égales ».</td><td class='v'>Fenêtre « Combien de personnes paient ? » : boutons 2 à 8 et « Plus » ; 3 est déjà choisi ; « Chaque personne paiera 33 333 FCFA ; le dernier paie ce qui reste. » ; « Valider », « Retour ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>4</td><td class='a'>« Valider ».</td><td class='v'>Bandeau « Part 1 sur 3 : 33 333 FCFA » et bouton « Annuler le partage ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>5</td><td class='a'>Touchez « Espèces ».</td><td class='v'>Ligne Espèces 33 333 FCFA ; bandeau « Part 2 sur 3 : 33 333 FCFA ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>6</td><td class='a'>Touchez « Mobile Money ».</td><td class='v'>Ligne Mobile Money 33 333 FCFA ; bandeau « Part 3 sur 3 : 33 334 FCFA ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>7</td><td class='a'>Touchez « Espèces ».</td><td class='v'>Ligne Espèces 33 334 FCFA ; bandeau « Les 3 parts sont encaissées. Validez le paiement. » ; « Annuler le partage » a disparu.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>8</td><td class='a'>« Valider ». Puis : touchez ≡ (en haut à droite) → « Commandes 1… » → tapez le code de la caissière si demandé → touchez le filtre « Toutes les commandes actives » → « Payé » → touchez la commande en haut de la liste → « Imprimer le ticket ».</td><td class='v'>Retour au plan. Le ticket montre les 3 paiements et, dessous, « Partagée en 3 parts égales ».</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> 33 333 + 33 333 + 33 334 = 100 000 FCFA ; une seule vente ; mention sur le ticket.</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme.</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-27</span><span class='titre'>Monnaie à rendre sur une part payée en espèces</span><span class='f'>F2 · 18.0.1.0.12</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> Partager l'addition à parts égales</span><span><b>Rôle :</b> Serveur 1 + Caissière</span><span><b>Recette :</b> R106</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> Aucun.<br><b>Données :</b> Table 4, 3 personnes, 100 000 FCFA (5 Tea Time 2 pers avec Moscato). La 1re personne donne 50 000 FCFA en espèces.</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Préparez la table 4 comme ST-26 (envoi), « J'encaisse » (caissière), « Partager à parts égales », 3, « Valider ».</td><td class='v'>« Part 1 sur 3 : 33 333 FCFA ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>Touchez « Espèces », puis tapez 50000 au pavé.</td><td class='v'>Le bandeau ajoute « Monnaie à rendre : 16 667 FCFA ». Rendez 16 667 FCFA.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>Touchez « Mobile Money ».</td><td class='v'>La ligne Espèces revient à 33 333 FCFA ; Mobile Money 33 333 FCFA ; « Part 3 sur 3 : 33 334 FCFA ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>4</td><td class='a'>Touchez « Espèces », « Valider ».</td><td class='v'>Retour au plan. Ticket (réimpression) : « Partagée en 3 parts égales ».</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> La monnaie d'une part est annoncée ; la caisse n'enregistre que la part (33 333).</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme.</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-28</span><span class='titre'>Supprimer une ligne, puis « Annuler le partage »</span><span class='f'>F2 · 18.0.1.0.12</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> Partager l'addition à parts égales</span><span><b>Rôle :</b> Serveur 1 + Caissière</span><span><b>Recette :</b> R106</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> Aucun.<br><b>Données :</b> Table 10, 3 personnes, 100 000 FCFA.</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Préparez la table 10 comme ST-26, partagez en 3. Touchez « Espèces » puis « Mobile Money ».</td><td class='v'>Lignes 33 333 et 33 333 ; « Part 3 sur 3 : 33 334 FCFA ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>Supprimez la ligne Mobile Money (croix rouge au bout de la ligne).</td><td class='v'>Le bandeau recule : « Part 2 sur 3 : 33 333 FCFA ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>Touchez « Annuler le partage ».</td><td class='v'>Le bandeau disparaît ; le bouton « Partager à parts égales » revient.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>4</td><td class='a'>Touchez « Mobile Money ».</td><td class='v'>La ligne prend tout le reste : 66 667 FCFA.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>5</td><td class='a'>« Valider », puis réimprimez le ticket.</td><td class='v'>Espèces 33 333 FCFA, Mobile Money 66 667 FCFA, « TOTAL 100 000 FCFA », sans « Partagée en … ».</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> Le compteur suit les lignes ; « Annuler le partage » rend le paiement habituel.</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme.</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-29</span><span class='titre'>Partager ce qui reste après un premier paiement</span><span class='f'>F2 · 18.0.1.0.12</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> Partager l'addition à parts égales</span><span><b>Rôle :</b> Serveur 1 + Caissière</span><span><b>Recette :</b> R106</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> Aucun.<br><b>Données :</b> Table 11, 3 personnes, 100 000 FCFA. Un premier paiement de 10 000 FCFA en espèces, puis 90 000 à partager en 3.</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Préparez la table 11 comme ST-26, « J'encaisse ». Touchez « Espèces », tapez 10000.</td><td class='v'>Ligne Espèces 10 000 FCFA.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>« Partager à parts égales ».</td><td class='v'>La fenêtre dit « Reste dû partagé : 90 000 FCFA. » et « Chaque personne paiera 30 000 FCFA ; le dernier paie ce qui reste. » (3 choisi).</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>« Valider ».</td><td class='v'>Bandeau « Part 1 sur 3 : 30 000 FCFA » et « Reste dû partagé : 90 000 FCFA. »</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>4</td><td class='a'>Touchez « Mobile Money », « Mobile Money », « Espèces », puis « Valider ».</td><td class='v'>Lignes 10 000 / 30 000 / 30 000 / 30 000. Ticket : « Partagée en 3 parts égales ».</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> C'est le reste dû qui est partagé.</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme.</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-30</span><span class='titre'>Retour à la commande : le partage est gardé, sauf si le total change</span><span class='f'>F2 · 18.0.1.0.12</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> Partager l'addition à parts égales</span><span><b>Rôle :</b> Serveur 1 + Caissière</span><span><b>Recette :</b> R106</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> Aucun.<br><b>Données :</b> Table 12, 3 personnes, 100 000 FCFA ; ajout d'une Eau minérale 0,5 L (500).</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Préparez la table 12 comme ST-26, partagez en 3, touchez « Espèces ».</td><td class='v'>« Part 2 sur 3 : 33 333 FCFA ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>Touchez « Retour » (en bas de l'écran de paiement), puis « J'encaisse » (code de la caissière si demandé).</td><td class='v'>Le bandeau est retrouvé : « Part 2 sur 3 : 33 333 FCFA ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>« Retour », ajoutez Eau minérale 0,5 L, « J'encaisse ».</td><td class='v'>Total 100 500 FCFA ; plus de bandeau ; le bouton « Partager à parts égales » est revenu.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>4</td><td class='a'>Touchez « Espèces », « Valider ».</td><td class='v'>La ligne Espèces prend le reste : 67 167 FCFA.</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> Le partage survit à un aller-retour ; un produit ajouté l'efface (on le refait d'un toucher).</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme.</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-31</span><span class='titre'>Avec l'arrondi des espèces : parts multiples du pas</span><span class='f'>F2 · 18.0.1.0.12</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> Partager l'addition à parts égales</span><span><b>Rôle :</b> Serveur 1 + Caissière</span><span><b>Recette :</b> R106</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> Seulement si « Arrondi des paiements en espèces » est coché dans les Paramètres de la caisse (sinon cochez S.O.). Exemple écrit pour un pas de 25 FCFA (« Moitié supérieure »).<br><b>Données :</b> Table 2, 6 personnes : Pizza Marguerite Grand 10 000 FCFA ; 6 parts en espèces.</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Table 2, code du serveur, « 6 », Pizza Marguerite Grand, « J'envoie ». Caissière : « J'encaisse », « Partager à parts égales ».</td><td class='v'>6 est choisi ; « Chaque personne paiera entre 1 650 FCFA et 1 675 FCFA ; le dernier paie ce qui reste. »</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>« Valider », puis touchez 6 fois « Espèces ».</td><td class='v'>Lignes 1 650, 1 650, 1 675, 1 675, 1 675, 1 675 (total 10 000).</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>« Valider », réimprimez.</td><td class='v'>« Partagée en 6 parts égales ».</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> Avec un autre pas, chaque part (sauf la dernière) est un multiple du pas et deux parts diffèrent d'un pas au plus.</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme. (arrondi de 25 FCFA activé pour le test, puis retiré.)</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-32</span><span class='titre'>Dernière part mise sur ardoise par le manager</span><span class='f'>F2 · 18.0.1.0.12</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> Partager l'addition à parts égales</span><span><b>Rôle :</b> Caissière + Manager</span><span><b>Recette :</b> R106</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> Le mode « Ardoise client » est sur la caisse. Un client de test (ex. « Client ardoise test ») existe dans Contacts.<br><b>Données :</b> Table 3 (libérée par ST-26), 3 personnes, 100 000 FCFA : Espèces, Mobile Money, puis ardoise 33 334.</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Préparez la table 3 comme ST-26, partagez en 3, touchez « Espèces » puis « Mobile Money ».</td><td class='v'>« Part 3 sur 3 : 33 334 FCFA ». La caissière ne voit pas « Mettre sur ardoise ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>Touchez le nom en haut à droite : le manager tape son code (démo : 4001).</td><td class='v'>Fenêtre « Qui prend la main ? Tapez votre code ». Puis le bouton « Mettre sur ardoise » apparaît ; le bandeau reste « Part 3 sur 3 : 33 334 FCFA ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>Touchez « Client », choisissez le client, puis « Mettre sur ardoise ».</td><td class='v'>Le paiement est validé, retour au plan ; le « Bon d'ardoise » sort : « Montant dû 33 334 FCFA », « Je reconnais devoir la somme ci-dessus. »</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>4</td><td class='a'>touchez ≡ (en haut à droite) → « Commandes 1… » → tapez le code de la caissière si demandé → touchez le filtre « Toutes les commandes actives » → « Payé » → touchez la commande en haut de la liste → « Imprimer le ticket » (code du manager).</td><td class='v'>« Ardoise client 33 334 FCFA » et « Partagée en 3 parts égales ».</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> L'ardoise compte comme la dernière part ; la mention reste sur le ticket.</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme.</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<div class='bloc'>G. Non-régression</div>
+<div class='sc'>
+<div class='sc-tete'><span class='id'>ST-33</span><span class='titre'>Envoyer et encaisser une table simple</span><span class='f'>NR · 18.0.1.0.14</span></div>
+<div class='sc-meta'><span><b>Fonctionnalité :</b> Non-régression : envoyer et encaisser</span><span><b>Rôle :</b> Serveur 1 + Caissière</span><span><b>Recette :</b> —</span></div>
+<div class='sc-corps'><div class='pre'><b>Prérequis :</b> Toute table libre.<br><b>Données :</b> Table 4, 2 personnes : 2 Café expresso (1 000) = 2 000 FCFA, payés en espèces.</div>
+<table class='et'><tr><th>N°</th><th>Action</th><th>Vous devez voir</th><th>Vu</th></tr>
+<tr><td class='n'>1</td><td class='a'>Table 4, code du serveur, « 2 », 2 Café expresso, « J'envoie ».</td><td class='v'>« Envoyé : Café &amp; thé × 2. » ; un bon au Bar « Nouveau », « 2 Café expresso ».</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>2</td><td class='a'>Table 4, code de la caissière, « J'encaisse », « Espèces ».</td><td class='v'>Ligne Espèces 2 000 FCFA.</td><td class='c'><span class='case'></span></td></tr>
+<tr><td class='n'>3</td><td class='a'>« Valider ».</td><td class='v'>Retour au plan ; la table 4 est libre (grise).</td><td class='c'><span class='case'></span></td></tr>
+</table>
+<div class='attendu'><b>Résultat attendu :</b> Le service habituel marche comme avant.</div>
+<div class='verifie'>Vérifié par AITE avant livraison : Joué le 27/11/2026 sur une base de test : conforme.</div>
+<div class='resultat'><span><span class='case'></span> OK</span><span><span class='case'></span> KO</span><span><span class='case'></span> S.O.</span><span><span class='case'></span> Bloqué</span><span>Testeur :</span><span class='ligne'></span><span>Date :</span><span class='ligne' style='flex:0 0 26mm'></span></div>
+<div>Observations :</div><div class='obs'></div><div class='obs'></div>
+</div></div>
+<h2 class='saut'>Synthèse de la recette</h2><table class='syn'><tr><th>Code</th><th>Fonctionnalité</th><th>Scénarios</th><th>OK</th><th>KO</th><th>S.O.</th><th>Bloqué</th></tr>
+<tr><td class='c'><b>F1</b></td><td>« Addition » sur une table divisée<br><span style='font-size:8pt;color:#666'>aite_pos_restaurant 18.0.1.0.11</span></td><td>ST-24, ST-25</td><td></td><td></td><td></td><td></td></tr>
+<tr><td class='c'><b>F2</b></td><td>Partager l'addition à parts égales<br><span style='font-size:8pt;color:#666'>aite_pos_restaurant 18.0.1.0.12</span></td><td>ST-26, ST-27, ST-28, ST-29, ST-30, ST-31, ST-32</td><td></td><td></td><td></td><td></td></tr>
+<tr><td class='c'><b>F3</b></td><td>Bon de cuisine en plusieurs exemplaires, bons en français, alerte de panne<br><span style='font-size:8pt;color:#666'>aite_pos_restaurant 18.0.1.0.13</span></td><td>ST-10, ST-12, ST-13, ST-14</td><td></td><td></td><td></td><td></td></tr>
+<tr><td class='c'><b>F4</b></td><td>Notes de commande (6 corrections)<br><span style='font-size:8pt;color:#666'>aite_pos_restaurant 18.0.1.0.13</span></td><td>ST-16, ST-17, ST-18, ST-19, ST-20</td><td></td><td></td><td></td><td></td></tr>
+<tr><td class='c'><b>F5</b></td><td>Une imprimante par poste, imprimante « Autre », familles oubliées<br><span style='font-size:8pt;color:#666'>aite_pos_restaurant 18.0.1.0.14</span></td><td>ST-05, ST-06, ST-07, ST-08, ST-09, ST-11</td><td></td><td></td><td></td><td></td></tr>
+<tr><td class='c'><b>F6</b></td><td>Impression directe sur les Epson (http et https)<br><span style='font-size:8pt;color:#666'>aite_pos_restaurant 18.0.1.0.14</span></td><td>ST-15</td><td></td><td></td><td></td><td></td></tr>
+<tr><td class='c'><b>F7</b></td><td>Addition et ticket groupés par famille<br><span style='font-size:8pt;color:#666'>aite_pos_restaurant 18.0.1.0.14</span></td><td>ST-21, ST-22, ST-23</td><td></td><td></td><td></td><td></td></tr>
+<tr><td class='c'><b>F8</b></td><td>La carte appartient au client (mise à niveau sans écrasement)<br><span style='font-size:8pt;color:#666'>aite_resto_carte_messager 18.0.1.3.5</span></td><td>ST-01, ST-03, ST-04</td><td></td><td></td><td></td><td></td></tr>
+<tr><td class='c'><b>F9</b></td><td>Réglage « grouper par famille » posé une seule fois<br><span style='font-size:8pt;color:#666'>aite_resto_carte_messager 18.0.1.3.6</span></td><td>ST-02</td><td></td><td></td><td></td><td></td></tr>
+<tr><td class='c'><b>NR</b></td><td>Non-régression : envoyer et encaisser<br><span style='font-size:8pt;color:#666'>aite_pos_restaurant 18.0.1.0.14</span></td><td>ST-33</td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td><b>Total</b> (33 scénarios)</td><td></td><td></td><td></td><td></td><td></td></tr></table>
+<p style='margin-top:5mm'><span class='case'></span> CONFORME &nbsp;&nbsp; <span class='case'></span> NON CONFORME (au moins un KO : appeler AITE) &nbsp;&nbsp; <span class='case'></span> EN COURS</p>
+<table class='ident' style='margin-top:4mm'><tr><td class='l'>Intégrateur (nom, signature)</td><td style='height:14mm'></td></tr><tr><td class='l'>Gérant du restaurant (nom, signature)</td><td style='height:14mm'></td></tr><tr><td class='l'>Date (JJ/MM/AAAA)</td><td></td></tr></table>
+<p class='verifie' style='margin-top:4mm'>Tous les scénarios, sauf ST-15 (https), ont été joués le 27/11/2026 sur une base de test (carte Le Messager posée à neuf, imprimantes Epson simulées au niveau du réseau). Rien n'a été essayé sur une vraie imprimante Epson ni sur Odoo Enterprise.</p>
+</body></html>
