@@ -58,6 +58,23 @@
                          help="Coché : un produit dont vous suivez le stock (case « Suivre l'inventaire » de sa fiche, par exemple une bière) ne peut plus être ajouté à une table quand il n'en reste plus, en comptant ce qui est déjà parti sur les tables ouvertes ; il redevient vendable moins d'une minute après l'enregistrement d'une entrée de stock. Les produits sans suivi (plats, pizzas, café) se vendent toujours. Saisissez le stock de départ avant le premier service, sinon ces produits seront refusés.">
                     <field name="pos_aite_refus_epuise"/>
                 </setting>
+                <!-- 18.0.1.0.14 : l'addition et le ticket groupés par famille
+                     (demande du restaurant de Douala). Décoché d'office. -->
+                <setting id="aite_grouper_familles" string="Grouper les produits par famille sur l'addition et le ticket"
+                         invisible="not pos_aite_mode_restaurant"
+                         help="Coché : sur l'addition (bouton « Addition », y compris les additions d'une table divisée) et sur le ticket remis au client (et sa réimpression), les produits sont rangés sous le nom de leur famille (Petit déjeuner, Plats, Pizzas &amp; burgers, Afternoon tea, Bar…), dans l'ordre des familles de la caisse ; chaque famille finit par « Sous-total Plats : 21 000 FCFA ». Les produits sans famille sont sous « Autres » ; le pourboire et la remise globale viennent ensuite, sans rubrique. Le total, les taxes, les paiements et la note au client ne changent pas. Au paiement, le ticket final sort seul si « Impression automatique du reçu » est coché (avec une imprimante de tickets) ; sinon, réimprimez-le depuis Commandes. Décoché : le ticket habituel, dans l'ordre de la saisie. S'applique quand la caisse est rouverte.">
+                    <field name="pos_aite_grouper_familles"/>
+                </setting>
+            </xpath>
+            <!-- 18.0.1.0.14 : sous « Imprimantes de préparation », les familles
+                 de la carte qu'aucune imprimante ne prend (pas d'imprimante
+                 « Autre »). -->
+            <xpath expr="//field[@name='pos_printer_ids']/.." position="after">
+                <div class="alert alert-warning mt-2 mb-0 aite-familles-orphelines" role="alert"
+                     invisible="not pos_aite_familles_orphelines">
+                    <i class="fa fa-exclamation-triangle me-1" title="Familles qu'aucune imprimante ne prend"/>
+                    <field name="pos_aite_familles_orphelines" readonly="1"/>
+                </div>
             </xpath>
             <xpath expr="//field[@name='pos_basic_employee_ids']/.." position="attributes">
                 <attribute name="invisible">pos_aite_mode_restaurant</attribute>

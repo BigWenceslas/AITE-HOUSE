@@ -39,16 +39,105 @@
  * - les imprimantes en panne restent connues après l'envoi
  *   (`aiteBonsNonSortis`) : la notification « Envoyé » le dit ;
  * - « Message » (le compte de « J'envoie » et de « Envoyé : … ») devient
- *   « Note générale », le nom du bon. */
+ *   « Note générale », le nom du bon.
+ *
+ * Les familles de la carte (18.0.1.0.14) :
+ * - chaque plat va aux imprimantes dont une famille cochée est la sienne ou
+ *   une famille parente (règle d'Odoo, `parentPosCategIds` : cocher « Bar »
+ *   couvre les vins blancs) ;
+ * - l'imprimante « Autre » (« Prend tout ce qu'aucune autre imprimante ne
+ *   prend ») reçoit en plus tout plat qu'aucune autre imprimante ne prend,
+ *   sans famille compris (`imprimantesDuProduit`) ; le pourboire et les
+ *   remises n'y vont pas. Pour qu'Odoo n'écarte pas ces plats de l'envoi,
+ *   la caisse les compte tous comme « à préparer »
+ *   (`orderPreparationCategories`). Les annulations (même fonction) et la
+ *   note générale suivent la même règle. */
 import { patch } from "@web/core/utils/patch";
 import { renderToElement } from "@web/core/utils/render";
 import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 import { PosStore } from "@point_of_sale/app/store/pos_store";
 import "@aite_pos_restaurant/store/pos_store";
 import { MESSAGES, TEXTES, TITRES, nombre } from "@aite_pos_restaurant/utils/messages";
-import { bonVide, imprimantesDeLaNote, nombreDExemplaires } from "@aite_pos_restaurant/utils/bons";
+import {
+    adressesACertifier,
+    bonVide,
+    imprimantesDeLaNote,
+    nombreDExemplaires,
+} from "@aite_pos_restaurant/utils/bons";
+import { AUCUNE_FAMILLE, estHorsCuisine, imprimantesDuProduit } from "@aite_pos_restaurant/utils/familles";
+
+/** Les familles « à préparer » quand la caisse a une imprimante « Autre » :
+ * toutes (une imprimante prend tout ce que les autres ne prennent pas). */
+class ToutesLesFamilles extends Set {
+    has() {
+        return true;
+    }
+}
 
 patch(PosStore.prototype, {
+    async processServerData() {
+        await super.processServerData(...arguments);
+        // Une imprimante « Autre » sans famille cochée : la caisse imprime
+        // quand même (Odoo n'imprime que si une imprimante a des familles).
+        if (this.aiteImprimanteAutre) {
+            this.printers_category_ids_set.add(AUCUNE_FAMILLE);
+        }
+    },
+
+    /** L'imprimante « Autre » de la caisse (au plus une), en mode. */
+    get aiteImprimanteAutre() {
+        if (!this.aiteActif) {
+            return null;
+        }
+        return (this.unwatched?.printers || []).find((imprimante) => imprimante.config?.aite_prend_le_reste) || null;
+    },
+
+    /** Avec une imprimante « Autre », tout plat est à préparer : Odoo
+     * (`getOrderChanges`) écartait de l'envoi les plats dont aucune
+     * imprimante n'a la famille. */
+    get orderPreparationCategories() {
+        const familles = super.orderPreparationCategories;
+        return this.aiteImprimanteAutre ? new ToutesLesFamilles(familles) : familles;
+    },
+
+    /** Ne part jamais seul sur « Autre » : pourboire, remise globale,
+     * remise d'un programme de fidélité ou de promotion, ligne mère d'un
+     * menu (`estHorsCuisine`, relecture de 18.0.1.0.14). */
+    aiteHorsCuisine(produitId) {
+        const config = this.config;
+        const recompenses = (this.models["loyalty.reward"]?.getAll?.() || [])
+            .map((r) => r.discount_line_product_id?.id)
+            .filter(Boolean);
+        const produit = this.models["product.product"].get(produitId) || { id: produitId };
+        return estHorsCuisine(produit, {
+            pourboire: config?.tip_product_id?.id,
+            remise: config?.discount_product_id?.id,
+            recompenses,
+        });
+    },
+
+    /** Vrai si `imprimante` reçoit le produit `produitId` (voir l'en-tête). */
+    aitePrend(imprimante, produitId) {
+        const familles = this.models["product.product"].get(produitId)?.parentPosCategIds || [];
+        return imprimantesDuProduit(
+            this.unwatched.printers,
+            familles,
+            (i) => i.config.product_categories_ids || [],
+            (i) => Boolean(i.config.aite_prend_le_reste),
+            this.aiteHorsCuisine(produitId)
+        ).includes(imprimante);
+    },
+
+    /** Les changements d'un envoi que reçoit `imprimante`. */
+    aiteChangementsDeLImprimante(imprimante, orderChange) {
+        const prend = (ligne) => this.aitePrend(imprimante, ligne.product_id);
+        return {
+            new: (orderChange.new || []).filter(prend),
+            cancelled: (orderChange.cancelled || []).filter(prend),
+            noteUpdated: (orderChange.noteUpdated || []).filter(prend),
+        };
+    },
+
     /** Les bons d'un envoi, imprimante par imprimante (voir l'en-tête). Rend
      * vrai si au moins un bon est sorti. */
     async printChanges(order, orderChange) {
@@ -66,13 +155,15 @@ patch(PosStore.prototype, {
             (generale !== "" || Boolean(order.last_order_preparation_change?.generalNote));
         const pourLaNote = noteChangee ? this.aiteImprimantesDeLaNote(order, nouveau) : [];
         const enPanne = [];
+        const imprimantesEnPanne = [];
         this.aiteBonsNonSortis = enPanne;
         let imprime = false;
         for (const imprimante of this.unwatched.printers) {
-            const changes = this._getPrintingCategoriesChanges(
-                imprimante.config.product_categories_ids,
-                { ...orderChange, ...reelles, new: nouveau }
-            );
+            const changes = this.aiteChangementsDeLImprimante(imprimante, {
+                ...orderChange,
+                ...reelles,
+                new: nouveau,
+            });
             const sections = {
                 nouveau: changes.new,
                 annule: changes.cancelled,
@@ -107,6 +198,7 @@ patch(PosStore.prototype, {
                 }
                 if (!reponse?.successful) {
                     enPanne.push(imprimante.config.name);
+                    imprimantesEnPanne.push(imprimante);
                     break; // les autres exemplaires ne sortiraient pas mieux
                 }
                 imprime = true;
@@ -115,7 +207,10 @@ patch(PosStore.prototype, {
         if (enPanne.length) {
             this.dialog.add(AlertDialog, {
                 title: TITRES.bonNonImprime,
-                body: MESSAGES.bonNonImprime(enPanne),
+                body: MESSAGES.bonNonImprime(
+                    enPanne,
+                    adressesACertifier(window.location.protocol, Boolean(window.odoo?.use_lna), imprimantesEnPanne)
+                ),
             });
         }
         return imprime;
@@ -151,12 +246,30 @@ patch(PosStore.prototype, {
      * note générale s'y appelle « Note générale » (le nom du bon), pas
      * « Message ». */
     get categoryCount() {
-        const compte = super.categoryCount;
-        if (!this.aiteActif || !("generalNote" in this.getOrderChanges())) {
+        let compte = super.categoryCount;
+        if (!this.aiteActif) {
             return compte;
         }
-        const message = compte.at(-1);
-        return [...compte.slice(0, -1), { ...message, name: TEXTES.bonNoteGenerale }];
+        const changements = this.getOrderChanges();
+        if ("generalNote" in changements) {
+            const message = compte.at(-1);
+            compte = [...compte.slice(0, -1), { ...message, name: TEXTES.bonNoteGenerale }];
+        }
+        // Avec une imprimante « Autre », les plats sans famille partent aussi :
+        // « J'envoie » les compte (Odoo ne compte que les familles).
+        if (this.aiteImprimanteAutre) {
+            const sansFamille = Object.values(changements.orderlines || {})
+                .filter(
+                    (l) =>
+                        !this.aiteHorsCuisine(l.product_id) &&
+                        !this.models["product.product"].get(l.product_id)?.pos_categ_ids?.length
+                )
+                .reduce((somme, l) => somme + l.quantity, 0);
+            if (sansFamille) {
+                compte = [{ count: sansFamille, name: TEXTES.sansFamille }, ...compte];
+            }
+        }
+        return compte;
     },
 
     /** Les nouveaux plats dans l'ordre d'Odoo : les menus d'abord, puis les
@@ -183,11 +296,8 @@ patch(PosStore.prototype, {
             ...Object.values(order.last_order_preparation_change?.lines || {}).map((l) => l.product_id),
             ...nouveau.map((l) => l.product_id),
         ];
-        return imprimantesDeLaNote(
-            this.unwatched.printers,
-            produits,
-            (imprimante) => imprimante.config.product_categories_ids || [],
-            (id) => this.models["product.product"].get(id)?.parentPosCategIds || []
+        return imprimantesDeLaNote(this.unwatched.printers, produits, (imprimante, id) =>
+            this.aitePrend(imprimante, id)
         );
     },
 

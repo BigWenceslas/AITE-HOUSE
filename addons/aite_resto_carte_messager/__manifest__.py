@@ -60,7 +60,10 @@ Messager ») :
   de la caisse, renommé ou supprimé par le client ne revient pas (ce que la
   base a reçu est retenu dans le paramètre système
   aite_resto_carte_messager.elements_poses) ;
-* complète la salle et l'équipe de démonstration si elles manquent.
+* complète la salle et l'équipe de démonstration si elles manquent ;
+* coche une fois « Grouper les produits par famille sur l'addition et le
+  ticket » sur la caisse du restaurant (18.0.1.3.6 ; aite_pos_restaurant
+  18.0.1.0.14) : un client qui le décoche garde son choix.
 
 Une notification dit ce qui est en place et ce qui vient d'être fait, par
 exemple « Carte posée : 101 produits en 30 familles ; salle : 12 tables ;
@@ -68,7 +71,7 @@ exemple « Carte posée : 101 produits en 30 familles ; salle : 12 tables ;
 vous : une mise à niveau ne modifie aucun de vos produits… ». Le nom de la
 société n'est pas changé. Désinstaller le module ne retire pas la carte.
 """,
-    'version': '18.0.1.3.5',
+    'version': '18.0.1.3.6',
     'category': 'Sales/Point of Sale',
     'author': "AITE Consulting",
     'website': "https://aiteconsulting.com",

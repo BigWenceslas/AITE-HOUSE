@@ -654,6 +654,15 @@ if orphelins:
 # carte de démonstration.
 env['ir.config_parameter'].sudo().set_param('aite.carte_client', 'messager')
 
+# L'addition et le ticket groupés par famille (aite_pos_restaurant
+# 18.0.1.0.14, demande du client : « grouper les produits par famille ») :
+# coché UNE fois sur la caisse du restaurant ; un choix du client (décoché)
+# n'est jamais réécrit à la mise à niveau.
+if 'aite_grouper_familles' in caisse_pos._fields and 'reglage:grouper_familles' not in deja:
+    caisse_pos.aite_grouper_familles = True
+if 'aite_grouper_familles' in caisse_pos._fields:
+    recus.add('reglage:grouper_familles')
+
 # Le registre de ce que la base a reçu (lu à la prochaine mise à niveau).
 if deja | recus != set(json.loads(Parametres.get_param(REGISTRE) or '[]')):
     Parametres.set_param(REGISTRE, json.dumps(sorted(deja | recus), ensure_ascii=False))

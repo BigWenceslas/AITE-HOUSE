@@ -335,3 +335,36 @@ class TestCarteDuClient(TransactionCase):
         self.assertIn("ne modifie aucun de vos produits", message)
         for technique in ("seed", "OK", "créés :", "|", "attendus", "remis", "retiré"):
             self.assertNotIn(technique, message)
+
+    # ------------------------------------------------------------------
+    # L'addition groupée par famille (aite_pos_restaurant 18.0.1.0.14)
+    # ------------------------------------------------------------------
+
+    def _caisse(self):
+        return self.env['pos.config'].search([('aite_mode_restaurant', '=', True)], order='id', limit=1)
+
+    def test_addition_groupee_par_famille_cochee(self):
+        """La carte coche « Grouper les produits par famille sur l'addition
+        et le ticket » sur la caisse du restaurant, et le retient."""
+        self.assertTrue(self._caisse().aite_grouper_familles)
+        registre = json.loads(self.env['ir.config_parameter'].sudo().get_param(CLE_PARAMETRE))
+        self.assertIn('reglage:grouper_familles', registre)
+
+    def test_addition_groupee_choix_du_client_garde(self):
+        """Le client décoche le réglage : une mise à niveau ne le recoche pas."""
+        caisse = self._caisse()
+        caisse.aite_grouper_familles = False
+        self._mettre_a_niveau()
+        self.assertFalse(caisse.aite_grouper_familles)
+
+    def test_addition_groupee_base_posee_avant(self):
+        """Une base posée avant 18.0.1.3.6 (le registre ne connaît pas le
+        réglage) : la mise à niveau le coche une fois."""
+        caisse = self._caisse()
+        caisse.aite_grouper_familles = False
+        parametre = self.env['ir.config_parameter'].sudo()
+        registre = [e for e in json.loads(parametre.get_param(CLE_PARAMETRE))
+                    if e != 'reglage:grouper_familles']
+        parametre.set_param(CLE_PARAMETRE, json.dumps(registre))
+        self._mettre_a_niveau()
+        self.assertTrue(caisse.aite_grouper_familles)

@@ -29,6 +29,9 @@ import { caisseEnMode } from "@aite_pos_restaurant/models/pos_order_line";
 import { floatIsZero } from "@web/core/utils/numbers";
 import { TEXTES } from "@aite_pos_restaurant/utils/messages";
 import { montantDUnePart } from "@aite_pos_restaurant/utils/parts_egales";
+import { grouperParFamille } from "@aite_pos_restaurant/utils/familles";
+import { formatCurrency } from "@point_of_sale/app/models/utils/currency";
+import { omit } from "@web/core/utils/objects";
 
 patch(PosOrder.prototype, {
     setup(vals) {
@@ -169,8 +172,62 @@ patch(PosOrder.prototype, {
             // La note générale est une consigne pour la cuisine : elle ne va
             // ni sur l'addition ni sur le ticket du client (18.0.1.0.13).
             donnees.generalNote = "";
+            if (this.config.aite_grouper_familles) {
+                donnees.aiteFamilles = this.aiteFamillesDuTicket(donnees.orderlines);
+            }
         }
         return donnees;
+    },
+
+    /** L'addition et le ticket groupés par famille (réglage « Grouper les
+     * produits par famille sur l'addition et le ticket », 18.0.1.0.14) :
+     * [{ titre, lignes, libelle, sousTotal }], les lignes au format du ticket
+     * d'Odoo (`affichees`, dans l'ordre de `getSortedOrderlines`).
+     *
+     * La famille d'une ligne est la famille de niveau 1 (la racine) de la
+     * première famille de caisse du produit ; les familles suivent l'ordre
+     * de la caisse (séquence). Un élément de menu reste avec son menu. Le
+     * sous-total est la somme des montants imprimés des lignes (TTC si la
+     * caisse affiche les prix TTC, comme les lignes). Les produits sans
+     * famille sont sous « Autres » ; le pourboire, la remise globale et les
+     * récompenses viennent ensuite, sans titre ni sous-total (ce ne sont pas
+     * des produits de la carte) : la somme des sous-totaux et de ces lignes
+     * reste égale au total. */
+    aiteFamillesDuTicket(affichees) {
+        const lignes = this.getSortedOrderlines();
+        if (!Array.isArray(affichees) || affichees.length !== lignes.length) {
+            affichees = lignes.map((l) => omit(l.getDisplayData(), "internalNote"));
+        }
+        const affichage = new Map(lignes.map((ligne, i) => [ligne, affichees[i]]));
+        const horsFamille = [this.config.tip_product_id?.id, this.config.discount_product_id?.id].filter(
+            Boolean
+        );
+        const groupes = grouperParFamille(lignes, {
+            familleDe: (ligne) => {
+                let famille = ligne.get_product()?.pos_categ_ids?.[0];
+                if (!famille) {
+                    return null;
+                }
+                while (famille.parent_id) {
+                    famille = famille.parent_id;
+                }
+                return { cle: famille.id, titre: famille.name, rang: famille.sequence || 0 };
+            },
+            parentDe: (ligne) => ligne.combo_parent_id || null,
+            horsFamille: (ligne) =>
+                horsFamille.includes(ligne.get_product()?.id) || Boolean(ligne.is_reward_line),
+            montant: (ligne) => ligne.get_display_price(),
+            titreAutres: TEXTES.familleAutres,
+        });
+        // Le dernier groupe (pourboire, remise globale, récompenses) n'a ni
+        // titre ni sous-total : il vient après les familles, avant le total.
+        return groupes.map((groupe) => ({
+            titre: groupe.titre,
+            horsFamilles: Boolean(groupe.horsFamilles),
+            lignes: groupe.lignes.map((ligne) => affichage.get(ligne)),
+            libelle: groupe.horsFamilles ? "" : TEXTES.sousTotal(groupe.titre),
+            sousTotal: groupe.horsFamilles ? "" : formatCurrency(groupe.sousTotal, this.currency),
+        }));
     },
 
     /** L'écran tourné vers le client ne montre pas non plus la note générale

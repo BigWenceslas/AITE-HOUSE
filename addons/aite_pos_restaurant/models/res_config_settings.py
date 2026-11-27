@@ -18,6 +18,12 @@ class ResConfigSettings(models.TransientModel):
         related='pos_config_id.aite_delai_alerte', readonly=False)
     pos_aite_refus_epuise = fields.Boolean(
         related='pos_config_id.aite_refus_epuise', readonly=False)
+    # 18.0.1.0.14 : l'addition groupée par famille ; les familles qu'aucune
+    # imprimante de préparation ne prend.
+    pos_aite_grouper_familles = fields.Boolean(
+        related='pos_config_id.aite_grouper_familles', readonly=False)
+    pos_aite_familles_orphelines = fields.Text(
+        related='pos_config_id.aite_familles_orphelines')
     # La phrase « ce qui va se passer » du délai : le nombre suit le réglage,
     # à l'écran, pendant que le manager le tape (partie 4.3).
     pos_aite_phrase_delai = fields.Char(

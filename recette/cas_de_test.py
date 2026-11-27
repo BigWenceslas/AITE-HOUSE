@@ -1568,4 +1568,52 @@ CAS = [
      "table). Étape 3 : 1 bon au bar seulement. Étape 4 : l'addition porte "
      "« Joyeux anniversaire », pas « Client pressé » ; l'écran tourné vers "
      "le client ne montre pas non plus la note générale."),
+    ("R110", "R", 1, "Caisse au service à table contrôlé, carte Le Messager ; cinq "
+     "imprimantes Epson : Chaud (Plats, Petit déjeuner, Burgers, Pastas), Pizza "
+     "(Pizzas), Froid (Crêpes & glaces, Afternoon tea), Bar (Bar), Autre",
+     "18.0.1.0.14 — une imprimante par poste, l'imprimante « Autre »",
+     "1. Ouvrir l'imprimante « Autre », case « Prend tout ce qu'aucune autre "
+     "imprimante ne prend » décochée : lire le cadre orange.\n2. Cocher la case, "
+     "enregistrer ; cocher la même case sur « Bar ».\n3. Décocher sur « Bar ». "
+     "Fermer puis rouvrir la caisse.\n4. Table 3 : un poulet DG, une pizza, un "
+     "verre de vin blanc, une crêpe, un produit sans famille ; « J'envoie ».\n5. "
+     "Annuler le produit sans famille (code d'un chef de salle, motif).",
+     "Étape 1 : le cadre liste les familles qu'aucune imprimante ne prend "
+     "(par exemple Pizzas & burgers / Burgers si on l'a décochée) et les "
+     "produits sans famille. Étape 2 : la phrase « ce qui va se passer » ; la "
+     "seconde « Autre » est refusée par un message en français qui nomme les "
+     "deux imprimantes. Étape 4 : sans aucune fenêtre, le poulet sort sur "
+     "Chaud, la pizza sur Pizza, le vin blanc sur Bar, la crêpe sur Froid, le "
+     "produit sans famille sur Autre seulement. Étape 5 : le bon « Annulé » "
+     "sort sur Autre seulement."),
+    ("R111", "R", 1, "Caisse au service à table contrôlé, carte Le Messager ; "
+     "réglage « Grouper les produits par famille sur l'addition et le ticket » "
+     "coché ; table 6 : 2 Poulet DG, 1 pizza, 1 verre de vin, 1 produit sans "
+     "famille, envoyés",
+     "18.0.1.0.14 — l'addition groupée par famille",
+     "1. Table 6 : « Addition ».\n2. Diviser l'addition (le vin à part), puis "
+     "« Addition ».\n3. Encaisser la part, puis l'addition d'origine.\n4. "
+     "Décocher le réglage, rouvrir la caisse, « Addition » sur une autre table.",
+     "Étape 1 : titres Plats, Pizzas & burgers, Bar, Autres, dans l'ordre de "
+     "la caisse, chacun suivi de « Sous-total <famille> : … FCFA » ; le total "
+     "est la somme des sous-totaux, taxes et total inchangés. Étape 2 : chaque "
+     "addition de la table divisée est groupée. Étape 3 : les tickets finaux "
+     "sont groupés, paiements et monnaie inchangés. Étape 4 : le ticket "
+     "habituel, sans titre ni sous-total."),
+    ("R112", "R", 2, "Comme R110, cinq imprimantes, sans imprimante « Autre » au "
+     "départ ; une seconde caisse « Bar piscine » hors service à table contrôlé, "
+     "avec les imprimantes Bar et Autre ; pourboire activé",
+     "18.0.1.0.14 — relectures : le cadre suit la saisie, « Autre » hors mode, "
+     "pourboire",
+     "1. Ouvrir l'imprimante « Chaud » ; cocher une famille orpheline sans "
+     "enregistrer.\n2. Cocher la case « Autre » sur l'imprimante « Autre » de "
+     "« Bar piscine » ; ouvrir les réglages de « Bar piscine ».\n3. Restaurant : "
+     "table 4, un poulet DG et un produit sans famille, pourboire 500, "
+     "« J'envoie », puis « Addition ».",
+     "Étape 1 : le cadre orange reste et ne cite plus la famille cochée, avant "
+     "même d'enregistrer. Étape 2 : sur « Bar piscine », le cadre reste et dit "
+     "que l'imprimante « Autre » n'agit qu'au service à table contrôlé. Étape 3 : "
+     "le pourboire ne sort sur aucun bon ; l'addition montre PLATS, AUTRES (le "
+     "produit sans famille, avec son sous-total), puis le pourboire seul, sans "
+     "rubrique ni sous-total ; le total est inchangé."),
 ]

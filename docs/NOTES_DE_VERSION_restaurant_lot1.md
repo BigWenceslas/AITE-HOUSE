@@ -370,6 +370,123 @@ inchangée (aucune vue ni donnée) : un **redémarrage** suffit.
     enregistrement, note puis +1, « Ignorer » en trois cas, note au client,
     note générale seule, libellé, note retirée, addition et écran du client,
     bon en français), `TestImpression` (réglage) ; recette R107 à R109.
+- **`aite_pos_restaurant` 18.0.1.0.14 — les familles de la carte : une
+  imprimante par poste et l'addition groupée par famille** (demandes du
+  restaurant de Douala : « quand le serveur touche Envoyer, ça imprime
+  directement sur chaque imprimante selon son type : chaud, froid, bar,
+  pizza et autre » et « au niveau de la facture, grouper les produits par
+  famille de produits »). `aite_resto_carte_messager` 18.0.1.3.6.
+  - **Le routage par famille (déjà dans Odoo, vérifié).** Chaque plat va
+    aux imprimantes dont une famille cochée est la sienne ou une famille
+    parente : cocher « Bar » couvre Vins > Vins blancs (code d'Odoo :
+    `ProductProduct.parentPosCategIds`, prouvé par `AiteFamilleParenteTour`,
+    vert avant comme après).
+  - **L'imprimante « Autre » (gérant).** Nouvelle case sur l'imprimante
+    de préparation : **« Prend tout ce qu'aucune autre imprimante ne
+    prend »**, avec sa phrase « ce qui va se passer ». Un plat dont aucune
+    autre imprimante de la caisse ne prend la famille, ou sans famille,
+    part sur cette imprimante (en plus des familles qui y sont cochées) :
+    il n'est jamais perdu. Les annulations et la note générale suivent la
+    même règle. **Au plus une imprimante « Autre » par caisse** : une
+    seconde est refusée (« La caisse « Restaurant » ne peut avoir qu'une
+    seule imprimante « Autre » … »). Les N exemplaires et l'alerte unique
+    de panne (18.0.1.0.13) s'appliquent aussi à elle. Le pourboire et la
+    remise globale ne partent jamais en préparation. Sur « J'envoie », les
+    plats sans famille sont comptés sous « Sans famille ».
+  - **Les familles orphelines.** Tant que la caisse n'a pas d'imprimante
+    « Autre », le formulaire de chaque imprimante et les réglages de la
+    caisse (sous « Imprimantes de préparation ») affichent un cadre orange :
+    « Ces familles de la carte ne sont prises par aucune imprimante :
+    Desserts, Pizzas & burgers / Pastas. 2 produits sans famille (…). Leurs
+    plats ne sortiront sur aucun bon de préparation… ». Une famille sans
+    produit en vente n'est jamais signalée ; une famille dont aucune
+    sous-famille n'est prise est nommée au plus haut niveau.
+  - **Envoi direct aux Epson en Wi-Fi.** `aite_pos_restaurant` dépend
+    maintenant de `pos_epson_printer` (module Community d'Odoo, installé
+    d'office avec le Point de Vente, mais rien ne garantissait sa présence) :
+    type « Utiliser une imprimante Epson » et adresse IP sur l'imprimante.
+    La dépendance est portée par la caisse du restaurant (et non par le
+    chapeau `aite_house_restaurant`) : c'est elle qui imprime les bons et
+    ses tests utilisent des imprimantes Epson. « J'envoie » envoie le bon à
+    l'imprimante par une requête ePOS directe depuis la tablette, **sans
+    fenêtre ni aperçu** (`AiteEpsonDirectTour`). L'adresse utilisée est
+    `<protocole de la page>//<IP>/cgi-bin/epos/service.cgi` : si Odoo est
+    servi en **https**, activer le SSL/ePOS sur l'imprimante et accepter
+    une fois son certificat sur chaque tablette (https://<IP>) — voir le
+    guide, §2.4. Une imprimante restée au type « IoT Box » sans boîtier ne
+    reçoit rien : alerte « Bon non imprimé ».
+  - **L'addition groupée (réglage de la caisse).** « Grouper les produits
+    par famille sur l'addition et le ticket » (bloc Restaurant des
+    réglages, sous les réglages du mode ; décoché d'office, coché par la
+    graine du restaurant et une fois par la carte Le Messager — un client
+    qui le décoche garde son choix, registre `elements_poses`). Coché :
+    l'addition (« Addition », y compris la fenêtre des additions d'une
+    table divisée), le ticket final et sa réimpression rangent les lignes
+    sous leur famille de niveau 1 (la racine de la première famille de
+    caisse du produit), dans l'ordre de la caisse (séquence), chaque
+    famille suivie de « Sous-total Plats : 14 000 FCFA » (somme des
+    montants imprimés des lignes, donc TTC comme elles). Les produits sans
+    famille sont sous **« Autres »**, avec leur sous-total ; le pourboire,
+    la remise globale et les récompenses viennent ensuite, **sans rubrique
+    ni sous-total**, juste avant le total : ce ne sont pas des produits de
+    la carte (un « Sous-total Autres : -150 FCFA » ne voulait rien dire), et
+    la somme des sous-totaux et de ces lignes reste égale au total. À
+    séquence égale, les familles suivent leur nom, comme dans Odoo. Une remise sur une
+    ligne reste dans la ligne ; un produit rendu (ligne négative) reste dans
+    sa famille et diminue son sous-total ; un élément de menu reste avec son
+    menu. Le total, les taxes, les paiements, « Partagée en N parts
+    égales » et la note au client sont inchangés. Décoché : le ticket
+    d'Odoo, inchangé.
+  - **Corrections après relecture (même version).**
+    - Le cadre orange des familles orphelines suit la saisie sur le
+      formulaire de l'imprimante : il ne disparaît plus dès qu'on coche une
+      famille avant d'enregistrer (calcul avec les valeurs du formulaire).
+    - L'imprimante « Autre » n'agit qu'au **service à table contrôlé** (hors
+      de ce mode, la caisse garde le routage d'Odoo). Sur une autre caisse,
+      le cadre orange reste affiché malgré l'« Autre », et le dit ; la phrase
+      de la case le précise.
+    - Une caisse aux familles restreintes (« Restreindre les catégories ») ne
+      signale que les familles qu'elle vend.
+    - Ne partent jamais seules sur « Autre » : le pourboire, la remise
+      globale, la remise d'un programme de fidélité ou de promotion
+      (pos_loyalty), et la ligne mère d'un menu (elle ne sort que là où sa
+      famille est cochée, comme dans Odoo ; ses éléments partent chacun sur
+      leur poste). Un produit offert part en préparation.
+    - Odoo servi en https : l'alerte « Bon non imprimé » d'une Epson ajoute
+      « ouvrez une fois https://<IP> dans le navigateur et acceptez le
+      certificat de l'imprimante ».
+    - La phrase du réglage d'addition dit que le ticket final ne sort au
+      paiement que si « Impression automatique du reçu » est coché (avec une
+      imprimante de tickets) — l'écran « Paiement réussi » étant sauté au
+      service à table contrôlé —, sinon il se réimprime depuis Commandes. La
+      carte ne coche pas ce réglage : elle ne pose pas d'imprimante de tickets,
+      et sans elle chaque paiement ouvrirait la fenêtre d'impression du
+      navigateur. À régler avec le client quand l'imprimante de caisse est là.
+  - **Non fait (non demandé) :** la facture comptable (`account.move`
+    imprimée depuis la caisse) n'est pas groupée ; c'est possible dans un
+    lot suivant (rapport de facture hérité, sections par famille).
+  - **Limites.** Rien n'a été essayé sur une vraie imprimante ni sur une
+    vraie tablette en https (requêtes ePOS interceptées dans les tests). Le
+    regroupement du ticket ne s'applique qu'au service à table contrôlé. Sur
+    l'addition, un produit est rangé sous sa famille de niveau 1 (une crêpe
+    de « Pizzas & burgers » y reste, même si elle part sur l'imprimante
+    Froid). Le paramètre `point_of_sale.use_lna` (envoi en http aux
+    imprimantes depuis une page https) n'est pas utilisé. Avec une
+    imprimante « Autre », tout plat compte comme « à préparer » pour Odoo ;
+    un pourboire saisi avant « J'envoie » est marqué envoyé, sans être
+    imprimé.
+  - Tests : `TestToursFamilles` (famille parente, imprimante « Autre »,
+    Epson direct), `TestToursAdditionFamilles` (addition, ticket final et
+    réimpression ; table divisée ; réglage décoché), `TestFamilles` (case,
+    phrase, une seule « Autre », familles orphelines, dépendance Epson,
+    réglage ; saisie en cours, caisse hors mode, familles restreintes,
+    phrase du ticket final), `TestToursFamillesRelecture` (« Autre » seule
+    sans famille, ordre des familles, règle « hors cuisine », conseil du
+    certificat), `TestToursAdditionFamillesRelecture` (pourboire ni sur
+    « Autre » ni dans « Autres ») ; carte :
+    `TestCarteDuClient.test_addition_groupee_*` ; recette R110 à R112.
+    `AiteEpsonDirectTour` et `AiteFamilleParenteTour` sont des
+    vérifications de non-régression (le code d'Odoo le faisait déjà).
 
 ### Corrections après livraison
 

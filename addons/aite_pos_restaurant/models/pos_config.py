@@ -67,6 +67,25 @@ AIDE_REFUS_EPUISE = (
 )
 
 
+# 18.0.1.0.14 : l'addition et le ticket groupés par famille (demande du
+# restaurant de Douala : « au niveau de la facture, grouper les produits par
+# famille de produits »). Décoché d'office ; la graine du restaurant et la
+# carte Le Messager le cochent.
+AIDE_GROUPER_FAMILLES = (
+    "Coché : sur l'addition (bouton « Addition », y compris les additions d'une "
+    "table divisée) et sur le ticket remis au client (et sa réimpression), les "
+    "produits sont rangés sous le nom de leur famille (Petit déjeuner, Plats, "
+    "Pizzas & burgers, Afternoon tea, Bar…), dans l'ordre des familles de la "
+    "caisse ; chaque famille finit par « Sous-total Plats : 21 000 FCFA ». Les "
+    "produits sans famille sont sous « Autres » ; le pourboire et la remise "
+    "globale viennent ensuite, sans rubrique. Le total, les taxes, les paiements et la note au client ne "
+    "changent pas. Au paiement, le ticket final sort seul si « Impression "
+    "automatique du reçu » est coché (avec une imprimante de tickets) ; sinon, "
+    "réimprimez-le depuis Commandes. Décoché : le ticket habituel, dans l'ordre "
+    "de la saisie. S'applique quand la caisse est rouverte."
+)
+
+
 def phrase_delai(delai):
     """La phrase « ce qui va se passer » du délai, avec le nombre réglé
     (« plus de 1 minute », « plus de 90 minutes »)."""
@@ -103,6 +122,159 @@ class PosConfig(models.Model):
     aite_refus_epuise = fields.Boolean(
         string="Refuser la vente des produits épuisés", default=True,
         help=AIDE_REFUS_EPUISE)
+
+    aite_grouper_familles = fields.Boolean(
+        string="Grouper les produits par famille sur l'addition et le ticket",
+        default=False, help=AIDE_GROUPER_FAMILLES)
+    # Les familles de la carte qu'aucune imprimante de préparation ne prend
+    # (18.0.1.0.14) : affichées dans les réglages et sur chaque imprimante.
+    aite_familles_orphelines = fields.Text(
+        string="Familles qu'aucune imprimante ne prend",
+        compute='_compute_aite_familles_orphelines')
+
+    @api.depends('printer_ids', 'printer_ids.product_categories_ids',
+                 'printer_ids.aite_prend_le_reste', 'limit_categories',
+                 'iface_available_categ_ids', 'tip_product_id', 'aite_mode_restaurant',
+                 'module_pos_restaurant', 'module_pos_hr')
+    def _compute_aite_familles_orphelines(self):
+        for caisse in self:
+            caisse.aite_familles_orphelines = caisse._aite_texte_orphelines(caisse.printer_ids)
+
+    def _aite_texte_orphelines(self, imprimantes):
+        """L'avertissement des familles orphelines de la caisse, avec les
+        imprimantes ``imprimantes`` (celles de la caisse, ou celles du
+        formulaire d'une imprimante en cours de saisie, relecture de
+        18.0.1.0.14). L'imprimante « Autre » ne couvre tout qu'au service à
+        table contrôlé ; ailleurs la caisse garde le routage d'Odoo et
+        l'avertissement le dit. Une caisse aux familles restreintes ne
+        signale que ce qu'elle vend."""
+        self.ensure_one()
+        if not imprimantes:
+            return False
+        autres = imprimantes.filtered('aite_prend_le_reste')
+        actif = self._aite_actif()
+        if autres and actif:
+            return False
+        Famille = self.env['pos.category'].sudo()
+        familles = {f.id: (f.display_name, f.parent_id.id, f.sequence) for f in Famille.search([])}
+        domaine = [('available_in_pos', '=', True), ('sale_ok', '=', True)]
+        restreinte = self.limit_categories and self.iface_available_categ_ids
+        vendues = set(self.sudo()._get_available_categories().ids) if restreinte else None
+        if restreinte:
+            domaine.append(('pos_categ_ids', 'in', list(vendues)))
+        produits = self.env['product.template'].sudo().search(domaine)
+        hors_cuisine = self.tip_product_id.product_tmpl_id
+        if 'discount_product_id' in self._fields:
+            hors_cuisine |= self.discount_product_id.product_tmpl_id
+        produits -= hors_cuisine
+        avec_produits = set(produits.pos_categ_ids.ids)
+        if vendues is not None:
+            avec_produits &= vendues
+        prises = set(imprimantes.product_categories_ids._origin.ids)
+        orphelines = self._aite_familles_orphelines(familles, prises, avec_produits)
+        sans_famille = produits.filtered(lambda p: not p.pos_categ_ids)
+        return self._aite_phrase_orphelines(
+            [familles[i][0] for i in orphelines], sans_famille.mapped('name'),
+            autres_sans_effet=autres.mapped('name') if autres else None)
+
+    @staticmethod
+    def _aite_familles_orphelines(familles, prises, avec_produits):
+        """Les familles qu'aucune imprimante ne prend, au plus haut niveau
+        possible (« Desserts » plutôt que chacune de ses sous-familles).
+        ``familles`` : {id: (nom complet, id du parent ou False, séquence)} ;
+        ``prises`` : les familles cochées sur les imprimantes ; une famille
+        prise couvre ses sous-familles (règle d'Odoo, parentPosCategIds) ;
+        ``avec_produits`` : les familles qui portent directement un produit
+        en vente. Une famille sans produit n'est jamais signalée. Rend les
+        identifiants, dans l'ordre de la carte."""
+        enfants = {}
+        for ident, (_nom, parent, _seq) in familles.items():
+            enfants.setdefault(parent or False, []).append(ident)
+
+        def couverte(ident):
+            vus = set()
+            while ident and ident not in vus:
+                if ident in prises:
+                    return True
+                vus.add(ident)
+                ident = familles.get(ident, (None, False, 0))[1]
+            return False
+
+        def descendants(ident):
+            pile, tous = list(enfants.get(ident, [])), []
+            while pile:
+                courant = pile.pop()
+                tous.append(courant)
+                pile.extend(enfants.get(courant, []))
+            return tous
+
+        def a_des_produits(ident):
+            return ident in avec_produits or any(d in avec_produits for d in descendants(ident))
+
+        def entierement_orpheline(ident):
+            return not couverte(ident) and not any(d in prises for d in descendants(ident))
+
+        resultat = []
+        for ident, (_nom, parent, _seq) in familles.items():
+            if couverte(ident) or not a_des_produits(ident):
+                continue
+            if entierement_orpheline(ident):
+                if not (parent and parent in familles and entierement_orpheline(parent)):
+                    resultat.append(ident)
+            elif ident in avec_produits:
+                # En partie prise (une sous-famille est cochée) : ses produits
+                # rangés directement à ce niveau ne sortent nulle part.
+                resultat.append(ident)
+
+        def chemin(ident):
+            cles = []
+            while ident and ident in familles:
+                cles.insert(0, (familles[ident][2], familles[ident][0]))
+                ident = familles[ident][1]
+            return cles
+
+        return sorted(resultat, key=chemin)
+
+    @staticmethod
+    def _aite_phrase_orphelines(noms, sans_famille, autres_sans_effet=None):
+        """L'avertissement des familles orphelines (False s'il n'y en a pas).
+        ``autres_sans_effet`` : les imprimantes « Autre » d'une caisse qui
+        n'est pas au service à table contrôlé, où la case n'agit pas."""
+        if not noms and not sans_famille:
+            return False
+        morceaux = []
+        if noms:
+            morceaux.append("Ces familles de la carte ne sont prises par aucune imprimante : "
+                            + ", ".join(noms) + ".")
+        if sans_famille:
+            exemples = ", ".join(sans_famille[:5]) + (", …" if len(sans_famille) > 5 else "")
+            morceaux.append("%d produit%s sans famille (%s)." % (
+                len(sans_famille), "s" if len(sans_famille) > 1 else "", exemples))
+        morceaux.append("Leurs plats ne sortiront sur aucun bon de préparation.")
+        if autres_sans_effet:
+            morceaux.append(
+                "L'imprimante « Autre » (%s) n'agit qu'au service à table contrôlé : sur "
+                "cette caisse, elle ne reçoit que les familles cochées sur elle. Cochez ces "
+                "familles sur une imprimante." % ", ".join(autres_sans_effet))
+        else:
+            morceaux.append("Cochez ces familles sur une imprimante, ou cochez « Prend tout "
+                            "ce qu'aucune autre imprimante ne prend » sur votre imprimante "
+                            "« Autre ».")
+        return " ".join(morceaux)
+
+    @api.constrains('printer_ids')
+    def _aite_verifier_une_seule_autre(self):
+        """Au plus une imprimante « Autre » par caisse : avec deux, on ne
+        saurait pas laquelle reçoit les plats restants."""
+        for caisse in self:
+            autres = caisse.printer_ids.filtered('aite_prend_le_reste')
+            if len(autres) > 1:
+                raise ValidationError(_(
+                    "La caisse « %(caisse)s » ne peut avoir qu'une seule imprimante « Autre » "
+                    "(case « Prend tout ce qu'aucune autre imprimante ne prend ») ; elle en a "
+                    "%(nombre)d : %(noms)s. Décochez la case sur l'une d'elles, ou retirez-la "
+                    "de la caisse.",
+                    caisse=caisse.name, nombre=len(autres), noms=", ".join(autres.mapped('name'))))
 
     def _aite_actif(self):
         """Vrai si la caisse est au service à table contrôlé (même règle que

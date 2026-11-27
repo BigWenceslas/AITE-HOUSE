@@ -1282,3 +1282,192 @@ class TestToursNotes(AiteToursBonsCommon):
         self._ouvrir_la_caisse()
         self.start_pos_tour('AiteBonEnFrancaisTour', login='pos_user')
         self.assertEqual(self._poulets(self._table(5)), [(1.0, 'bien cuit')])
+
+
+class AiteToursFamillesCommon(AiteToursModeCommon):
+    """Les familles de la carte (18.0.1.0.14) : « ça imprime directement sur
+    chaque imprimante selon son type : chaud, froid, bar, pizza et autre » et
+    « au niveau de la facture, grouper les produits par famille ».
+
+    La carte (sans taxe) : Plats > Grillades (Poulet braisé 7 000) ;
+    Pizzas & burgers > Pizzas (Pizza Marguerite 5 000), Burgers (Burger
+    maison 4 000) ; Desserts (Glace vanille 1 500) ; Bar > Vins > Vins blancs
+    (Vin blanc au verre 3 000) ; Pain maison (500, sans famille). Trois
+    imprimantes Epson, simulées par les tours (familles_tour.js) : Chaud
+    (Plats, Burgers), Pizza (Pizzas), Bar (Bar, la famille de niveau 1
+    seulement). Personne ne prend les desserts ni le pain."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.env['res.lang']._activate_lang('fr_FR')
+        cls.pos_user.lang = 'fr_FR'
+        Famille = cls.env['pos.category']
+        cls.f_plats = Famille.create({'name': "Plats", 'sequence': 10})
+        grillades = Famille.create({'name': "Grillades", 'parent_id': cls.f_plats.id})
+        cls.f_pizzas_burgers = Famille.create({'name': "Pizzas & burgers", 'sequence': 11})
+        pizzas = Famille.create({'name': "Pizzas", 'parent_id': cls.f_pizzas_burgers.id, 'sequence': 1})
+        burgers = Famille.create({'name': "Burgers", 'parent_id': cls.f_pizzas_burgers.id, 'sequence': 2})
+        cls.f_desserts = Famille.create({'name': "Desserts", 'sequence': 12})
+        cls.f_bar = Famille.create({'name': "Bar", 'sequence': 13})
+        vins = Famille.create({'name': "Vins", 'parent_id': cls.f_bar.id})
+        vins_blancs = Famille.create({'name': "Vins blancs", 'parent_id': vins.id})
+        Produit = cls.env['product.product']
+        for nom, prix, famille in (("Poulet braisé", 7000, grillades), ("Pizza Marguerite", 5000, pizzas),
+                                   ("Burger maison", 4000, burgers), ("Glace vanille", 1500, cls.f_desserts),
+                                   ("Vin blanc au verre", 3000, vins_blancs), ("Pain maison", 500, None)):
+            Produit.create({
+                'name': nom, 'list_price': prix, 'available_in_pos': True, 'taxes_id': [(5, 0, 0)],
+                'pos_categ_ids': [(6, 0, famille.ids if famille else [])]})
+        Imprimante = cls.env['pos.printer']
+        cls.chaud = Imprimante.create({
+            'name': "Chaud", 'printer_type': 'epson_epos', 'epson_printer_ip': '127.0.0.1',
+            'product_categories_ids': [(6, 0, (cls.f_plats | burgers).ids)]})
+        cls.pizza = Imprimante.create({
+            'name': "Pizza", 'printer_type': 'epson_epos', 'epson_printer_ip': '127.0.0.2',
+            'product_categories_ids': [(6, 0, pizzas.ids)]})
+        cls.bar = Imprimante.create({
+            'name': "Bar", 'printer_type': 'epson_epos', 'epson_printer_ip': '127.0.0.3',
+            'product_categories_ids': [(6, 0, cls.f_bar.ids)]})
+        cls.pos_config.write({
+            'is_order_printer': True,
+            'printer_ids': [(6, 0, (cls.chaud | cls.pizza | cls.bar).ids)],
+        })
+
+    def _avec_autre(self):
+        """L'imprimante « Autre » : « Prend tout ce qu'aucune autre imprimante
+        ne prend », sans famille cochée, 2 exemplaires."""
+        self.autre = self.env['pos.printer'].create({
+            'name': "Autre", 'printer_type': 'epson_epos', 'epson_printer_ip': '127.0.0.4',
+            'aite_prend_le_reste': True, 'aite_exemplaires': 2})
+        self.pos_config.printer_ids = [(4, self.autre.id)]
+        return self.autre
+
+    def _table(self, numero):
+        return self.env['pos.order'].search([
+            ('config_id', '=', self.pos_config.id),
+            ('table_id.table_number', '=', numero)], order='id desc', limit=1)
+
+
+@tagged('post_install', '-at_install', 'aite_pos_restaurant')
+class TestToursFamilles(AiteToursFamillesCommon):
+    """Les bons de préparation, famille par famille."""
+
+    def test_famille_parente(self):
+        """Cocher « Bar » (niveau 1) couvre Vins blancs (niveau 3) ; « Plats »
+        couvre Grillades. Vérification du code d'Odoo (parentPosCategIds)."""
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteFamilleParenteTour', login='pos_user')
+
+    def test_imprimante_autre(self):
+        """Le dessert (famille non cochée) et le pain (sans famille) partent
+        sur « Autre », jamais perdus ; l'annulation et la note générale
+        suivent la même règle."""
+        self._avec_autre()
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteImprimanteAutreTour', login='pos_user')
+        pain = self._table(5).lines.filtered(lambda l: l.product_id.name == "Pain maison")
+        self.assertEqual(pain.qty, 1)
+        self.assertEqual(pain.aite_qte_envoyee, 1)
+
+    def test_epson_direct(self):
+        """Sans boîtier IoT : « J'envoie » envoie le bon à l'imprimante Epson
+        (requête ePOS à son adresse, au protocole de la page), sans fenêtre
+        ni aperçu d'impression."""
+        self._avec_autre()
+        self.pos_config.printer_ids = [(6, 0, (self.chaud | self.autre).ids)]
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteEpsonDirectTour', login='pos_user')
+
+
+@tagged('post_install', '-at_install', 'aite_pos_restaurant')
+class TestToursAdditionFamilles(AiteToursFamillesCommon):
+    """L'addition et le ticket groupés par famille, en francs CFA ; le
+    ticket s'imprime à la validation (« Impression automatique du reçu »)."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.pos_config.write({'iface_print_auto': True})
+
+    def _en_francs_cfa(self):
+        xaf = self.env.ref('base.XAF')
+        xaf.active = True
+        self.env.company.currency_id = xaf
+        self.pos_config.available_pricelist_ids.write({'currency_id': xaf.id})
+
+    def test_addition_groupee(self):
+        """Addition, ticket final et réimpression : Plats, Pizzas & burgers,
+        Bar, Autres, chacune avec son sous-total ; total et paiement
+        inchangés."""
+        self._en_francs_cfa()
+        self.pos_config.aite_grouper_familles = True
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteAdditionFamillesTour', login='pos_user')
+        addition = self._table(5)
+        self.assertEqual(addition.state, 'paid')
+        self.assertEqual(addition.amount_total, 26500)
+
+    def test_addition_table_divisee(self):
+        """La fenêtre des additions d'une table divisée : chaque addition est
+        groupée."""
+        self._en_francs_cfa()
+        self.pos_config.aite_grouper_familles = True
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteAdditionFamillesDiviseeTour', login='pos_user')
+
+    def test_reglage_decoche(self):
+        """Réglage décoché (d'office) : le ticket d'Odoo, inchangé."""
+        self._en_francs_cfa()
+        self.assertFalse(self.pos_config.aite_grouper_familles)
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteAdditionSansFamillesTour', login='pos_user')
+
+
+@tagged('post_install', '-at_install', 'aite_pos_restaurant')
+class TestToursFamillesRelecture(AiteToursFamillesCommon):
+    """Les constats des relectures de 18.0.1.0.14 (routage et règles)."""
+
+    def test_autre_seule_sans_famille(self):
+        """Une « Autre » sans famille cochée, seule imprimante de la caisse :
+        elle reçoit tout (le repère des plats sans famille compris)."""
+        self._avec_autre()
+        self.pos_config.printer_ids = [(6, 0, self.autre.ids)]
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteAutreSeuleTour', login='pos_user')
+
+    def test_ordre_des_familles(self):
+        """À séquence égale, les familles de l'addition suivent leur nom."""
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteRegleOrdreFamillesTour', login='pos_user')
+
+    def test_hors_cuisine(self):
+        """Récompenses et lignes mères de menu ne partent pas seules sur
+        « Autre »."""
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteRegleHorsCuisineTour', login='pos_user')
+
+    def test_conseil_certificat(self):
+        """En https, l'alerte de panne d'une Epson dit d'accepter son
+        certificat."""
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteRegleCertificatTour', login='pos_user')
+
+
+@tagged('post_install', '-at_install', 'aite_pos_restaurant')
+class TestToursAdditionFamillesRelecture(AiteToursFamillesCommon):
+    """Le pourboire : ni sur « Autre », ni dans la rubrique « Autres »."""
+
+    def test_pourboire_hors_cuisine_et_hors_rubrique(self):
+        xaf = self.env.ref('base.XAF')
+        xaf.active = True
+        self.env.company.currency_id = xaf
+        self.pos_config.available_pricelist_ids.write({'currency_id': xaf.id})
+        self.pos_config.write({
+            'aite_grouper_familles': True,
+            'iface_tipproduct': True,
+            'tip_product_id': self.env.ref('point_of_sale.product_product_tip').id,
+        })
+        self._avec_autre()
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteAutreHorsCuisineTour', login='pos_user')

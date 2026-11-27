@@ -487,15 +487,17 @@ class TestInstallation(RestaurantCommon):
 
     def test_l_ordre_des_reglages_du_restaurant(self):
         """Partie 4.3 : la case, le délai, la vente sans table, le refus des
-        épuisés ; les trois derniers seulement au service à table contrôlé."""
+        épuisés ; les trois derniers seulement au service à table contrôlé.
+        18.0.1.0.14 : puis l'addition groupée par famille, au même régime."""
         arch = self.env['res.config.settings'].get_view(view_type='form')['arch']
         vue = etree.fromstring(arch)
         ids = [r.get('id') for r in vue.xpath("//block[@id='restaurant_section']/setting")]
         aite = [i for i in ids if i and i.startswith('aite_')]
         self.assertEqual(aite, ['aite_mode_restaurant', 'aite_delai_alerte',
-                                'aite_vente_sans_table', 'aite_refus_epuise'])
+                                'aite_vente_sans_table', 'aite_refus_epuise',
+                                'aite_grouper_familles'])
         self.assertEqual(ids.index('aite_delai_alerte'), ids.index('aite_mode_restaurant') + 1)
-        for reglage in ('aite_delai_alerte', 'aite_refus_epuise'):
+        for reglage in ('aite_delai_alerte', 'aite_refus_epuise', 'aite_grouper_familles'):
             with self.subTest(reglage=reglage):
                 element = vue.xpath("//setting[@id='%s']" % reglage)[0]
                 self.assertEqual(element.get('invisible'), 'not pos_aite_mode_restaurant')

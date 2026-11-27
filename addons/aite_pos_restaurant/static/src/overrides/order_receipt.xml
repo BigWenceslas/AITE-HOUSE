@@ -5,6 +5,43 @@
          parts égales », sous les paiements (et la monnaie). Rien d'autre ne
          change ; une addition sans partage n'a pas cette ligne. -->
     <t t-name="aite_pos_restaurant.OrderReceipt" t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension">
+        <!-- L'addition et le ticket groupés par famille (réglage « Grouper
+             les produits par famille sur l'addition et le ticket »,
+             18.0.1.0.14) : un titre par famille de niveau 1, ses lignes (le
+             rendu d'Odoo, note au client comprise), puis « Sous-total
+             Plats : 21 000 FCFA ». Le total, les taxes et les paiements qui
+             suivent sont ceux d'Odoo. Sans le réglage, la liste d'Odoo. -->
+        <xpath expr="//OrderWidget" position="attributes">
+            <attribute name="t-if">props.data.orderlines?.length and !props.data.aiteFamilles</attribute>
+        </xpath>
+        <xpath expr="//OrderWidget" position="after">
+            <div t-if="props.data.aiteFamilles" class="aite-familles d-flex flex-column text-start">
+                <t t-foreach="props.data.aiteFamilles" t-as="famille" t-key="famille_index">
+                    <!-- Pourboire, remise globale, récompenses : après les
+                         familles, sans titre ni sous-total. -->
+                    <div t-if="famille.horsFamilles" class="aite-hors-familles mt-2 border-top border-dark">
+                        <t t-foreach="famille.lignes" t-as="line" t-key="line_index">
+                            <Orderline basic_receipt="props.basic_receipt" line="omit(line, 'customerNote')" class="{ 'px-0': true }" showTaxGroupLabels="showTaxGroupLabels"/>
+                        </t>
+                    </div>
+                    <div t-else="" class="aite-famille mb-1">
+                        <div class="aite-famille-titre fw-bolder text-uppercase border-bottom border-dark mt-2" t-esc="famille.titre"/>
+                        <t t-foreach="famille.lignes" t-as="line" t-key="line_index">
+                            <Orderline basic_receipt="props.basic_receipt" line="omit(line, 'customerNote')" class="{ 'px-0': true }" showTaxGroupLabels="showTaxGroupLabels">
+                                <li t-if="line.customerNote" class="customer-note w-100 p-2 my-1 rounded text-break">
+                                    <i class="fa fa-sticky-note me-1" role="img" aria-label="Note au client" title="Note au client"/>
+                                    <t t-esc="line.customerNote"/>
+                                </li>
+                            </Orderline>
+                        </t>
+                        <div t-if="!props.basic_receipt" class="aite-famille-sous-total d-flex fw-bold border-top">
+                            <span class="aite-famille-sous-total-libelle" t-esc="famille.libelle"/>
+                            <span class="ms-auto" t-esc="famille.sousTotal"/>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </xpath>
         <xpath expr="//div[hasclass('receipt-change')]" position="after">
             <div t-if="props.data.aitePartage" class="aite-ticket-partage text-center mt-1"
                  t-esc="props.data.aitePartage"/>

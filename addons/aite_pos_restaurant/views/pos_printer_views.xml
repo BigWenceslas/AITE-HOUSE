@@ -14,6 +14,18 @@
                     <i class="fa fa-info-circle me-1" title="Ce qui va se passer"/>
                     <field name="aite_exemplaires_phrase" class="d-inline" nolabel="1"/>
                 </div>
+                <!-- 18.0.1.0.14 : l'imprimante « Autre » et les familles
+                     qu'aucune imprimante ne prend. -->
+                <field name="aite_prend_le_reste"/>
+                <div colspan="2" class="text-muted aite-prend-le-reste-phrase">
+                    <i class="fa fa-info-circle me-1" title="Ce qui va se passer"/>
+                    <field name="aite_prend_le_reste_phrase" class="d-inline" nolabel="1"/>
+                </div>
+                <div colspan="2" class="alert alert-warning mt-2 aite-familles-orphelines" role="alert"
+                     invisible="not aite_familles_orphelines">
+                    <i class="fa fa-exclamation-triangle me-1" title="Familles qu'aucune imprimante ne prend"/>
+                    <field name="aite_familles_orphelines" nolabel="1"/>
+                </div>
             </field>
         </field>
     </record>
@@ -25,6 +37,7 @@
         <field name="arch" type="xml">
             <field name="product_categories_ids" position="after">
                 <field name="aite_exemplaires" string="Exemplaires"/>
+                <field name="aite_prend_le_reste" string="Autre" optional="show"/>
             </field>
         </field>
     </record>

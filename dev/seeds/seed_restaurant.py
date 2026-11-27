@@ -60,6 +60,10 @@ if carte_client and not SANS_CARTE_DEMO:
     print("ℹ base à la carte du client (%s) : la carte de démonstration n'est pas posée"
           % carte_client)
 
+# L'addition et le ticket groupés par famille (aite_pos_restaurant 18.0.1.0.14).
+if 'aite_grouper_familles' in caisse_pos._fields and not caisse_pos.aite_grouper_familles:
+    caisse_pos.aite_grouper_familles = True
+
 # Une base créée par l'écran de création garde le nom de société d'Odoo :
 # la graine donne un nom fictif, rien de plus.
 if company.name in ("My Company", "YourCompany", "Ma société", "Votre société"):

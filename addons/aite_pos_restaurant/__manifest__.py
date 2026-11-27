@@ -200,14 +200,51 @@ Bons de préparation et notes (18.0.1.0.13) :
   notification dit quel bon n'est pas sorti ; une erreur au rendu d'un bon
   donne la même alerte « Bon non imprimé » qu'une imprimante en panne.
 
+Les familles de la carte (18.0.1.0.14) :
+
+* « J'envoie » imprime chaque plat sur l'imprimante de son poste (chaud,
+  froid, bar, pizza…) d'après les familles cochées sur l'imprimante de
+  préparation ; cocher une famille (« Bar ») couvre toutes ses sous-familles
+  (vins blancs, bières…) ;
+* nouvelle case « Prend tout ce qu'aucune autre imprimante ne prend » sur
+  l'imprimante (l'imprimante « Autre »), avec sa phrase « ce qui va se
+  passer » : un plat dont aucune autre imprimante de la caisse ne prend la
+  famille, ou sans famille, sort sur cette imprimante, jamais perdu ; les
+  annulations et la note générale suivent le même chemin ; une seule
+  imprimante « Autre » par caisse (message clair sinon) ; les exemplaires et
+  l'alerte de panne de 18.0.1.0.13 restent ; la case n'agit qu'au service à
+  table contrôlé ; pourboire, remises, récompenses et ligne mère d'un menu
+  ne partent jamais seuls sur « Autre » ;
+* sans imprimante « Autre », le formulaire de l'imprimante et les réglages
+  de la caisse (Imprimantes de préparation) listent les familles de la carte
+  qu'aucune imprimante ne prend, et les produits sans famille (le cadre suit
+  la saisie ; hors service à table contrôlé, il reste malgré l'« Autre » et
+  le dit ; une caisse aux familles restreintes ne cite que ce qu'elle vend) ;
+* envoi direct depuis la tablette, sans boîtier IoT, aux Epson en Wi-Fi
+  (TM-m30III…) : le module dépend de pos_epson_printer (type « Epson » et
+  adresse IP sur l'imprimante) ; « J'envoie » imprime sans aucune fenêtre ;
+  en https, l'alerte « Bon non imprimé » dit d'accepter le certificat de
+  l'imprimante (https://<IP>) ;
+* réglage de la caisse « Grouper les produits par famille sur l'addition et
+  le ticket » (décoché d'office) : l'addition (y compris les additions d'une
+  table divisée), le ticket final et sa réimpression rangent les produits
+  sous leur famille de niveau 1, dans l'ordre de la caisse, chacune suivie
+  de « Sous-total Plats : 21 000 FCFA » ; produits sans famille sous
+  « Autres » ; pourboire et remise globale ensuite, sans rubrique ni
+  sous-total ; total, taxes, paiements, partage à parts égales et note au
+  client inchangés ; le ticket final sort au paiement si « Impression
+  automatique du reçu » est coché.
+
 Aucune dépendance au socle hôtelier.
 """,
-    'version': '18.0.1.0.13',
+    'version': '18.0.1.0.14',
     'author': "AITE Consulting",
     'website': "https://aiteconsulting.com",
     'category': 'Point of Sale',
     'license': 'LGPL-3',
-    'depends': ['pos_restaurant', 'pos_hr'],
+    # pos_epson_printer : les tablettes impriment les bons directement sur les
+    # imprimantes Epson du réseau (Wi-Fi), sans boîtier IoT (18.0.1.0.14).
+    'depends': ['pos_restaurant', 'pos_hr', 'pos_epson_printer'],
     'data': [
         'security/restaurant_security.xml',
         'security/ir.model.access.csv',

@@ -32,12 +32,25 @@ export function bonVide(sections) {
  * celles qui ont déjà reçu (ou reçoivent dans ce même envoi) un plat de la
  * table — la note concerne ce qu'elles préparent ; aucune → toutes (on ne
  * sait pas encore qui préparera, la note ne doit pas se perdre).
- * `familles(imprimante)` rend les familles de l'imprimante ;
- * `famillesDuProduit(id)` celles d'un produit (avec leurs parents). */
-export function imprimantesDeLaNote(imprimantes, produits, familles, famillesDuProduit) {
-    const concernees = imprimantes.filter((imprimante) => {
-        const siennes = familles(imprimante);
-        return produits.some((id) => famillesDuProduit(id).some((f) => siennes.includes(f)));
-    });
+ * `prend(imprimante, produitId)` : vrai si l'imprimante reçoit ce produit
+ * (familles cochées, imprimante « Autre » ; 18.0.1.0.14). */
+export function imprimantesDeLaNote(imprimantes, produits, prend) {
+    const concernees = imprimantes.filter((imprimante) => produits.some((id) => prend(imprimante, id)));
     return concernees.length ? concernees : [...imprimantes];
+}
+
+/** Les adresses des imprimantes Epson en panne dont il faut accepter le
+ * certificat (relecture de 18.0.1.0.14). La caisse parle aux Epson au
+ * protocole de la page (pos_epson_printer : `window.location.protocol`,
+ * ou http si `use_lna`) : servie en https, la tablette doit avoir accepté
+ * une fois le certificat de chaque imprimante (https://<IP>), sinon rien ne
+ * sort. `protocole` : celui de la page ; `useLna` : le paramètre d'Odoo ;
+ * `imprimantes` : celles qui n'ont pas répondu. */
+export function adressesACertifier(protocole, useLna, imprimantes) {
+    if (protocole !== "https:" || useLna) {
+        return [];
+    }
+    return imprimantes
+        .filter((i) => i?.config?.printer_type === "epson_epos" && i.config.epson_printer_ip)
+        .map((i) => i.config.epson_printer_ip);
 }

@@ -66,12 +66,19 @@ export const MESSAGES = {
     // Incrément 5 : les produits épuisés (titre `TITRES.produitEpuise`)
     /** Une imprimante de préparation n'a pas répondu (une seule alerte,
      * même pour plusieurs exemplaires ou plusieurs imprimantes). */
-    bonNonImprime: (noms) =>
+    // `adresses` : les Epson dont la tablette doit accepter le certificat
+    // (Odoo servi en https ; relecture de 18.0.1.0.14).
+    bonNonImprime: (noms, adresses = []) =>
         `${noms.length > 1 ? "Les imprimantes" : "L'imprimante"} ${noms
             .map((nom) => `«${ESP}${nom}${ESP}»`)
             .join(", ")} n'${noms.length > 1 ? "ont" : "a"} pas répondu${ESP}: le bon n'est pas ` +
         `sorti. La commande est enregistrée comme envoyée${ESP}: prévenez le poste de vive voix, ` +
-        `puis vérifiez que l'imprimante est allumée et reliée au réseau.`,
+        `puis vérifiez que l'imprimante est allumée et reliée au réseau.` +
+        (adresses.length
+            ? ` Odoo est ouvert en https${ESP}: si c'est la première fois sur cette tablette, ` +
+              `ouvrez une fois ${adresses.map((ip) => "https://" + ip).join(", ")} dans le ` +
+              `navigateur et acceptez le certificat de l'imprimante, puis revenez à la caisse.`
+            : ""),
     R11: (produit) =>
         `Plus de ${produit} en stock. Si la bouteille est bien là, demandez au manager ` +
         `d'enregistrer l'entrée de stock${ESP}: la vente repassera aussitôt.`,
@@ -237,6 +244,13 @@ export const TEXTES = {
     /** La note d'un plat déjà parti, effacée (relecture de 18.0.1.0.13). */
     bonNoteRetireeDe: (ancienne) => `Note retirée${ESP}: ${ancienne}`,
     exemplaire: (rang, total) => `Exemplaire ${rang}/${total}`,
+    // Les familles de la carte (18.0.1.0.14).
+    /** Sur l'addition groupée, la fin de chaque famille. */
+    sousTotal: (famille) => `Sous-total ${famille}${ESP}: `,
+    /** La rubrique des produits sans famille, du pourboire et des remises. */
+    familleAutres: "Autres",
+    /** Le compte de « J'envoie » pour les plats sans famille. */
+    sansFamille: "Sans famille",
     /** « 35 min » ; à partir d'une heure, « 1 h 05 ». */
     duree: (minutes) => {
         if (minutes < 60) {
