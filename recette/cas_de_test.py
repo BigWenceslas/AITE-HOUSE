@@ -1516,4 +1516,56 @@ CAS = [
      "addition payée, sans monnaie. Étape 7 : le partage est retrouvé au "
      "retour ; après l'annulation, le bandeau disparaît et la ligne "
      "suivante paie tout le reste dû."),
+    ("R107", "R", 1, "Caisse au service à table contrôlé ; deux imprimantes "
+     "de préparation : « Cuisine » (plats) et « Bar » (boissons) ; gérant "
+     "connecté à la gestion",
+     "18.0.1.0.13 — le bon de cuisine en plusieurs exemplaires",
+     "1. Point de Vente → Configuration → Imprimantes de préparation → "
+     "« Cuisine » : « Nombre d'exemplaires du bon » = 3, enregistrer ; "
+     "essayer 0 puis 6.\n2. Fermer puis rouvrir la caisse.\n3. Table 1 : "
+     "3 Poulet DG et 1 Castel, « J'envoie ».\n4. Annuler 1 Poulet DG "
+     "(code et motif).\n5. Débrancher la « Cuisine », ajouter un poulet, "
+     "« J'envoie ».",
+     "Étape 1 : la phrase dit « Chaque nouveau bon envoyé à cette imprimante "
+     "sort en 3 exemplaires identiques… Les annulations et les notes seules "
+     "sortent en un exemplaire. » ; 0 et 6 sont refusés (« doit être entre "
+     "1 et 5 »). Étape 3 : 3 bons identiques en cuisine, marqués "
+     "« Exemplaire 1/3 », « 2/3 », « 3/3 », en français (« Sur place », "
+     "« Table 1 », « Nouveau ») ; 1 bon au bar, sans mention d'exemplaire. "
+     "Étape 4 : 1 seul bon « Annulé ». Étape 5 : une seule alerte « Bon "
+     "non imprimé » qui nomme la Cuisine ; la notification dit « …, mais "
+     "le bon « Cuisine » n'est pas sorti : prévenez de vive voix. »"),
+    ("R108", "R", 1, "Caisse au service à table contrôlé ; Cuisine et Bar ; "
+     "table 4 : 3 Poulet DG déjà envoyés",
+     "18.0.1.0.13 — les notes d'un plat déjà parti",
+     "1. Ajouter un 4e Poulet DG, revenir au plan, rouvrir la table.\n2. "
+     "Choisir la ligne, « Note cuisine », taper « bien cuit », "
+     "« Appliquer ».\n3. « J'envoie ».\n4. Sur la table 5 (3 poulets "
+     "partis), « Note cuisine » « sans piment » sur la ligne, puis 4 au "
+     "pavé, « J'envoie ».\n5. Sur un Castel parti avec la note « sans "
+     "glaçon » : vider le champ, « Appliquer », « J'envoie ».\n6. Ouvrir "
+     "une note, taper autre chose, « Ignorer » ; même chose pour la note "
+     "générale.\n7. « Note au client » sur une ligne déjà envoyée.",
+     "Étape 2 : aucune fenêtre d'accompagnement ; 2 lignes (3 et 1 « bien "
+     "cuit »), le total ne change pas. Étape 3 : le bon dit « Nouveau 1 "
+     "Poulet DG … bien cuit » ; Rapports → journal des saisies : 4 poulets, "
+     "pas 5. Étape 4 : le bon dit « Nouveau 1 Poulet DG » et « Note 3 "
+     "Poulet DG … sans piment ». Étape 5 : le bon du bar dit « Note retirée "
+     ": sans glaçon ». Étape 6 : rien ne change (ni la note du plat, ni la "
+     "note générale, ni les lignes). Étape 7 : la fenêtre s'ouvre sans "
+     "erreur, la note s'enregistre, la ligne n'est pas coupée."),
+    ("R109", "R", 1, "Caisse au service à table contrôlé ; Cuisine et Bar ; "
+     "table 2 : 1 poulet et 1 Castel envoyés ; table 3 : 1 Castel envoyé",
+     "18.0.1.0.13 — la note générale",
+     "1. Table 2 : « Actions » → « Note générale », « Client pressé », "
+     "« Appliquer ».\n2. Regarder « J'envoie », puis le toucher.\n3. "
+     "Table 3 : note générale « Allergie arachide », « J'envoie ».\n4. "
+     "Table 2 : « Note au client » « Joyeux anniversaire » sur le poulet, "
+     "puis « Addition ».",
+     "Étape 2 : « J'envoie » montre « Note générale 1 » (pas « Message ») ; "
+     "notification « Envoyé : Note générale × 1. » ; 1 bon « Note générale "
+     "— Client pressé » en cuisine et 1 au bar (les deux ont servi la "
+     "table). Étape 3 : 1 bon au bar seulement. Étape 4 : l'addition porte "
+     "« Joyeux anniversaire », pas « Client pressé » ; l'écran tourné vers "
+     "le client ne montre pas non plus la note générale."),
 ]

@@ -298,6 +298,78 @@ inchangée (aucune vue ni donnée) : un **redémarrage** suffit.
     annuler, arrondi, monnaie d'une part, arrondi réparti, pourboire),
     `TestToursPartsEgalesHorsMode`, `TestCommande.test_parts_egales_*` ;
     recette R106.
+- **`aite_pos_restaurant` 18.0.1.0.13 — le bon de cuisine en plusieurs
+  exemplaires, et des notes de commande fiables** (demandes du Messager :
+  « imprimer 3 fois d'un coup en cuisine » et les défauts constatés sur les
+  notes). Seulement sur une caisse au service à table contrôlé ; une autre
+  caisse de la base garde les bons et les notes d'Odoo.
+  - **Le réglage (gérant).** Point de Vente → Configuration → Imprimantes de
+    préparation → une imprimante → **Nombre d'exemplaires du bon** (1
+    d'office, de 1 à 5 ; « doit être entre 1 et 5 » sinon), avec la phrase
+    « Chaque nouveau bon envoyé à cette imprimante sort en 3 exemplaires
+    identiques, marqués « Exemplaire 1/3 » à « Exemplaire 3/3 ». Les
+    annulations et les notes seules sortent en un exemplaire. » La colonne
+    « Exemplaires » est aussi dans la liste. La caisse lit le réglage à son
+    ouverture : **fermer puis rouvrir la caisse** (ou recharger la page)
+    après un changement.
+  - **Le bon.** Un envoi donne **un seul bon par imprimante**, en français :
+    « Sur place », « Restaurant : 12:00 », « Par : Brice », « Table 7 # 101 »,
+    puis les sections « Nouveau », « Annulé », « Note » (note changée d'un
+    plat déjà parti) et « Note générale ». Odoo sortait jusqu'à quatre
+    feuilles titrées « New », « Cancelled », « Note », « Message », et
+    l'en-tête pouvait dire « Tableau 7 » (le mot « Table » traduit par
+    l'éditeur de texte d'Odoo) : les textes du bon ne passent plus par les
+    traductions d'Odoo. **Changement visible pour la cuisine, à annoncer.**
+  - **Les exemplaires.** Un bon qui porte au moins un nouveau plat (même
+    mêlé d'annulations) sort en N exemplaires identiques, marqués
+    « Exemplaire k/N » dans un cadre en haut (rien si N = 1). Un bon fait
+    seulement d'annulations, de notes ou de la note générale sort en un
+    exemplaire. Les N exemplaires partent en N impressions successives.
+  - **Imprimante injoignable.** Les exemplaires suivants ne sont pas tentés,
+    une seule alerte « Bon non imprimé » nomme la ou les imprimantes, et la
+    notification dit « Envoyé : Plats × 1, mais le bon « Cuisine » n'est pas
+    sorti : prévenez de vive voix. » Comme dans Odoo, l'envoi reste
+    enregistré (les plats sont marqués partis). Une erreur au rendu d'un bon
+    donne la même alerte, au lieu de passer sans bruit. Pas encore de bouton
+    « Réimprimer le dernier bon » (proposé pour un lot suivant).
+  - **Les notes.**
+    - « Note cuisine » sur une ligne en partie envoyée (3 poulets partis, un
+      4ᵉ saisi) : la note va au 4ᵉ, sur une ligne à part, sans rouvrir la
+      fenêtre des accompagnements ; l'addition garde sa quantité et son
+      montant ; le journal des saisies compte 4 poulets (la coupure est
+      enregistrée comme un déplacement : ni saisie, ni retrait).
+    - Une note posée sur un plat parti, puis une unité de plus au pavé : le
+      bon dit « Nouveau 1 Poulet DG » et « Note 3 Poulet DG » (Odoo écrivait
+      « Nouveau 3 »).
+    - Une note effacée sur un plat parti (champ vidé, « Appliquer ») : le bon
+      dit « Note retirée : sans glaçon ».
+    - « Ignorer » (ou la croix) ne change plus rien : ni la note du plat, ni
+      la note générale, ni la ligne. Pour effacer une note : vider le champ
+      et toucher « Appliquer ».
+    - « Note au client » s'ouvre sur une ligne déjà envoyée (elle plantait)
+      et ne coupe jamais la ligne : elle ne va pas en cuisine.
+    - Une note générale tapée seule est imprimée, en un exemplaire, sur les
+      imprimantes qui ont déjà reçu un plat de la table (ou qui en reçoivent
+      un dans le même envoi) ; sur toutes si aucune n'en a reçu, pour ne pas
+      la perdre. Elle reste rappelée en bas des bons qui portent de nouveaux
+      plats, comme dans Odoo. Sur « J'envoie » et dans « Envoyé : … », elle
+      s'appelle « Note générale » (plus « Message »).
+    - La note générale est une consigne pour la cuisine : elle ne figure
+      plus sur l'addition, le ticket ni l'écran tourné vers le client ; la
+      note au client, si.
+  - **Limites.** Rien n'a été essayé sur une vraie imprimante (les tests
+    simulent les imprimantes Epson) : avec 3 exemplaires, « J'envoie » prend
+    un peu plus de temps. Sur une table sans aucun plat, « Note générale »
+    reste grisée (règle d'Odoo). Sans aucune imprimante de préparation, la
+    caisse dit toujours « Envoyé » (comportement de la spécification,
+    REST-02 : l'envoi est enregistré). Hors connexion, une note posée sur une
+    ligne en partie envoyée est enregistrée avec la synchronisation
+    suivante, qui peut noter l'unité coupée comme une saisie.
+  - Tests : `TestToursBons` (exemplaires, rendu en erreur, notification de
+    panne), `TestToursNotes` (12 tours : coupure, coupure après
+    enregistrement, note puis +1, « Ignorer » en trois cas, note au client,
+    note générale seule, libellé, note retirée, addition et écran du client,
+    bon en français), `TestImpression` (réglage) ; recette R107 à R109.
 
 ### Corrections après livraison
 

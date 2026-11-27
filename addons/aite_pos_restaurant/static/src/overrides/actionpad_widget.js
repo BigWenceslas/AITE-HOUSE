@@ -26,6 +26,7 @@ patch(ActionpadWidget.prototype, {
                 TEXTES.familleQuantite(ligne.name, this.env.utils.formatProductQty(ligne.count, false))
             )
             .join(", ");
+        this.pos.aiteBonsNonSortis = [];
         try {
             await super.submitOrder(...arguments);
             await this.pos.syncAllOrders({ orders: [order] });
@@ -42,7 +43,14 @@ patch(ActionpadWidget.prototype, {
             this.pos.notification.add(MESSAGES.R29, { type: "danger" });
             return;
         }
-        this.pos.notification.add(TEXTES.envoye(compte), { type: "info" });
+        // Une imprimante de préparation n'a pas répondu (alerte « Bon non
+        // imprimé ») : la notification le redit, au lieu d'un « Envoyé » seul.
+        const nonSortis = [...new Set(this.pos.aiteBonsNonSortis || [])];
+        if (nonSortis.length) {
+            this.pos.notification.add(TEXTES.envoyeSansBon(compte, nonSortis), { type: "warning" });
+        } else {
+            this.pos.notification.add(TEXTES.envoye(compte), { type: "info" });
+        }
         this.pos.showScreen("FloorScreen");
     },
 });

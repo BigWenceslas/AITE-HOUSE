@@ -165,6 +165,21 @@ patch(PosOrder.prototype, {
     export_for_printing() {
         const donnees = super.export_for_printing(...arguments);
         donnees.aitePartage = this.aite_parts_egales ? TEXTES.partagee(this.aite_parts_egales) : "";
+        if (caisseEnMode(this.config)) {
+            // La note générale est une consigne pour la cuisine : elle ne va
+            // ni sur l'addition ni sur le ticket du client (18.0.1.0.13).
+            donnees.generalNote = "";
+        }
+        return donnees;
+    },
+
+    /** L'écran tourné vers le client ne montre pas non plus la note générale
+     * (relecture de 18.0.1.0.13) ; la note au client, oui. */
+    getCustomerDisplayData() {
+        const donnees = super.getCustomerDisplayData(...arguments);
+        if (caisseEnMode(this.config)) {
+            donnees.generalNote = "";
+        }
         return donnees;
     },
 });

@@ -1091,3 +1091,194 @@ class TestToursPartsEgalesHorsMode(AiteToursCommon):
         self.assertFalse(self.pos_config.aite_mode_restaurant)
         self.pos_config.with_user(self.pos_user).open_ui()
         self.start_pos_tour('AitePartsEgalesHorsModeTour', login='pos_user')
+
+
+class AiteToursBonsCommon(AiteToursModeCommon):
+    """Les bons de préparation (18.0.1.0.13) : deux imprimantes, simulées par
+    les tours (bons_tour.js) — « Cuisine » pour la famille Plats (Poulet DG,
+    7 000, accompagnement Riz ou Frites, sans taxe) et « Bar » pour Drinks
+    (Coca-Cola). La caisse est en français : les bons d'Odoo y affichent
+    « New » et « Tableau 5 » (constat du Messager)."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.env['res.lang']._activate_lang('fr_FR')
+        cls.pos_user.lang = 'fr_FR'
+        plats = cls.env['pos.category'].create({'name': "Plats", 'sequence': 3})
+        accompagnement = cls.env['product.attribute'].create({
+            'name': "Accompagnement", 'create_variant': 'no_variant', 'display_type': 'radio'})
+        valeurs = cls.env['product.attribute.value'].create([
+            {'name': "Riz", 'attribute_id': accompagnement.id},
+            {'name': "Frites", 'attribute_id': accompagnement.id},
+        ])
+        cls.poulet = cls.env['product.template'].create({
+            'name': "Poulet DG", 'list_price': 7000, 'available_in_pos': True,
+            'taxes_id': [(5, 0, 0)], 'pos_categ_ids': [(4, plats.id)],
+            'attribute_line_ids': [(0, 0, {
+                'attribute_id': accompagnement.id, 'value_ids': [(6, 0, valeurs.ids)]})],
+        })
+        boissons = cls.env['product.product'].search([('name', '=', "Coca-Cola")], limit=1).pos_categ_ids
+        Imprimante = cls.env['pos.printer']
+        cls.cuisine = Imprimante.create({
+            'name': "Cuisine", 'printer_type': 'epson_epos', 'epson_printer_ip': '127.0.0.1',
+            'product_categories_ids': [(6, 0, plats.ids)]})
+        cls.bar = Imprimante.create({
+            'name': "Bar", 'printer_type': 'epson_epos', 'epson_printer_ip': '127.0.0.2',
+            'product_categories_ids': [(6, 0, boissons.ids)]})
+        cls.pos_config.write({
+            'is_order_printer': True,
+            'printer_ids': [(6, 0, (cls.cuisine | cls.bar).ids)],
+        })
+
+    def _table(self, numero):
+        return self.env['pos.order'].search([
+            ('config_id', '=', self.pos_config.id),
+            ('table_id.table_number', '=', numero)], order='id desc', limit=1)
+
+    def _unites_saisies(self, addition):
+        """Le nombre de Poulet DG au journal des saisies de l'addition."""
+        return sum(q for (nom, q, _e) in self._saisies(addition) if (nom or '').startswith("Poulet DG"))
+
+    def _poulets(self, addition):
+        lignes = addition.lines.filtered(lambda l: l.product_id.product_tmpl_id == self.poulet)
+        return sorted((l.qty, l.note or '') for l in lignes)
+
+
+@tagged('post_install', '-at_install', 'aite_pos_restaurant')
+class TestToursBons(AiteToursBonsCommon):
+    """« Imprimer 3 fois d'un coup en cuisine » : la cuisine est réglée sur 3
+    exemplaires, le bar sur 1."""
+
+    def test_exemplaires(self):
+        self.cuisine.aite_exemplaires = 3
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteBonsExemplairesTour', login='pos_user')
+        addition = self._table(5)
+        # 2 poulets envoyés, 1 annulé, 1 frites envoyé (imprimante en panne :
+        # l'envoi est quand même enregistré, comme dans Odoo).
+        self.assertEqual(sum(addition.lines.filtered(
+            lambda l: l.product_id.product_tmpl_id == self.poulet).mapped('qty')), 2)
+
+    def test_rendu_en_erreur(self):
+        """Relecture : une erreur au rendu du bon donne l'alerte « Bon non
+        imprimé » ; les autres imprimantes reçoivent leur bon."""
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteBonRenduEnErreurTour', login='pos_user')
+        self.assertEqual(self._poulets(self._table(5)), [(1.0, '')])
+
+    def test_panne_notification(self):
+        """Relecture : cuisine injoignable, la notification dit que le bon
+        de la cuisine n'est pas sorti ; l'envoi reste enregistré."""
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteBonPanneNotificationTour', login='pos_user')
+        addition = self._table(5)
+        self.assertEqual(sum(addition.lines.mapped('aite_qte_envoyee')), 2)
+
+
+@tagged('post_install', '-at_install', 'aite_pos_restaurant')
+class TestToursNotes(AiteToursBonsCommon):
+    """Les défauts des notes constatés au Messager (B1 à B6), un exemplaire
+    par imprimante. Chaque tour reproduit un défaut, écrit avant sa
+    correction."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        divers = cls.env['pos.category'].create({'name': "Divers", 'sequence': 9})
+        cls.env['product.product'].create({
+            'name': "Pain", 'list_price': 500, 'available_in_pos': True,
+            'taxes_id': [(5, 0, 0)], 'pos_categ_ids': [(4, divers.id)]})
+
+    def test_coupure(self):
+        """B1 : la note posée sur l'unité de plus ne change ni la quantité ni
+        le total, sur la caisse comme sur le serveur."""
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteNoteCoupureTour', login='pos_user')
+        addition = self._table(4)
+        self.assertEqual(self._poulets(addition), [(1.0, 'bien cuit'), (3.0, '')])
+        self.assertEqual(addition.amount_total, 28000)
+        self.assertEqual(sum(addition.lines.mapped('aite_qte_envoyee')), 4)
+        self.assertEqual(self._unites_saisies(addition), 4)
+
+    def test_coupure_apres_synchro(self):
+        """B1, relecture : l'addition a été enregistrée entre l'ajout du 4e
+        poulet et la note. Le journal des saisies compte 4 poulets, pas 5."""
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteNoteCoupureSynchroTour', login='pos_user')
+        addition = self._table(4)
+        self.assertEqual(self._poulets(addition), [(1.0, 'bien cuit'), (3.0, '')])
+        self.assertEqual(addition.amount_total, 28000)
+        self.assertEqual(self._unites_saisies(addition), 4, self._saisies(addition))
+        self.assertFalse(self.env['aite.restaurant.annulation'].search(
+            [('order_id', '=', addition.id)]), "la coupure n'est pas un retrait")
+
+    def test_note_puis_plus_un(self):
+        """Relecture : note sur un plat parti, puis une unité de plus au pavé :
+        le bon dit « Nouveau 1 Poulet DG »."""
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteNotePuisPlusUnTour', login='pos_user')
+        addition = self._table(5)
+        self.assertEqual(self._poulets(addition), [(4.0, 'bien cuit')])
+        self.assertEqual(self._unites_saisies(addition), 4)
+
+    def test_ignorer(self):
+        """B2 : « Ignorer » ne coupe pas une ligne en partie envoyée."""
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteNoteIgnorerTour', login='pos_user')
+        self.assertEqual(self._poulets(self._table(4)), [(4.0, '')])
+
+    def test_ignorer_note_du_plat(self):
+        """B2 : « Ignorer » garde la note du plat."""
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteNoteIgnorerNotePlatTour', login='pos_user')
+        coca = self._table(4).lines.filtered(lambda l: l.product_id.name == "Coca-Cola")
+        self.assertEqual(coca.note, "sans glaçon")
+
+    def test_ignorer_note_generale(self):
+        """B2 : « Ignorer » garde la note générale."""
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteNoteIgnorerNoteGeneraleTour', login='pos_user')
+        self.assertEqual(self._table(4).general_note, "Client pressé")
+
+    def test_note_retiree(self):
+        """Relecture : une note effacée sur un plat parti est annoncée au bar
+        (« Note retirée : sans glaçon »)."""
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteNoteRetireeTour', login='pos_user')
+        coca = self._table(5).lines.filtered(lambda l: l.product_id.name == "Coca-Cola")
+        self.assertFalse(coca.note)
+
+    def test_note_generale_libelle(self):
+        """Relecture : « Note générale », pas « Message », sur « J'envoie » et
+        dans la notification."""
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteNoteGeneraleLibelleTour', login='pos_user')
+        self.assertEqual(self._table(5).general_note, "Client pressé")
+
+    def test_note_au_client(self):
+        """B3 : « Note au client » sur une ligne déjà envoyée."""
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteNoteClientTour', login='pos_user')
+        addition = self._table(4)
+        self.assertEqual(addition.lines.customer_note, "Joyeux anniversaire")
+        self.assertEqual(addition.amount_total, 7000)
+
+    def test_note_generale_seule(self):
+        """B4 : une note générale tapée seule est imprimée."""
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteNoteGeneraleSeuleTour', login='pos_user')
+        self.assertEqual(self._table(2).general_note, "Allergie arachide")
+        self.assertEqual(self._table(5).general_note, "Client pressé")
+
+    def test_addition_sans_note_generale(self):
+        """B5 : la note générale (pour la cuisine) n'est pas sur l'addition."""
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteAdditionSansNoteTour', login='pos_user')
+        self.assertEqual(self._table(5).general_note, "Client pressé")
+
+    def test_bon_en_francais(self):
+        """B6 : « Nouveau », « Note », « Annulé », « Table 5 »."""
+        self._ouvrir_la_caisse()
+        self.start_pos_tour('AiteBonEnFrancaisTour', login='pos_user')
+        self.assertEqual(self._poulets(self._table(5)), [(1.0, 'bien cuit')])

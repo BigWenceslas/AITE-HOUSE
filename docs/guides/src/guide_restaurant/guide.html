@@ -135,6 +135,18 @@
 <p><b>Les motifs d'annulation.</b> <span class="chemin">Point de Vente → Configuration → Motifs d'annulation</span>. Cinq motifs sont posés d'office : « Erreur de saisie », « Client parti », « Plat refusé », « Produit manquant », « Autre ». La case « Précision obligatoire » (cochée sur « Autre ») oblige le chef de salle à écrire quelques mots. Un motif ne se supprime pas : on l'archive.</p>
 <p><b>La salle et les tables.</b> <span class="chemin">Point de Vente → Configuration → Plans de salle</span> → « Salle » : les tables, avec leur numéro et leurs places. Le plan ne se modifie pas depuis la caisse.</p>
 <p><b>La carte et les familles.</b> <span class="chemin">Point de Vente → Configuration → Produits → Catégories de produits du PdV</span> : les familles de l'écran de commande, sur trois niveaux (par exemple Nourriture &gt; Pizzas ; Boisson &gt; Alcoolisé &gt; Bière). Les mêmes noms en catégories de produit (Inventaire → Configuration → Produits → Catégories de produits), que lisent encore le tableau de bord AITE et l'onglet « Par catégorie ». Sur chaque produit : le prix en FCFA, la case « Point de Vente », sa famille dans l'onglet « Point de Vente », et <b>« Suivre l'inventaire »</b> sur les seules boissons vendues à l'unité.</p>
+<p><b>Les imprimantes de cuisine et de bar.</b> <span class="chemin">Point de Vente → Configuration → Imprimantes de préparation</span> → l'imprimante (par exemple « Cuisine ») → <b>« Nombre d'exemplaires du bon »</b> : 1 d'office, de 1 à 5. La phrase sous le champ dit ce qui va se passer : « Chaque nouveau bon envoyé à cette imprimante sort en 3 exemplaires identiques, marqués « Exemplaire 1/3 » à « Exemplaire 3/3 ». Les annulations et les notes seules sortent en un exemplaire. » <b>Fermez puis rouvrez la caisse</b> après un changement : elle lit ce réglage à son ouverture.</p>
+<div style="display:flex; gap:6mm; justify-content:center; align-items:flex-start" class="sans-saut">
+  <figure style="width:110mm; margin:0">
+    <img src="../../../../captures/restaurant/32_imprimante_exemplaires.jpg" alt="Nombre d'exemplaires du bon">
+    <figcaption>L'imprimante « Cuisine » réglée sur 3 exemplaires, avec sa phrase.</figcaption>
+  </figure>
+  <figure style="width:55mm; margin:0">
+    <img src="../../../../captures/restaurant/33_bon_cuisine_exemplaire_2_sur_3.jpg" alt="Bon de cuisine, exemplaire 2/3">
+    <figcaption>Le 2ᵉ des 3 exemplaires : tout en français, « Table 7 ».</figcaption>
+  </figure>
+</div>
+<p class="petit">Un envoi donne un seul bon par imprimante, avec les sections « Nouveau », « Annulé », « Note » et « Note générale ». Seul un bon qui porte un nouveau plat sort en plusieurs exemplaires. Si l'imprimante ne répond pas, une seule alerte « Bon non imprimé » la nomme : la commande est quand même enregistrée comme envoyée, prévenez la cuisine de vive voix.</p>
 <p><b>Le stock de départ.</b> Sur la fiche de chaque produit suivi : <span class="b">Mettre la quantité à jour</span>. Un produit suivi sans stock est refusé à la caisse.</p>
 <div class="encadre"><p><span class="titre">Bon réflexe —</span> la TVA. Odoo pose d'office sur chaque nouveau produit la TVA de 19,25 % <b>hors taxes</b> : un prix de 1 000 FCFA est encaissé 1 193 FCFA. Pour des prix de carte taxes comprises, AITE règle avec le comptable une taxe « prix TTC » <b>avant</b> la saisie de la carte.</p></div>
 
@@ -198,6 +210,24 @@
 </figure>
 <div class="encadre"><p><span class="titre">La monnaie d'une part —</span> une personne donne un billet plus gros que sa part : tapez ce qu'elle donne au pavé, le bandeau dit « Monnaie à rendre » ; rendez-la, puis touchez le mode de la personne suivante : la ligne revient au montant de la part, comme l'argent qui reste dans le tiroir. Pour la dernière personne, la monnaie s'affiche comme d'habitude.</p></div>
 <p class="petit">Si un paiement était déjà fait, c'est le reste dû qui se partage, et le bandeau le dit. Supprimer une ligne fait reculer le compteur. <span class="b">Annuler le partage</span> revient au paiement habituel (la ligne suivante paie tout le reste). Revenir au panier puis au paiement retrouve le partage ; un produit ou un pourboire ajouté l'efface : touchez de nouveau <span class="b">Partager à parts égales</span>. Avec l'arrondi des espèces, les parts peuvent différer d'un pas (« entre 2 650 et 2 675 FCFA ») et le bandeau de la dernière part dit aussi le montant en espèces. Terminez un partage sur le poste où vous l'avez commencé. L'addition reste une seule vente (stock, cuisine, rapports inchangés).</p>
+
+<h3>Les notes de la commande</h3>
+<p>Trois notes, sur l'écran de commande. Aucune ne change le montant de l'addition.</p>
+<table class="t">
+  <tr><th style="width:24%">Note</th><th>Où</th><th>Qui la lit</th></tr>
+  <tr><td><b>Note cuisine</b></td><td>choisir la ligne, puis <span class="b">Note cuisine</span> (« Bien cuite », « Sans piment »)</td><td>la cuisine ou le bar, sur le bon</td></tr>
+  <tr><td><b>Note générale</b></td><td><span class="b">Actions</span> → <span class="b">Note générale</span> (« Client pressé », « Allergie arachide »)</td><td>la cuisine et le bar seulement : jamais sur l'addition, le ticket ni l'écran du client</td></tr>
+  <tr><td><b>Note au client</b></td><td>choisir la ligne, <span class="b">Actions</span> → <span class="b">Note au client</span> (« Joyeux anniversaire Awa ! »)</td><td>le client, sur l'addition et le ticket ; elle ne va pas en cuisine</td></tr>
+</table>
+<figure class="moyen">
+  <img src="../../../../captures/restaurant/34_j_envoie_note_generale.jpg" alt="Note générale">
+  <figcaption>Une note générale tapée seule : « J'envoie » montre « Note générale 1 ». Elle part en cuisine et au bar, sur les postes qui ont déjà servi la table.</figcaption>
+</figure>
+<ul>
+  <li>Une note cuisine posée sur un plat <b>déjà parti</b> part en cuisine au prochain <span class="b">J'envoie</span> (section « Note »). Si vous avez ajouté une unité à ce plat (3 poulets partis, un 4ᵉ saisi), la note va au 4ᵉ seul, sur une ligne à part : l'addition ne change pas.</li>
+  <li>Pour effacer une note : videz le champ, puis <span class="b">Appliquer</span>. Le bon dit « Note retirée : Sans piment ». <span class="b">Ignorer</span> ne change jamais rien.</li>
+  <li>Une note générale tapée seule, sans nouveau plat, est imprimée en un exemplaire.</li>
+</ul>
 
 <!-- =================================================================== -->
 <h2>4. Le serveur</h2>
@@ -485,7 +515,7 @@
   <tr><td>Manager — encaisser une table ouverte par un autre</td><td class="n">8</td><td class="n">8</td></tr>
   <tr><td>Une table servie de bout en bout</td><td class="n">27 + n</td><td class="n">30 (n = 3)</td></tr>
 </table>
-<p class="petit">Comptées sur Chrome à 1 280 × 800, pas encore sur la tablette du client. Ce guide est tiré du code du module (textes de la caisse, réglages, droits), des notes de version du lot 1 du restaurant et du cahier de recette (domaine R, 106 cas).</p>
+<p class="petit">Comptées sur Chrome à 1 280 × 800, pas encore sur la tablette du client. Ce guide est tiré du code du module (textes de la caisse, réglages, droits), des notes de version du lot 1 du restaurant et du cahier de recette (domaine R, 109 cas).</p>
 
 </body>
 </html>

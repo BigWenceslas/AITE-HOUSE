@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- La fenêtre de note : « Appliquer » est permis sur un champ vidé quand
+         la note existait (aiteVider, posé par les boutons de note en mode) :
+         c'est ainsi qu'on efface une note, « Ignorer » ne changeant plus rien
+         (18.0.1.0.13). Sans aiteVider, la règle d'Odoo. -->
+    <t t-name="aite_pos_restaurant.TextInputPopup" t-inherit="point_of_sale.TextInputPopup" t-inherit-mode="extension">
+        <xpath expr="//button[@t-on-click='confirm']" position="attributes">
+            <attribute name="t-att-disabled">!this.state.inputValue.trim() and !props.aiteVider</attribute>
+        </xpath>
+    </t>
+
+</templates>

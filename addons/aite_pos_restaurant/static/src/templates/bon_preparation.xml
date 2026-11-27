@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- Le bon de préparation de la caisse du restaurant (18.0.1.0.13) : une
+         feuille par imprimante et par envoi, en français, avec ses sections
+         « Nouveau », « Annulé », « Note » et « Note générale ». Les textes
+         viennent de messages.js (t-esc) : aucun mot n'est confié aux
+         traductions d'Odoo, qui donnent « Tableau » pour « Table » quand
+         l'éditeur de texte est installé. Même mise en forme que le bon
+         d'Odoo (point_of_sale.OrderChangeReceipt). -->
+    <t t-name="aite_pos_restaurant.BonDePreparation">
+        <div class="pos-receipt m-0 p-0 aite-bon">
+            <div t-if="bon.exemplaire" class="aite-bon-exemplaire text-center fw-bolder"
+                 style="font-size: 120%; border: 3px solid black; padding: 4px; margin-bottom: 8px;"
+                 t-esc="bon.exemplaire"/>
+            <div class="receipt-header text-center">
+                <div class="pos-receipt-title" t-esc="bon.mode"/>
+                <div class="o-employee-name" style="font-size: 78%;">
+                    <span t-esc="bon.poste"/><br/>
+                    <span t-if="bon.par" t-esc="bon.par"/>
+                </div>
+                <div class="my-4 aite-bon-table" style="font-size: 120%;">
+                    <strong t-esc="bon.table"/>
+                    <t t-if="bon.numero"> <span class="fw-light" t-esc="bon.numero"/></t>
+                </div>
+            </div>
+            <hr style="border: none; border-top: 4px dashed black;"/>
+            <div class="pos-receipt-body pb-5">
+                <t t-foreach="bon.sections" t-as="section" t-key="section_index">
+                    <div class="aite-bon-section mb-3">
+                        <div class="pos-receipt-title text-center aite-bon-titre" t-esc="section.titre"/>
+                        <div t-foreach="section.lignes" t-as="ligne" t-key="ligne_index" style="font-size: 120%;">
+                            <div t-attf-class="orderline #{ligne.combo ? 'mx-5 px-2' : 'mx-1'}">
+                                <div class="d-flex medium">
+                                    <span class="me-3" t-esc="ligne.quantite"/> <span class="product-name" t-esc="ligne.nom"/>
+                                </div>
+                                <div t-if="ligne.attributs.length" class="mx-5" style="font-size: 91%;">
+                                    <p t-foreach="ligne.attributs" t-as="attribut" t-key="attribut_index" class="p-0 m-0">- <t t-esc="attribut"/></p>
+                                </div>
+                                <div t-if="ligne.note" class="fst-italic" style="font-size: 91%;" t-esc="ligne.note"/>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+                <div t-if="bon.noteGenerale" class="mt-4 aite-bon-note-generale" style="font-size: 109%;">
+                    <div class="fw-bolder" t-esc="bon.noteGenerale.titre"/>
+                    <div class="fst-italic" t-esc="bon.noteGenerale.texte"/>
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>

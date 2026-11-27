@@ -162,9 +162,47 @@ Partager à parts égales (18.0.1.0.12) :
   par inchangés) ; une table divisée se partage addition par addition ;
   une caisse hors mode n'a pas le bouton.
 
+Bons de préparation et notes (18.0.1.0.13) :
+
+* « Nombre d'exemplaires du bon » sur chaque imprimante de préparation (1
+  d'office, de 1 à 5), avec la phrase « ce qui va se passer » ; un bon qui
+  porte de nouveaux plats (même mêlés d'annulations) sort en autant
+  d'exemplaires identiques, marqués « Exemplaire 1/3 » à « Exemplaire 3/3 »
+  (rien s'il n'y en a qu'un) ; un bon fait seulement d'annulations, de notes
+  ou de la note générale sort en un exemplaire ; une imprimante qui ne
+  répond pas n'est pas relancée pour ses autres exemplaires et une seule
+  alerte, en français, la nomme ; le réglage est lu par la caisse au
+  démarrage ;
+* un envoi donne un seul bon par imprimante, en français : « Sur place »,
+  « Par : Awa », « Table 7 », puis « Nouveau », « Annulé », « Note » (note
+  changée d'un plat déjà parti) et « Note générale » (plus de « New »,
+  « Cancelled », « Message », ni de « Tableau 7 ») ;
+* « Note cuisine » sur une ligne en partie envoyée (3 poulets partis, un 4ᵉ
+  saisi) : la note va au 4ᵉ, sur une ligne à part, sans rouvrir la fenêtre
+  des accompagnements ; l'addition garde sa quantité et son montant, et le
+  journal des saisies compte 4 poulets (la coupure est un déplacement) ;
+* une note posée sur un plat parti puis une unité de plus au pavé : le bon
+  dit « Nouveau 1 Poulet DG » et « Note 3 Poulet DG » (Odoo écrivait
+  « Nouveau 3 ») ; une note effacée sur un plat parti : « Note retirée :
+  sans glaçon » ;
+* « Ignorer » dans la fenêtre de note ne change plus rien (ni la note du
+  plat, ni la note générale, ni la ligne) ; pour effacer une note, on vide
+  le champ et on touche « Appliquer » ;
+* « Note au client » s'ouvre sur une ligne déjà envoyée (elle plantait) ;
+  elle ne coupe jamais la ligne : elle ne va pas en cuisine ;
+* une note générale tapée seule est imprimée : sur les imprimantes qui ont
+  déjà reçu un plat de la table, ou sur toutes si aucune n'en a reçu ; elle
+  reste rappelée sous les nouveaux plats, comme avant ;
+* la note générale (consigne pour la cuisine) ne figure plus sur l'addition,
+  le ticket ni l'écran tourné vers le client ; la note au client, si ;
+* « J'envoie » et la notification « Envoyé : … » disent « Note générale »
+  (plus « Message ») ; si une imprimante de préparation n'a pas répondu, la
+  notification dit quel bon n'est pas sorti ; une erreur au rendu d'un bon
+  donne la même alerte « Bon non imprimé » qu'une imprimante en panne.
+
 Aucune dépendance au socle hôtelier.
 """,
-    'version': '18.0.1.0.12',
+    'version': '18.0.1.0.13',
     'author': "AITE Consulting",
     'website': "https://aiteconsulting.com",
     'category': 'Point of Sale',
@@ -181,6 +219,7 @@ Aucune dépendance au socle hôtelier.
         'views/restaurant_saisie_views.xml',
         'views/restaurant_annulation_views.xml',
         'views/restaurant_motif_views.xml',
+        'views/pos_printer_views.xml',
         'views/report_saledetails.xml',
         'views/restaurant_menus.xml',
     ],

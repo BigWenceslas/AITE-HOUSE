@@ -64,6 +64,14 @@ export const MESSAGES = {
      * de l'incrément 4 ; texte que la spécification ne donne pas). */
     quantiteNegative: `Pas de quantité négative sur une addition${ESP}: pour retirer un produit, touchez ⌫.`,
     // Incrément 5 : les produits épuisés (titre `TITRES.produitEpuise`)
+    /** Une imprimante de préparation n'a pas répondu (une seule alerte,
+     * même pour plusieurs exemplaires ou plusieurs imprimantes). */
+    bonNonImprime: (noms) =>
+        `${noms.length > 1 ? "Les imprimantes" : "L'imprimante"} ${noms
+            .map((nom) => `«${ESP}${nom}${ESP}»`)
+            .join(", ")} n'${noms.length > 1 ? "ont" : "a"} pas répondu${ESP}: le bon n'est pas ` +
+        `sorti. La commande est enregistrée comme envoyée${ESP}: prévenez le poste de vive voix, ` +
+        `puis vérifiez que l'imprimante est allumée et reliée au réseau.`,
     R11: (produit) =>
         `Plus de ${produit} en stock. Si la bouteille est bien là, demandez au manager ` +
         `d'enregistrer l'entrée de stock${ESP}: la vente repassera aussitôt.`,
@@ -98,6 +106,7 @@ export const TITRES = {
     additionsSansTable: (noms) => `Les additions ${noms.join(", ")}`,
     /** Partager à parts égales (demande du Messager). */
     combienPaient: `Combien de personnes paient${ESP}?`,
+    bonNonImprime: "Bon non imprimé",
 };
 
 export const TEXTES = {
@@ -112,6 +121,12 @@ export const TEXTES = {
     // (« 1 Pizzas, 2 Bière » ne s'accordait pas : recette).
     familleQuantite: (famille, quantite) => `${famille}${ESP}×${ESP}${quantite}`,
     envoye: (compte) => `Envoyé${ESP}: ${compte}.`,
+    /** « J'envoie » quand une imprimante de préparation n'a pas répondu : la
+     * notification ne dit pas seulement « Envoyé » (relecture de 18.0.1.0.13). */
+    envoyeSansBon: (compte, noms) =>
+        `Envoyé${ESP}: ${compte}, mais ${noms.length > 1 ? "les bons" : "le bon"} ` +
+        `${noms.map((nom) => `«${ESP}${nom}${ESP}»`).join(", ")} ` +
+        `${noms.length > 1 ? "ne sont pas sortis" : "n'est pas sorti"}${ESP}: prévenez de vive voix.`,
     retour: "Retour",
     // Incrément 3 : la table
     neufEtPlus: "9 et plus",
@@ -208,6 +223,20 @@ export const TEXTES = {
     annulerLePartage: "Annuler le partage",
     /** Sous les paiements, sur le ticket. */
     partagee: (nombre) => `Partagée en ${nombre} parts égales`,
+    // Les bons de préparation (18.0.1.0.13).
+    bonSurPlace: "Sur place",
+    bonAEmporter: "À emporter",
+    bonVersAEmporter: "Sur place → À emporter",
+    bonVersSurPlace: "À emporter → Sur place",
+    bonPar: (nom) => `Par${ESP}: ${nom}`,
+    bonNouveau: "Nouveau",
+    bonAnnule: "Annulé",
+    bonNote: "Note",
+    bonNoteGenerale: "Note générale",
+    bonNoteRetiree: "(note retirée)",
+    /** La note d'un plat déjà parti, effacée (relecture de 18.0.1.0.13). */
+    bonNoteRetireeDe: (ancienne) => `Note retirée${ESP}: ${ancienne}`,
+    exemplaire: (rang, total) => `Exemplaire ${rang}/${total}`,
     /** « 35 min » ; à partir d'une heure, « 1 h 05 ». */
     duree: (minutes) => {
         if (minutes < 60) {

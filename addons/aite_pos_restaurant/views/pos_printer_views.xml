@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- L'imprimante de préparation : « Nombre d'exemplaires du bon », avec
+         la phrase « ce qui va se passer » (18.0.1.0.13). -->
+    <record id="view_pos_printer_form_aite" model="ir.ui.view">
+        <field name="name">pos.printer.form.aite</field>
+        <field name="model">pos.printer</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_printer_form"/>
+        <field name="arch" type="xml">
+            <field name="product_categories_ids" position="after">
+                <field name="aite_exemplaires"/>
+                <div colspan="2" class="text-muted aite-exemplaires-phrase">
+                    <i class="fa fa-info-circle me-1" title="Ce qui va se passer"/>
+                    <field name="aite_exemplaires_phrase" class="d-inline" nolabel="1"/>
+                </div>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_pos_printer_list_aite" model="ir.ui.view">
+        <field name="name">pos.printer.list.aite</field>
+        <field name="model">pos.printer</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_printer"/>
+        <field name="arch" type="xml">
+            <field name="product_categories_ids" position="after">
+                <field name="aite_exemplaires" string="Exemplaires"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>
