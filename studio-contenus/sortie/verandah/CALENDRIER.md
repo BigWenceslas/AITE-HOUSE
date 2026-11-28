@@ -1538,14 +1538,16 @@ La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp 
 
 ### Samedi 12h — Ambiance · undefined
 
-![VD-WE-15](VD-WE-15-vd-ambiance.jpg)
+![VD-WE-17](VD-WE-17-vd-ambiance.jpg)
 
-**Visuel :** Dernier samedi du mois — NOVEMBRE NOUS QUITTE, ÇA VA GÂTER CE SOIR
+**Visuel :** La paie a tombé, mola — ON NE RESTE PAS À LA MAISON CE SOIR, MOLA
 
 **Légende à publier :**
 
 ```text
-C’est le dernier samedi de novembre, la famille : on ne le laisse pas passer comme ça. Préviens les gars, ce soir ça se passe à La Vérandah. Le groupe est déjà prêt ?
+La fin du mois est là, la semaine a été longue et le samedi est enfin arrivé. Ce soir, on sort et on se capte à La Vérandah, à Makepe.
+
+Tu viens avec qui ?
 
 La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
 
@@ -1554,32 +1556,36 @@ La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp 
 
 ### Samedi 18h — Pensée (photo ronde) · undefined
 
-![VD-WE-16](VD-WE-16-vd-sombre.jpg)
+![VD-WE-18](VD-WE-18-vd-sombre.jpg)
 
-**Visuel :** Bon samedi — Novembre t’a fatigué, mola : ce soir, c’est toi qui vas le fatiguer à La Vérandah.
+**Visuel :** Bon samedi — Ce soir, mola, c’est toi qui vas lancer l’ambiance à La Vérandah.
 
 **Légende à publier :**
 
 ```text
-Tout le mois, tu as couru à gauche, à droite. Ce samedi, c’est ton tour de prendre ta revanche avec les amis. On t’attend ce soir, tu ramènes qui ?
+Une bonne soirée, ça commence avec quelqu’un qui arrive le sourire aux lèvres. Ce samedi, ce quelqu’un, c’est toi.
+
+Tu passes à quelle heure ?
 
 La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
 
 #LaVerandah #Douala #Makepe #SamediSoir #BonWeekEnd
 ```
 
-### Dimanche 13h — Ambiance · undefined
+### Dimanche 13h — Pensée (photo ronde) · undefined
 
-![VD-DIM-16](VD-DIM-16-vd-ambiance.jpg)
+![VD-DIM-17](VD-DIM-17-vd-sombre.jpg)
 
-**Visuel :** Décembre arrive, mola — ON SE CHAUFFE DÈS AUJOURD’HUI À LA VÉRANDAH
+**Visuel :** Bon dimanche — Hier soir, ça a chauffé, mola. Aujourd’hui, on se capte pour raconter ça.
 
 **Légende à publier :**
 
 ```text
-Décembre est à la porte, la famille, et ça sent déjà les fêtes. Ce dimanche, on lance l’ambiance entre amis à La Vérandah 🎉 Tu es prêt pour décembre ?
+Les meilleures histoires du samedi se racontent le dimanche, entre amis. On t’attend à La Vérandah pour refaire la soirée.
+
+Qui a le plus mis l’ambiance hier ?
 
 La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
 
-#LaVerandah #Douala #Makepe #BonDimanche #Decembre
+#LaVerandah #Douala #Makepe #BonDimanche
 ```
