@@ -1913,6 +1913,69 @@
       "etiquette": "",
       "photo": null,
       "texte": "LA CRAVATE DANS LE SAC, LA *JOIE* SUR LE VISAGE"
+    },
+    {
+      "serie": "Week-end 28-29 novembre — au choix",
+      "jour": "samedi",
+      "id": "VD-WE-15",
+      "moment": "samedi 12h",
+      "alcool": false,
+      "points": [],
+      "legende": "C’est le dernier samedi de novembre, la famille : on ne le laisse pas passer comme ça. Préviens les gars, ce soir ça se passe à La Vérandah. Le groupe est déjà prêt ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#SamediSoir",
+        "#FinDeMois"
+      ],
+      "modele": "vd-ambiance",
+      "titre": "Dernier samedi du mois",
+      "etiquette": "",
+      "photo": null,
+      "texte": "NOVEMBRE NOUS QUITTE, ÇA VA *GÂTER* CE SOIR"
+    },
+    {
+      "serie": "Week-end 28-29 novembre — au choix",
+      "jour": "samedi",
+      "id": "VD-WE-16",
+      "moment": "samedi 18h",
+      "alcool": false,
+      "points": [],
+      "legende": "Tout le mois, tu as couru à gauche, à droite. Ce samedi, c’est ton tour de prendre ta revanche avec les amis. On t’attend ce soir, tu ramènes qui ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#SamediSoir",
+        "#BonWeekEnd"
+      ],
+      "modele": "vd-sombre",
+      "titre": "",
+      "etiquette": "Bon samedi",
+      "photo": "boubou",
+      "texte": "Novembre t’a fatigué, mola : ce soir, c’est toi qui vas le *fatiguer* à La Vérandah."
+    },
+    {
+      "serie": "Week-end 28-29 novembre — au choix",
+      "jour": "dimanche",
+      "id": "VD-DIM-16",
+      "moment": "dimanche 13h",
+      "alcool": false,
+      "points": [],
+      "legende": "Décembre est à la porte, la famille, et ça sent déjà les fêtes. Ce dimanche, on lance l’ambiance entre amis à La Vérandah 🎉 Tu es prêt pour décembre ?\n\nLa Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98",
+      "hashtags": [
+        "#LaVerandah",
+        "#Douala",
+        "#Makepe",
+        "#BonDimanche",
+        "#Decembre"
+      ],
+      "modele": "vd-ambiance",
+      "titre": "Décembre arrive, mola",
+      "etiquette": "",
+      "photo": null,
+      "texte": "ON SE *CHAUFFE* DÈS AUJOURD’HUI À LA VÉRANDAH"
     }
   ]
 }

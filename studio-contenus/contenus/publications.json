@@ -3626,6 +3626,73 @@
         "#PME",
         "#Douala"
       ]
+    },
+    {
+      "id": "CIT-9",
+      "serie": "Week-end 28-29 novembre — au choix",
+      "semaine": null,
+      "jour": "samedi",
+      "moment": "samedi",
+      "modele": "sombre",
+      "theme": "citation · Nelson Mandela (Long Walk to Freedom, 1994, dernières pages ; traduction)",
+      "etiquette": "Citation du week-end",
+      "texte": "« Après avoir gravi une haute colline, on découvre qu’il en reste *beaucoup d’autres* à gravir. »",
+      "auteur": "Nelson Mandela",
+      "titre": "",
+      "points": [],
+      "numero": null,
+      "photo": "tunique",
+      "legende": "Nelson Mandela l’écrit à la fin de son autobiographie, Un long chemin vers la liberté (1994) : « after climbing a great hill, one only finds that there are many more hills to climb ». Pour l’entrepreneur qui arrive en fin d’année, c’est pareil : chaque objectif atteint en révèle un autre, et c’est bon signe. Prends le temps de regarder la colline gravie avant de repartir.\n\nQuelle colline as-tu gravie cette année ?",
+      "hashtags": [
+        "#AITEConsulting",
+        "#NelsonMandela",
+        "#Motivation",
+        "#Douala"
+      ]
+    },
+    {
+      "serie": "Week-end 28-29 novembre — au choix",
+      "semaine": null,
+      "jour": "samedi",
+      "moment": "samedi",
+      "modele": "affiche",
+      "etiquette": "Bon week-end",
+      "titre": "",
+      "points": [],
+      "numero": null,
+      "id": "WE-14",
+      "photo": "ndop",
+      "theme": "novembre semé, décembre récolté",
+      "texte": "Ce que tu as semé en novembre, tu le *récolteras* en décembre.",
+      "legende": "Les rendez-vous pris, les efforts discrets, les relances que personne n’a vues : rien n’est perdu. Décembre, c’est le mois où beaucoup de graines sortent de terre.\n\nOn est ensemble pour la récolte. 🌱\n\nQu’as-tu semé ce mois-ci ?",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Motivation",
+        "#BonWeekEnd",
+        "#Douala"
+      ]
+    },
+    {
+      "serie": "Week-end 28-29 novembre — au choix",
+      "semaine": null,
+      "jour": "dimanche",
+      "moment": "dimanche",
+      "modele": "affiche",
+      "etiquette": "Bon dimanche",
+      "titre": "",
+      "points": [],
+      "numero": null,
+      "id": "DIM-16",
+      "photo": "blazer",
+      "theme": "finir l’année fort",
+      "texte": "Dors bien ce soir : décembre appartient à ceux qui *finissent fort*.",
+      "legende": "Beaucoup commencent l’année avec force, peu la terminent avec la même énergie. Ce dimanche, accorde-toi le repos qui te fera tenir jusqu’au bout. Les gars, on finit fort ensemble.\n\nÀ quelle heure tu éteins ce soir ?",
+      "hashtags": [
+        "#AITEConsulting",
+        "#Motivation",
+        "#BonDimanche",
+        "#Douala"
+      ]
     }
   ]
 }
