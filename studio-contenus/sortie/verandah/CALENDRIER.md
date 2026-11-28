@@ -1534,56 +1534,56 @@ La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp 
 #LaVerandah #Douala #Makepe #Vendredi #AfterWork
 ```
 
-## Week-end 28-29 novembre — au choix
+## Week-end 28-29 novembre — version 3
+
+### Samedi 17h — Ambiance · undefined
+
+![VD-WE-19](VD-WE-19-vd-ambiance.jpg)
+
+**Visuel :** Je suis en route, mola — CE SOIR, SOIS VRAIMENT EN ROUTE : ÇA VA CHAUFFER À LA VÉRANDAH
+
+**Légende à publier :**
+
+```text
+On connaît tous ce « je suis en route » envoyé depuis la douche. Ce samedi, on te croit sur parole.
+
+Qui, dans ton groupe, dit toujours ça avant même de s’habiller ? 😄
+
+La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
+
+#LaVerandah #Douala #Makepe #SamediSoir #JeSuisEnRoute
+```
 
 ### Samedi 12h — Ambiance · undefined
 
-![VD-WE-17](VD-WE-17-vd-ambiance.jpg)
+![VD-WE-20](VD-WE-20-vd-ambiance.jpg)
 
-**Visuel :** La paie a tombé, mola — ON NE RESTE PAS À LA MAISON CE SOIR, MOLA
+**Visuel :** Samedi soir, mola — TON GARS SÛR, TU L’APPELLES EN PREMIER : ÇA VA CHAUFFER
 
 **Légende à publier :**
 
 ```text
-La fin du mois est là, la semaine a été longue et le samedi est enfin arrivé. Ce soir, on sort et on se capte à La Vérandah, à Makepe.
+Chacun a ce gars qui ne dit jamais non à un samedi soir. Ce soir, c’est lui que tu appelles d’abord, et on se capte à La Vérandah.
 
-Tu viens avec qui ?
+C’est qui, ton gars sûr du samedi ?
 
 La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
 
-#LaVerandah #Douala #Makepe #SamediSoir #FinDeMois
+#LaVerandah #Douala #Makepe #SamediSoir #GarsSur
 ```
 
-### Samedi 18h — Pensée (photo ronde) · undefined
+### Dimanche 11h — Ambiance · undefined
 
-![VD-WE-18](VD-WE-18-vd-sombre.jpg)
+![VD-DIM-18](VD-DIM-18-vd-ambiance.jpg)
 
-**Visuel :** Bon samedi — Ce soir, mola, c’est toi qui vas lancer l’ambiance à La Vérandah.
+**Visuel :** Il a dit « je reste à la maison » — LE SOIR, C’EST LUI QUI DEMANDE OÙ ON SE CAPTE : À LA VÉRANDAH
 
 **Légende à publier :**
 
 ```text
-Une bonne soirée, ça commence avec quelqu’un qui arrive le sourire aux lèvres. Ce samedi, ce quelqu’un, c’est toi.
+Le dimanche midi, il annonce qu’il reste à la maison pour se reposer. Le soir, c’est lui qui demande où on se retrouve.
 
-Tu passes à quelle heure ?
-
-La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
-
-#LaVerandah #Douala #Makepe #SamediSoir #BonWeekEnd
-```
-
-### Dimanche 13h — Pensée (photo ronde) · undefined
-
-![VD-DIM-17](VD-DIM-17-vd-sombre.jpg)
-
-**Visuel :** Bon dimanche — Hier soir, ça a chauffé, mola. Aujourd’hui, on se capte pour raconter ça.
-
-**Légende à publier :**
-
-```text
-Les meilleures histoires du samedi se racontent le dimanche, entre amis. On t’attend à La Vérandah pour refaire la soirée.
-
-Qui a le plus mis l’ambiance hier ?
+C’est qui, ce gars-là, dans ton groupe ? 😄
 
 La Vérandah, Makepe, en face de l’église Sainte Monique. Appels et WhatsApp : 656 80 10 98
 
